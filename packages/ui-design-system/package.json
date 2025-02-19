@@ -38,10 +38,12 @@
   },
   "dependencies": {
     "@ariakit/react": "^0.4.13",
+    "@marble/shared": "workspace:*",
     "@radix-ui/react-avatar": "^1.1.1",
     "@radix-ui/react-checkbox": "^1.1.2",
     "@radix-ui/react-collapsible": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.2",
+    "@radix-ui/react-hover-card": "^1.1.6",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-radio-group": "^1.2.1",
@@ -58,6 +60,7 @@
     "cmdk": "^1.0.4",
     "date-fns": "^4.1.0",
     "react-day-picker": "^9.1.4",
+    "sharpstate": "^0.0.13",
     "tailwind-merge": "^2.5.5",
     "ui-icons": "workspace:*"
   },

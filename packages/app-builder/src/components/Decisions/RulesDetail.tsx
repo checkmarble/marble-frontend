@@ -6,20 +6,16 @@ import {
 } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type RuleExecution } from '@app-builder/models/decision';
-import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
+import { NewNodeEvaluation, type NodeEvaluation } from '@app-builder/models/node-evaluation';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
-import { useAstNodeEditor } from '@app-builder/services/editor/ast-editor';
-import {
-  DisplayReturnValuesProvider,
-  useDisplayReturnValues,
-} from '@app-builder/services/editor/return-value';
+import { generateFlatEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { Await } from '@remix-run/react';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Collapsible, Switch } from 'ui-design-system';
 
-import { AstBuilder } from '../Scenario/AstBuilder/AstBuilder';
+import { AstBuilder } from '../AstBuilder';
 import {
   RuleExecutionCollapsible,
   RuleExecutionContent,
@@ -29,10 +25,12 @@ import {
 } from './RulesExecutions/RulesExecutions';
 
 export function RulesDetail({
+  scenarioId,
   ruleExecutions,
   triggerObjectType,
   astRuleData,
 }: {
+  scenarioId: string;
   ruleExecutions: RuleExecution[];
   triggerObjectType: string;
   astRuleData: Promise<{
@@ -61,6 +59,7 @@ export function RulesDetail({
                     <Await resolve={astRuleData}>
                       {(astRuleData) => (
                         <RuleExecutionDetail
+                          scenarioId={scenarioId}
                           ruleExecution={ruleExecution}
                           triggerObjectType={triggerObjectType}
                           astRuleData={astRuleData}
@@ -79,10 +78,12 @@ export function RulesDetail({
 }
 
 export function RuleExecutionDetail({
+  scenarioId,
   ruleExecution,
   triggerObjectType,
   astRuleData,
 }: {
+  scenarioId: string;
   ruleExecution: RuleExecution;
   triggerObjectType: string;
   astRuleData: {
@@ -99,6 +100,7 @@ export function RuleExecutionDetail({
     () => astRuleData.rules.find((rule) => rule.id === ruleExecution.ruleId),
     [astRuleData.rules, ruleExecution.ruleId],
   );
+  const [showValues, setShowValues] = React.useState(false);
 
   if (!currentRule || !currentRule.formula) {
     return (
@@ -109,7 +111,7 @@ export function RuleExecutionDetail({
   }
 
   return (
-    <DisplayReturnValuesProvider>
+    <>
       <div className="flex w-full items-center justify-between gap-2">
         <div className="bg-purple-96 text-s text-purple-65 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal">
           <Trans
@@ -126,10 +128,13 @@ export function RuleExecutionDetail({
             }}
           />
         </div>
-        {ruleExecution.evaluation ? <DisplayReturnValuesSwitch /> : null}
+        {ruleExecution.evaluation ? (
+          <DisplayReturnValuesSwitch value={showValues} onChange={setShowValues} />
+        ) : null}
       </div>
 
       <RuleFormula
+        scenarioId={scenarioId}
         formula={currentRule.formula}
         evaluation={ruleExecution.evaluation}
         databaseAccessors={astRuleData.databaseAccessors}
@@ -137,14 +142,20 @@ export function RuleExecutionDetail({
         dataModel={astRuleData.dataModel}
         customLists={astRuleData.customLists}
         triggerObjectType={triggerObjectType}
+        showValues={showValues}
       />
-    </DisplayReturnValuesProvider>
+    </>
   );
 }
 
-function DisplayReturnValuesSwitch() {
+function DisplayReturnValuesSwitch({
+  value,
+  onChange,
+}: {
+  value: boolean;
+  onChange: (v: boolean) => void;
+}) {
   const { t } = useTranslation(decisionsI18n);
-  const [displayReturnValues, setDisplayReturnValues] = useDisplayReturnValues();
 
   const id = React.useId();
 
@@ -153,12 +164,13 @@ function DisplayReturnValuesSwitch() {
       <label htmlFor={id} className="text-s select-none font-medium">
         {t('decisions:rules.show_contextual_values')}
       </label>
-      <Switch id={id} checked={displayReturnValues} onCheckedChange={setDisplayReturnValues} />
+      <Switch id={id} checked={value} onCheckedChange={onChange} />
     </div>
   );
 }
 
 function RuleFormula({
+  scenarioId,
   formula,
   databaseAccessors,
   evaluation,
@@ -166,7 +178,9 @@ function RuleFormula({
   dataModel,
   customLists,
   triggerObjectType,
+  showValues,
 }: {
+  scenarioId: string;
   formula: AstNode;
   evaluation?: NodeEvaluation;
   databaseAccessors: DatabaseAccessAstNode[];
@@ -174,24 +188,28 @@ function RuleFormula({
   dataModel: DataModel;
   customLists: CustomList[];
   triggerObjectType: string;
+  showValues: boolean;
 }) {
-  const astEditorStore = useAstNodeEditor({
-    initialAstNode: formula,
-    initialEvaluation: evaluation,
-  });
+  const flatEvaluation = React.useMemo(
+    () => generateFlatEvaluation(formula, evaluation ?? NewNodeEvaluation()),
+    [formula, evaluation],
+  );
   return (
     <Paper.Container className="bg-grey-100">
-      <AstBuilder
-        options={{
+      <AstBuilder.Provider
+        scenarioId={scenarioId}
+        initialData={{
+          customLists,
+          dataModel,
           databaseAccessors,
           payloadAccessors,
-          dataModel,
-          customLists,
           triggerObjectType,
         }}
-        astEditorStore={astEditorStore}
-        viewOnly={true}
-      />
+        mode="view"
+        showValues={showValues}
+      >
+        <AstBuilder.Root node={formula} evaluation={flatEvaluation} />
+      </AstBuilder.Provider>
     </Paper.Container>
   );
 }

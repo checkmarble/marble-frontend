@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
 import * as React from 'react';
+import * as R from 'remeda';
 import invariant from 'tiny-invariant';
 
 export type Tree<T> = T & {
@@ -55,13 +56,13 @@ export function parsePath(stringPath: string): Path {
 }
 
 export function getParentPath(path: Path) {
-  if (path.length === 0) {
-    return undefined;
+  if (R.hasAtLeast(path, 1)) {
+    return {
+      path: path.slice(0, -1),
+      childPathSegment: path[path.length - 1]!,
+    };
   }
-  return {
-    path: path.slice(0, -1),
-    childPathSegment: path[path.length - 1],
-  };
+  return undefined;
 }
 export type ParentPath = ReturnType<typeof getParentPath>;
 
@@ -90,7 +91,11 @@ export function getAtPath<T>(tree: Tree<T>, path: Path): Tree<T> | undefined {
   return getAtPath(child, restPath);
 }
 
-function setAtPathSegment<T>(tree: Tree<T>, pathSegment: PathSegment, value: Tree<T>): Tree<T> {
+export function setAtPathSegment<T>(
+  tree: Tree<T>,
+  pathSegment: PathSegment,
+  value: Tree<T>,
+): Tree<T> {
   switch (pathSegment.type) {
     case 'children': {
       const { index } = pathSegment;

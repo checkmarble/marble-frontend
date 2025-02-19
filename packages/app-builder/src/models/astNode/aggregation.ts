@@ -1,4 +1,8 @@
-import { type AstNode } from './ast-node';
+import { v7 as uuidv7 } from 'uuid';
+
+import { type AggregatorOperator } from '../modale-operators';
+import { type AstNode, type CheckNodeId, type IdLessAstNode } from './ast-node';
+import { type KnownOperandAstNode } from './builder-ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
 export const unaryAggregationFilterOperators = ['IsEmpty', 'IsNotEmpty'] as const;
@@ -21,13 +25,14 @@ export type BinaryAggregationFilterOperator = (typeof binaryAggregationFilterOpe
 export const aggregationFilterOperators = [
   ...binaryAggregationFilterOperators,
   ...unaryAggregationFilterOperators,
-];
+] as const;
 export type AggregationFilterOperator = (typeof aggregationFilterOperators)[number];
 
 export const aggregationFilterAstNodeName = 'Filter';
 export type UnaryAggregationFilterAstNode = {
+  id: string;
   name: typeof aggregationFilterAstNodeName;
-  constant: undefined;
+  constant?: undefined;
   children: never[];
   namedChildren: {
     tableName: ConstantAstNode<string | null>;
@@ -37,14 +42,15 @@ export type UnaryAggregationFilterAstNode = {
 };
 
 export type BinaryAggregationFilterAstNode = {
+  id: string;
   name: typeof aggregationFilterAstNodeName;
-  constant: undefined;
+  constant?: undefined;
   children: never[];
   namedChildren: {
     tableName: ConstantAstNode<string | null>;
     fieldName: ConstantAstNode<string | null>;
     operator: ConstantAstNode<(typeof binaryAggregationFilterOperators)[number] | null>;
-    value: AstNode;
+    value: KnownOperandAstNode;
   };
 };
 
@@ -59,25 +65,28 @@ export type GetAggregationFilterOperator<T extends AggregationFilterAstNode> =
 
 export const aggregationAstNodeName = 'Aggregator';
 export interface AggregationAstNode {
+  id: string;
   name: typeof aggregationAstNodeName;
-  constant: undefined;
+  constant?: undefined;
   children: [];
   namedChildren: {
-    aggregator: ConstantAstNode<string>;
+    aggregator: ConstantAstNode<AggregatorOperator>;
     tableName: ConstantAstNode<string>;
     fieldName: ConstantAstNode<string>;
     label: ConstantAstNode<string>;
     filters: {
+      id: string;
       name: 'List';
-      constant: undefined;
+      constant?: undefined;
       children: AggregationFilterAstNode[];
       namedChildren: Record<string, never>;
     };
   };
 }
 
-export function NewAggregatorAstNode(aggregatorName: string): AggregationAstNode {
+export function NewAggregatorAstNode(aggregatorName: AggregatorOperator): AggregationAstNode {
   return {
+    id: uuidv7(),
     name: aggregationAstNodeName,
     constant: undefined,
     children: [],
@@ -87,6 +96,7 @@ export function NewAggregatorAstNode(aggregatorName: string): AggregationAstNode
       fieldName: NewConstantAstNode({ constant: '' }),
       label: NewConstantAstNode({ constant: '' }),
       filters: {
+        id: uuidv7(),
         name: 'List',
         constant: undefined,
         children: [],
@@ -94,6 +104,19 @@ export function NewAggregatorAstNode(aggregatorName: string): AggregationAstNode
       },
     },
   };
+}
+
+export function NewAggregatorFilterAstNode<T extends AggregationFilterAstNode>({
+  namedChildren,
+}: {
+  namedChildren: T['namedChildren'];
+}): T {
+  return {
+    id: uuidv7(),
+    name: 'Filter',
+    children: [],
+    namedChildren,
+  } as T;
 }
 
 export function isAggregationFilterOperator(value: string): value is AggregationFilterOperator {
@@ -107,16 +130,16 @@ export function isUnaryAggregationFilterOperator(
 }
 
 export function isUnaryAggregationFilter(
-  node: AggregationFilterAstNode,
-): node is UnaryAggregationFilterAstNode {
+  node: IdLessAstNode<AggregationFilterAstNode> | AggregationFilterAstNode,
+): node is CheckNodeId<UnaryAggregationFilterAstNode, typeof node> {
   return (unaryAggregationFilterOperators as ReadonlyArray<string>).includes(
     node.namedChildren.operator.constant as string,
   );
 }
 
 export function isBinaryAggregationFilter(
-  node: AggregationFilterAstNode,
-): node is BinaryAggregationFilterAstNode {
+  node: IdLessAstNode<AggregationFilterAstNode> | AggregationFilterAstNode,
+): node is CheckNodeId<BinaryAggregationFilterAstNode, typeof node> {
   const operator = node.namedChildren.operator.constant;
   return (
     operator === null ||
@@ -126,6 +149,8 @@ export function isBinaryAggregationFilter(
   );
 }
 
-export function isAggregation(node: AstNode): node is AggregationAstNode {
+export function isAggregation(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<AggregationAstNode, typeof node> {
   return node.name === aggregationAstNodeName;
 }

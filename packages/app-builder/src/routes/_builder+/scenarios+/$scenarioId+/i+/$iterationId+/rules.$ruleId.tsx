@@ -350,11 +350,10 @@ export default function RuleDetail() {
                       <FieldAstFormula
                         type="rule"
                         scenarioId={scenario.id}
-                        iterationId={iterationId}
                         options={options}
                         onBlur={field.handleBlur}
                         onChange={field.handleChange}
-                        trigger={field.state.value}
+                        astNode={field.state.value}
                         defaultValue={NewEmptyRuleAstNode()}
                       />
                     )}

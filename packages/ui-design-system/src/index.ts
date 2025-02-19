@@ -9,6 +9,7 @@ export * from './HiddenInputs/HiddenInputs';
 export * from './Input/Input';
 export * from './Kbd/Kbd';
 export * from './Menu/Menu';
+export * from './MenuCommand/MenuCommand';
 export * from './Modal/Modal';
 export * from './RadioGroup/RadioGroup';
 export * from './ScrollArea/ScrollArea';

@@ -47,3 +47,5 @@ firebase-debug.log
 ui-debug.log
 # Sentry Config File
 .sentryclirc
+
+.jj/

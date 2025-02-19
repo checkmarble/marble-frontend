@@ -1,5 +1,10 @@
-import { type AstNode, type DataModel, type DataType, type TableModel } from '@app-builder/models';
-import { isConstant } from '@app-builder/models/astNode/constant';
+import {
+  type DataModel,
+  type DataType,
+  type IdLessAstNode,
+  type TableModel,
+} from '@app-builder/models';
+import { type ConstantAstNode, isConstant } from '@app-builder/models/astNode/constant';
 import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import {
@@ -13,39 +18,14 @@ import * as R from 'remeda';
 import { getDataAccessorAstNodeField } from './getDataAccessorAstNodeField';
 
 export function getAstNodeDataType(
-  astNode: AstNode,
+  astNode: IdLessAstNode,
   context: {
     triggerObjectTable: TableModel;
     dataModel: DataModel;
   },
 ): DataType {
   if (isConstant(astNode)) {
-    const { constant } = astNode;
-    if (R.isString(constant)) {
-      const parsedConstant = dateTimeDataTypeSchema.safeParse(constant);
-      if (parsedConstant.success) {
-        return 'Timestamp';
-      }
-      return 'String';
-    }
-
-    if (R.isNumber(constant)) {
-      return Number.isInteger(constant) ? 'Int' : 'Float';
-    }
-
-    if (R.isBoolean(constant)) {
-      return 'Bool';
-    }
-
-    if (R.isArray(constant)) {
-      if (constant.every(R.isString)) return 'String[]';
-      if (constant.every(R.isNumber)) {
-        return constant.every(Number.isInteger) ? 'Int[]' : 'Float[]';
-      }
-      if (constant.every(R.isBoolean)) return 'Bool[]';
-    }
-
-    return 'unknown';
+    return getConstantAstNodeDataType(astNode);
   }
 
   if (isDataAccessorAstNode(astNode)) {
@@ -67,6 +47,35 @@ export function getAstNodeDataType(
 
   if (isTimeNow(astNode) || isTimeAdd(astNode)) {
     return 'Timestamp';
+  }
+
+  return 'unknown';
+}
+
+export function getConstantAstNodeDataType(astNode: IdLessAstNode<ConstantAstNode>) {
+  const { constant } = astNode;
+  if (R.isString(constant)) {
+    const parsedConstant = dateTimeDataTypeSchema.safeParse(constant);
+    if (parsedConstant.success) {
+      return 'Timestamp';
+    }
+    return 'String';
+  }
+
+  if (R.isNumber(constant)) {
+    return Number.isInteger(constant) ? 'Int' : 'Float';
+  }
+
+  if (R.isBoolean(constant)) {
+    return 'Bool';
+  }
+
+  if (R.isArray(constant)) {
+    if (constant.every(R.isString)) return 'String[]';
+    if (constant.every(R.isNumber)) {
+      return constant.every(Number.isInteger) ? 'Int[]' : 'Float[]';
+    }
+    if (constant.every(R.isBoolean)) return 'Bool[]';
   }
 
   return 'unknown';

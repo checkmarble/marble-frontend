@@ -1,31 +1,24 @@
+import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
-import { useGetAstNodeOperandProps, useOperandOptions } from '@app-builder/services/editor/options';
+import { type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { memo } from 'react';
-
-import { Operand } from '../AstBuilder/AstBuilderNode/Operand';
 
 export const MatchOperand = memo(function MatchOperand({
   node,
   onSave,
   placeholder,
-  viewOnly,
 }: {
-  node?: AstNode;
+  node?: KnownOperandAstNode;
   onSave?: (astNode: AstNode) => void;
   placeholder?: string;
-  viewOnly?: boolean;
 }) {
-  const getOperandAstNodeOperandProps = useGetAstNodeOperandProps();
-  const options = useOperandOptions();
-
   return (
-    <Operand
-      {...getOperandAstNodeOperandProps(node ?? NewUndefinedAstNode())}
+    <AstBuilder.Operand
       placeholder={placeholder}
-      options={options.filter((o) => o.dataType === 'String')}
+      node={node ?? NewUndefinedAstNode()}
+      optionsDataType={['String']}
       validationStatus="valid"
-      onSave={onSave}
-      viewOnly={viewOnly}
+      onChange={onSave}
     />
   );
 });
