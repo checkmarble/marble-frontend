@@ -21,8 +21,6 @@ import * as R from 'remeda';
 export function getAstNodeOperandType(
   astNode: AstNode,
   context: {
-    triggerObjectTable: TableModel;
-    dataModel: DataModel;
     // To distinguish between Enum and Constant operands
     enumValues?: EnumValue[];
   },

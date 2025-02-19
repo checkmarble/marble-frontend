@@ -200,6 +200,11 @@ export const routes = [
                     "file": "routes/_builder+/scenarios+/$scenarioId+/_index.tsx"
                   },
                   {
+                    "id": "routes/_builder+/scenarios+/$scenarioId+/builder",
+                    "path": "builder",
+                    "file": "routes/_builder+/scenarios+/$scenarioId+/builder.tsx"
+                  },
+                  {
                     "id": "routes/_builder+/scenarios+/$scenarioId+/home",
                     "path": "home",
                     "file": "routes/_builder+/scenarios+/$scenarioId+/home.tsx"
@@ -560,6 +565,11 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/builder-options",
+        "path": "ressources/scenarios/:scenarioId/builder-options",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/builder-options.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/$scenarioId+/testrun+/$testRunId+/cancel",
         "path": "ressources/scenarios/:scenarioId/testrun/:testRunId/cancel",
         "file": "routes/ressources+/scenarios+/$scenarioId+/testrun+/$testRunId+/cancel.tsx"
@@ -593,11 +603,6 @@ export const routes = [
         "id": "routes/ressources+/settings+/api-keys+/delete",
         "path": "ressources/settings/api-keys/delete",
         "file": "routes/ressources+/settings+/api-keys+/delete.tsx"
-      },
-      {
-        "id": "routes/ressources+/settings+/edit-org-default-timezone",
-        "path": "ressources/settings/edit-org-default-timezone",
-        "file": "routes/ressources+/settings+/edit-org-default-timezone.tsx"
       },
       {
         "id": "routes/ressources+/settings+/inboxes+/create",

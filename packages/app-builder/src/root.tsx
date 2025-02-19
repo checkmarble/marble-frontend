@@ -17,7 +17,9 @@ import {
   useRouteLoaderData,
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError, withSentry } from '@sentry/remix';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { type Namespace } from 'i18next';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useChangeLanguage } from 'remix-i18next/react';
 import { ClientOnly } from 'remix-utils/client-only';
@@ -169,11 +171,25 @@ export function ErrorBoundary() {
 }
 
 function App() {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 60 * 1000,
+          },
+        },
+      }),
+  );
   const { locale } = useLoaderData<typeof loader>();
 
   useChangeLanguage(locale);
 
-  return <Outlet />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Outlet />
+    </QueryClientProvider>
+  );
 }
 
 export default withSentry(App);

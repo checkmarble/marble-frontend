@@ -65,7 +65,10 @@ export function getParentPath(path: Path) {
 }
 export type ParentPath = ReturnType<typeof getParentPath>;
 
-function getAtPathSegment<T>(tree: Tree<T>, pathSegment: PathSegment): Tree<T> | undefined {
+function getAtPathSegment<T>(
+  tree: Tree<T>,
+  pathSegment: PathSegment,
+): Tree<T> | undefined {
   switch (pathSegment.type) {
     case 'children': {
       const { index } = pathSegment;
@@ -90,13 +93,21 @@ export function getAtPath<T>(tree: Tree<T>, path: Path): Tree<T> | undefined {
   return getAtPath(child, restPath);
 }
 
-function setAtPathSegment<T>(tree: Tree<T>, pathSegment: PathSegment, value: Tree<T>): Tree<T> {
+export function setAtPathSegment<T>(
+  tree: Tree<T>,
+  pathSegment: PathSegment,
+  value: Tree<T>,
+): Tree<T> {
   switch (pathSegment.type) {
     case 'children': {
       const { index } = pathSegment;
       return {
         ...tree,
-        children: [...tree.children.slice(0, index), value, ...tree.children.slice(index + 1)],
+        children: [
+          ...tree.children.slice(0, index),
+          value,
+          ...tree.children.slice(index + 1),
+        ],
       };
     }
     case 'namedChildren': {
@@ -112,7 +123,11 @@ function setAtPathSegment<T>(tree: Tree<T>, pathSegment: PathSegment, value: Tre
   }
 }
 
-export function setAtPath<T>(tree: Tree<T>, path: Path, value: Tree<T>): Tree<T> {
+export function setAtPath<T>(
+  tree: Tree<T>,
+  path: Path,
+  value: Tree<T>,
+): Tree<T> {
   const [pathSegment, ...restPath] = path;
   if (pathSegment === undefined) {
     return value;
@@ -125,13 +140,19 @@ export function setAtPath<T>(tree: Tree<T>, path: Path, value: Tree<T>): Tree<T>
   return setAtPathSegment(tree, pathSegment, newChild);
 }
 
-function removeAtPathSegment<T>(tree: Tree<T>, pathSegment: PathSegment): Tree<T> {
+function removeAtPathSegment<T>(
+  tree: Tree<T>,
+  pathSegment: PathSegment,
+): Tree<T> {
   switch (pathSegment.type) {
     case 'children': {
       const { index } = pathSegment;
       return {
         ...tree,
-        children: [...tree.children.slice(0, index), ...tree.children.slice(index + 1)],
+        children: [
+          ...tree.children.slice(0, index),
+          ...tree.children.slice(index + 1),
+        ],
       };
     }
     case 'namedChildren': {
@@ -145,7 +166,11 @@ function removeAtPathSegment<T>(tree: Tree<T>, pathSegment: PathSegment): Tree<T
   }
 }
 
-export function removeAtPath<T>(tree: Tree<T>, path: Path, emptyTree?: Tree<T>): Tree<T> {
+export function removeAtPath<T>(
+  tree: Tree<T>,
+  path: Path,
+  emptyTree?: Tree<T>,
+): Tree<T> {
   const [pathSegment, ...restPath] = path;
   if (pathSegment === undefined) {
     // This is the root node, return an empty tree
