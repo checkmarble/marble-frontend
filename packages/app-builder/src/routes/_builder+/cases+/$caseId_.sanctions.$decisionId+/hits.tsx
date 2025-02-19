@@ -5,6 +5,7 @@ import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/Trigg
 import { SanctionReviewSection } from '@app-builder/components/Sanctions/SanctionReview';
 import { SearchInputDisplay } from '@app-builder/components/Sanctions/SearchInput';
 import { usePivotValues } from '@app-builder/hooks/decisions/usePivotValues';
+import { type SanctionCheck } from '@app-builder/models/sanction-check';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -15,7 +16,6 @@ export default function CaseSanctionsHitsPage() {
   const { t } = useTranslation(casesI18n);
   const { sanctionCheck, decision, dataModel, pivots } = useCurrentCase();
   const pivotValues = usePivotValues(decision.pivotValues, pivots);
-  const searchInput = R.values(sanctionCheck.request.queries);
   const [objectLink, setObjectLink] = useState<{
     tableName: string;
     objectId: string;
@@ -29,14 +29,9 @@ export default function CaseSanctionsHitsPage() {
           sanctionCheck={sanctionCheck}
         />
         <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
-          <div className="flex h-fit flex-col gap-2">
-            <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
-              <span className="text-grey-00 text-xs font-medium first-letter:capitalize">
-                {t('sanctions:search_input')}
-              </span>
-            </div>
-            <SearchInputDisplay searchInput={searchInput} />
-          </div>
+          {sanctionCheck.request ? (
+            <SanctionCheckSearchInput request={sanctionCheck.request} />
+          ) : null}
           <div className="flex h-fit flex-col gap-2">
             <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
               <span className="text-grey-00 text-xs font-medium first-letter:capitalize">
@@ -72,6 +67,26 @@ export default function CaseSanctionsHitsPage() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function SanctionCheckSearchInput({
+  request,
+}: {
+  request: NonNullable<SanctionCheck['request']>;
+}) {
+  const { t } = useTranslation(casesI18n);
+  const searchInput = R.values(request.queries);
+
+  return (
+    <div className="flex h-fit flex-col gap-2">
+      <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
+        <span className="text-grey-00 text-xs font-medium first-letter:capitalize">
+          {t('sanctions:search_input')}
+        </span>
+      </div>
+      <SearchInputDisplay searchInput={searchInput} />
     </div>
   );
 }

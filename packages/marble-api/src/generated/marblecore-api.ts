@@ -517,15 +517,26 @@ export type SanctionCheckMatchDto = {
         created_at: string;
     }[];
 };
-export type SanctionCheckDto = {
+export type SanctionCheckSuccessDto = {
     id: string;
     decision_id: string;
-    status: "in_review" | "confirmed_hit" | "no_hit" | "error";
+    status: "in_review" | "confirmed_hit" | "no_hit";
     request: SanctionCheckRequestDto;
     partial: boolean;
     is_manual: boolean;
     matches: SanctionCheckMatchDto[];
 };
+export type SanctionCheckErrorDto = {
+    id: string;
+    decision_id: string;
+    status: "error";
+    request?: SanctionCheckRequestDto;
+    partial: boolean;
+    is_manual: boolean;
+    matches: SanctionCheckMatchDto[];
+    error_codes: "all_fields_null_or_empty"[];
+};
+export type SanctionCheckDto = SanctionCheckSuccessDto | SanctionCheckErrorDto;
 export type OpenSanctionsCatalogDataset = {
     name: string;
     title: string;

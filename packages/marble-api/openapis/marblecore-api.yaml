@@ -5086,6 +5086,11 @@ components:
           $ref: '#/components/schemas/NodeDto'
     SanctionCheckDto:
       type: object
+      anyOf:
+        - $ref: '#/components/schemas/SanctionCheckSuccessDto'
+        - $ref: '#/components/schemas/SanctionCheckErrorDto'
+    SanctionCheckSuccessDto:
+      type: object
       required:
         - id
         - decision_id
@@ -5103,7 +5108,7 @@ components:
           format: uuid
         status:
           type: string
-          enum: ['in_review', 'confirmed_hit', 'no_hit', 'error']
+          enum: ['in_review', 'confirmed_hit', 'no_hit']
         request:
           $ref: '#/components/schemas/SanctionCheckRequestDto'
         partial:
@@ -5114,6 +5119,41 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SanctionCheckMatchDto'
+    SanctionCheckErrorDto:
+      type: object
+      required:
+        - id
+        - decision_id
+        - status
+        - partial
+        - is_manual
+        - matches
+        - error_codes
+      properties:
+        id:
+          type: string
+          format: uuid
+        decision_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: ['error']
+        request:
+          $ref: '#/components/schemas/SanctionCheckRequestDto'
+        partial:
+          type: boolean
+        is_manual:
+          type: boolean
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/SanctionCheckMatchDto'
+        error_codes:
+          type: array
+          items:
+            type: string
+            enum: ['all_fields_null_or_empty']
     SanctionCheckFileDto:
       type: object
       required:

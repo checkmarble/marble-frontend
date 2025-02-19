@@ -73,7 +73,6 @@
   "entity.schema.organization": "Organisation",
   "entity.schema.person": "Personne",
   "entity.schema.thing": "Chose",
-  "match.not_reviewed": "Non examiné",
   "match.similarity": "Similitude {{pour cent}}%",
   "match.status.confirmed_hit": "Correspondance confirmée",
   "match.status.no_hit": "Pas de correspondance",
@@ -113,5 +112,10 @@
   "match.status.skipped": "Sauté",
   "match.unique_counterparty_identifier": "Identifiant unique de contrepartie",
   "sanction_check": "Filtrage des sanction",
-  "see_details": "Voir les détails"
+  "see_details": "Voir les détails",
+  "error.all_fields_null_or_empty": "Tous les champs de recherche sont nuls ou vides",
+  "error_label_one": "Le filtrage de sanction est erronée pour la raison suivante",
+  "error_label_others": "Le filtrage de sanction est erronée pour les raisons suivantes",
+  "match.not_reviewable": "Non révisable",
+  "refine_modal.search_input_label": "La recherche couvre les champs suivants:"
 }

@@ -63,11 +63,6 @@ export function RefineSearchModal({
   onClose: _onClose,
 }: RefineSearchModalProps) {
   const { t } = useTranslation(sanctionsI18n);
-  const searchInputs = R.pipe(
-    R.values(sanctionCheck.request.queries),
-    R.flatMap((query) => R.values(query.properties)),
-    R.flat(),
-  );
   const searchFetcher = useFetcher<typeof searchAction>();
   const refineFetcher = useFetcher<typeof refineAction>();
   const formDataRef = useRef<FormData | null>(null);
@@ -192,7 +187,10 @@ export function RefineSearchModal({
                 className="flex-1"
                 variant="primary"
                 onClick={handleRefine}
-                disabled={searchResults.length > sanctionCheck.request.limit}
+                disabled={
+                  searchResults.length >
+                  (sanctionCheck.request?.limit ?? Infinity)
+                }
               >
                 {t('sanctions:refine_modal.apply_search')}
               </Button>
@@ -202,19 +200,9 @@ export function RefineSearchModal({
       ) : (
         <searchFetcher.Form onSubmit={handleSubmit(form)} className="contents">
           <div className="flex h-full flex-col gap-6 overflow-y-scroll p-8">
-            <Field label="Search covers the following fields:">
-              {searchInputs.map((input, i) => (
-                <div
-                  key={i}
-                  className="border-grey-90 flex items-center gap-2 rounded border p-2"
-                >
-                  <span className="bg-grey-95 size-6 rounded-sm p-1">
-                    <Icon icon="string" className="size-4" />
-                  </span>
-                  {input}
-                </div>
-              ))}
-            </Field>
+            {sanctionCheck.request ? (
+              <SearchInput request={sanctionCheck.request} />
+            ) : null}
             <form.Field
               name="entityType"
               listeners={{ onChange: onSearchEntityChange }}
@@ -357,5 +345,34 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
         </Select.Viewport>
       </Select.Content>
     </Select.Root>
+  );
+}
+
+function SearchInput({
+  request,
+}: {
+  request: NonNullable<SanctionCheck['request']>;
+}) {
+  const { t } = useTranslation(['sanctions']);
+  const searchInputs = R.pipe(
+    R.values(request.queries),
+    R.flatMap((query) => R.values(query.properties)),
+    R.flat(),
+  );
+
+  return (
+    <Field label={t('sanctions:refine_modal.search_input_label')}>
+      {searchInputs.map((input, i) => (
+        <div
+          key={i}
+          className="border-grey-90 flex items-center gap-2 rounded border p-2"
+        >
+          <span className="bg-grey-95 size-6 rounded-sm p-1">
+            <Icon icon="string" className="size-4" />
+          </span>
+          {input}
+        </div>
+      ))}
+    </Field>
   );
 }
