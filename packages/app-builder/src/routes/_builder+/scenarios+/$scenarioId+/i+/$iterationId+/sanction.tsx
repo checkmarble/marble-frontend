@@ -6,22 +6,17 @@ import {
 } from '@app-builder/components/Breadcrumbs';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type AstBuilderProps } from '@app-builder/components/Scenario/AstBuilder';
 import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
 import { FieldNodeConcat } from '@app-builder/components/Scenario/Sanction/FieldNodeConcat';
-import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
 import { FieldSanction } from '@app-builder/components/Scenario/Sanction/FieldSanction';
 import { FieldToolTip } from '@app-builder/components/Scenario/Sanction/FieldToolTip';
 import { FieldTrigger } from '@app-builder/components/Scenario/Sanction/FieldTrigger';
 import { type AstNode } from '@app-builder/models';
-import {
-  knownOutcomes,
-  type SanctionOutcome,
-} from '@app-builder/models/outcome';
+import { type SanctionOutcome } from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
 import { useEditorMode } from '@app-builder/services/editor';
 import { OptionsProvider } from '@app-builder/services/editor/options';
@@ -37,7 +32,6 @@ import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace, t as rawT } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
-import { difference } from 'remeda';
 import { Button, Collapsible, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
@@ -294,11 +288,26 @@ export default function SanctionDetail() {
           >
             <div className="flex max-w-3xl flex-col gap-4">
               <div className="flex items-center justify-between">
-                <input
-                  type="text"
-                  className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
-                  placeholder="Sanction Check title..."
-                />
+                <form.Field name="name">
+                  {(field) => (
+                    <div className="flex flex-col gap-1">
+                      <input
+                        type="text"
+                        name={field.name}
+                        value={field.state.value}
+                        onChange={(e) =>
+                          field.handleChange(e.currentTarget.value)
+                        }
+                        onBlur={field.handleBlur}
+                        className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
+                        placeholder="Sanction Check title..."
+                      />
+                      <FormErrorOrDescription
+                        errors={field.state.meta.errors}
+                      />
+                    </div>
+                  )}
+                </form.Field>
                 <div className="flex items-center gap-2">
                   <DeleteSanction
                     iterationId={iterationId}
@@ -315,10 +324,43 @@ export default function SanctionDetail() {
                   </Button>
                 </div>
               </div>
-              <textarea
-                className="text-grey-50 text-s h-fit w-full border-none bg-transparent font-medium outline-none"
-                placeholder="Add a description..."
-              />
+              <div className="flex flex-col items-start gap-6">
+                <form.Field name="description">
+                  {(field) => (
+                    <div className="flex w-full flex-col gap-1">
+                      <textarea
+                        name={field.name}
+                        value={field.state.value}
+                        onChange={(e) =>
+                          field.handleChange(e.currentTarget.value)
+                        }
+                        onBlur={field.handleBlur}
+                        className="form-textarea text-grey-50 text-s w-full resize-none border-none bg-transparent font-medium outline-none"
+                        placeholder="Add a description..."
+                      />
+                      <FormErrorOrDescription
+                        errors={field.state.meta.errors}
+                      />
+                    </div>
+                  )}
+                </form.Field>
+                <form.Field name="ruleGroup">
+                  {(field) => (
+                    <div className="flex flex-col gap-2">
+                      <FieldRuleGroup
+                        name={field.name}
+                        onChange={field.handleChange}
+                        onBlur={field.handleBlur}
+                        selectedRuleGroup={field.state.value}
+                        ruleGroups={ruleGroups}
+                      />
+                      <FormErrorOrDescription
+                        errors={field.state.meta.errors}
+                      />
+                    </div>
+                  )}
+                </form.Field>
+              </div>
             </div>
             {/* <Collapsible.Container className="bg-grey-100 max-w-3xl">
               <Collapsible.Title>
@@ -326,89 +368,6 @@ export default function SanctionDetail() {
               </Collapsible.Title>
               <Collapsible.Content>
                 <div className="flex flex-col gap-4 lg:gap-6">
-                  <form.Field name="name">
-                    {(field) => (
-                      <div className="flex flex-col gap-2">
-                        <FormLabel
-                          name={field.name}
-                          className="text-m"
-                          valid={field.state.meta.errors.length === 0}
-                        >
-                          {t('common:name')}
-                        </FormLabel>
-                        <FormInput
-                          disabled={editor === 'view'}
-                          defaultValue={field.state.value}
-                          type="text"
-                          name={field.name}
-                          onBlur={field.handleBlur}
-                          onChange={({ currentTarget: { value } }) =>
-                            field.handleChange(value)
-                          }
-                          placeholder={t(
-                            'scenarios:edit_rule.name_placeholder',
-                          )}
-                          valid={field.state.meta.errors.length === 0}
-                        />
-                        <FormErrorOrDescription
-                          errors={field.state.meta.errors}
-                        />
-                      </div>
-                    )}
-                  </form.Field>
-                  <form.Field name="description">
-                    {(field) => (
-                      <div className="flex flex-col gap-2">
-                        <FormLabel
-                          name={field.name}
-                          className="text-m"
-                          valid={field.state.meta.errors.length === 0}
-                        >
-                          {t('common:description')}
-                        </FormLabel>
-                        <FormInput
-                          disabled={editor === 'view'}
-                          defaultValue={field.state.value}
-                          type="text"
-                          name={field.name}
-                          onBlur={field.handleBlur}
-                          onChange={(e) =>
-                            field.handleChange(e.currentTarget.value)
-                          }
-                          placeholder={t(
-                            'scenarios:edit_rule.description_placeholder',
-                          )}
-                          valid={field.state.meta.errors.length === 0}
-                        />
-                        <FormErrorOrDescription
-                          errors={field.state.meta.errors}
-                        />
-                      </div>
-                    )}
-                  </form.Field>
-                  <form.Field name="ruleGroup">
-                    {(field) => (
-                      <div className="flex flex-col gap-2">
-                        <FormLabel
-                          name={field.name}
-                          className="text-m"
-                          valid={field.state.meta.errors.length === 0}
-                        >
-                          {t('scenarios:rules.rule_group')}
-                        </FormLabel>
-                        <FieldRuleGroup
-                          name={field.name}
-                          onChange={field.handleChange}
-                          onBlur={field.handleBlur}
-                          selectedRuleGroup={field.state.value}
-                          ruleGroups={ruleGroups}
-                        />
-                        <FormErrorOrDescription
-                          errors={field.state.meta.errors}
-                        />
-                      </div>
-                    )}
-                  </form.Field>
                   <form.Field name="forcedOutcome">
                     {(field) => (
                       <div className="flex flex-col gap-2">
