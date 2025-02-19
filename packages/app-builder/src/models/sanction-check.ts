@@ -189,3 +189,10 @@ export function isSanctionCheckError(
 ): sanctionCheck is SanctionCheckError {
   return sanctionCheck.status === 'error';
 }
+
+export function isSanctionCheckReviewCompleted(sanctionCheck: SanctionCheck) {
+  return (
+    sanctionCheck.status === 'no_hit' ||
+    sanctionCheck.status === 'confirmed_hit'
+  );
+}
