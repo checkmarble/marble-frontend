@@ -1,6 +1,7 @@
 import { Callout } from '@app-builder/components/Callout';
 import {
   isSanctionCheckError,
+  isSanctionCheckReviewCompleted,
   type SanctionCheck,
 } from '@app-builder/models/sanction-check';
 import { useState } from 'react';
@@ -31,6 +32,7 @@ export function SanctionReviewSection({
     (m) => m.status === 'pending',
   ).length;
   const hasError = isSanctionCheckError(sanctionCheck);
+  const isRefinable = !isSanctionCheckReviewCompleted(sanctionCheck);
 
   return (
     <div className="flex h-fit flex-[2] flex-col gap-6">
@@ -43,14 +45,16 @@ export function SanctionReviewSection({
               totalMatches: sanctionCheck.matches.length,
             })}
           </span>
-          <Button
-            className="ml-auto"
-            variant="secondary"
-            onClick={() => setIsRefining(true)}
-          >
-            <Icon icon="restart-alt" className="size-5" />
-            {t('sanctions:refine_search')}
-          </Button>
+          {isRefinable ? (
+            <Button
+              className="ml-auto"
+              variant="secondary"
+              onClick={() => setIsRefining(true)}
+            >
+              <Icon icon="restart-alt" className="size-5" />
+              {t('sanctions:refine_search')}
+            </Button>
+          ) : null}
         </div>
         {match(sanctionCheck)
           .when(isSanctionCheckError, (sc) => (
