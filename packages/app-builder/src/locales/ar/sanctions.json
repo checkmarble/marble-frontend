@@ -112,5 +112,6 @@
   "match.status.skipped": "تخطي",
   "match.unique_counterparty_identifier": "معرف فريد للطرف المقابل",
   "sanction_check": "فحص العقوبة",
-  "see_details": "انظر التفاصيل"
+  "see_details": "انظر التفاصيل",
+  "review_modal.confirmation": "تأكيد"
 }

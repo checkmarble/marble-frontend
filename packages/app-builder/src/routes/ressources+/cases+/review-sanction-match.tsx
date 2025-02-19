@@ -9,7 +9,7 @@ import { parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type UpdateSanctionCheckMatchDto } from 'marble-api';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2, Switch, TextArea } from 'ui-design-system';
 import { z } from 'zod';
@@ -74,6 +74,8 @@ export const SanctionCheckReviewModal = ({
     UpdateSanctionCheckMatchDto['status'] | null
   >(null);
   const onClose = useCallbackRef(_onClose);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const fetcher = useFetcher<typeof action>();
   useEffect(() => {
@@ -98,6 +100,7 @@ export const SanctionCheckReviewModal = ({
         className="flex flex-col gap-8 p-8"
         method="post"
         action={getRoute('/ressources/cases/review-sanction-match')}
+        ref={formRef}
       >
         <input name="matchId" type="hidden" value={sanctionMatch.id} />
         <div className="flex flex-col gap-2">
@@ -142,14 +145,54 @@ export const SanctionCheckReviewModal = ({
             {t('common:cancel')}
           </ModalV2.Close>
           <Button
-            type="submit"
+            type={currentStatus === 'confirmed_hit' ? 'button' : 'submit'}
             disabled={!currentStatus}
             className="flex-1"
             variant="primary"
             name="save"
+            onClick={() => {
+              if (currentStatus === 'confirmed_hit') {
+                setIsConfirming(true);
+              }
+            }}
           >
             {t('common:save')}
           </Button>
+          <ModalV2.Content
+            open={isConfirming}
+            onClose={() => setIsConfirming(false)}
+          >
+            <ModalV2.Title>
+              {t('sanctions:review_modal.confirmation')}
+            </ModalV2.Title>
+            <div className="flex flex-col gap-4 p-6">
+              <div>{t('sanctions:review_modal.callout_confirmed_hit')}</div>
+              <div className="flex justify-between gap-4">
+                <ModalV2.Close
+                  render={
+                    <Button
+                      className="flex-1"
+                      variant="secondary"
+                      name="cancel"
+                    />
+                  }
+                >
+                  {t('common:cancel')}
+                </ModalV2.Close>
+                <Button
+                  disabled={!currentStatus}
+                  className="flex-1"
+                  variant="primary"
+                  name="save"
+                  onClick={() => {
+                    fetcher.submit(formRef.current);
+                  }}
+                >
+                  {t('common:save')}
+                </Button>
+              </div>
+            </div>
+          </ModalV2.Content>
         </div>
       </fetcher.Form>
     </ModalV2.Content>
