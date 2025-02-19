@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .form-textarea {
+    field-sizing: content;
+    resize: false;
+  }
+}
