@@ -1,5 +1,6 @@
 import {
   type SanctionCheckDto,
+  type SanctionCheckErrorDto,
   type SanctionCheckFileDto,
   type SanctionCheckMatchDto,
   type SanctionCheckMatchPayloadDto,
@@ -123,25 +124,47 @@ export function adaptSanctionCheckRequest(
   };
 }
 
-export type SanctionCheck = {
+type BaseSanctionCheck = {
   id: string;
   decisionId: string;
-  status: SanctionCheckStatus;
-  request: SanctionCheckRequest;
   partial: boolean;
   isManual: boolean;
   matches: SanctionCheckMatch[];
 };
+export type SanctionCheckError = BaseSanctionCheck & {
+  status: 'error';
+  request: SanctionCheckRequest | null;
+  errorCodes: SanctionCheckErrorDto['error_codes'];
+};
+export type SanctionCheckSuccess = BaseSanctionCheck & {
+  status: Exclude<SanctionCheckStatus, 'error'>;
+  request: SanctionCheckRequest;
+};
+
+export type SanctionCheck = SanctionCheckError | SanctionCheckSuccess;
 
 export function adaptSanctionCheck(dto: SanctionCheckDto): SanctionCheck {
-  return {
+  const baseSanctionCheck: BaseSanctionCheck = {
     id: dto.id,
     decisionId: dto.decision_id,
-    status: dto.status,
-    request: adaptSanctionCheckRequest(dto.request),
     partial: dto.partial,
     isManual: dto.is_manual,
     matches: R.map(dto.matches, adaptSanctionCheckMatch),
+  };
+
+  if (dto.status === 'error') {
+    return {
+      ...baseSanctionCheck,
+      status: dto.status,
+      request: dto.request ? adaptSanctionCheckRequest(dto.request) : null,
+      errorCodes: dto.error_codes,
+    };
+  }
+
+  return {
+    ...baseSanctionCheck,
+    status: dto.status,
+    request: adaptSanctionCheckRequest(dto.request),
   };
 }
 
@@ -160,3 +183,9 @@ export type SanctionCheckFile = {
   fileName: string;
   createdAt: string;
 };
+
+export function isSanctionCheckError(
+  sanctionCheck: SanctionCheck,
+): sanctionCheck is SanctionCheckError {
+  return sanctionCheck.status === 'error';
+}

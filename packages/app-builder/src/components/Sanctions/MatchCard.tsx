@@ -15,14 +15,14 @@ import { StatusTag } from './StatusTag';
 type MatchCardProps = {
   match: SanctionCheckMatch;
   readonly?: boolean;
-  disabled?: boolean;
+  unreviewable?: boolean;
   defaultOpen?: boolean;
 };
 
 export const MatchCard = ({
   match,
   readonly,
-  disabled,
+  unreviewable,
   defaultOpen,
 }: MatchCardProps) => {
   const { t } = useTranslation(sanctionsI18n);
@@ -59,9 +59,9 @@ export const MatchCard = ({
               </div>
             </CollapsibleV2.Title>
             <div className="inline-flex h-8">
-              {disabled ? (
+              {unreviewable ? (
                 <Tag border="square" color="grey">
-                  {t('sanctions:match.not_reviewed')}
+                  {t('sanctions:match.not_reviewable')}
                 </Tag>
               ) : (
                 <StatusTag
