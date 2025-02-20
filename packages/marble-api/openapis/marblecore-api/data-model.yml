@@ -1,0 +1,527 @@
+/data-model:
+  get:
+    tags:
+      - Data Model
+    summary: Get the data model associated with the current organization (present in the JWT)
+    operationId: getDataModel
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: The data model from the organization
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data_model
+              properties:
+                data_model:
+                  $ref: '#/components/schemas/DataModelDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/data-model/tables:
+  post:
+    tags:
+      - Data Model
+    summary: Create a new table on the data model
+    operationId: postDataModelTable
+    requestBody:
+      description: 'Describe the table to create'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateTableBody'
+      required: true
+    security:
+      - bearerAuth: []
+    responses:
+      '204':
+        description: Empty response body
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/data-model/tables/{tableId}:
+  patch:
+    tags:
+      - Data Model
+    summary: Update data model table
+    operationId: patchDataModelTable
+    parameters:
+      - name: tableId
+        description: ID of the table to update
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: 'Describe the modifications to make to the table'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateTableBody'
+      required: true
+    security:
+      - bearerAuth: []
+    responses:
+      '204':
+        description: Empty response body
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/data-model/tables/{tableId}/fields:
+  post:
+    tags:
+      - Data Model
+    summary: Create a new field on a table from the data model
+    operationId: postDataModelTableField
+    parameters:
+      - name: tableId
+        description: ID of the table in which to create the field
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: 'Describe the content of the field to create'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateTableFieldDto'
+      required: true
+    security:
+      - bearerAuth: []
+    responses:
+      '204':
+        description: Empty response body
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/data-model/fields/{fieldId}:
+  patch:
+    tags:
+      - Data Model
+    summary: Update data model field
+    operationId: patchDataModelField
+    parameters:
+      - name: fieldId
+        description: ID of the field to update
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: 'Describe the modifications to make to the field'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateTableFieldDto'
+      required: true
+    security:
+      - bearerAuth: []
+    responses:
+      '204':
+        description: Empty response body
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/data-model/links:
+  post:
+    tags:
+      - Data Model
+    summary: Create a new link on a table from the data model
+    operationId: postDataModelTableLink
+    requestBody:
+      description: 'Describe the link to create'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateTableLinkBody'
+      required: true
+    security:
+      - bearerAuth: []
+    responses:
+      '204':
+        description: Empty response body
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/data-model/openapi:
+  get:
+    tags:
+      - Data Model
+    summary: Get the OpenAPI specification of the client specific API for data ingestion and decision making
+    operationId: getDataModelOpenApi
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: The OpenAPI specification of the client specific API for data ingestion and decision making
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpenAPISpec'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/data-model/pivots:
+  get:
+    tags:
+      - Data Model
+    summary: Get the pivots associated with the current organization (can be filtered by table_id)
+    operationId: listDataModelPivots
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: table_id
+        description: ID of the table to get the pivots from
+        in: query
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The pivots corresponding to the current organization (and table_id if provided)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pivots:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PivotDto'
+              required:
+                - pivots
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+  post:
+    tags:
+      - Data Model
+    summary: Create a pivot
+    operationId: createDataModelPivot
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: 'Describe the pivot to create'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreatePivotInputDto'
+      required: true
+    responses:
+      '200':
+        description: The created pivot
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pivot:
+                  $ref: '#/components/schemas/PivotDto'
+              required:
+                - pivot
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+components:
+  schemas:
+    LinkToSingleDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        parent_table_name:
+          type: string
+        parent_table_id:
+          type: string
+          format: uuid
+        parent_field_name:
+          type: string
+        parent_field_id:
+          type: string
+          format: uuid
+        child_table_name:
+          type: string
+        child_table_id:
+          type: string
+          format: uuid
+        child_field_name:
+          type: string
+        child_field_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - parent_table_name
+        - parent_table_id
+        - parent_field_name
+        - parent_field_id
+        - child_table_name
+        - child_table_id
+        - child_field_name
+        - child_field_id
+    FieldDto:
+      type: object
+      properties:
+        id:
+          type: string
+        data_type:
+          type: string
+          enum: [Bool, Int, Float, String, Timestamp, unknown]
+        description:
+          type: string
+        is_enum:
+          type: boolean
+        name:
+          type: string
+        nullable:
+          type: boolean
+        table_id:
+          type: string
+          format: uuid
+        values:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: number
+        unicity_constraint:
+          type: string
+          enum:
+            [
+              no_unicity_constraint,
+              pending_unique_constraint,
+              active_unique_constraint,
+            ]
+      required:
+        - id
+        - data_type
+        - description
+        - is_enum
+        - name
+        - nullable
+        - table_id
+        - unicity_constraint
+    TableDto:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        fields:
+          type: object
+          additionalProperties:
+            type: object
+            $ref: '#/components/schemas/FieldDto'
+        links_to_single:
+          type: object
+          additionalProperties:
+            type: object
+            $ref: '#/components/schemas/LinkToSingleDto'
+      required:
+        - id
+        - name
+        - description
+        - fields
+    DataModelDto:
+      type: object
+      properties:
+        tables:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/TableDto'
+      required:
+        - tables
+    CreateTableBody:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    UpdateTableBody:
+      type: object
+      properties:
+        description:
+          type: string
+    CreateTableFieldDto:
+      type: object
+      required:
+        - name
+        - type
+        - nullable
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [Bool, Int, Float, String, Timestamp]
+        nullable:
+          type: boolean
+        is_enum:
+          type: boolean
+        is_unique:
+          type: boolean
+    UpdateTableFieldDto:
+      type: object
+      properties:
+        description:
+          type: string
+        is_enum:
+          type: boolean
+        is_unique:
+          type: boolean
+    CreateTableLinkBody:
+      type: object
+      required:
+        - name
+        - parent_table_id
+        - parent_field_id
+        - child_table_id
+        - child_field_id
+      properties:
+        name:
+          type: string
+        parent_table_id:
+          type: string
+        parent_field_id:
+          type: string
+        child_table_id:
+          type: string
+        child_field_id:
+          type: string
+    OpenAPISpec:
+      type: object
+      required:
+        - openapi
+        - tags
+        - paths
+      properties:
+        info:
+          type: object
+        openapi:
+          type: string
+        tags:
+          type: array
+          items:
+            type: object
+        paths:
+          type: object
+        components:
+          type: object
+          properties:
+            schemas:
+              type: object
+            securitySchemes:
+              type: object
+    PivotDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        base_table:
+          type: string
+        base_table_id:
+          type: string
+          format: uuid
+        pivot_table:
+          type: string
+        pivot_table_id:
+          type: string
+          format: uuid
+        field:
+          type: string
+        field_id:
+          type: string
+          format: uuid
+        path_links:
+          type: array
+          items:
+            type: string
+        path_link_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - id
+        - created_at
+        - base_table
+        - base_table_id
+        - pivot_table
+        - pivot_table_id
+        - field
+        - field_id
+        - path_links
+        - path_link_ids
+    PivotValueDto:
+      type: object
+      properties:
+        pivot_id:
+          type: string
+          format: uuid
+          nullable: true
+        pivot_value:
+          type: string
+          nullable: true
+      required:
+        - pivot_id
+        - pivot_value
+    CreatePivotInputDto:
+      type: object
+      properties:
+        base_table_id:
+          type: string
+          format: uuid
+        field_id:
+          type: string
+          format: uuid
+        path_link_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - base_table_id

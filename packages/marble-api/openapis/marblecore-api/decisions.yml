@@ -1,0 +1,450 @@
+/decisions/with-ranks:
+  get:
+    tags:
+      - Decisions
+    summary: List decisions
+    operationId: listDecisions
+    security:
+      - bearerAuth: []
+    parameters:
+      # Filtering parameters
+      - name: case_id[]
+        description: decision case_ids used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      - $ref: 'components.yml#/parameters/end_date'
+      - name: has_case
+        description: Filter decisions that have a case associated with them or not (true or false, default returns all)
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: outcome[]
+        description: decision outcomes used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutcomeDto'
+      - name: pivot_value
+        description: decision pivot value used to filter the list
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: scenario_id[]
+        description: scenario IDs used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      - name: case_inbox_id[]
+        description: inbox IDs used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      - name: review_status[]
+        description: decision review statuses used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: 'cases.yml#/components/schemas/ReviewStatusDto'
+      - name: scheduled_execution_id[]
+        description: scheduled execution IDs used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      - $ref: 'components.yml#/parameters/start_date'
+      - name: trigger_object[]
+        description: trigger objects used to filter the list
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      # Pagination and sorting parameters
+      - $ref: 'components.yml#/parameters/limit'
+      - $ref: 'components.yml#/parameters/offset_id'
+      - $ref: 'components.yml#/parameters/order'
+      - name: sorting
+        description: the field used to sort the items
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+            - created_at
+    responses:
+      '200':
+        description: List of corresponding decisions
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: 'components.yml#/schemas/Pagination'
+                - type: object
+                  required:
+                    - items
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/DecisionDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+  post:
+    tags:
+      - Decisions
+    summary: Create a decision
+    operationId: createDecision
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: 'Payload object used to be trigger the decision engine'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateDecisionBody'
+      required: true
+    responses:
+      '200':
+        description: The decision corresponding to the provided payload
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionDetailDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/decisions/{decisionId}:
+  get:
+    tags:
+      - Decisions
+    summary: Get a decision by id
+    operationId: getDecision
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: decisionId
+        description: ID of the decision that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The decision corresponding to the provided `decisionId`
+        content:
+          application/json:
+            schema:
+              $ref: 'decisions.yml#/components/schemas/DecisionDetailDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/decisions/{decisionId}/active-snoozes:
+  get:
+    tags:
+      - Decisions
+    summary: Get active snoozes for a decision
+    operationId: getDecisionActiveSnoozes
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: decisionId
+        description: ID of the decision that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The active snoozes for the decision corresponding to the provided `decisionId`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - snoozes
+              properties:
+                snoozes:
+                  $ref: 'components.yml#/schemas/SnoozesOfDecisionDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/decisions/{decisionId}/snooze:
+  post:
+    tags:
+      - Decisions
+    summary: Create a snooze for a decision
+    operationId: createSnoozeForDecision
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: decisionId
+        description: ID of the decision that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: 'Snooze object that needs to be added to the database'
+      content:
+        application/json:
+          schema:
+            $ref: 'components.yml#/schemas/SnoozeDecisionInputDto'
+      required: true
+    responses:
+      '200':
+        description: The active snoozes for the decision corresponding to the provided `decisionId`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - snoozes
+              properties:
+                snoozes:
+                  $ref: 'components.yml#/schemas/SnoozesOfDecisionDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scheduled-executions:
+  get:
+    tags:
+      - ScheduledExecutions
+    summary: List Scheduled Executions
+    operationId: listScheduledExecutions
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenario_id
+        description: ID of the scenario used to filter the list
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: List of Scheduled Executions of the organization
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scheduled_executions
+              properties:
+                scheduled_executions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ScheduledExecutionDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+components:
+  schemas:
+    OutcomeDto:
+      type: string
+      enum: ['approve', 'review', 'decline', 'block_and_review', 'unknown']
+    DecisionDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        case:
+          $ref: 'cases.yml#/components/schemas/CaseDto'
+        created_at:
+          type: string
+          format: date-time
+        error:
+          $ref: 'components.yml#/schemas/Error'
+        outcome:
+          $ref: '#/components/schemas/OutcomeDto'
+        pivot_values:
+          type: array
+          items:
+            $ref: 'components.yml#/schemas/PivotValueDto'
+        review_status:
+          $ref: 'cases.yml#/components/schemas/ReviewStatusDto'
+        scenario:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            description:
+              type: string
+            name:
+              type: string
+            scenario_iteration_id:
+              type: string
+              format: uuid
+            version:
+              type: integer
+          required:
+            - id
+            - description
+            - name
+            - scenario_iteration_id
+            - version
+        score:
+          type: integer
+        trigger_object:
+          additionalProperties: true
+        trigger_object_type:
+          type: string
+        scheduled_execution_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - created_at
+        - outcome
+        - pivot_values
+        - scenario
+        - score
+        - trigger_object
+        - trigger_object_type
+    DecisionDetailDto:
+      allOf:
+        - $ref: '#/components/schemas/DecisionDto'
+        - type: object
+          required:
+            - rules
+          properties:
+            rules:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleExecutionDto'
+    CreateDecisionBody:
+      type: object
+      required:
+        - scenario_id
+        - trigger_object
+        - object_type
+      properties:
+        scenario_id:
+          type: string
+          format: uuid
+        trigger_object:
+          type: object
+        object_type:
+          type: string
+    RuleExecutionDto:
+      type: object
+      required:
+        - description
+        - name
+        - outcome
+        - result
+        - rule_id
+        - score_modifier
+      properties:
+        error:
+          $ref: 'components.yml#/schemas/Error'
+        description:
+          type: string
+        name:
+          type: string
+        outcome:
+          type: string
+          enum: ['hit', 'no_hit', 'snoozed', 'error']
+        result:
+          type: boolean
+        rule_id:
+          type: string
+          format: uuid
+        score_modifier:
+          type: integer
+        rule_evaluation:
+          $ref: 'ast.yml#/components/schemas/NodeEvaluationDto'
+    ScheduledExecutionDto:
+      type: object
+      required:
+        - finished_at
+        - id
+        - manual
+        - number_of_created_decisions
+        - number_of_evaluated_decisions
+        - number_of_planned_decisions
+        - scenario_id
+        - scenario_iteration_id
+        - scenario_name
+        - scenario_trigger_object_type
+        - started_at
+        - status
+      properties:
+        finished_at:
+          format: date-time
+          nullable: true
+          type: string
+        id:
+          format: uuid
+          type: string
+        manual:
+          description: Whether the execution was manual or not
+          type: boolean
+        number_of_created_decisions:
+          type: number
+          description: Number of decisions who were created (matched the trigger condition)
+        number_of_evaluated_decisions:
+          type: number
+          description: Number of decisions who were executed (even if they did not match the trigger condition)
+        number_of_planned_decisions:
+          type: number
+          description: Number of decisions who have been planned (using the preliminary filter of ingsted entities in the DB). Null before the execution initial filter has run.
+          nullable: true
+        scenario_id:
+          format: uuid
+          type: string
+        scenario_iteration_id:
+          format: uuid
+          type: string
+        scenario_name:
+          type: string
+        scenario_trigger_object_type:
+          type: string
+        started_at:
+          type: string
+        status:
+          type: string
+          enum:
+            ['pending', 'processing', 'success', 'failure', 'partial_failure']

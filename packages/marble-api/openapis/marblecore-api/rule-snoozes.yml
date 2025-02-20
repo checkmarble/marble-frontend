@@ -1,0 +1,131 @@
+/rule-snoozes/{rule_snooze_id}:
+  get:
+    tags:
+      - RuleSnoozes
+    summary: Get a rule snooze by id
+    operationId: getRuleSnooze
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: rule_snooze_id
+        description: ID of the rule snooze that needs to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The rule snooze corresponding to the provided `rule_snooze_id`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - snooze
+              properties:
+                snooze:
+                  $ref: '#/components/schemas/RuleSnoozeDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+
+components:
+  schemas:
+    RuleSnoozeDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        pivot_value:
+          type: string
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        created_by_user:
+          type: string
+          format: uuid
+        created_from_decision_id:
+          type: string
+          format: uuid
+        created_from_rule_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - pivot_value
+        - starts_at
+        - ends_at
+        - created_by_user
+        - created_from_rule_id
+    RuleSnoozeWithRuleIdDto:
+      allOf:
+        - $ref: '#/components/schemas/RuleSnoozeDto'
+        - type: object
+          properties:
+            rule_id:
+              type: string
+              format: uuid
+          required:
+            - rule_id
+    RuleSnoozeInformationDto:
+      type: object
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        snooze_group_id:
+          type: string
+          format: uuid
+        has_snoozes_active:
+          type: boolean
+      required:
+        - rule_id
+        - snooze_group_id
+        - has_snoozes_active
+    SnoozesOfIterationDto:
+      type: object
+      properties:
+        iteration_id:
+          type: string
+          format: uuid
+        rule_snoozes:
+          type: array
+          items:
+            $ref: '#/components/schemas/RuleSnoozeInformationDto'
+      required:
+        - iteration_id
+        - rule_snoozes
+    SnoozesOfDecisionDto:
+      type: object
+      properties:
+        decision_id:
+          type: string
+          format: uuid
+        rule_snoozes:
+          type: array
+          items:
+            $ref: '#/components/schemas/RuleSnoozeWithRuleIdDto'
+      required:
+        - decision_id
+        - rule_snoozes
+    SnoozeDecisionInputDto:
+      type: object
+      properties:
+        rule_id:
+          type: string
+          format: uuid
+        duration:
+          type: string
+        comment:
+          type: string
+      required:
+        - rule_id
+        - duration

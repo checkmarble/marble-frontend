@@ -1,0 +1,110 @@
+components:
+  schemas:
+    NodeDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: '>'
+        constant:
+          $ref: '#/components/schemas/ConstantDto'
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeDto'
+          example: [{ constant: 4 }]
+        named_children:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/NodeDto'
+          example: { 'field_name': { constant: 'account' } }
+    NodeEvaluationDto:
+      type: object
+      required:
+        - return_value
+        - errors
+      properties:
+        return_value:
+          type: object
+          required:
+            - is_omitted
+          properties:
+            value:
+              $ref: '#/components/schemas/ConstantDto'
+            is_omitted:
+              type: boolean
+        errors:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/EvaluationErrorDto'
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeEvaluationDto'
+        named_children:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/NodeEvaluationDto'
+        skipped:
+          type: boolean
+          default: false
+    ConstantDto:
+      nullable: true
+      example: 'some constant value'
+      oneOf:
+        - type: string
+        - type: number
+        - type: boolean
+        - type: array
+          items:
+            $ref: '#/components/schemas/ConstantDto'
+        - type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ConstantDto'
+    EvaluationErrorDto:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          $ref: '#/components/schemas/EvaluationErrorCodeDto'
+        message:
+          type: string
+        argument_index:
+          type: integer
+        argument_name:
+          type: string
+    EvaluationErrorCodeDto:
+      type: string
+      enum:
+        - UNEXPECTED_ERROR
+        - UNDEFINED_FUNCTION
+        - WRONG_NUMBER_OF_ARGUMENTS
+        - MISSING_NAMED_ARGUMENT
+        - ARGUMENTS_MUST_BE_INT_OR_FLOAT
+        - ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME
+        - ARGUMENT_MUST_BE_INTEGER
+        - ARGUMENT_MUST_BE_STRING
+        - ARGUMENT_MUST_BE_BOOLEAN
+        - ARGUMENT_MUST_BE_LIST
+        - ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION
+        - ARGUMENT_MUST_BE_TIME
+        - ARGUMENT_REQUIRED
+        - ARGUMENT_INVALID_TYPE
+        - LIST_NOT_FOUND
+        - DATABASE_ACCESS_NOT_FOUND
+        - PAYLOAD_FIELD_NOT_FOUND
+        - NULL_FIELD_READ
+        - NO_ROWS_READ
+        - DIVISION_BY_ZERO
+        - PAYLOAD_FIELD_NOT_FOUND
+        - RUNTIME_EXPRESSION_ERROR
+    FuncAttributes:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string

@@ -1,0 +1,136 @@
+/ingestion/{objectType}:
+  post:
+    tags:
+      - Ingestions
+    summary: Ingest some data
+    operationId: createIngestion
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: objectType
+        description: Type of the data that needs to be ingested
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      description: 'Data that needs to be added to the database. The `objectType` is used to determine the type of the data'
+      content:
+        application/json:
+          schema:
+            type: object
+      required: true
+    responses:
+      '201':
+        description: Data created
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '422':
+        $ref: 'components.yml#/responses/422'
+/ingestion/{objectType}/upload-logs:
+  get:
+    tags:
+      - Ingestions
+    summary: Get ingestion upload logs for an object type
+    operationId: getIngestionUploadLogs
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: objectType
+        description: Type of the data that needs to be ingested
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Ingestion upload logs
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UploadLog'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/ingestion/{tableName}/{objectId}:
+  get:
+    tags:
+      - Data Model
+    summary: Get an ingested object based on the tableId and objectId passed
+    operationId: getIngestedObject
+    parameters:
+      - name: tableName
+        description: ID of the table from which we want the object
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: objectId
+        description: ID of the object we want the object
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The ingested object wanted
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataModelObjectDto'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+components:
+  schemas:
+    UploadLog:
+      type: object
+      required:
+        - started_at
+        - finished_at
+        - status
+        - lines_processed
+        - num_rows_ingested
+      properties:
+        started_at:
+          type: string
+          format: date-time
+        finished_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: ['success', 'failure', 'progressing', 'pending']
+        lines_processed:
+          type: integer
+        num_rows_ingested:
+          type: integer
+    DataModelObjectDto:
+      type: object
+      required:
+        - data
+        - metadata
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+        metadata:
+          type: object
+          required:
+            - valid_from
+          properties:
+            valid_from:
+              type: string
+              format: date-time
