@@ -1,0 +1,247 @@
+/scenario-iteration-rules:
+  get:
+    tags:
+      - Scenario Iteration Rules
+    summary: List rules
+    description: List rules using provided filters
+    operationId: listScenarioIterationRules
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration returned rules should be linked to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Scenario iterations rules corresponding to filters
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScenarioIterationRuleDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  post:
+    tags:
+      - Scenario Iteration Rules
+    summary: Create a scenario iteration rule
+    description: Create a scenario iteration rule for a given `scenarioIterationId`
+    operationId: createScenarioIterationRule
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: 'Scenario iteration rule object to create and linked `scenarioIterationId`'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateScenarioIterationRuleBodyDto'
+      required: true
+    responses:
+      '200':
+        description: The created scenario iteration rule
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rule
+              properties:
+                rule:
+                  $ref: '#/components/schemas/ScenarioIterationRuleDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-iteration-rules/{ruleId}:
+  get:
+    tags:
+      - Scenario Iteration Rules
+    summary: Get a scenario iteration rule by id
+    operationId: getScenarioIterationRule
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: ID of the rule that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The scenario iteration rule corresponding to the provided `ruleId`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rule
+              properties:
+                rule:
+                  $ref: '#/components/schemas/ScenarioIterationRuleDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  patch:
+    tags:
+      - Scenario Iteration Rules
+    summary: Update a scenario iteration rule
+    operationId: updateScenarioIterationRule
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: ID of the rule that need to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: 'Updated scenario iteration rule object'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateScenarioIterationRuleBodyDto'
+      required: true
+    responses:
+      '200':
+        description: The updated scenario iteration rule corresponding to the provided `ruleId`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rule
+              properties:
+                rule:
+                  $ref: '#/components/schemas/ScenarioIterationRuleDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  delete:
+    tags:
+      - Scenario Iteration Rules
+    summary: Delete a scenario iteration rule
+    operationId: deleteScenarioIterationRule
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: ID of the rule that need to be delete
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: The rule has been deleted
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+
+components:
+  schemas:
+    ScenarioIterationRuleDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        scenario_iteration_id:
+          type: string
+          format: uuid
+        display_order:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        rule_group:
+          type: string
+        formula_ast_expression:
+          nullable: true
+          oneOf:
+            - $ref: 'ast.yml#/components/schemas/NodeDto'
+        score_modifier:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - scenario_iteration_id
+        - display_order
+        - name
+        - description
+        - rule_group
+        - formula_ast_expression
+        - score_modifier
+        - created_at
+    CreateScenarioIterationRuleBodyDto:
+      type: object
+      properties:
+        scenario_iteration_id:
+          type: string
+          format: uuid
+        display_order:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        rule_group:
+          type: string
+        formula_ast_expression:
+          nullable: true
+          oneOf:
+            - $ref: 'ast.yml#/components/schemas/NodeDto'
+        score_modifier:
+          type: integer
+      required:
+        - scenario_iteration_id
+        - display_order
+        - name
+        - description
+        - rule_group
+        - formula_ast_expression
+        - score_modifier
+    UpdateScenarioIterationRuleBodyDto:
+      type: object
+      properties:
+        display_order:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        rule_group:
+          type: string
+        formula_ast_expression:
+          nullable: true
+          oneOf:
+            - $ref: 'ast.yml#/components/schemas/NodeDto'
+        score_modifier:
+          type: integer

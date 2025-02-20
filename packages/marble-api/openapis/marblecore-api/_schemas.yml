@@ -1,0 +1,318 @@
+# COMMON
+
+Error:
+  type: object
+  required:
+    - code
+    - message
+  properties:
+    code:
+      type: integer
+    message:
+      type: string
+Pagination:
+  type: object
+  required:
+    - has_next_page
+    - start_index
+    - end_index
+  properties:
+    has_next_page:
+      type: boolean
+    start_index:
+      type: integer
+    end_index:
+      type: integer
+
+# AUTHORIZATION
+
+Token:
+  $ref: authorization.yml#/components/schemas/Token
+CredentialsDto:
+  $ref: authorization.yml#/components/schemas/CredentialsDto
+
+# DECISIONS
+
+OutcomeDto:
+  $ref: decisions.yml#/components/schemas/OutcomeDto
+DecisionDto:
+  $ref: decisions.yml#/components/schemas/DecisionDto
+DecisionDetailDto:
+  $ref: decisions.yml#/components/schemas/DecisionDetailDto
+CreateDecisionBody:
+  $ref: decisions.yml#/components/schemas/CreateDecisionBody
+RuleExecutionDto:
+  $ref: decisions.yml#/components/schemas/RuleExecutionDto
+ScheduledExecutionDto:
+  $ref: decisions.yml#/components/schemas/ScheduledExecutionDto
+
+# CASES
+
+ReviewStatusDto:
+  $ref: cases.yml#/components/schemas/ReviewStatusDto
+CaseStatusDto:
+  $ref: cases.yml#/components/schemas/CaseStatusDto
+CaseDto:
+  $ref: cases.yml#/components/schemas/CaseDto
+CaseDetailDto:
+  $ref: cases.yml#/components/schemas/CaseDetailDto
+CaseFileDto:
+  $ref: cases.yml#/components/schemas/CaseFileDto
+CaseTagDto:
+  $ref: cases.yml#/components/schemas/CaseTagDto
+CaseEventDto:
+  $ref: cases.yml#/components/schemas/CaseEventDto
+CaseCreatedEventDto:
+  $ref: cases.yml#/components/schemas/CaseCreatedEventDto
+CaseStatusUpdatedEventDto:
+  $ref: cases.yml#/components/schemas/CaseStatusUpdatedEventDto
+DecisionAddedEventDto:
+  $ref: cases.yml#/components/schemas/DecisionAddedEventDto
+CommentAddedEventDto:
+  $ref: cases.yml#/components/schemas/CommentAddedEventDto
+NameUpdatedEventDto:
+  $ref: cases.yml#/components/schemas/NameUpdatedEventDto
+CaseTagsUpdatedEventDto:
+  $ref: cases.yml#/components/schemas/CaseTagsUpdatedEventDto
+FileAddedEventDto:
+  $ref: cases.yml#/components/schemas/FileAddedEventDto
+InboxChangedEventDto:
+  $ref: cases.yml#/components/schemas/InboxChangedEventDto
+RuleSnoozeCreatedDto:
+  $ref: cases.yml#/components/schemas/RuleSnoozeCreatedDto
+DecisionReviewedEventDto:
+  $ref: cases.yml#/components/schemas/DecisionReviewedEventDto
+CaseContributorDto:
+  $ref: cases.yml#/components/schemas/CaseContributorDto
+UpdateCaseBodyDto:
+  $ref: cases.yml#/components/schemas/UpdateCaseBodyDto
+CreateCaseBodyDto:
+  $ref: cases.yml#/components/schemas/CreateCaseBodyDto
+
+# TAGS
+
+Tag:
+  $ref: tags.yml#/components/schemas/Tag
+
+# INGESTION
+
+UploadLog:
+  $ref: ingestion.yml#/components/schemas/UploadLog
+DataModelObjectDto:
+  $ref: ingestion.yml#/components/schemas/DataModelObjectDto
+
+# CUSTOM LISTS
+
+CustomListDto:
+  $ref: custom-lists.yml#/components/schemas/CustomListDto
+CustomListValueDto:
+  $ref: custom-lists.yml#/components/schemas/CustomListValueDto
+CustomListWithValuesDto:
+  $ref: custom-lists.yml#/components/schemas/CustomListWithValuesDto
+CreateCustomListBodyDto:
+  $ref: custom-lists.yml#/components/schemas/CreateCustomListBodyDto
+UpdateCustomListBodyDto:
+  $ref: custom-lists.yml#/components/schemas/UpdateCustomListBodyDto
+CreateCustomListValueBody:
+  $ref: custom-lists.yml#/components/schemas/CreateCustomListValueBody
+
+# SCENARIOS
+
+ScenarioDto:
+  $ref: scenarios.yml#/components/schemas/ScenarioDto
+ScenarioCreateInputDto:
+  $ref: scenarios.yml#/components/schemas/ScenarioCreateInputDto
+ScenarioUpdateInputDto:
+  $ref: scenarios.yml#/components/schemas/ScenarioUpdateInputDto
+ScenarioAstValidateInputDto:
+  $ref: scenarios.yml#/components/schemas/ScenarioAstValidateInputDto
+ScenarioValidationErrorDto:
+  $ref: scenarios.yml#/components/schemas/ScenarioValidationErrorDto
+ScenarioValidationErrorCodeDto:
+  $ref: scenarios.yml#/components/schemas/ScenarioValidationErrorCodeDto
+
+# AST EVALUATION
+
+NodeDto:
+  $ref: ast.yml#/components/schemas/NodeDto
+NodeEvaluationDto:
+  $ref: ast.yml#/components/schemas/NodeEvaluationDto
+ConstantDto:
+  $ref: ast.yml#/components/schemas/ConstantDto
+EvaluationErrorDto:
+  $ref: ast.yml#/components/schemas/EvaluationErrorDto
+EvaluationErrorCodeDto:
+  $ref: ast.yml#/components/schemas/EvaluationErrorCodeDto
+FuncAttributes:
+  $ref: ast.yml#/components/schemas/FuncAttributes
+
+# SCENARIO ITERATIONS
+
+ScenarioIterationDto:
+  $ref: scenario-iterations.yml#/components/schemas/ScenarioIterationDto
+ScenarioIterationWithBodyDto:
+  $ref: scenario-iterations.yml#/components/schemas/ScenarioIterationWithBodyDto
+CreateScenarioIterationBody:
+  $ref: scenario-iterations.yml#/components/schemas/CreateScenarioIterationBody
+UpdateScenarioIterationBody:
+  $ref: scenario-iterations.yml#/components/schemas/UpdateScenarioIterationBody
+CreateScenarioIterationRuleBodyDto:
+  $ref: scenario-iteration-rules.yml#/components/schemas/CreateScenarioIterationRuleBodyDto
+UpdateScenarioIterationRuleBodyDto:
+  $ref: scenario-iteration-rules.yml#/components/schemas/UpdateScenarioIterationRuleBodyDto
+
+# RULES
+
+ScenarioIterationRuleDto:
+  $ref: scenario-iteration-rules.yml#/components/schemas/ScenarioIterationRuleDto
+ScenarioValidationDto:
+  $ref: scenario-iterations.yml#/components/schemas/ScenarioValidationDto
+
+# SANCTION CHECKS
+
+OpenSanctionsCatalogDataset:
+  $ref: sanction-checks.yml#/components/schemas/OpenSanctionsCatalogDataset
+OpenSanctionsCatalogSection:
+  $ref: sanction-checks.yml#/components/schemas/OpenSanctionsCatalogSection
+OpenSanctionsCatalogDto:
+  $ref: sanction-checks.yml#/components/schemas/OpenSanctionsCatalogDto
+SanctionCheckConfigDto:
+  $ref: sanction-checks.yml#/components/schemas/SanctionCheckConfigDto
+SanctionCheckDto:
+  $ref: sanction-checks.yml#/components/schemas/SanctionCheckDto
+SanctionCheckSuccessDto:
+  $ref: sanction-checks.yml#/components/schemas/SanctionCheckSuccessDto
+SanctionCheckErrorDto:
+  $ref: sanction-checks.yml#/components/schemas/SanctionCheckErrorDto
+SanctionCheckFileDto:
+  $ref: sanction-checks.yml#/components/schemas/SanctionCheckFileDto
+SanctionCheckMatchPayloadDto:
+  $ref: sanction-checks.yml#/components/schemas/SanctionCheckMatchPayloadDto
+SanctionCheckMatchDto:
+  $ref: sanction-checks.yml#/components/schemas/SanctionCheckMatchDto
+SanctionCheckEntityDto:
+  $ref: sanction-checks.yml#/components/schemas/SanctionCheckEntityDto
+SanctionCheckRequestDto:
+  $ref: sanction-checks.yml#/components/schemas/SanctionCheckRequestDto
+SanctionCheckRefineDto:
+  $ref: sanction-checks.yml#/components/schemas/SanctionCheckRefineDto
+UpdateSanctionCheckMatchDto:
+  $ref: sanction-checks.yml#/components/schemas/UpdateSanctionCheckMatchDto
+
+# SCENARIO PUBLICATIONS
+
+ScenarioPublicationStatusDto:
+  $ref: scenario-publications.yml#/components/schemas/ScenarioPublicationStatusDto
+ScenarioPublication:
+  $ref: scenario-publications.yml#/components/schemas/ScenarioPublication
+CreateScenarioPublicationBody:
+  $ref: scenario-publications.yml#/components/schemas/CreateScenarioPublicationBody
+PublicationAction:
+  $ref: scenario-publications.yml#/components/schemas/PublicationAction
+
+# DATA MODEL
+
+LinkToSingleDto:
+  $ref: data-model.yml#/components/schemas/LinkToSingleDto
+FieldDto:
+  $ref: data-model.yml#/components/schemas/FieldDto
+TableDto:
+  $ref: data-model.yml#/components/schemas/TableDto
+DataModelDto:
+  $ref: data-model.yml#/components/schemas/DataModelDto
+CreateTableBody:
+  $ref: data-model.yml#/components/schemas/CreateTableBody
+UpdateTableBody:
+  $ref: data-model.yml#/components/schemas/UpdateTableBody
+CreateTableFieldDto:
+  $ref: data-model.yml#/components/schemas/CreateTableFieldDto
+UpdateTableFieldDto:
+  $ref: data-model.yml#/components/schemas/UpdateTableFieldDto
+CreateTableLinkBody:
+  $ref: data-model.yml#/components/schemas/CreateTableLinkBody
+OpenAPISpec:
+  $ref: data-model.yml#/components/schemas/OpenAPISpec
+PivotDto:
+  $ref: data-model.yml#/components/schemas/PivotDto
+PivotValueDto:
+  $ref: data-model.yml#/components/schemas/PivotValueDto
+CreatePivotInputDto:
+  $ref: data-model.yml#/components/schemas/CreatePivotInputDto
+
+# MISC
+
+AnalyticsDto:
+  $ref: misc.yml#/components/schemas/AnalyticsDto
+
+# ADMINISTRATION
+
+OrganizationDto:
+  $ref: admin.yml#/components/schemas/OrganizationDto
+CreateOrganizationBodyDto:
+  $ref: admin.yml#/components/schemas/CreateOrganizationBodyDto
+UpdateOrganizationBodyDto:
+  $ref: admin.yml#/components/schemas/UpdateOrganizationBodyDto
+UserDto:
+  $ref: admin.yml#/components/schemas/UserDto
+CreateUser:
+  $ref: admin.yml#/components/schemas/CreateUser
+UpdateUser:
+  $ref: admin.yml#/components/schemas/UpdateUser
+ApiKeyDto:
+  $ref: admin.yml#/components/schemas/ApiKeyDto
+CreateApiKeyBody:
+  $ref: admin.yml#/components/schemas/CreateApiKeyBody
+CreatedApiKeyDto:
+  $ref: admin.yml#/components/schemas/CreatedApiKeyDto
+
+# INBOXES
+
+InboxDto:
+  $ref: inboxes.yml#/components/schemas/InboxDto
+CreateInboxBodyDto:
+  $ref: inboxes.yml#/components/schemas/CreateInboxBodyDto
+InboxUserDto:
+  $ref: inboxes.yml#/components/schemas/InboxUserDto
+AddInboxUserBodyDto:
+  $ref: inboxes.yml#/components/schemas/AddInboxUserBodyDto
+
+# WEBHOOKS
+
+WebhookDto:
+  $ref: webhooks.yml#/components/schemas/WebhookDto
+WebhookSecretDto:
+  $ref: webhooks.yml#/components/schemas/WebhookSecretDto
+WebhookWithSecretDto:
+  $ref: webhooks.yml#/components/schemas/WebhookWithSecretDto
+WebhookRegisterBodyDto:
+  $ref: webhooks.yml#/components/schemas/WebhookRegisterBodyDto
+WebhookUpdateBodyDto:
+  $ref: webhooks.yml#/components/schemas/WebhookUpdateBodyDto
+
+# RULE SNOOZES
+
+RuleSnoozeDto:
+  $ref: rule-snoozes.yml#/components/schemas/RuleSnoozeDto
+RuleSnoozeWithRuleIdDto:
+  $ref: rule-snoozes.yml#/components/schemas/RuleSnoozeWithRuleIdDto
+RuleSnoozeInformationDto:
+  $ref: rule-snoozes.yml#/components/schemas/RuleSnoozeInformationDto
+SnoozesOfIterationDto:
+  $ref: rule-snoozes.yml#/components/schemas/SnoozesOfIterationDto
+SnoozesOfDecisionDto:
+  $ref: rule-snoozes.yml#/components/schemas/SnoozesOfDecisionDto
+SnoozeDecisionInputDto:
+  $ref: rule-snoozes.yml#/components/schemas/SnoozeDecisionInputDto
+
+# TEST RUNS
+
+TestRunStatusDto:
+  $ref: scenario-testrun.yml#/components/schemas/TestRunStatusDto
+TestRunDto:
+  $ref: scenario-testrun.yml#/components/schemas/TestRunDto
+TestRunDecisionDataDto:
+  $ref: scenario-testrun.yml#/components/schemas/TestRunDecisionDataDto
+TestRunRuleExecutionDataDto:
+  $ref: scenario-testrun.yml#/components/schemas/TestRunRuleExecutionDataDto
+TestRunCreateInputDto:
+  $ref: scenario-testrun.yml#/components/schemas/TestRunCreateInputDto

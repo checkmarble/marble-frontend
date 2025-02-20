@@ -1,0 +1,171 @@
+/tags:
+  get:
+    tags:
+      - Tags
+    summary: List tags
+    operationId: listTags
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: withCaseCount
+        description: whether the result should include the cases count
+        in: query
+        required: false
+        schema:
+          type: boolean
+    responses:
+      '200':
+        description: List of corresponding tags
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tags
+              properties:
+                tags:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Tag'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+  post:
+    tags:
+      - Tags
+    summary: Create a tag
+    operationId: createTag
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: Tag object that needs to be added to the database
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - color
+            properties:
+              name:
+                type: string
+              color:
+                type: string
+      required: true
+    responses:
+      '200':
+        description: Created tag
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tag
+              properties:
+                tag:
+                  $ref: '#/components/schemas/Tag'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/tags/{tagId}:
+  patch:
+    tags:
+      - Tags
+    summary: Update a tag
+    operationId: updateTag
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: tagId
+        description: ID of the tag that need to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: 'Updated tag object'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+              - color
+            properties:
+              name:
+                type: string
+              color:
+                type: string
+      required: true
+    responses:
+      '200':
+        description: The updated tag corresponding to the provided `tagId`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tag
+              properties:
+                tag:
+                  $ref: '#/components/schemas/Tag'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+  delete:
+    tags:
+      - Tags
+    summary: Delete a tag
+    operationId: deleteTag
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: tagId
+        description: ID of the tag that need to be deleted
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The deleted tag corresponding to the provided `tagId`
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+components:
+  schemas:
+    Tag:
+      type: object
+      required:
+        - id
+        - name
+        - color
+        - organization_id
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        color:
+          type: string
+        organization_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        cases_count:
+          type: number

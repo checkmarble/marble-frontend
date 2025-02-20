@@ -1,0 +1,430 @@
+/sanction-checks:
+  get:
+    tags:
+      - Sanction Check
+    summary: List sanction checks for a decision
+    operationId: listSanctionChecks
+    parameters:
+      - name: decision_id
+        description: ID of the decision
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The list of sanction checks
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SanctionCheckDto'
+/sanction-checks/datasets:
+  get:
+    tags:
+      - Sanction Check
+    summary: List Open Sanction Dataset
+    operationId: listOpenSanctionDatasets
+    responses:
+      '200':
+        description: The list of datasets
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpenSanctionsCatalogDto'
+/sanction-checks/{sanctionCheckId}/files:
+  get:
+    tags:
+      - Sanction Check
+    summary: List files for sanction check
+    operationId: listSanctionCheckFiles
+    parameters:
+      - name: sanctionCheckId
+        description: ID of the sanction check
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The list of the files
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SanctionCheckFileDto'
+/sanction-checks/matches/{matchId}:
+  patch:
+    tags:
+      - Sanction Check
+    summary: Update the status of a sanction check match
+    operationId: updateSanctionCheckMatch
+    parameters:
+      - name: matchId
+        description: ID of the match to update
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: 'Updated match object'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateSanctionCheckMatchDto'
+      required: true
+    responses:
+      '200':
+        description: The match returned ?
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SanctionCheckMatchDto'
+/sanction-checks/search:
+  post:
+    tags:
+      - Sanction Check
+    summary: Search possible matches
+    operationId: searchSanctionCheckMatches
+    requestBody:
+      description: 'Refine query params'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SanctionCheckRefineDto'
+    responses:
+      '200':
+        description: The list of matches
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SanctionCheckMatchPayloadDto'
+/sanction-checks/refine:
+  post:
+    tags:
+      - Sanction Check
+    summary: Try refine the search
+    operationId: refineSanctionCheck
+    requestBody:
+      description: 'Refine query'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SanctionCheckRefineDto'
+    responses:
+      '200':
+        description: The sanction check created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SanctionCheckDto'
+
+components:
+  schemas:
+    OpenSanctionsCatalogDataset:
+      type: object
+      required:
+        - name
+        - title
+      properties:
+        name:
+          type: string
+        title:
+          type: string
+    OpenSanctionsCatalogSection:
+      type: object
+      required:
+        - name
+        - title
+        - datasets
+      properties:
+        name:
+          type: string
+        title:
+          type: string
+        datasets:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpenSanctionsCatalogDataset'
+    OpenSanctionsCatalogDto:
+      type: object
+      required:
+        - sections
+      properties:
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpenSanctionsCatalogSection'
+    SanctionCheckConfigDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        rule_group:
+          type: string
+        datasets:
+          type: array
+          items:
+            type: string
+        forced_outcome:
+          $ref: 'decisions.yml#/components/schemas/OutcomeDto'
+        trigger_rule:
+          $ref: 'ast.yml#/components/schemas/NodeDto'
+        query:
+          type: object
+          properties:
+            name:
+              $ref: 'ast.yml#/components/schemas/NodeDto'
+            label:
+              $ref: 'ast.yml#/components/schemas/NodeDto'
+        counterparty_id_expression:
+          $ref: 'ast.yml#/components/schemas/NodeDto'
+    SanctionCheckDto:
+      type: object
+      anyOf:
+        - $ref: '#/components/schemas/SanctionCheckSuccessDto'
+        - $ref: '#/components/schemas/SanctionCheckErrorDto'
+    SanctionCheckSuccessDto:
+      type: object
+      required:
+        - id
+        - decision_id
+        - status
+        - request
+        - partial
+        - is_manual
+        - matches
+      properties:
+        id:
+          type: string
+          format: uuid
+        decision_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: ['in_review', 'confirmed_hit', 'no_hit']
+        request:
+          $ref: '#/components/schemas/SanctionCheckRequestDto'
+        partial:
+          type: boolean
+        is_manual:
+          type: boolean
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/SanctionCheckMatchDto'
+    SanctionCheckErrorDto:
+      type: object
+      required:
+        - id
+        - decision_id
+        - status
+        - partial
+        - is_manual
+        - matches
+        - error_codes
+      properties:
+        id:
+          type: string
+          format: uuid
+        decision_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: ['error']
+        request:
+          $ref: '#/components/schemas/SanctionCheckRequestDto'
+        partial:
+          type: boolean
+        is_manual:
+          type: boolean
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/SanctionCheckMatchDto'
+        error_codes:
+          type: array
+          items:
+            type: string
+            enum: ['all_fields_null_or_empty']
+    SanctionCheckFileDto:
+      type: object
+      required:
+        - id
+        - filename
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        filename:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    SanctionCheckMatchPayloadDto:
+      type: object
+      required:
+        - id
+        - match
+        - score
+        - schema
+        - caption
+        - properties
+      properties:
+        id:
+          type: string
+        match:
+          type: boolean
+        score:
+          type: number
+        schema:
+          $ref: '#/components/schemas/SanctionCheckEntityDto'
+        caption:
+          type: string
+        properties:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    SanctionCheckMatchDto:
+      type: object
+      required:
+        - id
+        - entity_id
+        - query_ids
+        - status
+        - datasets
+        - payload
+        - comments
+      properties:
+        id:
+          type: string
+        entity_id:
+          type: string
+        query_ids:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: ['pending', 'confirmed_hit', 'no_hit', 'skipped']
+        datasets:
+          type: array
+        unique_counterparty_identifier:
+          type: string
+        payload:
+          $ref: '#/components/schemas/SanctionCheckMatchPayloadDto'
+        comments:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - author_id
+              - comment
+              - created_at
+            properties:
+              id:
+                type: string
+                format: uuid
+              author_id:
+                type: string
+                format: uuid
+              comment:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+    SanctionCheckEntityDto:
+      type: string
+      enum:
+        [
+          'Thing',
+          'Address',
+          'Airplane',
+          'Asset',
+          'Associate',
+          'Company',
+          'CryptoWallet',
+          'Debt',
+          'Directorship',
+          'Employment',
+          'Family',
+          'Identification',
+          'LegalEntity',
+          'Membership',
+          'Occupancy',
+          'Organization',
+          'Ownership',
+          'Passport',
+          'Payment',
+          'Person',
+          'Position',
+          'PublicBody',
+          'Representation',
+          'Sanction',
+          'Security',
+          'Succession',
+          'UnknownLink',
+          'Vessel',
+          'Vehicle',
+        ]
+    SanctionCheckRequestDto:
+      type: object
+      required:
+        - threshold
+        - limit
+        - search_input
+      properties:
+        threshold:
+          type: number
+        limit:
+          type: number
+        search_input:
+          type: object
+          required:
+            - queries
+          properties:
+            queries:
+              type: object
+              additionalProperties:
+                type: object
+                required:
+                  - schema
+                  - properties
+                properties:
+                  schema:
+                    $ref: '#/components/schemas/SanctionCheckEntityDto'
+                  properties:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+    SanctionCheckRefineDto:
+      type: object
+    UpdateSanctionCheckMatchDto:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: ['confirmed_hit', 'no_hit']
+        comment:
+          type: string
+        whitelist:
+          type: boolean

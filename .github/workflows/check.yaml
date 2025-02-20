@@ -20,6 +20,13 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - run: |
+          pnpm --filter marble-api exec swagger-cli validate openapis/marblecore-api.yaml
+          pnpm --filter marble-api exec swagger-cli validate openapis/license-api.yaml
+          pnpm --filter marble-api exec swagger-cli validate openapis/transfercheck-api.yaml
+          pnpm --filter marble-api run generate-api
+          git diff --exit-code || (echo 'Generated API stubs not up to date with OpenAPI specification.' && exit 1)
+
       - run: pnpm run format:check
       - run: pnpm run -r lint
       - run: pnpm run -r type-check

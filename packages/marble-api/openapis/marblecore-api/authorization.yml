@@ -1,0 +1,100 @@
+/token:
+  post:
+    tags:
+      - Authorization
+    summary: Get an access token
+    description: You need to suply either "X-API-Key" or “Authorization" header
+    operationId: postToken
+    security: []
+    parameters:
+      - in: header
+        description: 'Valid Api Key token to generate a new access token'
+        name: X-API-Key
+        schema:
+          type: string
+      - in: header
+        description: 'Valid bearer token to generate a new access token'
+        name: Authorization
+        schema:
+          type: string
+    responses:
+      '200':
+        description: New access token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Token'
+      '401':
+        $ref: './components.yml#/responses/401'
+/credentials:
+  get:
+    tags:
+      - Authorization
+    summary: Get user credentials included in the token
+    description: You need to suply either "X-API-Key" or “Authorization" header
+    operationId: getCredentials
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Credentials included in the token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialsDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+components:
+  schemas:
+    Token:
+      type: object
+      required:
+        - access_token
+        - token_type
+        - expires_at
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+    CredentialsDto:
+      type: object
+      required:
+        - credentials
+      properties:
+        credentials:
+          type: object
+          required:
+            - organization_id
+            - role
+            - actor_identity
+            - permissions
+          properties:
+            organization_id:
+              type: string
+            partner_id:
+              type: string
+            role:
+              type: string
+            actor_identity:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                email:
+                  type: string
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                api_key_name:
+                  type: string
+            permissions:
+              type: array
+              items:
+                type: string

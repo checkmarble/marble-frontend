@@ -1,0 +1,298 @@
+/scenario-testrun:
+  get:
+    tags:
+      - TestRun
+    summary: List all test runs for a scenario
+    operationId: listTestRuns
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenario_id
+        description: ID of the scenario that need to be fetched
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: List of corresponding test runs
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scenario_test_runs
+              properties:
+                scenario_test_runs:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TestRunDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+  post:
+    tags:
+      - TestRun
+    summary: Create a test run
+    operationId: createTestRun
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: 'Test run object that needs to be added to the database'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TestRunCreateInputDto'
+      required: true
+    responses:
+      '201':
+        description: Created test run
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scenario_test_run
+              properties:
+                scenario_test_run:
+                  $ref: '#/components/schemas/TestRunDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '422':
+        $ref: 'components.yml#/responses/422'
+/scenario-testruns/{test_run_id}:
+  get:
+    tags:
+      - TestRun
+    summary: Get a test run by id
+    operationId: getTestRun
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: test_run_id
+        description: ID of the test run that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The test run corresponding to the provided `test_run_id`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scenario_test_run
+              properties:
+                scenario_test_run:
+                  $ref: '#/components/schemas/TestRunDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-testruns/{test_run_id}/cancel:
+  post:
+    tags:
+      - TestRun
+    summary: Cancel a test run by id
+    operationId: cancelTestRun
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: test_run_id
+        description: ID of the test run that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The cancelled test run corresponding to the provided `test_run_id`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scenario_test_run
+              properties:
+                scenario_test_run:
+                  $ref: '#/components/schemas/TestRunDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-testruns/{test_run_id}/decision_data_by_score:
+  get:
+    tags:
+      - TestRun
+    summary: Get decisions by score and outcome
+    operationId: getDecisionData
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: test_run_id
+        description: ID of the test run that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The list of decisions produced for the provided `test_run_id`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - decisions
+              properties:
+                decisions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TestRunDecisionDataDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-testruns/{test_run_id}/data_by_rule_execution:
+  get:
+    tags:
+      - TestRun
+    summary: Get rules execution distribution by status (hit, no hit, etxc)
+    operationId: getRuleData
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: test_run_id
+        description: ID of the test run that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The list of decision rules produced for the provided `test_run_id`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rules
+              properties:
+                rules:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/TestRunRuleExecutionDataDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+
+components:
+  schemas:
+    TestRunStatusDto:
+      type: string
+      enum: ['pending', 'up', 'down', 'unknown']
+    TestRunDto:
+      type: object
+      required:
+        - id
+        - scenario_id
+        - ref_iteration_id
+        - test_iteration_id
+        - start_date
+        - end_date
+        - creator_id
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        scenario_id:
+          type: string
+          format: uuid
+        ref_iteration_id:
+          type: string
+          format: uuid
+        test_iteration_id:
+          type: string
+          format: uuid
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        creator_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/TestRunStatusDto'
+    TestRunDecisionDataDto:
+      type: object
+      required:
+        - version
+        - outcome
+        - total
+      properties:
+        version:
+          type: string
+        outcome:
+          $ref: 'decisions.yml#/components/schemas/OutcomeDto'
+        score:
+          type: integer
+        total:
+          type: integer
+    TestRunRuleExecutionDataDto:
+      type: object
+      required:
+        - version
+        - name
+        - status
+        - total
+      properties:
+        version:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum: ['hit', 'no_hit', 'error', 'snoozed']
+        total:
+          type: integer
+        stable_rule_id:
+          type: string
+          format: uuid
+    TestRunCreateInputDto:
+      type: object
+      required:
+        - scenario_id
+        - test_iteration_id
+        - end_date
+      properties:
+        scenario_id:
+          type: string
+          format: uuid
+        test_iteration_id:
+          type: string
+          format: uuid
+        end_date:
+          type: string
+          format: date-time

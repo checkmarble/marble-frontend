@@ -1,0 +1,426 @@
+/inboxes:
+  get:
+    tags:
+      - Inboxes
+    summary: List all inboxes
+    operationId: listInboxes
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: withCaseCount
+        description: whether the result should include the cases count
+        in: query
+        required: false
+        schema:
+          type: boolean
+    responses:
+      '200':
+        description: The list of inboxes
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - inboxes
+              properties:
+                inboxes:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/InboxDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+  post:
+    tags:
+      - Inboxes
+    summary: Create an inbox
+    operationId: createInbox
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: Describe the inbox to create
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateInboxBodyDto'
+      required: true
+    responses:
+      '200':
+        description: The created inbox
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - inbox
+              properties:
+                inbox:
+                  $ref: '#/components/schemas/InboxDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/inboxes/{inboxId}:
+  get:
+    tags:
+      - Inboxes
+    summary: Get an inbox by id
+    operationId: getInbox
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: inboxId
+        description: ID of the inbox that needs to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The inbox corresponding to the provided `inboxId`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - inbox
+              properties:
+                inbox:
+                  $ref: '#/components/schemas/InboxDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  patch:
+    tags:
+      - Inboxes
+    summary: Update an inbox
+    operationId: updateInbox
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: inboxId
+        description: ID of the inbox that needs to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Describe the fields to update
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+      required: true
+    responses:
+      '200':
+        description: The updated inbox
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - inbox
+              properties:
+                inbox:
+                  $ref: '#/components/schemas/InboxDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+  delete:
+    tags:
+      - Inboxes
+    summary: Delete an inbox
+    operationId: deleteInbox
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: inboxId
+        description: ID of the inbox that needs to be deleted
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: The inbox has been deleted
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/inboxes/{inboxId}/users:
+  get:
+    tags:
+      - Inboxes
+    summary: List all users of an inbox
+    operationId: listInboxUsers
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: inboxId
+        description: ID of the inbox
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The list of users of the inbox
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - inbox_users
+              properties:
+                inbox_users:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/InboxUserDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+  post:
+    tags:
+      - Inboxes
+    summary: Add a user to an inbox
+    operationId: addInboxUser
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: inboxId
+        description: ID of the inbox
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Describe the user to add to the inbox
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AddInboxUserBodyDto'
+      required: true
+    responses:
+      '200':
+        description: The list of users of the inbox
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - inbox_user
+              properties:
+                inbox_user:
+                  $ref: '#/components/schemas/InboxUserDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/inbox_users:
+  get:
+    tags:
+      - Inboxes
+    summary: List all inbox users
+    operationId: listAllInboxUsers
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: The list of all inbox users
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - inbox_users
+              properties:
+                inbox_users:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/InboxUserDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/inbox_users/{inboxUserId}:
+  get:
+    tags:
+      - Inboxes
+    summary: Get an inbox user by id
+    operationId: getInboxUser
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: inboxUserId
+        description: ID of the inbox user that needs to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The inbox user corresponding to the provided `inboxUserId`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - inbox_user
+              properties:
+                inbox_user:
+                  $ref: '#/components/schemas/InboxUserDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+  patch:
+    tags:
+      - Inboxes
+    summary: Update an inbox user
+    operationId: updateInboxUser
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: inboxUserId
+        description: ID of the inbox user that needs to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Describe the fields to update
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - role
+            properties:
+              role:
+                type: string
+      required: true
+    responses:
+      '200':
+        description: The updated inbox user
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - inbox_user
+              properties:
+                inbox_user:
+                  $ref: '#/components/schemas/InboxUserDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+  delete:
+    tags:
+      - Inboxes
+    summary: Delete an inbox user
+    operationId: deleteInboxUser
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: inboxUserId
+        description: ID of the inbox user that needs to be deleted
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: The inbox user has been deleted
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+components:
+  schemas:
+    InboxDto:
+      type: object
+      required:
+        - id
+        - name
+        - created_at
+        - updated_at
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [active, archived]
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/InboxUserDto'
+        cases_count:
+          type: number
+    CreateInboxBodyDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    InboxUserDto:
+      type: object
+      required:
+        - id
+        - inbox_id
+        - user_id
+        - role
+      properties:
+        id:
+          type: string
+          format: uuid
+        inbox_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        role:
+          type: string
+    AddInboxUserBodyDto:
+      type: object
+      required:
+        - user_id
+        - role
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        role:
+          type: string

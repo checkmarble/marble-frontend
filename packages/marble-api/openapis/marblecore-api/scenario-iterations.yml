@@ -1,0 +1,511 @@
+/scenario-iterations:
+  get:
+    tags:
+      - Scenario Iterations
+    summary: List iterations
+    description: List iterations corresponding to filters
+    operationId: listScenarioIterations
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenario_id
+        description: ID of the scenario returned iterations should be linked to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Scenario iterations corresponding to filters
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  post:
+    tags:
+      - Scenario Iterations
+    summary: Create a scenario iteration
+    description: Create a scenario iteration for a given `scenarioId`
+    operationId: createScenarioIteration
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: 'Scenario iteration object to create and linked `scenarioId`'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateScenarioIterationBody'
+      required: true
+    responses:
+      '200':
+        description: The created scenario iteration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-iterations/{scenarioIterationId}:
+  get:
+    tags:
+      - Scenario Iterations
+    summary: Get a scenario iteration by id
+    operationId: getScenarioIteration
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration that need to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The scenario iteration corresponding to the provided `scenarioIterationId`
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  post:
+    tags:
+      - Scenario Iterations
+    summary: Create draft from a scenario iteration
+    operationId: createDraftFromScenarioIteration
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration that need to be used as base for the draft
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The create draft scenario iteration corresponding to the scenario iteration provided `scenarioIterationId`
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  patch:
+    tags:
+      - Scenario Iterations
+    summary: Update a scenario iteration
+    operationId: updateScenarioIteration
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration that need to be updated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: 'Updated scenario iteration object'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateScenarioIterationBody'
+      required: true
+    responses:
+      '200':
+        description: The updated scenario iteration corresponding to the provided `scenarioIterationId`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - iteration
+              properties:
+                iteration:
+                  $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-iterations/{scenarioIterationId}/schedule-execution:
+  post:
+    tags:
+      - Scenario Iterations
+    summary: Schedule a scenario execution
+    operationId: scheduleScenarioExecution
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration that need to be scheduled
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '201':
+        description: Data created
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-iterations/{scenarioIterationId}/validate:
+  post:
+    tags:
+      - Scenario Iterations
+    summary: Validate a scenario iteration by id. A rule or trigger can be override in the body
+    operationId: validateScenarioIteration
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: 'Trigger or rule to validate'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - trigger_or_rule
+              - rule_id
+            properties:
+              trigger_or_rule:
+                $ref: 'ast.yml#/components/schemas/NodeDto'
+              rule_id:
+                type: string
+                nullable: true
+                format: uuid
+    responses:
+      '200':
+        description: The scenario validation of the sent iteration
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - scenario_validation
+              properties:
+                scenario_validation:
+                  $ref: '#/components/schemas/ScenarioValidationDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-iterations/{scenarioIterationId}/active-snoozes:
+  get:
+    tags:
+      - Scenario Iterations
+    summary: Get active snoozes for a scenario iteration
+    operationId: getScenarioIterationActiveSnoozes
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The active snoozes for the scenario iteration corresponding to the provided `scenarioIterationId`
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - snoozes
+              properties:
+                snoozes:
+                  $ref: 'rule-snoozes.yml#/components/schemas/SnoozesOfIterationDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-iterations/{scenarioIterationId}/commit:
+  post:
+    tags:
+      - Scenario Iterations
+    summary: Commit a scenario iteration
+    operationId: commitScenarioIteration
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The committed scenario iteration
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - iteration
+              properties:
+                iteration:
+                  $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-iterations/{scenarioIterationId}/sanction-check:
+  delete:
+    tags:
+      - Scenario Iterations
+    summary: Delete a sanction check for a scenario iteration
+    operationId: deleteSanctionCheckConfig
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: The sanction check has been deleted
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  patch:
+    tags:
+      - Scenario Iterations
+    summary: Upsert a sanction check for a scenario iteration
+    operationId: upsertSanctionCheckConfig
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: The SanctionCheckConfig to update
+      content:
+        application/json:
+          schema:
+            $ref: 'sanction-checks.yml#/components/schemas/SanctionCheckConfigDto'
+    responses:
+      '200':
+        description: The upserted SanctionCheckConfig
+        content:
+          application/json:
+            schema:
+              $ref: 'sanction-checks.yml#/components/schemas/SanctionCheckConfigDto'
+
+components:
+  schemas:
+    ScenarioIterationDto:
+      type: object
+      required:
+        - id
+        - scenario_id
+        - version
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        scenario_id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ScenarioIterationWithBodyDto:
+      allOf:
+        - $ref: '#/components/schemas/ScenarioIterationDto'
+        - type: object
+          required:
+            - body
+          properties:
+            body:
+              type: object
+              required:
+                - rules
+              properties:
+                sanction_check_config:
+                  nullable: true
+                  allOf:
+                    - $ref: 'sanction-checks.yml#/components/schemas/SanctionCheckConfigDto'
+                trigger_condition_ast_expression:
+                  nullable: true
+                  allOf:
+                    - $ref: 'ast.yml#/components/schemas/NodeDto'
+                score_review_threshold:
+                  type: integer
+                  minimum: 0
+                score_block_and_review_threshold:
+                  type: integer
+                  minimum: 0
+                score_decline_threshold:
+                  type: integer
+                  minimum: 0
+                rules:
+                  type: array
+                  items:
+                    $ref: 'scenario-iteration-rules.yml#/components/schemas/ScenarioIterationRuleDto'
+                schedule:
+                  type: string
+    CreateScenarioIterationBody:
+      type: object
+      required:
+        - scenario_id
+      properties:
+        scenario_id:
+          type: string
+          format: uuid
+        body:
+          type: object
+          properties:
+            trigger_condition_ast_expression:
+              nullable: true
+              allOf:
+                - $ref: 'ast.yml#/components/schemas/NodeDto'
+            score_review_threshold:
+              type: integer
+              minimum: 0
+            score_block_and_review_threshold:
+              type: integer
+              minimum: 0
+            score_decline_threshold:
+              type: integer
+              minimum: 0
+            rules:
+              type: array
+              items:
+                $ref: 'scenario-iteration-rules.yml#/components/schemas/CreateScenarioIterationRuleBodyDto'
+    UpdateScenarioIterationBody:
+      type: object
+      properties:
+        body:
+          type: object
+          properties:
+            trigger_condition_ast_expression:
+              nullable: true
+              allOf:
+                - $ref: 'ast.yml#/components/schemas/NodeDto'
+            score_review_threshold:
+              type: integer
+              minimum: 0
+            score_block_and_review_threshold:
+              type: integer
+              minimum: 0
+            score_decline_threshold:
+              type: integer
+              minimum: 0
+            schedule:
+              type: string
+    ScenarioValidationDto:
+      type: object
+      required:
+        - trigger
+        - rules
+        - decision
+      properties:
+        trigger:
+          type: object
+          required:
+            - errors
+            - trigger_evaluation
+          properties:
+            errors:
+              type: array
+              items:
+                $ref: 'scenarios.yml#/components/schemas/ScenarioValidationErrorDto'
+            trigger_evaluation:
+              $ref: 'ast.yml#/components/schemas/NodeEvaluationDto'
+        rules:
+          type: object
+          required:
+            - errors
+            - rules
+          properties:
+            errors:
+              type: array
+              items:
+                $ref: 'scenarios.yml#/components/schemas/ScenarioValidationErrorDto'
+            rules:
+              additionalProperties:
+                type: object
+                required:
+                  - errors
+                  - rule_evaluation
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: 'scenarios.yml#/components/schemas/ScenarioValidationErrorDto'
+                  rule_evaluation:
+                    $ref: 'ast.yml#/components/schemas/NodeEvaluationDto'
+        decision:
+          type: object
+          required:
+            - errors
+          properties:
+            errors:
+              type: array
+              items:
+                $ref: 'scenarios.yml#/components/schemas/ScenarioValidationErrorDto'

@@ -1,0 +1,97 @@
+parameters:
+  start_date:
+    in: query
+    name: start_date
+    description: start date used to filter the list
+    required: false
+    schema:
+      type: string
+      format: date-time
+  end_date:
+    in: query
+    name: end_date
+    description: end date used to filter the list
+    required: false
+    schema:
+      type: string
+      format: date-time
+  offset_id:
+    in: query
+    name: offset_id
+    description: the item from which to paginate
+    required: false
+    schema:
+      type: string
+      format: uuid
+  limit:
+    in: query
+    name: limit
+    description: the number of items to fetch
+    required: false
+    schema:
+      type: integer
+      minimum: 1
+      maximum: 100
+  order:
+    in: query
+    name: order
+    description: the order of the items to fetch
+    required: false
+    schema:
+      type: string
+      enum:
+        - ASC
+        - DESC
+
+schemas:
+  $ref: '_schemas.yml'
+
+securitySchemes:
+  bearerAuth:
+    type: http
+    scheme: bearer
+    bearerFormat: JWT
+
+responses:
+  '400':
+    description: Bad Request
+    content:
+      application/json:
+        schema:
+          type: string
+          example: Bad Request
+  '401':
+    description: Unauthorized
+    content:
+      application/json:
+        schema:
+          type: string
+          example: Unauthorized
+  '403':
+    description: Forbidden
+    content:
+      application/json:
+        schema:
+          type: string
+          example: Forbidden
+  '404':
+    description: Not found
+    content:
+      application/json:
+        schema:
+          type: string
+          example: Not found
+  '409':
+    description: Conflict
+    content:
+      application/json:
+        schema:
+          type: string
+          example: Duplicate Value
+  '422':
+    description: Unprocessable Content
+    content:
+      application/json:
+        schema:
+          type: object
+          description: To be defined
