@@ -4,6 +4,7 @@ export * from './Calendar/Calendar';
 export * from './Checkbox/Checkbox';
 export * from './Collapsible/Collapsible';
 export * from './Combobox/Combobox';
+export * from './Command/Command';
 export * from './HiddenInputs/HiddenInputs';
 export * from './Input/Input';
 export * from './Kbd/Kbd';

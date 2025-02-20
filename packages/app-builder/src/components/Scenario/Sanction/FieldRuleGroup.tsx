@@ -1,71 +1,143 @@
-import { Highlight } from '@app-builder/components/Highlight';
+import { Content, Root, Trigger } from '@radix-ui/react-popover';
 import clsx from 'clsx';
-import { matchSorter } from 'match-sorter';
-import { useDeferredValue, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, SelectWithCombobox } from 'ui-design-system';
+import { unique } from 'remeda';
+import {
+  Button,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from 'ui-design-system';
+import { Icon } from 'ui-icons';
+
+const RuleGroup = ({
+  ruleGroup,
+  onClear,
+}: {
+  ruleGroup: string;
+  onClear?: () => void;
+}) => (
+  <div className="bg-purple-96 flex size-fit flex-row items-center gap-2 rounded-full px-2 py-1">
+    <span className="text-purple-65 text-xs">{ruleGroup}</span>
+    {onClear ? (
+      <Icon
+        onClick={onClear}
+        icon="cross"
+        className="text-purple-65 hover:text-purple-60 size-4 cursor-pointer"
+      />
+    ) : null}
+  </div>
+);
 
 export const FieldRuleGroup = ({
   selectedRuleGroup,
   ruleGroups,
   disabled,
-  name,
   onChange,
   onBlur,
 }: {
   selectedRuleGroup?: string;
   ruleGroups: string[];
   disabled?: boolean;
-  name?: string;
   onChange?: (value: string) => void;
   onBlur?: () => void;
 }) => {
   const { t } = useTranslation(['scenarios']);
-  const [searchValue, setSearchValue] = useState('');
-  const deferredSearchValue = useDeferredValue(searchValue);
+  const [newRule, setNewRule] = useState<string | undefined>();
+  const [value, setValue] = useState<string | undefined>();
 
-  const matches = useMemo(
-    () => matchSorter(ruleGroups, deferredSearchValue),
-    [ruleGroups, deferredSearchValue],
+  const finalRuleGroups = useMemo(
+    () =>
+      unique(
+        [selectedRuleGroup, newRule, ...ruleGroups].filter(Boolean),
+      ) as string[],
+    [selectedRuleGroup, ruleGroups, newRule],
   );
 
   return (
-    <SelectWithCombobox.Root
-      selectedValue={selectedRuleGroup}
-      searchValue={searchValue}
-      onSearchValueChange={setSearchValue}
-      onSelectedValueChange={onChange}
+    <Root
+      defaultOpen={false}
+      onOpenChange={(open) => {
+        if (open === false) {
+          setValue(undefined);
+          onBlur?.();
+        }
+      }}
     >
-      <SelectWithCombobox.Select
-        name={name}
-        onBlur={onBlur}
-        disabled={disabled}
-        className="w-full"
-      >
-        <span className={clsx({ 'text-grey-80': disabled })}>
-          {selectedRuleGroup}
-        </span>
-        {disabled ? null : <SelectWithCombobox.Arrow />}
-      </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
-        <SelectWithCombobox.Combobox
-          render={<Input className="shrink-0" />}
-          autoSelect
-          autoFocus
-        />
-        <SelectWithCombobox.ComboboxList>
-          {matches.map((group) => (
-            <SelectWithCombobox.ComboboxItem key={group} value={group}>
-              <Highlight text={group} query={deferredSearchValue} />
-            </SelectWithCombobox.ComboboxItem>
-          ))}
-          {matches.length === 0 ? (
-            <p className="text-grey-50 text-xs">
-              {t('scenarios:edit_rule.rule_group.empty_matches')}
-            </p>
-          ) : null}
-        </SelectWithCombobox.ComboboxList>
-      </SelectWithCombobox.Popover>
-    </SelectWithCombobox.Root>
+      <div className="flex items-center gap-2">
+        {selectedRuleGroup ? <RuleGroup ruleGroup={selectedRuleGroup} /> : null}
+        <Trigger asChild>
+          <Button
+            disabled={disabled}
+            variant="secondary"
+            size={selectedRuleGroup ? 'icon' : undefined}
+            className={clsx({ 'w-fit': !selectedRuleGroup })}
+          >
+            <Icon
+              icon={selectedRuleGroup ? 'edit' : 'plus'}
+              className="size-4"
+            />
+            {!selectedRuleGroup ? (
+              <span>{t('scenarios:rules.add_group')}</span>
+            ) : null}
+          </Button>
+        </Trigger>
+      </div>
+      <Content className="mt-1 shadow-md" align="start">
+        <Command className="flex flex-col gap-2 p-2">
+          <div className="border-grey-90 flex items-center gap-2 border-b p-2 pb-3">
+            {selectedRuleGroup ? (
+              <RuleGroup
+                ruleGroup={selectedRuleGroup}
+                onClear={() => onChange?.('')}
+              />
+            ) : null}
+            <CommandInput
+              placeholder={t('scenarios:rules.new_group')}
+              value={value}
+              onInput={(e) => setValue(e.currentTarget.value)}
+            />
+          </div>
+          <CommandList>
+            {finalRuleGroups.length ? (
+              <CommandGroup heading={t('scenarios:rules.heading')}>
+                {finalRuleGroups.map((r) => (
+                  <CommandItem key={r} onSelect={() => onChange?.(r)}>
+                    <RuleGroup ruleGroup={r} />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ) : (
+              <CommandEmpty className="flex items-center gap-2 p-2">
+                <Icon icon="plus" className="text-grey-80 size-4" />
+                <span className="text-grey-80">
+                  {t('scenarios:rules.empty_groups')}
+                </span>
+              </CommandEmpty>
+            )}
+            {value && !finalRuleGroups.includes(value) ? (
+              <Button
+                variant="tertiary"
+                onClick={() => {
+                  setNewRule(value);
+                  onChange?.(value);
+                  setValue('');
+                }}
+              >
+                <Icon icon="plus" className="text-grey-00 size-4" />
+                <span className="text-grey-00 text-s inline-flex items-center gap-2">
+                  {t('scenarios:rules.create')}
+                  {value ? <RuleGroup ruleGroup={value} /> : null}
+                </span>
+              </Button>
+            ) : null}
+          </CommandList>
+        </Command>
+      </Content>
+    </Root>
   );
 };
