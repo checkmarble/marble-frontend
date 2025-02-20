@@ -14,7 +14,7 @@ import { serverServices } from './services/init.server';
 import { captureUnexpectedRemixError } from './services/monitoring';
 import { getServerEnv } from './utils/environment';
 
-const ABORT_DELAY = 5000;
+const ABORT_DELAY = 70000;
 
 export default async function handleRequest(
   request: Request,
