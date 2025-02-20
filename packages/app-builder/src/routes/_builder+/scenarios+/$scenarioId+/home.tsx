@@ -410,19 +410,14 @@ function TestRunSection({
           </Link>
         ) : null}
 
-        {testRuns.length > 1 ? (
+        {testRuns.length ? (
           <Link
-            className={CtaClassName({
-              variant: 'secondary',
-              color: 'grey',
-            })}
+            className={CtaClassName({ variant: 'secondary', color: 'grey' })}
             to={getRoute('/scenarios/:scenarioId/test-run', {
               scenarioId: fromUUID(scenarioId),
             })}
           >
-            {t('scenarios:home.other_versions_other', {
-              count: testRuns.filter((tr) => tr.status != 'up').length,
-            })}
+            {t('scenarios:testrun.archived')}
           </Link>
         ) : null}
       </div>

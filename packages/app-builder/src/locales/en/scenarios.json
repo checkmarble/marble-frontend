@@ -50,6 +50,7 @@
   "trigger.trigger_manual_execution.button": "Launch now",
   "testrun.nudge": "Compare a live version with a new one or an older one without compromising live data",
   "testrun.home": "List of comparisons",
+  "testrun.archived": "Archived",
   "testrun.not_allowed": "No live version or alternative version available",
   "testrun.description": "Test and compare a scenario version with a live one",
   "testrun.current_run": "Current TestRun",

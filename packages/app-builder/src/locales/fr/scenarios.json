@@ -352,6 +352,7 @@
   "testrun.rule.new": "Nouvelle règle",
   "testrun.rule.old": "Ancienne règle",
   "testrun.home": "Liste des comparaisons",
+  "testrun.archived": "Archivés",
   "testrun.not_allowed": "Aucune version live ou version alternative disponible",
   "edit_is_multiple_of.title": "Multiple d'un palier",
   "edit_is_multiple_of.display_name": "{{value}} est un multiple de {{divider}}",
