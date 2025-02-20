@@ -348,7 +348,6 @@ export default function SanctionDetail() {
                   {(field) => (
                     <div className="flex flex-col gap-2">
                       <FieldRuleGroup
-                        name={field.name}
                         onChange={field.handleChange}
                         onBlur={field.handleBlur}
                         selectedRuleGroup={field.state.value}
@@ -362,43 +361,6 @@ export default function SanctionDetail() {
                 </form.Field>
               </div>
             </div>
-            {/* <Collapsible.Container className="bg-grey-100 max-w-3xl">
-              <Collapsible.Title>
-                {t('scenarios:edit_rule.informations')}
-              </Collapsible.Title>
-              <Collapsible.Content>
-                <div className="flex flex-col gap-4 lg:gap-6">
-                  <form.Field name="forcedOutcome">
-                    {(field) => (
-                      <div className="flex flex-col gap-2">
-                        <FormLabel
-                          name={field.name}
-                          className="text-m"
-                          valid={field.state.meta.errors.length === 0}
-                        >
-                          {t('decisions:forced_outcome')}
-                        </FormLabel>
-                        <FieldOutcomes
-                          disabled={editor === 'view'}
-                          name={field.name}
-                          onChange={field.handleChange}
-                          onBlur={field.handleBlur}
-                          selectedOutcome={field.state.value}
-                          outcomes={
-                            difference(knownOutcomes, [
-                              'approve',
-                            ]) as SanctionOutcome[]
-                          }
-                        />
-                        <FormErrorOrDescription
-                          errors={field.state.meta.errors}
-                        />
-                      </div>
-                    )}
-                  </form.Field>
-                </div>
-              </Collapsible.Content>
-            </Collapsible.Container> */}
 
             <Collapsible.Container className="bg-grey-100 max-w-3xl">
               <Collapsible.Title>
