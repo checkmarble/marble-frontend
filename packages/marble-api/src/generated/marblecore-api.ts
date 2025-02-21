@@ -134,45 +134,6 @@ export type RuleExecutionDto = {
 export type DecisionDetailDto = DecisionDto & {
     rules: RuleExecutionDto[];
 };
-export type RuleSnoozeDto = {
-    id: string;
-    pivot_value: string;
-    starts_at: string;
-    ends_at: string;
-    created_by_user: string;
-    created_from_decision_id?: string;
-    created_from_rule_id: string;
-};
-export type RuleSnoozeWithRuleIdDto = RuleSnoozeDto & {
-    rule_id: string;
-};
-export type SnoozesOfDecisionDto = {
-    decision_id: string;
-    rule_snoozes: RuleSnoozeWithRuleIdDto[];
-};
-export type SnoozeDecisionInputDto = {
-    rule_id: string;
-    duration: string;
-    comment?: string;
-};
-export type ScheduledExecutionDto = {
-    finished_at: string | null;
-    id: string;
-    /** Whether the execution was manual or not */
-    manual: boolean;
-    /** Number of decisions who were created (matched the trigger condition) */
-    number_of_created_decisions: number;
-    /** Number of decisions who were executed (even if they did not match the trigger condition) */
-    number_of_evaluated_decisions: number;
-    /** Number of decisions who have been planned (using the preliminary filter of ingsted entities in the DB). Null before the execution initial filter has run. */
-    number_of_planned_decisions: number | null;
-    scenario_id: string;
-    scenario_iteration_id: string;
-    scenario_name: string;
-    scenario_trigger_object_type: string;
-    started_at: string;
-    status: "pending" | "processing" | "success" | "failure" | "partial_failure";
-};
 export type CreateCaseBodyDto = {
     name: string;
     inbox_id: string;
@@ -296,6 +257,45 @@ export type Tag = {
     organization_id: string;
     created_at: string;
     cases_count?: number;
+};
+export type ScheduledExecutionDto = {
+    finished_at: string | null;
+    id: string;
+    /** Whether the execution was manual or not */
+    manual: boolean;
+    /** Number of decisions who were created (matched the trigger condition) */
+    number_of_created_decisions: number;
+    /** Number of decisions who were executed (even if they did not match the trigger condition) */
+    number_of_evaluated_decisions: number;
+    /** Number of decisions who have been planned (using the preliminary filter of ingsted entities in the DB). Null before the execution initial filter has run. */
+    number_of_planned_decisions: number | null;
+    scenario_id: string;
+    scenario_iteration_id: string;
+    scenario_name: string;
+    scenario_trigger_object_type: string;
+    started_at: string;
+    status: "pending" | "processing" | "success" | "failure" | "partial_failure";
+};
+export type RuleSnoozeDto = {
+    id: string;
+    pivot_value: string;
+    starts_at: string;
+    ends_at: string;
+    created_by_user: string;
+    created_from_decision_id?: string;
+    created_from_rule_id: string;
+};
+export type RuleSnoozeWithRuleIdDto = RuleSnoozeDto & {
+    rule_id: string;
+};
+export type SnoozesOfDecisionDto = {
+    decision_id: string;
+    rule_snoozes: RuleSnoozeWithRuleIdDto[];
+};
+export type SnoozeDecisionInputDto = {
+    rule_id: string;
+    duration: string;
+    comment?: string;
 };
 export type UploadLog = {
     started_at: string;
@@ -477,14 +477,6 @@ export type SnoozesOfIterationDto = {
     iteration_id: string;
     rule_snoozes: RuleSnoozeInformationDto[];
 };
-export type UpdateScenarioIterationRuleBodyDto = {
-    display_order?: number;
-    name?: string;
-    description?: string;
-    rule_group?: string;
-    formula_ast_expression?: (NodeDto) | null;
-    score_modifier?: number;
-};
 export type SanctionCheckEntityDto = "Thing" | "Address" | "Airplane" | "Asset" | "Associate" | "Company" | "CryptoWallet" | "Debt" | "Directorship" | "Employment" | "Family" | "Identification" | "LegalEntity" | "Membership" | "Occupancy" | "Organization" | "Ownership" | "Passport" | "Payment" | "Person" | "Position" | "PublicBody" | "Representation" | "Sanction" | "Security" | "Succession" | "UnknownLink" | "Vessel" | "Vehicle";
 export type SanctionCheckRequestDto = {
     threshold: number;
@@ -568,6 +560,14 @@ export type UpdateSanctionCheckMatchDto = {
     whitelist?: boolean;
 };
 export type SanctionCheckRefineDto = object;
+export type UpdateScenarioIterationRuleBodyDto = {
+    display_order?: number;
+    name?: string;
+    description?: string;
+    rule_group?: string;
+    formula_ast_expression?: (NodeDto) | null;
+    score_modifier?: number;
+};
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
     id: string;
@@ -929,95 +929,6 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
     })));
 }
 /**
- * Get a decision by id
- */
-export function getDecision(decisionId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: DecisionDetailDto;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/decisions/${encodeURIComponent(decisionId)}`, {
-        ...opts
-    }));
-}
-/**
- * Get active snoozes for a decision
- */
-export function getDecisionActiveSnoozes(decisionId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            snoozes: SnoozesOfDecisionDto;
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/decisions/${encodeURIComponent(decisionId)}/active-snoozes`, {
-        ...opts
-    }));
-}
-/**
- * Create a snooze for a decision
- */
-export function createSnoozeForDecision(decisionId: string, snoozeDecisionInputDto: SnoozeDecisionInputDto, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            snoozes: SnoozesOfDecisionDto;
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/decisions/${encodeURIComponent(decisionId)}/snooze`, oazapfts.json({
-        ...opts,
-        method: "POST",
-        body: snoozeDecisionInputDto
-    })));
-}
-/**
- * List Scheduled Executions
- */
-export function listScheduledExecutions({ scenarioId }: {
-    scenarioId?: string;
-} = {}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            scheduled_executions: ScheduledExecutionDto[];
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    }>(`/scheduled-executions${QS.query(QS.explode({
-        scenario_id: scenarioId
-    }))}`, {
-        ...opts
-    }));
-}
-/**
  * List cases
  */
 export function listCases({ status, inboxId, startDate, endDate, sorting, name, offsetId, limit, order }: {
@@ -1337,6 +1248,95 @@ export function deleteTag(tagId: string, opts?: Oazapfts.RequestOpts) {
         ...opts,
         method: "DELETE"
     }));
+}
+/**
+ * List Scheduled Executions
+ */
+export function listScheduledExecutions({ scenarioId }: {
+    scenarioId?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            scheduled_executions: ScheduledExecutionDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/scheduled-executions${QS.query(QS.explode({
+        scenario_id: scenarioId
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * Get a decision by id
+ */
+export function getDecision(decisionId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: DecisionDetailDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/decisions/${encodeURIComponent(decisionId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Get active snoozes for a decision
+ */
+export function getDecisionActiveSnoozes(decisionId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            snoozes: SnoozesOfDecisionDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/decisions/${encodeURIComponent(decisionId)}/active-snoozes`, {
+        ...opts
+    }));
+}
+/**
+ * Create a snooze for a decision
+ */
+export function createSnoozeForDecision(decisionId: string, snoozeDecisionInputDto: SnoozeDecisionInputDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            snoozes: SnoozesOfDecisionDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/decisions/${encodeURIComponent(decisionId)}/snooze`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: snoozeDecisionInputDto
+    })));
 }
 /**
  * Ingest some data
@@ -1899,6 +1899,80 @@ export function upsertSanctionCheckConfig(scenarioIterationId: string, sanctionC
     })));
 }
 /**
+ * List sanction checks for a decision
+ */
+export function listSanctionChecks(decisionId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SanctionCheckDto[];
+    }>(`/sanction-checks${QS.query(QS.explode({
+        decision_id: decisionId
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * List Open Sanction Dataset
+ */
+export function listOpenSanctionDatasets(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: OpenSanctionsCatalogDto;
+    }>("/sanction-checks/datasets", {
+        ...opts
+    }));
+}
+/**
+ * List files for sanction check
+ */
+export function listSanctionCheckFiles(sanctionCheckId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SanctionCheckFileDto[];
+    }>(`/sanction-checks/${encodeURIComponent(sanctionCheckId)}/files`, {
+        ...opts
+    }));
+}
+/**
+ * Update the status of a sanction check match
+ */
+export function updateSanctionCheckMatch(matchId: string, updateSanctionCheckMatchDto: UpdateSanctionCheckMatchDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SanctionCheckMatchDto;
+    }>(`/sanction-checks/matches/${encodeURIComponent(matchId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateSanctionCheckMatchDto
+    })));
+}
+/**
+ * Search possible matches
+ */
+export function searchSanctionCheckMatches(sanctionCheckRefineDto?: SanctionCheckRefineDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SanctionCheckMatchPayloadDto[];
+    }>("/sanction-checks/search", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: sanctionCheckRefineDto
+    })));
+}
+/**
+ * Try refine the search
+ */
+export function refineSanctionCheck(sanctionCheckRefineDto?: SanctionCheckRefineDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SanctionCheckDto;
+    }>("/sanction-checks/refine", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: sanctionCheckRefineDto
+    })));
+}
+/**
  * List rules
  */
 export function listScenarioIterationRules({ scenarioIterationId }: {
@@ -2011,80 +2085,6 @@ export function deleteScenarioIterationRule(ruleId: string, opts?: Oazapfts.Requ
         ...opts,
         method: "DELETE"
     }));
-}
-/**
- * List sanction checks for a decision
- */
-export function listSanctionChecks(decisionId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: SanctionCheckDto[];
-    }>(`/sanction-checks${QS.query(QS.explode({
-        decision_id: decisionId
-    }))}`, {
-        ...opts
-    }));
-}
-/**
- * List Open Sanction Dataset
- */
-export function listOpenSanctionDatasets(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: OpenSanctionsCatalogDto;
-    }>("/sanction-checks/datasets", {
-        ...opts
-    }));
-}
-/**
- * List files for sanction check
- */
-export function listSanctionCheckFiles(sanctionCheckId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: SanctionCheckFileDto[];
-    }>(`/sanction-checks/${encodeURIComponent(sanctionCheckId)}/files`, {
-        ...opts
-    }));
-}
-/**
- * Update the status of a sanction check match
- */
-export function updateSanctionCheckMatch(matchId: string, updateSanctionCheckMatchDto: UpdateSanctionCheckMatchDto, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: SanctionCheckMatchDto;
-    }>(`/sanction-checks/matches/${encodeURIComponent(matchId)}`, oazapfts.json({
-        ...opts,
-        method: "PATCH",
-        body: updateSanctionCheckMatchDto
-    })));
-}
-/**
- * Search possible matches
- */
-export function searchSanctionCheckMatches(sanctionCheckRefineDto?: SanctionCheckRefineDto, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: SanctionCheckMatchPayloadDto[];
-    }>("/sanction-checks/search", oazapfts.json({
-        ...opts,
-        method: "POST",
-        body: sanctionCheckRefineDto
-    })));
-}
-/**
- * Try refine the search
- */
-export function refineSanctionCheck(sanctionCheckRefineDto?: SanctionCheckRefineDto, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: SanctionCheckDto;
-    }>("/sanction-checks/refine", oazapfts.json({
-        ...opts,
-        method: "POST",
-        body: sanctionCheckRefineDto
-    })));
 }
 /**
  * List scenario publications
