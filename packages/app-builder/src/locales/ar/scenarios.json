@@ -425,5 +425,8 @@
   "sanction_counterparty_name.tooltip": "حدد الاسم الأول الاسم الأخير أو الاسم الكامل.",
   "sanction_counterparty_id_placeholder": "حدد معرف طرف مقابل فريد",
   "sanction.match_settings.no_empty": "تحتاج إلى تحديد اسم أو تسمية واحدة على الأقل",
-  "testrun.archived": "أرشفة"
+  "testrun.archived": "أرشفة",
+  "trigger.trigger_object.add_trigger": "إضافة حالة الزناد",
+  "trigger.trigger_object.delete_trigger": "حذف حالة الزناد",
+  "trigger.trigger_object.no_trigger": "سيتم فحص الكل <strong>{{objectType}}</strong>"
 }

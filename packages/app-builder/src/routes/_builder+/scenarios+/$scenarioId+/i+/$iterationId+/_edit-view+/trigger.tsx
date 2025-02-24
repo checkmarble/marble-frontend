@@ -4,7 +4,12 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
-import { type AstNode, NewEmptyTriggerAstNode } from '@app-builder/models';
+import {
+  type AstNode,
+  isUndefinedAstNode,
+  NewEmptyTriggerAstNode,
+  NewUndefinedAstNode,
+} from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import {
@@ -143,9 +148,12 @@ export default function Trigger() {
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   const astEditorStore = useAstNodeEditor({
-    initialAstNode: scenarioIteration.trigger ?? NewEmptyTriggerAstNode(),
+    initialAstNode: scenarioIteration.trigger ?? NewUndefinedAstNode(),
     initialEvaluation: scenarioValidation.trigger.triggerEvaluation,
   });
+  const isTriggerNull = isUndefinedAstNode(
+    astEditorStore.getState().rootAstNode,
+  );
 
   useValidateAstNode(astEditorStore, validate, validation);
 
@@ -162,6 +170,18 @@ export default function Trigger() {
       },
     );
   });
+
+  const handleAddTrigger = () => {
+    astEditorStore.setState({
+      rootAstNode: NewEmptyTriggerAstNode(),
+    });
+  };
+
+  const handleDeleteTrigger = () => {
+    astEditorStore.setState({
+      rootAstNode: NewUndefinedAstNode(),
+    });
+  };
 
   const getCopyToClipboardProps = useGetCopyToClipboard();
   return (
@@ -252,23 +272,54 @@ export default function Trigger() {
             </p>
           </Callout>
           <div className="flex flex-col gap-2 lg:gap-4">
-            <AstBuilder
-              options={{
-                databaseAccessors,
-                payloadAccessors,
-                dataModel,
-                customLists,
-                triggerObjectType: scenario.triggerObjectType,
-              }}
-              viewOnly={editorMode === 'view'}
-              astEditorStore={astEditorStore}
-            />
+            {isTriggerNull ? (
+              <div className="border-blue-58 bg-blue-96 text-blue-58 flex items-center rounded border p-2">
+                <span>
+                  <Trans
+                    t={t}
+                    i18nKey="scenarios:trigger.trigger_object.no_trigger"
+                    values={{ objectType: scenario.triggerObjectType }}
+                  />
+                </span>
+              </div>
+            ) : (
+              <AstBuilder
+                options={{
+                  databaseAccessors,
+                  payloadAccessors,
+                  dataModel,
+                  customLists,
+                  triggerObjectType: scenario.triggerObjectType,
+                }}
+                viewOnly={editorMode === 'view'}
+                astEditorStore={astEditorStore}
+              />
+            )}
 
             {editorMode === 'edit' ? (
               <div className="flex flex-row-reverse items-center justify-between gap-2">
-                <Button type="submit" onClick={handleSave}>
-                  {t('common:save')}
-                </Button>
+                <div className="flex items-center gap-2">
+                  {isTriggerNull ? (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={handleAddTrigger}
+                    >
+                      {t('scenarios:trigger.trigger_object.add_trigger')}
+                    </Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={handleDeleteTrigger}
+                    >
+                      {t('scenarios:trigger.trigger_object.delete_trigger')}
+                    </Button>
+                  )}
+                  <Button type="submit" onClick={handleSave}>
+                    {t('common:save')}
+                  </Button>
+                </div>
                 <EvaluationErrors
                   errors={scenarioValidation.trigger.errors
                     .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')

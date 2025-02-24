@@ -425,5 +425,8 @@
   "sanction_counterparty_id.tooltip": "Choisissez une valeur d'identifiant unique (comme Iban, numéro de téléphone), qui peut être liste blanche en cas de faux match.",
   "sanction_counterparty_name.tooltip": "Sélectionnez le nom de famille du prénom ou le nom complet.",
   "sanction_counterparty_id_placeholder": "Sélectionnez un identifiant de contrepartie unique",
-  "sanction.match_settings.no_empty": "Vous devez sélectionner au moins un nom ou un étiquette"
+  "sanction.match_settings.no_empty": "Vous devez sélectionner au moins un nom ou un étiquette",
+  "trigger.trigger_object.add_trigger": "Ajouter une condition de déclenchement",
+  "trigger.trigger_object.delete_trigger": "Supprimer la condition de déclenchement",
+  "trigger.trigger_object.no_trigger": "Toutes les entités de type <strong>{{objectType}}</strong> seront vérifiées"
 }
