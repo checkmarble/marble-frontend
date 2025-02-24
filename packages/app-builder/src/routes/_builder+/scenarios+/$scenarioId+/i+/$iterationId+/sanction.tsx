@@ -28,7 +28,7 @@ import { OptionsProvider } from '@app-builder/services/editor/options';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import * as Ariakit from '@ariakit/react';
 import {
   type ActionFunctionArgs,
   json,
@@ -303,7 +303,7 @@ export default function SanctionDetail() {
           >
             <div
               className={cn(
-                'sticky top-0 z-20 flex h-[88px] items-center justify-between bg-[#FCFCFC]',
+                'bg-purple-99 sticky top-0 z-20 flex h-[88px] items-center justify-between',
                 {
                   'border-b-grey-90 border-b': !intersection?.isIntersecting,
                 },
@@ -329,8 +329,8 @@ export default function SanctionDetail() {
               </form.Field>
               {editor === 'edit' ? (
                 <div className="flex items-center gap-2">
-                  <DropdownMenu.Root>
-                    <DropdownMenu.Trigger
+                  <Ariakit.MenuProvider>
+                    <Ariakit.MenuButton
                       className={CtaClassName({
                         variant: 'secondary',
                         size: 'icon',
@@ -338,9 +338,9 @@ export default function SanctionDetail() {
                       })}
                     >
                       <Icon icon="dots-three" className="size-4" />
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content
-                      align="end"
+                    </Ariakit.MenuButton>
+                    <Ariakit.Menu
+                      shift={-80}
                       className="bg-grey-100 border-grey-90 mt-2 flex flex-col gap-2 rounded border p-2"
                     >
                       <DeleteSanction
@@ -352,8 +352,8 @@ export default function SanctionDetail() {
                           {t('common:delete')}
                         </Button>
                       </DeleteSanction>
-                    </DropdownMenu.Content>
-                  </DropdownMenu.Root>
+                    </Ariakit.Menu>
+                  </Ariakit.MenuProvider>
 
                   <Button type="submit" className="flex-1">
                     <Icon icon="save" className="size-5" aria-hidden />
