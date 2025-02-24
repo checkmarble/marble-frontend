@@ -63,7 +63,7 @@ export const FieldRuleGroup = ({
       defaultOpen={false}
       onOpenChange={(open) => {
         if (open === false) {
-          setValue(undefined);
+          setValue('');
           onBlur?.();
         }
       }}
@@ -78,7 +78,7 @@ export const FieldRuleGroup = ({
             className={clsx({ 'w-fit': !selectedRuleGroup })}
           >
             <Icon
-              icon={selectedRuleGroup ? 'edit' : 'plus'}
+              icon={selectedRuleGroup ? 'edit-square' : 'plus'}
               className="size-4"
             />
             {!selectedRuleGroup ? (
@@ -87,7 +87,7 @@ export const FieldRuleGroup = ({
           </Button>
         </Trigger>
       </div>
-      <Content className="mt-1 shadow-md" align="start">
+      <Content className="mt-1 min-w-[280px] shadow-md" align="start">
         <Command className="flex flex-col gap-2 p-2">
           <div className="border-grey-90 flex items-center gap-2 border-b p-2 pb-3">
             {selectedRuleGroup ? (
@@ -120,20 +120,22 @@ export const FieldRuleGroup = ({
               </CommandEmpty>
             )}
             {value && !finalRuleGroups.includes(value) ? (
-              <Button
-                variant="tertiary"
-                onClick={() => {
-                  setNewRule(value);
-                  onChange?.(value);
-                  setValue('');
-                }}
-              >
-                <Icon icon="plus" className="text-grey-00 size-4" />
-                <span className="text-grey-00 text-s inline-flex items-center gap-2">
-                  {t('scenarios:rules.create')}
-                  {value ? <RuleGroup ruleGroup={value} /> : null}
-                </span>
-              </Button>
+              <CommandItem asChild forceMount>
+                <Button
+                  variant="tertiary"
+                  onClick={() => {
+                    setNewRule(value);
+                    onChange?.(value);
+                    setValue('');
+                  }}
+                >
+                  <Icon icon="plus" className="text-grey-00 size-4" />
+                  <span className="text-grey-00 text-s inline-flex items-center gap-2">
+                    {t('scenarios:rules.create')}
+                    {value ? <RuleGroup ruleGroup={value} /> : null}
+                  </span>
+                </Button>
+              </CommandItem>
             ) : null}
           </CommandList>
         </Command>

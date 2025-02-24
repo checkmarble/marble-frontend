@@ -99,6 +99,7 @@
     "react-hook-form": "^7.53.1",
     "react-hot-toast": "^2.4.1",
     "react-i18next": "^15.0.3",
+    "react-use": "^17.6.0",
     "reactflow": "^11.11.4",
     "remeda": "^2.15.2",
     "remix-i18next": "^6.4.1",

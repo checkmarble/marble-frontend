@@ -382,8 +382,6 @@
   "create_sanction.title": "Ajouter un chèque de sanction",
   "delete_sanction.content": "Vous êtes sur le point de supprimer ce chèque de sanction. \nCette action est irréversible, voulez-vous continuer?",
   "delete_sanction.title": "Supprimer ce chèque de sanction",
-  "edit_sanction.global_settings": "Vérification de la sanction des paramètres globaux",
-  "edit_sanction.global_settings.callout": "Ces paramètres seront enregistrés dans les paramètres de votre entreprise mondiale et seront appliqués à tous vos scénarios.",
   "edit_sanction.similarity_score": "Score de similitude minimum (%)",
   "edit_sanction.trigger.callout": "Détermine si la vérification des sanctions est pertinente pour chaque objet déclencheur (<coclink> en savoir plus </cocLink>)",
   "edit_sanction.trigger_title": "Conditions de déclenchement",

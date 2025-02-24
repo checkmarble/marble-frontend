@@ -1,9 +1,9 @@
 import { Link, useNavigate } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
-import clsx from 'clsx';
+import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
-import { Tooltip } from 'ui-design-system';
+import { cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { GithubBanner } from './GithubBanner';
@@ -11,7 +11,7 @@ import { GithubBanner } from './GithubBanner';
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <main
-      className={clsx(
+      className={cn(
         'bg-purple-99 flex flex-1 flex-col overflow-hidden',
         className,
       )}
@@ -41,7 +41,7 @@ function PageHeader({
 }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={clsx(
+      className={cn(
         'border-b-grey-90 bg-grey-100 text-l text-grey-00 relative flex shrink-0 flex-row items-center border-b px-4 font-bold lg:px-6',
         headerHeight({ type: 'height' }),
         className,
@@ -54,19 +54,22 @@ function PageHeader({
   );
 }
 
-function PageContainer({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      className="scrollbar-gutter-stable size-full overflow-y-scroll"
-      {...props}
-    />
-  );
-}
+const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(
+  function PageContainer({ className, ...props }, ref) {
+    return (
+      <div
+        ref={ref}
+        className="scrollbar-gutter-stable size-full overflow-y-scroll"
+        {...props}
+      />
+    );
+  },
+);
 
 function PageDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <aside
-      className={clsx(
+      className={cn(
         'bg-purple-98 text-s text-purple-65 flex flex-row gap-2 p-4 font-normal lg:px-8 lg:py-4',
         className,
       )}
@@ -81,7 +84,7 @@ function PageDescription({ className, ...props }: React.ComponentProps<'div'>) {
 function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={clsx(
+      className={cn(
         'flex flex-1 flex-col gap-4 p-4 pe-[calc(1rem-var(--scrollbar-width))] lg:gap-8 lg:p-8 lg:pe-[calc(2rem-var(--scrollbar-width))]',
         className,
       )}
