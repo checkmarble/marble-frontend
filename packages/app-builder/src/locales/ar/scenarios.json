@@ -381,8 +381,6 @@
   "create_sanction.title": "أضف شيكًا للعقوبة",
   "delete_sanction.content": "أنت على وشك حذف شيك العقوبات هذا. \nهذا الإجراء لا رجعة فيه ، هل تريد المتابعة؟",
   "delete_sanction.title": "حذف هذا الشيك العقوبات",
-  "edit_sanction.global_settings": "فحص العقوبات الإعدادات العالمية",
-  "edit_sanction.global_settings.callout": "سيتم حفظ هذه الإعدادات في إعدادات شركتك العالمية وسيتم تطبيقها على جميع السيناريو الخاص بك.",
   "edit_sanction.similarity_score": "الحد الأدنى لدرجة التشابه (٪)",
   "edit_sanction.trigger.callout": "يحدد ما إذا كان فحص العقوبات ذا صلة بكل كائن مشغل (<Sclink> تعرف على المزيد </doClink>)",
   "edit_sanction.trigger_title": "شروط الزناد",

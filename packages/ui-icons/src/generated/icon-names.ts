@@ -25,6 +25,7 @@ export const iconNames = [
   'dash',
   'decision',
   'delete',
+  'dots-three',
   'download',
   'draft',
   'drag',

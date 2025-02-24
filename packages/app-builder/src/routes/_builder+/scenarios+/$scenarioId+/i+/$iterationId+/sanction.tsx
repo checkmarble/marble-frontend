@@ -11,18 +11,24 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type AstBuilderProps } from '@app-builder/components/Scenario/AstBuilder';
 import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
 import { FieldNodeConcat } from '@app-builder/components/Scenario/Sanction/FieldNodeConcat';
+import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
 import { FieldSanction } from '@app-builder/components/Scenario/Sanction/FieldSanction';
 import { FieldToolTip } from '@app-builder/components/Scenario/Sanction/FieldToolTip';
 import { FieldTrigger } from '@app-builder/components/Scenario/Sanction/FieldTrigger';
+import useIntersection from '@app-builder/hooks/useIntersection';
 import { type AstNode } from '@app-builder/models';
-import { type SanctionOutcome } from '@app-builder/models/outcome';
+import {
+  knownOutcomes,
+  type SanctionOutcome,
+} from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
 import { useEditorMode } from '@app-builder/services/editor';
 import { OptionsProvider } from '@app-builder/services/editor/options';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
   type ActionFunctionArgs,
   json,
@@ -31,8 +37,10 @@ import {
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace, t as rawT } from 'i18next';
+import { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Collapsible, Tag } from 'ui-design-system';
+import { difference } from 'remeda';
+import { Button, cn, CtaClassName, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -229,6 +237,13 @@ export default function SanctionDetail() {
   const ruleGroups = useRuleGroups();
   const { id: iterationId, sanctionCheckConfig } =
     useCurrentScenarioIteration();
+  const descriptionRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const intersection = useIntersection(descriptionRef, {
+    root: containerRef.current,
+    rootMargin: '-30px',
+    threshold: 1,
+  });
 
   const form = useForm<EditSanctionForm>({
     onSubmit: ({ value, formApi }) => {
@@ -276,58 +291,85 @@ export default function SanctionDetail() {
           })}
         />
       </Page.Header>
-      <Page.Container>
-        <Page.Content>
+      <Page.Container ref={containerRef}>
+        <Page.Content className="pt-0 lg:pt-0">
           <form
-            className="flex flex-col gap-8"
+            className="relative flex max-w-3xl flex-col"
             onSubmit={(e) => {
               e.preventDefault();
               e.stopPropagation();
               form.handleSubmit();
             }}
           >
-            <div className="flex max-w-3xl flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <form.Field name="name">
-                  {(field) => (
-                    <div className="flex flex-col gap-1">
-                      <input
-                        type="text"
-                        name={field.name}
-                        value={field.state.value}
-                        onChange={(e) =>
-                          field.handleChange(e.currentTarget.value)
-                        }
-                        onBlur={field.handleBlur}
-                        className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
-                        placeholder="Sanction Check title..."
-                      />
-                      <FormErrorOrDescription
-                        errors={field.state.meta.errors}
-                      />
-                    </div>
-                  )}
-                </form.Field>
+            <div
+              className={cn(
+                'sticky top-0 z-20 flex h-[88px] items-center justify-between bg-[#FCFCFC]',
+                {
+                  'border-b-grey-90 border-b': !intersection?.isIntersecting,
+                },
+              )}
+            >
+              <form.Field name="name">
+                {(field) => (
+                  <div className="flex flex-col gap-1">
+                    <input
+                      type="text"
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) =>
+                        field.handleChange(e.currentTarget.value)
+                      }
+                      onBlur={field.handleBlur}
+                      className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
+                      placeholder={t('scenarios:sanction_name_placeholder')}
+                    />
+                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                  </div>
+                )}
+              </form.Field>
+              {editor === 'edit' ? (
                 <div className="flex items-center gap-2">
-                  <DeleteSanction
-                    iterationId={iterationId}
-                    scenarioId={scenario.id}
-                  >
-                    <Button color="red" className="w-fit">
-                      <Icon icon="delete" className="size-5" aria-hidden />
-                      {t('common:delete')}
-                    </Button>
-                  </DeleteSanction>
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger
+                      className={CtaClassName({
+                        variant: 'secondary',
+                        size: 'icon',
+                        className: 'size-[40px]',
+                      })}
+                    >
+                      <Icon icon="dots-three" className="size-4" />
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content
+                      align="end"
+                      className="bg-grey-100 border-grey-90 mt-2 flex flex-col gap-2 rounded border p-2"
+                    >
+                      <DeleteSanction
+                        iterationId={iterationId}
+                        scenarioId={scenario.id}
+                      >
+                        <Button color="red" className="w-fit">
+                          <Icon icon="delete" className="size-5" aria-hidden />
+                          {t('common:delete')}
+                        </Button>
+                      </DeleteSanction>
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
+
                   <Button type="submit" className="flex-1">
                     <Icon icon="save" className="size-5" aria-hidden />
                     {t('common:save')}
                   </Button>
                 </div>
-              </div>
-              <div className="flex flex-col items-start gap-6">
+              ) : null}
+            </div>
+            <div className="flex flex-col gap-8">
+              <div className="border-grey-90 flex flex-col items-start gap-6 border-b pb-6">
                 <form.Field name="description">
                   {(field) => (
-                    <div className="flex w-full flex-col gap-1">
+                    <div
+                      ref={descriptionRef}
+                      className="flex w-full flex-col gap-1"
+                    >
                       <textarea
                         name={field.name}
                         value={field.state.value}
@@ -336,7 +378,9 @@ export default function SanctionDetail() {
                         }
                         onBlur={field.handleBlur}
                         className="form-textarea text-grey-50 text-s w-full resize-none border-none bg-transparent font-medium outline-none"
-                        placeholder="Add a description..."
+                        placeholder={t(
+                          'scenarios:sanction_description_placeholder',
+                        )}
                       />
                       <FormErrorOrDescription
                         errors={field.state.meta.errors}
@@ -360,58 +404,78 @@ export default function SanctionDetail() {
                   )}
                 </form.Field>
               </div>
-            </div>
 
-            <Collapsible.Container className="bg-grey-100 max-w-3xl">
-              <Collapsible.Title>
-                {t('scenarios:trigger.trigger_object.title')}
-              </Collapsible.Title>
-              <Collapsible.Content>
-                <Callout variant="outlined" className="mb-4 lg:mb-6">
-                  <p className="whitespace-pre text-wrap">
-                    <Trans
-                      t={t}
-                      i18nKey="scenarios:trigger.trigger_object.callout"
-                      components={{
-                        DocLink: (
-                          <ExternalLink href="https://docs.checkmarble.com/docs/getting-started" />
-                        ),
-                      }}
-                    />
-                  </p>
-                </Callout>
-                <form.Field name="triggerRule">
-                  {(field) => (
-                    <FieldTrigger
-                      scenarioId={scenario.id}
-                      iterationId={iterationId}
-                      options={options}
-                      onBlur={field.handleBlur}
-                      onChange={field.handleChange}
-                      trigger={field.state.value}
-                    />
-                  )}
-                </form.Field>
-              </Collapsible.Content>
-            </Collapsible.Container>
+              <div className="flex flex-col gap-2">
+                <span className="text-s font-medium">
+                  {t('scenarios:edit_sanction.global_settings')}
+                </span>
+                <div className="bg-grey-100 border-grey-90 rounded-md border p-6">
+                  <Callout variant="outlined" className="mb-4 lg:mb-6">
+                    <p className="whitespace-pre text-wrap">
+                      <Trans
+                        t={t}
+                        i18nKey="scenarios:sanction.trigger_object.callout"
+                        components={{
+                          DocLink: (
+                            <ExternalLink href="https://docs.checkmarble.com/docs/getting-started" />
+                          ),
+                        }}
+                      />
+                    </p>
+                  </Callout>
+                  <form.Field name="triggerRule">
+                    {(field) => (
+                      <FieldTrigger
+                        scenarioId={scenario.id}
+                        iterationId={iterationId}
+                        options={options}
+                        onBlur={field.handleBlur}
+                        onChange={field.handleChange}
+                        trigger={field.state.value}
+                      />
+                    )}
+                  </form.Field>
+                </div>
+                <div className="bg-grey-100 border-grey-90 rounded-md border p-6">
+                  <div className="flex items-center gap-2">
+                    <span className="bg-grey-95 text-grey-50 text-s inline-flex rounded p-2 font-medium">
+                      {t('scenarios:sanction_forced_outcome_heading')}
+                    </span>
+                    <form.Field name="forcedOutcome">
+                      {(field) => (
+                        <div className="flex flex-col gap-1">
+                          <FieldOutcomes
+                            disabled={editor === 'view'}
+                            name={field.name}
+                            onChange={field.handleChange}
+                            onBlur={field.handleBlur}
+                            selectedOutcome={field.state.value}
+                            outcomes={
+                              difference(knownOutcomes, [
+                                'approve',
+                              ]) as SanctionOutcome[]
+                            }
+                          />
+                          <FormErrorOrDescription
+                            errors={field.state.meta.errors}
+                          />
+                        </div>
+                      )}
+                    </form.Field>
+                  </div>
+                </div>
+              </div>
 
-            <Collapsible.Container className="bg-grey-100 max-w-3xl">
-              <Collapsible.Title className="mb-2">
-                {t('scenarios:sanction_counterparty_id')}
-              </Collapsible.Title>
-              <Collapsible.Content>
+              <div className="flex flex-col gap-2">
+                <span className="text-s inline-flex items-center gap-2 font-medium">
+                  {t('scenarios:sanction_counterparty_id')}
+                  <FieldToolTip>
+                    {t('scenarios:sanction_counterparty_id.tooltip')}
+                  </FieldToolTip>
+                </span>
                 <form.Field name="counterPartyId">
                   {(field) => (
-                    <div className="flex flex-col gap-4">
-                      <FormLabel
-                        className="inline-flex items-center gap-1"
-                        name={field.name}
-                      >
-                        {t('scenarios:sanction_counterparty_id')}
-                        <FieldToolTip>
-                          {t('scenarios:sanction_counterparty_id.tooltip')}
-                        </FieldToolTip>
-                      </FormLabel>
+                    <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded border p-6">
                       <OptionsProvider {...options}>
                         <FieldNode
                           viewOnly={editor === 'view'}
@@ -429,121 +493,106 @@ export default function SanctionDetail() {
                     </div>
                   )}
                 </form.Field>
-              </Collapsible.Content>
-            </Collapsible.Container>
+              </div>
 
-            <Collapsible.Container className="bg-grey-100 max-w-3xl">
-              <Collapsible.Title>
-                {t('scenarios:sanction.match_settings.title')}
-              </Collapsible.Title>
-              <Collapsible.Content>
-                <Callout variant="outlined" className="mb-4 lg:mb-6">
-                  <p className="whitespace-pre text-wrap">
-                    {t('scenarios:sanction.match_settings.callout')}
-                  </p>
-                </Callout>
-                <div className="flex flex-col gap-6">
-                  <form.Field name="query.name">
-                    {(field) => (
-                      <div className="flex flex-col gap-4">
-                        <FormLabel
-                          className="inline-flex items-center gap-1"
-                          name={field.name}
-                        >
-                          {t('scenarios:sanction_counterparty_name')}
-                          <FieldToolTip>
-                            {t('scenarios:sanction_counterparty_name.tooltip')}
-                          </FieldToolTip>
-                        </FormLabel>
-                        <OptionsProvider {...options}>
-                          <FieldNodeConcat
-                            viewOnly={editor === 'view'}
-                            value={sanctionCheckConfig?.query?.name}
-                            onChange={field.handleChange}
-                            onBlur={field.handleBlur}
-                            placeholder="Select the First name or Full Name"
-                            limit={5}
+              <div className="flex flex-col gap-2">
+                <span className="text-s font-medium">
+                  {t('scenarios:sanction.match_settings.title')}
+                </span>
+                <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded border p-6">
+                  <Callout variant="outlined" className="mb-4 lg:mb-6">
+                    <p className="whitespace-pre text-wrap">
+                      {t('scenarios:sanction.match_settings.callout')}
+                    </p>
+                  </Callout>
+                  <div className="flex flex-col gap-6">
+                    <form.Field name="query.name">
+                      {(field) => (
+                        <div className="flex flex-col gap-4">
+                          <FormLabel
+                            className="inline-flex items-center gap-1"
+                            name={field.name}
+                          >
+                            {t('scenarios:sanction_counterparty_name')}
+                            <FieldToolTip>
+                              {t(
+                                'scenarios:sanction_counterparty_name.tooltip',
+                              )}
+                            </FieldToolTip>
+                          </FormLabel>
+                          <OptionsProvider {...options}>
+                            <FieldNodeConcat
+                              viewOnly={editor === 'view'}
+                              value={sanctionCheckConfig?.query?.name}
+                              onChange={field.handleChange}
+                              onBlur={field.handleBlur}
+                              placeholder={t(
+                                'scenarios:sanction_counterparty_name_placeholder',
+                              )}
+                              limit={5}
+                            />
+                          </OptionsProvider>
+                          <FormErrorOrDescription
+                            errors={field.state.meta.errors}
                           />
-                        </OptionsProvider>
-                        <FormErrorOrDescription
-                          errors={field.state.meta.errors}
-                        />
-                      </div>
-                    )}
-                  </form.Field>
-                  <form.Field name="query.label">
-                    {(field) => (
-                      <div className="flex flex-col gap-4">
-                        <FormLabel name={field.name}>
-                          {t('scenarios:sanction_transaction_label')}
-                        </FormLabel>
-                        <OptionsProvider {...options}>
-                          <FieldNode
-                            viewOnly={editor === 'view'}
-                            value={field.state.value}
-                            onChange={field.handleChange}
-                            onBlur={field.handleBlur}
-                            placeholder="Select the transaction label"
+                        </div>
+                      )}
+                    </form.Field>
+                    <form.Field name="query.label">
+                      {(field) => (
+                        <div className="flex flex-col gap-4">
+                          <FormLabel name={field.name}>
+                            {t('scenarios:sanction_transaction_label')}
+                          </FormLabel>
+                          <OptionsProvider {...options}>
+                            <FieldNode
+                              viewOnly={editor === 'view'}
+                              value={field.state.value}
+                              onChange={field.handleChange}
+                              onBlur={field.handleBlur}
+                              placeholder={t(
+                                'scenarios:sanction_transaction_label_placeholder',
+                              )}
+                            />
+                          </OptionsProvider>
+                          <FormErrorOrDescription
+                            errors={field.state.meta.errors}
                           />
-                        </OptionsProvider>
-                        <FormErrorOrDescription
-                          errors={field.state.meta.errors}
-                        />
-                      </div>
-                    )}
-                  </form.Field>
-                </div>
-              </Collapsible.Content>
-            </Collapsible.Container>
-
-            <Collapsible.Container className="bg-grey-100 max-w-3xl">
-              <Collapsible.Title>
-                {t('scenarios:sanction.lists.title')}
-              </Collapsible.Title>
-              <Collapsible.Content>
-                <Callout variant="outlined" className="mb-4 lg:mb-6">
-                  <p className="whitespace-pre text-wrap">
-                    {t('scenarios:sanction.lists.callout')}
-                  </p>
-                </Callout>
-                <form.Field name="datasets">
-                  {(field) => (
-                    <div className="flex flex-col gap-2">
-                      <FieldSanction
-                        defaultValue={field.state.value}
-                        onChange={field.handleChange}
-                        onBlur={field.handleBlur}
-                        sections={sections}
-                      />
-                      <FormErrorOrDescription
-                        errors={field.state.meta.errors}
-                      />
-                    </div>
-                  )}
-                </form.Field>
-              </Collapsible.Content>
-            </Collapsible.Container>
-
-            {editor === 'edit' ? (
-              <div className="sticky bottom-4 flex w-full max-w-3xl items-center justify-center lg:bottom-6">
-                <div className="bg-grey-100 border-grey-90 flex w-fit flex-row gap-2 rounded-md border p-2 drop-shadow-md">
-                  <DeleteSanction
-                    iterationId={iterationId}
-                    scenarioId={scenario.id}
-                  >
-                    <Button color="red" className="w-fit">
-                      <Icon icon="delete" className="size-5" aria-hidden />
-                      {t('common:delete')}
-                    </Button>
-                  </DeleteSanction>
-
-                  <Button type="submit" className="flex-1">
-                    <Icon icon="save" className="size-5" aria-hidden />
-                    {t('common:save')}
-                  </Button>
+                        </div>
+                      )}
+                    </form.Field>
+                  </div>
                 </div>
               </div>
-            ) : null}
+
+              <div className="flex flex-col gap-2">
+                <span className="text-s font-medium">
+                  {t('scenarios:sanction.lists.title')}
+                </span>
+                <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded border p-6">
+                  <Callout variant="outlined" className="mb-4 lg:mb-6">
+                    <p className="whitespace-pre text-wrap">
+                      {t('scenarios:sanction.lists.callout')}
+                    </p>
+                  </Callout>
+                  <form.Field name="datasets">
+                    {(field) => (
+                      <div className="flex flex-col gap-2">
+                        <FieldSanction
+                          defaultValue={field.state.value}
+                          onChange={field.handleChange}
+                          onBlur={field.handleBlur}
+                          sections={sections}
+                        />
+                        <FormErrorOrDescription
+                          errors={field.state.meta.errors}
+                        />
+                      </div>
+                    )}
+                  </form.Field>
+                </div>
+              </div>
+            </div>
           </form>
         </Page.Content>
       </Page.Container>
