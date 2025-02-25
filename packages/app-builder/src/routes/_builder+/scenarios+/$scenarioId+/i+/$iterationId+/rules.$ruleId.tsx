@@ -1,79 +1,38 @@
-import { Callout, Page, Paper, scenarioI18n } from '@app-builder/components';
+import { Page, scenarioI18n } from '@app-builder/components';
 import {
   BreadCrumbLink,
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
-import {
-  FormControl,
-  FormError,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@app-builder/components/Form';
-import { Highlight } from '@app-builder/components/Highlight';
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { AstBuilder } from '@app-builder/components/Scenario/AstBuilder';
-import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import { type AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
-import {
-  type DatabaseAccessAstNode,
-  type PayloadAstNode,
-} from '@app-builder/models/astNode/data-accessor';
-import { type CustomList } from '@app-builder/models/custom-list';
-import { type DataModel } from '@app-builder/models/data-model';
-import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
+import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
+import { FieldTrigger } from '@app-builder/components/Scenario/Sanction/FieldTrigger';
+import useIntersection from '@app-builder/hooks/useIntersection';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
 import { DuplicateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate';
-import { useRuleValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import { useEditorMode } from '@app-builder/services/editor';
-import {
-  type AstEditorStore,
-  useAstNodeEditor,
-  useSaveAstNode,
-  useValidateAstNode,
-} from '@app-builder/services/editor/ast-editor';
 import { serverServices } from '@app-builder/services/init.server';
-import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
-import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
+import * as Ariakit from '@ariakit/react';
 import {
   type ActionFunctionArgs,
   json,
   type LoaderFunctionArgs,
 } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
-import { matchSorter } from 'match-sorter';
-import * as React from 'react';
-import {
-  type ControllerRenderProps,
-  FormProvider,
-  useForm,
-} from 'react-hook-form';
-import { Trans, useTranslation } from 'react-i18next';
-import * as R from 'remeda';
-import {
-  Button,
-  Collapsible,
-  Combobox,
-  ComboboxItem,
-  ComboboxLabel,
-  ComboboxPopover,
-  ComboboxRoot,
-  Input,
-  Tag,
-} from 'ui-design-system';
+import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, cn, CtaClassName, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
-import {
-  useCurrentRuleValidationRule,
-  useCurrentScenarioIterationRule,
-  useRuleGroups,
-} from './_layout';
+import { useCurrentScenarioIterationRule, useRuleGroups } from './_layout';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
@@ -135,29 +94,29 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       failureRedirect: getRoute('/sign-in'),
     });
 
-  const scenarioId = fromParams(params, 'scenarioId');
+  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists] =
+    await Promise.all([
+      editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
+      dataModelRepository.getDataModel(),
+      customListsRepository.listCustomLists(),
+    ]);
 
-  const accessorsPromise = editor.listAccessors({
-    scenarioId,
-  });
-
-  const dataModelPromise = dataModelRepository.getDataModel();
-  const customLists = await customListsRepository.listCustomLists();
-
-  return json({
-    databaseAccessors: (await accessorsPromise).databaseAccessors,
-    payloadAccessors: (await accessorsPromise).payloadAccessors,
-    dataModel: await dataModelPromise,
+  return {
+    databaseAccessors,
+    payloadAccessors,
+    dataModel,
     customLists,
-  });
+  };
 }
 
 const editRuleFormSchema = z.object({
   name: z.string().min(1),
   description: z.string(),
-  ruleGroup: z.string(),
+  ruleGroup: z.string().min(1),
   scoreModifier: z.coerce.number().int().min(-1000).max(1000),
+  formula: z.any(),
 });
+
 type EditRuleFormValues = z.infer<typeof editRuleFormSchema>;
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -165,65 +124,55 @@ export async function action({ request, params }: ActionFunctionArgs) {
     authService,
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { formValues: formValuesRaw, astNode } = (await request.json()) as {
-    formValues: z.infer<typeof editRuleFormSchema>;
-    astNode: AstNode;
-  };
 
-  const session = await getSession(request);
-  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const [session, data, { scenarioIterationRuleRepository }] =
+    await Promise.all([
+      getSession(request),
+      request.json(),
+      authService.isAuthenticated(request, {
+        failureRedirect: getRoute('/sign-in'),
+      }),
+    ]);
 
-  const parsedForm = editRuleFormSchema.safeParse(formValuesRaw);
-  if (!parsedForm.success) {
-    return json({
-      success: false as const,
-      values: null,
-      errors: parsedForm.error.flatten(),
-    });
+  const result = editRuleFormSchema.safeParse(data);
+
+  if (!result.success) {
+    return json(
+      { status: 'error', errors: result.error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 
-  const formValues = parsedForm.data;
   try {
-    const ruleId = fromParams(params, 'ruleId');
-
     await scenarioIterationRuleRepository.updateRule({
-      ruleId,
-      formula: astNode,
-      name: formValues.name,
-      description: formValues.description,
-      ruleGroup: formValues.ruleGroup,
-      scoreModifier: formValues.scoreModifier,
+      ruleId: fromParams(params, 'ruleId'),
+      ...result.data,
     });
 
     setToastMessage(session, {
       type: 'success',
       messageKey: 'common:success.save',
     });
+
     return json(
+      { status: 'success', errors: [] },
       {
-        success: true as const,
-        errors: null,
-        values: formValues,
+        headers: { 'Set-Cookie': await commitSession(session) },
       },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',
     });
+
     return json(
+      { status: 'error', errors: [] },
       {
-        success: false as const,
-        errors: null,
-        values: formValues,
+        headers: { 'Set-Cookie': await commitSession(session) },
       },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   }
 }
@@ -232,28 +181,37 @@ export default function RuleDetail() {
   const { databaseAccessors, payloadAccessors, dataModel, customLists } =
     useLoaderData<typeof loader>();
 
+  const { t } = useTranslation(handle.i18n);
   const iterationId = useParam('iterationId');
   const scenarioId = useParam('scenarioId');
-  const ruleId = useParam('ruleId');
 
-  const { validate, validation: localValidation } = useRuleValidationFetcher(
-    scenarioId,
-    iterationId,
-    ruleId,
-  );
-
+  const fetcher = useFetcher<typeof action>();
   const scenario = useCurrentScenario();
   const rule = useCurrentScenarioIterationRule();
-  const ruleValidation = useCurrentRuleValidationRule();
+  const editor = useEditorMode();
+  const ruleGroups = useRuleGroups();
 
-  const editorMode = useEditorMode();
-
-  const astEditorStore = useAstNodeEditor({
-    initialAstNode: rule.formula ?? NewEmptyRuleAstNode(),
-    initialEvaluation: ruleValidation.ruleEvaluation,
+  const descriptionRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const intersection = useIntersection(descriptionRef, {
+    root: containerRef.current,
+    rootMargin: '-30px',
+    threshold: 1,
   });
 
-  useValidateAstNode(astEditorStore, validate, localValidation);
+  const form = useForm<EditRuleFormValues>({
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, { method: 'PATCH', encType: 'application/json' });
+      }
+    },
+    validators: {
+      onChangeAsync: editRuleFormSchema,
+      onBlurAsync: editRuleFormSchema,
+      onSubmitAsync: editRuleFormSchema,
+    },
+    defaultValues: rule,
+  });
 
   const options = {
     databaseAccessors,
@@ -263,326 +221,193 @@ export default function RuleDetail() {
     triggerObjectType: scenario.triggerObjectType,
   };
 
+  //TODO Add errors from the servers if they are present
+
   return (
     <Page.Main>
       <Page.Header>
-        <BreadCrumbs />
+        <BreadCrumbs
+          back={getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
+            iterationId: fromUUID(iterationId),
+            scenarioId: fromUUID(scenario.id),
+          })}
+        />
       </Page.Header>
       <Page.Container>
-        {editorMode === 'view' ? (
-          <RuleViewContent
-            options={options}
-            astEditorStore={astEditorStore}
-            rule={rule}
-          />
-        ) : (
-          <RuleEditContent
-            options={options}
-            astEditorStore={astEditorStore}
-            rule={rule}
-            scenarioId={scenarioId}
-          />
-        )}
-      </Page.Container>
-    </Page.Main>
-  );
-}
-
-function RuleViewContent({
-  options,
-  astEditorStore,
-  rule,
-}: {
-  options: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: DataModel;
-    customLists: CustomList[];
-    triggerObjectType: string;
-  };
-  astEditorStore: AstEditorStore;
-  rule: ScenarioIterationRule;
-}) {
-  const { t } = useTranslation(handle.i18n);
-  const language = useFormatLanguage();
-
-  return (
-    <Page.Content>
-      <Callout className="max-w-3xl" variant="outlined">
-        {rule.description}
-      </Callout>
-
-      <div className="flex flex-col gap-4">
-        <div className="bg-purple-96 text-purple-65 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal">
-          <Trans
-            t={t}
-            i18nKey="scenarios:rules.consequence.score_modifier"
-            components={{
-              Score: <span className="font-semibold" />,
+        <Page.Content>
+          <form
+            className="relative flex max-w-3xl flex-col"
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit();
             }}
-            values={{
-              score: formatNumber(rule.scoreModifier, {
-                language,
-                signDisplay: 'always',
-              }),
-            }}
-          />
-        </div>
-        <Paper.Container className="bg-grey-100 max-w-3xl">
-          <AstBuilder
-            options={options}
-            astEditorStore={astEditorStore}
-            viewOnly={true}
-          />
-        </Paper.Container>
-      </div>
-    </Page.Content>
-  );
-}
-
-function RuleEditContent({
-  options,
-  astEditorStore,
-  rule,
-  scenarioId,
-}: {
-  options: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: DataModel;
-    customLists: CustomList[];
-    triggerObjectType: string;
-  };
-  astEditorStore: AstEditorStore;
-  rule: ScenarioIterationRule;
-  scenarioId: string;
-}) {
-  const { t } = useTranslation(handle.i18n);
-
-  const ruleValidation = useCurrentRuleValidationRule();
-  const getScenarioErrorMessage = useGetScenarioErrorMessage();
-
-  const fetcher = useFetcher<typeof action>();
-
-  const formMethods = useForm<EditRuleFormValues>({
-    defaultValues: {
-      name: rule.name,
-      description: rule.description,
-      ruleGroup: rule.ruleGroup,
-      scoreModifier: rule.scoreModifier,
-    },
-    mode: 'onChange',
-  });
-  const { setError } = formMethods;
-  const { data } = fetcher;
-  const errors = data?.errors;
-
-  React.useEffect(() => {
-    if (!errors) return;
-
-    R.forEachObj(errors.fieldErrors, (err, name) => {
-      const message = err?.[0];
-      if (message === undefined) return;
-      setError(name, {
-        type: 'custom',
-        message,
-      });
-    });
-  }, [errors, setError]);
-
-  const handleSave = useSaveAstNode(astEditorStore, (astNode) => {
-    const values = formMethods.getValues();
-    fetcher.submit(
-      {
-        astNode,
-        formValues: values,
-      },
-      {
-        method: 'PATCH',
-        encType: 'application/json',
-      },
-    );
-  });
-
-  return (
-    <Page.Content>
-      <Collapsible.Container className="bg-grey-100 max-w-3xl">
-        <Collapsible.Title>
-          {t('scenarios:edit_rule.informations')}
-        </Collapsible.Title>
-        <Collapsible.Content>
-          <div className="flex flex-col gap-4 lg:gap-6">
-            <FormProvider {...formMethods}>
-              <FormField
-                name="name"
-                control={formMethods.control}
-                render={({ field }) => (
-                  <FormItem className="flex flex-col gap-2">
-                    <FormLabel>{t('common:name')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder={t('scenarios:edit_rule.name_placeholder')}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormError />
-                  </FormItem>
+          >
+            <div
+              className={cn(
+                'bg-purple-99 sticky top-0 z-20 flex h-[88px] items-center justify-between',
+                {
+                  'border-b-grey-90 border-b': !intersection?.isIntersecting,
+                },
+              )}
+            >
+              <form.Field name="name">
+                {(field) => (
+                  <div className="flex flex-col gap-1">
+                    <input
+                      type="text"
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) =>
+                        field.handleChange(e.currentTarget.value)
+                      }
+                      onBlur={field.handleBlur}
+                      className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
+                      placeholder={t('scenarios:edit_rule.name_placeholder')}
+                    />
+                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                  </div>
                 )}
-              />
-              <FormField
-                name="description"
-                control={formMethods.control}
-                render={({ field }) => (
-                  <FormItem className="flex flex-col gap-2">
-                    <FormLabel>{t('common:description')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
+              </form.Field>
+              {editor === 'edit' ? (
+                <div className="flex items-center gap-2">
+                  <Ariakit.MenuProvider>
+                    <Ariakit.MenuButton
+                      className={CtaClassName({
+                        variant: 'secondary',
+                        size: 'icon',
+                        className: 'size-[40px]',
+                      })}
+                    >
+                      <Icon icon="dots-three" className="size-4" />
+                    </Ariakit.MenuButton>
+                    <Ariakit.Menu
+                      shift={-80}
+                      className="bg-grey-100 border-grey-90 mt-2 flex flex-col gap-2 rounded border p-2"
+                    >
+                      <DuplicateRule
+                        ruleId={rule.id}
+                        iterationId={rule.scenarioIterationId}
+                        scenarioId={scenarioId}
+                      >
+                        <Button variant="secondary" type="button">
+                          <Icon icon="copy" className="size-5" aria-hidden />
+                          {t('scenarios:clone_rule.button')}
+                        </Button>
+                      </DuplicateRule>
+
+                      <DeleteRule
+                        ruleId={rule.id}
+                        iterationId={rule.scenarioIterationId}
+                        scenarioId={scenarioId}
+                      >
+                        <Button color="red" type="button">
+                          <Icon icon="delete" className="size-5" aria-hidden />
+                          {t('common:delete')}
+                        </Button>
+                      </DeleteRule>
+                    </Ariakit.Menu>
+                  </Ariakit.MenuProvider>
+
+                  <Button type="submit" className="flex-1">
+                    <Icon icon="save" className="size-5" aria-hidden />
+                    {t('common:save')}
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+            <div className="flex flex-col gap-8">
+              <div className="border-grey-90 flex flex-col items-start gap-6 border-b pb-6">
+                <form.Field name="description">
+                  {(field) => (
+                    <div
+                      ref={descriptionRef}
+                      className="flex w-full flex-col gap-1"
+                    >
+                      <textarea
+                        name={field.name}
+                        value={field.state.value}
+                        onChange={(e) =>
+                          field.handleChange(e.currentTarget.value)
+                        }
+                        onBlur={field.handleBlur}
+                        className="form-textarea text-grey-50 text-s w-full resize-none border-none bg-transparent font-medium outline-none"
                         placeholder={t(
                           'scenarios:edit_rule.description_placeholder',
                         )}
-                        {...field}
                       />
-                    </FormControl>
-                    <FormError />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="ruleGroup"
-                control={formMethods.control}
-                render={({ field }) => <RuleGroup field={field} />}
-              />
-              <FormField
-                name="scoreModifier"
-                control={formMethods.control}
-                render={({ field }) => (
-                  <FormItem className="flex flex-col gap-2">
-                    <FormLabel>{t('scenarios:edit_rule.score')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder={t('scenarios:edit_rule.score_placeholder')}
-                        {...field}
+                      <FormErrorOrDescription
+                        errors={field.state.meta.errors}
                       />
-                    </FormControl>
-                    <FormError />
-                  </FormItem>
-                )}
-              />
-            </FormProvider>
-          </div>
-        </Collapsible.Content>
-      </Collapsible.Container>
+                    </div>
+                  )}
+                </form.Field>
+                <form.Field name="ruleGroup">
+                  {(field) => (
+                    <div className="flex flex-col gap-2">
+                      <FieldRuleGroup
+                        onChange={field.handleChange}
+                        onBlur={field.handleBlur}
+                        selectedRuleGroup={field.state.value}
+                        ruleGroups={ruleGroups}
+                      />
+                      <FormErrorOrDescription
+                        errors={field.state.meta.errors}
+                      />
+                    </div>
+                  )}
+                </form.Field>
+              </div>
 
-      <Collapsible.Container className="bg-grey-100 max-w-3xl">
-        <Collapsible.Title>
-          {t('scenarios:edit_rule.formula')}
-        </Collapsible.Title>
-        <Collapsible.Content>
-          <div className="flex flex-col gap-4 lg:gap-6">
-            <AstBuilder options={options} astEditorStore={astEditorStore} />
-
-            <EvaluationErrors
-              errors={ruleValidation.errors
-                .filter((error) => error != 'RULE_FORMULA_REQUIRED')
-                .map(getScenarioErrorMessage)}
-            />
-          </div>
-        </Collapsible.Content>
-      </Collapsible.Container>
-
-      <div className="sticky bottom-4 flex w-full max-w-3xl items-center justify-center lg:bottom-6">
-        <div className="bg-grey-100 border-grey-90 flex w-fit flex-row gap-2 rounded-md border p-2 drop-shadow-md">
-          <DeleteRule
-            ruleId={rule.id}
-            iterationId={rule.scenarioIterationId}
-            scenarioId={scenarioId}
-          >
-            <Button color="red" className="w-fit">
-              <Icon icon="delete" className="size-5" aria-hidden />
-              {t('common:delete')}
-            </Button>
-          </DeleteRule>
-
-          <DuplicateRule
-            ruleId={rule.id}
-            iterationId={rule.scenarioIterationId}
-            scenarioId={scenarioId}
-          >
-            <Button variant="secondary" className="w-fit">
-              <Icon icon="copy" className="size-5" aria-hidden />
-              {t('scenarios:clone_rule.button')}
-            </Button>
-          </DuplicateRule>
-
-          <Button onClick={handleSave} className="flex-1">
-            <Icon icon="save" className="size-5" aria-hidden />
-            {t('common:save')}
-          </Button>
-        </div>
-      </div>
-    </Page.Content>
-  );
-}
-
-function RuleGroup({
-  field,
-}: {
-  field: ControllerRenderProps<EditRuleFormValues, 'ruleGroup'>;
-}) {
-  const { t } = useTranslation(handle.i18n);
-  const deferredSearchValue = React.useDeferredValue(field.value);
-  const ruleGroups = useRuleGroups();
-
-  const matches = React.useMemo(
-    () => matchSorter(ruleGroups, deferredSearchValue),
-    [deferredSearchValue, ruleGroups],
-  );
-
-  return (
-    <ComboboxRoot
-      open={ruleGroups.length === 0 ? false : undefined}
-      value={field.value}
-      setValue={field.onChange}
-      selectedValue={field.value}
-      setSelectedValue={field.onChange}
-    >
-      <FormItem className="flex flex-col gap-2">
-        <ComboboxLabel render={<FormLabel />}>
-          {t('scenarios:rules.rule_group')}
-        </ComboboxLabel>
-        <FormControl>
-          <Combobox
-            ref={field.ref}
-            disabled={field.disabled}
-            name={field.name}
-            onBlur={field.onBlur}
-            placeholder={t('scenarios:edit_rule.rule_group_placeholder')}
-          />
-        </FormControl>
-        <FormError />
-        <ComboboxPopover
-          className="flex flex-col gap-2 overflow-y-auto p-2"
-          fitViewport
-          portal
-          sameWidth
-        >
-          {matches.map((item) => {
-            return (
-              <ComboboxItem key={item} value={item}>
-                <Highlight text={item} query={deferredSearchValue} />
-              </ComboboxItem>
-            );
-          })}
-          {matches.length === 0 ? (
-            <p className="text-grey-50 text-xs">
-              {t('scenarios:edit_rule.rule_group.empty_matches')}
-            </p>
-          ) : null}
-        </ComboboxPopover>
-      </FormItem>
-    </ComboboxRoot>
+              <div className="flex flex-col gap-2">
+                <span className="text-s font-medium">
+                  {t('scenarios:edit_rule.formula')}
+                </span>
+                <div className="bg-grey-100 border-grey-90 rounded-md border p-6">
+                  <form.Field name="formula">
+                    {(field) => (
+                      <FieldTrigger
+                        type="rule"
+                        scenarioId={scenario.id}
+                        iterationId={iterationId}
+                        options={options}
+                        onBlur={field.handleBlur}
+                        onChange={field.handleChange}
+                        trigger={field.state.value}
+                      />
+                    )}
+                  </form.Field>
+                </div>
+                <div className="bg-grey-100 border-grey-90 rounded-md border p-6">
+                  <div className="flex items-center gap-2">
+                    <span className="bg-grey-95 text-grey-50 text-s inline-flex rounded p-2 font-medium">
+                      {t('scenarios:edit_rule.score_heading')}
+                    </span>
+                    <form.Field name="scoreModifier">
+                      {(field) => (
+                        <div className="flex flex-col gap-1">
+                          <FormInput
+                            type="text"
+                            name={field.name}
+                            value={field.state.value}
+                            onChange={(e) =>
+                              field.handleChange(+e.currentTarget.value)
+                            }
+                            onBlur={field.handleBlur}
+                          />
+                          <FormErrorOrDescription
+                            errors={field.state.meta.errors}
+                          />
+                        </div>
+                      )}
+                    </form.Field>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </Page.Content>
+      </Page.Container>
+    </Page.Main>
   );
 }
