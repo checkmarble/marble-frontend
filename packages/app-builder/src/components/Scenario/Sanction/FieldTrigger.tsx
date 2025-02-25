@@ -1,17 +1,34 @@
 import { type AstNode, NewEmptyTriggerAstNode } from '@app-builder/models';
+import { useCurrentRuleValidationRule } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
 import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import { useEditorMode } from '@app-builder/services/editor';
 import {
   useAstNodeEditor,
   useValidateAstNode,
 } from '@app-builder/services/editor/ast-editor';
+import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { useEffect } from 'react';
 import { hasSubObject } from 'remeda';
 import { useStore } from 'zustand';
 
 import { AstBuilder, type AstBuilderProps } from '../AstBuilder';
+import { EvaluationErrors } from '../ScenarioValidationError';
+
+const EvaluationErrorsWrapper = () => {
+  const ruleValidation = useCurrentRuleValidationRule();
+  const getScenarioErrorMessage = useGetScenarioErrorMessage();
+
+  return (
+    <EvaluationErrors
+      errors={ruleValidation.errors
+        .filter((error) => error != 'RULE_FORMULA_REQUIRED')
+        .map(getScenarioErrorMessage)}
+    />
+  );
+};
 
 export const FieldTrigger = ({
+  type,
   trigger,
   scenarioId,
   iterationId,
@@ -19,6 +36,7 @@ export const FieldTrigger = ({
   onChange,
   onBlur,
 }: {
+  type: 'rule' | 'sanction';
   trigger?: AstNode;
   onChange?: (node?: AstNode) => void;
   onBlur?: () => void;
@@ -54,6 +72,7 @@ export const FieldTrigger = ({
         astEditorStore={astEditorStore}
         options={options}
       />
+      {type === 'rule' ? <EvaluationErrorsWrapper /> : null}
     </div>
   );
 };

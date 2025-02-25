@@ -281,6 +281,8 @@ export default function SanctionDetail() {
     triggerObjectType: scenario.triggerObjectType,
   };
 
+  //TODO Add errors from the servers if they are present
+
   return (
     <Page.Main>
       <Page.Header className="justify-between">
@@ -426,6 +428,7 @@ export default function SanctionDetail() {
                   <form.Field name="triggerRule">
                     {(field) => (
                       <FieldTrigger
+                        type="sanction"
                         scenarioId={scenario.id}
                         iterationId={iterationId}
                         options={options}

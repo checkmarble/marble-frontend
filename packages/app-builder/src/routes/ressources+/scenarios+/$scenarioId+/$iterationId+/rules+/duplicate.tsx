@@ -1,47 +1,40 @@
 import { serverServices } from '@app-builder/services/init.server';
-import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Button, HiddenInputs, ModalV2 } from 'ui-design-system';
+import { Button, ModalV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
 
 export const handle = {
   i18n: ['scenarios', 'navigation', 'common'] satisfies Namespace,
 };
 
-const duplicateRuleFormSchema = z.object({
-  ruleId: z.string().uuid(),
-  scenarioId: z.string().uuid(),
-  iterationId: z.string().uuid(),
-});
-
-export async function action({ request }: ActionFunctionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { authService, i18nextService } = serverServices;
-  const t = await i18nextService.getFixedT(request, 'scenarios');
-  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const iterationId = fromParams(params, 'iterationId');
+  const scenarioId = fromParams(params, 'scenarioId');
 
-  const parsedForm = await parseFormSafe(request, duplicateRuleFormSchema);
-  if (!parsedForm.success) {
-    return null;
-  }
-  const { ruleId, scenarioId, iterationId } = parsedForm.data;
+  const [data, t, { scenarioIterationRuleRepository }] = await Promise.all([
+    request.formData(),
+    i18nextService.getFixedT(request, 'scenarios'),
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
+
   const { createdAt, name, ...rest } =
-    await scenarioIterationRuleRepository.getRule({ ruleId });
-  const newName = t('clone_rule.default_name', { name });
+    await scenarioIterationRuleRepository.getRule({
+      ruleId: data.get('ruleId') as string,
+    });
+
   await scenarioIterationRuleRepository.createRule({
-    name: newName,
+    name: t('clone_rule.default_name', { name }),
     ...rest,
   });
+
   return redirect(
     getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
       scenarioId: fromUUID(scenarioId),
@@ -68,49 +61,47 @@ export function DuplicateRule({
     <ModalV2.Root>
       <ModalV2.Trigger render={children} />
       <ModalV2.Content>
-        <fetcher.Form
-          method="POST"
-          action={getRoute(
-            '/ressources/scenarios/:scenarioId/:iterationId/rules/duplicate',
-            {
-              scenarioId: fromUUID(scenarioId),
-              iterationId: fromUUID(iterationId),
-            },
-          )}
-        >
-          <HiddenInputs
-            ruleId={ruleId}
-            scenarioId={scenarioId}
-            iterationId={iterationId}
-          />
-          <div className="flex flex-col gap-6 p-6">
-            <div className="flex flex-1 flex-col items-center justify-center gap-2">
-              <div className="bg-purple-96 mb-8 box-border rounded-[90px] p-4">
-                <Icon icon="copy" className="text-purple-65 size-16" />
-              </div>
-              <h1 className="text-l font-semibold">
-                {t('scenarios:clone_rule.title')}
-              </h1>
-              <p className="text-center">{t('scenarios:clone_rule.content')}</p>
+        <div className="flex flex-col gap-6 p-6">
+          <div className="flex flex-1 flex-col items-center justify-center gap-2">
+            <div className="bg-purple-96 mb-8 box-border rounded-[90px] p-4">
+              <Icon icon="copy" className="text-purple-65 size-16" />
             </div>
-            <div className="flex flex-1 flex-row gap-2">
-              <ModalV2.Close
-                render={<Button className="flex-1" variant="secondary" />}
-              >
-                {t('common:cancel')}
-              </ModalV2.Close>
-              <Button
-                className="flex-1"
-                variant="primary"
-                type="submit"
-                name="confirm"
-              >
-                <Icon icon="copy" className="size-6" />
-                {t('scenarios:clone_rule.confirmation_button')}
-              </Button>
-            </div>
+            <h1 className="text-l font-semibold">
+              {t('scenarios:clone_rule.title')}
+            </h1>
+            <p className="text-center">{t('scenarios:clone_rule.content')}</p>
           </div>
-        </fetcher.Form>
+          <div className="flex flex-1 flex-row gap-2">
+            <ModalV2.Close
+              render={<Button className="flex-1" variant="secondary" />}
+            >
+              {t('common:cancel')}
+            </ModalV2.Close>
+            <Button
+              className="flex-1"
+              variant="primary"
+              type="button"
+              onClick={() => {
+                const data = new FormData();
+                data.append('ruleId', ruleId);
+
+                fetcher.submit(data, {
+                  method: 'POST',
+                  action: getRoute(
+                    `/ressources/scenarios/:scenarioId/:iterationId/rules/duplicate`,
+                    {
+                      scenarioId: fromUUID(scenarioId),
+                      iterationId: fromUUID(iterationId),
+                    },
+                  ),
+                });
+              }}
+            >
+              <Icon icon="copy" className="size-6" />
+              {t('scenarios:clone_rule.confirmation_button')}
+            </Button>
+          </div>
+        </div>
       </ModalV2.Content>
     </ModalV2.Root>
   );
