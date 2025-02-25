@@ -317,6 +317,7 @@ export default function SanctionDetail() {
                     <input
                       type="text"
                       name={field.name}
+                      disabled={editor === 'view'}
                       value={field.state.value}
                       onChange={(e) =>
                         field.handleChange(e.currentTarget.value)
@@ -375,6 +376,7 @@ export default function SanctionDetail() {
                       <textarea
                         name={field.name}
                         value={field.state.value}
+                        disabled={editor === 'view'}
                         onChange={(e) =>
                           field.handleChange(e.currentTarget.value)
                         }
@@ -394,6 +396,7 @@ export default function SanctionDetail() {
                   {(field) => (
                     <div className="flex flex-col gap-2">
                       <FieldRuleGroup
+                        disabled={editor === 'view'}
                         onChange={field.handleChange}
                         onBlur={field.handleBlur}
                         selectedRuleGroup={field.state.value}
