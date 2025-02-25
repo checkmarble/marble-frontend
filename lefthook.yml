@@ -1,0 +1,18 @@
+# EXAMPLE USAGE:
+#
+#   Refer for explanation to following link:
+#   https://lefthook.dev/configuration/
+#
+pre-push:
+  jobs:
+    - run: pnpm run -r type-check
+
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      run: pnpm run -r lint --fix
+      stage_fixed: true
+    format:
+      run: pnpm run format:write
+      stage_fixed: true
