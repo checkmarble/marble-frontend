@@ -23,7 +23,7 @@ import { OrganizationUsersContextProvider } from '@app-builder/services/organiza
 import { useSegmentIdentification } from '@app-builder/services/segment';
 import { forbidden } from '@app-builder/utils/http/http-responses';
 import { getRoute } from '@app-builder/utils/routes';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -33,7 +33,7 @@ import { Icon } from 'ui-icons';
 import { getSettings } from './settings+/_layout';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, versionRepository } = serverServices;
   const { user, organization, entitlements } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
@@ -51,7 +51,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const firstSettings = getSettings(user)[0];
 
-  return json({
+  return {
     user,
     orgUsers,
     organization: organizationDetail,
@@ -64,7 +64,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
         ...(firstSettings !== undefined && { to: firstSettings.to }),
       },
     },
-  });
+    versions: await versionRepository.getBackendVersion(),
+  };
 }
 
 export const handle = {
@@ -72,7 +73,7 @@ export const handle = {
 };
 
 export default function Builder() {
-  const { user, orgUsers, organization, orgTags, featuresAccess } =
+  const { user, orgUsers, organization, orgTags, featuresAccess, versions } =
     useLoaderData<typeof loader>();
   useSegmentIdentification(user);
   const { t } = useTranslation(handle.i18n);
@@ -211,6 +212,7 @@ export default function Builder() {
                           )}
                         />
                       }
+                      versions={versions}
                     />
                   </li>
                   <li>

@@ -251,6 +251,10 @@ paths:
   /scenario-testruns/{test_run_id}/data_by_rule_execution:
     $ref: ./marblecore-api/scenario-testrun.yml#/~1scenario-testruns~1{test_run_id}~1data_by_rule_execution
 
+  # VERSION
+  /version:
+    $ref: ./marblecore-api/version.yml#/~1version
+
 components:
   securitySchemes:
     $ref: marblecore-api/_common.yml#/securitySchemes

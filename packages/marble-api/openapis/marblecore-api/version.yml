@@ -1,0 +1,20 @@
+/version:
+  get:
+    summary: Retrieves the backend version
+    operationId: getBackendVersion
+    responses:
+      '200':
+        description: The version of the backend
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionDto'
+components:
+  schemas:
+    VersionDto:
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          type: string

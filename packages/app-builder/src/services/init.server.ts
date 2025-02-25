@@ -28,6 +28,9 @@ function makeServerServices(repositories: ServerRepositories) {
     authSessionService,
     csrfService,
     toastSessionService,
+    versionRepository: repositories.getVersionRepository(
+      repositories.marbleCoreApiClient,
+    ),
     licenseService: repositories.getLicenseRepository(
       repositories.getLicenseApiClientWithoutAuth(),
     ),
@@ -45,9 +48,10 @@ function initServerServices() {
 
   const devEnvironment = getServerEnv('FIREBASE_CONFIG').withEmulator;
 
-  const { getMarbleCoreAPIClientWithAuth } = initializeMarbleCoreAPIClient({
-    baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
-  });
+  const { getMarbleCoreAPIClientWithAuth, marbleCoreApiClient } =
+    initializeMarbleCoreAPIClient({
+      baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
+    });
 
   const { getTransfercheckAPIClientWithAuth } =
     initializeTransfercheckAPIClient({
@@ -63,6 +67,7 @@ function initServerServices() {
     devEnvironment,
     getLicenseApiClientWithoutAuth: () => licenseApi,
     getLicenseAPIClientWithAuth,
+    marbleCoreApiClient,
     getMarbleCoreAPIClientWithAuth,
     getTransfercheckAPIClientWithAuth,
     sessionStorageRepositoryOptions: {
