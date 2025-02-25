@@ -257,6 +257,7 @@ export default function RuleDetail() {
                     <input
                       type="text"
                       name={field.name}
+                      disabled={editor === 'view'}
                       value={field.state.value}
                       onChange={(e) =>
                         field.handleChange(e.currentTarget.value)
@@ -326,6 +327,7 @@ export default function RuleDetail() {
                     >
                       <textarea
                         name={field.name}
+                        disabled={editor === 'view'}
                         value={field.state.value}
                         onChange={(e) =>
                           field.handleChange(e.currentTarget.value)
@@ -346,6 +348,7 @@ export default function RuleDetail() {
                   {(field) => (
                     <div className="flex flex-col gap-2">
                       <FieldRuleGroup
+                        disabled={editor === 'view'}
                         onChange={field.handleChange}
                         onBlur={field.handleBlur}
                         selectedRuleGroup={field.state.value}
@@ -387,7 +390,8 @@ export default function RuleDetail() {
                       {(field) => (
                         <div className="flex flex-col gap-1">
                           <FormInput
-                            type="text"
+                            type="number"
+                            disabled={editor === 'view'}
                             name={field.name}
                             value={field.state.value}
                             onChange={(e) =>
