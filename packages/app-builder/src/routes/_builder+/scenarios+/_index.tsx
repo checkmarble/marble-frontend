@@ -37,9 +37,7 @@ export default function ScenariosPage() {
         <BreadCrumbs />
       </Page.Header>
       <Page.Container>
-        <Page.Description>
-          {t('scenarios:scenarios.description')}
-        </Page.Description>
+        <Page.Description>{t('scenarios:scenarios.description')}</Page.Description>
         <Page.Content className="max-w-3xl">
           <div className="flex flex-col gap-4">
             <div className="flex flex-row justify-end">
@@ -70,9 +68,7 @@ export default function ScenariosPage() {
                           ) : null}
                         </div>
                         {scenario.description ? (
-                          <p className="text-s line-clamp-2 font-medium">
-                            {scenario.description}
-                          </p>
+                          <p className="text-s line-clamp-2 font-medium">{scenario.description}</p>
                         ) : null}
                       </div>
                     </Link>
@@ -80,9 +76,7 @@ export default function ScenariosPage() {
                 })
               ) : (
                 <div className="bg-grey-100 border-grey-90 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
-                  <p className="text-s font-medium">
-                    {t('scenarios:empty_scenario_list')}
-                  </p>
+                  <p className="text-s font-medium">{t('scenarios:empty_scenario_list')}</p>
                 </div>
               )}
             </div>

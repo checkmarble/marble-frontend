@@ -14,16 +14,10 @@ import {
 
 export interface TransferAlertRepository {
   createAlert(args: TransferAlertCreateBody): Promise<TransferAlertSender>;
-  listSentAlerts(args?: {
-    transferId?: string;
-  }): Promise<TransferAlertSender[]>;
-  listReceivedAlerts(args?: {
-    transferId?: string;
-  }): Promise<TransferAlertBeneficiary[]>;
+  listSentAlerts(args?: { transferId?: string }): Promise<TransferAlertSender[]>;
+  listReceivedAlerts(args?: { transferId?: string }): Promise<TransferAlertBeneficiary[]>;
   getSentAlert(args: { alertId: string }): Promise<TransferAlertSender>;
-  getReceivedAlert(args: {
-    alertId: string;
-  }): Promise<TransferAlertBeneficiary>;
+  getReceivedAlert(args: { alertId: string }): Promise<TransferAlertBeneficiary>;
   updateSentAlert(
     updateTransferAlert: TransferAlertUpdateAsSenderBody,
   ): Promise<TransferAlertSender>;

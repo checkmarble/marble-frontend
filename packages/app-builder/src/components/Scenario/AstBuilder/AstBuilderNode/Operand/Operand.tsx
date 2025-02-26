@@ -1,8 +1,4 @@
-import {
-  type AstNode,
-  type ConstantType,
-  type DataType,
-} from '@app-builder/models';
+import { type AstNode, type ConstantType, type DataType } from '@app-builder/models';
 import { isKnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { type ConstantAstNode } from '@app-builder/models/astNode/constant';
 import { type OperandType } from '@app-builder/models/operand-type';
@@ -48,11 +44,7 @@ export function Operand({
   }[];
 }) {
   if (!isKnownOperandAstNode(astNode)) {
-    return (
-      <div className={defaultClassnames({ validationStatus })}>
-        {displayName}
-      </div>
-    );
+    return <div className={defaultClassnames({ validationStatus })}>{displayName}</div>;
   }
 
   if (viewOnly || !onSave) {

@@ -33,8 +33,7 @@ const logicalOperatorClassnames = cva(
 
 export type LogicalOperatorType = 'if' | 'and' | 'or' | 'where';
 
-interface LogicalOperatorLabelProps
-  extends VariantProps<typeof logicalOperatorClassnames> {
+interface LogicalOperatorLabelProps extends VariantProps<typeof logicalOperatorClassnames> {
   operator: LogicalOperatorType;
   className?: string;
 }

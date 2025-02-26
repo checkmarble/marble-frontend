@@ -6,9 +6,7 @@ import { Calendar, type CalendarProps } from './Calendar';
 
 const Demo = ({ mode, ...args }: CalendarProps) => {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
-  const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
-    undefined,
-  );
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>(undefined);
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -19,18 +17,13 @@ const Demo = ({ mode, ...args }: CalendarProps) => {
       />
 
       {mode === 'single' ? (
-        <p className="text-m">
-          Selected Date: {date ? date.toDateString() : 'None'}
-        </p>
+        <p className="text-m">Selected Date: {date ? date.toDateString() : 'None'}</p>
       ) : null}
       {mode === 'range' ? (
         <p className="text-m">
           Selected Range:{' '}
           {dateRange
-            ? [
-                dateRange.from?.toDateString(),
-                dateRange.to?.toDateString() ?? '?',
-              ].join(' - ')
+            ? [dateRange.from?.toDateString(), dateRange.to?.toDateString() ?? '?'].join(' - ')
             : 'None'}
         </p>
       ) : null}

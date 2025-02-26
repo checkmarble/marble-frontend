@@ -16,12 +16,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const { authService } = serverServices;
   const iterationId = fromParams(params, 'iterationId');
   const scenarioId = fromParams(params, 'scenarioId');
-  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const data = await request.formData();
 
@@ -60,15 +57,11 @@ export function DeleteRule({
             <div className="bg-red-95 mb-6 box-border rounded-[90px] p-4">
               <Icon icon="delete" className="text-red-47 size-16" />
             </div>
-            <h1 className="text-l font-semibold">
-              {t('scenarios:delete_rule.title')}
-            </h1>
+            <h1 className="text-l font-semibold">{t('scenarios:delete_rule.title')}</h1>
             <p className="text-center">{t('scenarios:delete_rule.content')}</p>
           </div>
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
             <Button
@@ -82,13 +75,10 @@ export function DeleteRule({
 
                 fetcher.submit(data, {
                   method: 'DELETE',
-                  action: getRoute(
-                    `/ressources/scenarios/:scenarioId/:iterationId/rules/delete`,
-                    {
-                      scenarioId: fromUUID(scenarioId),
-                      iterationId: fromUUID(iterationId),
-                    },
-                  ),
+                  action: getRoute(`/ressources/scenarios/:scenarioId/:iterationId/rules/delete`, {
+                    scenarioId: fromUUID(scenarioId),
+                    iterationId: fromUUID(iterationId),
+                  }),
                 });
               }}
             >

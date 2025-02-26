@@ -2,25 +2,19 @@ import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
 import { z } from 'zod';
 
-const baseConstantTypeSchema = z.union([
-  z.number(),
-  z.string(),
-  z.boolean(),
-  z.null(),
-]);
+const baseConstantTypeSchema = z.union([z.number(), z.string(), z.boolean(), z.null()]);
 
 export type ConstantType =
   | z.infer<typeof baseConstantTypeSchema>
   | Array<ConstantType>
   | { [key: string]: ConstantType };
 
-export const constantTypeSchema: z.ZodType<ConstantType> =
-  baseConstantTypeSchema.or(
-    z.union([
-      z.lazy(() => z.array(constantTypeSchema)),
-      z.lazy(() => z.record(z.string(), constantTypeSchema)),
-    ]),
-  );
+export const constantTypeSchema: z.ZodType<ConstantType> = baseConstantTypeSchema.or(
+  z.union([
+    z.lazy(() => z.array(constantTypeSchema)),
+    z.lazy(() => z.record(z.string(), constantTypeSchema)),
+  ]),
+);
 
 const baseAstNodeSchema = z.object({
   name: z.string().nullish(),

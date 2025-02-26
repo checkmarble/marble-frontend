@@ -4,11 +4,5 @@
     "types": ["vitest/globals"],
     "jsx": "react-jsx"
   },
-  "include": [
-    "**/*.js",
-    "**/*.jsx",
-    "**/*.ts",
-    "**/*.tsx",
-    ".storybook/**/*.ts"
-  ]
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", ".storybook/**/*.ts"]
 }

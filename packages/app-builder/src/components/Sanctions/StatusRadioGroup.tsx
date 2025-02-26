@@ -22,11 +22,7 @@ export function StatusRadioGroup({ value, onChange }: StatusRadioGroupProps) {
         >
           <StatusTag disabled status="confirmed_hit" />
         </RadioItem>
-        <RadioItem
-          value="no_hit"
-          checked={value === 'no_hit'}
-          onCheck={() => onChange('no_hit')}
-        >
+        <RadioItem value="no_hit" checked={value === 'no_hit'} onCheck={() => onChange('no_hit')}>
           <StatusTag disabled status="no_hit" />
         </RadioItem>
       </RadioGroup>
@@ -53,17 +49,8 @@ const radio = cva('transition-colors flex items-center gap-2 rounded', {
 function RadioItem({ value, children, checked, onCheck }: RadioItemProps) {
   return (
     <label className={clsx(radio({ checked }), '')}>
-      <Radio
-        name="status"
-        className="hidden"
-        value={value}
-        checked={checked}
-        onChange={onCheck}
-      />
-      <Icon
-        icon={checked ? 'radio-selected' : 'radio-unselected'}
-        className="size-6"
-      />
+      <Radio name="status" className="hidden" value={value} checked={checked} onChange={onCheck} />
+      <Icon icon={checked ? 'radio-selected' : 'radio-unselected'} className="size-6" />
       {children}
     </label>
   );

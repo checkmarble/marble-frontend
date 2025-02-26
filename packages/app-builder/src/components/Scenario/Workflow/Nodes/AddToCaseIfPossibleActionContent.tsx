@@ -5,11 +5,7 @@ import { type AddToCaseIfPossibleAction } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
 import { useWorkflowData } from '../WorkflowProvider';
 
-export function AddToCaseIfPossibleActionContent({
-  data,
-}: {
-  data: AddToCaseIfPossibleAction;
-}) {
+export function AddToCaseIfPossibleActionContent({ data }: { data: AddToCaseIfPossibleAction }) {
   const { t } = useTranslation(workflowI18n);
   const { inboxes } = useWorkflowData();
   const selectedInbox = React.useMemo(() => {

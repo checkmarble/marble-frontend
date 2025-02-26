@@ -98,10 +98,7 @@ export function DeactivateScenarioVersion({
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <DeactivateScenarioVersionContent
-          scenarioId={scenarioId}
-          iterationId={iterationId}
-        />
+        <DeactivateScenarioVersionContent scenarioId={scenarioId} iterationId={iterationId} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -135,33 +132,24 @@ function DeactivateScenarioVersionContent({
   return (
     <FormProvider context={form.context}>
       <fetcher.Form
-        action={getRoute(
-          '/ressources/scenarios/:scenarioId/:iterationId/deactivate',
-          {
-            scenarioId: fromUUID(scenarioId),
-            iterationId: fromUUID(iterationId),
-          },
-        )}
+        action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/deactivate', {
+          scenarioId: fromUUID(scenarioId),
+          iterationId: fromUUID(iterationId),
+        })}
         method="POST"
         {...getFormProps(form)}
       >
-        <Modal.Title>
-          {t('scenarios:deployment_modal.deactivate.title')}
-        </Modal.Title>
+        <Modal.Title>{t('scenarios:deployment_modal.deactivate.title')}</Modal.Title>
         <div className="flex flex-col gap-6 p-6">
           <AuthenticityTokenInput />
           <div className="text-s flex flex-col gap-4 font-medium">
-            <p className="font-semibold">
-              {t('scenarios:deployment_modal.deactivate.confirm')}
-            </p>
+            <p className="font-semibold">{t('scenarios:deployment_modal.deactivate.confirm')}</p>
             <FormField
               name={fields.stopOperating.name}
               className="group flex flex-row items-center gap-2"
             >
               <FormCheckbox />
-              <FormLabel>
-                {t('scenarios:deployment_modal.deactivate.stop_operating')}
-              </FormLabel>
+              <FormLabel>{t('scenarios:deployment_modal.deactivate.stop_operating')}</FormLabel>
             </FormField>
             <FormField
               name={fields.changeIsImmediate.name}
@@ -182,12 +170,7 @@ function DeactivateScenarioVersionContent({
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              color="red"
-            >
+            <Button className="flex-1" variant="primary" type="submit" color="red">
               <Icon icon="stop" className="size-6" />
               {t('scenarios:deployment_modal.deactivate.button')}
             </Button>

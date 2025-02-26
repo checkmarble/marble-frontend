@@ -19,21 +19,13 @@ import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/f
 import { FiltersButton } from '@app-builder/components/Filters';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { type Decision } from '@app-builder/models/decision';
-import {
-  type PaginatedResponse,
-  type PaginationParams,
-} from '@app-builder/models/pagination';
+import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import {
-  Form,
-  useLoaderData,
-  useNavigate,
-  useRouteError,
-} from '@remix-run/react';
+import { Form, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
@@ -47,10 +39,7 @@ export const handle = {
   i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
 };
 
-export const buildQueryParams = (
-  filters: DecisionFilters,
-  offsetId: string | null,
-) => {
+export const buildQueryParams = (filters: DecisionFilters, offsetId: string | null) => {
   return {
     outcomeAndReviewStatus: filters.outcomeAndReviewStatus ?? [],
     triggerObject: filters.triggerObject ?? [],
@@ -77,15 +66,14 @@ export const buildQueryParams = (
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { decision, scenario, dataModelRepository, inbox } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
-
-  const parsedFilterQuery = await parseQuerySafe(
+  const { decision, scenario, dataModelRepository, inbox } = await authService.isAuthenticated(
     request,
-    decisionFiltersSchema,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
   );
+
+  const parsedFilterQuery = await parseQuerySafe(request, decisionFiltersSchema);
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
 
   if (!parsedFilterQuery.success || !parsedPaginationQuery.success) {
@@ -95,9 +83,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { outcomeAndReviewStatus, ...filters } = parsedFilterQuery.data;
   const [decisionsData, scenarios, pivots, inboxes] = await Promise.all([
     decision.listDecisions({
-      outcome: outcomeAndReviewStatus?.outcome
-        ? [outcomeAndReviewStatus.outcome]
-        : [],
+      outcome: outcomeAndReviewStatus?.outcome ? [outcomeAndReviewStatus.outcome] : [],
       reviewStatus: outcomeAndReviewStatus?.reviewStatus
         ? [outcomeAndReviewStatus.reviewStatus]
         : [],
@@ -166,8 +152,7 @@ export default function Decisions() {
     [navigate, next, previous, reset],
   );
 
-  const { hasSelection, getSelectedDecisions, selectionProps } =
-    useSelectedDecisionIds();
+  const { hasSelection, getSelectedDecisions, selectionProps } = useSelectedDecisionIds();
 
   return (
     <DecisionRightPanel.Root>

@@ -24,10 +24,7 @@ export const TestRunSelector = ({
   iterations,
 }: TestRun & {
   users: Record<string, Pick<User, 'firstName' | 'lastName'>>;
-  iterations: Record<
-    string,
-    Pick<ScenarioIterationWithType, 'version' | 'type'>
-  >;
+  iterations: Record<string, Pick<ScenarioIterationWithType, 'version' | 'type'>>;
 }) => {
   const currentScenario = useCurrentScenario();
 
@@ -56,10 +53,7 @@ export const TestRunSelector = ({
         <TestRunPeriod startDate={startDate} endDate={endDate} />
       </div>
       <div className="flex flex-row items-center justify-center">
-        <Avatar
-          firstName={users[creatorId]?.firstName}
-          lastName={users[creatorId]?.lastName}
-        />
+        <Avatar firstName={users[creatorId]?.firstName} lastName={users[creatorId]?.lastName} />
       </div>
       <div className="px-4">
         <TestRunStatus status={status} />

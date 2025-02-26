@@ -7,11 +7,7 @@ import {
 } from 'marble-api/generated/transfercheck-api';
 import { z } from 'zod';
 
-export const transferAlerStatuses = [
-  'pending',
-  'acknowledged',
-  'archived',
-] as const;
+export const transferAlerStatuses = ['pending', 'acknowledged', 'archived'] as const;
 export const transferAlerStatusesWithoutArchived = transferAlerStatuses.filter(
   (status) => status !== 'archived',
 );
@@ -29,9 +25,7 @@ export interface TransferAlertSender {
   senderIban: string;
 }
 
-export function adaptTransferAlertSender(
-  dto: TransferAlertSenderDto,
-): TransferAlertSender {
+export function adaptTransferAlertSender(dto: TransferAlertSenderDto): TransferAlertSender {
   return {
     id: dto.id,
     transferId: dto.transfer_id,
@@ -127,14 +121,8 @@ export const messageSchema = z
   .string({ required_error: 'required' })
   .max(1000, { message: 'max 1000 characters' });
 
-export const transferEndToEndIdSchema = z
-  .string()
-  .max(100, { message: 'max 100 characters' });
+export const transferEndToEndIdSchema = z.string().max(100, { message: 'max 100 characters' });
 
-export const senderIbanSchema = z
-  .string()
-  .max(34, { message: 'max 34 characters' });
+export const senderIbanSchema = z.string().max(34, { message: 'max 34 characters' });
 
-export const beneficiaryIbanSchema = z
-  .string()
-  .max(34, { message: 'max 34 characters' });
+export const beneficiaryIbanSchema = z.string().max(34, { message: 'max 34 characters' });

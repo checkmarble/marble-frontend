@@ -45,11 +45,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 }
 
-export function useGetRuleSnoozeFetcher({
-  ruleSnoozeId,
-}: {
-  ruleSnoozeId: string;
-}) {
+export function useGetRuleSnoozeFetcher({ ruleSnoozeId }: { ruleSnoozeId: string }) {
   const loadFetcher = useFetcher<typeof loader>();
   React.useEffect(() => {
     if (loadFetcher.state === 'idle' && !loadFetcher.data) {

@@ -1,7 +1,4 @@
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { getRoute } from '@app-builder/utils/routes';
 import { Outlet } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';

@@ -12,11 +12,7 @@ export function TriggerObjectTag({ children }: TriggerObjectTagProps) {
     <div className="text-s bg-purple-98 text-purple-65 flex h-10 items-center gap-2 rounded p-2 font-normal">
       {children}
 
-      <Ariakit.HovercardProvider
-        showTimeout={0}
-        hideTimeout={0}
-        placement="bottom"
-      >
+      <Ariakit.HovercardProvider showTimeout={0} hideTimeout={0} placement="bottom">
         <Ariakit.HovercardAnchor
           tabIndex={-1}
           className="hover:text-purple-65 text-purple-82 cursor-pointer transition-colors"

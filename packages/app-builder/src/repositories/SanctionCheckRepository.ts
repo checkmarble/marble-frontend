@@ -36,23 +36,16 @@ export interface SanctionCheckRepository {
     entityType: SanctionCheckEntitySchema;
     fields: Record<string, string>;
   }): Promise<SanctionCheck>;
-  listSanctionCheckFiles(args: {
-    sanctionCheckId: string;
-  }): Promise<SanctionCheckFile[]>;
+  listSanctionCheckFiles(args: { sanctionCheckId: string }): Promise<SanctionCheckFile[]>;
 }
 
 export function makeGetSanctionCheckRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): SanctionCheckRepository => ({
     listDatasets: async () => {
-      return adaptOpenSanctionsCatalog(
-        await marbleCoreApiClient.listOpenSanctionDatasets(),
-      );
+      return adaptOpenSanctionsCatalog(await marbleCoreApiClient.listOpenSanctionDatasets());
     },
     listSanctionChecks: async ({ decisionId }) => {
-      return R.map(
-        await marbleCoreApiClient.listSanctionChecks(decisionId),
-        adaptSanctionCheck,
-      );
+      return R.map(await marbleCoreApiClient.listSanctionChecks(decisionId), adaptSanctionCheck);
     },
     updateMatchStatus: async ({ matchId, status, comment, whitelist }) => {
       return adaptSanctionCheckMatch(
@@ -82,9 +75,7 @@ export function makeGetSanctionCheckRepository() {
           [entityType]: fields,
         },
       };
-      return adaptSanctionCheck(
-        await marbleCoreApiClient.refineSanctionCheck(dto),
-      );
+      return adaptSanctionCheck(await marbleCoreApiClient.refineSanctionCheck(dto));
     },
     listSanctionCheckFiles: async ({ sanctionCheckId }) => {
       return R.map(

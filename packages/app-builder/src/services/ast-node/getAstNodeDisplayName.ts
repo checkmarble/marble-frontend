@@ -1,18 +1,9 @@
 import { type AstNode, isUndefinedAstNode } from '@app-builder/models';
-import {
-  type AggregationAstNode,
-  isAggregation,
-} from '@app-builder/models/astNode/aggregation';
+import { type AggregationAstNode, isAggregation } from '@app-builder/models/astNode/aggregation';
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
-import {
-  isDatabaseAccess,
-  isPayload,
-} from '@app-builder/models/astNode/data-accessor';
-import {
-  isIsMultipleOf,
-  type IsMultipleOfAstNode,
-} from '@app-builder/models/astNode/multiple-of';
+import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
+import { isIsMultipleOf, type IsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
 import {
   type FuzzyMatchComparatorAstNode,
   isFuzzyMatchComparator,
@@ -111,9 +102,7 @@ export function getAstNodeDisplayName(
 
   const namedChildrenArgs = R.pipe(
     R.entries(astNode.namedChildren),
-    R.map(
-      ([name, child]) => `${name}: ${getAstNodeDisplayName(child, context)}`,
-    ),
+    R.map(([name, child]) => `${name}: ${getAstNodeDisplayName(child, context)}`),
     R.join(', '),
   );
 
@@ -144,39 +133,22 @@ function getTimeAddDisplayName(
   return `${timestamp} ${sign} ${temporalDurationToString(temporalDuration)}`;
 }
 // TODO (i18n): translate & pluralize / or use Intl.DurationFormat polyfill: https://formatjs.io/docs/polyfills/intl-durationformat/
-const temporalDurationToString = (
-  temporalDuration: Temporal.Duration,
-): string => {
+const temporalDurationToString = (temporalDuration: Temporal.Duration): string => {
   let durationString = '';
   if (temporalDuration.days !== 0) {
-    durationString += `${pluralizeTemporalDurationUnit(
-      temporalDuration.days,
-      'day',
-    )}`;
+    durationString += `${pluralizeTemporalDurationUnit(temporalDuration.days, 'day')}`;
   }
   if (temporalDuration.hours !== 0) {
-    durationString += `${pluralizeTemporalDurationUnit(
-      temporalDuration.hours,
-      'hour',
-    )}`;
+    durationString += `${pluralizeTemporalDurationUnit(temporalDuration.hours, 'hour')}`;
   }
   if (temporalDuration.minutes !== 0) {
-    durationString += `${pluralizeTemporalDurationUnit(
-      temporalDuration.minutes,
-      'minute',
-    )}`;
+    durationString += `${pluralizeTemporalDurationUnit(temporalDuration.minutes, 'minute')}`;
   }
   if (temporalDuration.seconds !== 0) {
-    durationString += `${pluralizeTemporalDurationUnit(
-      temporalDuration.seconds,
-      'second',
-    )}`;
+    durationString += `${pluralizeTemporalDurationUnit(temporalDuration.seconds, 'second')}`;
   }
   if (durationString === '') {
-    durationString += `${pluralizeTemporalDurationUnit(
-      temporalDuration.seconds,
-      'second',
-    )}`;
+    durationString += `${pluralizeTemporalDurationUnit(temporalDuration.seconds, 'second')}`;
   }
   return durationString;
 };

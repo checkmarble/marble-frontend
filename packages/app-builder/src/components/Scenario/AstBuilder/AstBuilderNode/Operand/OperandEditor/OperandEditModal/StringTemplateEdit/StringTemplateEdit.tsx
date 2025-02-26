@@ -72,11 +72,7 @@ export const StringTemplateEdit = ({
         </Callout>
         <StringTemplateEditForm {...state} errors={initialErrors} />
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close
-            render={
-              <Button className="flex-1" variant="secondary" name="cancel" />
-            }
-          >
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
             {t('common:cancel')}
           </ModalV2.Close>
           <Button

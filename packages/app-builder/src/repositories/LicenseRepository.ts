@@ -1,8 +1,5 @@
 import { type LicenseApi } from '@app-builder/infra/license-api';
-import {
-  adaptLicenseEntitlements,
-  type LicenseEntitlements,
-} from '@app-builder/models/license';
+import { adaptLicenseEntitlements, type LicenseEntitlements } from '@app-builder/models/license';
 
 export interface LicenseRepository {
   getEntitlements(organizationId?: string): Promise<LicenseEntitlements>;
@@ -15,9 +12,7 @@ export const makeGetLicenseRepository =
     getEntitlements: async (organizationId) => {
       const accesses: LicenseEntitlements =
         !isDev && organizationId
-          ? adaptLicenseEntitlements(
-              (await client.getEntitlements(organizationId)).feature_access,
-            )
+          ? adaptLicenseEntitlements((await client.getEntitlements(organizationId)).feature_access)
           : {
               sanctions: 'allowed',
               ruleSnoozes: 'allowed',

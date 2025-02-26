@@ -7,11 +7,7 @@ import {
 import { serverServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  json,
-  type LinksFunction,
-  type LoaderFunctionArgs,
-} from '@remix-run/node';
+import { json, type LinksFunction, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import * as React from 'react';

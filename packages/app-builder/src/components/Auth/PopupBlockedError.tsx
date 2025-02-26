@@ -20,19 +20,14 @@ export function PopupBlockedError() {
 
 const hrefMap = {
   Safari: 'https://support.apple.com/guide/safari/sfri40696/mac',
-  Firefox:
-    'https://support.mozilla.org/en-US/kb/pop-blocker-settings-exceptions-troubleshooting',
+  Firefox: 'https://support.mozilla.org/en-US/kb/pop-blocker-settings-exceptions-troubleshooting',
   Chrome: 'https://support.google.com/chrome/answer/95472',
 };
 
 function EnablePopup({ children }: { children?: React.ReactNode }) {
   const browser = getCurrentBrowser(navigator.userAgent);
   if (browser in hrefMap) {
-    return (
-      <ExternalLink href={hrefMap[browser as keyof typeof hrefMap]}>
-        {children}
-      </ExternalLink>
-    );
+    return <ExternalLink href={hrefMap[browser as keyof typeof hrefMap]}>{children}</ExternalLink>;
   }
   return <span>{children}</span>;
 }

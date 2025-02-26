@@ -16,10 +16,7 @@ import {
 import { useFormatReturnValue } from '@app-builder/services/editor/return-value';
 import * as React from 'react';
 
-import {
-  MainAstBinaryOperatorLine,
-  MainAstUnaryOperatorLine,
-} from './MainAstLine';
+import { MainAstBinaryOperatorLine, MainAstUnaryOperatorLine } from './MainAstLine';
 import { Operand } from './Operand';
 
 interface AstBuilderNodeProps {
@@ -61,12 +58,7 @@ export function AstBuilderNode({
   }
 
   return (
-    <OperandBuilderNode
-      treePath={treePath}
-      astNode={astNode}
-      viewOnly={viewOnly}
-      onSave={onSave}
-    />
+    <OperandBuilderNode treePath={treePath} astNode={astNode} viewOnly={viewOnly} onSave={onSave} />
   );
 }
 
@@ -96,10 +88,7 @@ export function OperandBuilderNode({
   const returnValue = React.useMemo(() => {
     return formatReturnValue(evaluation?.returnValue);
   }, [evaluation?.returnValue, formatReturnValue]);
-  const validationStatus = useValidationStatus(
-    treePath,
-    evaluation?.returnValue,
-  );
+  const validationStatus = useValidationStatus(treePath, evaluation?.returnValue);
 
   return (
     <Operand

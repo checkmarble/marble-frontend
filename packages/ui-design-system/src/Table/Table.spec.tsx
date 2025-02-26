@@ -1,9 +1,5 @@
 import { faker } from '@faker-js/faker';
-import {
-  type ColumnDef,
-  getCoreRowModel,
-  getSortedRowModel,
-} from '@tanstack/react-table';
+import { type ColumnDef, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
@@ -13,11 +9,7 @@ import { Table, useTable } from './Table';
 
 mockResizeObserver();
 
-function TestTable({
-  data,
-}: {
-  data: { name: string; description: string }[];
-}) {
+function TestTable({ data }: { data: { name: string; description: string }[] }) {
   const columns = useMemo<
     ColumnDef<{
       name: string;
@@ -94,18 +86,14 @@ describe('Table', () => {
     // First: Ascending order
     await userEvent.click(nameHeader);
 
-    const ascendingData = [...data].sort((lhs, rhs) =>
-      lhs.name.localeCompare(rhs.name),
-    );
+    const ascendingData = [...data].sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
 
     checkTableSort(ascendingData);
 
     // Second: Descending order
     await userEvent.click(nameHeader);
 
-    const descendingData = [...data].sort((lhs, rhs) =>
-      rhs.name.localeCompare(lhs.name),
-    );
+    const descendingData = [...data].sort((lhs, rhs) => rhs.name.localeCompare(lhs.name));
 
     checkTableSort(descendingData);
 

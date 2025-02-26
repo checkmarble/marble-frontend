@@ -59,11 +59,7 @@ export function HelpCenter({
   const deferredSearchValue = React.useDeferredValue(searchValue);
 
   return (
-    <MenuRoot
-      searchValue={searchValue}
-      onSearch={setSearchValue}
-      rtl={i18n.dir() === 'rtl'}
-    >
+    <MenuRoot searchValue={searchValue} onSearch={setSearchValue} rtl={i18n.dir() === 'rtl'}>
       <MenuButton render={renderMenuButton} />
       <MenuPopover
         className="flex h-[600px] max-h-[var(--popover-available-height)] w-[400px] max-w-[var(--popover-available-width)] flex-col"
@@ -122,10 +118,7 @@ function HelpCenterContent({
     const allMatches = matchSorter(flatResources, searchValue, {
       keys: ['label', 'tags'],
     });
-    const groups: Record<string, FlatResource[]> = R.groupBy(
-      allMatches,
-      R.prop('category'),
-    );
+    const groups: Record<string, FlatResource[]> = R.groupBy(allMatches, R.prop('category'));
     return groups;
   }, [flatResources, searchValue]);
 
@@ -142,19 +135,12 @@ function HelpCenterContent({
     >
       <MenuCombobox render={<Input className="mx-2 mt-2 shrink-0" />} />
 
-      <Ariakit.TabList
-        aria-label="Categories"
-        className="shrink-0 overflow-x-auto"
-      >
+      <Ariakit.TabList aria-label="Categories" className="shrink-0 overflow-x-auto">
         <div className="flex w-fit flex-row gap-2 p-2">
           {categories.map((category) => {
             const resourcesLength = matches[category]?.length ?? 0;
             return (
-              <CategoryTab
-                key={category}
-                id={category}
-                disabled={resourcesLength === 0}
-              >
+              <CategoryTab key={category} id={category} disabled={resourcesLength === 0}>
                 {category} {formatNumber(resourcesLength, { language })}
               </CategoryTab>
             );
@@ -162,10 +148,7 @@ function HelpCenterContent({
         </div>
       </Ariakit.TabList>
       <div className="border-grey-90 bg-grey-98 flex h-full flex-col overflow-hidden border-y">
-        <Ariakit.TabPanel
-          tabId={deferredTabId}
-          className="flex flex-col overflow-hidden"
-        >
+        <Ariakit.TabPanel tabId={deferredTabId} className="flex flex-col overflow-hidden">
           <MenuContent>
             <div className="flex flex-col gap-2 overflow-y-auto p-2">
               {!currentResources.length ? (
@@ -246,8 +229,7 @@ const CategoryTab = React.forwardRef<HTMLButtonElement, Ariakit.TabProps>(
     // Scroll to the selected tab on first render only
     React.useEffect(() => {
       if (!internalRef.current) return;
-      const isSelected =
-        internalRef.current.getAttribute('aria-selected') === 'true';
+      const isSelected = internalRef.current.getAttribute('aria-selected') === 'true';
       if (isSelected) internalRef.current.scrollIntoView();
     }, []);
 
@@ -267,17 +249,12 @@ export function useMarbleCoreResources() {
 
   const location = useLocation();
   const defaultTab = React.useMemo(() => {
-    if (location.pathname.startsWith(getRoute('/scenarios')))
-      return t('navigation:scenarios');
-    if (location.pathname.startsWith(getRoute('/lists')))
-      return t('navigation:lists');
+    if (location.pathname.startsWith(getRoute('/scenarios'))) return t('navigation:scenarios');
+    if (location.pathname.startsWith(getRoute('/lists'))) return t('navigation:lists');
     if (location.pathname.includes('/workflow')) return 'Workflows';
-    if (location.pathname.startsWith(getRoute('/data')))
-      return t('navigation:data');
-    if (location.pathname.startsWith(getRoute('/settings')))
-      return t('navigation:settings');
-    if (location.pathname.startsWith(getRoute('/cases/')))
-      return t('navigation:case_manager');
+    if (location.pathname.startsWith(getRoute('/data'))) return t('navigation:data');
+    if (location.pathname.startsWith(getRoute('/settings'))) return t('navigation:settings');
+    if (location.pathname.startsWith(getRoute('/cases/'))) return t('navigation:case_manager');
 
     return t('navigation:scenarios');
   }, [location.pathname, t]);
@@ -329,14 +306,7 @@ export function useMarbleCoreResources() {
         },
         {
           label: 'Scenario Lyfecycle',
-          tags: [
-            'Draft',
-            'Version',
-            'Live',
-            'Prepare',
-            'Activate',
-            'Deactivate',
-          ],
+          tags: ['Draft', 'Version', 'Live', 'Prepare', 'Activate', 'Deactivate'],
           href: 'https://docs.checkmarble.com/docs/versioning',
         },
       ],

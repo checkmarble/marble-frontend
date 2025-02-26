@@ -21,10 +21,7 @@ export class FormulaBuilderPage {
 
   @boxedStep
   async selectFirstEmptyOperand() {
-    await this.page
-      .getByRole('button', { name: 'Select an operand...' })
-      .first()
-      .click();
+    await this.page.getByRole('button', { name: 'Select an operand...' }).first().click();
   }
 
   @boxedStep
@@ -44,9 +41,7 @@ export class FormulaBuilderPage {
       .getByLabel('Fields')
       .getByText(parts.slice(0, -1).join('.'), { exact: true })
       .click();
-    await this.page
-      .getByRole('menuitem', { name: parts[parts.length - 1] })
-      .click();
+    await this.page.getByRole('menuitem', { name: parts[parts.length - 1] }).click();
   }
 
   @boxedStep
@@ -63,8 +58,6 @@ export class FormulaBuilderPage {
   @boxedStep
   async useStringConstant(constant: string) {
     await this.search(constant);
-    await this.page
-      .getByRole('option', { name: `"${constant}" Use string` })
-      .click();
+    await this.page.getByRole('option', { name: `"${constant}" Use string` }).click();
   }
 }

@@ -4,11 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
 import { FilterDetail } from './FilterDetail';
-import {
-  getFilterIcon,
-  getFilterTKey,
-  type TestRunFilterName,
-} from './filters';
+import { getFilterIcon, getFilterTKey, type TestRunFilterName } from './filters';
 import { useTestRunsFiltersContext } from './TestRunsFiltersContext';
 
 export function TestRunsFiltersMenu({
@@ -18,8 +14,7 @@ export function TestRunsFiltersMenu({
   children: React.ReactNode;
   filterNames: readonly TestRunFilterName[];
 }) {
-  const { onTestRunsFilterClose: onCasesFilterClose } =
-    useTestRunsFiltersContext();
+  const { onTestRunsFilterClose: onCasesFilterClose } = useTestRunsFiltersContext();
 
   const onOpenChange = useCallback(
     (open: boolean) => {
@@ -32,9 +27,7 @@ export function TestRunsFiltersMenu({
 
   return (
     <FiltersDropdownMenu.Root onOpenChange={onOpenChange}>
-      <FiltersDropdownMenu.Trigger asChild>
-        {children}
-      </FiltersDropdownMenu.Trigger>
+      <FiltersDropdownMenu.Trigger asChild>{children}</FiltersDropdownMenu.Trigger>
       <FiltersDropdownMenu.Content>
         <FilterContent filterNames={filterNames} />
       </FiltersDropdownMenu.Content>
@@ -55,19 +48,13 @@ const FiltersMenuItem = forwardRef<
   return (
     <FiltersDropdownMenu.Item {...props} ref={ref}>
       <Icon icon={icon} className="size-5" />
-      <span className="text-s text-grey-00 font-normal first-letter:capitalize">
-        {t(tKey)}
-      </span>
+      <span className="text-s text-grey-00 font-normal first-letter:capitalize">{t(tKey)}</span>
     </FiltersDropdownMenu.Item>
   );
 });
 FiltersMenuItem.displayName = 'FiltersMenuItem';
 
-function FilterContent({
-  filterNames,
-}: {
-  filterNames: readonly TestRunFilterName[];
-}) {
+function FilterContent({ filterNames }: { filterNames: readonly TestRunFilterName[] }) {
   const [selectedFilter, setSelectedFilter] = useState<TestRunFilterName>();
 
   if (selectedFilter) {

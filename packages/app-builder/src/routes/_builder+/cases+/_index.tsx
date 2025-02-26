@@ -19,9 +19,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const inboxes = await inbox.listInboxes();
 
   if (R.hasAtLeast(inboxes, 1)) {
-    return redirect(
-      getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxes[0].id) }),
-    );
+    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxes[0].id) }));
   }
 
   return json({

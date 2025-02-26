@@ -1,7 +1,4 @@
-import {
-  transferAlerStatuses,
-  type TransferAlertStatus,
-} from '@app-builder/models/transfer-alert';
+import { transferAlerStatuses, type TransferAlertStatus } from '@app-builder/models/transfer-alert';
 import { cva, cx, type VariantProps } from 'class-variance-authority';
 import { type ParseKeys } from 'i18next';
 import * as React from 'react';

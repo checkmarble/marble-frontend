@@ -5,10 +5,7 @@ import {
 } from '@app-builder/models/transfer-alert';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { type DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
-import {
-  arrIncludesExactSome,
-  dateRangeFilterFn,
-} from '@app-builder/utils/table-filter-fn';
+import { arrIncludesExactSome, dateRangeFilterFn } from '@app-builder/utils/table-filter-fn';
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -46,27 +43,23 @@ type TransferAlertColumnFiltersState = (
 )[];
 
 export function AlertsList({ alerts, className, rowLink }: AlertsListProps) {
-  const [columnFilters, setColumnFilters] =
-    React.useState<TransferAlertColumnFiltersState>([
-      // archived status is not included in the default filter
-      { id: 'status', value: transferAlerStatusesWithoutArchived },
-    ]);
+  const [columnFilters, setColumnFilters] = React.useState<TransferAlertColumnFiltersState>([
+    // archived status is not included in the default filter
+    { id: 'status', value: transferAlerStatusesWithoutArchived },
+  ]);
 
-  const filterValues: AlertsFilters = columnFilters.reduce<AlertsFilters>(
-    (acc, filter) => {
-      if (filter.id === 'status') {
-        acc.statuses = filter.value;
-      }
-      if (filter.id === 'createdAt') {
-        acc.dateRange = filter.value;
-      }
-      if (filter.id === 'message') {
-        acc.message = filter.value;
-      }
-      return acc;
-    },
-    {},
-  );
+  const filterValues: AlertsFilters = columnFilters.reduce<AlertsFilters>((acc, filter) => {
+    if (filter.id === 'status') {
+      acc.statuses = filter.value;
+    }
+    if (filter.id === 'createdAt') {
+      acc.dateRange = filter.value;
+    }
+    if (filter.id === 'message') {
+      acc.message = filter.value;
+    }
+    return acc;
+  }, {});
   const submitRulesFilters = React.useCallback((filters: AlertsFilters) => {
     const nextColumnFilters: TransferAlertColumnFiltersState = [];
     if (filters.statuses) {
@@ -82,10 +75,7 @@ export function AlertsList({ alerts, className, rowLink }: AlertsListProps) {
   }, []);
 
   return (
-    <AlertsFiltersProvider
-      filterValues={filterValues}
-      submitAlertsFilters={submitRulesFilters}
-    >
+    <AlertsFiltersProvider filterValues={filterValues} submitAlertsFilters={submitRulesFilters}>
       <div className="flex flex-col gap-2 lg:gap-4">
         <div className="flex flex-row gap-2 lg:gap-4">
           <MessageFilter disabled={alerts.length === 0} />
@@ -154,8 +144,7 @@ function AlertsListTable({
         size: 200,
         cell: ({ getValue, column }) => {
           const columnFilterValue = column.getFilterValue();
-          const query =
-            typeof columnFilterValue === 'string' ? columnFilterValue : '';
+          const query = typeof columnFilterValue === 'string' ? columnFilterValue : '';
 
           return (
             <div className="py-2">
@@ -208,10 +197,7 @@ function AlertsListTable({
   }
 
   return (
-    <Table.Container
-      {...getContainerProps()}
-      className={clsx('bg-grey-100', className)}
-    >
+    <Table.Container {...getContainerProps()} className={clsx('bg-grey-100', className)}>
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {

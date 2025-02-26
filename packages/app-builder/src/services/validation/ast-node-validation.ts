@@ -36,12 +36,9 @@ export function separateChildrenErrors(errors: EvaluationError[]) {
     return error.argumentIndex != undefined;
   });
 
-  const [namedChildrenErrors, nodeErrors] = R.partition(
-    nonChildrenErrors,
-    (error) => {
-      return error.argumentName != undefined;
-    },
-  );
+  const [namedChildrenErrors, nodeErrors] = R.partition(nonChildrenErrors, (error) => {
+    return error.argumentName != undefined;
+  });
 
   return {
     childrenErrors,
@@ -67,9 +64,7 @@ export function separateChildrenErrors(errors: EvaluationError[]) {
 function hasNestedErrors(astNodeErrors: AstNodeErrors, root = true): boolean {
   let errors: EvaluationError[];
   if (root) {
-    const { namedChildrenErrors, nodeErrors } = separateChildrenErrors(
-      astNodeErrors.errors,
-    );
+    const { namedChildrenErrors, nodeErrors } = separateChildrenErrors(astNodeErrors.errors);
     errors = [...namedChildrenErrors, ...nodeErrors];
   } else {
     errors = astNodeErrors.errors;
@@ -79,13 +74,8 @@ function hasNestedErrors(astNodeErrors: AstNodeErrors, root = true): boolean {
     return true;
   }
 
-  const children = [
-    ...astNodeErrors.children,
-    ...Object.values(astNodeErrors.namedChildren),
-  ];
-  if (
-    children.some((childValidation) => hasNestedErrors(childValidation, false))
-  ) {
+  const children = [...astNodeErrors.children, ...Object.values(astNodeErrors.namedChildren)];
+  if (children.some((childValidation) => hasNestedErrors(childValidation, false))) {
     return true;
   }
 
@@ -107,15 +97,10 @@ export function computeValidationForNamedChildren(
   const parentErrors = getAstNodeEvaluationErrors(astNode, astNodeErrors);
   for (const key of namedArgumentKeys) {
     const namedChild = astNode.namedChildren[key];
-    invariant(
-      namedChild,
-      `${key} is not a valid named argument key of ${astNode.name}`,
-    );
+    invariant(namedChild, `${key} is not a valid named argument key of ${astNode.name}`);
     const namedChildValidation = astNodeErrors.namedChildren[key];
     if (namedChildValidation) {
-      errors.push(
-        ...getAstNodeEvaluationErrors(namedChild, namedChildValidation),
-      );
+      errors.push(...getAstNodeEvaluationErrors(namedChild, namedChildValidation));
     }
     errors.push(
       ...findArgumentErrorsFromParent(
@@ -136,14 +121,10 @@ export function findArgumentErrorsFromParent(
 ): EvaluationError[] {
   switch (pathSegment.type) {
     case 'children': {
-      return parentErrors.filter(
-        (error) => error.argumentIndex == pathSegment.index,
-      );
+      return parentErrors.filter((error) => error.argumentIndex == pathSegment.index);
     }
     case 'namedChildren':
-      return parentErrors.filter(
-        (error) => error.argumentName == pathSegment.key,
-      );
+      return parentErrors.filter((error) => error.argumentName == pathSegment.key);
   }
 }
 
@@ -160,9 +141,7 @@ export function getIndirectEvaluationErrors({
 }): EvaluationError[] {
   const out = [] as EvaluationError[];
   if (pathSegment && parentEvaluationErrors) {
-    out.push(
-      ...findArgumentErrorsFromParent(pathSegment, parentEvaluationErrors),
-    );
+    out.push(...findArgumentErrorsFromParent(pathSegment, parentEvaluationErrors));
   }
   if (isDivByZeroField) {
     out.push({

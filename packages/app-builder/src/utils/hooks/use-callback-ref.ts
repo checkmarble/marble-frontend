@@ -8,9 +8,7 @@ import * as React from 'react';
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useCallbackRef<T extends (...args: any[]) => any>(
-  callback: T | undefined,
-): T {
+export function useCallbackRef<T extends (...args: any[]) => any>(callback: T | undefined): T {
   const callbackRef = React.useRef(callback);
 
   React.useEffect(() => {
@@ -18,8 +16,5 @@ export function useCallbackRef<T extends (...args: any[]) => any>(
   });
 
   // https://github.com/facebook/react/issues/19240
-  return React.useMemo(
-    () => ((...args) => callbackRef.current?.(...args)) as T,
-    [],
-  );
+  return React.useMemo(() => ((...args) => callbackRef.current?.(...args)) as T, []);
 }

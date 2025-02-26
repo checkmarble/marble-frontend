@@ -7,8 +7,7 @@ interface OrganizationUsersContext {
   getOrgUserById: (userId: string) => User | undefined;
 }
 
-const OrganizationUsersContext =
-  createSimpleContext<OrganizationUsersContext>('OrganizationUsers');
+const OrganizationUsersContext = createSimpleContext<OrganizationUsersContext>('OrganizationUsers');
 
 export function OrganizationUsersContextProvider({
   orgUsers,
@@ -18,9 +17,7 @@ export function OrganizationUsersContextProvider({
   children: React.ReactNode;
 }) {
   const value = useMemo(() => {
-    const orgUserMap = new Map<string, User>(
-      orgUsers.map((user) => [user.userId, user]),
-    );
+    const orgUserMap = new Map<string, User>(orgUsers.map((user) => [user.userId, user]));
 
     return {
       orgUsers,
@@ -28,9 +25,7 @@ export function OrganizationUsersContextProvider({
     };
   }, [orgUsers]);
   return (
-    <OrganizationUsersContext.Provider value={value}>
-      {children}
-    </OrganizationUsersContext.Provider>
+    <OrganizationUsersContext.Provider value={value}>{children}</OrganizationUsersContext.Provider>
   );
 }
 

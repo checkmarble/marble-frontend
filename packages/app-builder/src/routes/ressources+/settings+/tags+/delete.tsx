@@ -86,13 +86,7 @@ const DeleteTagContent = ({ tagId }: { tagId: string }) => {
               {t('common:cancel')}
             </Button>
           </Modal.Close>
-          <Button
-            color="red"
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="delete"
-          >
+          <Button color="red" className="flex-1" variant="primary" type="submit" name="delete">
             <Icon icon="delete" className="size-6" />
             {t('common:delete')}
           </Button>

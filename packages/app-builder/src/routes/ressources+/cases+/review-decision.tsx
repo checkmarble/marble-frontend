@@ -14,12 +14,7 @@ import { blockingReviewDocHref } from '@app-builder/services/documentation-href'
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import type * as Ariakit from '@ariakit/react';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -133,9 +128,7 @@ function ReviewDecisionContent({
         action={getRoute('/ressources/cases/review-decision')}
         {...getFormProps(form)}
       >
-        <ModalV2.Title>
-          {t('cases:case_detail.review_decision.title')}
-        </ModalV2.Title>
+        <ModalV2.Title>{t('cases:case_detail.review_decision.title')}</ModalV2.Title>
         <div className="flex flex-col gap-6 p-6">
           <ModalV2.Description render={<Callout variant="outlined" />}>
             <p className="whitespace-pre text-wrap">
@@ -155,24 +148,16 @@ function ReviewDecisionContent({
             })}
           />
 
-          <FormField
-            name={fields.reviewStatus.name}
-            className="flex flex-col gap-2"
-          >
-            <FormLabel>
-              {t('cases:case_detail.review_decision.review_status.label')}
-            </FormLabel>
+          <FormField name={fields.reviewStatus.name} className="flex flex-col gap-2">
+            <FormLabel>{t('cases:case_detail.review_decision.review_status.label')}</FormLabel>
             <FormSelect.Default
               className="h-10 w-full"
               options={nonPendingReviewStatuses}
-              placeholder={t(
-                'cases:case_detail.review_decision.review_status.placeholder',
-              )}
+              placeholder={t('cases:case_detail.review_decision.review_status.placeholder')}
               contentClassName="max-w-[var(--radix-select-trigger-width)]"
             >
               {nonPendingReviewStatuses.map((reviewStatus) => {
-                const disabled =
-                  sanctionCheck && sanctionCheck.status !== 'no_hit';
+                const disabled = sanctionCheck && sanctionCheck.status !== 'no_hit';
 
                 return disabled && reviewStatus === 'approve' ? (
                   <div className="flex flex-col items-start gap-2 p-1">
@@ -188,15 +173,8 @@ function ReviewDecisionContent({
                     </span>
                   </div>
                 ) : (
-                  <FormSelect.DefaultItem
-                    key={reviewStatus}
-                    value={reviewStatus}
-                  >
-                    <ReviewStatusTag
-                      border="square"
-                      size="big"
-                      reviewStatus={reviewStatus}
-                    />
+                  <FormSelect.DefaultItem key={reviewStatus} value={reviewStatus}>
+                    <ReviewStatusTag border="square" size="big" reviewStatus={reviewStatus} />
                   </FormSelect.DefaultItem>
                 );
               })}
@@ -204,26 +182,17 @@ function ReviewDecisionContent({
             <FormErrorOrDescription />
           </FormField>
 
-          <FormField
-            name={fields.reviewComment.name}
-            className="flex flex-col gap-2"
-          >
-            <FormLabel>
-              {t('cases:case_detail.review_decision.comment.label')}
-            </FormLabel>
+          <FormField name={fields.reviewComment.name} className="flex flex-col gap-2">
+            <FormLabel>{t('cases:case_detail.review_decision.comment.label')}</FormLabel>
             <FormTextArea
               className="w-full"
-              placeholder={t(
-                'cases:case_detail.review_decision.comment.placeholder',
-              )}
+              placeholder={t('cases:case_detail.review_decision.comment.placeholder')}
             />
             <FormErrorOrDescription />
           </FormField>
 
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
             <Button className="flex-1" variant="primary" type="submit">

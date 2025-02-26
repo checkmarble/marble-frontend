@@ -6,9 +6,7 @@ export const FilterTransactionByDecisionSkeleton = () => {
 
   return (
     <Collapsible.Container className="bg-grey-100">
-      <Collapsible.Title>
-        {t('scenarios:testrun.transaction_by_decision')}
-      </Collapsible.Title>
+      <Collapsible.Title>{t('scenarios:testrun.transaction_by_decision')}</Collapsible.Title>
       <Collapsible.Content>
         <div className="mb-6 flex items-center justify-end space-x-2">
           <span className="text-s text-grey-00 font-medium">

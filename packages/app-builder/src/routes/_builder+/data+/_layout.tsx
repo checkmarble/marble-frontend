@@ -40,12 +40,9 @@ export const handle = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { user, dataModelRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { user, dataModelRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const dataModel = await dataModelRepository.getDataModel();
   return json({

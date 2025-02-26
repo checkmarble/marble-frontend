@@ -19,22 +19,12 @@ export interface RightPanelRootProps
 export function createRightPanel(name: string) {
   const { Provider, useValue } = createSimpleContext<RightPanelContext>(name);
 
-  function RightPanelRoot({
-    open,
-    onClose,
-    className,
-    ...otherProps
-  }: RightPanelRootProps) {
+  function RightPanelRoot({ open, onClose, className, ...otherProps }: RightPanelRootProps) {
     const value = { open, onClose };
     return (
       <div className={clsx('relative flex size-full', className)}>
         <Provider value={value}>
-          <Dialog.Root
-            modal={false}
-            open={open}
-            onOpenChange={noop}
-            {...otherProps}
-          />
+          <Dialog.Root modal={false} open={open} onOpenChange={noop} {...otherProps} />
         </Provider>
       </div>
     );
@@ -67,22 +57,21 @@ export function createRightPanel(name: string) {
   const RightPanelTrigger = Dialog.Trigger;
   RightPanelTrigger.displayName = `${name}Trigger`;
 
-  const RightPanelContent = forwardRef<
-    HTMLDivElement,
-    Dialog.DialogContentProps
-  >(({ className, ...props }, ref) => {
-    return (
-      <Dialog.Content
-        ref={ref}
-        {...props}
-        className={clsx(
-          'bg-grey-100 absolute inset-y-0 end-0 size-full gap-4 overflow-y-scroll p-4 pe-[calc(1rem-var(--scrollbar-width))] shadow lg:gap-6 lg:p-6 lg:pe-[calc(1.5rem-var(--scrollbar-width))]',
-          'rtl:radix-state-open:animate-slideLeftAndFadeIn rtl:radix-state-closed:animate-slideLeftAndFadeOut ltr:radix-state-open:animate-slideRightAndFadeIn ltr:radix-state-closed:animate-slideRightAndFadeOut',
-          className,
-        )}
-      />
-    );
-  });
+  const RightPanelContent = forwardRef<HTMLDivElement, Dialog.DialogContentProps>(
+    ({ className, ...props }, ref) => {
+      return (
+        <Dialog.Content
+          ref={ref}
+          {...props}
+          className={clsx(
+            'bg-grey-100 absolute inset-y-0 end-0 size-full gap-4 overflow-y-scroll p-4 pe-[calc(1rem-var(--scrollbar-width))] shadow lg:gap-6 lg:p-6 lg:pe-[calc(1.5rem-var(--scrollbar-width))]',
+            'rtl:radix-state-open:animate-slideLeftAndFadeIn rtl:radix-state-closed:animate-slideLeftAndFadeOut ltr:radix-state-open:animate-slideRightAndFadeIn ltr:radix-state-closed:animate-slideRightAndFadeOut',
+            className,
+          )}
+        />
+      );
+    },
+  );
   RightPanelContent.displayName = `${name}Content`;
 
   function RightPanelTitle(props: Dialog.DialogTitleProps) {

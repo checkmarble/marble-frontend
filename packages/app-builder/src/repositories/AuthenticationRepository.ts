@@ -9,18 +9,9 @@ export interface AuthenticationClientRepository {
     locale: string,
     email: string,
     password: string,
-  ) => Promise<
-    { idToken: string; emailVerified: true } | { emailVerified: false }
-  >;
-  emailAndPassswordSignUp: (
-    locale: string,
-    email: string,
-    password: string,
-  ) => Promise<void>;
-  resendEmailVerification: (
-    locale: string,
-    logout: () => void,
-  ) => Promise<void>;
+  ) => Promise<{ idToken: string; emailVerified: true } | { emailVerified: false }>;
+  emailAndPassswordSignUp: (locale: string, email: string, password: string) => Promise<void>;
+  resendEmailVerification: (locale: string, logout: () => void) => Promise<void>;
   sendPasswordResetEmail: (locale: string, email: string) => Promise<void>;
   firebaseIdToken: () => Promise<string>;
   isFirebaseEmulator: boolean;
@@ -61,19 +52,11 @@ export function getAuthenticationClientRepository(
     return credential.user.getIdToken();
   }
 
-  async function emailAndPasswordSignIn(
-    locale: string,
-    email: string,
-    password: string,
-  ) {
+  async function emailAndPasswordSignIn(locale: string, email: string, password: string) {
     const auth = getClientAuth(locale);
     // Logout before sign in to avoid grant token firebase error
     await firebaseClient.logout(auth);
-    const credential = await firebaseClient.signInWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    );
+    const credential = await firebaseClient.signInWithEmailAndPassword(auth, email, password);
     if (!credential.user.emailVerified) {
       return { emailVerified: false as const };
     }
@@ -87,19 +70,11 @@ export function getAuthenticationClientRepository(
     url: new URL(getRoute('/sign-in'), getClientEnv('MARBLE_APP_DOMAIN')).href,
   };
 
-  async function emailAndPassswordSignUp(
-    locale: string,
-    email: string,
-    password: string,
-  ) {
+  async function emailAndPassswordSignUp(locale: string, email: string, password: string) {
     const auth = getClientAuth(locale);
     // Logout before sign up to avoid grant token firebase error
     await firebaseClient.logout(auth);
-    const credential = await firebaseClient.createUserWithEmailAndPassword(
-      auth,
-      email,
-      password,
-    );
+    const credential = await firebaseClient.createUserWithEmailAndPassword(auth, email, password);
 
     await firebaseClient.sendEmailVerification(
       credential.user,
@@ -127,27 +102,21 @@ export function getAuthenticationClientRepository(
   async function sendPasswordResetEmail(locale: string, email: string) {
     const auth = getClientAuth(locale);
 
-    await firebaseClient.sendPasswordResetEmail(
-      auth,
-      email,
-      passwordResetEmailActionCodeSettings,
-    );
+    await firebaseClient.sendPasswordResetEmail(auth, email, passwordResetEmailActionCodeSettings);
   }
 
   const firebaseIdToken = () => {
     // Prefer onAuthStateChanged https://github.com/firebase/firebase-js-sdk/issues/7348#issuecomment-1579320535
     // currentUser is not reliable when firebase app is initialising
     return new Promise<string>((resolve, reject) => {
-      const unsubscribe = firebaseClient.clientAuth.onAuthStateChanged(
-        (user) => {
-          unsubscribe();
-          if (user) {
-            void user.getIdToken().then(resolve);
-          } else {
-            reject(new Error('No authenticated user, no token'));
-          }
-        },
-      );
+      const unsubscribe = firebaseClient.clientAuth.onAuthStateChanged((user) => {
+        unsubscribe();
+        if (user) {
+          void user.getIdToken().then(resolve);
+        } else {
+          reject(new Error('No authenticated user, no token'));
+        }
+      });
     });
   };
 

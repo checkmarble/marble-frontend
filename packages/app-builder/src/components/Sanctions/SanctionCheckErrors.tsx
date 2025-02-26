@@ -2,11 +2,7 @@ import { type SanctionCheckError } from '@app-builder/models/sanction-check';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-export function SanctionCheckErrors({
-  sanctionCheck,
-}: {
-  sanctionCheck: SanctionCheckError;
-}) {
+export function SanctionCheckErrors({ sanctionCheck }: { sanctionCheck: SanctionCheckError }) {
   const { t } = useTranslation(['sanctions']);
 
   return (

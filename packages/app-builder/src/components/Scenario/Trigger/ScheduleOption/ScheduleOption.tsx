@@ -1,8 +1,4 @@
-import {
-  adaptScheduleOption,
-  adaptScheduleOptionToCron,
-  isEditableScheduleOption,
-} from './models';
+import { adaptScheduleOption, adaptScheduleOptionToCron, isEditableScheduleOption } from './models';
 import { ScheduleOptionEditor } from './ScheduleOptionEditor';
 import { ScheduleOptionViewer } from './ScheduleOptionViewer';
 

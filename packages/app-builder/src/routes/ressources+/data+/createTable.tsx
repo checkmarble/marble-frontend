@@ -152,9 +152,7 @@ export function CreateTable({ children }: { children: React.ReactNode }) {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder={t(
-                            'data:create_table.description_placeholder',
-                          )}
+                          placeholder={t('data:create_table.description_placeholder')}
                           {...field}
                         />
                       </FormControl>
@@ -169,12 +167,7 @@ export function CreateTable({ children }: { children: React.ReactNode }) {
                     {t('common:cancel')}
                   </Button>
                 </Modal.Close>
-                <Button
-                  className="flex-1"
-                  variant="primary"
-                  type="submit"
-                  name="create"
-                >
+                <Button className="flex-1" variant="primary" type="submit" name="create">
                   {t('data:create_table.button_accept')}
                 </Button>
               </div>

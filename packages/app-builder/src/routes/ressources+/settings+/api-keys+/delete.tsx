@@ -58,10 +58,7 @@ function DeleteApiKeyContent({ apiKey }: { apiKey: ApiKey }) {
   const { t } = useTranslation(['settings', 'common']);
 
   return (
-    <Form
-      action={getRoute('/ressources/settings/api-keys/delete')}
-      method="DELETE"
-    >
+    <Form action={getRoute('/ressources/settings/api-keys/delete')} method="DELETE">
       <Modal.Title>{t('settings:api_keys.delete')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <div className="text-s flex flex-1 flex-col gap-4">
@@ -74,13 +71,7 @@ function DeleteApiKeyContent({ apiKey }: { apiKey: ApiKey }) {
               {t('common:cancel')}
             </Button>
           </Modal.Close>
-          <Button
-            color="red"
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="delete"
-          >
+          <Button color="red" className="flex-1" variant="primary" type="submit" name="delete">
             <Icon icon="delete" className="size-6" />
             {t('common:delete')}
           </Button>

@@ -121,12 +121,7 @@ export function NewListValue({ listId }: { listId: string }) {
                     {t('common:cancel')}
                   </Button>
                 </Modal.Close>
-                <Button
-                  className="flex-1"
-                  variant="primary"
-                  type="submit"
-                  name="create"
-                >
+                <Button className="flex-1" variant="primary" type="submit" name="create">
                   {t('common:save')}
                 </Button>
               </div>

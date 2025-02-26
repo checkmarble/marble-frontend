@@ -14,9 +14,7 @@ export interface DecisionCreatedTrigger {
   outcomes: Outcome[];
 }
 
-export function isDecisionCreatedTrigger(
-  data: NodeData,
-): data is DecisionCreatedTrigger {
+export function isDecisionCreatedTrigger(data: NodeData): data is DecisionCreatedTrigger {
   return data.type === 'decision-created';
 }
 
@@ -42,9 +40,7 @@ export interface AddToCaseIfPossibleAction {
   caseName?: StringTemplateAstNode | null;
 }
 
-export function isAddToCaseIfPossibleAction(
-  data: NodeData,
-): data is AddToCaseIfPossibleAction {
+export function isAddToCaseIfPossibleAction(data: NodeData): data is AddToCaseIfPossibleAction {
   return data.type === 'add-to-case-if-possible';
 }
 
@@ -64,9 +60,7 @@ export function isEmptyNodeData(data: NodeData): data is EmptyNodeData {
 
 export type NodeData = TriggerData | ActionData | EmptyNodeData;
 
-export function isTriggerOrActionData(
-  data: NodeData,
-): data is TriggerData | ActionData {
+export function isTriggerOrActionData(data: NodeData): data is TriggerData | ActionData {
   return isTriggerData(data) || isActionData(data);
 }
 

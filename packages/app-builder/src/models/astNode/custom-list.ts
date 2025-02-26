@@ -11,9 +11,7 @@ export interface CustomListAccessAstNode {
   };
 }
 
-export function NewCustomListAstNode(
-  customListId: string,
-): CustomListAccessAstNode {
+export function NewCustomListAstNode(customListId: string): CustomListAccessAstNode {
   return {
     name: customListAccessAstNodeName,
     constant: undefined,
@@ -24,8 +22,6 @@ export function NewCustomListAstNode(
   };
 }
 
-export function isCustomListAccess(
-  node: AstNode,
-): node is CustomListAccessAstNode {
+export function isCustomListAccess(node: AstNode): node is CustomListAccessAstNode {
   return node.name === customListAccessAstNodeName;
 }

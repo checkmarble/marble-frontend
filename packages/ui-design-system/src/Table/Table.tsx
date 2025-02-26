@@ -9,13 +9,7 @@ import {
 } from '@tanstack/react-table';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import clsx from 'clsx';
-import {
-  cloneElement,
-  createContext,
-  useContext,
-  useMemo,
-  useRef,
-} from 'react';
+import { cloneElement, createContext, useContext, useMemo, useRef } from 'react';
 import { Icon } from 'ui-icons';
 
 import { ScrollAreaV2 } from '../ScrollArea/ScrollArea';
@@ -34,18 +28,12 @@ function TableContainer({
   return (
     <ScrollAreaV2
       ref={scrollElementRef}
-      className={clsx(
-        'border-grey-90 border-spacing-0 rounded-lg border',
-        className,
-      )}
+      className={clsx('border-grey-90 border-spacing-0 rounded-lg border', className)}
       orientation="both"
       type="auto"
     >
       <WithRowLinkContext.Provider value={withRowLink}>
-        <table
-          className="isolate w-full table-fixed border-separate border-spacing-0"
-          {...props}
-        />
+        <table className="isolate w-full table-fixed border-separate border-spacing-0" {...props} />
       </WithRowLinkContext.Provider>
     </ScrollAreaV2>
   );
@@ -78,11 +66,7 @@ function TableTH<TData extends RowData, TValue>({
 
 const internalRowLink = '__internal-row-link';
 
-function Header<TData extends RowData>({
-  headerGroups,
-}: {
-  headerGroups: HeaderGroup<TData>[];
-}) {
+function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderGroup<TData>[] }) {
   return (
     <thead className="sticky top-0 z-10">
       {headerGroups.map((headerGroup) => (
@@ -148,11 +132,7 @@ interface TableProps<TData extends RowData> extends TableOptions<TData> {
   rowLink?: (row: TData) => JSX.Element;
 }
 
-function useCoreTable<TData extends RowData>({
-  columns,
-  rowLink,
-  ...options
-}: TableProps<TData>) {
+function useCoreTable<TData extends RowData>({ columns, rowLink, ...options }: TableProps<TData>) {
   const _columns = useMemo(() => {
     if (!rowLink) return columns;
 
@@ -170,9 +150,7 @@ function useCoreTable<TData extends RowData>({
   return useReactTable({ columns: _columns, ...options });
 }
 
-export function useVirtualTable<TData extends RowData>(
-  options: TableProps<TData>,
-) {
+export function useVirtualTable<TData extends RowData>(options: TableProps<TData>) {
   const table = useCoreTable(options);
 
   const scrollElementRef = useRef<HTMLTableElement>(null);
@@ -191,9 +169,7 @@ export function useVirtualTable<TData extends RowData>(
 
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
   const paddingBottom =
-    virtualRows.length > 0
-      ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
-      : 0;
+    virtualRows.length > 0 ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0) : 0;
 
   return {
     table,
@@ -269,14 +245,8 @@ function Row<TData extends RowData>({
     <tr
       onClick={(e) => {
         if (withRowLink) {
-          const rowLink = e.currentTarget.querySelector(
-            '[data-column-id="__internal-row-link"]',
-          );
-          if (
-            rowLink &&
-            rowLink !== e.target &&
-            rowLink instanceof HTMLAnchorElement
-          ) {
+          const rowLink = e.currentTarget.querySelector('[data-column-id="__internal-row-link"]');
+          if (rowLink && rowLink !== e.target && rowLink instanceof HTMLAnchorElement) {
             rowLink.click();
           }
         }
@@ -284,8 +254,7 @@ function Row<TData extends RowData>({
       }}
       className={clsx(
         'even:bg-grey-98 h-12',
-        withRowLink &&
-          'hover:bg-purple-98 focus-within:bg-purple-98 cursor-pointer',
+        withRowLink && 'hover:bg-purple-98 focus-within:bg-purple-98 cursor-pointer',
         className,
       )}
       {...props}
@@ -293,11 +262,7 @@ function Row<TData extends RowData>({
       {row.getVisibleCells().map((cell) => {
         const context = cell.getContext();
         if (context.column.id === internalRowLink) {
-          return (
-            <td key={cell.id}>
-              {flexRender(cell.column.columnDef.cell, context)}
-            </td>
-          );
+          return <td key={cell.id}>{flexRender(cell.column.columnDef.cell, context)}</td>;
         }
         return (
           <td key={cell.id} className="text-s w-full truncate px-4 font-normal">

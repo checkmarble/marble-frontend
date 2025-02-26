@@ -28,24 +28,14 @@ export interface InputProps extends React.ComponentPropsWithoutRef<'input'> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  {
-    className,
-    startAdornment,
-    endAdornment,
-    borderColor = 'greyfigma-90',
-    ...props
-  },
+  { className, startAdornment, endAdornment, borderColor = 'greyfigma-90', ...props },
   ref,
 ) {
   return (
     <div className={clsx('relative h-10', className)}>
       <input
         ref={ref}
-        className={clsx(
-          input({ borderColor }),
-          startAdornment && 'ps-10',
-          endAdornment && 'pe-10',
-        )}
+        className={clsx(input({ borderColor }), startAdornment && 'ps-10', endAdornment && 'pe-10')}
         {...props}
       />
       {/* Order matter, for peer to work */}

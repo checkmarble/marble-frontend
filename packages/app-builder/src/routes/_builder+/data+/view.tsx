@@ -1,8 +1,5 @@
 import { Page, TabLink } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { getRoute } from '@app-builder/utils/routes';
@@ -76,9 +73,7 @@ export default function DataSearchPage() {
         <div className="flex flex-col gap-4">
           <div className="flex gap-2">
             <div className="text-s flex flex-col gap-1">
-              <label htmlFor="tableNameField">
-                {t('data:viewer.object_type')}
-              </label>
+              <label htmlFor="tableNameField">{t('data:viewer.object_type')}</label>
               <Select.Default
                 value={tableName}
                 onValueChange={handleTableNameChange}
@@ -94,9 +89,7 @@ export default function DataSearchPage() {
             </div>
             <div className="flex gap-2">
               <div className="text-s flex flex-col gap-1">
-                <label htmlFor="objectIdField">
-                  {t('data:viewer.object_id')}
-                </label>
+                <label htmlFor="objectIdField">{t('data:viewer.object_id')}</label>
                 <Input
                   type="text"
                   id="objectIdField"

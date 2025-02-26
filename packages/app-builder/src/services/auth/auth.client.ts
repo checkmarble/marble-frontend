@@ -14,13 +14,9 @@ export function makeAuthenticationClientService(
   };
 }
 
-export type AuthenticationClientService = ReturnType<
-  typeof makeAuthenticationClientService
->;
+export type AuthenticationClientService = ReturnType<typeof makeAuthenticationClientService>;
 
-export function useGoogleSignIn({
-  authenticationClientRepository,
-}: AuthenticationClientService) {
+export function useGoogleSignIn({ authenticationClientRepository }: AuthenticationClientService) {
   const {
     i18n: { language },
   } = useTranslation();
@@ -28,8 +24,7 @@ export function useGoogleSignIn({
 
   return async () => {
     try {
-      const idToken =
-        await authenticationClientRepository.googleSignIn(language);
+      const idToken = await authenticationClientRepository.googleSignIn(language);
       return { idToken, csrf };
     } catch (error) {
       if (error instanceof FirebaseError) {
@@ -64,8 +59,7 @@ export function useMicrosoftSignIn({
 
   return async () => {
     try {
-      const idToken =
-        await authenticationClientRepository.microsoftSignIn(language);
+      const idToken = await authenticationClientRepository.microsoftSignIn(language);
       return { idToken, csrf };
     } catch (error) {
       if (error instanceof FirebaseError) {
@@ -104,12 +98,11 @@ export function useEmailAndPasswordSignIn({
 
   return async (email: string, password: string) => {
     try {
-      const result =
-        await authenticationClientRepository.emailAndPasswordSignIn(
-          language,
-          email,
-          password,
-        );
+      const result = await authenticationClientRepository.emailAndPasswordSignIn(
+        language,
+        email,
+        password,
+      );
       if (!result.emailVerified) {
         throw new EmailUnverified();
       }
@@ -147,12 +140,11 @@ export function useEmailAndPasswordSignUp({
 
   return async (email: string, password: string) => {
     try {
-      const idToken =
-        await authenticationClientRepository.emailAndPassswordSignUp(
-          language,
-          email,
-          password,
-        );
+      const idToken = await authenticationClientRepository.emailAndPassswordSignUp(
+        language,
+        email,
+        password,
+      );
       return { idToken, csrf };
     } catch (error) {
       if (error instanceof FirebaseError) {
@@ -185,10 +177,7 @@ export function useResendEmailVerification({
 
   return async (logout: () => void) => {
     try {
-      await authenticationClientRepository.resendEmailVerification(
-        language,
-        logout,
-      );
+      await authenticationClientRepository.resendEmailVerification(language, logout);
     } catch (error) {
       if (error instanceof FirebaseError) {
         switch (error.code) {
@@ -212,10 +201,7 @@ export function useSendPasswordResetEmail({
 
   return async (email: string) => {
     try {
-      await authenticationClientRepository.sendPasswordResetEmail(
-        language,
-        email,
-      );
+      await authenticationClientRepository.sendPasswordResetEmail(language, email);
     } catch (error) {
       if (error instanceof FirebaseError) {
         switch (error.code) {
@@ -230,15 +216,12 @@ export function useSendPasswordResetEmail({
   };
 }
 
-export function useBackendInfo({
-  authenticationClientRepository,
-}: AuthenticationClientService) {
+export function useBackendInfo({ authenticationClientRepository }: AuthenticationClientService) {
   const backendUrl = getClientEnv('MARBLE_API_DOMAIN');
 
   const getAccessToken = async () => {
     try {
-      const firebaseIdToken =
-        await authenticationClientRepository.firebaseIdToken();
+      const firebaseIdToken = await authenticationClientRepository.firebaseIdToken();
       const token = await marblecoreApi.postToken(
         {
           authorization: `Bearer ${firebaseIdToken}`,

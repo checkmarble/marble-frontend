@@ -59,19 +59,11 @@ export function DetailPanel({ onSave, onDelete }: DetailPanelProps) {
             </ModalV2.Title>
             <div className="flex flex-col gap-6 p-6">
               <ModalV2.Description>
-                {t(
-                  'workflows:detail_panel.confirm_delete_workflow.description',
-                )}
+                {t('workflows:detail_panel.confirm_delete_workflow.description')}
               </ModalV2.Description>
               <div className="flex flex-1 flex-row gap-4">
                 <ModalV2.Close
-                  render={
-                    <Button
-                      className="flex-1"
-                      variant="secondary"
-                      name="cancel"
-                    />
-                  }
+                  render={<Button className="flex-1" variant="secondary" name="cancel" />}
                 >
                   {t('common:cancel')}
                 </ModalV2.Close>
@@ -84,11 +76,7 @@ export function DetailPanel({ onSave, onDelete }: DetailPanelProps) {
           </ModalV2.Content>
         </ModalV2.Root>
 
-        <Button
-          className="w-full"
-          disabled={!validationPayload.isValid}
-          onClick={saveWorkflow}
-        >
+        <Button className="w-full" disabled={!validationPayload.isValid} onClick={saveWorkflow}>
           <Icon icon="rule-settings" className="size-6" />
           {t('common:save')}
         </Button>

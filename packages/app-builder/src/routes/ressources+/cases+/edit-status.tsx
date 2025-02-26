@@ -52,10 +52,7 @@ export async function action({ request }: ActionFunctionArgs) {
   return json(submission.reply());
 }
 
-export function EditCaseStatus({
-  status,
-  caseId,
-}: Pick<Schema, 'caseId' | 'status'>) {
+export function EditCaseStatus({ status, caseId }: Pick<Schema, 'caseId' | 'status'>) {
   const { t } = useTranslation(handle.i18n);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [hasOpenDialog, setHasOpenDialog] = React.useState(false);
@@ -83,9 +80,7 @@ export function EditCaseStatus({
   return (
     <DropdownMenu.Root open={dropdownOpen} onOpenChange={setDropdownOpen}>
       <div className="flex flex-row items-center gap-4">
-        <span className="text-s text-grey-00 font-medium capitalize">
-          {t('cases:case.status')}
-        </span>
+        <span className="text-s text-grey-00 font-medium capitalize">{t('cases:case.status')}</span>
         <DropdownMenu.Trigger
           ref={dropdownTriggerRef}
           className={caseStatusVariants({
@@ -95,13 +90,8 @@ export function EditCaseStatus({
             className: 'group',
           })}
         >
-          <span className="text-s ml-2 font-semibold capitalize">
-            {t(caseStatus.tKey)}
-          </span>
-          <Icon
-            icon="arrow-2-down"
-            className="group-radix-state-open:rotate-180 size-6"
-          />
+          <span className="text-s ml-2 font-semibold capitalize">{t(caseStatus.tKey)}</span>
+          <Icon icon="arrow-2-down" className="group-radix-state-open:rotate-180 size-6" />
         </DropdownMenu.Trigger>
       </div>
       <DropdownMenu.Content
@@ -120,10 +110,7 @@ export function EditCaseStatus({
       >
         <div className="flex flex-col gap-2">
           {nextStatuses.map((nextStatus) => (
-            <Modal.Root
-              key={nextStatus.value}
-              onOpenChange={handleDialogItemOpenChange}
-            >
+            <Modal.Root key={nextStatus.value} onOpenChange={handleDialogItemOpenChange}>
               <Modal.Trigger asChild>
                 <DropdownMenu.Item
                   className="radix-highlighted:bg-purple-98 flex flex-row items-center gap-2 rounded p-2 align-baseline outline-none transition-colors"
@@ -132,11 +119,7 @@ export function EditCaseStatus({
                     event.preventDefault();
                   }}
                 >
-                  <CaseStatus
-                    type="full"
-                    size="big"
-                    status={nextStatus.value}
-                  />
+                  <CaseStatus type="full" size="big" status={nextStatus.value} />
                 </DropdownMenu.Item>
               </Modal.Trigger>
               <Modal.Content>
@@ -191,14 +174,8 @@ function ModalContent({
     >
       <Modal.Title>{t('cases:change_status_modal.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
-        <input
-          {...getInputProps(fields.caseId, { type: 'hidden' })}
-          key={fields.caseId.key}
-        />
-        <input
-          {...getInputProps(fields.status, { type: 'hidden' })}
-          key={fields.status.key}
-        />
+        <input {...getInputProps(fields.caseId, { type: 'hidden' })} key={fields.caseId.key} />
+        <input {...getInputProps(fields.status, { type: 'hidden' })} key={fields.status.key} />
         <input
           {...getInputProps(fields.nextStatus, { type: 'hidden' })}
           key={fields.nextStatus.key}
@@ -218,19 +195,14 @@ function ModalContent({
               t={t}
               i18nKey="cases:change_status_modal.description.to"
               components={{
-                Status: (
-                  <CaseStatus type="full" size="big" status={nextStatus} />
-                ),
+                Status: <CaseStatus type="full" size="big" status={nextStatus} />,
               }}
             />
           </div>
         </div>
         <div className="flex w-full flex-row gap-2">
           <Modal.Close asChild>
-            <Button
-              variant="secondary"
-              className="flex-1 first-letter:capitalize"
-            >
+            <Button variant="secondary" className="flex-1 first-letter:capitalize">
               {t('common:close')}
             </Button>
           </Modal.Close>

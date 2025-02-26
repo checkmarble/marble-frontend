@@ -12,12 +12,7 @@ import { fromUUID } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { FormProvider, getFormProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
-import {
-  type ActionFunctionArgs,
-  json,
-  type LoaderFunctionArgs,
-  redirect,
-} from '@remix-run/node';
+import { type ActionFunctionArgs, json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
@@ -140,10 +135,7 @@ function CreateScenarioContent() {
             </p>
           </ModalV2.Description>
           <div className="flex flex-1 flex-col gap-4">
-            <FormField
-              name={fields.name.name}
-              className="group flex w-full flex-col gap-2"
-            >
+            <FormField name={fields.name.name} className="group flex w-full flex-col gap-2">
               <FormLabel>{t('scenarios:create_scenario.name')}</FormLabel>
               <FormInput
                 type="text"
@@ -151,18 +143,11 @@ function CreateScenarioContent() {
               />
               <FormErrorOrDescription />
             </FormField>
-            <FormField
-              name={fields.description.name}
-              className="group flex w-full flex-col gap-2"
-            >
-              <FormLabel>
-                {t('scenarios:create_scenario.description')}
-              </FormLabel>
+            <FormField name={fields.description.name} className="group flex w-full flex-col gap-2">
+              <FormLabel>{t('scenarios:create_scenario.description')}</FormLabel>
               <FormInput
                 type="text"
-                placeholder={t(
-                  'scenarios:create_scenario.description_placeholder',
-                )}
+                placeholder={t('scenarios:create_scenario.description_placeholder')}
               />
               <FormErrorOrDescription />
             </FormField>
@@ -193,14 +178,10 @@ function CreateScenarioContent() {
                 </Ariakit.HovercardProvider>
               </FormLabel>
               <FormSelect.Default
-                placeholder={t(
-                  'scenarios:create_scenario.trigger_object_placeholder',
-                )}
+                placeholder={t('scenarios:create_scenario.trigger_object_placeholder')}
                 options={dataModel}
               >
-                {dataModelFetcher.state === 'loading' ? (
-                  <p>{t('common:loading')}</p>
-                ) : null}
+                {dataModelFetcher.state === 'loading' ? <p>{t('common:loading')}</p> : null}
                 {dataModel.map((tableName) => {
                   return (
                     <FormSelect.DefaultItem key={tableName} value={tableName}>
@@ -216,9 +197,7 @@ function CreateScenarioContent() {
             </FormField>
           </div>
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
             <Button className="flex-1" variant="primary" type="submit">

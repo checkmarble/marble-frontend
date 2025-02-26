@@ -59,11 +59,7 @@ export function IsMultipleOfEdit({
             <LeftOperand
               astNode={value.astNode}
               astNodeErrors={value.astNodeErrors}
-              validationStatus={
-                (value.astNodeErrors?.errors ?? []).length > 0
-                  ? 'error'
-                  : 'valid'
-              }
+              validationStatus={(value.astNodeErrors?.errors ?? []).length > 0 ? 'error' : 'valid'}
               onChange={setValue}
             />
             <div className="border-grey-90 bg-grey-98 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
@@ -93,19 +89,10 @@ export function IsMultipleOfEdit({
           <Examples divider={divider.value} />
         </div>
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close
-            render={
-              <Button className="flex-1" variant="secondary" name="cancel" />
-            }
-          >
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
             {t('common:cancel')}
           </ModalV2.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            name="save"
-            onClick={() => handleSave()}
-          >
+          <Button className="flex-1" variant="primary" name="save" onClick={() => handleSave()}>
             {t('common:save')}
           </Button>
         </div>
@@ -120,9 +107,7 @@ function Examples({ divider }: { divider: number }) {
 
   return (
     <table className="border-grey-90 table-auto border-collapse border">
-      <caption className="sr-only">
-        {t('scenarios:edit_is_multiple_of.examples.caption')}
-      </caption>
+      <caption className="sr-only">{t('scenarios:edit_is_multiple_of.examples.caption')}</caption>
       <thead>
         <tr>
           <th className="text-grey-00 bg-grey-98 border-grey-90 border px-2 text-start text-xs font-normal capitalize">

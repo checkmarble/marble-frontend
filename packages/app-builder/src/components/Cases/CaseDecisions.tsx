@@ -4,10 +4,7 @@ import {
   type PayloadAstNode,
 } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
-import {
-  type Decision,
-  type RuleExecution,
-} from '@app-builder/models/decision';
+import { type Decision, type RuleExecution } from '@app-builder/models/decision';
 import { type LicenseEntitlements } from '@app-builder/models/license';
 import { type RuleSnoozeWithRuleId } from '@app-builder/models/rule-snooze';
 import { type SanctionCheck } from '@app-builder/models/sanction-check';
@@ -79,9 +76,7 @@ export function CaseDecisions({
     isCreateSnoozeAvailable: boolean;
   };
   entitlements: LicenseEntitlements;
-  caseDecisionsPromise: Promise<
-    [TableModel[], CustomList[], DecisionsDetailWithContext[]]
-  >;
+  caseDecisionsPromise: Promise<[TableModel[], CustomList[], DecisionsDetailWithContext[]]>;
 }) {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
@@ -92,25 +87,16 @@ export function CaseDecisions({
         <div className="text-grey-00 text-s col-start-2 font-semibold">
           {t('decisions:created_at')}
         </div>
-        <div className="text-grey-00 text-s font-semibold">
-          {t('decisions:scenario.name')}
-        </div>
+        <div className="text-grey-00 text-s font-semibold">{t('decisions:scenario.name')}</div>
         <div className="text-grey-00 text-s font-semibold">
           {t('decisions:trigger_object.type')}
         </div>
-        <div className="text-grey-00 text-s font-semibold">
-          {t('decisions:score')}
-        </div>
-        <div className="text-grey-00 text-s font-semibold">
-          {t('decisions:outcome')}
-        </div>
+        <div className="text-grey-00 text-s font-semibold">{t('decisions:score')}</div>
+        <div className="text-grey-00 text-s font-semibold">{t('decisions:outcome')}</div>
       </div>
       {decisions.map((row) => {
         return (
-          <CollapsibleV2.Provider
-            key={row.id}
-            defaultOpen={decisions.length === 1}
-          >
+          <CollapsibleV2.Provider key={row.id} defaultOpen={decisions.length === 1}>
             <div className="bg-grey-100 border-grey-90 col-span-full grid grid-cols-subgrid rounded-md border">
               <div className="col-span-full grid grid-cols-subgrid items-center px-4 py-3">
                 <CollapsibleV2.Title className="border-grey-90 focus-visible:border-purple-65 group rounded border outline-none transition-colors">
@@ -158,10 +144,7 @@ export function CaseDecisions({
                           decision={row}
                           sanctionCheck={sanctionCheck}
                         />
-                        <DecisionActions
-                          decision={row}
-                          sanctionCheck={sanctionCheck}
-                        />
+                        <DecisionActions decision={row} sanctionCheck={sanctionCheck} />
                       </>
                     );
                   }}
@@ -196,10 +179,7 @@ export function CaseDecisions({
 }
 
 function isPendingBlockAndReview(decision: Decision) {
-  return (
-    decision.reviewStatus === 'pending' &&
-    decision.outcome === 'block_and_review'
-  );
+  return decision.reviewStatus === 'pending' && decision.outcome === 'block_and_review';
 }
 
 function OutcomeAndReviewStatusWithModal({
@@ -230,12 +210,7 @@ function OutcomeAndReviewStatusWithModal({
       </>
     );
   }
-  return (
-    <OutcomeAndReviewStatus
-      outcome={decision.outcome}
-      reviewStatus={decision.reviewStatus}
-    />
-  );
+  return <OutcomeAndReviewStatus outcome={decision.outcome} reviewStatus={decision.reviewStatus} />;
 }
 
 function DecisionActions({
@@ -278,9 +253,7 @@ function DecisionActions({
           {withReviewDecisionModal ? (
             <MenuItem
               className="data-[active-item]:bg-purple-98 group flex flex-row gap-2 rounded p-2 outline-none"
-              render={
-                <Ariakit.DialogDisclosure store={reviewDecisionModalStore} />
-              }
+              render={<Ariakit.DialogDisclosure store={reviewDecisionModalStore} />}
             >
               {t('cases:case_detail.review_decision.title')}
             </MenuItem>
@@ -370,17 +343,12 @@ function DecisionDetail({
               count: decisionDetail.ruleExecutions.length,
             })}
           </span>
-          <ShowHitOnlySwitch
-            checked={showHitOnly}
-            onCheckedChange={setShowHitOnly}
-          />
+          <ShowHitOnlySwitch checked={showHitOnly} onCheckedChange={setShowHitOnly} />
         </div>
 
         {sanctionCheck ? (
           <>
-            <div className="text-s text-grey-50">
-              {t('sanctions:sanction_check')}
-            </div>
+            <div className="text-s text-grey-50">{t('sanctions:sanction_check')}</div>
             <div className="bg-grey-98 grid h-fit grid-cols-[1fr_max-content] items-center gap-2 rounded-lg px-4 py-3">
               <span className="text-s line-clamp-1 text-start font-semibold">
                 Some sanction check rule name
@@ -420,9 +388,7 @@ function DecisionDetail({
               <RuleExecutionCollapsible key={ruleExecution.ruleId}>
                 <RuleExecutionTitle ruleExecution={ruleExecution} />
                 <RuleExecutionContent>
-                  <RuleExecutionDescription
-                    description={ruleExecution.description}
-                  />
+                  <RuleExecutionDescription description={ruleExecution.description} />
 
                   <RuleExecutionDetail
                     key={ruleExecution.ruleId}
@@ -431,10 +397,8 @@ function DecisionDetail({
                     astRuleData={{
                       dataModel,
                       customLists,
-                      databaseAccessors:
-                        decisionDetail.accessors.databaseAccessors,
-                      payloadAccessors:
-                        decisionDetail.accessors.payloadAccessors,
+                      databaseAccessors: decisionDetail.accessors.databaseAccessors,
+                      payloadAccessors: decisionDetail.accessors.payloadAccessors,
                       rules: decisionDetail.rules,
                     }}
                   />
@@ -444,9 +408,7 @@ function DecisionDetail({
                       ruleSnoozes={ruleSnoozes}
                       pivotValues={pivotValues}
                       entitlements={entitlements}
-                      isCreateSnoozeAvailable={
-                        featureAccess.isCreateSnoozeAvailable
-                      }
+                      isCreateSnoozeAvailable={featureAccess.isCreateSnoozeAvailable}
                       decisionId={decision.id}
                       ruleId={ruleExecution.ruleId}
                     />
@@ -479,9 +441,7 @@ function DecisionDetail({
             dataModel={dataModel}
             triggerObject={decision.triggerObject}
             triggerObjectType={decision.triggerObjectType}
-            onLinkClicked={(tableName, objectId) =>
-              setObjectLink({ tableName, objectId })
-            }
+            onLinkClicked={(tableName, objectId) => setObjectLink({ tableName, objectId })}
           />
           {objectLink ? (
             <IngestedObjectDetailModal
@@ -507,13 +467,7 @@ function SanctionState({ sanctionCheck }: { sanctionCheck: SanctionCheck }) {
     );
   }
 
-  return (
-    <SanctionStatusTag
-      border="square"
-      status={sanctionCheck.status}
-      className="h-8"
-    />
-  );
+  return <SanctionStatusTag border="square" status={sanctionCheck.status} className="h-8" />;
 }
 
 function ShowHitOnlySwitch({
@@ -528,10 +482,7 @@ function ShowHitOnlySwitch({
 
   return (
     <div className="flex flex-row items-center gap-2">
-      <label
-        htmlFor={id}
-        className="text-grey-00 cursor-pointer select-none text-xs"
-      >
+      <label htmlFor={id} className="text-grey-00 cursor-pointer select-none text-xs">
         {t('cases:case_detail.rules_execution.show_hit_only')}
       </label>
       <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />

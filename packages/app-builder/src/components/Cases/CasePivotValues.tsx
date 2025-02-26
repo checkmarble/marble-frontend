@@ -42,8 +42,7 @@ export function CasePivotValues({
                   className={clsx(
                     'cursor-pointer transition-colors',
                     pivot.type === 'field' && 'text-grey-80 hover:text-grey-50',
-                    pivot.type === 'link' &&
-                      'hover:text-purple-65 text-purple-82',
+                    pivot.type === 'link' && 'hover:text-purple-65 text-purple-82',
                   )}
                 >
                   <Icon icon="tip" className="size-5" />
@@ -58,9 +57,7 @@ export function CasePivotValues({
               </Ariakit.HovercardProvider>
             </Tag>
             <CopyToClipboardButton toCopy={value} className="bg-grey-100">
-              <span className="text-s line-clamp-1 max-w-40 font-normal">
-                {value}
-              </span>
+              <span className="text-s line-clamp-1 max-w-40 font-normal">{value}</span>
             </CopyToClipboardButton>
           </React.Fragment>
         );

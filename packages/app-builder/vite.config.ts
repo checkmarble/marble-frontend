@@ -46,12 +46,7 @@ if (!isVitest) {
       routes: (defineRoutes) => {
         return flatRoutes('routes', defineRoutes, {
           appDir: appDirectory,
-          ignoredRouteFiles: [
-            '.*',
-            '**/*.css',
-            '**/*.test.{js,jsx,ts,tsx}',
-            '**/__*.*',
-          ],
+          ignoredRouteFiles: ['.*', '**/*.css', '**/*.test.{js,jsx,ts,tsx}', '**/__*.*'],
         });
       },
     }),

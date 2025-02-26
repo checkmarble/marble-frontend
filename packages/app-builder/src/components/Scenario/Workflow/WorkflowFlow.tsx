@@ -23,12 +23,7 @@ import { type NodeData, type NodeType } from './models/nodes';
 import { Action } from './Nodes/Action';
 import { EmptyNode } from './Nodes/EmptyNode';
 import { Trigger } from './Nodes/Trigger';
-import {
-  nodesep,
-  useEdges,
-  useNodes,
-  useWorkflowActions,
-} from './WorkflowProvider';
+import { nodesep, useEdges, useNodes, useWorkflowActions } from './WorkflowProvider';
 
 export const workflowFlowStyles = reactflowStyles;
 

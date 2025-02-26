@@ -40,7 +40,5 @@ export function formatConstant(
   }
 
   // Handle other cases when needed
-  return JSON.stringify(
-    R.mapValues(constant, (constant) => formatConstant(constant, context)),
-  );
+  return JSON.stringify(R.mapValues(constant, (constant) => formatConstant(constant, context)));
 }

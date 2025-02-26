@@ -110,26 +110,17 @@ function AndOperand({
 }) {
   const { remove } = useAstNodeEditorActions();
 
-  const { errorMessages, hasArgumentIndexErrorsFromParent } =
-    useRootOrAndChildValidation(treePath);
+  const { errorMessages, hasArgumentIndexErrorsFromParent } = useRootOrAndChildValidation(treePath);
 
   return (
     <Fragment>
       {/* Row 1 */}
       <div
-        className={clsx(
-          'border-grey-90 col-span-5 w-2 border-e',
-          isFirstCondition ? 'h-4' : 'h-2',
-        )}
+        className={clsx('border-grey-90 col-span-5 w-2 border-e', isFirstCondition ? 'h-4' : 'h-2')}
       />
 
       {/* Row 2 */}
-      <div
-        className={clsx(
-          'border-grey-90 col-start-1 border-e',
-          isLastCondition && 'h-5',
-        )}
-      />
+      <div className={clsx('border-grey-90 col-start-1 border-e', isLastCondition && 'h-5')} />
       <div className="border-grey-90 col-start-2 h-5 border-b" />
       <LogicalOperatorLabel
         operator={isFirstCondition ? 'where' : 'and'}
@@ -144,12 +135,7 @@ function AndOperand({
           viewOnly ? 'col-span-2' : 'col-span-1',
         )}
       >
-        <AstBuilderNode
-          treePath={treePath}
-          astNode={astNode}
-          viewOnly={viewOnly}
-          root
-        />
+        <AstBuilderNode treePath={treePath} astNode={astNode} viewOnly={viewOnly} root />
         <EvaluationErrors errors={errorMessages} />
       </div>
       {!viewOnly ? (

@@ -12,13 +12,12 @@ type BaseUseCursorPaginatedFetcherOptions<D> = {
   validateData?: (data: D) => boolean;
 };
 
-type UseCursorPaginatedFetcherOptions<T, D> =
-  BaseUseCursorPaginatedFetcherOptions<D> &
-    (D extends T
-      ? Record<string, never>
-      : {
-          transform: (value: SerializeFrom<T>) => D;
-        });
+type UseCursorPaginatedFetcherOptions<T, D> = BaseUseCursorPaginatedFetcherOptions<D> &
+  (D extends T
+    ? Record<string, never>
+    : {
+        transform: (value: SerializeFrom<T>) => D;
+      });
 
 export const useCursorPaginatedFetcher = <T, D = T>({
   initialData,
@@ -26,17 +25,11 @@ export const useCursorPaginatedFetcher = <T, D = T>({
   validateData,
   ...opts
 }: UseCursorPaginatedFetcherOptions<T, D>) => {
-  const [previousFetcherData, setPreviousFetcherData] =
-    useState<SerializeFrom<T> | null>(null);
+  const [previousFetcherData, setPreviousFetcherData] = useState<SerializeFrom<T> | null>(null);
   const [data, setData] = useState(initialData);
   const getQueryParamsRef = useCallbackRef(getQueryParams);
 
-  const {
-    state: paginationState,
-    next,
-    previous,
-    reset,
-  } = useCursorPagination();
+  const { state: paginationState, next, previous, reset } = useCursorPagination();
   const { data: fetcherData, submit } = useFetcher<T>();
 
   useEffect(() => {
@@ -57,8 +50,7 @@ export const useCursorPaginatedFetcher = <T, D = T>({
   }
 
   if (fetcherData !== previousFetcherData && fetcherData) {
-    const transformedData =
-      'transform' in opts ? opts.transform(fetcherData) : (fetcherData as D);
+    const transformedData = 'transform' in opts ? opts.transform(fetcherData) : (fetcherData as D);
 
     if (validateData?.(transformedData) ?? true) {
       setPreviousFetcherData(fetcherData);

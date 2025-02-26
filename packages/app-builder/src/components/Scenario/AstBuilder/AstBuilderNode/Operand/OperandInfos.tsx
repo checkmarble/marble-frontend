@@ -1,9 +1,4 @@
-import {
-  type AstNode,
-  type DataType,
-  getDataTypeIcon,
-  getDataTypeTKey,
-} from '@app-builder/models';
+import { type AstNode, type DataType, getDataTypeIcon, getDataTypeTKey } from '@app-builder/models';
 import {
   type AggregationAstNode,
   isAggregation,
@@ -91,13 +86,7 @@ export function OperandInfos({
   );
 }
 
-function TypeInfos({
-  operandType,
-  dataType,
-}: {
-  operandType: OperandType;
-  dataType: DataType;
-}) {
+function TypeInfos({ operandType, dataType }: { operandType: OperandType; dataType: DataType }) {
   const { t } = useTranslation(['scenarios']);
   const typeInfos = [
     {
@@ -142,9 +131,7 @@ function OperandDescription({ astNode }: { astNode: AstNode }) {
     return <DataAccessorDescription astNode={astNode} />;
   }
   if (isTimeAdd(astNode)) {
-    return (
-      <Description description={t('scenarios:edit_date.now.description')} />
-    );
+    return <Description description={t('scenarios:edit_date.now.description')} />;
   }
 
   return null;
@@ -159,21 +146,13 @@ function Description({ description }: { description: string }) {
   );
 }
 
-function CustomListAccessDescription({
-  astNode,
-}: {
-  astNode: CustomListAccessAstNode;
-}) {
+function CustomListAccessDescription({ astNode }: { astNode: CustomListAccessAstNode }) {
   const customList = useCustomListAccessCustomList(astNode);
   if (!customList) return null;
   return <Description description={customList.description} />;
 }
 
-function DataAccessorDescription({
-  astNode,
-}: {
-  astNode: DataAccessorAstNode;
-}) {
+function DataAccessorDescription({ astNode }: { astNode: DataAccessorAstNode }) {
   const { t } = useTranslation(['scenarios']);
   const { description, values, isEnum } = useDataAccessorAstNodeField(astNode);
 
@@ -189,10 +168,7 @@ function DataAccessorDescription({
               .sort()
               .map((value) => {
                 return (
-                  <li
-                    key={value}
-                    className="text-grey-50 truncate text-xs font-normal"
-                  >
+                  <li key={value} className="text-grey-50 truncate text-xs font-normal">
                     {value}
                   </li>
                 );
@@ -210,29 +186,19 @@ function DataAccessorDescription({
 function AggregatorDescription({ astNode }: { astNode: AggregationAstNode }) {
   const getAstNodeOperandProps = useGetAstNodeOperandProps();
   const { aggregator, tableName, fieldName, filters } = astNode.namedChildren;
-  if (
-    !tableName.constant &&
-    !fieldName.constant &&
-    filters.children.length === 0
-  )
-    return null;
+  if (!tableName.constant && !fieldName.constant && filters.children.length === 0) return null;
 
   const aggregatedFieldName = `${tableName.constant}.${fieldName.constant}`;
 
   return (
     <div className="grid grid-cols-[min-content_1fr] items-center gap-2">
-      <span className="text-purple-65 text-center font-bold">
-        {aggregator.constant}
-      </span>
+      <span className="text-purple-65 text-center font-bold">{aggregator.constant}</span>
       <span className="font-bold">{aggregatedFieldName}</span>
       {filters.children.map((filter, index) => {
         const { operator, fieldName } = filter.namedChildren;
         return (
           <Fragment key={`filter_${index}`}>
-            <LogicalOperatorLabel
-              operator={index === 0 ? 'where' : 'and'}
-              type="text"
-            />
+            <LogicalOperatorLabel operator={index === 0 ? 'where' : 'and'} type="text" />
             <div className="flex items-center gap-1">
               {/* TODO: replace with OperandLabel for consistency,
               we may need to change the AggregatorEditableAstNode to register a valid Payload node (instead of the shorthand Constant)

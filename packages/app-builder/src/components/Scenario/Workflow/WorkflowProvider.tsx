@@ -45,9 +45,7 @@ type WorkflowStore = WorkflowState & {
   actions: WorkflowActions;
 };
 
-const WorkflowStoreContext = createSimpleContext<StoreApi<WorkflowStore>>(
-  'WorkflowStoreContext',
-);
+const WorkflowStoreContext = createSimpleContext<StoreApi<WorkflowStore>>('WorkflowStoreContext');
 
 interface WorkflowDataContext {
   nonEditableData: { scenarioId: string | null };
@@ -56,9 +54,7 @@ interface WorkflowDataContext {
   hasPivotValue: boolean;
 }
 
-const WorkflowDataContext = createSimpleContext<WorkflowDataContext>(
-  'WorkflowDataContext',
-);
+const WorkflowDataContext = createSimpleContext<WorkflowDataContext>('WorkflowDataContext');
 
 export const useWorkflowData = WorkflowDataContext.useValue;
 
@@ -66,13 +62,11 @@ interface WorkflowDataFeatureAccess {
   isCreateInboxAvailable: boolean;
 }
 
-const WorkflowDataFeatureAccessContext =
-  createSimpleContext<WorkflowDataFeatureAccess>(
-    'WorkflowDataFeatureAccessContext',
-  );
+const WorkflowDataFeatureAccessContext = createSimpleContext<WorkflowDataFeatureAccess>(
+  'WorkflowDataFeatureAccessContext',
+);
 
-export const useWorkflowDataFeatureAccess =
-  WorkflowDataFeatureAccessContext.useValue;
+export const useWorkflowDataFeatureAccess = WorkflowDataFeatureAccessContext.useValue;
 
 interface WorkflowProviderProps {
   children: React.ReactNode;
@@ -216,9 +210,7 @@ export function WorkflowProvider({
   return (
     <WorkflowDataContext.Provider value={dataValue}>
       <WorkflowStoreContext.Provider value={store}>
-        <WorkflowDataFeatureAccessContext.Provider
-          value={workflowDataFeatureAccess}
-        >
+        <WorkflowDataFeatureAccessContext.Provider value={workflowDataFeatureAccess}>
           {children}
         </WorkflowDataFeatureAccessContext.Provider>
       </WorkflowStoreContext.Provider>
@@ -263,10 +255,7 @@ function createInitialState(initialWorkflow?: ValidWorkflow): WorkflowState {
       });
 
       const actionNode = createNode({
-        type:
-          initialWorkflow.type === 'CREATE_CASE'
-            ? 'create-case'
-            : 'add-to-case-if-possible',
+        type: initialWorkflow.type === 'CREATE_CASE' ? 'create-case' : 'add-to-case-if-possible',
         ...initialWorkflow.action,
       });
 
@@ -299,20 +288,14 @@ export function useNodes() {
 
 export function useNodeData(nodeId: string) {
   const nodes = useNodes();
-  return React.useMemo(
-    () => nodes.find((node) => node.id === nodeId)?.data,
-    [nodes, nodeId],
-  );
+  return React.useMemo(() => nodes.find((node) => node.id === nodeId)?.data, [nodes, nodeId]);
 }
 
 export function useEdges() {
   return useWorkflowStore((state) => state.edges);
 }
 
-const nonConnectableNodeDataTypes: NodeData['type'][] = [
-  'add-to-case-if-possible',
-  'create-case',
-];
+const nonConnectableNodeDataTypes: NodeData['type'][] = ['add-to-case-if-possible', 'create-case'];
 export function useIsSourceConnectable({ nodeId }: { nodeId: string }) {
   const nodeData = useNodeData(nodeId);
   const nodeType = nodeData?.type;

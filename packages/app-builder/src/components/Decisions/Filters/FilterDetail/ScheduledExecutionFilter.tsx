@@ -19,9 +19,7 @@ export function ScheduledExecutionFilter() {
   const loadFetcher = useFetcher<ScheduledExecutionsLoader>();
   React.useEffect(() => {
     if (loadFetcher.state === 'idle' && !loadFetcher.data) {
-      loadFetcher.load(
-        getRoute('/ressources/decisions/list-scheduled-execution'),
-      );
+      loadFetcher.load(getRoute('/ressources/decisions/list-scheduled-execution'));
     }
   }, [loadFetcher]);
   const successfullScheduledExecutions = React.useMemo(
@@ -41,9 +39,7 @@ export function ScheduledExecutionFilter() {
     [language, loadFetcher.data],
   );
 
-  const isLoading =
-    loadFetcher.state === 'loading' ||
-    successfullScheduledExecutions === undefined;
+  const isLoading = loadFetcher.state === 'loading' || successfullScheduledExecutions === undefined;
   const showSpinner = useSpinDelay(isLoading);
 
   const [value, setSearchValue] = React.useState('');
@@ -68,13 +64,7 @@ export function ScheduledExecutionFilter() {
         onSelectedValueChange={setSelectedScheduledExecutionIds}
       >
         <SelectWithCombobox.Combobox
-          render={
-            <Input
-              placeholder={t(
-                'decisions:filters.scheduled_execution.placeholder',
-              )}
-            />
-          }
+          render={<Input placeholder={t('decisions:filters.scheduled_execution.placeholder')} />}
           autoSelect
           autoFocus
         />
@@ -95,10 +85,7 @@ export function ScheduledExecutionFilter() {
                     dateTime={successfullScheduledExecution.startedAt.dateTime}
                   >
                     <Highlight
-                      text={
-                        successfullScheduledExecution.startedAt
-                          .formattedDateTime
-                      }
+                      text={successfullScheduledExecution.startedAt.formattedDateTime}
                       query={searchValue}
                     />
                   </time>

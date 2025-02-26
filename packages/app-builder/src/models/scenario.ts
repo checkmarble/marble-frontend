@@ -6,16 +6,10 @@ import {
 import * as z from 'zod';
 
 import { adaptAstNode, adaptNodeDto } from './astNode/ast-node';
-import {
-  isStringTemplateAstNode,
-  type StringTemplateAstNode,
-} from './astNode/strings';
+import { isStringTemplateAstNode, type StringTemplateAstNode } from './astNode/strings';
 import { type Outcome, outcomes } from './outcome';
 
-type DecisionToCaseWorkflowType =
-  | 'DISABLED'
-  | 'CREATE_CASE'
-  | 'ADD_TO_CASE_IF_POSSIBLE';
+type DecisionToCaseWorkflowType = 'DISABLED' | 'CREATE_CASE' | 'ADD_TO_CASE_IF_POSSIBLE';
 
 export interface Scenario {
   id: string;
@@ -43,9 +37,7 @@ export function adaptScenario(dto: ScenarioDto): Scenario {
     decisionToCaseOutcomes: dto.decision_to_case_outcomes,
     decisionToCaseWorkflowType: dto.decision_to_case_workflow_type,
     decisionToCaseNameTemplate:
-      caseNameAstNode && isStringTemplateAstNode(caseNameAstNode)
-        ? caseNameAstNode
-        : null,
+      caseNameAstNode && isStringTemplateAstNode(caseNameAstNode) ? caseNameAstNode : null,
     description: dto.description,
     liveVersionId: dto.live_version_id,
     name: dto.name,
@@ -60,9 +52,7 @@ export interface ScenarioCreateInput {
   triggerObjectType: string;
 }
 
-export function adaptScenarioCreateInputDto(
-  input: ScenarioCreateInput,
-): ScenarioCreateInputDto {
+export function adaptScenarioCreateInputDto(input: ScenarioCreateInput): ScenarioCreateInputDto {
   return {
     name: input.name,
     description: input.description ?? '',
@@ -91,9 +81,7 @@ export const scenarioUpdateWorkflowInputSchema = z.discriminatedUnion(
   ],
 );
 
-export type ScenarioUpdateWorkflowInput = z.infer<
-  typeof scenarioUpdateWorkflowInputSchema
->;
+export type ScenarioUpdateWorkflowInput = z.infer<typeof scenarioUpdateWorkflowInputSchema>;
 
 export function adaptScenarioUpdateInputDto(
   input: ScenarioUpdateWorkflowInput,
@@ -107,8 +95,6 @@ export function adaptScenarioUpdateInputDto(
     decision_to_case_inbox_id: input.decisionToCaseInboxId,
     decision_to_case_outcomes: input.decisionToCaseOutcomes,
     decision_to_case_workflow_type: input.decisionToCaseWorkflowType,
-    decision_to_case_name_template: adaptNodeDto(
-      input.decisionToCaseNameTemplate,
-    ),
+    decision_to_case_name_template: adaptNodeDto(input.decisionToCaseNameTemplate),
   };
 }

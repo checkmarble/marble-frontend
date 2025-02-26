@@ -17,13 +17,7 @@ import { Logo } from 'ui-icons';
 import { Spinner } from '../Spinner';
 import { PopupBlockedError } from './PopupBlockedError';
 
-function SignInWithGoogleButton({
-  onClick,
-  loading,
-}: {
-  onClick?: () => void;
-  loading?: boolean;
-}) {
+function SignInWithGoogleButton({ onClick, loading }: { onClick?: () => void; loading?: boolean }) {
   const { t } = useTranslation(['auth']);
 
   return (
@@ -53,9 +47,7 @@ function ClientSignInWithGoogle({
   loading?: boolean;
 }) {
   const { t } = useTranslation(['common', 'auth']);
-  const googleSignIn = useGoogleSignIn(
-    clientServices.authenticationClientService,
-  );
+  const googleSignIn = useGoogleSignIn(clientServices.authenticationClientService);
 
   const [handleGoogleSignIn, _state] = useAsync(async () => {
     try {
@@ -66,9 +58,7 @@ function ClientSignInWithGoogle({
       signIn({ type: 'google', idToken, csrf });
     } catch (error) {
       if (error instanceof AccountExistsWithDifferentCredential) {
-        toast.error(
-          t('common:errors.account_exists_with_different_credential'),
-        );
+        toast.error(t('common:errors.account_exists_with_different_credential'));
       } else if (error instanceof PopupBlockedByClient) {
         toast.error(<PopupBlockedError />);
       } else if (error instanceof NetworkRequestFailed) {

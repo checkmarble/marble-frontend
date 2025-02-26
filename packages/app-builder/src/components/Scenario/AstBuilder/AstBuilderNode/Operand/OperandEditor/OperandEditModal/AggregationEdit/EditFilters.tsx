@@ -2,11 +2,7 @@ import { Callout } from '@app-builder/components';
 import { scenarioI18n } from '@app-builder/components/Scenario';
 import { RemoveButton } from '@app-builder/components/Scenario/AstBuilder/RemoveButton';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import {
-  type AstNode,
-  type DataModel,
-  NewUndefinedAstNode,
-} from '@app-builder/models';
+import { type AstNode, type DataModel, NewUndefinedAstNode } from '@app-builder/models';
 import {
   aggregationFilterOperators,
   isAggregationFilterOperator,
@@ -34,10 +30,7 @@ import { Icon } from 'ui-icons';
 import { Operator } from '../../../../Operator';
 import { Operand } from '../../../Operand';
 import { type FilterViewModel, isBinaryFilterModel } from './AggregationEdit';
-import {
-  type DataModelFieldOption,
-  EditDataModelFieldTableMenu,
-} from './EditDataModelField';
+import { type DataModelFieldOption, EditDataModelFieldTableMenu } from './EditDataModelField';
 
 const newFilterValidation = () => ({
   filter: [],
@@ -68,10 +61,7 @@ export function EditFilters({
       : null;
   }, [tableName, dataModel]);
 
-  const onFilterChange = (
-    newFieldValue: Partial<FilterViewModel>,
-    filterIndex: number,
-  ): void => {
+  const onFilterChange = (newFieldValue: Partial<FilterViewModel>, filterIndex: number): void => {
     onChange(
       value.map((filter, index) => {
         if (index !== filterIndex) {
@@ -79,12 +69,8 @@ export function EditFilters({
         }
 
         if ('operator' in newFieldValue && !!newFieldValue.operator) {
-          const isOldOpUnary = isUnaryAggregationFilterOperator(
-            filter.operator,
-          );
-          const isNewOpUnary = isUnaryAggregationFilterOperator(
-            newFieldValue.operator,
-          );
+          const isOldOpUnary = isUnaryAggregationFilterOperator(filter.operator);
+          const isNewOpUnary = isUnaryAggregationFilterOperator(newFieldValue.operator);
           const isBinaryToUnary = !isOldOpUnary && isNewOpUnary;
           const isUnaryToBinary = isOldOpUnary && !isNewOpUnary;
 
@@ -151,8 +137,7 @@ export function EditFilters({
         <div className="flex flex-col gap-2">
           {value.map((filter, filterIndex) => {
             const binaryFilter = isBinaryFilterModel(filter);
-            const hasFilteredFieldError =
-              filter.errors.filteredField.length > 0;
+            const hasFilteredFieldError = filter.errors.filteredField.length > 0;
             const isLastFilter = filterIndex === value.length - 1;
 
             return (
@@ -160,9 +145,7 @@ export function EditFilters({
                 <div className="border-grey-90 flex flex-col gap-4 rounded-md border-[0.5px] p-4">
                   <div className="flex items-center justify-between">
                     <div className="text-grey-50 flex items-center gap-2 pl-2 text-xs">
-                      <span>
-                        {t('scenarios:edit_aggregation.filter_field_label')}
-                      </span>
+                      <span>{t('scenarios:edit_aggregation.filter_field_label')}</span>
                       <MenuRoot>
                         <MenuButton
                           disabled={!tableName}
@@ -191,42 +174,28 @@ export function EditFilters({
                           />
                         ) : null}
                       </MenuRoot>
-                      <span>
-                        {t('scenarios:edit_aggregation.filter_operator_label')}
-                      </span>
+                      <span>{t('scenarios:edit_aggregation.filter_operator_label')}</span>
                       <Operator
                         isFilter
                         value={
-                          filter.operator &&
-                          isAggregationFilterOperator(filter.operator)
+                          filter.operator && isAggregationFilterOperator(filter.operator)
                             ? filter.operator
                             : undefined
                         }
-                        setValue={(operator) =>
-                          onFilterChange({ operator }, filterIndex)
-                        }
-                        validationStatus={
-                          filter.errors.operator.length > 0 ? 'error' : 'valid'
-                        }
+                        setValue={(operator) => onFilterChange({ operator }, filterIndex)}
+                        validationStatus={filter.errors.operator.length > 0 ? 'error' : 'valid'}
                         operators={aggregationFilterOperators}
                       />
                       {binaryFilter && filter.operator ? (
                         <>
-                          <span>
-                            {t('scenarios:edit_aggregation.filter_value_label')}
-                          </span>
+                          <span>{t('scenarios:edit_aggregation.filter_value_label')}</span>
                           <FilterValue
                             filterValue={filter.value.astNode}
                             onSave={(astNode) =>
-                              onFilterChange(
-                                { value: { astNode } },
-                                filterIndex,
-                              )
+                              onFilterChange({ value: { astNode } }, filterIndex)
                             }
                             astNodeErrors={filter.value.astNodeErrors}
-                            validationStatus={
-                              filter.errors.value.length > 0 ? 'error' : 'valid'
-                            }
+                            validationStatus={filter.errors.value.length > 0 ? 'error' : 'valid'}
                           />
                         </>
                       ) : null}
@@ -241,9 +210,7 @@ export function EditFilters({
                   />
                 </div>
                 {!isLastFilter ? (
-                  <div className="text-grey-50 text-xs">
-                    {t('scenarios:logical_operator.and')}
-                  </div>
+                  <div className="text-grey-50 text-xs">{t('scenarios:logical_operator.and')}</div>
                 ) : null}
               </Fragment>
             );
@@ -254,13 +221,7 @@ export function EditFilters({
         <MenuRoot>
           <MenuButton
             disabled={!tableName}
-            render={
-              <Button
-                className="h-fit"
-                variant="secondary"
-                disabled={!tableName}
-              />
-            }
+            render={<Button className="h-fit" variant="secondary" disabled={!tableName} />}
           >
             <Icon icon="plus" className="size-6" />
             {t('scenarios:edit_aggregation.add_filter')}
@@ -274,9 +235,7 @@ export function EditFilters({
           ) : null}
         </MenuRoot>
         {value.length === 0 ? (
-          <Callout>
-            {t('scenarios:edit_aggregation.add_filter.callout')}
-          </Callout>
+          <Callout>{t('scenarios:edit_aggregation.add_filter.callout')}</Callout>
         ) : null}
       </div>
     </div>
@@ -295,9 +254,7 @@ function FilterValue({
   onSave: (astNode: AstNode) => void;
 }) {
   // TODO: try to get enum values from the left operand
-  const filterOptions = useOperandOptions([]).filter(
-    (opt) => opt.operandType !== 'Modeling',
-  );
+  const filterOptions = useOperandOptions([]).filter((opt) => opt.operandType !== 'Modeling');
   const coerceToConstant = useDefaultCoerceToConstant();
   const getAstNodeOperandProps = useGetAstNodeOperandProps();
 

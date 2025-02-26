@@ -1,8 +1,4 @@
-import {
-  CopyToClipboardButton,
-  ErrorComponent,
-  Page,
-} from '@app-builder/components';
+import { CopyToClipboardButton, ErrorComponent, Page } from '@app-builder/components';
 import { TransferData } from '@app-builder/components/Transfers/TransferData';
 import { transfersI18n } from '@app-builder/components/Transfers/transfers-i18n';
 import {
@@ -19,11 +15,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { getFormProps, useForm } from '@conform-to/react';
 import { parseWithZod } from '@conform-to/zod';
-import {
-  type ActionFunctionArgs,
-  json,
-  type LoaderFunctionArgs,
-} from '@remix-run/node';
+import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
@@ -37,15 +29,14 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { transferRepository, transferAlertRepository } =
-    await authService.isAuthenticated(request, {
+  const { transferRepository, transferAlertRepository } = await authService.isAuthenticated(
+    request,
+    {
       failureRedirect: getRoute('/sign-in'),
-    });
-
-  const parsedParam = await parseParamsSafe(
-    params,
-    z.object({ transferId: shortUUIDSchema }),
+    },
   );
+
+  const parsedParam = await parseParamsSafe(params, z.object({ transferId: shortUUIDSchema }));
   if (!parsedParam.success) {
     return handleParseParamError(request, parsedParam.error);
   }
@@ -82,10 +73,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const parsedParam = await parseParamsSafe(
-    params,
-    z.object({ transferId: shortUUIDSchema }),
-  );
+  const parsedParam = await parseParamsSafe(params, z.object({ transferId: shortUUIDSchema }));
   if (!parsedParam.success) {
     return handleParseParamError(request, parsedParam.error);
   }
@@ -149,9 +137,7 @@ export default function TransferDetailPage() {
               <div className="flex flex-col gap-4">
                 <fetcher.Form
                   {...getFormProps(form)}
-                  onChange={(event) =>
-                    fetcher.submit(event.currentTarget, { method: 'POST' })
-                  }
+                  onChange={(event) => fetcher.submit(event.currentTarget, { method: 'POST' })}
                 >
                   <fieldset className="flex flex-row gap-2">
                     {transferStatuses.map((status) => {

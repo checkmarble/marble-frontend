@@ -46,10 +46,7 @@ export function TransferStatusRadioButton({
         value={value}
         defaultChecked={defaultChecked}
       />
-      <label
-        htmlFor={value}
-        className={transferStatusRadioButtonVariants({ status: value })}
-      >
+      <label htmlFor={value} className={transferStatusRadioButtonVariants({ status: value })}>
         {t(`transfercheck:transfer_detail.status.${value}`)}
       </label>
       <span className="peer-checked:border-purple-65 pointer-events-none absolute -inset-px rounded border-2 border-transparent transition-colors" />

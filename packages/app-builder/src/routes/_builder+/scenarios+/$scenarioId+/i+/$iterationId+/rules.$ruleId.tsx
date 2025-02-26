@@ -18,11 +18,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
-import {
-  type ActionFunctionArgs,
-  json,
-  type LoaderFunctionArgs,
-} from '@remix-run/node';
+import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
@@ -65,14 +61,11 @@ export const handle = {
         <div className="flex items-center gap-2">
           <BreadCrumbLink
             isLast={isLast}
-            to={getRoute(
-              '/scenarios/:scenarioId/i/:iterationId/rules/:ruleId',
-              {
-                scenarioId: fromUUID(scenarioId),
-                iterationId: fromUUID(iterationId),
-                ruleId: fromUUID(rule.id),
-              },
-            )}
+            to={getRoute('/scenarios/:scenarioId/i/:iterationId/rules/:ruleId', {
+              scenarioId: fromUUID(scenarioId),
+              iterationId: fromUUID(iterationId),
+              ruleId: fromUUID(rule.id),
+            })}
           >
             {rule.name ?? fromUUID(rule.id)}
           </BreadCrumbLink>
@@ -89,17 +82,18 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { customListsRepository, editor, dataModelRepository } =
-    await authService.isAuthenticated(request, {
+  const { customListsRepository, editor, dataModelRepository } = await authService.isAuthenticated(
+    request,
+    {
       failureRedirect: getRoute('/sign-in'),
-    });
+    },
+  );
 
-  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists] =
-    await Promise.all([
-      editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
-      dataModelRepository.getDataModel(),
-      customListsRepository.listCustomLists(),
-    ]);
+  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists] = await Promise.all([
+    editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
+    dataModelRepository.getDataModel(),
+    customListsRepository.listCustomLists(),
+  ]);
 
   return {
     databaseAccessors,
@@ -125,14 +119,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
 
-  const [session, data, { scenarioIterationRuleRepository }] =
-    await Promise.all([
-      getSession(request),
-      request.json(),
-      authService.isAuthenticated(request, {
-        failureRedirect: getRoute('/sign-in'),
-      }),
-    ]);
+  const [session, data, { scenarioIterationRuleRepository }] = await Promise.all([
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
   const result = editRuleFormSchema.safeParse(data);
 
@@ -259,9 +252,7 @@ export default function RuleDetail() {
                       name={field.name}
                       disabled={editor === 'view'}
                       value={field.state.value}
-                      onChange={(e) =>
-                        field.handleChange(e.currentTarget.value)
-                      }
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
                       className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
                       placeholder={t('scenarios:edit_rule.name_placeholder')}
@@ -321,26 +312,17 @@ export default function RuleDetail() {
               <div className="border-grey-90 flex flex-col items-start gap-6 border-b pb-6">
                 <form.Field name="description">
                   {(field) => (
-                    <div
-                      ref={descriptionRef}
-                      className="flex w-full flex-col gap-1"
-                    >
+                    <div ref={descriptionRef} className="flex w-full flex-col gap-1">
                       <textarea
                         name={field.name}
                         disabled={editor === 'view'}
                         value={field.state.value}
-                        onChange={(e) =>
-                          field.handleChange(e.currentTarget.value)
-                        }
+                        onChange={(e) => field.handleChange(e.currentTarget.value)}
                         onBlur={field.handleBlur}
                         className="form-textarea text-grey-50 text-s w-full resize-none border-none bg-transparent font-medium outline-none"
-                        placeholder={t(
-                          'scenarios:edit_rule.description_placeholder',
-                        )}
+                        placeholder={t('scenarios:edit_rule.description_placeholder')}
                       />
-                      <FormErrorOrDescription
-                        errors={field.state.meta.errors}
-                      />
+                      <FormErrorOrDescription errors={field.state.meta.errors} />
                     </div>
                   )}
                 </form.Field>
@@ -354,18 +336,14 @@ export default function RuleDetail() {
                         selectedRuleGroup={field.state.value}
                         ruleGroups={ruleGroups}
                       />
-                      <FormErrorOrDescription
-                        errors={field.state.meta.errors}
-                      />
+                      <FormErrorOrDescription errors={field.state.meta.errors} />
                     </div>
                   )}
                 </form.Field>
               </div>
 
               <div className="flex flex-col gap-2">
-                <span className="text-s font-medium">
-                  {t('scenarios:edit_rule.formula')}
-                </span>
+                <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
                 <div className="bg-grey-100 border-grey-90 rounded-md border p-6">
                   <form.Field name="formula">
                     {(field) => (
@@ -394,14 +372,10 @@ export default function RuleDetail() {
                             disabled={editor === 'view'}
                             name={field.name}
                             value={field.state.value}
-                            onChange={(e) =>
-                              field.handleChange(+e.currentTarget.value)
-                            }
+                            onChange={(e) => field.handleChange(+e.currentTarget.value)}
                             onBlur={field.handleBlur}
                           />
-                          <FormErrorOrDescription
-                            errors={field.state.meta.errors}
-                          />
+                          <FormErrorOrDescription errors={field.state.meta.errors} />
                         </div>
                       )}
                     </form.Field>

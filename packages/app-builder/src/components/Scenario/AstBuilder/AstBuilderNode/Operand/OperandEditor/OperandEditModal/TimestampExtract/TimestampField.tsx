@@ -34,9 +34,7 @@ export function TimestampField({
   const defaultCoerceToConstant = useDefaultCoerceToConstant();
   const coerceToConstant = React.useCallback(
     (searchValue: string) =>
-      defaultCoerceToConstant(searchValue).filter(
-        ({ dataType }) => dataType === 'Timestamp',
-      ),
+      defaultCoerceToConstant(searchValue).filter(({ dataType }) => dataType === 'Timestamp'),
     [defaultCoerceToConstant],
   );
 

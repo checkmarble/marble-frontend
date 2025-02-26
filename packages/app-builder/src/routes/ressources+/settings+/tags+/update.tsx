@@ -6,12 +6,7 @@ import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -124,30 +119,18 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
         <Modal.Title>{t('settings:tags.update_tag')}</Modal.Title>
         <div className="flex flex-col gap-6 p-6">
           <div className="flex gap-2">
-            <input
-              {...getInputProps(fields.id, { type: 'hidden' })}
-              key={fields.id.key}
-            />
-            <FormField
-              name={fields.name.name}
-              className="group flex w-full flex-col gap-2"
-            >
+            <input {...getInputProps(fields.id, { type: 'hidden' })} key={fields.id.key} />
+            <FormField name={fields.name.name} className="group flex w-full flex-col gap-2">
               <FormLabel>{t('settings:tags.name')}</FormLabel>
               <FormInput type="text" />
               <FormErrorOrDescription />
             </FormField>
-            <FormField
-              name={fields.color.name}
-              className="group flex flex-col gap-2"
-            >
+            <FormField name={fields.color.name} className="group flex flex-col gap-2">
               <FormLabel>{t('settings:tags.color')}</FormLabel>
               <FormSelect.Default options={tagColors}>
                 {tagColors.map((color) => (
                   <FormSelect.DefaultItem key={color} value={color}>
-                    <div
-                      className="size-4 rounded-full"
-                      style={{ backgroundColor: color }}
-                    ></div>
+                    <div className="size-4 rounded-full" style={{ backgroundColor: color }}></div>
                   </FormSelect.DefaultItem>
                 ))}
               </FormSelect.Default>
@@ -160,12 +143,7 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="update"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="update">
               {t('common:save')}
             </Button>
           </div>

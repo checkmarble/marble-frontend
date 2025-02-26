@@ -11,15 +11,7 @@ describe('getPivotOptions', () => {
   it('should only keep String field', () => {
     const tableModel: TableModel = helperTable({
       id: '1',
-      fields: helperFields([
-        'String',
-        'Int',
-        'Float',
-        'Bool',
-        'String[]',
-        'Int[]',
-        'Float[]',
-      ]),
+      fields: helperFields(['String', 'Int', 'Float', 'Bool', 'String[]', 'Int[]', 'Float[]']),
       linksToSingle: [],
     });
     const dataModel: DataModel = [tableModel];
@@ -247,9 +239,7 @@ describe('getPivotOptions', () => {
   });
 });
 
-function helperTable(
-  args: Pick<TableModel, 'id' | 'fields' | 'linksToSingle'>,
-): TableModel {
+function helperTable(args: Pick<TableModel, 'id' | 'fields' | 'linksToSingle'>): TableModel {
   return {
     ...args,
     name: `table${args.id}`,

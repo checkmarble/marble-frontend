@@ -19,9 +19,7 @@ export const FiltersButton = forwardRef<HTMLButtonElement, FiltersButtonProps>(
         {...props}
       >
         <Icon icon="filters" className="size-5" />
-        <span className="text-s font-semibold first-letter:capitalize">
-          {t('filters:filters')}
-        </span>
+        <span className="text-s font-semibold first-letter:capitalize">{t('filters:filters')}</span>
       </Button>
     );
   },

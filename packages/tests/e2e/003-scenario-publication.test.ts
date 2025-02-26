@@ -33,9 +33,7 @@ test('create and activate a valid scenario', async ({ page, authenticate }) => {
 
   await scenarioIterationPage.goto('trigger');
 
-  await expect(
-    page.getByText('At least one condition is required'),
-  ).toBeVisible();
+  await expect(page.getByText('At least one condition is required')).toBeVisible();
 
   const { triggerConditionBuilder } = scenarioIterationPage;
 

@@ -109,9 +109,7 @@ function ClientSendEmailVerificationDescription() {
 export function SendEmailVerificationDescription() {
   const { t } = useTranslation(['auth']);
   return (
-    <ClientOnly
-      fallback={<Trans t={t} i18nKey="auth:email-verification.description" />}
-    >
+    <ClientOnly fallback={<Trans t={t} i18nKey="auth:email-verification.description" />}>
       {() => <ClientSendEmailVerificationDescription />}
     </ClientOnly>
   );

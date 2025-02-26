@@ -4,16 +4,9 @@ import { Handle, NodeToolbar, Position, useReactFlow } from 'reactflow';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import {
-  type ActionData,
-  type TriggerData,
-  useTitleInfo,
-} from '../models/nodes';
+import { type ActionData, type TriggerData, useTitleInfo } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
-import {
-  useIsSourceConnectable,
-  useWorkflowActions,
-} from '../WorkflowProvider';
+import { useIsSourceConnectable, useWorkflowActions } from '../WorkflowProvider';
 
 export function NodeRoot({ children }: { children: React.ReactNode }) {
   return <div className="group relative min-w-72 max-w-96">{children}</div>;
@@ -77,19 +70,13 @@ export function TriggerNodeContainer({
   const { t } = useTranslation(workflowI18n);
   return (
     <NodeRoot>
-      <NodeToolbar
-        position={Position.Right}
-        align="center"
-        className="flex flex-col pt-8"
-      >
+      <NodeToolbar position={Position.Right} align="center" className="flex flex-col pt-8">
         <DeleteNode nodeId={id} />
       </NodeToolbar>
       <p
         className={clsx(
           'text-s bg-grey-98 border-grey-90 flex h-8 w-fit flex-row items-center gap-1 rounded-t-md border border-b-0 px-2 capitalize',
-          selected
-            ? 'border-purple-65 text-purple-65'
-            : 'border-grey-90 text-grey-50',
+          selected ? 'border-purple-65 text-purple-65' : 'border-grey-90 text-grey-50',
         )}
       >
         <Icon icon="trigger" className="size-4" />
@@ -120,11 +107,7 @@ export function NodeContainer({
 }) {
   return (
     <NodeRoot>
-      <NodeToolbar
-        position={Position.Right}
-        align="center"
-        className="flex flex-col"
-      >
+      <NodeToolbar position={Position.Right} align="center" className="flex flex-col">
         <DeleteNode nodeId={id} />
       </NodeToolbar>
       <Handle type="target" position={Position.Top} />

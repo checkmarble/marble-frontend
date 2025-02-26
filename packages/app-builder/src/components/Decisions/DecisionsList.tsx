@@ -8,13 +8,7 @@ import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import {
-  useCallback,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, Table, Tooltip, useTable } from 'ui-design-system';
 
@@ -73,10 +67,7 @@ type WithoutSelectable = {
 export function useSelectedDecisionIds() {
   const [rowSelection, setRowSelection] = useState({});
   const getSelectedDecisionsRef = useRef<() => DecisionViewModel[]>(() => []);
-  const getSelectedDecisions = useCallback(
-    () => getSelectedDecisionsRef.current(),
-    [],
-  );
+  const getSelectedDecisions = useCallback(() => getSelectedDecisionsRef.current(), []);
 
   return {
     hasSelection: Object.keys(rowSelection).length > 0,
@@ -156,9 +147,7 @@ export function DecisionsList({
         cell: ({ getValue, row }) => (
           <div className="flex flex-row items-center gap-2">
             <Tooltip.Default content={getValue()}>
-              <span className="text-grey-00 text-s line-clamp-2 font-normal">
-                {getValue()}
-              </span>
+              <span className="text-grey-00 text-s line-clamp-2 font-normal">{getValue()}</span>
             </Tooltip.Default>
             <div className="border-grey-90 text-grey-00 rounded-full border px-3 py-1 font-semibold">
               {`V${row.original.scenario.version}`}
@@ -185,16 +174,10 @@ export function DecisionsList({
         cell: ({ getValue, row }) =>
           row.original.case ? (
             <div className="flex w-fit flex-row items-center justify-center gap-2 align-baseline">
-              <CaseStatus
-                size="big"
-                type="first-letter"
-                status={row.original.case.status}
-              />
+              <CaseStatus size="big" type="first-letter" status={row.original.case.status} />
               <Tooltip.Default content={getValue()}>
                 <div className="bg-grey-98 flex h-8 items-center justify-center rounded px-2">
-                  <span className="text-grey-00 text-s line-clamp-1 font-normal">
-                    {getValue()}
-                  </span>
+                  <span className="text-grey-00 text-s line-clamp-1 font-normal">{getValue()}</span>
                 </div>
               </Tooltip.Default>
             </div>
@@ -231,24 +214,21 @@ export function DecisionsList({
         minSize: 80,
         cell: ({ getValue }) => <Score score={getValue()} />,
       }),
-      columnHelper.accessor(
-        (row) => ({ outcome: row.outcome, reviewStatus: row.reviewStatus }),
-        {
-          id: 'outcome',
-          header: t('decisions:outcome'),
-          size: 150,
-          cell: ({ getValue }) => {
-            const { outcome, reviewStatus } = getValue();
-            return (
-              <OutcomeAndReviewStatus
-                outcome={outcome}
-                className="my-2 w-full"
-                reviewStatus={reviewStatus}
-              />
-            );
-          },
+      columnHelper.accessor((row) => ({ outcome: row.outcome, reviewStatus: row.reviewStatus }), {
+        id: 'outcome',
+        header: t('decisions:outcome'),
+        size: 150,
+        cell: ({ getValue }) => {
+          const { outcome, reviewStatus } = getValue();
+          return (
+            <OutcomeAndReviewStatus
+              outcome={outcome}
+              className="my-2 w-full"
+              reviewStatus={reviewStatus}
+            />
+          );
         },
-      ),
+      }),
     ],
     [t, selectable, language],
   );
@@ -280,10 +260,7 @@ export function DecisionsList({
   );
 
   return (
-    <Table.Container
-      {...getContainerProps()}
-      className={clsx('bg-grey-100', className)}
-    >
+    <Table.Container {...getContainerProps()} className={clsx('bg-grey-100', className)}>
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {

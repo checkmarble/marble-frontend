@@ -56,9 +56,7 @@ export interface ScheduledExecution {
   finishedAt: string | null;
 }
 
-export function adaptScheduledExecution(
-  dto: ScheduledExecutionDto,
-): ScheduledExecution {
+export function adaptScheduledExecution(dto: ScheduledExecutionDto): ScheduledExecution {
   return {
     id: dto.id,
     manual: dto.manual,
@@ -182,9 +180,7 @@ function adaptRuleExecutionDto(dto: RuleExecutionDto): RuleExecution {
     name: dto.name,
     ruleId: dto.rule_id,
     description: dto.description || undefined,
-    evaluation: dto.rule_evaluation
-      ? adaptNodeEvaluation(dto.rule_evaluation)
-      : undefined,
+    evaluation: dto.rule_evaluation ? adaptNodeEvaluation(dto.rule_evaluation) : undefined,
   };
   switch (dto.outcome) {
     case 'hit': {
@@ -195,10 +191,7 @@ function adaptRuleExecutionDto(dto: RuleExecutionDto): RuleExecution {
       };
     }
     case 'error': {
-      invariant(
-        dto.error,
-        '[RuleExecutionDto] error is missing for error outcome',
-      );
+      invariant(dto.error, '[RuleExecutionDto] error is missing for error outcome');
       return {
         ...ruleExecution,
         outcome: 'error',

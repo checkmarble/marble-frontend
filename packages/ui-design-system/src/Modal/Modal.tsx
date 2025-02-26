@@ -25,23 +25,24 @@ interface ModalContentProps
   extends Dialog.DialogContentProps,
     VariantProps<typeof modalContentClassnames> {}
 
-const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(
-  function ModalContent({ className, size = 'small', ...props }, ref) {
-    return (
-      <Dialog.Portal>
-        <Dialog.Overlay className="animate-overlayShow bg-grey-00/20 fixed inset-0 flex items-center justify-center p-4" />
-        <Dialog.Content
-          ref={ref}
-          {...props}
-          className={modalContentClassnames({
-            size,
-            className: clsx('fixed left-1/2 -translate-x-1/2', className),
-          })}
-        />
-      </Dialog.Portal>
-    );
-  },
-);
+const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function ModalContent(
+  { className, size = 'small', ...props },
+  ref,
+) {
+  return (
+    <Dialog.Portal>
+      <Dialog.Overlay className="animate-overlayShow bg-grey-00/20 fixed inset-0 flex items-center justify-center p-4" />
+      <Dialog.Content
+        ref={ref}
+        {...props}
+        className={modalContentClassnames({
+          size,
+          className: clsx('fixed left-1/2 -translate-x-1/2', className),
+        })}
+      />
+    </Dialog.Portal>
+  );
+});
 
 function ModalTitle(props: Dialog.DialogTitleProps) {
   return (
@@ -66,10 +67,7 @@ export interface ModalContentV2Props
     VariantProps<typeof modalContentClassnames> {}
 
 export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(
-  function ModalContentV2(
-    { className, size = 'small', fixedHeight, ...props },
-    ref,
-  ) {
+  function ModalContentV2({ className, size = 'small', fixedHeight, ...props }, ref) {
     return (
       <Ariakit.Dialog
         ref={ref}
@@ -90,10 +88,7 @@ export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(
         }
         unmountOnHide
         render={({ className, ...p }) => (
-          <div
-            className={clsx(className, 'fixed left-1/2 -translate-x-1/2')}
-            {...p}
-          />
+          <div className={clsx(className, 'fixed left-1/2 -translate-x-1/2')} {...p} />
         )}
         {...props}
       />

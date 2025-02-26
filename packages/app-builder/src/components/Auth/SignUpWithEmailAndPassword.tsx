@@ -63,22 +63,13 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
           <FormItem className="flex flex-col items-start gap-2">
             <FormLabel>{t('auth:sign_in.password')}</FormLabel>
             <FormControl>
-              <Input
-                className="w-full"
-                type="password"
-                autoComplete="new-password"
-                {...field}
-              />
+              <Input className="w-full" type="password" autoComplete="new-password" {...field} />
             </FormControl>
             <FormError />
           </FormItem>
         )}
       />
-      <FormField
-        control={control}
-        name="credentials"
-        render={() => <FormError />}
-      />
+      <FormField control={control} name="credentials" render={() => <FormError />} />
       <Button type="submit">{t('auth:sign_up')}</Button>
     </>
   );
@@ -86,11 +77,7 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
   return (
     <FormProvider {...formMethods}>
       <ClientOnly
-        fallback={
-          <SignUpWithEmailAndPasswordForm>
-            {children}
-          </SignUpWithEmailAndPasswordForm>
-        }
+        fallback={<SignUpWithEmailAndPasswordForm>{children}</SignUpWithEmailAndPasswordForm>}
       >
         {() => (
           <ClientSignUpWithEmailAndPasswordForm signUp={signUp}>
@@ -102,9 +89,7 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
   );
 }
 
-function SignUpWithEmailAndPasswordForm(
-  props: React.ComponentPropsWithoutRef<'form'>,
-) {
+function SignUpWithEmailAndPasswordForm(props: React.ComponentPropsWithoutRef<'form'>) {
   return <form noValidate className="flex w-full flex-col gap-4" {...props} />;
 }
 
@@ -121,42 +106,39 @@ function ClientSignUpWithEmailAndPasswordForm({
     clientServices.authenticationClientService,
   );
 
-  const { handleSubmit, setError } =
-    useFormContext<EmailAndPasswordFormValues>();
+  const { handleSubmit, setError } = useFormContext<EmailAndPasswordFormValues>();
 
-  const handleEmailSignIn = handleSubmit(
-    async ({ credentials: { email, password } }) => {
-      try {
-        await emailAndPasswordSignUp(email, password);
-        signUp();
-      } catch (error) {
-        if (error instanceof EmailExistsError) {
-          setError(
-            'credentials.email',
-            {
-              message: t('auth:sign_up.errors.email_already_exists'),
-            },
-            { shouldFocus: true },
-          );
-        } else if (error instanceof WeakPasswordError) {
-          setError(
-            'credentials.password',
-            {
-              message: t('auth:sign_up.errors.weak_password_error'),
-            },
-            { shouldFocus: true },
-          );
-        } else if (error instanceof NetworkRequestFailed) {
-          toast.error(t('common:errors.firebase_network_error'));
-        } else if (error instanceof TooManyRequest) {
-          toast.error(t('common:errors.too_many_requests'));
-        } else {
-          Sentry.captureException(error);
-          toast.error(t('common:errors.unknown'));
-        }
+  const handleEmailSignIn = handleSubmit(async ({ credentials: { email, password } }) => {
+    try {
+      await emailAndPasswordSignUp(email, password);
+      signUp();
+    } catch (error) {
+      if (error instanceof EmailExistsError) {
+        setError(
+          'credentials.email',
+          {
+            message: t('auth:sign_up.errors.email_already_exists'),
+          },
+          { shouldFocus: true },
+        );
+      } else if (error instanceof WeakPasswordError) {
+        setError(
+          'credentials.password',
+          {
+            message: t('auth:sign_up.errors.weak_password_error'),
+          },
+          { shouldFocus: true },
+        );
+      } else if (error instanceof NetworkRequestFailed) {
+        toast.error(t('common:errors.firebase_network_error'));
+      } else if (error instanceof TooManyRequest) {
+        toast.error(t('common:errors.too_many_requests'));
+      } else {
+        Sentry.captureException(error);
+        toast.error(t('common:errors.unknown'));
       }
-    },
-  );
+    }
+  });
 
   return (
     <SignUpWithEmailAndPasswordForm

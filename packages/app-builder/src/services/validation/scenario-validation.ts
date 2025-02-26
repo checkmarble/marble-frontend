@@ -1,33 +1,20 @@
 import { type ScenarioValidation } from '@app-builder/models';
-import {
-  type EvaluationError,
-  type NodeEvaluation,
-} from '@app-builder/models/node-evaluation';
+import { type EvaluationError, type NodeEvaluation } from '@app-builder/models/node-evaluation';
 import invariant from 'tiny-invariant';
 
 // return just an array of error from a recursive evaluation
-function flattenNodeEvaluationErrors(
-  evaluation: NodeEvaluation,
-): EvaluationError[] {
+function flattenNodeEvaluationErrors(evaluation: NodeEvaluation): EvaluationError[] {
   return [
     ...(evaluation.errors ?? []),
     ...evaluation.children.flatMap(flattenNodeEvaluationErrors),
-    ...Object.values(evaluation.namedChildren).flatMap(
-      flattenNodeEvaluationErrors,
-    ),
+    ...Object.values(evaluation.namedChildren).flatMap(flattenNodeEvaluationErrors),
   ];
 }
 
-export function findRuleValidation(
-  validation: ScenarioValidation,
-  ruleId: string,
-) {
+export function findRuleValidation(validation: ScenarioValidation, ruleId: string) {
   const ruleValidation = validation.rules.ruleItems[ruleId];
 
-  invariant(
-    ruleValidation !== undefined,
-    `Rule ${ruleId} not found in validation`,
-  );
+  invariant(ruleValidation !== undefined, `Rule ${ruleId} not found in validation`);
 
   return ruleValidation;
 }
@@ -39,8 +26,7 @@ export function countNodeEvaluationErrors(evaluation: NodeEvaluation): number {
 export function hasTriggerErrors(validation: ScenarioValidation): boolean {
   if (validation.trigger.errors.length > 0) return true;
 
-  if (countNodeEvaluationErrors(validation.trigger.triggerEvaluation) > 0)
-    return true;
+  if (countNodeEvaluationErrors(validation.trigger.triggerEvaluation) > 0) return true;
 
   return false;
 }
@@ -65,7 +51,6 @@ export function hasRuleErrors(
   ruleValidation: ScenarioValidation['rules']['ruleItems'][number],
 ): boolean {
   return (
-    ruleValidation.errors.length > 0 ||
-    countNodeEvaluationErrors(ruleValidation.ruleEvaluation) > 0
+    ruleValidation.errors.length > 0 || countNodeEvaluationErrors(ruleValidation.ruleEvaluation) > 0
   );
 }

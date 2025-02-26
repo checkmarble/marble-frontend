@@ -12,11 +12,7 @@ import {
 import { useGetRuleSnoozeFetcher } from '@app-builder/routes/ressources+/rule-snoozes+/read.$ruleSnoozeId';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
-import {
-  formatDateRelative,
-  formatDateTime,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatDateRelative, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
@@ -44,10 +40,7 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
         const Title = getEventTitle(event, t);
         const Detail = getEventDetail(event);
         return (
-          <div
-            key={event.id}
-            className="grid w-full grid-cols-[max-content,_1fr] gap-x-2 gap-y-1"
-          >
+          <div key={event.id} className="grid w-full grid-cols-[max-content,_1fr] gap-x-2 gap-y-1">
             {EventIcon}
             <span className="flex w-full flex-row items-baseline gap-2">
               <span className="flex-1 text-start">{Title}</span>
@@ -65,20 +58,9 @@ export function CaseEvents({ events }: { events: CaseEvent[] }) {
   );
 }
 
-function EventIcon({
-  className,
-  icon,
-}: {
-  icon: IconName;
-  className?: string;
-}) {
+function EventIcon({ className, icon }: { icon: IconName; className?: string }) {
   return (
-    <div
-      className={cx(
-        'flex size-6 items-center justify-center rounded-full',
-        className,
-      )}
-    >
+    <div className={cx('flex size-6 items-center justify-center rounded-full', className)}>
       <Icon icon={icon} className="size-4" />
     </div>
   );
@@ -87,14 +69,10 @@ function EventIcon({
 export function getEventIcon(eventType: CaseEventType) {
   switch (eventType) {
     case 'status_updated': {
-      return (
-        <EventIcon className="bg-blue-96 text-blue-58" icon="manage-search" />
-      );
+      return <EventIcon className="bg-blue-96 text-blue-58" icon="manage-search" />;
     }
     case 'case_created':
-      return (
-        <EventIcon className="bg-blue-96 text-blue-58" icon="case-manager" />
-      );
+      return <EventIcon className="bg-blue-96 text-blue-58" icon="case-manager" />;
     case 'decision_added':
       return <EventIcon className="bg-blue-96 text-blue-58" icon="decision" />;
     case 'tags_updated':
@@ -103,29 +81,17 @@ export function getEventIcon(eventType: CaseEventType) {
     case 'comment_added':
       return <EventIcon className="bg-grey-90 text-grey-50" icon="edit" />;
     case 'file_added':
-      return (
-        <EventIcon className="bg-grey-90 text-grey-50" icon="attachment" />
-      );
+      return <EventIcon className="bg-grey-90 text-grey-50" icon="attachment" />;
     case 'rule_snooze_created':
-      return (
-        <EventIcon className="bg-purple-96 text-purple-65" icon="snooze" />
-      );
+      return <EventIcon className="bg-purple-96 text-purple-65" icon="snooze" />;
     case 'decision_reviewed':
-      return (
-        <EventIcon
-          className="bg-purple-96 text-purple-65"
-          icon="case-manager"
-        />
-      );
+      return <EventIcon className="bg-purple-96 text-purple-65" icon="case-manager" />;
     default:
       assertNever('[CaseEvent] unknown event:', eventType);
   }
 }
 
-export function getEventTitle(
-  event: CaseEvent,
-  t: TFunction<typeof casesI18n>,
-) {
+export function getEventTitle(event: CaseEvent, t: TFunction<typeof casesI18n>) {
   const { eventType } = event;
   switch (eventType) {
     case 'case_created': {
@@ -138,9 +104,7 @@ export function getEventTitle(
       } else {
         return (
           <span className="text-s text-grey-00 font-semibold">
-            {t(
-              'cases:case_detail.history.event_title.case_created_automatically',
-            )}
+            {t('cases:case_detail.history.event_title.case_created_automatically')}
           </span>
         );
       }
@@ -200,9 +164,7 @@ export function getEventTitle(
             t={t}
             i18nKey="cases:case_detail.history.event_title.status_updated"
             components={{
-              Status: (
-                <CaseStatus status={event.newStatus} size="small" type="full" />
-              ),
+              Status: <CaseStatus status={event.newStatus} size="small" type="full" />,
             }}
           />
         </span>
@@ -271,13 +233,7 @@ function Author({
         t={t}
         i18nKey={`cases:case_detail.history.event_detail.${type}`}
         components={{
-          Avatar: (
-            <Avatar
-              size="xs"
-              firstName={user?.firstName}
-              lastName={user?.lastName}
-            />
-          ),
+          Avatar: <Avatar size="xs" firstName={user?.firstName} lastName={user?.lastName} />,
           User: <span className="text-s text-grey-00 font-normal capitalize" />,
         }}
         values={{
@@ -288,11 +244,7 @@ function Author({
   );
 }
 
-function ByWorkflow({
-  type,
-}: {
-  type: 'added_by_workflow' | 'edited_by_workflow';
-}) {
+function ByWorkflow({ type }: { type: 'added_by_workflow' | 'edited_by_workflow' }) {
   const { t } = useTranslation(casesI18n);
   return (
     <div className="text-grey-00 text-s font-medium">
@@ -354,11 +306,7 @@ function CommentAddedEventDetail({ event }: { event: CommentAddedEvent }) {
   );
 }
 
-function DecisionReviewedEventDetail({
-  event,
-}: {
-  event: DecisionReviewedEvent;
-}) {
+function DecisionReviewedEventDetail({ event }: { event: DecisionReviewedEvent }) {
   const { t } = useTranslation(casesI18n);
 
   return (
@@ -373,9 +321,7 @@ function DecisionReviewedEventDetail({
           decisionId: fromUUID(event.decisionId),
         })}
       >
-        {t(
-          'cases:case_detail.history.event_detail.rule_snooze_created.decision_detail',
-        )}
+        {t('cases:case_detail.history.event_detail.rule_snooze_created.decision_detail')}
       </Link>
     </div>
   );
@@ -420,9 +366,7 @@ function RuleSnoozeCreatedDetail({ event }: { event: RuleSnoozeCreatedEvent }) {
           tabIndex={-1}
           className="text-s text-purple-65 inline-flex w-fit cursor-pointer items-center gap-1 font-normal"
         >
-          {t(
-            'cases:case_detail.history.event_detail.rule_snooze_created.load_details',
-          )}
+          {t('cases:case_detail.history.event_detail.rule_snooze_created.load_details')}
         </Ariakit.HovercardAnchor>
         <Ariakit.Hovercard
           unmountOnHide
@@ -447,17 +391,13 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
   const isLoading = state === 'loading' || !data;
 
   if (isError) {
-    return (
-      <div className="text-s text-red-47">{t('common:errors.unknown')}</div>
-    );
+    return <div className="text-s text-red-47">{t('common:errors.unknown')}</div>;
   }
 
   return (
     <div className="grid w-full auto-rows-max grid-cols-[max-content_1fr] items-baseline gap-2">
       <span className="text-grey-00 text-s font-medium first-letter:capitalize">
-        {t(
-          'cases:case_detail.history.event_detail.rule_snooze_created.pivot_value',
-        )}
+        {t('cases:case_detail.history.event_detail.rule_snooze_created.pivot_value')}
       </span>
       <span className="text-grey-00 text-s">
         {isLoading ? (
@@ -471,9 +411,7 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
         )}
       </span>
       <span className="text-grey-00 text-s font-medium first-letter:capitalize">
-        {t(
-          'cases:case_detail.history.event_detail.rule_snooze_created.created_from_decision',
-        )}
+        {t('cases:case_detail.history.event_detail.rule_snooze_created.created_from_decision')}
       </span>
       <span className="text-grey-00 text-s">
         {isLoading ? (
@@ -485,18 +423,14 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
               decisionId: fromUUID(data.ruleSnoozeDetail.createdFromDecisionId),
             })}
           >
-            {t(
-              'cases:case_detail.history.event_detail.rule_snooze_created.decision_detail',
-            )}
+            {t('cases:case_detail.history.event_detail.rule_snooze_created.decision_detail')}
           </Link>
         ) : (
           '-'
         )}
       </span>
       <span className="text-grey-00 text-s font-medium first-letter:capitalize">
-        {t(
-          'cases:case_detail.history.event_detail.rule_snooze_created.created_from_rule',
-        )}
+        {t('cases:case_detail.history.event_detail.rule_snooze_created.created_from_rule')}
       </span>
       <span className="text-grey-00 text-s">
         {isLoading ? (
@@ -504,39 +438,26 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
         ) : (
           <Link
             className="hover:text-purple-60 focus:text-purple-60 text-purple-65 relative font-normal hover:underline focus:underline"
-            to={getRoute(
-              '/scenarios/:scenarioId/i/:iterationId/rules/:ruleId',
-              {
-                scenarioId: fromUUID(
-                  data.ruleSnoozeDetail.createdFromRule.scenarioId,
-                ),
-                iterationId: fromUUID(
-                  data.ruleSnoozeDetail.createdFromRule.scenarioIterationId,
-                ),
-                ruleId: fromUUID(data.ruleSnoozeDetail.createdFromRule.ruleId),
-              },
-            )}
+            to={getRoute('/scenarios/:scenarioId/i/:iterationId/rules/:ruleId', {
+              scenarioId: fromUUID(data.ruleSnoozeDetail.createdFromRule.scenarioId),
+              iterationId: fromUUID(data.ruleSnoozeDetail.createdFromRule.scenarioIterationId),
+              ruleId: fromUUID(data.ruleSnoozeDetail.createdFromRule.ruleId),
+            })}
           >
             {data.ruleSnoozeDetail.createdFromRule.ruleName ??
-              t(
-                'cases:case_detail.history.event_detail.rule_snooze_created.rule_detail',
-              )}
+              t('cases:case_detail.history.event_detail.rule_snooze_created.rule_detail')}
           </Link>
         )}
       </span>
       <span className="text-grey-00 text-s font-medium first-letter:capitalize">
-        {t(
-          'cases:case_detail.history.event_detail.rule_snooze_created.validity',
-        )}
+        {t('cases:case_detail.history.event_detail.rule_snooze_created.validity')}
       </span>
       <span className="text-grey-00 text-s">
         {t('cases:case_detail.pivot_values.snooze_from_to', {
           from: isLoading
             ? '--/--/----'
             : formatDateTime(data.ruleSnoozeDetail.startsAt, { language }),
-          to: isLoading
-            ? '--/--/----'
-            : formatDateTime(data.ruleSnoozeDetail.endsAt, { language }),
+          to: isLoading ? '--/--/----' : formatDateTime(data.ruleSnoozeDetail.endsAt, { language }),
         })}
       </span>
     </div>

@@ -15,10 +15,7 @@ import {
   unaryAggregationFilterOperators,
 } from '@app-builder/models/astNode/aggregation';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
-import {
-  type AggregatorOperator,
-  aggregatorOperators,
-} from '@app-builder/models/modale-operators';
+import { type AggregatorOperator, aggregatorOperators } from '@app-builder/models/modale-operators';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useAstValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
@@ -41,10 +38,7 @@ import { Button, Input, ModalV2 } from 'ui-design-system';
 import { Logo } from 'ui-icons';
 
 import { Operator } from '../../../../Operator';
-import {
-  type DataModelFieldOption,
-  EditDataModelField,
-} from './EditDataModelField';
+import { type DataModelFieldOption, EditDataModelField } from './EditDataModelField';
 import { EditFilters } from './EditFilters';
 
 export const handle = {
@@ -62,9 +56,7 @@ export interface AggregationViewModel {
     aggregatedField: EvaluationError[];
   };
 }
-export type FilterViewModel<
-  T extends AggregationFilterOperator = AggregationFilterOperator,
-> = {
+export type FilterViewModel<T extends AggregationFilterOperator = AggregationFilterOperator> = {
   operator: T | null;
   filteredField: DataModelFieldOption | null;
   errors: {
@@ -84,9 +76,9 @@ export const isUnaryFilterModel = (
 ): filter is FilterViewModel<UnaryAggregationFilterOperator> => {
   return (
     !!filter.operator &&
-    (
-      unaryAggregationFilterOperators as ReadonlyArray<AggregationFilterOperator>
-    ).includes(filter.operator)
+    (unaryAggregationFilterOperators as ReadonlyArray<AggregationFilterOperator>).includes(
+      filter.operator,
+    )
   );
 };
 
@@ -95,9 +87,9 @@ export const isBinaryFilterModel = (
 ): filter is FilterViewModel<BinaryAggregationFilterOperator> => {
   return (
     filter.operator === null ||
-    (
-      binaryAggregationFilterOperators as ReadonlyArray<AggregationFilterOperator>
-    ).includes(filter.operator)
+    (binaryAggregationFilterOperators as ReadonlyArray<AggregationFilterOperator>).includes(
+      filter.operator,
+    )
   );
 };
 
@@ -119,15 +111,13 @@ export const adaptAggregationViewModel = (
       }
     : null;
 
-  const initialFiltersAstNodeErrors = initialAstNodeErrors.namedChildren[
-    'filters'
-  ] ?? {
+  const initialFiltersAstNodeErrors = initialAstNodeErrors.namedChildren['filters'] ?? {
     errors: [],
     children: [],
     namedChildren: {},
   };
-  const globalFiltersAstNodeErrors = initialAstNodeErrors.errors.filter(
-    (error) => error.argumentName?.startsWith('filters'),
+  const globalFiltersAstNodeErrors = initialAstNodeErrors.errors.filter((error) =>
+    error.argumentName?.startsWith('filters'),
   );
   const filters = initialAggregationAstNode.namedChildren.filters.children.map(
     (filterAstNode, index) => {
@@ -143,12 +133,12 @@ export const adaptAggregationViewModel = (
           return err.argumentName?.replace(`filters.${index}.`, '') ?? '';
         }),
         mapValues((errors, key) => {
-          const initialErrorForField: Tree<{ errors: EvaluationError[] }> =
-            initialErrorForFilter?.namedChildren[key] ?? {
-              errors: [],
-              children: [],
-              namedChildren: {},
-            };
+          const initialErrorForField: Tree<{ errors: EvaluationError[] }> = initialErrorForFilter
+            ?.namedChildren[key] ?? {
+            errors: [],
+            children: [],
+            namedChildren: {},
+          };
           return {
             ...initialErrorForField,
             errors: [...(initialErrorForField.errors ?? []), ...errors],
@@ -177,8 +167,7 @@ export const adaptAggregationViewModel = (
   return {
     label: initialAggregationAstNode.namedChildren.label.constant ?? '',
     // No guard here: we prefer to display an unhandled operator to a default one
-    aggregator: initialAggregationAstNode.namedChildren.aggregator
-      .constant as AggregatorOperator,
+    aggregator: initialAggregationAstNode.namedChildren.aggregator.constant as AggregatorOperator,
     aggregatedField,
     filters,
     errors: {
@@ -201,9 +190,7 @@ export const adaptAggregationViewModel = (
   };
 };
 
-function adaptFilterViewModel<
-  T extends AggregationFilterAstNode = AggregationFilterAstNode,
->(
+function adaptFilterViewModel<T extends AggregationFilterAstNode = AggregationFilterAstNode>(
   filterAstNode: T,
   initialAstNodeErrors: AstNodeErrors,
 ): FilterViewModel<GetAggregationFilterOperator<T>> {
@@ -223,24 +210,15 @@ function adaptFilterViewModel<
         }),
     errors: {
       filter: initialAstNodeErrors.errors,
-      operator: computeValidationForNamedChildren(
-        filterAstNode,
-        initialAstNodeErrors,
-        'operator',
-      ),
-      filteredField: computeValidationForNamedChildren(
-        filterAstNode,
-        initialAstNodeErrors,
-        ['tableName', 'fieldName'],
-      ),
+      operator: computeValidationForNamedChildren(filterAstNode, initialAstNodeErrors, 'operator'),
+      filteredField: computeValidationForNamedChildren(filterAstNode, initialAstNodeErrors, [
+        'tableName',
+        'fieldName',
+      ]),
       ...(isUnaryAggregationFilter(filterAstNode)
         ? {}
         : {
-            value: computeValidationForNamedChildren(
-              filterAstNode,
-              initialAstNodeErrors,
-              'value',
-            ),
+            value: computeValidationForNamedChildren(filterAstNode, initialAstNodeErrors, 'value'),
           }),
     },
   } as FilterViewModel<GetAggregationFilterOperator<T>>;
@@ -308,11 +286,7 @@ export function AggregationEdit({
   const { t } = useTranslation(handle.i18n);
   const dataModel = useDataModel();
   const [aggregation, setAggregation] = useState(() =>
-    adaptAggregationViewModel(
-      dataModel,
-      initialAggregationAstNode,
-      initialAstNodeErrors,
-    ),
+    adaptAggregationViewModel(dataModel, initialAggregationAstNode, initialAstNodeErrors),
   );
   const currentScenario = useCurrentScenario();
   const { validation, validate } = useAstValidationFetcher(currentScenario.id);
@@ -365,9 +339,7 @@ export function AggregationEdit({
             </ModalV2.Description>
           </Callout>
           <div className="flex flex-col gap-2">
-            <label htmlFor="aggregation.label">
-              {t('scenarios:edit_aggregation.label_title')}
-            </label>
+            <label htmlFor="aggregation.label">{t('scenarios:edit_aggregation.label_title')}</label>
             <Input
               type="text"
               id="aggregation.label"
@@ -383,16 +355,12 @@ export function AggregationEdit({
                   },
                 })
               }
-              borderColor={
-                aggregation.errors.label.length > 0
-                  ? 'redfigma-47'
-                  : 'greyfigma-90'
-              }
+              borderColor={aggregation.errors.label.length > 0 ? 'redfigma-47' : 'greyfigma-90'}
             />
             <EvaluationErrors
-              errors={adaptEvaluationErrorViewModels(
-                aggregation.errors.label,
-              ).map(getNodeEvaluationErrorMessage)}
+              errors={adaptEvaluationErrorViewModels(aggregation.errors.label).map(
+                getNodeEvaluationErrorMessage,
+              )}
             />
           </div>
           <div className="grid grid-cols-[150px_1fr] gap-2">
@@ -411,15 +379,13 @@ export function AggregationEdit({
                     },
                   })
                 }
-                validationStatus={
-                  aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'
-                }
+                validationStatus={aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'}
                 operators={aggregatorOperators}
               />
               <EvaluationErrors
-                errors={adaptEvaluationErrorViewModels(
-                  aggregation.errors.aggregator,
-                ).map(getNodeEvaluationErrorMessage)}
+                errors={adaptEvaluationErrorViewModels(aggregation.errors.aggregator).map(
+                  getNodeEvaluationErrorMessage,
+                )}
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -439,9 +405,9 @@ export function AggregationEdit({
                 }
               />
               <EvaluationErrors
-                errors={adaptEvaluationErrorViewModels(
-                  aggregation.errors.aggregatedField,
-                ).map(getNodeEvaluationErrorMessage)}
+                errors={adaptEvaluationErrorViewModels(aggregation.errors.aggregatedField).map(
+                  getNodeEvaluationErrorMessage,
+                )}
               />
             </div>
           </div>
@@ -455,19 +421,10 @@ export function AggregationEdit({
       </div>
       <ModalV2.Footer>
         <div className="flex flex-1 flex-row gap-2 p-4">
-          <ModalV2.Close
-            render={
-              <Button className="flex-1" variant="secondary" name="cancel" />
-            }
-          >
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
             {t('common:cancel')}
           </ModalV2.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            name="save"
-            onClick={() => handleSave()}
-          >
+          <Button className="flex-1" variant="primary" name="save" onClick={() => handleSave()}>
             {t('common:save')}
           </Button>
         </div>

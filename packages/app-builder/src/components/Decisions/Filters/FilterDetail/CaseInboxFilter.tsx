@@ -7,8 +7,7 @@ import { useCaseInboxFilter } from '../DecisionFiltersContext';
 
 export function CaseInboxFilter() {
   const [value, setSearchValue] = useState('');
-  const { inboxes, selectedCaseInboxIds, setSelectedCaseInboxIds } =
-    useCaseInboxFilter();
+  const { inboxes, selectedCaseInboxIds, setSelectedCaseInboxIds } = useCaseInboxFilter();
   const searchValue = useDeferredValue(value);
 
   const matches = useMemo(

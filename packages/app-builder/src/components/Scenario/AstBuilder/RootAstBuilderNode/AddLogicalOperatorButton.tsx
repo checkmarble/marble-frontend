@@ -3,10 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-type AddLogicalOperatorButtonProps = Omit<
-  React.ComponentProps<'button'>,
-  'type'
-> & {
+type AddLogicalOperatorButtonProps = Omit<React.ComponentProps<'button'>, 'type'> & {
   operator: 'and' | 'or';
 };
 

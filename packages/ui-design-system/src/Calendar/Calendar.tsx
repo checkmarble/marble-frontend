@@ -51,13 +51,11 @@ export function Calendar({
         [UI.Chevron]: 'absolute m-auto size-5',
         [UI.MonthGrid]: 'w-full border-none',
         [UI.Weekdays]: 'flex w-full',
-        [UI.Weekday]:
-          'flex items-center justify-center size-12 text-xs font-semibold text-grey-00',
+        [UI.Weekday]: 'flex items-center justify-center size-12 text-xs font-semibold text-grey-00',
         [UI.Weeks]: 'border-none',
         [UI.Week]: 'flex w-full',
         [UI.Day]: 'flex p-0',
-        [UI.DayButton]:
-          'size-12 text-s font-medium outline-1 outline-purple-65',
+        [UI.DayButton]: 'size-12 text-s font-medium outline-1 outline-purple-65',
         [SelectionState.selected]: clsx(
           'transition-colors',
           props.mode === 'single' && 'rounded bg-purple-65 text-grey-100 ',
@@ -74,10 +72,7 @@ export function Calendar({
       }}
       components={{
         Chevron: (props) => (
-          <Icon
-            icon={props.orientation === 'left' ? 'arrow-left' : 'arrow-right'}
-            {...props}
-          />
+          <Icon icon={props.orientation === 'left' ? 'arrow-left' : 'arrow-right'} {...props} />
         ),
       }}
       {...props}

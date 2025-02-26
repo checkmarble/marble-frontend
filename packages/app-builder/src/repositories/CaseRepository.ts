@@ -38,16 +38,9 @@ export type CaseFiltersWithPagination = FiltersWithPagination<CaseFilters>;
 
 export interface CaseRepository {
   listCases(args: CaseFiltersWithPagination): Promise<PaginatedResponse<Case>>;
-  createCase(data: {
-    name: string;
-    inboxId: string;
-    decisionIds?: string[];
-  }): Promise<CaseDetail>;
+  createCase(data: { name: string; inboxId: string; decisionIds?: string[] }): Promise<CaseDetail>;
   getCase(args: { caseId: string }): Promise<CaseDetail>;
-  updateCase(args: {
-    caseId: string;
-    body: CaseUpdateBody;
-  }): Promise<CaseDetail>;
+  updateCase(args: { caseId: string; body: CaseUpdateBody }): Promise<CaseDetail>;
   addComment(args: {
     caseId: string;
     body: {
@@ -55,10 +48,7 @@ export interface CaseRepository {
     };
   }): Promise<CaseDetail>;
   setTags(args: { caseId: string; tagIds: string[] }): Promise<CaseDetail>;
-  addDecisionsToCase(args: {
-    caseId: string;
-    decisionIds: string[];
-  }): Promise<CaseDetail>;
+  addDecisionsToCase(args: { caseId: string; decisionIds: string[] }): Promise<CaseDetail>;
   reviewDecision(args: {
     decisionId: string;
     reviewComment: string;
@@ -94,9 +84,7 @@ export function makeGetCaseRepository() {
       };
     },
     createCase: async (data) => {
-      const result = await marbleCoreApiClient.createCase(
-        adaptCaseCreateBody(data),
-      );
+      const result = await marbleCoreApiClient.createCase(adaptCaseCreateBody(data));
       return adaptCaseDetail(result.case);
     },
     getCase: async ({ caseId }) => {
@@ -104,10 +92,7 @@ export function makeGetCaseRepository() {
       return adaptCaseDetail(result);
     },
     updateCase: async ({ caseId, body }) => {
-      const result = await marbleCoreApiClient.updateCase(
-        caseId,
-        adaptUpdateCaseBodyDto(body),
-      );
+      const result = await marbleCoreApiClient.updateCase(caseId, adaptUpdateCaseBodyDto(body));
       return adaptCaseDetail(result.case);
     },
     addComment: async ({ caseId, body }) => {

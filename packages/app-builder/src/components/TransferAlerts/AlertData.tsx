@@ -1,9 +1,5 @@
 import { type TransferAlertStatus } from '@app-builder/models/transfer-alert';
-import {
-  formatDateRelative,
-  formatDateTime,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatDateRelative, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'ui-design-system';
 
@@ -55,14 +51,10 @@ export function AlertData({ alert }: AlertDataProps) {
         </span>
         <span className="text-grey-00 text-s">{alert.transferEndToEndId}</span>
 
-        <span className="text-grey-50 text-s">
-          {t('transfercheck:alert.sender_iban')}
-        </span>
+        <span className="text-grey-50 text-s">{t('transfercheck:alert.sender_iban')}</span>
         <span className="text-grey-00 text-s">{alert.senderIban}</span>
 
-        <span className="text-grey-50 text-s">
-          {t('transfercheck:alert.beneficiary_iban')}
-        </span>
+        <span className="text-grey-50 text-s">{t('transfercheck:alert.beneficiary_iban')}</span>
         <span className="text-grey-00 text-s">{alert.beneficiaryIban}</span>
       </div>
     </div>

@@ -24,9 +24,7 @@ export const handle = {
       return (
         <BreadCrumbLink to={getRoute('/analytics')} isLast={isLast}>
           <Icon icon="analytics" className="me-2 size-6" />
-          <span className="line-clamp-1 text-start">
-            {t('navigation:analytics')}
-          </span>
+          <span className="line-clamp-1 text-start">{t('navigation:analytics')}</span>
         </BreadCrumbLink>
       );
     },
@@ -35,10 +33,9 @@ export const handle = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { user, analytics, entitlements } = await authService.isAuthenticated(
-    request,
-    { failureRedirect: getRoute('/sign-in') },
-  );
+  const { user, analytics, entitlements } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   if (!isAnalyticsAvailable(user, entitlements)) {
     return redirect(getRoute('/'));
@@ -68,11 +65,7 @@ export default function Analytics() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
       </Page.Header>
-      <iframe
-        src={globalDashbord.src}
-        title={globalDashbord.title}
-        className="size-full"
-      ></iframe>
+      <iframe src={globalDashbord.src} title={globalDashbord.title} className="size-full"></iframe>
     </Page.Main>
   );
 }

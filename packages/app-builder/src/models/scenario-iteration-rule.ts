@@ -18,9 +18,7 @@ export interface ScenarioIterationRule {
   createdAt: string;
 }
 
-export function adaptScenarioIterationRule(
-  dto: ScenarioIterationRuleDto,
-): ScenarioIterationRule {
+export function adaptScenarioIterationRule(dto: ScenarioIterationRuleDto): ScenarioIterationRule {
   return {
     id: dto.id,
     scenarioIterationId: dto.scenario_iteration_id,
@@ -28,9 +26,7 @@ export function adaptScenarioIterationRule(
     name: dto.name,
     description: dto.description,
     ruleGroup: dto.rule_group,
-    formula: dto.formula_ast_expression
-      ? adaptAstNode(dto.formula_ast_expression)
-      : null,
+    formula: dto.formula_ast_expression ? adaptAstNode(dto.formula_ast_expression) : null,
     scoreModifier: dto.score_modifier,
     createdAt: dto.created_at,
   };
@@ -78,9 +74,7 @@ export function adaptUpdateScenarioIterationRuleBodyDto(
     name: input.name,
     description: input.description,
     rule_group: input.ruleGroup,
-    formula_ast_expression: input.formula
-      ? adaptNodeDto(input.formula)
-      : input.formula,
+    formula_ast_expression: input.formula ? adaptNodeDto(input.formula) : input.formula,
     score_modifier: input.scoreModifier,
   };
 }

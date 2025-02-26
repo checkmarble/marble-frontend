@@ -15,14 +15,12 @@ export const isReadAllInboxesAvailable = ({ role }: CurrentUser) =>
 export const isReadTagAvailable = ({ role }: CurrentUser) =>
   role === 'ADMIN' || role === 'MARBLE_ADMIN';
 
-export const isReadApiKeyAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canReadApiKey;
+export const isReadApiKeyAvailable = ({ permissions }: CurrentUser) => permissions.canReadApiKey;
 
 export const isReadWebhookAvailable = ({ permissions }: CurrentUser) =>
   permissions.canManageWebhooks;
 
-export const isCreateInboxAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canEditInboxes;
+export const isCreateInboxAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
 export const isReadSnoozeAvailable = (
   { permissions }: CurrentUser,
@@ -52,11 +50,9 @@ export const isCreateDataModelLinkAvailable = ({ permissions }: CurrentUser) =>
 export const isCreateDataModelPivotAvailable = ({ permissions }: CurrentUser) =>
   permissions.canEditDataModel;
 
-export const isIngestDataAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canIngestData;
+export const isIngestDataAvailable = ({ permissions }: CurrentUser) => permissions.canIngestData;
 
-export const isCreateListAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canManageList;
+export const isCreateListAvailable = ({ permissions }: CurrentUser) => permissions.canManageList;
 
 export const isCreateListValueAvailable = ({ permissions }: CurrentUser) =>
   permissions.canManageListItem;
@@ -64,18 +60,15 @@ export const isCreateListValueAvailable = ({ permissions }: CurrentUser) =>
 export const isDeleteListValueAvailable = ({ permissions }: CurrentUser) =>
   permissions.canManageListItem;
 
-export const isEditListAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canManageList;
+export const isEditListAvailable = ({ permissions }: CurrentUser) => permissions.canManageList;
 
-export const isDeleteListAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canManageList;
+export const isDeleteListAvailable = ({ permissions }: CurrentUser) => permissions.canManageList;
 
 export const isEditScenarioAvailable = ({ permissions }: CurrentUser) =>
   permissions.canManageScenario;
 
-export const isManualTriggerScenarioAvailable = ({
-  permissions,
-}: CurrentUser) => permissions.canManageDecision;
+export const isManualTriggerScenarioAvailable = ({ permissions }: CurrentUser) =>
+  permissions.canManageDecision;
 
 export const isWorkflowsAvailable = (entitlements: LicenseEntitlements) =>
   entitlements.workflows !== 'restricted';
@@ -96,15 +89,11 @@ export const isDeleteApiKeyAvailable = ({ permissions }: CurrentUser) =>
   permissions.canCreateApiKey;
 
 export const getInboxUserRoles = (entitlements: LicenseEntitlements) =>
-  entitlements.userRoles !== 'restricted'
-    ? (['admin', 'member'] as const)
-    : (['admin'] as const);
+  entitlements.userRoles !== 'restricted' ? (['admin', 'member'] as const) : (['admin'] as const);
 
-export const isEditInboxAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canEditInboxes;
+export const isEditInboxAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
-export const isDeleteInboxAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canEditInboxes;
+export const isDeleteInboxAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
 export const isCreateInboxUserAvailable = ({ permissions }: CurrentUser) =>
   permissions.canEditInboxes;
@@ -115,28 +104,22 @@ export const isEditInboxUserAvailable = ({ permissions }: CurrentUser) =>
 export const isDeleteInboxUserAvailable = ({ permissions }: CurrentUser) =>
   permissions.canEditInboxes;
 
-export const isCreateTagAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canEditInboxes;
+export const isCreateTagAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
-export const isEditTagAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canEditInboxes;
+export const isEditTagAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
-export const isDeleteTagAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canEditInboxes;
+export const isDeleteTagAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
 export const getUserRoles = (entitlements: LicenseEntitlements) =>
   entitlements.userRoles !== 'restricted'
     ? (['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'] as const)
     : (['ADMIN'] as const);
 
-export const isCreateUserAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canCreateUser;
+export const isCreateUserAvailable = ({ permissions }: CurrentUser) => permissions.canCreateUser;
 
-export const isEditUserAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canCreateUser;
+export const isEditUserAvailable = ({ permissions }: CurrentUser) => permissions.canCreateUser;
 
-export const isDeleteUserAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canDeleteUser;
+export const isDeleteUserAvailable = ({ permissions }: CurrentUser) => permissions.canDeleteUser;
 
 export const isCreateWebhookAvailable = ({ permissions }: CurrentUser) =>
   permissions.canManageWebhooks;

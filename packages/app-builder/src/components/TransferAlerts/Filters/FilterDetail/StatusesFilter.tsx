@@ -28,10 +28,7 @@ export function StatusesFilter() {
         <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((status) => {
             return (
-              <SelectWithCombobox.ComboboxItem
-                key={status.value}
-                value={status.value}
-              >
+              <SelectWithCombobox.ComboboxItem key={status.value} value={status.value}>
                 <AlertStatus status={status.value} />
                 <span className="text-grey-00 text-s font-normal first-letter:capitalize">
                   {status.label}

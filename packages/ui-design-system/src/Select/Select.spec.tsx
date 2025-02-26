@@ -12,10 +12,7 @@ describe('Select', () => {
   it('should render successfully', async () => {
     const mockedOnValueChanged = vi.fn();
     render(
-      <Select.Default
-        placeholder="Select a value..."
-        onValueChange={mockedOnValueChanged}
-      >
+      <Select.Default placeholder="Select a value..." onValueChange={mockedOnValueChanged}>
         {fruits.map((fruit) => {
           return (
             <Select.DefaultItem key={fruit} value={fruit}>
@@ -32,9 +29,7 @@ describe('Select', () => {
 
     await userEvent.click(combobox);
 
-    fruits.forEach((fruit) =>
-      expect(screen.getByText(fruit)).toBeInTheDocument(),
-    );
+    fruits.forEach((fruit) => expect(screen.getByText(fruit)).toBeInTheDocument());
     await userEvent.click(screen.getByText('apple'));
 
     expect(screen.getByText('apple')).toBeInTheDocument();

@@ -28,5 +28,4 @@ export function OrganizationDetailsContextProvider({
   );
 }
 
-export const useOrganizationDetails = () =>
-  OrganizationDetailsContext.useValue();
+export const useOrganizationDetails = () => OrganizationDetailsContext.useValue();

@@ -31,12 +31,7 @@ export const sidebarLink = cva(
   },
 );
 
-export function SidebarLink({
-  Icon,
-  labelTKey,
-  to,
-  children,
-}: SidebarLinkProps) {
+export function SidebarLink({ Icon, labelTKey, to, children }: SidebarLinkProps) {
   const { t } = useTranslation(navigationI18n);
 
   return (
@@ -56,21 +51,20 @@ export interface SidebarButtonProps
   labelTKey: ParseKeys<['navigation']>;
 }
 
-export const SidebarButton = React.forwardRef<
-  HTMLButtonElement,
-  SidebarButtonProps
->(function SidebarButton({ Icon, labelTKey, className, ...props }, ref) {
-  const { t } = useTranslation(navigationI18n);
+export const SidebarButton = React.forwardRef<HTMLButtonElement, SidebarButtonProps>(
+  function SidebarButton({ Icon, labelTKey, className, ...props }, ref) {
+    const { t } = useTranslation(navigationI18n);
 
-  return (
-    <button ref={ref} className={sidebarLink({ className })} {...props}>
-      <Icon className="size-6 shrink-0" />
-      <span className="line-clamp-1 text-start opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
-        {t(labelTKey)}
-      </span>
-    </button>
-  );
-});
+    return (
+      <button ref={ref} className={sidebarLink({ className })} {...props}>
+        <Icon className="size-6 shrink-0" />
+        <span className="line-clamp-1 text-start opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+          {t(labelTKey)}
+        </span>
+      </button>
+    );
+  },
+);
 
 export interface TabLinkProps {
   Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;

@@ -23,10 +23,9 @@ import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { user, inbox, entitlements } = await authService.isAuthenticated(
-    request,
-    { failureRedirect: getRoute('/sign-in') },
-  );
+  const { user, inbox, entitlements } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   if (!isReadUserAvailable(user)) return redirect(getRoute('/'));
 
@@ -82,9 +81,7 @@ export default function Users() {
         id: 'email',
         header: t('settings:users.email'),
         size: 150,
-        cell: ({ getValue }) => (
-          <div className="overflow-hidden text-ellipsis">{getValue()}</div>
-        ),
+        cell: ({ getValue }) => <div className="overflow-hidden text-ellipsis">{getValue()}</div>,
       }),
       columnHelper.accessor((row) => row.role, {
         id: 'role',
@@ -103,9 +100,7 @@ export default function Users() {
           return (
             <ul>
               {inboxUsers.map(([role, count]) => {
-                return (
-                  <li key={role}>{t(tKeyForInboxUserRole(role), { count })}</li>
-                );
+                return <li key={role}>{t(tKeyForInboxUserRole(role), { count })}</li>;
               })}
             </ul>
           );
@@ -182,13 +177,7 @@ export default function Users() {
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>
                 {rows.map((row) => {
-                  return (
-                    <Table.Row
-                      key={row.id}
-                      className="hover:bg-purple-98 group"
-                      row={row}
-                    />
-                  );
+                  return <Table.Row key={row.id} className="hover:bg-purple-98 group" row={row} />;
                 })}
               </Table.Body>
             </Table.Container>

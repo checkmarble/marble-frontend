@@ -15,15 +15,11 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
 
   return (
     <Collapsible.Container className="bg-grey-100">
-      <Collapsible.Title>
-        {t('decisions:decision_detail.title')}
-      </Collapsible.Title>
+      <Collapsible.Title>{t('decisions:decision_detail.title')}</Collapsible.Title>
       <Collapsible.Content>
         <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-2">
           <DetailLabel>{t('decisions:created_at')}</DetailLabel>
-          <time dateTime={createdAt}>
-            {formatDateTime(createdAt, { language })}
-          </time>
+          <time dateTime={createdAt}>{formatDateTime(createdAt, { language })}</time>
 
           <DetailLabel>{t('decisions:scenario.name')}</DetailLabel>
           <Link
@@ -52,11 +48,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
           <DetailLabel>{t('decisions:case')}</DetailLabel>
           {caseDetail ? (
             <div className="flex w-fit flex-row items-center justify-center gap-1 align-baseline">
-              <CaseStatus
-                size="small"
-                type="first-letter"
-                status={caseDetail.status}
-              />
+              <CaseStatus size="small" type="first-letter" status={caseDetail.status} />
               <Link
                 to={getRoute('/cases/:caseId', {
                   caseId: fromUUID(caseDetail.id),

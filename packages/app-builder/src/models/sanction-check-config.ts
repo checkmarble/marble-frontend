@@ -17,9 +17,7 @@ export type SanctionCheckConfig = Partial<{
   counterPartyId: AstNode;
 }>;
 
-export function adaptSanctionCheckConfig(
-  dto: SanctionCheckConfigDto,
-): SanctionCheckConfig {
+export function adaptSanctionCheckConfig(dto: SanctionCheckConfigDto): SanctionCheckConfig {
   return {
     name: dto.name,
     description: dto.description,
@@ -37,18 +35,14 @@ export function adaptSanctionCheckConfig(
   };
 }
 
-export function adaptSanctionCheckConfigDto(
-  config: SanctionCheckConfig,
-): SanctionCheckConfigDto {
+export function adaptSanctionCheckConfigDto(config: SanctionCheckConfig): SanctionCheckConfigDto {
   return {
     name: config.name,
     description: config.description,
     rule_group: config.ruleGroup,
     datasets: config.datasets,
     forced_outcome: config.forcedOutcome,
-    trigger_rule: config.triggerRule
-      ? adaptNodeDto(config.triggerRule)
-      : undefined,
+    trigger_rule: config.triggerRule ? adaptNodeDto(config.triggerRule) : undefined,
     query: {
       name: config.query?.name ? adaptNodeDto(config.query.name) : undefined,
       label: config.query?.label ? adaptNodeDto(config.query.label) : undefined,

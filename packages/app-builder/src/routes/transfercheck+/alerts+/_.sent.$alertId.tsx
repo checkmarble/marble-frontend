@@ -29,17 +29,11 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { transferAlertRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { transferAlertRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
-  const parsedParam = await parseParamsSafe(
-    params,
-    z.object({ alertId: shortUUIDSchema }),
-  );
+  const parsedParam = await parseParamsSafe(params, z.object({ alertId: shortUUIDSchema }));
   if (!parsedParam.success) {
     return handleParseParamError(request, parsedParam.error);
   }

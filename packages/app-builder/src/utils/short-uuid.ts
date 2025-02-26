@@ -14,10 +14,7 @@ const translator = shortUUID();
 export const toUUID = (val: string) => translator.toUUID(val);
 export const fromUUID = (val: string) => translator.fromUUID(val);
 
-export const fromParams = (
-  params: LoaderFunctionArgs['params'],
-  name: string,
-) => {
+export const fromParams = (params: LoaderFunctionArgs['params'], name: string) => {
   const value = params[name];
   invariant(value, `${name} is required`);
   return toUUID(value);

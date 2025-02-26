@@ -2,11 +2,7 @@ import { createSimpleContext } from '@app-builder/utils/create-context';
 import { adaptToStringArray } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useComposedRefs } from '@app-builder/utils/hooks/use-compose-refs';
-import {
-  getSelectProps,
-  unstable_useControl,
-  useField,
-} from '@conform-to/react';
+import { getSelectProps, unstable_useControl, useField } from '@conform-to/react';
 import * as React from 'react';
 import {
   type Select,
@@ -24,12 +20,10 @@ interface FormSelectWithComboboxContextValue<T extends Value = Value> {
     blur: () => void;
   };
 }
-const FormSelectWithComboboxContext =
-  createSimpleContext<FormSelectWithComboboxContextValue>(
-    'FormSelectWithComboboxContext',
-  );
-export const useFormSelectWithComboboxContext =
-  FormSelectWithComboboxContext.useValue;
+const FormSelectWithComboboxContext = createSimpleContext<FormSelectWithComboboxContextValue>(
+  'FormSelectWithComboboxContext',
+);
+export const useFormSelectWithComboboxContext = FormSelectWithComboboxContext.useValue;
 
 interface FormSelectWithComboboxControlProps<Multiple extends boolean> {
   /**

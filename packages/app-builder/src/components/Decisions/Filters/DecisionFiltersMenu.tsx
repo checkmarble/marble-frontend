@@ -6,11 +6,7 @@ import { Icon } from 'ui-icons';
 import { decisionsI18n } from '../decisions-i18n';
 import { useDecisionFiltersContext } from './DecisionFiltersContext';
 import { FilterDetail } from './FilterDetail';
-import {
-  type DecisionFilterName,
-  getFilterIcon,
-  getFilterTKey,
-} from './filters';
+import { type DecisionFilterName, getFilterIcon, getFilterTKey } from './filters';
 
 export function DecisionFiltersMenu({
   children,
@@ -32,9 +28,7 @@ export function DecisionFiltersMenu({
 
   return (
     <FiltersDropdownMenu.Root onOpenChange={onOpenChange}>
-      <FiltersDropdownMenu.Trigger asChild>
-        {children}
-      </FiltersDropdownMenu.Trigger>
+      <FiltersDropdownMenu.Trigger asChild>{children}</FiltersDropdownMenu.Trigger>
       <FiltersDropdownMenu.Content>
         <FilterContent filterNames={filterNames} />
       </FiltersDropdownMenu.Content>
@@ -55,19 +49,13 @@ const FiltersMenuItem = forwardRef<
   return (
     <FiltersDropdownMenu.Item {...props} ref={ref}>
       <Icon icon={icon} className="size-5" />
-      <span className="text-s text-grey-00 font-normal first-letter:capitalize">
-        {t(tKey)}
-      </span>
+      <span className="text-s text-grey-00 font-normal first-letter:capitalize">{t(tKey)}</span>
     </FiltersDropdownMenu.Item>
   );
 });
 FiltersMenuItem.displayName = 'FiltersMenuItem';
 
-function FilterContent({
-  filterNames,
-}: {
-  filterNames: readonly DecisionFilterName[];
-}) {
+function FilterContent({ filterNames }: { filterNames: readonly DecisionFilterName[] }) {
   const [selectedFilter, setSelectedFilter] = useState<DecisionFilterName>();
 
   if (selectedFilter) {

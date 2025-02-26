@@ -71,23 +71,16 @@ export function CancelTestRun({
         <cancelTestRunFetcher.Form
           className="flex flex-col gap-6 p-6"
           method="POST"
-          action={getRoute(
-            '/ressources/scenarios/:scenarioId/testrun/:testRunId/cancel',
-            {
-              scenarioId: fromUUID(currentScenario.id),
-              testRunId: fromUUID(testRunId),
-            },
-          )}
+          action={getRoute('/ressources/scenarios/:scenarioId/testrun/:testRunId/cancel', {
+            scenarioId: fromUUID(currentScenario.id),
+            testRunId: fromUUID(testRunId),
+          })}
         >
           <ModalV2.Description render={<Callout variant="outlined" />}>
-            <p className="whitespace-pre text-wrap">
-              {t('scenarios:testrun.cancel.callout')}
-            </p>
+            <p className="whitespace-pre text-wrap">{t('scenarios:testrun.cancel.callout')}</p>
           </ModalV2.Description>
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
             <Button className="flex-1" variant="primary" type="submit">

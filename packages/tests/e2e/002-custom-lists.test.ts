@@ -1,8 +1,5 @@
 import { expect, test } from 'tests/fixtures';
-import {
-  CustomListDetailPage,
-  CustomListsPage,
-} from 'tests/page-object-models/custom-lists';
+import { CustomListDetailPage, CustomListsPage } from 'tests/page-object-models/custom-lists';
 
 const user = {
   email: 'admin@e2e.com',

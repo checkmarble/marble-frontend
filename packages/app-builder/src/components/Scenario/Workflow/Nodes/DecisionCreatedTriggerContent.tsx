@@ -6,11 +6,7 @@ import { type DecisionCreatedTrigger } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
 import { useWorkflowData } from '../WorkflowProvider';
 
-export function DecisionCreatedTriggerContent({
-  data,
-}: {
-  data: DecisionCreatedTrigger;
-}) {
+export function DecisionCreatedTriggerContent({ data }: { data: DecisionCreatedTrigger }) {
   const { t } = useTranslation(workflowI18n);
   const { scenarios } = useWorkflowData();
   const selectedScenario = React.useMemo(() => {
@@ -42,12 +38,7 @@ export function DecisionCreatedTriggerContent({
       </p>
       <p className="inline-flex flex-row gap-1">
         {data.outcomes.map((outcome) => (
-          <OutcomeTag
-            key={outcome}
-            outcome={outcome}
-            border="square"
-            size="big"
-          />
+          <OutcomeTag key={outcome} outcome={outcome} border="square" size="big" />
         ))}
       </p>
     </div>

@@ -1,7 +1,4 @@
-import {
-  type PaginatedResponse,
-  type PaginationParams,
-} from '@app-builder/models/pagination';
+import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { type Table } from '@tanstack/react-table';
 import { Trans, useTranslation } from 'react-i18next';
@@ -64,11 +61,7 @@ export function CursorPaginationButtons({
         values={{ start, end }}
       />
 
-      <Button
-        onClick={fetchPrevious}
-        variant="secondary"
-        disabled={previousDisabled}
-      >
+      <Button onClick={fetchPrevious} variant="secondary" disabled={previousDisabled}>
         <Icon icon="arrow-left" className="size-4" />
       </Button>
       <Button onClick={fetchNext} variant="secondary" disabled={nextDisabled}>
@@ -109,11 +102,7 @@ export function OffsetPaginationButtons({
           pageCount: formatNumber(pageCount, { language }),
         }}
       />
-      <Button
-        onClick={previousPage}
-        variant="secondary"
-        disabled={canPreviousPage}
-      >
+      <Button onClick={previousPage} variant="secondary" disabled={canPreviousPage}>
         <Icon icon="arrow-left" className="size-4" />
       </Button>
       <Button onClick={nextPage} variant="secondary" disabled={canNextPage}>

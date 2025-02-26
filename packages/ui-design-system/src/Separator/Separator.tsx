@@ -1,7 +1,4 @@
-import {
-  Separator as RawSeparator,
-  type SeparatorProps,
-} from '@radix-ui/react-separator';
+import { Separator as RawSeparator, type SeparatorProps } from '@radix-ui/react-separator';
 import clsx from 'clsx';
 
 export function Separator({ className, ...props }: SeparatorProps) {

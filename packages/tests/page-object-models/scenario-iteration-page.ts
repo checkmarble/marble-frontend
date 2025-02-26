@@ -42,9 +42,7 @@ export class ScenarioIterationPage {
       await modal.getByLabel('description').fill(newDescription);
     }
     await modal.getByRole('button', { name: 'Save' }).click();
-    await expect(
-      this.page.getByRole('heading', { name: 'Update Scenario' }),
-    ).not.toBeVisible();
+    await expect(this.page.getByRole('heading', { name: 'Update Scenario' })).not.toBeVisible();
     if (newName) {
       await expect(scenarioNameButton).not.toBeVisible();
       await expect(
@@ -97,9 +95,7 @@ export class ScenarioIterationPage {
       await this.page.getByLabel('Rule Group').fill(ruleGroup);
     }
     if (scoreModifier !== undefined) {
-      await this.page
-        .getByLabel('Score Modifier')
-        .fill(scoreModifier.toString());
+      await this.page.getByLabel('Score Modifier').fill(scoreModifier.toString());
     }
   }
 
@@ -114,16 +110,12 @@ export class ScenarioIterationPage {
 
   @boxedStep
   async setScoreReviewThreshold(threshold: number) {
-    await this.page
-      .getByLabel('Score review threshold')
-      .fill(threshold.toString());
+    await this.page.getByLabel('Score review threshold').fill(threshold.toString());
   }
 
   @boxedStep
   async setScoreDeclineThreshold(threshold: number) {
-    await this.page
-      .getByLabel('Score decline threshold')
-      .fill(threshold.toString());
+    await this.page.getByLabel('Score decline threshold').fill(threshold.toString());
   }
 
   @boxedStep
@@ -138,9 +130,7 @@ export class ScenarioIterationPage {
     await this.page.getByText('Activating the committed').click();
     await this.page.getByText('This action is immediate.').click();
     await this.page.getByRole('button', { name: 'Commit' }).click();
-    await expect(
-      this.page.getByRole('button', { name: 'Activate' }),
-    ).toBeVisible();
+    await expect(this.page.getByRole('button', { name: 'Activate' })).toBeVisible();
   }
 
   @boxedStep
@@ -149,9 +139,7 @@ export class ScenarioIterationPage {
     await this.page.getByText('This version will be live').click();
     await this.page.getByText('This action is immediate').click();
     await this.page.getByRole('button', { name: 'Activate' }).click();
-    await expect(
-      this.page.getByRole('button', { name: 'Deactivate' }),
-    ).toBeVisible();
+    await expect(this.page.getByRole('button', { name: 'Deactivate' })).toBeVisible();
   }
 
   @boxedStep
@@ -160,8 +148,6 @@ export class ScenarioIterationPage {
     await this.page.getByText('The scenario will stop operating').click();
     await this.page.getByText('This action is immediate').click();
     await this.page.getByRole('button', { name: 'Deactivate' }).click();
-    await expect(
-      this.page.getByRole('button', { name: 'Activate' }),
-    ).toBeVisible();
+    await expect(this.page.getByRole('button', { name: 'Activate' })).toBeVisible();
   }
 }

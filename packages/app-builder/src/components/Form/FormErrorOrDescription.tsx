@@ -4,10 +4,7 @@ import * as React from 'react';
 import { useFieldName } from './FormField';
 
 interface FormErrorOrDescriptionProps
-  extends Omit<
-    React.HTMLAttributes<HTMLParagraphElement>,
-    'id' | 'children' | 'className'
-  > {
+  extends Omit<React.HTMLAttributes<HTMLParagraphElement>, 'id' | 'children' | 'className'> {
   errorClassName?: string;
   descriptionClassName?: string;
 }
@@ -15,10 +12,7 @@ interface FormErrorOrDescriptionProps
 export const FormErrorOrDescription = React.forwardRef<
   HTMLParagraphElement,
   FormErrorOrDescriptionProps
->(function FormErrorOrDescription(
-  { errorClassName, descriptionClassName, ...props },
-  ref,
-) {
+>(function FormErrorOrDescription({ errorClassName, descriptionClassName, ...props }, ref) {
   const { name, description } = useFieldName();
   const [meta] = useField(name);
 

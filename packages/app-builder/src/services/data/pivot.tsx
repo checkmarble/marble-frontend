@@ -58,10 +58,7 @@ function adaptLinkPivotOption({
 
 export type PivotOption = FieldPivotOption | LinkPivotOption;
 
-export function getPivotOptions(
-  tableModel: TableModel,
-  dataModel: DataModel,
-): PivotOption[] {
+export function getPivotOptions(tableModel: TableModel, dataModel: DataModel): PivotOption[] {
   const fieldsPivots = getFieldPivotOptions(tableModel);
 
   const tablesMap = new Map(dataModel.map((table) => [table.id, table]));
@@ -82,13 +79,9 @@ function getFieldPivotOptions(tableModel: TableModel): FieldPivotOption[] {
     // Exclude fields that are already links
     R.filter(
       (field) =>
-        tableModel.linksToSingle.find(
-          (link) => link.childFieldId === field.id,
-        ) === undefined,
+        tableModel.linksToSingle.find((link) => link.childFieldId === field.id) === undefined,
     ),
-    R.map((field) =>
-      adaptFieldPivotOption({ baseTableId: tableModel.id, field }),
-    ),
+    R.map((field) => adaptFieldPivotOption({ baseTableId: tableModel.id, field })),
   );
 }
 
@@ -115,9 +108,7 @@ function getLinkPivotOptions(
     R.map((link) => {
       const parentTable = config.tablesMap.get(link.parentTableId);
       if (!parentTable) return null;
-      const parentField = parentTable.fields.find(
-        (field) => field.id === link.parentFieldId,
-      );
+      const parentField = parentTable.fields.find((field) => field.id === link.parentFieldId);
       if (!parentField) return null;
       return {
         parentTable,
@@ -141,12 +132,7 @@ function getLinkPivotOptions(
       }
 
       return pivots.concat(
-        getLinkPivotOptions(
-          parentTable.linksToSingle,
-          config,
-          pathLinks,
-          depth + 1,
-        ),
+        getLinkPivotOptions(parentTable.linksToSingle, config, pathLinks, depth + 1),
       );
     }),
   );

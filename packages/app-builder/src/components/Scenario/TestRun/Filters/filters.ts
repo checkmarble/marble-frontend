@@ -22,18 +22,9 @@ export const getFilterIcon = (filterName: TestRunFilterName): IconName =>
 
 export const getFilterTKey = (filterName: TestRunFilterName) =>
   match(filterName)
-    .with(
-      'startedAfter',
-      () => 'scenarios:testrun.filters.started_after' as const,
-    )
+    .with('startedAfter', () => 'scenarios:testrun.filters.started_after' as const)
     .with('statuses', () => 'scenarios:testrun.filters.status' as const)
     .with('creators', () => 'scenarios:testrun.filters.creator' as const)
-    .with(
-      'ref_versions',
-      () => 'scenarios:testrun.filters.ref_version' as const,
-    )
-    .with(
-      'test_versions',
-      () => 'scenarios:testrun.filters.test_version' as const,
-    )
+    .with('ref_versions', () => 'scenarios:testrun.filters.ref_version' as const)
+    .with('test_versions', () => 'scenarios:testrun.filters.test_version' as const)
     .exhaustive();

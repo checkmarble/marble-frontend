@@ -19,19 +19,12 @@ type MatchCardProps = {
   defaultOpen?: boolean;
 };
 
-export const MatchCard = ({
-  match,
-  readonly,
-  unreviewable,
-  defaultOpen,
-}: MatchCardProps) => {
+export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchCardProps) => {
   const { t } = useTranslation(sanctionsI18n);
   const [isInReview, setIsInReview] = useState(false);
 
   const entity = match.payload;
-  const entitySchema = entity.schema.toLowerCase() as Lowercase<
-    typeof entity.schema
-  >;
+  const entitySchema = entity.schema.toLowerCase() as Lowercase<typeof entity.schema>;
 
   const handleMatchReview = () => {
     setIsInReview(true);
@@ -92,11 +85,7 @@ export const MatchCard = ({
   );
 };
 
-function CommentLine({
-  comment,
-}: {
-  comment: SanctionCheckMatch['comments'][number];
-}) {
+function CommentLine({ comment }: { comment: SanctionCheckMatch['comments'][number] }) {
   const language = useFormatLanguage();
   const { getOrgUserById } = useOrganizationUsers();
   const user = getOrgUserById(comment.authorId);
@@ -105,11 +94,7 @@ function CommentLine({
   return (
     <div key={comment.id} className="flex flex-col gap-2">
       <div className="flex items-center gap-1">
-        <Avatar
-          size="xs"
-          firstName={user?.firstName}
-          lastName={user?.lastName}
-        />
+        <Avatar size="xs" firstName={user?.firstName} lastName={user?.lastName} />
         <span className="flex items-baseline gap-1">
           {fullName}
           <time className="text-grey-50 text-xs" dateTime={comment.createdAt}>

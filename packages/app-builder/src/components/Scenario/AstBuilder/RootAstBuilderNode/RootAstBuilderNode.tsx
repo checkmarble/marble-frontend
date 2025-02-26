@@ -1,7 +1,4 @@
-import {
-  isAndAstNode,
-  isOrWithAndAstNode,
-} from '@app-builder/models/astNode/builder-ast-node';
+import { isAndAstNode, isOrWithAndAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { useRootAstNode } from '@app-builder/services/editor/ast-editor';
 
 import { AstBuilderNode } from '../AstBuilderNode';
@@ -28,12 +25,5 @@ export function RootAstBuilderNode({ viewOnly }: RootAstBuilderNodeProps) {
   }
 
   // Fallback to the generic AstBuilderNode
-  return (
-    <AstBuilderNode
-      treePath="root"
-      astNode={astNode}
-      viewOnly={viewOnly}
-      root
-    />
-  );
+  return <AstBuilderNode treePath="root" astNode={astNode} viewOnly={viewOnly} root />;
 }

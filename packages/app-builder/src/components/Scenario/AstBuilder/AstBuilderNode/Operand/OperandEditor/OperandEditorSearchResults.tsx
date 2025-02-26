@@ -69,9 +69,7 @@ export function OperandEditorSearchResults() {
                 count: matchOptions.length,
               })}
             </MenuGroupLabel>
-            <span className="text-grey-80 text-xs font-medium">
-              {matchOptions.length}
-            </span>
+            <span className="text-grey-80 text-xs font-medium">{matchOptions.length}</span>
           </span>
         </div>
         {matchOptions.map((option) => (

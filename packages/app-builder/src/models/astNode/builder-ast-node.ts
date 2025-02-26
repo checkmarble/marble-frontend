@@ -1,9 +1,5 @@
 import { type AggregationAstNode, isAggregation } from './aggregation';
-import {
-  type AstNode,
-  isUndefinedAstNode,
-  type UndefinedAstNode,
-} from './ast-node';
+import { type AstNode, isUndefinedAstNode, type UndefinedAstNode } from './ast-node';
 import {
   type BinaryMainAstOperatorFunction,
   isBinaryMainAstOperatorFunction,
@@ -13,14 +9,8 @@ import {
   type UnaryMainAstOperatorFunction,
 } from './builder-ast-node-node-operator';
 import { type ConstantAstNode, isConstant } from './constant';
-import {
-  type CustomListAccessAstNode,
-  isCustomListAccess,
-} from './custom-list';
-import {
-  type DatabaseAccessAstNode,
-  isDataAccessorAstNode,
-} from './data-accessor';
+import { type CustomListAccessAstNode, isCustomListAccess } from './custom-list';
+import { type DatabaseAccessAstNode, isDataAccessorAstNode } from './data-accessor';
 import { isIsMultipleOf, type IsMultipleOfAstNode } from './multiple-of';
 import {
   type FuzzyMatchComparatorAstNode,
@@ -66,9 +56,7 @@ type LeafOperandAstNode = EditableAstNode | TimeNowAstNode;
  * @param node
  * @returns
  */
-export function isLeafOperandAstNode(
-  node: AstNode,
-): node is LeafOperandAstNode {
+export function isLeafOperandAstNode(node: AstNode): node is LeafOperandAstNode {
   return isEditableAstNode(node) || isTimeNow(node);
 }
 
@@ -84,9 +72,7 @@ export type KnownOperandAstNode =
  * @param node
  * @returns
  */
-export function isKnownOperandAstNode(
-  node: AstNode,
-): node is KnownOperandAstNode {
+export function isKnownOperandAstNode(node: AstNode): node is KnownOperandAstNode {
   return (
     isUndefinedAstNode(node) ||
     isConstant(node) ||
@@ -118,9 +104,7 @@ export interface OrWithAndAstNode {
   namedChildren: Record<string, never>;
 }
 
-export function isOrWithAndAstNode(
-  astNode: AstNode,
-): astNode is OrWithAndAstNode {
+export function isOrWithAndAstNode(astNode: AstNode): astNode is OrWithAndAstNode {
   if (astNode.name !== 'Or') {
     return false;
   }
@@ -166,27 +150,21 @@ export function isMainAstNode(astNode: AstNode): astNode is MainAstNode {
   return isMainAstOperatorFunction(astNode.name) || isUndefinedAstNode(astNode);
 }
 
-export function isMainAstUnaryNode(
-  astNode: AstNode,
-): astNode is MainAstUnaryNode {
+export function isMainAstUnaryNode(astNode: AstNode): astNode is MainAstUnaryNode {
   if (!isMainAstNode(astNode)) return false;
 
   return (
     isMainAstNode(astNode) &&
     astNode.children.length === 1 &&
-    (isUnaryMainAstOperatorFunction(astNode.name) ||
-      isUndefinedAstNode(astNode))
+    (isUnaryMainAstOperatorFunction(astNode.name) || isUndefinedAstNode(astNode))
   );
 }
 
-export function isMainAstBinaryNode(
-  astNode: AstNode,
-): astNode is MainAstBinaryNode {
+export function isMainAstBinaryNode(astNode: AstNode): astNode is MainAstBinaryNode {
   if (!isMainAstNode(astNode)) return false;
 
   return (
     astNode.children.length === 2 &&
-    (isBinaryMainAstOperatorFunction(astNode.name) ||
-      isUndefinedAstNode(astNode))
+    (isBinaryMainAstOperatorFunction(astNode.name) || isUndefinedAstNode(astNode))
   );
 }

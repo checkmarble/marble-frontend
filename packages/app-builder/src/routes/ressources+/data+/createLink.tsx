@@ -54,8 +54,7 @@ export async function action({ request }: ActionFunctionArgs) {
       error: parsedForm.error.format(),
     });
   }
-  const { name, parentFieldId, childFieldId, parentTableId, childTableId } =
-    parsedForm.data;
+  const { name, parentFieldId, childFieldId, parentTableId, childTableId } = parsedForm.data;
 
   try {
     await apiClient.postDataModelTableLink({
@@ -134,9 +133,7 @@ function CreateLinkContent({
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
-  const [selectedParentTable, setSelectedParentTable] = useState(
-    otherTables[0],
-  );
+  const [selectedParentTable, setSelectedParentTable] = useState(otherTables[0]);
   const selectedParentTableFields = useMemo(() => {
     return selectedParentTable.fields.filter(
       (field) => field.unicityConstraint === 'active_unique_constraint',
@@ -266,9 +263,7 @@ function CreateLinkContent({
                         onValueChange={(id) => {
                           field.onChange(id);
                           const newTable =
-                            otherTables.find(
-                              ({ id: tableId }) => tableId === id,
-                            ) ?? otherTables[0];
+                            otherTables.find(({ id: tableId }) => tableId === id) ?? otherTables[0];
                           setSelectedParentTable(newTable);
                         }}
                         value={field.value}
@@ -322,12 +317,7 @@ function CreateLinkContent({
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="create"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="create">
               {t('data:create_field.button_accept')}
             </Button>
           </div>

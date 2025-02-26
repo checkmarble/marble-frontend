@@ -1,20 +1,11 @@
-import {
-  getInputProps,
-  unstable_useControl,
-  useField,
-} from '@conform-to/react';
+import { getInputProps, unstable_useControl, useField } from '@conform-to/react';
 import { Checkbox } from 'ui-design-system';
 
 import { useFieldName } from './FormField';
 
-interface FormCheckboxProps
-  extends Omit<React.ComponentProps<typeof Checkbox>, 'checked'> {}
+interface FormCheckboxProps extends Omit<React.ComponentProps<typeof Checkbox>, 'checked'> {}
 
-export function FormCheckbox({
-  children,
-  onCheckedChange,
-  ...rest
-}: FormCheckboxProps) {
+export function FormCheckbox({ children, onCheckedChange, ...rest }: FormCheckboxProps) {
   const { name, description } = useFieldName();
   const [meta] = useField<boolean>(name);
 

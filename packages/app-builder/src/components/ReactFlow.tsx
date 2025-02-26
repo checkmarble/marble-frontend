@@ -28,10 +28,7 @@ export function useLayoutElements<NodeData, EdgeData>({
   const layoutElementsRef = React.useRef(layoutElements);
   return React.useCallback(
     (options: { fitView?: boolean }) => {
-      const { nodes, edges } = layoutElementsRef.current(
-        getNodes(),
-        getEdges(),
-      );
+      const { nodes, edges } = layoutElementsRef.current(getNodes(), getEdges());
       setNodes(nodes);
       setEdges(edges);
       if (options.fitView) {
@@ -104,11 +101,9 @@ export function useIsValidConnection({
       const source = nodes.find((node) => node.id === connection.source);
       if (!source) return false;
 
-      if (singleOutgoer && getOutgoers(source, nodes, edges).length >= 1)
-        return false;
+      if (singleOutgoer && getOutgoers(source, nodes, edges).length >= 1) return false;
 
-      if (singleIncomer && getIncomers(target, nodes, edges).length >= 1)
-        return false;
+      if (singleIncomer && getIncomers(target, nodes, edges).length >= 1) return false;
 
       if (noCycle) {
         if (target.id === connection.source) return false;

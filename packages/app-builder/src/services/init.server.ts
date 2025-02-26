@@ -28,9 +28,7 @@ function makeServerServices(repositories: ServerRepositories) {
     authSessionService,
     csrfService,
     toastSessionService,
-    versionRepository: repositories.getVersionRepository(
-      repositories.marbleCoreApiClient,
-    ),
+    versionRepository: repositories.getVersionRepository(repositories.marbleCoreApiClient),
     licenseService: repositories.getLicenseRepository(
       repositories.getLicenseApiClientWithoutAuth(),
     ),
@@ -48,20 +46,17 @@ function initServerServices() {
 
   const devEnvironment = getServerEnv('FIREBASE_CONFIG').withEmulator;
 
-  const { getMarbleCoreAPIClientWithAuth, marbleCoreApiClient } =
-    initializeMarbleCoreAPIClient({
-      baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
-    });
+  const { getMarbleCoreAPIClientWithAuth, marbleCoreApiClient } = initializeMarbleCoreAPIClient({
+    baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
+  });
 
-  const { getTransfercheckAPIClientWithAuth } =
-    initializeTransfercheckAPIClient({
-      baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
-    });
+  const { getTransfercheckAPIClientWithAuth } = initializeTransfercheckAPIClient({
+    baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
+  });
 
-  const { getLicenseAPIClientWithAuth, licenseApi } =
-    initializeLicenseAPIClient({
-      baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
-    });
+  const { getLicenseAPIClientWithAuth, licenseApi } = initializeLicenseAPIClient({
+    baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
+  });
 
   const serverRepositories = makeServerRepositories({
     devEnvironment,

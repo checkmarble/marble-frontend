@@ -14,10 +14,7 @@ const config = tsEslint.config(defaultConfig, tsEslint.configs.recommended, {
         ignoreRestSiblings: true,
       },
     ],
-    '@typescript-eslint/no-empty-object-type': [
-      'error',
-      { allowWithName: 'Props$' },
-    ],
+    '@typescript-eslint/no-empty-object-type': ['error', { allowWithName: 'Props$' }],
     '@typescript-eslint/no-empty-function': 'error',
     '@typescript-eslint/no-unsafe-return': 'off',
     '@typescript-eslint/consistent-type-imports': [

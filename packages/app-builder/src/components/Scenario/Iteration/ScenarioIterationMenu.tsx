@@ -47,10 +47,7 @@ export function getFormattedLive(
   return type === 'live version' ? t('scenarios:live') : undefined;
 }
 
-function sortScenarioIteration(
-  lhs: LabelledScenarioIteration,
-  rhs: LabelledScenarioIteration,
-) {
+function sortScenarioIteration(lhs: LabelledScenarioIteration, rhs: LabelledScenarioIteration) {
   if (lhs.type === 'draft' && rhs.type !== 'draft') {
     return -1;
   }
@@ -69,11 +66,7 @@ export function ScenarioIterationMenu({
   const deferredSearchValue = React.useDeferredValue(searchValue);
 
   return (
-    <MenuRoot
-      searchValue={searchValue}
-      onSearch={setSearchValue}
-      rtl={i18n.dir() === 'rtl'}
-    >
+    <MenuRoot searchValue={searchValue} onSearch={setSearchValue} rtl={i18n.dir() === 'rtl'}>
       {children}
       <MenuPopover className="flex max-h-[min(400px,_var(--popover-available-height))] flex-col">
         <ScenarioIterationContent
@@ -129,9 +122,7 @@ function ScenarioIterationContent({
                   text={iteration.formattedVersion}
                 />
                 {iteration.formattedLive ? (
-                  <span className="text-purple-65 capitalize">
-                    {iteration.formattedLive}
-                  </span>
+                  <span className="text-purple-65 capitalize">{iteration.formattedLive}</span>
                 ) : null}
               </span>
               <Highlight

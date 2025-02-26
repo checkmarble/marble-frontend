@@ -1,8 +1,4 @@
-import {
-  fetchWithAuthMiddleware,
-  licenseApi,
-  type TokenService,
-} from 'marble-api';
+import { fetchWithAuthMiddleware, licenseApi, type TokenService } from 'marble-api';
 import * as R from 'remeda';
 import { type FunctionKeys } from 'typescript-utils';
 
@@ -12,9 +8,7 @@ export type LicenseApi = {
   [P in FunctionKeys<typeof licenseApi>]: (typeof licenseApi)[P];
 };
 
-export type GetLicenseAPIClientWithAuth = (
-  tokenService: TokenService<string>,
-) => LicenseApi;
+export type GetLicenseAPIClientWithAuth = (tokenService: TokenService<string>) => LicenseApi;
 
 function getLicenseAPIClient({
   tokenService,

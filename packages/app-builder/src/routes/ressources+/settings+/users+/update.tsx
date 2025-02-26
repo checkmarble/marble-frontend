@@ -9,12 +9,7 @@ import { tKeyForUserRole, type User } from '@app-builder/models';
 import { getUserRoles } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -48,12 +43,9 @@ export async function action({ request }: ActionFunctionArgs) {
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { apiClient, entitlements } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { apiClient, entitlements } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
     schema: getUpdateUserFormSchema(getUserRoles(entitlements)),
@@ -135,10 +127,7 @@ function UpdateUserContent({
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
-  const schema = React.useMemo(
-    () => getUpdateUserFormSchema(userRoles),
-    [userRoles],
-  );
+  const schema = React.useMemo(() => getUpdateUserFormSchema(userRoles), [userRoles]);
 
   const [form, fields] = useForm({
     shouldRevalidate: 'onInput',
@@ -171,44 +160,29 @@ function UpdateUserContent({
         <Modal.Title>{t('settings:users.update_user')}</Modal.Title>
         <div className="flex flex-col gap-6 p-6">
           <div className="flex flex-1 flex-col gap-4">
-            <input
-              {...getInputProps(fields.userId, { type: 'hidden' })}
-              key={fields.userId.key}
-            />
+            <input {...getInputProps(fields.userId, { type: 'hidden' })} key={fields.userId.key} />
             <input
               {...getInputProps(fields.organizationId, { type: 'hidden' })}
               key={fields.organizationId.key}
             />
             <div className="flex gap-2">
-              <FormField
-                name={fields.firstName.name}
-                className="group flex w-full flex-col gap-2"
-              >
+              <FormField name={fields.firstName.name} className="group flex w-full flex-col gap-2">
                 <FormLabel>{t('settings:users.first_name')}</FormLabel>
                 <FormInput type="text" />
                 <FormErrorOrDescription />
               </FormField>
-              <FormField
-                name={fields.lastName.name}
-                className="group flex w-full flex-col gap-2"
-              >
+              <FormField name={fields.lastName.name} className="group flex w-full flex-col gap-2">
                 <FormLabel>{t('settings:users.last_name')}</FormLabel>
                 <FormInput type="text" />
                 <FormErrorOrDescription />
               </FormField>
             </div>
-            <FormField
-              name={fields.email.name}
-              className="group flex flex-col gap-2"
-            >
+            <FormField name={fields.email.name} className="group flex flex-col gap-2">
               <FormLabel>{t('settings:users.email')}</FormLabel>
               <FormInput type="text" />
               <FormErrorOrDescription />
             </FormField>
-            <FormField
-              name={fields.role.name}
-              className="group flex flex-col gap-2"
-            >
+            <FormField name={fields.role.name} className="group flex flex-col gap-2">
               <FormLabel className="flex gap-2">
                 <span
                   className={clsx({
@@ -225,10 +199,7 @@ function UpdateUserContent({
                   />
                 )}
               </FormLabel>
-              <FormSelect.Default
-                options={userRoleOptions}
-                disabled={access === 'restricted'}
-              >
+              <FormSelect.Default options={userRoleOptions} disabled={access === 'restricted'}>
                 {userRoleOptions.map((role) => (
                   <FormSelect.DefaultItem key={role.value} value={role.value}>
                     {role.label}
@@ -244,12 +215,7 @@ function UpdateUserContent({
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="update"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="update">
               {t('common:save')}
             </Button>
           </div>

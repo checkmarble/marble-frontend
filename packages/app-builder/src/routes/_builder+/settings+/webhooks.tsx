@@ -27,10 +27,9 @@ export const handle = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { webhookRepository, user, entitlements } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const { webhookRepository, user, entitlements } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   if (!isReadWebhookAvailable(user)) return redirect(getRoute('/'));
 
@@ -49,8 +48,7 @@ const columnHelper = createColumnHelper<Webhook>();
 
 export default function Webhooks() {
   const { t } = useTranslation(['settings']);
-  const { webhooks, isCreateWebhookAvailable, webhooksStatus } =
-    useLoaderData<typeof loader>();
+  const { webhooks, isCreateWebhookAvailable, webhooksStatus } = useLoaderData<typeof loader>();
 
   const columns = useMemo(() => {
     return [

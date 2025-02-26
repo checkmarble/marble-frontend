@@ -13,10 +13,7 @@ import {
   type NodeEvaluation,
   type ReturnValueType,
 } from '@app-builder/models/node-evaluation';
-import {
-  adaptSnoozesOfIteration,
-  type SnoozesOfIteration,
-} from '@app-builder/models/rule-snooze';
+import { adaptSnoozesOfIteration, type SnoozesOfIteration } from '@app-builder/models/rule-snooze';
 import {
   adaptScenario,
   adaptScenarioCreateInputDto,
@@ -48,23 +45,14 @@ export interface ScenarioRepository {
     name: string;
     description: string | null;
   }): Promise<Scenario>;
-  updateScenarioWorkflow(
-    scenarioId: string,
-    args: ScenarioUpdateWorkflowInput,
-  ): Promise<Scenario>;
-  createScenarioIteration(args: {
-    scenarioId: string;
-  }): Promise<ScenarioIteration>;
+  updateScenarioWorkflow(scenarioId: string, args: ScenarioUpdateWorkflowInput): Promise<Scenario>;
+  createScenarioIteration(args: { scenarioId: string }): Promise<ScenarioIteration>;
   updateScenarioIteration(
     iterationId: string,
     input: UpdateScenarioIterationBody,
   ): Promise<ScenarioIteration>;
-  getScenarioIteration(args: {
-    iterationId: string;
-  }): Promise<ScenarioIteration>;
-  listScenarioIterations(args: {
-    scenarioId: string;
-  }): Promise<ScenarioIteration[]>;
+  getScenarioIteration(args: { iterationId: string }): Promise<ScenarioIteration>;
+  listScenarioIterations(args: { scenarioId: string }): Promise<ScenarioIteration[]>;
   validate(args: { iterationId: string }): Promise<ScenarioValidation>;
   validateTrigger(args: {
     iterationId: string;
@@ -79,17 +67,13 @@ export interface ScenarioRepository {
     scenarioId: string,
     payload: { node: AstNode; expectedReturnType?: ReturnValueType },
   ): Promise<NodeEvaluation>;
-  commitScenarioIteration(args: {
-    iterationId: string;
-  }): Promise<ScenarioIteration>;
+  commitScenarioIteration(args: { iterationId: string }): Promise<ScenarioIteration>;
   getPublicationPreparationStatus(args: {
     iterationId: string;
   }): Promise<ScenarioPublicationStatus>;
   startPublicationPreparation(args: { iterationId: string }): Promise<void>;
   createScenarioPublication(args: CreateScenarioPublicationBody): Promise<void>;
-  getScenarioIterationActiveSnoozes(
-    scenarioIterationId: string,
-  ): Promise<SnoozesOfIteration>;
+  getScenarioIterationActiveSnoozes(scenarioIterationId: string): Promise<SnoozesOfIteration>;
   scheduleScenarioExecution(args: { iterationId: string }): Promise<void>;
 }
 
@@ -104,9 +88,7 @@ export function makeGetScenarioRepository() {
       return adaptScenario(scenario);
     },
     createScenario: async (args) => {
-      const scenario = await marbleCoreApiClient.createScenario(
-        adaptScenarioCreateInputDto(args),
-      );
+      const scenario = await marbleCoreApiClient.createScenario(adaptScenarioCreateInputDto(args));
       return adaptScenario(scenario);
     },
     updateScenario: async ({ scenarioId, name, description }) => {
@@ -124,10 +106,9 @@ export function makeGetScenarioRepository() {
       return adaptScenario(scenario);
     },
     createScenarioIteration: async ({ scenarioId }) => {
-      const scenarioIteration =
-        await marbleCoreApiClient.createScenarioIteration({
-          scenario_id: scenarioId,
-        });
+      const scenarioIteration = await marbleCoreApiClient.createScenarioIteration({
+        scenario_id: scenarioId,
+      });
       return adaptScenarioIteration(scenarioIteration);
     },
     updateScenarioIteration: async (iterationId, input) => {
@@ -138,8 +119,7 @@ export function makeGetScenarioRepository() {
       return adaptScenarioIteration(iteration);
     },
     getScenarioIteration: async ({ iterationId }) => {
-      const scenarioIteration =
-        await marbleCoreApiClient.getScenarioIteration(iterationId);
+      const scenarioIteration = await marbleCoreApiClient.getScenarioIteration(iterationId);
       return adaptScenarioIteration(scenarioIteration);
     },
     listScenarioIterations: async ({ scenarioId }) => {
@@ -149,53 +129,46 @@ export function makeGetScenarioRepository() {
       return dtos.map(adaptScenarioIteration);
     },
     validate: async ({ iterationId }) => {
-      const { scenario_validation } =
-        await marbleCoreApiClient.validateScenarioIteration(
-          iterationId,
-          undefined,
-        );
+      const { scenario_validation } = await marbleCoreApiClient.validateScenarioIteration(
+        iterationId,
+        undefined,
+      );
       return adaptScenarioValidation(scenario_validation);
     },
     validateTrigger: async ({ iterationId, trigger }) => {
-      const { scenario_validation } =
-        await marbleCoreApiClient.validateScenarioIteration(iterationId, {
+      const { scenario_validation } = await marbleCoreApiClient.validateScenarioIteration(
+        iterationId,
+        {
           trigger_or_rule: adaptNodeDto(trigger),
           rule_id: null,
-        });
+        },
+      );
       return adaptScenarioValidation(scenario_validation).trigger;
     },
     validateRule: async ({ iterationId, rule, ruleId }) => {
-      const { scenario_validation } =
-        await marbleCoreApiClient.validateScenarioIteration(iterationId, {
+      const { scenario_validation } = await marbleCoreApiClient.validateScenarioIteration(
+        iterationId,
+        {
           trigger_or_rule: adaptNodeDto(rule),
           rule_id: ruleId,
-        });
-      return findRuleValidation(
-        adaptScenarioValidation(scenario_validation),
-        ruleId,
-      );
-    },
-    validateAst: async (scenarioId, { node, expectedReturnType }) => {
-      const { ast_validation } = await marbleCoreApiClient.validateAstNode(
-        scenarioId,
-        {
-          node: adaptNodeDto(node),
-          expected_return_type: expectedReturnType,
         },
       );
+      return findRuleValidation(adaptScenarioValidation(scenario_validation), ruleId);
+    },
+    validateAst: async (scenarioId, { node, expectedReturnType }) => {
+      const { ast_validation } = await marbleCoreApiClient.validateAstNode(scenarioId, {
+        node: adaptNodeDto(node),
+        expected_return_type: expectedReturnType,
+      });
 
       return adaptNodeEvaluation(ast_validation);
     },
     commitScenarioIteration: async ({ iterationId }) => {
-      const { iteration } =
-        await marbleCoreApiClient.commitScenarioIteration(iterationId);
+      const { iteration } = await marbleCoreApiClient.commitScenarioIteration(iterationId);
       return adaptScenarioIteration(iteration);
     },
     getPublicationPreparationStatus: async ({ iterationId }) => {
-      const status =
-        await marbleCoreApiClient.getScenarioPublicationPreparationStatus(
-          iterationId,
-        );
+      const status = await marbleCoreApiClient.getScenarioPublicationPreparationStatus(iterationId);
       return adaptScenarioPublicationStatus(status);
     },
     startPublicationPreparation: async ({ iterationId }) => {
@@ -236,9 +209,7 @@ export function makeGetScenarioRepository() {
     },
     getScenarioIterationActiveSnoozes: async (scenarioIterationId) => {
       const { snoozes } =
-        await marbleCoreApiClient.getScenarioIterationActiveSnoozes(
-          scenarioIterationId,
-        );
+        await marbleCoreApiClient.getScenarioIterationActiveSnoozes(scenarioIterationId);
       return adaptSnoozesOfIteration(snoozes);
     },
     scheduleScenarioExecution: async ({ iterationId }) => {

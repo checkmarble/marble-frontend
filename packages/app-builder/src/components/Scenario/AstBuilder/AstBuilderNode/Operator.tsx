@@ -27,24 +27,22 @@ interface OperatorLabelProps
   extends SelectTriggerProps,
     VariantProps<typeof operatorContainerClassnames> {}
 
-const OperatorLabel = forwardRef<HTMLButtonElement, OperatorLabelProps>(
-  function OperatorViewer(
-    { className, validationStatus = 'valid', ...props },
-    ref,
-  ) {
-    return (
-      <Trigger
-        ref={ref}
-        className={operatorContainerClassnames({ validationStatus, className })}
-        {...props}
-      >
-        <span className="text-s text-grey-00 w-full text-center font-medium">
-          <Value placeholder="..." />
-        </span>
-      </Trigger>
-    );
-  },
-);
+const OperatorLabel = forwardRef<HTMLButtonElement, OperatorLabelProps>(function OperatorViewer(
+  { className, validationStatus = 'valid', ...props },
+  ref,
+) {
+  return (
+    <Trigger
+      ref={ref}
+      className={operatorContainerClassnames({ validationStatus, className })}
+      {...props}
+    >
+      <span className="text-s text-grey-00 w-full text-center font-medium">
+        <Value placeholder="..." />
+      </span>
+    </Trigger>
+  );
+});
 
 interface OperatorProps<T extends OperatorOption>
   extends VariantProps<typeof operatorContainerClassnames> {
@@ -76,22 +74,13 @@ export function Operator<T extends OperatorOption>({
   const _value = value !== undefinedAstNodeName ? value : undefined;
 
   return (
-    <Select.Root
-      value={_value}
-      onValueChange={setValue}
-      disabled={viewOnly}
-      {...rest}
-    >
+    <Select.Root value={_value} onValueChange={setValue} disabled={viewOnly} {...rest}>
       <OperatorLabel validationStatus={validationStatus} />
       <Select.Content className="max-h-60">
         <Select.Viewport>
           {operators.map((operator) => {
             return (
-              <Select.Item
-                className="min-w-[110px]"
-                key={operator}
-                value={operator}
-              >
+              <Select.Item className="min-w-[110px]" key={operator} value={operator}>
                 <Select.ItemText>
                   <span className="text-s text-grey-00 font-semibold">
                     {getOperatorName(t, operator, isFilter)}

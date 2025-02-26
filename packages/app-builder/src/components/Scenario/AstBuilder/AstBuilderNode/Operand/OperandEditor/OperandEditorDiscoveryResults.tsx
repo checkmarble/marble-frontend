@@ -73,10 +73,7 @@ export function OperandEditorDiscoveryResults({
     <>
       {enumOptions.length > 0 ? (
         <Submenu options={enumOptions} onClick={onOptionClick}>
-          <OperandDiscoveryTitle
-            operandType="Enum"
-            count={enumOptions.length}
-          />
+          <OperandDiscoveryTitle operandType="Enum" count={enumOptions.length} />
         </Submenu>
       ) : null}
 
@@ -84,10 +81,7 @@ export function OperandEditorDiscoveryResults({
         <MenuGroup className="flex w-full flex-col">
           <OperandDiscoveryTitle
             operandType="Field"
-            count={fieldOptions.reduce(
-              (acc, [_, subOptions]) => acc + subOptions.length,
-              0,
-            )}
+            count={fieldOptions.reduce((acc, [_, subOptions]) => acc + subOptions.length, 0)}
             className="min-h-10 p-2"
             renderLabel={<MenuGroupLabel render={<span />} />}
           />
@@ -101,28 +95,19 @@ export function OperandEditorDiscoveryResults({
 
       {customListOptions.length > 0 ? (
         <Submenu options={customListOptions} onClick={onOptionClick}>
-          <OperandDiscoveryTitle
-            operandType="CustomList"
-            count={customListOptions.length}
-          />
+          <OperandDiscoveryTitle operandType="CustomList" count={customListOptions.length} />
         </Submenu>
       ) : null}
 
       {functionOptions.length > 0 ? (
         <Submenu options={functionOptions} onClick={onOptionClick}>
-          <OperandDiscoveryTitle
-            operandType="Function"
-            count={functionOptions.length}
-          />
+          <OperandDiscoveryTitle operandType="Function" count={functionOptions.length} />
         </Submenu>
       ) : null}
 
       {modelingOptions.length > 0 ? (
         <Submenu options={modelingOptions} onClick={onOptionClick}>
-          <OperandDiscoveryTitle
-            operandType="Modeling"
-            count={modelingOptions.length}
-          />
+          <OperandDiscoveryTitle operandType="Modeling" count={modelingOptions.length} />
         </Submenu>
       ) : null}
     </>
@@ -149,11 +134,7 @@ function Submenu({
     <SubMenuRoot rtl={i18n.dir() === 'rtl'}>
       <SubMenuButton className="data-[active-item]:bg-purple-98 flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2 outline-none">
         {children}
-        <Icon
-          aria-hidden="true"
-          icon="arrow-right"
-          className="size-5 shrink-0 rtl:rotate-180"
-        />
+        <Icon aria-hidden="true" icon="arrow-right" className="size-5 shrink-0 rtl:rotate-180" />
       </SubMenuButton>
       <MenuPopover className="max-h-64 w-96 flex-col" gutter={16}>
         <MenuContent>
@@ -188,18 +169,9 @@ function OperandDiscoveryTitle({
   const tKey = getOperandTypeTKey(operandType);
 
   return (
-    <div
-      className={clsx(
-        'flex select-none flex-row items-center gap-1',
-        className,
-      )}
-    >
+    <div className={clsx('flex select-none flex-row items-center gap-1', className)}>
       {icon ? (
-        <Icon
-          aria-hidden="true"
-          className="text-purple-65 size-5 shrink-0"
-          icon={icon}
-        />
+        <Icon aria-hidden="true" className="text-purple-65 size-5 shrink-0" icon={icon} />
       ) : null}
       {tKey ? (
         <span className="text-grey-00 text-m flex flex-1 flex-row items-baseline gap-1 break-all">

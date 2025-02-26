@@ -44,9 +44,7 @@ export const BreadCrumbs = ({ back }: { back?: string }) => {
       select(
         matches,
         ({ pathname, handle, data }) => ({
-          Elements: (handle as HandleWithBreadCrumbs)?.BreadCrumbs?.filter(
-            Boolean,
-          ),
+          Elements: (handle as HandleWithBreadCrumbs)?.BreadCrumbs?.filter(Boolean),
           pathname,
           data,
         }),
@@ -70,10 +68,7 @@ export const BreadCrumbs = ({ back }: { back?: string }) => {
               const isLastElement = elementIndex === Elements.length - 1;
 
               return (
-                <div
-                  className="flex items-center gap-4"
-                  key={`${pathname}-${elementIndex}`}
-                >
+                <div className="flex items-center gap-4" key={`${pathname}-${elementIndex}`}>
                   <Element
                     key={pathname}
                     // eslint-disable-next-line react/jsx-no-leaked-render

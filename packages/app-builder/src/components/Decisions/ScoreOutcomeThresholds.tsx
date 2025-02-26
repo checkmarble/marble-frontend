@@ -14,15 +14,12 @@ export function ScoreOutcomeThresholds({
   const { t } = useTranslation(['decisions']);
 
   const showReviewOutcome = scoreBlockAndReviewThreshold > scoreReviewThreshold;
-  const showBlockAndReviewOutcome =
-    scoreDeclineThreshold > scoreBlockAndReviewThreshold;
+  const showBlockAndReviewOutcome = scoreDeclineThreshold > scoreBlockAndReviewThreshold;
 
   return (
     <div className="relative flex h-[70px] w-full flex-row">
       <div className="bg-green-94 border-b-green-38 isolate flex h-10 flex-1 items-center justify-center rounded-s-md border-b-4">
-        <span className="text-s text-green-38 font-semibold">
-          {t('decisions:outcome.approve')}
-        </span>
+        <span className="text-s text-green-38 font-semibold">{t('decisions:outcome.approve')}</span>
       </div>
 
       {showReviewOutcome ? (
@@ -64,9 +61,7 @@ export function ScoreOutcomeThresholds({
       </div>
 
       <div className="bg-red-95 border-b-red-47 flex h-10 flex-1 items-center justify-center rounded-e-md border-b-4">
-        <span className="text-s text-red-47 font-semibold">
-          {t('decisions:outcome.decline')}
-        </span>
+        <span className="text-s text-red-47 font-semibold">{t('decisions:outcome.decline')}</span>
       </div>
     </div>
   );

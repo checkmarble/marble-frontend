@@ -1,11 +1,6 @@
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { NewStringConcatAstNode } from '@app-builder/models/astNode/strings';
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  type OnDragEndResponder,
-} from '@hello-pangea/dnd';
+import { DragDropContext, Draggable, Droppable, type OnDragEndResponder } from '@hello-pangea/dnd';
 import { nanoid } from 'nanoid';
 import { replace } from 'radash';
 import { useEffect, useState } from 'react';
@@ -15,11 +10,7 @@ import { Icon } from 'ui-icons';
 
 import { MatchOperand } from './MatchOperand';
 
-function reorder<TItem>(
-  list: TItem[],
-  startIndex: number,
-  endIndex: number,
-): TItem[] {
+function reorder<TItem>(list: TItem[], startIndex: number, endIndex: number): TItem[] {
   const result = [...list];
   const [removed] = result.splice(startIndex, 1);
   if (removed) result.splice(endIndex, 0, removed);
@@ -42,9 +33,10 @@ export function FieldNodeConcat({
   viewOnly?: boolean;
 }) {
   const [nodes, setNodes] = useState<(AstNode & { id: string })[]>(
-    (value?.children?.length ? value.children : [NewUndefinedAstNode()]).map(
-      (n) => ({ ...n, id: nanoid() }),
-    ),
+    (value?.children?.length ? value.children : [NewUndefinedAstNode()]).map((n) => ({
+      ...n,
+      id: nanoid(),
+    })),
   );
 
   useEffect(() => {
@@ -63,29 +55,17 @@ export function FieldNodeConcat({
   }, [nodes, onChange]);
 
   const onDragEnd: OnDragEndResponder<string> = (result): void => {
-    if (
-      !result.destination ||
-      result.destination.index === result.source.index
-    ) {
+    if (!result.destination || result.destination.index === result.source.index) {
       return;
     }
 
-    setNodes((prev) =>
-      reorder(prev, result.source.index, result.destination!.index),
-    );
+    setNodes((prev) => reorder(prev, result.source.index, result.destination!.index));
   };
 
   return (
-    <DragDropContext
-      onDragEnd={onDragEnd}
-      autoScrollerOptions={{ disabled: true }}
-    >
+    <DragDropContext onDragEnd={onDragEnd} autoScrollerOptions={{ disabled: true }}>
       <div onBlur={onBlur} className="flex flex-col gap-2">
-        <Droppable
-          isDropDisabled={viewOnly}
-          droppableId="NODES"
-          direction="vertical"
-        >
+        <Droppable isDropDisabled={viewOnly} droppableId="NODES" direction="vertical">
           {(dropProvided) => (
             <div className="flex flex-col gap-2" ref={dropProvided.innerRef}>
               {nodes.map((node, index) => (
@@ -115,9 +95,7 @@ export function FieldNodeConcat({
                             <Button
                               size="icon"
                               variant="tertiary"
-                              onClick={() =>
-                                setNodes((prev) => splice(prev, index, 1, []))
-                              }
+                              onClick={() => setNodes((prev) => splice(prev, index, 1, []))}
                             >
                               <Icon icon="cross" className="size-4" />
                             </Button>
@@ -148,11 +126,7 @@ export function FieldNodeConcat({
                         placeholder={placeholder}
                         onSave={(savedNode) =>
                           setNodes((prev) =>
-                            replace(
-                              prev,
-                              { ...savedNode, id: node.id },
-                              (_, i) => i === index,
-                            ),
+                            replace(prev, { ...savedNode, id: node.id }, (_, i) => i === index),
                           )
                         }
                       />

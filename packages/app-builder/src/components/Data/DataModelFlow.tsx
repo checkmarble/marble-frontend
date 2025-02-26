@@ -23,11 +23,7 @@ import * as R from 'remeda';
 import { Button, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import {
-  SchemaMenuMenuItem,
-  SchemaMenuMenuPopover,
-  SchemaMenuRoot,
-} from '../Schema/SchemaMenu';
+import { SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '../Schema/SchemaMenu';
 import { dataI18n } from './data-i18n';
 import {
   adaptLinkToSingleData,
@@ -62,10 +58,7 @@ const edgeTypes = {
   link_to_single_edge: LinkToSingleEdge,
 };
 
-const useDataModelReactFlow = useReactFlow<
-  DataModelNodeData,
-  DataModelEdgeData
->;
+const useDataModelReactFlow = useReactFlow<DataModelNodeData, DataModelEdgeData>;
 
 interface DataModelFlowProps {
   dataModel: DataModel;
@@ -75,11 +68,7 @@ interface DataModelFlowProps {
 
 export const dataModelFlowStyles = reactflowStyles;
 
-export function DataModelFlow({
-  dataModel,
-  pivots,
-  children,
-}: DataModelFlowProps) {
+export function DataModelFlow({ dataModel, pivots, children }: DataModelFlowProps) {
   return (
     <ReactFlowProvider>
       <SelectedPivotProvider dataModel={dataModel}>
@@ -91,11 +80,7 @@ export function DataModelFlow({
   );
 }
 
-function DataModelFlowImpl({
-  dataModel,
-  pivots,
-  children,
-}: DataModelFlowProps) {
+function DataModelFlowImpl({ dataModel, pivots, children }: DataModelFlowProps) {
   const { isCreateDataModelTableAvailable } = useDataModelFeatureAccess();
   const { t } = useTranslation(dataI18n);
   const [nodes, setNodes] = React.useState<Array<Node<DataModelNodeData>>>([]);
@@ -115,9 +100,7 @@ function DataModelFlowImpl({
     setNodes((currentNodes) =>
       R.pipe(
         dataModel,
-        R.map((tableModel) =>
-          adaptTableModelNodeData(tableModel, dataModel, pivots),
-        ),
+        R.map((tableModel) => adaptTableModelNodeData(tableModel, dataModel, pivots)),
         R.map((tableModelNodeData) => {
           const nodeId = getTableModelNodeDataId(tableModelNodeData);
           const existingNode = currentNodes.find((nd) => nd.id === nodeId);

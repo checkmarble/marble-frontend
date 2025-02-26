@@ -4,18 +4,9 @@ import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { type Inbox } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { parseWithZod } from '@conform-to/zod';
-import {
-  type ActionFunctionArgs,
-  json,
-  type LoaderFunctionArgs,
-} from '@remix-run/node';
+import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -57,13 +48,7 @@ export async function action({ request }: ActionFunctionArgs) {
   return json(submission.reply());
 }
 
-export function EditCaseInbox({
-  defaultInbox,
-  caseId,
-}: {
-  defaultInbox: Inbox;
-  caseId: string;
-}) {
+export function EditCaseInbox({ defaultInbox, caseId }: { defaultInbox: Inbox; caseId: string }) {
   const { t } = useTranslation(['common', 'cases']);
   const loadFetcher = useFetcher<typeof loader>();
   React.useEffect(() => {
@@ -96,10 +81,7 @@ export function EditCaseInbox({
         action={getRoute('/ressources/cases/edit-inbox')}
         {...getFormProps(form)}
       >
-        <input
-          {...getInputProps(fields.caseId, { type: 'hidden' })}
-          key={fields.caseId.key}
-        />
+        <input {...getInputProps(fields.caseId, { type: 'hidden' })} key={fields.caseId.key} />
         <FormField
           name={fields.inboxId.name}
           className="col-span-2 grid grid-cols-subgrid items-center"

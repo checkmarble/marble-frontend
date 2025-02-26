@@ -17,10 +17,7 @@ export const TestRunPeriod = ({
 
   return (
     <span
-      className={clsx(
-        'text-s inline-flex h-10 flex-row items-center gap-1',
-        className,
-      )}
+      className={clsx('text-s inline-flex h-10 flex-row items-center gap-1', className)}
       {...props}
     >
       <Trans

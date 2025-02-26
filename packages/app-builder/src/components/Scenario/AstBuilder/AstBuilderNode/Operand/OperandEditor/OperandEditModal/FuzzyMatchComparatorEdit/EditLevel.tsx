@@ -43,11 +43,7 @@ export function EditLevel({ level, setLevel, errors }: EditLevelProps) {
           <Select.Viewport>
             {fuzzyMatchComparatorLevelData.map(({ level }) => {
               return (
-                <Select.Item
-                  className="min-w-[110px]"
-                  key={level}
-                  value={level}
-                >
+                <Select.Item className="min-w-[110px]" key={level} value={level}>
                   <Select.ItemText>
                     <span className="text-s text-grey-00 font-semibold uppercase">
                       {t(`scenarios:edit_fuzzy_match.level.${level}`, {
@@ -62,9 +58,7 @@ export function EditLevel({ level, setLevel, errors }: EditLevelProps) {
         </Select.Content>
       </Select.Root>
       <EvaluationErrors
-        errors={adaptEvaluationErrorViewModels(errors).map(
-          getNodeEvaluationErrorMessage,
-        )}
+        errors={adaptEvaluationErrorViewModels(errors).map(getNodeEvaluationErrorMessage)}
       />
     </div>
   );

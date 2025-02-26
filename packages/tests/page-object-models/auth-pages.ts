@@ -16,16 +16,12 @@ export class SignInPage {
 
   @boxedStep
   async signInWithGoogle() {
-    await this.page
-      .getByRole('button', { name: 'Sign in with Google' })
-      .click();
+    await this.page.getByRole('button', { name: 'Sign in with Google' }).click();
   }
 
   @boxedStep
   async signInWithMicrosoft() {
-    await this.page
-      .getByRole('button', { name: 'Sign in with Microsoft' })
-      .click();
+    await this.page.getByRole('button', { name: 'Sign in with Microsoft' }).click();
   }
 
   @boxedStep
@@ -36,8 +32,6 @@ export class SignInPage {
     await email.fill(user.email);
     await expect(password).toBeEnabled();
     await password.fill(user.password);
-    await this.page
-      .getByRole('button', { name: 'Sign in', exact: true })
-      .click();
+    await this.page.getByRole('button', { name: 'Sign in', exact: true }).click();
   }
 }

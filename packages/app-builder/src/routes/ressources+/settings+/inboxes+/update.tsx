@@ -7,12 +7,7 @@ import { type Inbox } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -108,10 +103,7 @@ export function UpdateInbox({
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <UpdateInboxContent
-          inbox={inbox}
-          redirectRoutePath={redirectRoutePath}
-        />
+        <UpdateInboxContent inbox={inbox} redirectRoutePath={redirectRoutePath} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -149,18 +141,12 @@ export function UpdateInboxContent({
       >
         <Modal.Title>{t('settings:inboxes.update_inbox')}</Modal.Title>
         <div className="bg-grey-100 flex flex-col gap-6 p-6">
-          <input
-            {...getInputProps(fields.id, { type: 'hidden' })}
-            key={fields.id.key}
-          />
+          <input {...getInputProps(fields.id, { type: 'hidden' })} key={fields.id.key} />
           <input
             {...getInputProps(fields.redirectRoute, { type: 'hidden' })}
             key={fields.redirectRoute.key}
           />
-          <FormField
-            name={fields.name.name}
-            className="group flex flex-col gap-2"
-          >
+          <FormField name={fields.name.name} className="group flex flex-col gap-2">
             <FormLabel>{t('settings:inboxes.name')}</FormLabel>
             <FormInput type="text" />
             <FormErrorOrDescription />
@@ -171,12 +157,7 @@ export function UpdateInboxContent({
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="update"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="update">
               {t('common:save')}
             </Button>
           </div>

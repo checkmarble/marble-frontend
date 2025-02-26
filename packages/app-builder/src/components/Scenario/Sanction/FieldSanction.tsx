@@ -2,13 +2,7 @@ import { useEditorMode } from '@app-builder/services/editor';
 import clsx from 'clsx';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { diff, toggle } from 'radash';
-import {
-  type Dispatch,
-  type SetStateAction,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, CollapsibleV2 } from 'ui-design-system';
@@ -66,9 +60,7 @@ const FieldCategory = memo(function FieldCategory({
             ) : null}
           </CollapsibleV2.Title>
           <div className="flex items-center gap-4">
-            <span className="text-grey-50 text-xs">
-              {t('common:select_all')}
-            </span>
+            <span className="text-grey-50 text-xs">{t('common:select_all')}</span>
             <Checkbox
               disabled={editor === 'view'}
               checked={isAllSelected}
@@ -119,9 +111,7 @@ export const FieldSanction = ({
   onChange?: (value: string[]) => void;
   onBlur?: () => void;
 }) => {
-  const [selectedIds, updateSelectedIds] = useState<string[]>(
-    defaultValue ?? [],
-  );
+  const [selectedIds, updateSelectedIds] = useState<string[]>(defaultValue ?? []);
 
   useEffect(() => {
     onChange?.(selectedIds);

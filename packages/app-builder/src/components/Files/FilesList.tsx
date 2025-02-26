@@ -28,11 +28,7 @@ export type FilesListProps = {
   uploadEnpoint: string;
 };
 
-export function FilesList({
-  files,
-  downloadEnpoint,
-  uploadEnpoint,
-}: FilesListProps) {
+export function FilesList({ files, downloadEnpoint, uploadEnpoint }: FilesListProps) {
   const { t } = useTranslation(['cases']);
 
   if (files.length === 0) {
@@ -54,10 +50,7 @@ export function FilesList({
   return <FilesListTable downloadEnpoint={downloadEnpoint} files={files} />;
 }
 
-export function FilesListTable({
-  files,
-  downloadEnpoint,
-}: Omit<FilesListProps, 'uploadEnpoint'>) {
+export function FilesListTable({ files, downloadEnpoint }: Omit<FilesListProps, 'uploadEnpoint'>) {
   const { t } = useTranslation(['cases']);
   const language = useFormatLanguage();
 
@@ -147,9 +140,7 @@ function FileLink({ endpoint }: { endpoint: string }) {
           name="download"
           disabled={downloadingCaseFile}
         >
-          {downloadingCaseFile
-            ? t('cases:case.file.downloading')
-            : t('cases:case.file.download')}
+          {downloadingCaseFile ? t('cases:case.file.downloading') : t('cases:case.file.download')}
         </Button>
       )}
     </ClientOnly>

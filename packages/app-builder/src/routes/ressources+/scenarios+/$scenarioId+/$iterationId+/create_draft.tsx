@@ -24,10 +24,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const parsedForm = await parseFormSafe(
-    request,
-    createDraftIterationFormSchema,
-  );
+  const parsedForm = await parseFormSafe(request, createDraftIterationFormSchema);
   if (!parsedForm.success) {
     parsedForm.error.flatten((issue) => issue);
 
@@ -40,8 +37,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
   const { iterationId } = parsedForm.data;
   try {
-    const draftIteration =
-      await apiClient.createDraftFromScenarioIteration(iterationId);
+    const draftIteration = await apiClient.createDraftFromScenarioIteration(iterationId);
 
     return redirect(
       getRoute('/scenarios/:scenarioId/i/:iterationId', {
@@ -73,11 +69,7 @@ export function CreateDraftIteration({
         <NewDraftButton iterationId={iterationId} scenarioId={scenarioId} />
       ) : null}
       {draftId ? (
-        <ExistingDraftModal
-          iterationId={iterationId}
-          scenarioId={scenarioId}
-          draftId={draftId}
-        />
+        <ExistingDraftModal iterationId={iterationId} scenarioId={scenarioId} draftId={draftId} />
       ) : null}
     </>
   );
@@ -96,13 +88,10 @@ const NewDraftButton = ({
   return (
     <fetcher.Form
       method="POST"
-      action={getRoute(
-        '/ressources/scenarios/:scenarioId/:iterationId/create_draft',
-        {
-          scenarioId: fromUUID(scenarioId),
-          iterationId: fromUUID(iterationId),
-        },
-      )}
+      action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/create_draft', {
+        scenarioId: fromUUID(scenarioId),
+        iterationId: fromUUID(iterationId),
+      })}
     >
       <HiddenInputs iterationId={iterationId} />
       <Button type="submit">
@@ -141,21 +130,16 @@ const ExistingDraftModal = ({
       <Modal.Content>
         <fetcher.Form
           method="POST"
-          action={getRoute(
-            '/ressources/scenarios/:scenarioId/:iterationId/create_draft',
-            {
-              scenarioId: fromUUID(scenarioId),
-              iterationId: fromUUID(iterationId),
-            },
-          )}
+          action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/create_draft', {
+            scenarioId: fromUUID(scenarioId),
+            iterationId: fromUUID(iterationId),
+          })}
         >
           <HiddenInputs iterationId={iterationId} />
           <Modal.Title>{t('scenarios:create_iteration.title')}</Modal.Title>
           <div className="flex flex-col gap-6 p-6">
             <div className="text-s flex flex-1 flex-col gap-4">
-              <p className="text-center">
-                {t('scenarios:create_rule.draft_already_exist')}
-              </p>
+              <p className="text-center">{t('scenarios:create_rule.draft_already_exist')}</p>
               <p className="text-center">
                 {t('scenarios:create_rule.draft_already_exist_possibility')}
               </p>
@@ -166,23 +150,13 @@ const ExistingDraftModal = ({
                   className="flex-1"
                   variant="secondary"
                   onClick={() =>
-                    navigate(
-                      location.pathname.replace(
-                        fromUUID(iterationId),
-                        fromUUID(draftId),
-                      ),
-                    )
+                    navigate(location.pathname.replace(fromUUID(iterationId), fromUUID(draftId)))
                   }
                 >
                   {t('scenarios:create_draft.keep_existing_draft')}
                 </Button>
               </Modal.Close>
-              <Button
-                className="flex-1"
-                variant="primary"
-                type="submit"
-                name="create"
-              >
+              <Button className="flex-1" variant="primary" type="submit" name="create">
                 {t('scenarios:create_draft.override_existing_draft')}
               </Button>
             </div>

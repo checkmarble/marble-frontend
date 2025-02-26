@@ -25,16 +25,12 @@ export function useDownloadFile(
   { onError }: { onError?: (error: DownloadFileError) => void } = {},
 ) {
   const [downloading, setDownloading] = useState(false);
-  const { backendUrl, getAccessToken } = useBackendInfo(
-    clientServices.authenticationClientService,
-  );
+  const { backendUrl, getAccessToken } = useBackendInfo(clientServices.authenticationClientService);
 
   const downloadCaseFile = async () => {
     try {
       if (downloading) {
-        throw new AlreadyDownloadingError(
-          'Internal error: Already downloading',
-        );
+        throw new AlreadyDownloadingError('Internal error: Already downloading');
       }
       setDownloading(true);
 
@@ -52,9 +48,7 @@ export function useDownloadFile(
       });
 
       if (!response.ok) {
-        throw new FetchLinkError(
-          'Internal error: Failed to download file: ' + response.statusText,
-        );
+        throw new FetchLinkError('Internal error: Failed to download file: ' + response.statusText);
       }
       const { url } = fileDownloadUrlSchema.parse(await response.json());
       await downloadFile(url, 'download');

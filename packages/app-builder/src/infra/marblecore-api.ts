@@ -1,8 +1,4 @@
-import {
-  fetchWithAuthMiddleware,
-  marblecoreApi,
-  type TokenService,
-} from 'marble-api';
+import { fetchWithAuthMiddleware, marblecoreApi, type TokenService } from 'marble-api';
 import * as R from 'remeda';
 import { type FunctionKeys } from 'typescript-utils';
 
@@ -37,15 +33,9 @@ function getMarbleCoreAPIClient({
   });
 }
 
-export type GetMarbleCoreAPIClientWithAuth = (
-  tokenService: TokenService<string>,
-) => MarbleCoreApi;
+export type GetMarbleCoreAPIClientWithAuth = (tokenService: TokenService<string>) => MarbleCoreApi;
 
-export function initializeMarbleCoreAPIClient({
-  baseUrl,
-}: {
-  baseUrl: string;
-}): {
+export function initializeMarbleCoreAPIClient({ baseUrl }: { baseUrl: string }): {
   marbleCoreApiClient: MarbleCoreApi;
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
 } {

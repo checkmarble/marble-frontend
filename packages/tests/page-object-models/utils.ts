@@ -9,10 +9,7 @@ export function boxedStep(
   target: Function,
   context: ClassMethodDecoratorContext,
 ) {
-  return function replacementMethod(
-    this: NonNullable<unknown>,
-    ...args: unknown[]
-  ) {
+  return function replacementMethod(this: NonNullable<unknown>, ...args: unknown[]) {
     const name = this.constructor.name + '.' + context.name.toString();
     return test.step(
       name,

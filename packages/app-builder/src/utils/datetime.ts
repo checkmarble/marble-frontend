@@ -11,8 +11,7 @@ export function getDateRangeFilter(
   },
 ) {
   return (date: string) => {
-    const calendar =
-      calendarAndTimeZone?.calendar ?? Temporal.Calendar.from('iso8601');
+    const calendar = calendarAndTimeZone?.calendar ?? Temporal.Calendar.from('iso8601');
     const timeZone = calendarAndTimeZone?.timeZone ?? Temporal.Now.timeZoneId();
 
     if (dateRangeFilter.type === 'static') {
@@ -22,33 +21,25 @@ export function getDateRangeFilter(
       });
 
       if (dateRangeFilter.startDate && dateRangeFilter.startDate > date) {
-        const startDate = Temporal.Instant.from(
-          dateRangeFilter.startDate,
-        ).toZonedDateTime({
+        const startDate = Temporal.Instant.from(dateRangeFilter.startDate).toZonedDateTime({
           calendar,
           timeZone,
         });
 
-        if (Temporal.ZonedDateTime.compare(parsedDate, startDate) < 0)
-          return false;
+        if (Temporal.ZonedDateTime.compare(parsedDate, startDate) < 0) return false;
       }
       if (dateRangeFilter.endDate) {
-        const endDate = Temporal.Instant.from(
-          dateRangeFilter.endDate,
-        ).toZonedDateTime({
+        const endDate = Temporal.Instant.from(dateRangeFilter.endDate).toZonedDateTime({
           calendar,
           timeZone,
         });
 
-        if (Temporal.ZonedDateTime.compare(parsedDate, endDate) > 0)
-          return false;
+        if (Temporal.ZonedDateTime.compare(parsedDate, endDate) > 0) return false;
       }
       return true;
     }
     if (dateRangeFilter.type === 'dynamic') {
-      const minDate = Temporal.Now.zonedDateTime(calendar, timeZone).add(
-        dateRangeFilter.fromNow,
-      );
+      const minDate = Temporal.Now.zonedDateTime(calendar, timeZone).add(dateRangeFilter.fromNow);
 
       const parsedDate = Temporal.Instant.from(date).toZonedDateTime({
         calendar,

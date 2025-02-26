@@ -1,7 +1,4 @@
-import {
-  type GetLicenseAPIClientWithAuth,
-  type LicenseApi,
-} from '@app-builder/infra/license-api';
+import { type GetLicenseAPIClientWithAuth, type LicenseApi } from '@app-builder/infra/license-api';
 import {
   type GetMarbleCoreAPIClientWithAuth,
   type MarbleCoreApi,
@@ -56,16 +53,10 @@ export function makeServerRepositories({
   getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
 }) {
   return {
-    authStorageRepository: getAuthStorageRepository(
-      sessionStorageRepositoryOptions,
-    ),
+    authStorageRepository: getAuthStorageRepository(sessionStorageRepositoryOptions),
     csrfCookie: getCsrfCookie(sessionStorageRepositoryOptions),
-    toastStorageRepository: getToastStorageRepository(
-      sessionStorageRepositoryOptions,
-    ),
-    lngStorageRepository: getLngStorageRepository(
-      sessionStorageRepositoryOptions,
-    ),
+    toastStorageRepository: getToastStorageRepository(sessionStorageRepositoryOptions),
+    lngStorageRepository: getLngStorageRepository(sessionStorageRepositoryOptions),
     getLicenseApiClientWithoutAuth,
     getLicenseAPIClientWithAuth,
     marbleCoreApiClient,
@@ -79,10 +70,8 @@ export function makeServerRepositories({
     getSanctionCheckRepository: makeGetSanctionCheckRepository(),
     getCustomListRepository: makeGetCustomListRepository(),
     getScenarioRepository: makeGetScenarioRepository(),
-    getScenarioIterationRuleRepository:
-      makeGetScenarioIterationRuleRepository(),
-    getScenarioIterationSanctionRepository:
-      makeGetScenarioIterationSanctionRepository(),
+    getScenarioIterationRuleRepository: makeGetScenarioIterationRuleRepository(),
+    getScenarioIterationSanctionRepository: makeGetScenarioIterationSanctionRepository(),
     getOrganizationRepository: makeGetOrganizationRepository(),
     getDataModelRepository: makeGetDataModelRepository(),
     getApiKeyRepository: makeGetApiKeyRepository(),

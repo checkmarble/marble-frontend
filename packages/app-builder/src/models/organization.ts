@@ -8,9 +8,7 @@ export interface Organization {
   sanctionLimit?: number;
 }
 
-export const adaptOrganizationDto = (
-  organizationDto: OrganizationDto,
-): Organization => ({
+export const adaptOrganizationDto = (organizationDto: OrganizationDto): Organization => ({
   id: organizationDto.id,
   name: organizationDto.name,
   defaultScenarioTimezone: organizationDto.default_scenario_timezone

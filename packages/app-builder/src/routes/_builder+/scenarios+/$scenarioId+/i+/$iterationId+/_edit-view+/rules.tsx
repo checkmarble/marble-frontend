@@ -39,13 +39,7 @@ import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import {
-  CtaClassName,
-  Input,
-  Table,
-  Tag,
-  useVirtualTable,
-} from 'ui-design-system';
+import { CtaClassName, Input, Table, Tag, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { useCurrentScenarioValidation } from '../_layout';
@@ -70,9 +64,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     }),
   ]);
 
-  const sanctions = iteration.sanctionCheckConfig
-    ? [iteration.sanctionCheckConfig]
-    : [];
+  const sanctions = iteration.sanctionCheckConfig ? [iteration.sanctionCheckConfig] : [];
 
   const items = [
     ...rules.map((r) => ({ ...r, type: 'rule' as const })),
@@ -94,8 +86,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 const columnHelper = createColumnHelper<
-  | (ScenarioIterationRule & { type: 'rule' })
-  | (SanctionCheckConfig & { type: 'sanction' })
+  (ScenarioIterationRule & { type: 'rule' }) | (SanctionCheckConfig & { type: 'sanction' })
 >();
 
 const AddRuleOrSanction = ({
@@ -113,9 +104,7 @@ const AddRuleOrSanction = ({
 
   return (
     <DropdownMenu.Root>
-      <DropdownMenu.Trigger
-        className={CtaClassName({ variant: 'primary', color: 'purple' })}
-      >
+      <DropdownMenu.Trigger className={CtaClassName({ variant: 'primary', color: 'purple' })}>
         <Icon icon="plus" className="size-6" />
         {t('common:add')}
       </DropdownMenu.Trigger>
@@ -143,14 +132,10 @@ export default function Rules() {
   const scenarioId = useParam('scenarioId');
   const editorMode = useEditorMode();
 
-  const { items, ruleGroups, isSanctionAvailable } =
-    useLoaderData<typeof loader>();
+  const { items, ruleGroups, isSanctionAvailable } = useLoaderData<typeof loader>();
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
-  const hasAlreadyASanction = useMemo(
-    () => items.some((i) => i.type === 'sanction'),
-    [items],
-  );
+  const hasAlreadyASanction = useMemo(() => items.some((i) => i.type === 'sanction'), [items]);
 
   const columns = useMemo(
     () => [
@@ -160,15 +145,10 @@ export default function Rules() {
         size: 200,
         cell: ({ getValue, row, table }) => {
           const tableState = table.getState();
-          const query =
-            typeof tableState.globalFilter === 'string'
-              ? tableState.globalFilter
-              : '';
+          const query = typeof tableState.globalFilter === 'string' ? tableState.globalFilter : '';
           const hasErrors =
             row.original.type === 'rule'
-              ? hasRuleErrors(
-                  findRuleValidation(scenarioValidation, row.original.id),
-                )
+              ? hasRuleErrors(findRuleValidation(scenarioValidation, row.original.id))
               : false;
 
           return (
@@ -178,11 +158,7 @@ export default function Rules() {
                   <Ping className="text-red-47 relative box-content size-[6px] border border-transparent" />
                 ) : null}
               </span>
-              <Highlight
-                text={getValue() ?? ''}
-                query={query}
-                className="hyphens-auto"
-              />
+              <Highlight text={getValue() ?? ''} query={query} className="hyphens-auto" />
             </span>
           );
         },
@@ -193,10 +169,7 @@ export default function Rules() {
         size: 360,
         cell: ({ getValue, table }) => {
           const tableState = table.getState();
-          const query =
-            typeof tableState.globalFilter === 'string'
-              ? tableState.globalFilter
-              : '';
+          const query = typeof tableState.globalFilter === 'string' ? tableState.globalFilter : '';
 
           return <Highlight text={getValue() ?? ''} query={query} />;
         },
@@ -212,41 +185,33 @@ export default function Rules() {
           return <Tag>{value}</Tag>;
         },
       }),
-      columnHelper.accessor(
-        (row) => (row.type === 'rule' ? row.scoreModifier : undefined),
-        {
-          id: 'score',
-          cell: ({ getValue }) => {
-            const scoreModifier = getValue();
-            if (!scoreModifier) return '';
-            return (
-              <span
-                className={scoreModifier < 0 ? 'text-green-38' : 'text-red-47'}
-              >
-                {formatNumber(scoreModifier, {
-                  language,
-                  signDisplay: 'exceptZero',
-                })}
-              </span>
-            );
-          },
-          header: t('scenarios:rules.score'),
-          size: 100,
+      columnHelper.accessor((row) => (row.type === 'rule' ? row.scoreModifier : undefined), {
+        id: 'score',
+        cell: ({ getValue }) => {
+          const scoreModifier = getValue();
+          if (!scoreModifier) return '';
+          return (
+            <span className={scoreModifier < 0 ? 'text-green-38' : 'text-red-47'}>
+              {formatNumber(scoreModifier, {
+                language,
+                signDisplay: 'exceptZero',
+              })}
+            </span>
+          );
         },
-      ),
-      columnHelper.accessor(
-        (row) => (row.type === 'sanction' ? row.forcedOutcome : undefined),
-        {
-          id: 'outcome',
-          cell: ({ getValue }) => {
-            const outcome = getValue();
-            if (!outcome) return '';
-            return <OutcomeTag outcome={outcome} />;
-          },
-          header: t('decisions:outcome'),
-          size: 120,
+        header: t('scenarios:rules.score'),
+        size: 100,
+      }),
+      columnHelper.accessor((row) => (row.type === 'sanction' ? row.forcedOutcome : undefined), {
+        id: 'outcome',
+        cell: ({ getValue }) => {
+          const outcome = getValue();
+          if (!outcome) return '';
+          return <OutcomeTag outcome={outcome} />;
         },
-      ),
+        header: t('decisions:outcome'),
+        size: 120,
+      }),
     ],
     [language, scenarioValidation, t],
   );
@@ -255,11 +220,7 @@ export default function Rules() {
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const filterValues = R.pullObject(
-    columnFilters,
-    R.prop('id'),
-    R.prop('value'),
-  );
+  const filterValues = R.pullObject(columnFilters, R.prop('id'), R.prop('value'));
 
   const submitRulesFilters = useCallback((filters: RulesFilters) => {
     const nextColumnFilters = R.pipe(
@@ -310,9 +271,7 @@ export default function Rules() {
 
   return (
     <div className="flex flex-col gap-4">
-      <EvaluationErrors
-        errors={scenarioValidation.rules.errors.map(getScenarioErrorMessage)}
-      />
+      <EvaluationErrors errors={scenarioValidation.rules.errors.map(getScenarioErrorMessage)} />
 
       <RulesFiltersProvider
         filterValues={filterValues}

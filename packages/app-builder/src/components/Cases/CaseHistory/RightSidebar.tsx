@@ -23,10 +23,7 @@ function rightSidebarReducer(prevState: State, action: Actions): State {
     case 'triggerClicked': {
       return {
         ...prevState,
-        open:
-          prevState.activeId === action.payload.activeId
-            ? !prevState.open
-            : true,
+        open: prevState.activeId === action.payload.activeId ? !prevState.open : true,
         activeId: action.payload.activeId,
       };
     }
@@ -40,11 +37,7 @@ const RightSidebarContext = createSimpleContext<{
   dispatch: React.Dispatch<Actions>;
 }>('RightSidebar');
 
-export function RightSidebarProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function RightSidebarProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = React.useReducer(rightSidebarReducer, initialState);
 
   return (
@@ -69,48 +62,40 @@ interface RightSidebarButtonProps
   label: string;
 }
 
-export const RightSidebarTab = React.forwardRef<
-  HTMLButtonElement,
-  RightSidebarButtonProps
->(function RightSidebarButton(
-  { activeId, icon, label, className, ...props },
-  ref,
-) {
-  const { state, dispatch } = RightSidebarContext.useValue();
+export const RightSidebarTab = React.forwardRef<HTMLButtonElement, RightSidebarButtonProps>(
+  function RightSidebarButton({ activeId, icon, label, className, ...props }, ref) {
+    const { state, dispatch } = RightSidebarContext.useValue();
 
-  const isExpanded = state.activeId === activeId && state.open;
+    const isExpanded = state.activeId === activeId && state.open;
 
-  return (
-    <Tooltip.Default content={label}>
-      <button
-        ref={ref}
-        aria-expanded={isExpanded}
-        aria-controls={activeId}
-        onClick={() => {
-          dispatch({
-            type: 'triggerClicked',
-            payload: { activeId },
-          });
-        }}
-        className={clsx(
-          'hover:bg-purple-96 active:bg-purple-96 hover:text-purple-65 active:text-purple-65 flex size-8 items-center justify-center rounded-sm',
-          isExpanded && 'bg-purple-96 text-purple-65',
-          className,
-        )}
-        {...props}
-      >
-        <Icon className="size-6" icon={icon} />
-        <span className="sr-only">{label}</span>
-      </button>
-    </Tooltip.Default>
-  );
-});
+    return (
+      <Tooltip.Default content={label}>
+        <button
+          ref={ref}
+          aria-expanded={isExpanded}
+          aria-controls={activeId}
+          onClick={() => {
+            dispatch({
+              type: 'triggerClicked',
+              payload: { activeId },
+            });
+          }}
+          className={clsx(
+            'hover:bg-purple-96 active:bg-purple-96 hover:text-purple-65 active:text-purple-65 flex size-8 items-center justify-center rounded-sm',
+            isExpanded && 'bg-purple-96 text-purple-65',
+            className,
+          )}
+          {...props}
+        >
+          <Icon className="size-6" icon={icon} />
+          <span className="sr-only">{label}</span>
+        </button>
+      </Tooltip.Default>
+    );
+  },
+);
 
-export function RightSidebarDisclosureContent({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function RightSidebarDisclosureContent({ children }: { children: React.ReactNode }) {
   const { state } = RightSidebarContext.useValue();
 
   return (

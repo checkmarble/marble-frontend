@@ -15,17 +15,12 @@ export const ClearAllFiltersLink = forwardRef<
   const { t } = useTranslation(filtersI18n);
   return (
     <Link
-      className={clsx(
-        CtaClassName({ variant: 'tertiary', color: 'grey' }),
-        'shrink-0',
-      )}
+      className={clsx(CtaClassName({ variant: 'tertiary', color: 'grey' }), 'shrink-0')}
       ref={ref}
       {...props}
     >
       <Icon icon="cross" className="size-5" />
-      <span className="line-clamp-1 capitalize">
-        {t('filters:clear_filters')}
-      </span>
+      <span className="line-clamp-1 capitalize">{t('filters:clear_filters')}</span>
     </Link>
   );
 });
@@ -37,17 +32,12 @@ export const ClearAllFiltersButton = forwardRef<
   const { t } = useTranslation(filtersI18n);
   return (
     <button
-      className={clsx(
-        CtaClassName({ variant: 'tertiary', color: 'grey' }),
-        'shrink-0',
-      )}
+      className={clsx(CtaClassName({ variant: 'tertiary', color: 'grey' }), 'shrink-0')}
       ref={ref}
       {...props}
     >
       <Icon icon="cross" className="size-5" />
-      <span className="line-clamp-1 capitalize">
-        {t('filters:clear_filters')}
-      </span>
+      <span className="line-clamp-1 capitalize">{t('filters:clear_filters')}</span>
     </button>
   );
 });

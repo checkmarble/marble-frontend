@@ -16,9 +16,7 @@ const Story: Meta<typeof TextArea> = {
 };
 export default Story;
 
-export const Primary: StoryFn<typeof TextArea> = (args) => (
-  <TextArea {...args} />
-);
+export const Primary: StoryFn<typeof TextArea> = (args) => <TextArea {...args} />;
 Primary.args = {};
 
 export const Reset: StoryFn<typeof TextArea> = (args) => (

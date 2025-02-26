@@ -27,19 +27,14 @@ export const LeftOperand = ({
 }: LeftOperandProps) => {
   const options = useOperandOptions([]);
   const leftOptions = useMemo(
-    () =>
-      options.filter(
-        (option) => option.dataType === 'Int' || option.dataType === 'Float',
-      ),
+    () => options.filter((option) => option.dataType === 'Int' || option.dataType === 'Float'),
     [options],
   );
 
   const defaultCoerceToConstant = useDefaultCoerceToConstant();
   const coerceToConstant = useCallback(
     (searchValue: string) =>
-      defaultCoerceToConstant(searchValue).filter(
-        (option) => option.dataType === 'Int',
-      ),
+      defaultCoerceToConstant(searchValue).filter((option) => option.dataType === 'Int'),
     [defaultCoerceToConstant],
   );
 

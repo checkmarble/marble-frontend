@@ -14,12 +14,7 @@ import { ruleSnoozesDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -58,8 +53,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return json(submission.reply());
   }
 
-  const { decisionId, ruleId, comment, durationUnit, durationValue } =
-    submission.value;
+  const { decisionId, ruleId, comment, durationUnit, durationValue } = submission.value;
   const duration = Temporal.Duration.from({
     [durationUnit]: durationValue,
   });
@@ -73,9 +67,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return json(
       submission.reply({
         fieldErrors: {
-          durationValue: [
-            t('cases:case_detail.add_rule_snooze.errors.max_duration'),
-          ],
+          durationValue: [t('cases:case_detail.add_rule_snooze.errors.max_duration')],
         },
       }),
     );
@@ -95,9 +87,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     let message: string;
     if (isStatusConflictHttpError(error)) {
-      message = t(
-        'cases:case_detail.add_rule_snooze.errors.duplicate_rule_snooze',
-      );
+      message = t('cases:case_detail.add_rule_snooze.errors.duplicate_rule_snooze');
     } else {
       message = t('common:errors.unknown');
     }
@@ -128,11 +118,7 @@ export function AddRuleSnooze({
     <ModalV2.Root open={open} setOpen={setOpen}>
       <ModalV2.Trigger render={children} />
       <ModalV2.Content>
-        <AddRuleSnoozeContent
-          setOpen={setOpen}
-          decisionId={decisionId}
-          ruleId={ruleId}
-        />
+        <AddRuleSnoozeContent setOpen={setOpen} decisionId={decisionId} ruleId={ruleId} />
       </ModalV2.Content>
     </ModalV2.Root>
   );
@@ -188,9 +174,7 @@ function AddRuleSnoozeContent({
         action={getRoute('/ressources/cases/add-rule-snooze')}
         {...getFormProps(form)}
       >
-        <ModalV2.Title>
-          {t('cases:case_detail.add_rule_snooze.title')}
-        </ModalV2.Title>
+        <ModalV2.Title>{t('cases:case_detail.add_rule_snooze.title')}</ModalV2.Title>
         <div className="flex flex-col gap-6 p-6">
           <ModalV2.Description render={<Callout variant="outlined" />}>
             <p className="whitespace-pre text-wrap">
@@ -218,14 +202,10 @@ function AddRuleSnoozeContent({
             name={fields.comment.name}
             className="row-span-full grid grid-rows-subgrid gap-2"
           >
-            <FormLabel>
-              {t('cases:case_detail.add_rule_snooze.comment.label')}
-            </FormLabel>
+            <FormLabel>{t('cases:case_detail.add_rule_snooze.comment.label')}</FormLabel>
             <FormTextArea
               className="w-full"
-              placeholder={t(
-                'cases:case_detail.add_rule_snooze.comment.placeholder',
-              )}
+              placeholder={t('cases:case_detail.add_rule_snooze.comment.placeholder')}
             />
           </FormField>
 
@@ -234,9 +214,7 @@ function AddRuleSnoozeContent({
               name={fields.durationValue.name}
               className="row-span-full grid grid-rows-subgrid gap-2"
             >
-              <FormLabel>
-                {t('cases:case_detail.add_rule_snooze.duration_value')}
-              </FormLabel>
+              <FormLabel>{t('cases:case_detail.add_rule_snooze.duration_value')}</FormLabel>
               <FormInput type="number" className="w-full" />
               <FormErrorOrDescription />
             </FormField>
@@ -245,13 +223,8 @@ function AddRuleSnoozeContent({
               name={fields.durationUnit.name}
               className="row-span-full grid grid-rows-subgrid gap-2"
             >
-              <FormLabel>
-                {t('cases:case_detail.add_rule_snooze.duration_unit')}
-              </FormLabel>
-              <FormSelect.Default
-                className="h-10 w-full"
-                options={durationUnitOptions}
-              >
+              <FormLabel>{t('cases:case_detail.add_rule_snooze.duration_unit')}</FormLabel>
+              <FormSelect.Default className="h-10 w-full" options={durationUnitOptions}>
                 {durationUnitOptions.map((unit) => (
                   <FormSelect.DefaultItem key={unit} value={unit}>
                     {dateTimeFieldNames.of(adaptDateTimeFieldCodes(unit))}
@@ -263,17 +236,10 @@ function AddRuleSnoozeContent({
           </div>
 
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="update"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="update">
               <LoadingIcon
                 icon="snooze"
                 className="size-5"

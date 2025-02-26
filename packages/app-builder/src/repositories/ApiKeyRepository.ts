@@ -8,10 +8,7 @@ import {
 
 export interface ApiKeyRepository {
   listApiKeys(): Promise<ApiKey[]>;
-  createApiKey(args: {
-    description: string;
-    role: string;
-  }): Promise<CreatedApiKey>;
+  createApiKey(args: { description: string; role: string }): Promise<CreatedApiKey>;
   deleteApiKey(args: { apiKeyId: string }): Promise<void>;
 }
 

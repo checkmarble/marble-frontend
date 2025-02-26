@@ -16,10 +16,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const { authService } = serverServices;
   const iterationId = fromParams(params, 'iterationId');
   const scenarioId = fromParams(params, 'scenarioId');
-  const { scenarioIterationSanctionRepository } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const { scenarioIterationSanctionRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   await scenarioIterationSanctionRepository.deleteSanctioncheckConfig({
     iterationId,
@@ -54,17 +53,11 @@ export function DeleteSanction({
             <div className="bg-red-95 mb-6 box-border rounded-[90px] p-4">
               <Icon icon="delete" className="text-red-47 size-16" />
             </div>
-            <h1 className="text-l font-semibold">
-              {t('scenarios:delete_sanction.title')}
-            </h1>
-            <p className="text-center">
-              {t('scenarios:delete_sanction.content')}
-            </p>
+            <h1 className="text-l font-semibold">{t('scenarios:delete_sanction.title')}</h1>
+            <p className="text-center">{t('scenarios:delete_sanction.content')}</p>
           </div>
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
             <Button

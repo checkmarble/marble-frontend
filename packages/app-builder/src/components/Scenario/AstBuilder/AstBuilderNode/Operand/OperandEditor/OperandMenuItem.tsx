@@ -18,12 +18,7 @@ interface OperandMenuItemProps extends React.ComponentProps<typeof MenuItem> {
   children: React.ReactNode;
 }
 
-function MenuItemContainer({
-  className,
-  children,
-  leftIcon,
-  ...props
-}: OperandMenuItemProps) {
+function MenuItemContainer({ className, children, leftIcon, ...props }: OperandMenuItemProps) {
   return (
     <MenuItem
       className={clsx(
@@ -33,15 +28,9 @@ function MenuItemContainer({
       {...props}
     >
       {leftIcon ? (
-        <Icon
-          aria-hidden="true"
-          className="col-start-1 size-5 shrink-0"
-          icon={leftIcon}
-        />
+        <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon={leftIcon} />
       ) : null}
-      <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
-        {children}
-      </div>
+      <div className="col-start-2 flex flex-row gap-1 overflow-hidden">{children}</div>
     </MenuItem>
   );
 }
@@ -49,10 +38,7 @@ function MenuItemContainer({
 function MenuItemLabel({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={clsx(
-        'text-grey-00 text-s w-full break-all text-start font-normal',
-        className,
-      )}
+      className={clsx('text-grey-00 text-s w-full break-all text-start font-normal', className)}
       {...props}
     />
   );
@@ -117,17 +103,9 @@ export function OperandOption({
   const optionIcon = icon ?? getDataTypeIcon(dataType);
 
   return (
-    <MenuItemContainer
-      onClick={onClick}
-      className="group"
-      leftIcon={optionIcon}
-    >
+    <MenuItemContainer onClick={onClick} className="group" leftIcon={optionIcon}>
       <MenuItemLabel>
-        {searchValue ? (
-          <Highlight text={displayName} query={searchValue} />
-        ) : (
-          displayName
-        )}
+        {searchValue ? <Highlight text={displayName} query={searchValue} /> : displayName}
       </MenuItemLabel>
       <OperandInfos
         gutter={24}

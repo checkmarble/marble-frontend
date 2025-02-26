@@ -17,7 +17,6 @@ export function makeClientRepositories({
   firebaseClient,
 }: MakeClientRepositoriesArgs): ClientRepositories {
   return {
-    authenticationClientRepository:
-      getAuthenticationClientRepository(firebaseClient),
+    authenticationClientRepository: getAuthenticationClientRepository(firebaseClient),
   };
 }

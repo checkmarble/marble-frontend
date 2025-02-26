@@ -10,11 +10,7 @@ import { ScenarioFilter } from './ScenarioFilter';
 import { ScheduledExecutionFilter } from './ScheduledExecutionFilter';
 import { TriggerObjectFilter } from './TriggerObjectFilter';
 
-export function FilterDetail({
-  filterName,
-}: {
-  filterName: DecisionFilterName;
-}) {
+export function FilterDetail({ filterName }: { filterName: DecisionFilterName }) {
   switch (filterName) {
     case 'dateRange':
       return <DecisionsDateRangeFilter />;

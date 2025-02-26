@@ -11,12 +11,7 @@ import {
 import { transferAlerStatuses } from '@app-builder/models/transfer-alert';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -37,12 +32,9 @@ export async function action({ request }: ActionFunctionArgs) {
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { transferAlertRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { transferAlertRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
@@ -84,11 +76,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function UpdateAlertStatus({
-  defaultValue,
-}: {
-  defaultValue: UpdateAlertStatusForm;
-}) {
+export function UpdateAlertStatus({ defaultValue }: { defaultValue: UpdateAlertStatusForm }) {
   const { t } = useTranslation(['transfercheck']);
   const fetcher = useFetcher<typeof action>();
   const alertStatuses = useAlertStatuses();
@@ -117,17 +105,9 @@ export function UpdateAlertStatus({
         action={getRoute('/transfercheck/ressources/alert/update/status')}
         {...getFormProps(form)}
       >
-        <input
-          {...getInputProps(fields.alertId, { type: 'hidden' })}
-          key={fields.alertId.key}
-        />
-        <FormField
-          name={fields.status.name}
-          className="group flex flex-row items-center gap-4"
-        >
-          <FormLabel className="sr-only">
-            {t('transfercheck:alerts.status')}
-          </FormLabel>
+        <input {...getInputProps(fields.alertId, { type: 'hidden' })} key={fields.alertId.key} />
+        <FormField name={fields.status.name} className="group flex flex-row items-center gap-4">
+          <FormLabel className="sr-only">{t('transfercheck:alerts.status')}</FormLabel>
           <FormSelect.Root
             onValueChange={(value) => {
               //@ts-expect-error value is string but indeed, it is a valid status
@@ -137,9 +117,7 @@ export function UpdateAlertStatus({
             options={alertStatuses}
           >
             <FormSelect.Trigger>
-              <FormSelect.Value
-                className={alertStatusVariants({ color, variant: 'text' })}
-              >
+              <FormSelect.Value className={alertStatusVariants({ color, variant: 'text' })}>
                 {t(tKey)}
               </FormSelect.Value>
               <FormSelect.Arrow />

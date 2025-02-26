@@ -2,10 +2,7 @@ import { type AstNode, NewEmptyTriggerAstNode } from '@app-builder/models';
 import { useCurrentRuleValidationRule } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
 import { useTriggerValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule';
 import { useEditorMode } from '@app-builder/services/editor';
-import {
-  useAstNodeEditor,
-  useValidateAstNode,
-} from '@app-builder/services/editor/ast-editor';
+import { useAstNodeEditor, useValidateAstNode } from '@app-builder/services/editor/ast-editor';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { useEffect } from 'react';
 import { hasSubObject } from 'remeda';
@@ -52,26 +49,17 @@ export const FieldTrigger = ({
 
   const astNode = useStore(astEditorStore, (state) => state.rootAstNode);
 
-  const { validate, validation } = useTriggerValidationFetcher(
-    scenarioId,
-    iterationId,
-  );
+  const { validate, validation } = useTriggerValidationFetcher(scenarioId, iterationId);
 
   useValidateAstNode(astEditorStore, validate, validation);
 
   useEffect(() => {
-    onChange?.(
-      hasSubObject(NewEmptyTriggerAstNode(), astNode) ? undefined : astNode,
-    );
+    onChange?.(hasSubObject(NewEmptyTriggerAstNode(), astNode) ? undefined : astNode);
   }, [astNode, onChange]);
 
   return (
     <div onBlur={onBlur}>
-      <AstBuilder
-        viewOnly={editor === 'view'}
-        astEditorStore={astEditorStore}
-        options={options}
-      />
+      <AstBuilder viewOnly={editor === 'view'} astEditorStore={astEditorStore} options={options} />
       {type === 'rule' ? <EvaluationErrorsWrapper /> : null}
     </div>
   );

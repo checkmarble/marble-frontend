@@ -6,12 +6,7 @@ import { type CurrentUser, isAdmin } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -73,22 +68,15 @@ export function EditCaseTags({
   });
 
   const { orgTags } = useOrganizationTags();
-  const orgTagIds = React.useMemo(
-    () => orgTags.map((tag) => tag.id),
-    [orgTags],
-  );
+  const orgTagIds = React.useMemo(() => orgTags.map((tag) => tag.id), [orgTags]);
 
   const notTags = orgTags.length === 0;
   if (notTags) {
     return (
       <>
-        <div className="text-s font-semibold first-letter:capitalize">
-          {t('cases:case.tags')}
-        </div>
+        <div className="text-s font-semibold first-letter:capitalize">{t('cases:case.tags')}</div>
         <div className="flex flex-row gap-2">
-          <p className="bg-grey-100 text-s text-grey-80">
-            {t('cases:case_detail.empty_tag_list')}
-          </p>
+          <p className="bg-grey-100 text-s text-grey-80">{t('cases:case_detail.empty_tag_list')}</p>
 
           <Tooltip.Root delayDuration={0}>
             <Tooltip.Trigger tabIndex={-1}>
@@ -104,10 +92,7 @@ export function EditCaseTags({
                 className="bg-grey-100 border-grey-90 flex max-h-[400px] max-w-[300px] overflow-y-auto overflow-x-hidden rounded border p-2 shadow-md"
               >
                 {isAdmin(user) ? (
-                  <Link
-                    to={getRoute('/settings/tags')}
-                    className="text-purple-65 underline"
-                  >
+                  <Link to={getRoute('/settings/tags')} className="text-purple-65 underline">
                     {t('cases:case_detail.empty_tag_list.create_tag')}
                   </Link>
                 ) : (
@@ -132,10 +117,7 @@ export function EditCaseTags({
         action={getRoute('/ressources/cases/edit-tags')}
         {...getFormProps(form)}
       >
-        <input
-          {...getInputProps(fields.caseId, { type: 'hidden' })}
-          key={fields.caseId.key}
-        />
+        <input {...getInputProps(fields.caseId, { type: 'hidden' })} key={fields.caseId.key} />
         <FormField
           name={fields.caseTagIds.name}
           className="col-span-2 grid grid-cols-subgrid items-center"

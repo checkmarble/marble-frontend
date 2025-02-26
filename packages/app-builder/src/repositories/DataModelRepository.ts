@@ -18,20 +18,11 @@ import { type OpenApiSpec } from 'marble-api';
 export interface DataModelRepository {
   getDataModel(): Promise<DataModel>;
   getOpenApiSpec(): Promise<OpenApiSpec>;
-  postDataModelTableField(
-    tableId: string,
-    createFieldInput: CreateFieldInput,
-  ): Promise<void>;
-  patchDataModelField(
-    tableId: string,
-    updateFieldInput: UpdateFieldInput,
-  ): Promise<void>;
+  postDataModelTableField(tableId: string, createFieldInput: CreateFieldInput): Promise<void>;
+  patchDataModelField(tableId: string, updateFieldInput: UpdateFieldInput): Promise<void>;
   listPivots(args: { tableId?: string }): Promise<Pivot[]>;
   createPivot(pivot: CreatePivotInput): Promise<Pivot>;
-  getIngestedObject(
-    tableName: string,
-    objectId: string,
-  ): Promise<DataModelObject>;
+  getIngestedObject(tableName: string, objectId: string): Promise<DataModelObject>;
 }
 
 export function makeGetDataModelRepository() {
@@ -51,10 +42,7 @@ export function makeGetDataModelRepository() {
       );
     },
     patchDataModelField: async (tableId, updateFieldInput) => {
-      await marbleCoreApiClient.patchDataModelField(
-        tableId,
-        adaptUpdateFieldDto(updateFieldInput),
-      );
+      await marbleCoreApiClient.patchDataModelField(tableId, adaptUpdateFieldDto(updateFieldInput));
     },
     listPivots: async ({ tableId }) => {
       const { pivots } = await marbleCoreApiClient.listDataModelPivots({
@@ -71,9 +59,7 @@ export function makeGetDataModelRepository() {
       return adaptPivot(pivot);
     },
     getIngestedObject: async (tableName, objectId) => {
-      return adaptDataModelObject(
-        await marbleCoreApiClient.getIngestedObject(tableName, objectId),
-      );
+      return adaptDataModelObject(await marbleCoreApiClient.getIngestedObject(tableName, objectId));
     },
   });
 }

@@ -51,10 +51,7 @@ export function FuzzyMatchComparatorEdit({
     setRight,
     funcName,
     errors,
-  } = useFuzzyMatchComparatorEditState(
-    initialFuzzyMatchComparatorAstNode,
-    initialAstNodeErrors,
-  );
+  } = useFuzzyMatchComparatorEditState(initialFuzzyMatchComparatorAstNode, initialAstNodeErrors);
 
   const handleSave = () => {
     const fuzzyMatchComparatorAstNode = NewFuzzyMatchComparatorAstNode({
@@ -90,11 +87,7 @@ export function FuzzyMatchComparatorEdit({
               errors={algorithm.errors}
             />
             {threshold.mode === 'level' ? (
-              <EditLevel
-                level={threshold.level}
-                setLevel={setLevel}
-                errors={threshold.errors}
-              />
+              <EditLevel level={threshold.level} setLevel={setLevel} errors={threshold.errors} />
             ) : (
               <EditThreshold
                 threshold={threshold.value}
@@ -113,49 +106,28 @@ export function FuzzyMatchComparatorEdit({
             <LeftOperand
               astNode={left.astNode}
               astNodeErrors={left.astNodeErrors}
-              validationStatus={
-                (left.astNodeErrors?.errors ?? []).length > 0
-                  ? 'error'
-                  : 'valid'
-              }
+              validationStatus={(left.astNodeErrors?.errors ?? []).length > 0 ? 'error' : 'valid'}
               onChange={setLeft}
             />
             <div className="border-grey-90 bg-grey-98 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
-              <span className="text-s text-grey-00 font-medium">
-                {t(funcNameTKeys[funcName])}
-              </span>
+              <span className="text-s text-grey-00 font-medium">{t(funcNameTKeys[funcName])}</span>
             </div>
             <RightOperand
               astNode={right.astNode}
               astNodeErrors={right.astNodeErrors}
-              validationStatus={
-                (right.astNodeErrors?.errors ?? []).length > 0
-                  ? 'error'
-                  : 'valid'
-              }
+              validationStatus={(right.astNodeErrors?.errors ?? []).length > 0 ? 'error' : 'valid'}
               onChange={setRight}
             />
           </div>
           <EvaluationErrors
-            errors={adaptEvaluationErrorViewModels(errors).map(
-              getNodeEvaluationErrorMessage,
-            )}
+            errors={adaptEvaluationErrorViewModels(errors).map(getNodeEvaluationErrorMessage)}
           />
         </div>
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close
-            render={
-              <Button className="flex-1" variant="secondary" name="cancel" />
-            }
-          >
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
             {t('common:cancel')}
           </ModalV2.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            name="save"
-            onClick={() => handleSave()}
-          >
+          <Button className="flex-1" variant="primary" name="save" onClick={() => handleSave()}>
             {t('common:save')}
           </Button>
         </div>
@@ -172,21 +144,13 @@ const funcNameTKeys = {
   ParseKeys<['scenarios']>
 >;
 
-function Examples({
-  algorithm,
-  threshold,
-}: {
-  algorithm: FuzzyMatchAlgorithm;
-  threshold: number;
-}) {
+function Examples({ algorithm, threshold }: { algorithm: FuzzyMatchAlgorithm; threshold: number }) {
   const { t } = useTranslation(['common', 'scenarios']);
   if (!isEditableFuzzyMatchAlgorithm(algorithm)) return null;
 
   return (
     <table className="border-grey-90 table-auto border-collapse border">
-      <caption className="sr-only">
-        {t('scenarios:edit_fuzzy_match.examples.caption')}
-      </caption>
+      <caption className="sr-only">{t('scenarios:edit_fuzzy_match.examples.caption')}</caption>
       <thead>
         <tr>
           <th className="text-grey-00 bg-grey-98 border-grey-90 border px-2 text-start text-xs font-normal capitalize">
@@ -220,12 +184,8 @@ function Examples({
           },
         ].map(({ left, right, score }) => (
           <tr key={`${left}-${right}`}>
-            <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
-              {left}
-            </td>
-            <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
-              {right}
-            </td>
+            <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">{left}</td>
+            <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">{right}</td>
             <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
               {t(`common:${score[algorithm] > threshold}`)}
             </td>

@@ -316,12 +316,7 @@ components:
               - type: number
         unicity_constraint:
           type: string
-          enum:
-            [
-              no_unicity_constraint,
-              pending_unique_constraint,
-              active_unique_constraint,
-            ]
+          enum: [no_unicity_constraint, pending_unique_constraint, active_unique_constraint]
       required:
         - id
         - data_type

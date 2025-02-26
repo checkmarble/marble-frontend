@@ -1,9 +1,6 @@
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-} from '@remix-run/node';
+import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);

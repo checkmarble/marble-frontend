@@ -12,18 +12,9 @@ export const durationUnits = [
 export type DurationUnit = (typeof durationUnits)[number];
 
 // Source https://tc39.es/ecma402/#table-validcodefordatetimefield
-type DateTimeFieldCode =
-  | 'year'
-  | 'month'
-  | 'weekOfYear'
-  | 'day'
-  | 'hour'
-  | 'minute'
-  | 'second';
+type DateTimeFieldCode = 'year' | 'month' | 'weekOfYear' | 'day' | 'hour' | 'minute' | 'second';
 
-export function adaptDateTimeFieldCodes(
-  durationUnit: DurationUnit,
-): DateTimeFieldCode {
+export function adaptDateTimeFieldCodes(durationUnit: DurationUnit): DateTimeFieldCode {
   switch (durationUnit) {
     case 'years':
       return 'year';

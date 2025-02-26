@@ -1,8 +1,4 @@
-import {
-  type AstNode,
-  type ConstantType,
-  type DataType,
-} from '@app-builder/models';
+import { type AstNode, type ConstantType, type DataType } from '@app-builder/models';
 import { type ConstantAstNode } from '@app-builder/models/astNode/constant';
 import { type OperandType } from '@app-builder/models/operand-type';
 import {
@@ -118,16 +114,12 @@ function OperandEditorContent() {
       <MenuContent>
         <div className="scrollbar-gutter-stable flex flex-col gap-2 overflow-y-auto p-2 pe-[calc(0.5rem-var(--scrollbar-width))]">
           {searchValue === '' ? (
-            <OperandEditorDiscoveryResults
-              discoveryResults={discoveryResults}
-            />
+            <OperandEditorDiscoveryResults discoveryResults={discoveryResults} />
           ) : (
             <OperandEditorSearchResults />
           )}
         </div>
-        {bottomOptions.length > 0 ? (
-          <BottomOptions options={bottomOptions} />
-        ) : null}
+        {bottomOptions.length > 0 ? <BottomOptions options={bottomOptions} /> : null}
       </MenuContent>
     </>
   );
@@ -183,13 +175,7 @@ function OperandMenu({
   const operandEditorOpen = useOperandEditorOpen();
   const { setOperandEditorOpen, onSearch } = useOperandEditorActions();
   const setOpen = useCallbackRef((open: boolean) => {
-    setOperandEditorOpen(
-      open,
-      astNode,
-      options,
-      coerceToConstant,
-      astNodeErrors,
-    );
+    setOperandEditorOpen(open, astNode, options, coerceToConstant, astNodeErrors);
   });
 
   return (
@@ -215,38 +201,37 @@ interface OperandMenuButtonProps extends MenuButtonProps {
   validationStatus: ValidationStatus;
 }
 
-const OperandMenuButton = React.forwardRef<
-  HTMLDivElement,
-  OperandMenuButtonProps
->(function OperandMenuButton(
-  {
-    astNode,
-    placeholder,
-    dataType,
-    operandType,
-    displayName,
-    returnValue,
-    validationStatus,
-    ...props
+const OperandMenuButton = React.forwardRef<HTMLDivElement, OperandMenuButtonProps>(
+  function OperandMenuButton(
+    {
+      astNode,
+      placeholder,
+      dataType,
+      operandType,
+      displayName,
+      returnValue,
+      validationStatus,
+      ...props
+    },
+    ref,
+  ) {
+    return (
+      <MenuButton
+        ref={ref}
+        {...props}
+        render={
+          <OperandLabel
+            interactionMode="editor"
+            astNode={astNode}
+            placeholder={placeholder}
+            dataType={dataType}
+            operandType={operandType}
+            displayName={displayName}
+            returnValue={returnValue}
+            validationStatus={validationStatus}
+          />
+        }
+      />
+    );
   },
-  ref,
-) {
-  return (
-    <MenuButton
-      ref={ref}
-      {...props}
-      render={
-        <OperandLabel
-          interactionMode="editor"
-          astNode={astNode}
-          placeholder={placeholder}
-          dataType={dataType}
-          operandType={operandType}
-          displayName={displayName}
-          returnValue={returnValue}
-          validationStatus={validationStatus}
-        />
-      }
-    />
-  );
-});
+);

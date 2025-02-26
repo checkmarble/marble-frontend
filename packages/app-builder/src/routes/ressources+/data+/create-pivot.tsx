@@ -10,11 +10,7 @@ import {
 } from '@app-builder/components/Form';
 import { Highlight } from '@app-builder/components/Highlight';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import {
-  type DataModel,
-  isStatusConflictHttpError,
-  type TableModel,
-} from '@app-builder/models';
+import { type DataModel, isStatusConflictHttpError, type TableModel } from '@app-builder/models';
 import { getPivotOptions } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
@@ -214,9 +210,7 @@ function CreatePivotContent({
                     onSearchValueChange={setSearchValue}
                     selectedValue={field.value.id}
                     onSelectedValueChange={(value): void => {
-                      const pivot = pivotOptions.find(
-                        (pivot) => pivot.id === value,
-                      );
+                      const pivot = pivotOptions.find((pivot) => pivot.id === value);
                       field.onChange(pivot);
                     }}
                   >
@@ -241,10 +235,7 @@ function CreatePivotContent({
                             value={pivot.id}
                             className="flex items-center justify-between"
                           >
-                            <Highlight
-                              text={pivot.displayValue}
-                              query={deferredSearchValue}
-                            />
+                            <Highlight text={pivot.displayValue} query={deferredSearchValue} />
                             <PivotType type={pivot.type} />
                           </SelectWithCombobox.ComboboxItem>
                         ))}
@@ -262,9 +253,7 @@ function CreatePivotContent({
             )}
           />
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
             <Button className="flex-1" variant="primary" type="submit">

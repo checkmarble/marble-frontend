@@ -1,37 +1,19 @@
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import {
   getFormattedLive,
   getFormattedVersion,
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
-import {
-  type EditorMode,
-  EditorModeContextProvider,
-} from '@app-builder/services/editor';
+import { type EditorMode, EditorModeContextProvider } from '@app-builder/services/editor';
 import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { findRuleValidation } from '@app-builder/services/validation';
-import {
-  formatDateRelative,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatDateRelative, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import {
-  json,
-  type LoaderFunctionArgs,
-  type SerializeFrom,
-} from '@remix-run/node';
-import {
-  Outlet,
-  useLoaderData,
-  useLocation,
-  useRouteLoaderData,
-} from '@remix-run/react';
+import { json, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
+import { Outlet, useLoaderData, useLocation, useRouteLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -51,9 +33,7 @@ export const handle = {
       const iterationId = useParam('iterationId');
 
       const currentIteration = React.useMemo(() => {
-        const currentIteration = scenarioIterations.find(
-          ({ id }) => id === iterationId,
-        );
+        const currentIteration = scenarioIterations.find(({ id }) => id === iterationId);
         invariant(currentIteration, 'currentIteration is required');
         return currentIteration;
       }, [iterationId, scenarioIterations]);
@@ -73,9 +53,7 @@ export const handle = {
             <p className="text-s flex flex-row gap-1 font-semibold">
               <span className="capitalize">{currentFormattedVersion}</span>
               {currentFormattedLive ? (
-                <span className="text-purple-65 capitalize">
-                  {currentFormattedLive}
-                </span>
+                <span className="text-purple-65 capitalize">{currentFormattedLive}</span>
               ) : null}
             </p>
           </BreadCrumbLink>
@@ -110,9 +88,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   ]);
 
   const editorMode: EditorMode =
-    isEditScenarioAvailable(user) && R.isNullish(scenarioIteration.version)
-      ? 'edit'
-      : 'view';
+    isEditScenarioAvailable(user) && R.isNullish(scenarioIteration.version) ? 'edit' : 'view';
 
   return json({
     editorMode,
@@ -161,9 +137,7 @@ export const useRuleGroups = () => {
       R.pipe(
         [
           ...rules.map((r) => r.ruleGroup),
-          ...(sanctionCheckConfig?.ruleGroup
-            ? [sanctionCheckConfig.ruleGroup]
-            : []),
+          ...(sanctionCheckConfig?.ruleGroup ? [sanctionCheckConfig.ruleGroup] : []),
         ],
         R.filter((val) => !R.isEmpty(val)),
         R.unique(),
@@ -201,10 +175,7 @@ export function VersionSelect({
         type: si.type,
         version: si.version,
         updatedAt: si.updatedAt,
-        linkTo: location.pathname.replace(
-          fromUUID(currentIteration.id),
-          fromUUID(si.id),
-        ),
+        linkTo: location.pathname.replace(fromUUID(currentIteration.id), fromUUID(si.id)),
         formattedVersion: getFormattedVersion(si, t),
         formattedLive: getFormattedLive(si, t),
         formattedUpdatedAt: formatDateRelative(si.updatedAt, {
@@ -218,25 +189,15 @@ export function VersionSelect({
   const currentFormattedLive = getFormattedLive(currentIteration, t);
 
   return (
-    <ScenarioIterationMenu
-      labelledScenarioIteration={labelledScenarioIteration}
-    >
+    <ScenarioIterationMenu labelledScenarioIteration={labelledScenarioIteration}>
       <MenuButton className="text-s text-grey-00 border-grey-90 focus:border-purple-65 flex min-h-10 items-center justify-between rounded-full border p-2 font-medium outline-none">
         <p className="text-s ml-2 flex flex-row gap-1 font-semibold">
-          <span className="text-grey-00 capitalize">
-            {currentFormattedVersion}
-          </span>
+          <span className="text-grey-00 capitalize">{currentFormattedVersion}</span>
           {currentFormattedLive ? (
-            <span className="text-purple-65 capitalize">
-              {currentFormattedLive}
-            </span>
+            <span className="text-purple-65 capitalize">{currentFormattedLive}</span>
           ) : null}
         </p>
-        <Icon
-          aria-hidden
-          icon="arrow-2-down"
-          className="text-grey-00 size-6 shrink-0"
-        />
+        <Icon aria-hidden icon="arrow-2-down" className="text-grey-00 size-6 shrink-0" />
       </MenuButton>
     </ScenarioIterationMenu>
   );

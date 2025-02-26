@@ -47,12 +47,8 @@ const columnHelper = createColumnHelper<Tag>();
 
 export default function Tags() {
   const { t } = useTranslation(['settings']);
-  const {
-    tags,
-    isCreateTagAvailable,
-    isEditTagAvailable,
-    isDeleteTagAvailable,
-  } = useLoaderData<typeof loader>();
+  const { tags, isCreateTagAvailable, isEditTagAvailable, isDeleteTagAvailable } =
+    useLoaderData<typeof loader>();
 
   const columns = useMemo(() => {
     return [
@@ -66,10 +62,7 @@ export default function Tags() {
         header: t('settings:tags.color'),
         size: 100,
         cell: ({ getValue }) => (
-          <div
-            className="size-4 rounded-full"
-            style={{ backgroundColor: getValue() }}
-          ></div>
+          <div className="size-4 rounded-full" style={{ backgroundColor: getValue() }}></div>
         ),
       }),
       columnHelper.accessor((row) => row.cases_count, {
@@ -127,13 +120,7 @@ export default function Tags() {
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>
                 {rows.map((row) => {
-                  return (
-                    <Table.Row
-                      key={row.id}
-                      className="hover:bg-purple-98 group"
-                      row={row}
-                    />
-                  );
+                  return <Table.Row key={row.id} className="hover:bg-purple-98 group" row={row} />;
                 })}
               </Table.Body>
             </Table.Container>

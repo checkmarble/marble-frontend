@@ -1,7 +1,4 @@
-import {
-  type ScenarioValidationDto,
-  type ScenarioValidationErrorCodeDto,
-} from 'marble-api';
+import { type ScenarioValidationDto, type ScenarioValidationErrorCodeDto } from 'marble-api';
 import * as R from 'remeda';
 
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
@@ -27,9 +24,7 @@ export interface ScenarioValidation {
   };
 }
 
-export function adaptScenarioValidation(
-  dto: ScenarioValidationDto,
-): ScenarioValidation {
+export function adaptScenarioValidation(dto: ScenarioValidationDto): ScenarioValidation {
   return {
     trigger: {
       errors: dto.trigger.errors.map(({ error }) => error),

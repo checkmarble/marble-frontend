@@ -21,10 +21,7 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     const { preferredLanguage } = await parseForm(request, formSchema);
 
-    const { cookie } = await i18nextService.setLanguage(
-      request,
-      preferredLanguage,
-    );
+    const { cookie } = await i18nextService.setLanguage(request, preferredLanguage);
 
     return redirectBack(request, {
       fallback: getRoute('/scenarios'),

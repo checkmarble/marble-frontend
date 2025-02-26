@@ -6,17 +6,8 @@ import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicr
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  type ActionFunctionArgs,
-  json,
-  type LoaderFunctionArgs,
-} from '@remix-run/node';
-import {
-  Link,
-  useFetcher,
-  useLoaderData,
-  useSearchParams,
-} from '@remix-run/react';
+import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
+import { Link, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
 import { tryit } from 'radash';
 import { Trans, useTranslation } from 'react-i18next';
 import { safeRedirect } from 'remix-utils/safe-redirect';
@@ -31,14 +22,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
     successRedirect: getRoute('/app-router'),
   });
   const session = await authSessionService.getSession(request);
-  const [backendError, isSsoEnabled] = await tryit(
-    licenseService.isSsoEnabled,
-  )();
+  const [backendError, isSsoEnabled] = await tryit(licenseService.isSsoEnabled)();
 
   return json({
-    authError: backendError
-      ? 'BackendUnavailable'
-      : session.get('authError')?.message,
+    authError: backendError ? 'BackendUnavailable' : session.get('authError')?.message,
     isSsoEnabled,
   });
 }
@@ -66,8 +53,7 @@ export default function Login() {
   const signIn = (authPayload: AuthPayload) =>
     fetcher.submit(authPayload, {
       method: 'POST',
-      action:
-        getRoute('/sign-in') + (redirectTo ? `?redirectTo=${redirectTo}` : ''),
+      action: getRoute('/sign-in') + (redirectTo ? `?redirectTo=${redirectTo}` : ''),
     });
 
   const loading = fetcher.state === 'loading';
@@ -90,10 +76,7 @@ export default function Login() {
             />
           </div>
 
-          <div
-            className="my-4 flex w-full flex-row items-center gap-1"
-            role="separator"
-          >
+          <div className="my-4 flex w-full flex-row items-center gap-1" role="separator">
             <div className="bg-grey-90 h-px w-full" />
             or
             <div className="bg-grey-90 h-px w-full" />
@@ -111,22 +94,14 @@ export default function Login() {
             t={t}
             i18nKey="auth:sign_in.dont_have_an_account"
             components={{
-              SignUp: (
-                <Link
-                  className="text-purple-65 underline"
-                  to={getRoute('/sign-up')}
-                />
-              ),
+              SignUp: <Link className="text-purple-65 underline" to={getRoute('/sign-up')} />,
             }}
             values={{
               signUp: t('auth:sign_up'),
             }}
           />
         </p>
-        <Link
-          className="text-purple-65 w-fit text-xs underline"
-          to={getRoute('/forgot-password')}
-        >
+        <Link className="text-purple-65 w-fit text-xs underline" to={getRoute('/forgot-password')}>
           {t('auth:sign_in.forgot_password')}
         </Link>
       </div>

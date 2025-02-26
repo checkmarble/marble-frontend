@@ -1,7 +1,4 @@
-import {
-  type ToastFlashData,
-  type ToastSessionData,
-} from '@app-builder/models/toast-session';
+import { type ToastFlashData, type ToastSessionData } from '@app-builder/models/toast-session';
 import { createCookie, createCookieSessionStorage } from '@remix-run/node';
 
 import { type SessionStorageRepositoryOptions } from './SessionStorageRepository';
@@ -21,16 +18,11 @@ export function getToastStorageRepository({
   });
 
   // export the whole sessionStorage object
-  const toastStorage = createCookieSessionStorage<
-    ToastSessionData,
-    ToastFlashData
-  >({
+  const toastStorage = createCookieSessionStorage<ToastSessionData, ToastFlashData>({
     cookie: toastCookie,
   });
 
   return { toastStorage };
 }
 
-export type ToastStorageRepository = ReturnType<
-  typeof getToastStorageRepository
->;
+export type ToastStorageRepository = ReturnType<typeof getToastStorageRepository>;

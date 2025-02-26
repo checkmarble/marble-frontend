@@ -22,10 +22,7 @@ export function makeI18nextServerService({ lngStorage }: LngStorageRepository) {
     },
   });
 
-  async function getI18nextServerInstance(
-    request: Request,
-    remixContext: EntryContext,
-  ) {
+  async function getI18nextServerInstance(request: Request, remixContext: EntryContext) {
     // First, we create a new instance of i18next so every request will have a
     // completely unique instance and not share any state
     const instance = createInstance();
@@ -54,9 +51,7 @@ export function makeI18nextServerService({ lngStorage }: LngStorageRepository) {
 
   return {
     getLocale: (request: Request) => remixI18next.getLocale(request),
-    getFixedT: <
-      N extends FlatNamespace | readonly [FlatNamespace, ...FlatNamespace[]],
-    >(
+    getFixedT: <N extends FlatNamespace | readonly [FlatNamespace, ...FlatNamespace[]]>(
       request: Request,
       namespaces: N,
       options?: Omit<InitOptions, 'react'>,

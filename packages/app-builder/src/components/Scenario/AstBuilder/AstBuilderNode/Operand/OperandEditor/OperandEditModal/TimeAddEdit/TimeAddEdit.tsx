@@ -56,10 +56,8 @@ export function adaptTimeAddViewModel(
     timeAddAstNode.namedChildren.duration.constant !== ''
       ? timeAddAstNode.namedChildren.duration.constant
       : defaultISO8601Duration;
-  const temporalDuration =
-    Temporal.Duration.from(iso8601Duration).round('seconds');
-  const { duration, durationUnit } =
-    adaptDurationAndUnitFromTemporalDuration(temporalDuration);
+  const temporalDuration = Temporal.Duration.from(iso8601Duration).round('seconds');
+  const { duration, durationUnit } = adaptDurationAndUnitFromTemporalDuration(temporalDuration);
 
   const sign = isTimeAddOperator(timeAddAstNode.namedChildren.sign.constant)
     ? timeAddAstNode.namedChildren.sign.constant
@@ -79,23 +77,13 @@ export function adaptTimeAddViewModel(
         astNodeErrors,
         'timestampField',
       ),
-      sign: computeValidationForNamedChildren(
-        timeAddAstNode,
-        astNodeErrors,
-        'sign',
-      ),
-      duration: computeValidationForNamedChildren(
-        timeAddAstNode,
-        astNodeErrors,
-        'duration',
-      ),
+      sign: computeValidationForNamedChildren(timeAddAstNode, astNodeErrors, 'sign'),
+      duration: computeValidationForNamedChildren(timeAddAstNode, astNodeErrors, 'duration'),
     },
   };
 }
 
-function adaptTimeAddAstNode(
-  timeAddViewModel: TimeAddViewModel,
-): TimeAddAstNode {
+function adaptTimeAddAstNode(timeAddViewModel: TimeAddViewModel): TimeAddAstNode {
   const signAstNode = NewConstantAstNode({
     constant: timeAddViewModel.sign,
   });
@@ -106,11 +94,7 @@ function adaptTimeAddAstNode(
     constant: temporalDuration.toString(),
   });
 
-  return NewTimeAddAstNode(
-    timeAddViewModel.timestampField.astNode,
-    signAstNode,
-    durationAstNode,
-  );
+  return NewTimeAddAstNode(timeAddViewModel.timestampField.astNode, signAstNode, durationAstNode);
 }
 
 export function TimeAddEdit({
@@ -169,9 +153,7 @@ export function TimeAddEdit({
                   },
                 })
               }
-              validationStatus={
-                value.errors.timestampField.length > 0 ? 'error' : 'valid'
-              }
+              validationStatus={value.errors.timestampField.length > 0 ? 'error' : 'valid'}
             />
             <Operator
               operators={timeAddOperators}
@@ -186,9 +168,7 @@ export function TimeAddEdit({
                   },
                 })
               }
-              validationStatus={
-                value.errors.sign.length > 0 ? 'error' : 'valid'
-              }
+              validationStatus={value.errors.sign.length > 0 ? 'error' : 'valid'}
             />
             <Input
               value={value.duration ?? undefined}
@@ -202,11 +182,7 @@ export function TimeAddEdit({
                   },
                 })
               }
-              borderColor={
-                value.errors.duration.length > 0
-                  ? 'redfigma-47'
-                  : 'greyfigma-90'
-              }
+              borderColor={value.errors.duration.length > 0 ? 'redfigma-47' : 'greyfigma-90'}
               min="0"
               placeholder="0"
               type="number"
@@ -226,19 +202,10 @@ export function TimeAddEdit({
           />
         </div>
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close
-            render={
-              <Button className="flex-1" variant="secondary" name="cancel" />
-            }
-          >
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
             {t('common:cancel')}
           </ModalV2.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            name="save"
-            onClick={() => handleSave()}
-          >
+          <Button className="flex-1" variant="primary" name="save" onClick={() => handleSave()}>
             {t('common:save')}
           </Button>
         </div>

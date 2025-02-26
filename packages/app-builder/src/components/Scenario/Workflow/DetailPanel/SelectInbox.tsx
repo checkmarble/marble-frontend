@@ -37,9 +37,7 @@ export function SelectInbox({
   if (isCreateInboxAvailable) {
     footer = <CreateInbox />;
   } else if (inboxes.length === 0) {
-    footer = (
-      <p>{t('workflows:detail_panel.inbox.need_inbox_contact_admin')}</p>
-    );
+    footer = <p>{t('workflows:detail_panel.inbox.need_inbox_contact_admin')}</p>;
   } else {
     footer = null;
   }
@@ -57,24 +55,16 @@ export function SelectInbox({
         {selectedInbox ? (
           <span className="text-grey-00">{selectedInbox.name}</span>
         ) : (
-          <span className="text-grey-80">
-            {t('workflows:detail_panel.inbox.placeholder')}
-          </span>
+          <span className="text-grey-80">{t('workflows:detail_panel.inbox.placeholder')}</span>
         )}
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover
-        className="flex flex-col gap-2 p-2"
-        fitViewport
-      >
+      <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2" fitViewport>
         <SelectWithCombobox.Combobox render={<Input />} />
         <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((scenario) => {
             return (
-              <SelectWithCombobox.ComboboxItem
-                key={scenario.id}
-                value={scenario.id}
-              >
+              <SelectWithCombobox.ComboboxItem key={scenario.id} value={scenario.id}>
                 <Highlight text={scenario.name} query={searchValue} />
               </SelectWithCombobox.ComboboxItem>
             );

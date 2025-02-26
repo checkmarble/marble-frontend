@@ -49,39 +49,21 @@ export function OutcomeAndReviewStatus({
   outcome: TOutcome;
   reviewStatus?: ReviewStatus;
 }) {
-  if (
-    outcome !== 'block_and_review' ||
-    reviewStatus === undefined ||
-    reviewStatus === 'pending'
-  ) {
-    return (
-      <OutcomeTag
-        border="square"
-        size="big"
-        outcome={outcome}
-        className={className}
-      />
-    );
+  if (outcome !== 'block_and_review' || reviewStatus === undefined || reviewStatus === 'pending') {
+    return <OutcomeTag border="square" size="big" outcome={outcome} className={className} />;
   }
 
   return (
     <div className={clsx('relative flex flex-row gap-2', className)}>
       <Tooltip.Default
-        content={
-          <OutcomeTag border="square" size="big" outcome="block_and_review" />
-        }
+        content={<OutcomeTag border="square" size="big" outcome="block_and_review" />}
       >
         <div className="bg-orange-95 flex size-8 shrink-0 items-center justify-center rounded">
           <Icon icon="policy" className="size-6 text-orange-50" />
         </div>
       </Tooltip.Default>
       <span className="text-s text-grey-80 self-center font-semibold">→</span>
-      <ReviewStatusTag
-        border="square"
-        size="big"
-        reviewStatus={reviewStatus}
-        className="w-full"
-      />
+      <ReviewStatusTag border="square" size="big" reviewStatus={reviewStatus} className="w-full" />
     </div>
   );
 }

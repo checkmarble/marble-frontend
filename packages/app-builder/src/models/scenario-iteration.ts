@@ -5,14 +5,8 @@ import {
 } from 'marble-api';
 
 import { adaptAstNode, adaptNodeDto, type AstNode } from './astNode/ast-node';
-import {
-  adaptSanctionCheckConfig,
-  type SanctionCheckConfig,
-} from './sanction-check-config';
-import {
-  adaptScenarioIterationRule,
-  type ScenarioIterationRule,
-} from './scenario-iteration-rule';
+import { adaptSanctionCheckConfig, type SanctionCheckConfig } from './sanction-check-config';
+import { adaptScenarioIterationRule, type ScenarioIterationRule } from './scenario-iteration-rule';
 
 export interface ScenarioIterationSummary {
   id: string;
@@ -83,8 +77,7 @@ export function adaptUpdateScenarioIterationBody(
 export function adaptScenarioIteration(
   scenarioIterationWithBody: ScenarioIterationWithBodyDto,
 ): ScenarioIteration {
-  const triggerDto =
-    scenarioIterationWithBody.body.trigger_condition_ast_expression;
+  const triggerDto = scenarioIterationWithBody.body.trigger_condition_ast_expression;
   const configDto = scenarioIterationWithBody.body.sanction_check_config;
 
   return {
@@ -94,10 +87,8 @@ export function adaptScenarioIteration(
     createdAt: scenarioIterationWithBody.created_at,
     updatedAt: scenarioIterationWithBody.updated_at,
     scoreReviewThreshold: scenarioIterationWithBody.body.score_review_threshold,
-    scoreBlockAndReviewThreshold:
-      scenarioIterationWithBody.body.score_block_and_review_threshold,
-    scoreDeclineThreshold:
-      scenarioIterationWithBody.body.score_decline_threshold,
+    scoreBlockAndReviewThreshold: scenarioIterationWithBody.body.score_block_and_review_threshold,
+    scoreDeclineThreshold: scenarioIterationWithBody.body.score_decline_threshold,
     rules: scenarioIterationWithBody.body.rules.map(adaptScenarioIterationRule),
     schedule: scenarioIterationWithBody.body.schedule,
     trigger: triggerDto ? adaptAstNode(triggerDto) : null,
@@ -105,9 +96,7 @@ export function adaptScenarioIteration(
   };
 }
 
-export function adaptScenarioIterationSummary(
-  dto: ScenarioIterationDto,
-): ScenarioIterationSummary {
+export function adaptScenarioIterationSummary(dto: ScenarioIterationDto): ScenarioIterationSummary {
   return {
     id: dto.id,
     scenarioId: dto.scenario_id,

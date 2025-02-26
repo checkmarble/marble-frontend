@@ -14,9 +14,7 @@ const Story: Meta<typeof Checkbox> = {
 };
 export default Story;
 
-export const WithoutLabel: StoryFn<typeof Checkbox> = (args) => (
-  <Checkbox {...args} />
-);
+export const WithoutLabel: StoryFn<typeof Checkbox> = (args) => <Checkbox {...args} />;
 
 export const WithLabel: StoryFn<typeof Checkbox> = (args) => (
   <form>
@@ -33,9 +31,7 @@ export const WithIntermediate: StoryFn<typeof Checkbox> = () => {
   const [checkedFruits, setCheckedFruits] = useState(
     new Map(fruits.map((fruit) => [fruit, false])),
   );
-  const allChecked = Array.from(checkedFruits.values()).every(
-    (val) => val === true,
-  )
+  const allChecked = Array.from(checkedFruits.values()).every((val) => val === true)
     ? true
     : Array.from(checkedFruits.values()).every((val) => val === false)
       ? false

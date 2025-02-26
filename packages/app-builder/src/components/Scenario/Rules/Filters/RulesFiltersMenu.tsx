@@ -26,9 +26,7 @@ export function RulesFiltersMenu({
 
   return (
     <FiltersDropdownMenu.Root onOpenChange={onOpenChange}>
-      <FiltersDropdownMenu.Trigger asChild>
-        {children}
-      </FiltersDropdownMenu.Trigger>
+      <FiltersDropdownMenu.Trigger asChild>{children}</FiltersDropdownMenu.Trigger>
       <FiltersDropdownMenu.Content>
         <FilterContent filterNames={filterNames} />
       </FiltersDropdownMenu.Content>
@@ -48,19 +46,13 @@ const FiltersMenuItem = forwardRef<
   return (
     <FiltersDropdownMenu.Item {...props} ref={ref}>
       <Icon icon={icon} className="size-5" />
-      <span className="text-s text-grey-00 font-normal first-letter:capitalize">
-        {label}
-      </span>
+      <span className="text-s text-grey-00 font-normal first-letter:capitalize">{label}</span>
     </FiltersDropdownMenu.Item>
   );
 });
 FiltersMenuItem.displayName = 'FiltersMenuItem';
 
-function FilterContent({
-  filterNames,
-}: {
-  filterNames: readonly RulesFilterName[];
-}) {
+function FilterContent({ filterNames }: { filterNames: readonly RulesFilterName[] }) {
   const [selectedFilter, setSelectedFilter] = useState<RulesFilterName>();
 
   if (selectedFilter) {

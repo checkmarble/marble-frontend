@@ -36,18 +36,14 @@ export interface Webhook {
 
 export function adaptWebhook(dto: WebhookDto): Webhook {
   const eventTypes = dto.event_types ?? [];
-  invariant(
-    eventTypes.every(isEventType),
-    `Invalid event types: ${eventTypes.join(', ')}`,
-  );
+  invariant(eventTypes.every(isEventType), `Invalid event types: ${eventTypes.join(', ')}`);
   return {
     id: dto.id,
     eventTypes,
     url: dto.url,
     httpTimeout: dto.http_timeout !== 0 ? dto.http_timeout : undefined,
     rateLimit: dto.rate_limit !== 0 ? dto.rate_limit : undefined,
-    rateLimitDuration:
-      dto.rate_limit_duration !== 0 ? dto.rate_limit_duration : undefined,
+    rateLimitDuration: dto.rate_limit_duration !== 0 ? dto.rate_limit_duration : undefined,
   };
 }
 
@@ -78,9 +74,7 @@ export interface WebhookWithSecret extends Webhook {
   secrets: WebhookSecret[];
 }
 
-export function adaptWebhookWithSecret(
-  dto: WebhookWithSecretDto,
-): WebhookWithSecret {
+export function adaptWebhookWithSecret(dto: WebhookWithSecretDto): WebhookWithSecret {
   return {
     ...adaptWebhook(dto),
     secrets: dto.secrets?.map(adaptWebhookSecret) ?? [],
@@ -95,9 +89,7 @@ export interface WebhookCreateBody {
   rateLimitDuration?: number;
 }
 
-export function adaptWebhookRegisterBodyDto(
-  body: WebhookCreateBody,
-): WebhookRegisterBodyDto {
+export function adaptWebhookRegisterBodyDto(body: WebhookCreateBody): WebhookRegisterBodyDto {
   return {
     event_types: body.eventTypes,
     url: body.url,
@@ -115,9 +107,7 @@ export interface WebhookUpdateBody {
   rateLimitDuration?: number;
 }
 
-export function adaptWebhookUpdateBodyDto(
-  body: WebhookUpdateBody,
-): WebhookUpdateBodyDto {
+export function adaptWebhookUpdateBodyDto(body: WebhookUpdateBody): WebhookUpdateBodyDto {
   return {
     event_types: body.eventTypes,
     url: body.url,

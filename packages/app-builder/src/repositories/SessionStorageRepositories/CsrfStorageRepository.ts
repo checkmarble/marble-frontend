@@ -2,11 +2,7 @@ import { createCookie } from '@remix-run/node';
 
 import { type SessionStorageRepositoryOptions } from './SessionStorageRepository';
 
-export function getCsrfCookie({
-  maxAge,
-  secrets,
-  secure,
-}: SessionStorageRepositoryOptions) {
+export function getCsrfCookie({ maxAge, secrets, secure }: SessionStorageRepositoryOptions) {
   return createCookie('csrf', {
     maxAge,
     sameSite: 'lax', // this helps with CSRF

@@ -1,8 +1,4 @@
-import {
-  Callout,
-  type DecisionFilters,
-  decisionsI18n,
-} from '@app-builder/components';
+import { Callout, type DecisionFilters, decisionsI18n } from '@app-builder/components';
 import { type Pivot } from '@app-builder/models';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
@@ -24,10 +20,7 @@ interface PivotDetailProps {
   existingPivotDefinition: boolean;
 }
 
-export function PivotDetail({
-  pivotValues,
-  existingPivotDefinition,
-}: PivotDetailProps) {
+export function PivotDetail({ pivotValues, existingPivotDefinition }: PivotDetailProps) {
   const { t } = useTranslation(decisionsI18n);
 
   let content;
@@ -70,9 +63,7 @@ export function PivotDetail({
             t={t}
             i18nKey="decisions:pivot_detail.missing_pivot_definition"
             components={{
-              DataModelLink: (
-                <Link to={getRoute('/data/schema')} className={linkClasses} />
-              ),
+              DataModelLink: <Link to={getRoute('/data/schema')} className={linkClasses} />,
               DocLink: <ExternalLink href={pivotValuesDocHref} />,
             }}
           />
@@ -89,8 +80,7 @@ export function PivotDetail({
   );
 }
 
-const columnHelper =
-  createColumnHelper<PivotDetailProps['pivotValues'][number]>();
+const columnHelper = createColumnHelper<PivotDetailProps['pivotValues'][number]>();
 
 function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
   const { t } = useTranslation(decisionsI18n);
@@ -120,9 +110,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
         header: t('decisions:pivot_detail.pivot_value'),
         size: 200,
         cell: ({ getValue }) => (
-          <Tooltip.Default
-            content={t('decisions:pivot_detail.pivot_value.tooltip')}
-          >
+          <Tooltip.Default content={t('decisions:pivot_detail.pivot_value.tooltip')}>
             <Link
               to={getDecisionRoute({ pivotValue: getValue() })}
               className="hover:text-purple-60 focus:text-purple-60 text-purple-65 relative font-semibold hover:underline focus:underline"
@@ -156,9 +144,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
   );
 }
 
-function getDecisionRoute(
-  decisionFilters: Pick<DecisionFilters, 'pivotValue'>,
-) {
+function getDecisionRoute(decisionFilters: Pick<DecisionFilters, 'pivotValue'>) {
   const searchParams = new URLSearchParams(decisionFilters);
   return `${getRoute('/decisions')}?${searchParams.toString()}`;
 }

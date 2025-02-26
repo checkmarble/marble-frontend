@@ -124,18 +124,12 @@ const CreateApiKeyContent = () => {
         <ModalV2.Title>{t('settings:api_keys.new_api_key')}</ModalV2.Title>
         <div className="bg-grey-100 flex flex-col gap-6 p-6">
           <AuthenticityTokenInput />
-          <FormField
-            name={fields.description.name}
-            className="group flex flex-col gap-2"
-          >
+          <FormField name={fields.description.name} className="group flex flex-col gap-2">
             <FormLabel>{t('settings:api_keys.description')}</FormLabel>
             <FormInput type="text" />
             <FormErrorOrDescription />
           </FormField>
-          <FormField
-            name={fields.role.name}
-            className="group flex flex-col gap-2"
-          >
+          <FormField name={fields.role.name} className="group flex flex-col gap-2">
             <FormLabel>{t('settings:api_keys.role')}</FormLabel>
             <FormSelect.Default
               disabled={apiKeyRoleOptions.length === 1}
@@ -150,17 +144,10 @@ const CreateApiKeyContent = () => {
             <FormErrorOrDescription />
           </FormField>
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="create"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="create">
               {t('settings:api_keys.create')}
             </Button>
           </div>

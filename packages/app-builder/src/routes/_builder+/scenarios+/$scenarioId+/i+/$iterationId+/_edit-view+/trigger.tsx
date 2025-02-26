@@ -27,21 +27,14 @@ import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
-import {
-  type ActionFunctionArgs,
-  json,
-  type LoaderFunctionArgs,
-} from '@remix-run/node';
+import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Collapsible } from 'ui-design-system';
 
-import {
-  useCurrentScenarioIteration,
-  useCurrentScenarioValidation,
-} from '../_layout';
+import { useCurrentScenarioIteration, useCurrentScenarioValidation } from '../_layout';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
@@ -49,10 +42,12 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { customListsRepository, editor, dataModelRepository } =
-    await authService.isAuthenticated(request, {
+  const { customListsRepository, editor, dataModelRepository } = await authService.isAuthenticated(
+    request,
+    {
       failureRedirect: getRoute('/sign-in'),
-    });
+    },
+  );
 
   const scenarioId = fromParams(params, 'scenarioId');
 
@@ -151,9 +146,7 @@ export default function Trigger() {
     initialAstNode: scenarioIteration.trigger ?? NewUndefinedAstNode(),
     initialEvaluation: scenarioValidation.trigger.triggerEvaluation,
   });
-  const isTriggerNull = isUndefinedAstNode(
-    astEditorStore.getState().rootAstNode,
-  );
+  const isTriggerNull = isUndefinedAstNode(astEditorStore.getState().rootAstNode);
 
   useValidateAstNode(astEditorStore, validate, validation);
 
@@ -187,9 +180,7 @@ export default function Trigger() {
   return (
     <>
       <Collapsible.Container className="bg-grey-100 max-w-3xl">
-        <Collapsible.Title>
-          {t('scenarios:trigger.run_scenario.title')}
-        </Collapsible.Title>
+        <Collapsible.Title>{t('scenarios:trigger.run_scenario.title')}</Collapsible.Title>
         <Collapsible.Content>
           <div className="flex flex-col">
             <div className="space-y-2">
@@ -221,9 +212,7 @@ export default function Trigger() {
                           ScenarioIdValue: (
                             <code
                               className="border-grey-90 cursor-pointer select-none rounded-sm border px-1"
-                              {...getCopyToClipboardProps(
-                                scenarioIteration.scenarioId,
-                              )}
+                              {...getCopyToClipboardProps(scenarioIteration.scenarioId)}
                             />
                           ),
                         }}
@@ -256,9 +245,7 @@ export default function Trigger() {
       </Collapsible.Container>
 
       <Collapsible.Container className="bg-grey-100 max-w-3xl">
-        <Collapsible.Title>
-          {t('scenarios:trigger.trigger_object.title')}
-        </Collapsible.Title>
+        <Collapsible.Title>{t('scenarios:trigger.trigger_object.title')}</Collapsible.Title>
         <Collapsible.Content>
           <Callout variant="outlined" className="mb-4 lg:mb-6">
             <p className="whitespace-pre text-wrap">
@@ -300,19 +287,11 @@ export default function Trigger() {
               <div className="flex flex-row-reverse items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   {isTriggerNull ? (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={handleAddTrigger}
-                    >
+                    <Button type="button" variant="secondary" onClick={handleAddTrigger}>
                       {t('scenarios:trigger.trigger_object.add_trigger')}
                     </Button>
                   ) : (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={handleDeleteTrigger}
-                    >
+                    <Button type="button" variant="secondary" onClick={handleDeleteTrigger}>
                       {t('scenarios:trigger.trigger_object.delete_trigger')}
                     </Button>
                   )}

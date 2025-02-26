@@ -9,9 +9,7 @@ export interface RawUUIDIssue extends z.ZodCustomIssue {
     value: string;
   };
 }
-export function isRawUUIDIssue(
-  issue: z.ZodIssueOptionalMessage,
-): issue is RawUUIDIssue {
+export function isRawUUIDIssue(issue: z.ZodIssueOptionalMessage): issue is RawUUIDIssue {
   return (
     issue.code === z.ZodIssueCode.custom &&
     issue.params?.['expected'] === 'short-uuid' &&

@@ -9,14 +9,10 @@ import { useRuleGroupFilter } from '../RulesFiltersContext';
 export function RuleGroupFilter() {
   const { t } = useTranslation(['scenarios']);
   const [value, setSearchValue] = useState('');
-  const { ruleGroups, selectedRuleGroups, setSelectedRuleGroups } =
-    useRuleGroupFilter();
+  const { ruleGroups, selectedRuleGroups, setSelectedRuleGroups } = useRuleGroupFilter();
   const searchValue = useDeferredValue(value);
 
-  const matches = useMemo(
-    () => matchSorter(ruleGroups, searchValue),
-    [searchValue, ruleGroups],
-  );
+  const matches = useMemo(() => matchSorter(ruleGroups, searchValue), [searchValue, ruleGroups]);
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -30,10 +26,7 @@ export function RuleGroupFilter() {
         <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((ruleGroup) => {
             return (
-              <SelectWithCombobox.ComboboxItem
-                key={ruleGroup}
-                value={ruleGroup}
-              >
+              <SelectWithCombobox.ComboboxItem key={ruleGroup} value={ruleGroup}>
                 <Highlight text={ruleGroup} query={searchValue} />
               </SelectWithCombobox.ComboboxItem>
             );

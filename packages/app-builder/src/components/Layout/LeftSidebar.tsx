@@ -5,9 +5,7 @@ import { Icon } from 'ui-icons';
 
 import { SidebarButton } from '../Navigation';
 
-const ToggleSidebarContext = createSimpleContext<[boolean, () => void]>(
-  'ToggleSidebarContext',
-);
+const ToggleSidebarContext = createSimpleContext<[boolean, () => void]>('ToggleSidebarContext');
 
 export function LeftSidebar({ children }: { children: React.ReactNode }) {
   const [expanded, setExpanded] = React.useState(true);

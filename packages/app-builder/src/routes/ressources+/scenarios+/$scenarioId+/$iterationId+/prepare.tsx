@@ -117,9 +117,7 @@ export function PrepareScenarioVersion({
     return (
       <Tooltip.Default
         className="text-xs"
-        content={t(
-          'scenarios:deployment_modal.prepare.preparation_service_occupied',
-        )}
+        content={t('scenarios:deployment_modal.prepare.preparation_service_occupied')}
       >
         {button}
       </Tooltip.Default>
@@ -130,10 +128,7 @@ export function PrepareScenarioVersion({
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>{button}</Modal.Trigger>
       <Modal.Content>
-        <PrepareScenarioVersionContent
-          scenarioId={scenarioId}
-          iterationId={iteration.id}
-        />
+        <PrepareScenarioVersionContent scenarioId={scenarioId} iterationId={iteration.id} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -168,25 +163,18 @@ function PrepareScenarioVersionContent({
   return (
     <FormProvider context={form.context}>
       <fetcher.Form
-        action={getRoute(
-          '/ressources/scenarios/:scenarioId/:iterationId/prepare',
-          {
-            scenarioId: fromUUID(scenarioId),
-            iterationId: fromUUID(iterationId),
-          },
-        )}
+        action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/prepare', {
+          scenarioId: fromUUID(scenarioId),
+          iterationId: fromUUID(iterationId),
+        })}
         method="POST"
         {...getFormProps(form)}
       >
-        <Modal.Title>
-          {t('scenarios:deployment_modal.prepare.title')}
-        </Modal.Title>
+        <Modal.Title>{t('scenarios:deployment_modal.prepare.title')}</Modal.Title>
         <div className="flex flex-col gap-6 p-6">
           <AuthenticityTokenInput />
           <div className="text-s flex flex-col gap-4 font-medium">
-            <p className="font-semibold">
-              {t('scenarios:deployment_modal.prepare.confirm')}
-            </p>
+            <p className="font-semibold">{t('scenarios:deployment_modal.prepare.confirm')}</p>
             <FormField
               name={fields.activateToGoInProd.name}
               className="group flex flex-row items-center gap-2"
@@ -198,16 +186,11 @@ function PrepareScenarioVersionContent({
               <Tooltip.Default
                 content={
                   <p className="max-w-60">
-                    {t(
-                      'scenarios:deployment_modal.prepare.activate_to_go_in_prod.tooltip',
-                    )}
+                    {t('scenarios:deployment_modal.prepare.activate_to_go_in_prod.tooltip')}
                   </p>
                 }
               >
-                <Icon
-                  icon="tip"
-                  className="hover:text-purple-65 text-purple-82 size-6"
-                />
+                <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-6" />
               </Tooltip.Default>
             </FormField>
             <FormField
@@ -215,9 +198,7 @@ function PrepareScenarioVersionContent({
               className="group flex flex-row items-center gap-2"
             >
               <FormCheckbox />
-              <FormLabel>
-                {t('scenarios:deployment_modal.prepare.preparation_is_async')}
-              </FormLabel>
+              <FormLabel>{t('scenarios:deployment_modal.prepare.preparation_is_async')}</FormLabel>
             </FormField>
           </div>
           <div className="flex flex-1 flex-row gap-2">

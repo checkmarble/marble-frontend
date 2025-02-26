@@ -55,15 +55,8 @@ export function SignInWithEmailAndPassword({
 
   return (
     <FormProvider {...formMethods}>
-      <ClientOnly
-        fallback={<SignInWithEmailAndPasswordForm loading={loading} />}
-      >
-        {() => (
-          <ClientSignInWithEmailAndPasswordForm
-            loading={loading}
-            signIn={signIn}
-          />
-        )}
+      <ClientOnly fallback={<SignInWithEmailAndPasswordForm loading={loading} />}>
+        {() => <ClientSignInWithEmailAndPasswordForm loading={loading} signIn={signIn} />}
       </ClientOnly>
     </FormProvider>
   );
@@ -87,12 +80,7 @@ function SignInWithEmailAndPasswordForm({
           <FormItem className="flex flex-col items-start gap-2">
             <FormLabel>{t('auth:sign_in.email')}</FormLabel>
             <FormControl>
-              <Input
-                disabled={!hydrated}
-                className="w-full"
-                type="email"
-                {...field}
-              />
+              <Input disabled={!hydrated} className="w-full" type="email" {...field} />
             </FormControl>
             <FormError />
           </FormItem>
@@ -117,11 +105,7 @@ function SignInWithEmailAndPasswordForm({
           </FormItem>
         )}
       />
-      <FormField
-        control={control}
-        name="credentials"
-        render={() => <FormError />}
-      />
+      <FormField control={control} name="credentials" render={() => <FormError />} />
       <Button type="submit" disabled={!hydrated}>
         {loading ? <Spinner className="size-4" /> : t('auth:sign_in')}
       </Button>
@@ -142,53 +126,50 @@ function ClientSignInWithEmailAndPasswordForm({
     clientServices.authenticationClientService,
   );
 
-  const { handleSubmit, setError, formState } =
-    useFormContext<EmailAndPasswordFormValues>();
+  const { handleSubmit, setError, formState } = useFormContext<EmailAndPasswordFormValues>();
   const navigate = useNavigate();
 
-  const handleEmailSignIn = handleSubmit(
-    async ({ credentials: { email, password } }) => {
-      try {
-        const result = await emailAndPasswordSignIn(email, password);
+  const handleEmailSignIn = handleSubmit(async ({ credentials: { email, password } }) => {
+    try {
+      const result = await emailAndPasswordSignIn(email, password);
 
-        if (!result) return;
-        const { idToken, csrf } = result;
-        if (!idToken) return;
-        signIn({ type: 'email', idToken, csrf });
-        // Hack to wait for the form to be submitted, otherwise the loading spinner will be flickering
-        await sleep(1000);
-      } catch (error) {
-        if (error instanceof EmailUnverified) {
-          navigate(getRoute('/email-verification'));
-        } else if (error instanceof UserNotFoundError) {
-          setError(
-            'credentials.email',
-            {
-              message: t('auth:sign_in.errors.user_not_found'),
-            },
-            { shouldFocus: true },
-          );
-        } else if (error instanceof WrongPasswordError) {
-          setError(
-            'credentials.password',
-            {
-              message: t('auth:sign_in.errors.wrong_password_error'),
-            },
-            { shouldFocus: true },
-          );
-        } else if (error instanceof InvalidLoginCredentials) {
-          setError('credentials', {
-            message: t('auth:sign_in.errors.invalid_login_credentials'),
-          });
-        } else if (error instanceof NetworkRequestFailed) {
-          toast.error(t('common:errors.firebase_network_error'));
-        } else {
-          Sentry.captureException(error);
-          toast.error(t('common:errors.unknown'));
-        }
+      if (!result) return;
+      const { idToken, csrf } = result;
+      if (!idToken) return;
+      signIn({ type: 'email', idToken, csrf });
+      // Hack to wait for the form to be submitted, otherwise the loading spinner will be flickering
+      await sleep(1000);
+    } catch (error) {
+      if (error instanceof EmailUnverified) {
+        navigate(getRoute('/email-verification'));
+      } else if (error instanceof UserNotFoundError) {
+        setError(
+          'credentials.email',
+          {
+            message: t('auth:sign_in.errors.user_not_found'),
+          },
+          { shouldFocus: true },
+        );
+      } else if (error instanceof WrongPasswordError) {
+        setError(
+          'credentials.password',
+          {
+            message: t('auth:sign_in.errors.wrong_password_error'),
+          },
+          { shouldFocus: true },
+        );
+      } else if (error instanceof InvalidLoginCredentials) {
+        setError('credentials', {
+          message: t('auth:sign_in.errors.invalid_login_credentials'),
+        });
+      } else if (error instanceof NetworkRequestFailed) {
+        toast.error(t('common:errors.firebase_network_error'));
+      } else {
+        Sentry.captureException(error);
+        toast.error(t('common:errors.unknown'));
       }
-    },
-  );
+    }
+  });
 
   return (
     <SignInWithEmailAndPasswordForm

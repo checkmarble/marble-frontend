@@ -6,10 +6,7 @@ import * as React from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import {
-  OutcomeAndReviewStatus,
-  useOutcomeAndReviewStatus,
-} from '../../OutcomeAndReviewStatus';
+import { OutcomeAndReviewStatus, useOutcomeAndReviewStatus } from '../../OutcomeAndReviewStatus';
 import { useOutcomeAndReviewStatusFilter } from '../DecisionFiltersContext';
 
 export function OutcomeAndReviewStatusFilter() {
@@ -28,10 +25,7 @@ export function OutcomeAndReviewStatusFilter() {
   );
 
   const selectedValue = selectedOutcomeAndReviewStatus
-    ? getValue(
-        selectedOutcomeAndReviewStatus.outcome,
-        selectedOutcomeAndReviewStatus.reviewStatus,
-      )
+    ? getValue(selectedOutcomeAndReviewStatus.outcome, selectedOutcomeAndReviewStatus.reviewStatus)
     : undefined;
 
   const onSelectedValueChange = React.useCallback(

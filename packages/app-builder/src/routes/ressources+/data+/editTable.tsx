@@ -64,13 +64,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function EditTable({
-  table,
-  children,
-}: {
-  table: TableModel;
-  children: React.ReactNode;
-}) {
+export function EditTable({ table, children }: { table: TableModel; children: React.ReactNode }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
@@ -119,9 +113,7 @@ export function EditTable({
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder={t(
-                            'data:create_table.description_placeholder',
-                          )}
+                          placeholder={t('data:create_table.description_placeholder')}
                           {...field}
                         />
                       </FormControl>
@@ -136,12 +128,7 @@ export function EditTable({
                     {t('common:cancel')}
                   </Button>
                 </Modal.Close>
-                <Button
-                  className="flex-1"
-                  variant="primary"
-                  type="submit"
-                  name="edit"
-                >
+                <Button className="flex-1" variant="primary" type="submit" name="edit">
                   {t('data:edit_table.button_accept')}
                 </Button>
               </div>

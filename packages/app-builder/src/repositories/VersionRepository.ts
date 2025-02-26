@@ -9,8 +9,7 @@ export interface VersionRepository {
 export function makeGetVersionRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): VersionRepository => ({
     async getBackendVersion() {
-      const { version: apiVersion } =
-        await marbleCoreApiClient.getBackendVersion();
+      const { version: apiVersion } = await marbleCoreApiClient.getBackendVersion();
       return {
         appVersion: getServerEnv('APP_VERSION') ?? 'unknown',
         apiVersion,

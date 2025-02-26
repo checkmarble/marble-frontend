@@ -11,13 +11,7 @@ import {
 import { CaseNameEditor } from './CaseNameEditor';
 import { SelectInbox } from './SelectInbox';
 
-export function CreateCaseNode({
-  id,
-  data,
-}: {
-  id: string;
-  data: CreateCaseAction;
-}) {
+export function CreateCaseNode({ id, data }: { id: string; data: CreateCaseAction }) {
   const { t } = useTranslation(workflowI18n);
   const { updateNode } = useWorkflowActions();
   const { inboxes } = useWorkflowData();

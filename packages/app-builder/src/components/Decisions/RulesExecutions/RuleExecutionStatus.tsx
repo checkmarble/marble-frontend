@@ -12,11 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 import { decisionsI18n } from '../decisions-i18n';
 
-export function RuleExecutionStatus({
-  ruleExecution,
-}: {
-  ruleExecution: RuleExecution;
-}) {
+export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExecution }) {
   const { t } = useTranslation(decisionsI18n);
   const language = useFormatLanguage();
   const isHit = isRuleExecutionHit(ruleExecution);
@@ -35,12 +31,9 @@ export function RuleExecutionStatus({
         className={clsx(
           'text-s flex flex-1 items-center justify-center rounded p-2 font-semibold capitalize',
           isRuleExecutionHit(ruleExecution) && 'bg-green-94 text-green-38',
-          getRuleExecutionStatusColor(ruleExecution) === 'grey' &&
-            'bg-grey-90 text-grey-00',
-          getRuleExecutionStatusColor(ruleExecution) === 'lavender' &&
-            'text-grey-100 bg-[#AAA6CC]',
-          getRuleExecutionStatusColor(ruleExecution) === 'red' &&
-            'bg-red-95 text-red-47',
+          getRuleExecutionStatusColor(ruleExecution) === 'grey' && 'bg-grey-90 text-grey-00',
+          getRuleExecutionStatusColor(ruleExecution) === 'lavender' && 'text-grey-100 bg-[#AAA6CC]',
+          getRuleExecutionStatusColor(ruleExecution) === 'red' && 'bg-red-95 text-red-47',
         )}
       >
         {getRuleExecutionStatusLabel(t, ruleExecution)}

@@ -34,10 +34,7 @@ export function UploadFile({
     <ModalV2.Root open={open} setOpen={setOpen}>
       <ModalV2.Trigger render={children} />
       <ModalV2.Content>
-        <UploadFileContent
-          uploadFileEndpoint={uploadFileEndpoint}
-          setOpen={setOpen}
-        />
+        <UploadFileContent uploadFileEndpoint={uploadFileEndpoint} setOpen={setOpen} />
       </ModalV2.Content>
     </ModalV2.Root>
   );
@@ -54,9 +51,7 @@ function UploadFileContent({
   const [loading, setLoading] = useState(false);
   const revalidator = useRevalidator();
 
-  const { getAccessToken, backendUrl } = useBackendInfo(
-    clientServices.authenticationClientService,
-  );
+  const { getAccessToken, backendUrl } = useBackendInfo(clientServices.authenticationClientService);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
@@ -128,9 +123,7 @@ function UploadFileContent({
           {...getRootProps()}
           className={clsx(
             'text-s flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
-            isDragActive
-              ? 'bg-purple-96 border-purple-82 opacity-90'
-              : 'border-grey-50',
+            isDragActive ? 'bg-purple-96 border-purple-82 opacity-90' : 'border-grey-50',
           )}
         >
           <input {...getInputProps()} />

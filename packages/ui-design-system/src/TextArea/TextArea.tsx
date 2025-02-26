@@ -31,31 +31,32 @@ export interface TextAreaProps
  * Discussion to allow this in native HTML/CSS is here: https://github.com/w3c/csswg-drafts/issues/7542
  * Adapted from this nice article: https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
  */
-export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  function TextArea({ className, borderColor, ...props }, ref) {
-    // Used to trigger a rerender
-    const [_, setValue] = useState(props?.value?.toString() || '');
+export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function TextArea(
+  { className, borderColor, ...props },
+  ref,
+) {
+  // Used to trigger a rerender
+  const [_, setValue] = useState(props?.value?.toString() || '');
 
-    const sharedClassNames = textarea({ borderColor, className });
+  const sharedClassNames = textarea({ borderColor, className });
 
-    const internalRef = useRef<HTMLTextAreaElement>(null);
-    useImperativeHandle(ref, () => internalRef.current!);
+  const internalRef = useRef<HTMLTextAreaElement>(null);
+  useImperativeHandle(ref, () => internalRef.current!);
 
-    return (
-      <div className={clsx('grid', className)}>
-        <div
-          className={clsx('invisible whitespace-pre-wrap', sharedClassNames)}
-        >{`${internalRef.current?.value} `}</div>
-        <textarea
-          ref={internalRef}
-          placeholder="Write a note"
-          className={clsx('resize-none overflow-hidden', sharedClassNames)}
-          onChangeCapture={(e) => {
-            setValue(e.currentTarget.value);
-          }}
-          {...props}
-        />
-      </div>
-    );
-  },
-);
+  return (
+    <div className={clsx('grid', className)}>
+      <div
+        className={clsx('invisible whitespace-pre-wrap', sharedClassNames)}
+      >{`${internalRef.current?.value} `}</div>
+      <textarea
+        ref={internalRef}
+        placeholder="Write a note"
+        className={clsx('resize-none overflow-hidden', sharedClassNames)}
+        onChangeCapture={(e) => {
+          setValue(e.currentTarget.value);
+        }}
+        {...props}
+      />
+    </div>
+  );
+});

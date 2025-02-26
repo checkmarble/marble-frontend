@@ -12,22 +12,14 @@ import { type DecisionCreatedTrigger } from '../models/nodes';
 import { workflowI18n } from '../workflow-i18n';
 import { useWorkflowActions, useWorkflowData } from '../WorkflowProvider';
 
-export function DecisionCreatedNode({
-  id,
-  data,
-}: {
-  id: string;
-  data: DecisionCreatedTrigger;
-}) {
+export function DecisionCreatedNode({ id, data }: { id: string; data: DecisionCreatedTrigger }) {
   const { t } = useTranslation(workflowI18n);
   const { scenarios, nonEditableData } = useWorkflowData();
   const { updateNode } = useWorkflowActions();
 
   return (
     <>
-      <Callout>
-        {t('workflows:detail_panel.decision_created.description')}
-      </Callout>
+      <Callout>{t('workflows:detail_panel.decision_created.description')}</Callout>
       <SelectScenario
         selectedScenarioId={data.scenarioId ?? undefined}
         onSelectedScenarioIdChange={(scenarioId) => {
@@ -90,18 +82,12 @@ function SelectScenario({
         )}
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover
-        className="flex flex-col gap-2 p-2"
-        fitViewport
-      >
+      <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2" fitViewport>
         <SelectWithCombobox.Combobox render={<Input />} />
         <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((scenario) => {
             return (
-              <SelectWithCombobox.ComboboxItem
-                key={scenario.id}
-                value={scenario.id}
-              >
+              <SelectWithCombobox.ComboboxItem key={scenario.id} value={scenario.id}>
                 <Highlight text={scenario.name} query={searchValue} />
               </SelectWithCombobox.ComboboxItem>
             );
@@ -142,12 +128,7 @@ function SelectOutcomes({
         {selectedOutcomes.length > 0 ? (
           <div className="flex flex-wrap gap-1">
             {selectedOutcomes.map((outcome) => (
-              <OutcomeTag
-                key={outcome}
-                outcome={outcome}
-                border="square"
-                size="big"
-              />
+              <OutcomeTag key={outcome} outcome={outcome} border="square" size="big" />
             ))}
           </div>
         ) : (
@@ -157,24 +138,13 @@ function SelectOutcomes({
         )}
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover
-        className="flex flex-col gap-2 p-2"
-        fitViewport
-      >
+      <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2" fitViewport>
         <SelectWithCombobox.Combobox render={<Input />} />
         <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((outcome) => {
             return (
-              <SelectWithCombobox.ComboboxItem
-                key={outcome.value}
-                value={outcome.value}
-              >
-                <OutcomeTag
-                  outcome={outcome.value}
-                  border="square"
-                  size="big"
-                  className="w-full"
-                />
+              <SelectWithCombobox.ComboboxItem key={outcome.value} value={outcome.value}>
+                <OutcomeTag outcome={outcome.value} border="square" size="big" className="w-full" />
               </SelectWithCombobox.ComboboxItem>
             );
           })}

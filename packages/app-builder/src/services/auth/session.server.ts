@@ -7,10 +7,7 @@ import {
 } from '@remix-run/node';
 
 export type SessionService<Data = SessionData, FlashData = Data> = {
-  getSession: (
-    request: Request,
-    options?: CookieParseOptions,
-  ) => Promise<Session<Data, FlashData>>;
+  getSession: (request: Request, options?: CookieParseOptions) => Promise<Session<Data, FlashData>>;
   commitSession: (
     session: Session<Data, FlashData>,
     options?: CookieSerializeOptions,

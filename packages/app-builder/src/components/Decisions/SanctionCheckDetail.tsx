@@ -1,8 +1,5 @@
 import { decisionsI18n } from '@app-builder/components';
-import {
-  isSanctionCheckError,
-  type SanctionCheck,
-} from '@app-builder/models/sanction-check';
+import { isSanctionCheckError, type SanctionCheck } from '@app-builder/models/sanction-check';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
@@ -12,11 +9,7 @@ import { MatchCard } from '../Sanctions/MatchCard';
 import { SanctionCheckErrors } from '../Sanctions/SanctionCheckErrors';
 import { SanctionStatusTag } from '../Sanctions/SanctionStatusTag';
 
-export function SanctionCheckDetail({
-  sanctionCheck,
-}: {
-  sanctionCheck: SanctionCheck;
-}) {
+export function SanctionCheckDetail({ sanctionCheck }: { sanctionCheck: SanctionCheck }) {
   const { t } = useTranslation(decisionsI18n);
   const hasError = isSanctionCheckError(sanctionCheck);
 
@@ -25,21 +18,13 @@ export function SanctionCheckDetail({
       <Collapsible.Title>
         <div className="flex grow items-center justify-between">
           <span>{t('decisions:sanction_check.title')}</span>
-          <SanctionStatusTag
-            status={sanctionCheck.status}
-            border="square"
-            className="h-8"
-          />
+          <SanctionStatusTag status={sanctionCheck.status} border="square" className="h-8" />
         </div>
       </Collapsible.Title>
       <Collapsible.Content>
         <div className="flex flex-col gap-4">
-          {hasError ? (
-            <SanctionCheckErrors sanctionCheck={sanctionCheck} />
-          ) : null}
-          {sanctionCheck.request ? (
-            <SearchInput request={sanctionCheck.request} />
-          ) : null}
+          {hasError ? <SanctionCheckErrors sanctionCheck={sanctionCheck} /> : null}
+          {sanctionCheck.request ? <SearchInput request={sanctionCheck.request} /> : null}
           <div className="flex flex-col gap-2">
             {sanctionCheck.matches.map((match) => (
               <MatchCard
@@ -56,11 +41,7 @@ export function SanctionCheckDetail({
   );
 }
 
-const SearchInput = ({
-  request,
-}: {
-  request: NonNullable<SanctionCheck['request']>;
-}) => {
+const SearchInput = ({ request }: { request: NonNullable<SanctionCheck['request']> }) => {
   const { t } = useTranslation(decisionsI18n);
   const searchInputList = R.pipe(
     R.values(request.queries),
@@ -72,10 +53,7 @@ const SearchInput = ({
     <div className="flex items-center gap-2">
       <span>{t('sanctions:search_input')}</span>
       {searchInputList.map((input, i) => (
-        <div
-          key={i}
-          className="border-grey-90 flex items-center gap-2 rounded border p-2"
-        >
+        <div key={i} className="border-grey-90 flex items-center gap-2 rounded border p-2">
           <span className="bg-grey-95 size-6 rounded-sm p-1">
             <Icon icon="string" className="size-4" />
           </span>

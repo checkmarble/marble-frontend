@@ -8,11 +8,7 @@ const HideAllContext = React.createContext<(() => void) | null>(null);
 
 function HideAllContextProvider({ children }: { children: React.ReactNode }) {
   const hideAll = Ariakit.useMenuContext()?.hideAll ?? null;
-  return (
-    <HideAllContext.Provider value={hideAll}>
-      {children}
-    </HideAllContext.Provider>
-  );
+  return <HideAllContext.Provider value={hideAll}>{children}</HideAllContext.Provider>;
 }
 
 interface MenuProviderProps {
@@ -41,9 +37,7 @@ function MenuProvider({
       open={withCombobox ? undefined : open}
       setOpen={withCombobox ? undefined : setOpen}
       showTimeout={0}
-      placement={
-        isSubmenu ? (rtl ? 'left-start' : 'right-start') : 'bottom-start'
-      }
+      placement={isSubmenu ? (rtl ? 'left-start' : 'right-start') : 'bottom-start'}
       /**
        * Explicitly set the parent to null to prevent the menu from being nested (ex: a <Menu> inside a <Menu>)
        * This is necessary to prevent hideAll from closing the parent menu
@@ -123,25 +117,25 @@ export function SubMenuRoot(props: Omit<MenuProviderProps, 'isSubmenu'>) {
   return <MenuProvider {...props} isSubmenu />;
 }
 
-export interface CoreMenuButtonProps
-  extends Ariakit.MenuButtonProps<'div' | 'button'> {
+export interface CoreMenuButtonProps extends Ariakit.MenuButtonProps<'div' | 'button'> {
   isSubmenu: boolean;
 }
 
-const CoreMenuButton = React.forwardRef<HTMLDivElement, CoreMenuButtonProps>(
-  function MenuButton({ render, isSubmenu, ...props }, ref) {
-    return (
-      <Ariakit.MenuButton
-        ref={ref}
-        onClick={(e: React.SyntheticEvent) => {
-          e.stopPropagation();
-        }}
-        {...props}
-        render={isSubmenu ? <MenuItem render={render} /> : render}
-      />
-    );
-  },
-);
+const CoreMenuButton = React.forwardRef<HTMLDivElement, CoreMenuButtonProps>(function MenuButton(
+  { render, isSubmenu, ...props },
+  ref,
+) {
+  return (
+    <Ariakit.MenuButton
+      ref={ref}
+      onClick={(e: React.SyntheticEvent) => {
+        e.stopPropagation();
+      }}
+      {...props}
+      render={isSubmenu ? <MenuItem render={render} /> : render}
+    />
+  );
+});
 
 export type MenuButtonProps = Omit<CoreMenuButtonProps, 'isSubmenu'>;
 
@@ -153,12 +147,11 @@ export const MenuButton = React.forwardRef<HTMLDivElement, MenuButtonProps>(
 
 export type SubMenuButtonProps = Omit<CoreMenuButtonProps, 'isSubmenu'>;
 
-export const SubMenuButton = React.forwardRef<
-  HTMLDivElement,
-  SubMenuButtonProps
->(function SubMenuButton(props, ref) {
-  return <CoreMenuButton ref={ref} isSubmenu {...props} />;
-});
+export const SubMenuButton = React.forwardRef<HTMLDivElement, SubMenuButtonProps>(
+  function SubMenuButton(props, ref) {
+    return <CoreMenuButton ref={ref} isSubmenu {...props} />;
+  },
+);
 
 export interface MenuProps extends Ariakit.MenuProps<'div'> {}
 
@@ -189,12 +182,11 @@ export const MenuPopover = React.forwardRef<HTMLDivElement, MenuProps>(
 
 export interface MenuComboboxProps extends Ariakit.ComboboxProps<'input'> {}
 
-export const MenuCombobox = React.forwardRef<
-  HTMLInputElement,
-  MenuComboboxProps
->(function MenuCombobox(props, ref) {
-  return <Ariakit.Combobox ref={ref} autoSelect="always" {...props} />;
-});
+export const MenuCombobox = React.forwardRef<HTMLInputElement, MenuComboboxProps>(
+  function MenuCombobox(props, ref) {
+    return <Ariakit.Combobox ref={ref} autoSelect="always" {...props} />;
+  },
+);
 
 export interface MenuContentProps {
   children: React.ReactNode;
@@ -210,9 +202,7 @@ export function MenuContent({ children, className }: MenuContentProps) {
   const withCombobox = React.useContext(WithComboboxContext);
 
   const content = (
-    <div className={clsx('flex flex-col overflow-hidden', className)}>
-      {children}
-    </div>
+    <div className={clsx('flex flex-col overflow-hidden', className)}>{children}</div>
   );
 
   return (
@@ -226,8 +216,7 @@ export const MenuSeparator = Ariakit.MenuSeparator;
 export const MenuGroup = Ariakit.MenuGroup;
 export const MenuGroupLabel = Ariakit.MenuGroupLabel;
 
-export interface MenuItemProps
-  extends Omit<Ariakit.ComboboxItemProps, 'store'> {
+export interface MenuItemProps extends Omit<Ariakit.ComboboxItemProps, 'store'> {
   name?: string;
 }
 

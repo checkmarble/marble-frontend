@@ -6,11 +6,7 @@ import { StartedAfterFilter } from './StartedAfterFilter';
 import { StatusesFilter } from './StatusesFilter';
 import { VersionsFilter } from './VersionsFilter';
 
-export function FilterDetail({
-  filterName,
-}: {
-  filterName: TestRunFilterName;
-}) {
+export function FilterDetail({ filterName }: { filterName: TestRunFilterName }) {
   return match(filterName)
     .with('startedAfter', () => <StartedAfterFilter />)
     .with('statuses', () => <StatusesFilter />)

@@ -1,9 +1,4 @@
-import {
-  type AstNode,
-  type DataModel,
-  type EnumValue,
-  type TableModel,
-} from '@app-builder/models';
+import { type AstNode, type DataModel, type EnumValue, type TableModel } from '@app-builder/models';
 import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
 
 import { getDataAccessorAstNodeField } from '../ast-node/getDataAccessorAstNodeField';

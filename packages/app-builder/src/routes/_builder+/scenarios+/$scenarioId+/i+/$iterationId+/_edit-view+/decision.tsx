@@ -1,9 +1,4 @@
-import {
-  Callout,
-  decisionsI18n,
-  OutcomeTag,
-  scenarioI18n,
-} from '@app-builder/components';
+import { Callout, decisionsI18n, OutcomeTag, scenarioI18n } from '@app-builder/components';
 import { ScoreOutcomeThresholds } from '@app-builder/components/Decisions/ScoreOutcomeThresholds';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
@@ -30,10 +25,7 @@ import * as R from 'remeda';
 import { Button, Collapsible } from 'ui-design-system';
 import * as z from 'zod';
 
-import {
-  useCurrentScenarioIteration,
-  useCurrentScenarioValidation,
-} from '../_layout';
+import { useCurrentScenarioIteration, useCurrentScenarioValidation } from '../_layout';
 
 export const handle = {
   i18n: [...decisionsI18n, ...scenarioI18n, 'common'] satisfies Namespace,
@@ -99,14 +91,7 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
         .int(),
     })
     .superRefine(
-      (
-        {
-          scoreReviewThreshold,
-          scoreBlockAndReviewThreshold,
-          scoreDeclineThreshold,
-        },
-        ctx,
-      ) => {
+      ({ scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold }, ctx) => {
         if (scoreBlockAndReviewThreshold < scoreReviewThreshold) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
@@ -182,9 +167,7 @@ export default function Decision() {
 
   return (
     <Collapsible.Container className="bg-grey-100 max-w-3xl">
-      <Collapsible.Title>
-        {t('scenarios:decision.score_based.title')}
-      </Collapsible.Title>
+      <Collapsible.Title>{t('scenarios:decision.score_based.title')}</Collapsible.Title>
       <Collapsible.Content>
         <Callout variant="outlined" className="mb-4 lg:mb-6">
           <p className="whitespace-pre text-wrap">
@@ -197,22 +180,15 @@ export default function Decision() {
             />
           </p>
         </Callout>
-        {editorMode === 'view' ? (
-          <ViewScoreThresholds />
-        ) : (
-          <EditScoreThresholds />
-        )}
+        {editorMode === 'view' ? <ViewScoreThresholds /> : <EditScoreThresholds />}
       </Collapsible.Content>
     </Collapsible.Container>
   );
 }
 
 function ViewScoreThresholds() {
-  const {
-    scoreReviewThreshold,
-    scoreBlockAndReviewThreshold,
-    scoreDeclineThreshold,
-  } = useCurrentScenarioIteration();
+  const { scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold } =
+    useCurrentScenarioIteration();
 
   return (
     <ScoreOutcomeThresholds
@@ -225,11 +201,8 @@ function ViewScoreThresholds() {
 
 function EditScoreThresholds() {
   const { t } = useTranslation(handle.i18n);
-  const {
-    scoreReviewThreshold,
-    scoreBlockAndReviewThreshold,
-    scoreDeclineThreshold,
-  } = useCurrentScenarioIteration();
+  const { scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold } =
+    useCurrentScenarioIteration();
 
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
@@ -256,12 +229,10 @@ function EditScoreThresholds() {
     },
   });
 
-  const reviewThreshold =
-    fields.scoreReviewThreshold.value ?? scoreReviewThreshold;
+  const reviewThreshold = fields.scoreReviewThreshold.value ?? scoreReviewThreshold;
   const blockAndReviewThreshold =
     fields.scoreBlockAndReviewThreshold.value ?? scoreBlockAndReviewThreshold;
-  const declineThreshold =
-    fields.scoreDeclineThreshold.value ?? scoreDeclineThreshold;
+  const declineThreshold = fields.scoreDeclineThreshold.value ?? scoreDeclineThreshold;
 
   const serverErrors = R.pipe(
     scenarioValidation.decision.errors,
@@ -271,11 +242,7 @@ function EditScoreThresholds() {
 
   return (
     <FormProvider context={form.context}>
-      <Form
-        className="flex flex-col gap-2"
-        method="POST"
-        {...getFormProps(form)}
-      >
+      <Form className="flex flex-col gap-2" method="POST" {...getFormProps(form)}>
         <div className="grid grid-cols-[max-content_auto] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
           <OutcomeTag border="square" size="big" outcome="approve" />
           <FormField
@@ -289,9 +256,7 @@ function EditScoreThresholds() {
               t={t}
               i18nKey="scenarios:decision.score_based.approve_condition"
               components={{
-                ReviewThreshold: (
-                  <FormInput type="number" className="relative w-fit" />
-                ),
+                ReviewThreshold: <FormInput type="number" className="relative w-fit" />,
               }}
               shouldUnescape
             />
@@ -304,9 +269,7 @@ function EditScoreThresholds() {
             className="flex flex-row flex-wrap items-center gap-1 lg:gap-2"
           >
             <FormLabel className="sr-only">
-              {t(
-                'scenarios:decision.score_based.score_block_and_review_threshold',
-              )}
+              {t('scenarios:decision.score_based.score_block_and_review_threshold')}
             </FormLabel>
             <Trans
               t={t}
@@ -316,11 +279,7 @@ function EditScoreThresholds() {
               }}
               components={{
                 BlockAndReviewThreshold: (
-                  <FormInput
-                    type="number"
-                    className="relative w-fit"
-                    min={reviewThreshold}
-                  />
+                  <FormInput type="number" className="relative w-fit" min={reviewThreshold} />
                 ),
               }}
               shouldUnescape
@@ -378,6 +337,5 @@ function EditScoreThresholds() {
 }
 
 const style = {
-  errorMessage:
-    'bg-red-95 rounded px-2 py-1 h-8 flex items-center justify-center',
+  errorMessage: 'bg-red-95 rounded px-2 py-1 h-8 flex items-center justify-center',
 } as const;

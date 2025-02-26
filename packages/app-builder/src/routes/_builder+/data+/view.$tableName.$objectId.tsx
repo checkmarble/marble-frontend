@@ -1,7 +1,4 @@
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { IngestedObjectDetail } from '@app-builder/components/Data/IngestedObjectDetail';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { serverServices } from '@app-builder/services/init.server';
@@ -42,10 +39,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const objectId = params['objectId'] ?? '';
 
   try {
-    const object = await dataModelRepository.getIngestedObject(
-      tableName,
-      objectId,
-    );
+    const object = await dataModelRepository.getIngestedObject(tableName, objectId);
 
     return {
       tableName,

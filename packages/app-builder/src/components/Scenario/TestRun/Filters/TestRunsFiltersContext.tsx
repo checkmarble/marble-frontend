@@ -2,12 +2,7 @@ import { testRunStatuses } from '@app-builder/models/testrun';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useCallback, useMemo } from 'react';
-import {
-  FormProvider,
-  useController,
-  useForm,
-  useFormContext,
-} from 'react-hook-form';
+import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
 import * as z from 'zod';
 
@@ -29,9 +24,8 @@ interface TestRunsFiltersContextValue {
   onTestRunsFilterClose: () => void;
 }
 
-const TestRunsFiltersContext = createSimpleContext<TestRunsFiltersContextValue>(
-  'TestRunsFiltersContext',
-);
+const TestRunsFiltersContext =
+  createSimpleContext<TestRunsFiltersContextValue>('TestRunsFiltersContext');
 
 export type TestRunsFiltersForm = TestRunsFilters;
 
@@ -42,9 +36,7 @@ export const emptyTestRunsFilters: TestRunsFiltersForm = {
   test_versions: [],
 };
 
-function adaptFilterValues({
-  ...otherFilters
-}: TestRunsFilters): TestRunsFiltersForm {
+function adaptFilterValues({ ...otherFilters }: TestRunsFilters): TestRunsFiltersForm {
   return {
     ...emptyTestRunsFilters,
     ...otherFilters,
@@ -88,9 +80,7 @@ export function TestRunsFiltersProvider({
 
   return (
     <FormProvider {...formMethods}>
-      <TestRunsFiltersContext.Provider value={value}>
-        {children}
-      </TestRunsFiltersContext.Provider>
+      <TestRunsFiltersContext.Provider value={value}>{children}</TestRunsFiltersContext.Provider>
     </FormProvider>
   );
 }

@@ -35,11 +35,7 @@ export function HasCaseFilter() {
       <label htmlFor="hasCase" className="">
         {t('decisions:filters.has_case')}
       </label>
-      <Switch
-        id="hasCase"
-        checked={selectedHasCase}
-        onCheckedChange={setSelectedHasCase}
-      />
+      <Switch id="hasCase" checked={selectedHasCase} onCheckedChange={setSelectedHasCase} />
     </div>
   );
 }

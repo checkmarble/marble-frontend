@@ -4,10 +4,7 @@ import {
   isFuzzyMatchComparator,
   isStringTemplateAstNode,
 } from '@app-builder/models/astNode/strings';
-import {
-  isTimeAdd,
-  isTimestampExtract,
-} from '@app-builder/models/astNode/time';
+import { isTimeAdd, isTimestampExtract } from '@app-builder/models/astNode/time';
 import { CopyPasteASTContextProvider } from '@app-builder/services/editor/copy-paste-ast';
 import * as React from 'react';
 import { assertNever } from 'typescript-utils';
@@ -26,29 +23,28 @@ import { StringTemplateEdit } from './StringTemplateEdit/StringTemplateEdit';
 import { TimeAddEdit } from './TimeAddEdit/TimeAddEdit';
 import { TimestampExtractEdit } from './TimestampExtract/TimestampExtract';
 
-const OperandEditModalContent = React.forwardRef<
-  HTMLDivElement,
-  ModalContentV2Props
->(function OperandEditModalContent({ children, ...props }, ref) {
-  const { onEditClose } = useOperandEditorActions();
-  const editModalOpen = useEditModalOpen();
-  return (
-    <ModalV2.Content
-      ref={ref}
-      hideOnInteractOutside={(event) => {
-        event.stopPropagation();
-        // Prevent people from losing their work by clicking accidentally outside the modal
-        return false;
-      }}
-      open={editModalOpen}
-      onClose={onEditClose}
-      {...props}
-    >
-      {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
-      <CopyPasteASTContextProvider>{children}</CopyPasteASTContextProvider>
-    </ModalV2.Content>
-  );
-});
+const OperandEditModalContent = React.forwardRef<HTMLDivElement, ModalContentV2Props>(
+  function OperandEditModalContent({ children, ...props }, ref) {
+    const { onEditClose } = useOperandEditorActions();
+    const editModalOpen = useEditModalOpen();
+    return (
+      <ModalV2.Content
+        ref={ref}
+        hideOnInteractOutside={(event) => {
+          event.stopPropagation();
+          // Prevent people from losing their work by clicking accidentally outside the modal
+          return false;
+        }}
+        open={editModalOpen}
+        onClose={onEditClose}
+        {...props}
+      >
+        {/* New context necessary, hack to prevent pasting unwanted astnode inside the modal (ex: I close the modal, copy the current node, open the modal and paste the current inside the current...) */}
+        <CopyPasteASTContextProvider>{children}</CopyPasteASTContextProvider>
+      </ModalV2.Content>
+    );
+  },
+);
 
 export function OperandEditModal() {
   const { onEditSave } = useOperandEditorActions();
@@ -124,8 +120,5 @@ export function OperandEditModal() {
       </OperandEditModalContent>
     );
   }
-  assertNever(
-    '[OperandEditModal] Unsupported astNode type',
-    initialEditableAstNode,
-  );
+  assertNever('[OperandEditModal] Unsupported astNode type', initialEditableAstNode);
 }

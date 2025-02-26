@@ -1,8 +1,5 @@
 import { ErrorComponent } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { serverServices } from '@app-builder/services/init.server';
@@ -29,9 +26,7 @@ export const handle = {
           >
             {currentScenario.name}
           </BreadCrumbLink>
-          <TriggerObjectTag>
-            {currentScenario.triggerObjectType}
-          </TriggerObjectTag>
+          <TriggerObjectTag>{currentScenario.triggerObjectType}</TriggerObjectTag>
         </div>
       );
     },

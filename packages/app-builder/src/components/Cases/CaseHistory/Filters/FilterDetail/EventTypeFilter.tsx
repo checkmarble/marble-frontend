@@ -12,8 +12,7 @@ import { useCaseEventTypesFilter } from '../CaseHistoryFiltersContext';
 export function EventTypeFilter() {
   const { t } = useTranslation(casesI18n);
   const [value, setSearchValue] = React.useState('');
-  const { selectedCaseEventTypes, setSelectedCaseEventTypes } =
-    useCaseEventTypesFilter();
+  const { selectedCaseEventTypes, setSelectedCaseEventTypes } = useCaseEventTypesFilter();
   const deferredValue = React.useDeferredValue(value);
 
   const caseEventTypeOptions = React.useMemo(

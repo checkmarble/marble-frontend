@@ -50,27 +50,21 @@ export function adaptCustomListValue(dto: CustomListValueDto): CustomListValue {
   };
 }
 
-export function adaptCustomListWithValues(
-  dto: CustomListWithValuesDto,
-): CustomListWithValues {
+export function adaptCustomListWithValues(dto: CustomListWithValuesDto): CustomListWithValues {
   return {
     ...adaptCustomList(dto),
     values: dto.values.map(adaptCustomListValue),
   };
 }
 
-export function adaptCreateCustomListBody(
-  body: CreateCustomListBodyDto,
-): CreateCustomListBody {
+export function adaptCreateCustomListBody(body: CreateCustomListBodyDto): CreateCustomListBody {
   return {
     name: body.name,
     description: body.description,
   };
 }
 
-export function adaptUpdateCustomListBody(
-  body: UpdateCustomListBody,
-): UpdateCustomListBodyDto {
+export function adaptUpdateCustomListBody(body: UpdateCustomListBody): UpdateCustomListBodyDto {
   return {
     name: body.name,
     description: body.description,

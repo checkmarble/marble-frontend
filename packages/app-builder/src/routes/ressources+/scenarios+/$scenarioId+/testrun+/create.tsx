@@ -125,11 +125,7 @@ export function CreateTestRun({
 
   return (
     <Tooltip.Default content={t('scenarios:testrun.not_allowed')}>
-      <Button
-        disabled
-        variant="primary"
-        className="isolate h-10 w-fit cursor-not-allowed"
-      >
+      <Button disabled variant="primary" className="isolate h-10 w-fit cursor-not-allowed">
         <Icon icon="plus" className="size-6" aria-hidden />
         {t('scenarios:create_testrun.title')}
       </Button>
@@ -153,10 +149,7 @@ function CreateTestRunToContent({
   );
 
   const testIterations = React.useMemo(
-    () =>
-      scenarioIterations.filter(
-        ({ type }) => type !== 'live version' && type !== 'draft',
-      ),
+    () => scenarioIterations.filter(({ type }) => type !== 'live version' && type !== 'draft'),
     [scenarioIterations],
   );
 
@@ -220,9 +213,7 @@ function CreateTestRunToContent({
                     return (
                       <FormSelect.DefaultItem key={id} value={id}>
                         {`V${iteration?.version} ${
-                          iteration?.type === 'live version'
-                            ? t('scenarios:live')
-                            : ''
+                          iteration?.type === 'live version' ? t('scenarios:live') : ''
                         }`}
                       </FormSelect.DefaultItem>
                     );
@@ -236,17 +227,13 @@ function CreateTestRunToContent({
               >
                 <FormLabel>{t('scenarios:create_testrun.phantom')}</FormLabel>
                 <FormSelect.Default
-                  placeholder={t(
-                    'scenarios:create_testrun.phantom_placeholder',
-                  )}
+                  placeholder={t('scenarios:create_testrun.phantom_placeholder')}
                   options={testIterationsOptions}
                 >
                   {testIterations.map(({ id }) => (
                     <FormSelect.DefaultItem key={id} value={id}>
                       {`V${
-                        testIterations.find(
-                          ({ id: iterationId }) => iterationId === id,
-                        )?.version
+                        testIterations.find(({ id: iterationId }) => iterationId === id)?.version
                       }`}
                     </FormSelect.DefaultItem>
                   ))}
@@ -254,10 +241,7 @@ function CreateTestRunToContent({
                 <FormErrorOrDescription />
               </FormField>
             </div>
-            <FormField
-              name={fields.endDate.name}
-              className="group flex w-full flex-col gap-2"
-            >
+            <FormField name={fields.endDate.name} className="group flex w-full flex-col gap-2">
               <FormLabel className="flex flex-row items-center gap-1">
                 {t('scenarios:create_testrun.end_date')}
               </FormLabel>
@@ -269,9 +253,7 @@ function CreateTestRunToContent({
             </FormField>
           </div>
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
             <Button className="flex-1" variant="primary" type="submit">

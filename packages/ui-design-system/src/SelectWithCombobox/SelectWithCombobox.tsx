@@ -65,13 +65,7 @@ const Select = forwardRef<
   HTMLButtonElement,
   Ariakit.SelectProps & VariantProps<typeof selectTrigger>
 >(function SelectWithComboboxPopoverTrigger(
-  {
-    className,
-    border = 'square',
-    borderColor = 'greyfigma-90',
-    disabled,
-    ...props
-  },
+  { className, border = 'square', borderColor = 'greyfigma-90', disabled, ...props },
   ref,
 ) {
   return (
@@ -129,9 +123,7 @@ const Popover = forwardRef<HTMLDivElement, Ariakit.SelectPopoverProps>(
 
 const ComboboxList = forwardRef<HTMLDivElement, Ariakit.ComboboxListProps>(
   function ComboboxList(props, ref) {
-    return (
-      <Ariakit.ComboboxList ref={ref} render={<ScrollAreaV2 />} {...props} />
-    );
+    return <Ariakit.ComboboxList ref={ref} render={<ScrollAreaV2 />} {...props} />;
   },
 );
 

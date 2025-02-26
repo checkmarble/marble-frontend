@@ -7,9 +7,7 @@ export function EmptyNode({ selected }: NodeProps<void>) {
     <div
       className={clsx(
         'border-grey-90 bg-grey-100 flex items-center justify-center rounded-md border px-4 py-2',
-        selected
-          ? 'border-purple-65 text-purple-65'
-          : 'border-grey-90 text-grey-90',
+        selected ? 'border-purple-65 text-purple-65' : 'border-grey-90 text-grey-90',
       )}
     >
       <Handle type="target" position={Position.Top} className="invisible" />

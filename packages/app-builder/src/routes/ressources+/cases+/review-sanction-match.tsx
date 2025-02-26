@@ -70,9 +70,9 @@ export const SanctionCheckReviewModal = ({
   sanctionMatch: SanctionCheckMatch;
 }) => {
   const { t } = useTranslation(['common', 'sanctions']);
-  const [currentStatus, setCurrentStatus] = useState<
-    UpdateSanctionCheckMatchDto['status'] | null
-  >(null);
+  const [currentStatus, setCurrentStatus] = useState<UpdateSanctionCheckMatchDto['status'] | null>(
+    null,
+  );
   const onClose = useCallbackRef(_onClose);
   const [isConfirming, setIsConfirming] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -104,29 +104,21 @@ export const SanctionCheckReviewModal = ({
       >
         <input name="matchId" type="hidden" value={sanctionMatch.id} />
         <div className="flex flex-col gap-2">
-          <div className="text-m">
-            {t('sanctions:review_modal.status_label')}
-          </div>
+          <div className="text-m">{t('sanctions:review_modal.status_label')}</div>
           <StatusRadioGroup value={currentStatus} onChange={setCurrentStatus} />
           {currentStatus === 'confirmed_hit' ? (
-            <Callout>
-              {t('sanctions:review_modal.callout_confirmed_hit')}
-            </Callout>
+            <Callout>{t('sanctions:review_modal.callout_confirmed_hit')}</Callout>
           ) : null}
         </div>
         <div className="flex flex-col gap-2">
-          <div className="text-m">
-            {t('sanctions:review_modal.comment_label')}
-          </div>
+          <div className="text-m">{t('sanctions:review_modal.comment_label')}</div>
           <TextArea name="comment" />
         </div>
         {/* TODO: Whitelisting */}
-        {currentStatus === 'no_hit' &&
-        !!sanctionMatch.uniqueCounterpartyIdentifier ? (
+        {currentStatus === 'no_hit' && !!sanctionMatch.uniqueCounterpartyIdentifier ? (
           <div className="flex flex-col gap-2">
             <span className="flex items-center gap-2">
-              <Switch name="whitelist" />{' '}
-              {t('sanctions:review_modal.whitelist_label')}
+              <Switch name="whitelist" /> {t('sanctions:review_modal.whitelist_label')}
             </span>
             <div className="border-grey-90 bg-grey-98 flex flex-col gap-2 rounded border p-2">
               <span className="font-semibold">
@@ -137,11 +129,7 @@ export const SanctionCheckReviewModal = ({
           </div>
         ) : null}
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close
-            render={
-              <Button className="flex-1" variant="secondary" name="cancel" />
-            }
-          >
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
             {t('common:cancel')}
           </ModalV2.Close>
           <Button
@@ -158,24 +146,13 @@ export const SanctionCheckReviewModal = ({
           >
             {t('common:save')}
           </Button>
-          <ModalV2.Content
-            open={isConfirming}
-            onClose={() => setIsConfirming(false)}
-          >
-            <ModalV2.Title>
-              {t('sanctions:review_modal.confirmation')}
-            </ModalV2.Title>
+          <ModalV2.Content open={isConfirming} onClose={() => setIsConfirming(false)}>
+            <ModalV2.Title>{t('sanctions:review_modal.confirmation')}</ModalV2.Title>
             <div className="flex flex-col gap-4 p-6">
               <div>{t('sanctions:review_modal.callout_confirmed_hit')}</div>
               <div className="flex justify-between gap-4">
                 <ModalV2.Close
-                  render={
-                    <Button
-                      className="flex-1"
-                      variant="secondary"
-                      name="cancel"
-                    />
-                  }
+                  render={<Button className="flex-1" variant="secondary" name="cancel" />}
                 >
                   {t('common:cancel')}
                 </ModalV2.Close>

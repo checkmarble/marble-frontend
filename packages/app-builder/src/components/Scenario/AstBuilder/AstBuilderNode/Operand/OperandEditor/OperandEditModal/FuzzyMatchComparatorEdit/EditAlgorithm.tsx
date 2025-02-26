@@ -22,11 +22,7 @@ interface EditAlgorithmProps {
   errors: EvaluationError[];
 }
 
-export function EditAlgorithm({
-  algorithm,
-  setAlgorithm,
-  errors,
-}: EditAlgorithmProps) {
+export function EditAlgorithm({ algorithm, setAlgorithm, errors }: EditAlgorithmProps) {
   const { t } = useTranslation(['common', 'scenarios']);
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
 
@@ -47,9 +43,7 @@ export function EditAlgorithm({
               <Select.Value placeholder="..." />
             </span>
             <Tooltip.Default
-              content={t(
-                `scenarios:edit_fuzzy_match.algorithm.description.${algorithm}`,
-              )}
+              content={t(`scenarios:edit_fuzzy_match.algorithm.description.${algorithm}`)}
             >
               <Icon
                 icon="tip"
@@ -67,14 +61,10 @@ export function EditAlgorithm({
                     value={fuzzyMatchAlgorithm}
                   >
                     <Select.ItemText>
-                      <FuzzyMatchAlgorithmLabel
-                        fuzzyMatchAlgorithm={fuzzyMatchAlgorithm}
-                      />
+                      <FuzzyMatchAlgorithmLabel fuzzyMatchAlgorithm={fuzzyMatchAlgorithm} />
                     </Select.ItemText>
                     <p className="text-s text-grey-50">
-                      {t(
-                        `scenarios:edit_fuzzy_match.algorithm.description.${fuzzyMatchAlgorithm}`,
-                      )}
+                      {t(`scenarios:edit_fuzzy_match.algorithm.description.${fuzzyMatchAlgorithm}`)}
                     </p>
                   </Select.Item>
                 );
@@ -83,9 +73,7 @@ export function EditAlgorithm({
           </Select.Content>
         </Select.Root>
         <EvaluationErrors
-          errors={adaptEvaluationErrorViewModels(errors).map(
-            getNodeEvaluationErrorMessage,
-          )}
+          errors={adaptEvaluationErrorViewModels(errors).map(getNodeEvaluationErrorMessage)}
         />
       </div>
     );
@@ -100,9 +88,7 @@ export function EditAlgorithm({
         <FuzzyMatchAlgorithmLabel fuzzyMatchAlgorithm={algorithm} />
       </div>
       <EvaluationErrors
-        errors={adaptEvaluationErrorViewModels(errors).map(
-          getNodeEvaluationErrorMessage,
-        )}
+        errors={adaptEvaluationErrorViewModels(errors).map(getNodeEvaluationErrorMessage)}
       />
     </div>
   );

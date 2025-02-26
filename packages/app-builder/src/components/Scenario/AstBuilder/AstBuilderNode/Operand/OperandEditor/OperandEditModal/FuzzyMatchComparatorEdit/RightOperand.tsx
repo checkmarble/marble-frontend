@@ -41,8 +41,7 @@ export function RightOperand({
   const coerceToConstant = React.useCallback(
     (searchValue: string) =>
       defaultCoerceToConstant(searchValue).filter(
-        (option) =>
-          option.dataType === 'String[]' || option.dataType === 'String',
+        (option) => option.dataType === 'String[]' || option.dataType === 'String',
       ),
     [defaultCoerceToConstant],
   );
@@ -54,9 +53,7 @@ export function RightOperand({
 
   return (
     <Operand
-      placeholder={t(
-        'scenarios:edit_operand.data_type.string.field_placeholder',
-      )}
+      placeholder={t('scenarios:edit_operand.data_type.string.field_placeholder')}
       onSave={onChange}
       options={rightOptions}
       coerceToConstant={coerceToConstant}

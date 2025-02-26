@@ -5,10 +5,7 @@ import {
   type UndefinedAstNode,
 } from './ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
-import {
-  type DataAccessorAstNode,
-  isDataAccessorAstNode,
-} from './data-accessor';
+import { type DataAccessorAstNode, isDataAccessorAstNode } from './data-accessor';
 
 export const timeAddAstNodeName = 'TimeAdd';
 export interface TimeAddAstNode {
@@ -66,14 +63,9 @@ export type TimestampFieldAstNode =
   | TimeAddAstNode
   | UndefinedAstNode;
 
-export function isTimestampFieldAstNode(
-  node: AstNode,
-): node is TimestampFieldAstNode {
+export function isTimestampFieldAstNode(node: AstNode): node is TimestampFieldAstNode {
   return (
-    isDataAccessorAstNode(node) ||
-    isTimeNow(node) ||
-    isTimeAdd(node) ||
-    isUndefinedAstNode(node)
+    isDataAccessorAstNode(node) || isTimeNow(node) || isTimeAdd(node) || isUndefinedAstNode(node)
   );
 }
 
@@ -81,9 +73,7 @@ export function isTimeAdd(node: AstNode): node is TimeAddAstNode {
   return node.name === timeAddAstNodeName;
 }
 
-export function isTimestampExtract(
-  node: AstNode,
-): node is TimestampExtractAstNode {
+export function isTimestampExtract(node: AstNode): node is TimestampExtractAstNode {
   return node.name === timestampExtractAstNodeName;
 }
 
@@ -99,8 +89,7 @@ export const validTimestampExtractParts = [
   'day_of_week',
   'hour',
 ] as const;
-export type ValidTimestampExtractParts =
-  (typeof validTimestampExtractParts)[number];
+export type ValidTimestampExtractParts = (typeof validTimestampExtractParts)[number];
 
 export interface TimestampExtractAstNode {
   name: typeof timestampExtractAstNodeName;

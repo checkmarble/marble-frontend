@@ -17,8 +17,7 @@ export interface TransferRepository {
 export function makeGetTransferRepository() {
   return (transfercheckApi: TransfercheckApi): TransferRepository => ({
     listTransfers: async ({ partnerTransferId }) => {
-      const { transfers } =
-        await transfercheckApi.listTransfers(partnerTransferId);
+      const { transfers } = await transfercheckApi.listTransfers(partnerTransferId);
 
       return transfers.map(adaptTransfer);
     },
@@ -28,10 +27,7 @@ export function makeGetTransferRepository() {
       return adaptTransfer(transfer);
     },
     updateTransfer: async ({ transferId, transferUpdateBody }) => {
-      const { transfer } = await transfercheckApi.updateTransfer(
-        transferId,
-        transferUpdateBody,
-      );
+      const { transfer } = await transfercheckApi.updateTransfer(transferId, transferUpdateBody);
 
       return adaptTransfer(transfer);
     },

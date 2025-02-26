@@ -205,20 +205,15 @@ export default {
       animation: {
         'ping-slow': 'ping-slow 5s ease infinite',
         slideUpAndFade: 'slideUpAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)',
-        circleAnimation:
-          'circleAnimation 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        circleAnimation: 'circleAnimation 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275)',
         firstLineAnimation: 'firstLineAnimation 300ms ease-out forwards',
         secondLineAnimation: 'secondLineAnimation 300ms ease-out forwards',
         checkmarkAnimation: 'checkmarkAnimation  300ms ease-out forwards',
         overlayShow: 'overlayShow 200ms cubic-bezier(0.16, 1, 0.3, 1)',
-        slideLeftAndFadeIn:
-          'slideLeftAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1)',
-        slideLeftAndFadeOut:
-          'slideLeftAndFadeOut 200ms cubic-bezier(0.16, 1, 0.3, 1)',
-        slideRightAndFadeIn:
-          'slideRightAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1)',
-        slideRightAndFadeOut:
-          'slideRightAndFadeOut 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+        slideLeftAndFadeIn: 'slideLeftAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+        slideLeftAndFadeOut: 'slideLeftAndFadeOut 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+        slideRightAndFadeIn: 'slideRightAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+        slideRightAndFadeOut: 'slideRightAndFadeOut 200ms cubic-bezier(0.16, 1, 0.3, 1)',
         slideDown: 'slideDown 200ms cubic-bezier(0.87, 0, 0.13, 1)',
         slideUp: 'slideUp 200ms cubic-bezier(0.87, 0, 0.13, 1)',
         overflow: 'overflow linear',
@@ -243,8 +238,7 @@ export default {
         },
         '@supports (scrollbar-width: auto)': {
           '*': {
-            'scrollbar-color':
-              'var(--scrollbar-color-thumb) var(--scrollbar-color-track)',
+            'scrollbar-color': 'var(--scrollbar-color-thumb) var(--scrollbar-color-track)',
             'scrollbar-width': 'thin',
             '--scrollbar-width': '10px',
           },

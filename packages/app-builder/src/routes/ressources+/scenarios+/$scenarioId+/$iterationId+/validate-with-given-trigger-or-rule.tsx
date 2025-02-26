@@ -12,9 +12,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const body = (await request.json()) as
-    | TriggerValidationArgs
-    | RuleValidationArgs;
+  const body = (await request.json()) as TriggerValidationArgs | RuleValidationArgs;
 
   const iterationId = fromParams(params, 'iterationId');
 
@@ -33,10 +31,7 @@ type TriggerValidationArgs = {
   trigger: AstNode;
 };
 
-export function useTriggerValidationFetcher(
-  scenarioId: string,
-  iterationId: string,
-) {
+export function useTriggerValidationFetcher(scenarioId: string, iterationId: string) {
   const fetcher = useFetcher<typeof action>();
 
   const validate = useCallback(
@@ -70,11 +65,7 @@ type RuleValidationArgs = {
   ruleId: string;
 };
 
-export function useRuleValidationFetcher(
-  scenarioId: string,
-  iterationId: string,
-  ruleId: string,
-) {
+export function useRuleValidationFetcher(scenarioId: string, iterationId: string, ruleId: string) {
   const fetcher = useFetcher<typeof action>();
 
   const validate = useCallback(

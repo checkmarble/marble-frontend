@@ -21,13 +21,7 @@ export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
 };
 
-export const tagColors = [
-  '#C8C3FF',
-  '#FDE9AD',
-  '#FFA89A',
-  '#B7DFF5',
-  '#B2E5BA',
-] as const;
+export const tagColors = ['#C8C3FF', '#FDE9AD', '#FFA89A', '#B7DFF5', '#B2E5BA'] as const;
 
 const createTagFormSchema = z.object({
   name: z.string().min(1),
@@ -122,26 +116,17 @@ const CreateTagContent = () => {
         <Modal.Title>{t('settings:tags.new_tag')}</Modal.Title>
         <div className="flex flex-col gap-6 p-6">
           <div className="flex gap-2">
-            <FormField
-              name={fields.name.name}
-              className="group flex w-full flex-col gap-2"
-            >
+            <FormField name={fields.name.name} className="group flex w-full flex-col gap-2">
               <FormLabel>{t('settings:tags.name')}</FormLabel>
               <FormInput type="text" />
               <FormErrorOrDescription />
             </FormField>
-            <FormField
-              name={fields.color.name}
-              className="group flex flex-col gap-2"
-            >
+            <FormField name={fields.color.name} className="group flex flex-col gap-2">
               <FormLabel>{t('settings:tags.color')}</FormLabel>
               <FormSelect.Default options={tagColors}>
                 {tagColors.map((color) => (
                   <FormSelect.DefaultItem key={color} value={color}>
-                    <div
-                      className="size-4 rounded-full"
-                      style={{ backgroundColor: color }}
-                    ></div>
+                    <div className="size-4 rounded-full" style={{ backgroundColor: color }}></div>
                   </FormSelect.DefaultItem>
                 ))}
               </FormSelect.Default>
@@ -154,12 +139,7 @@ const CreateTagContent = () => {
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="create"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="create">
               {t('settings:tags.new_tag.create')}
             </Button>
           </div>

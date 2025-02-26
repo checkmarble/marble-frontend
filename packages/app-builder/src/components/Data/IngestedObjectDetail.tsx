@@ -16,12 +16,7 @@ function useParsedTriggerObject(triggerObject: Record<string, unknown> | null) {
   return useMemo(
     () =>
       triggerObject
-        ? R.pipe(
-            triggerObject,
-            R.omit(METADATA_FIELDS),
-            R.mapValues(parseUnknownData),
-            R.entries(),
-          )
+        ? R.pipe(triggerObject, R.omit(METADATA_FIELDS), R.mapValues(parseUnknownData), R.entries())
         : null,
     [triggerObject],
   );

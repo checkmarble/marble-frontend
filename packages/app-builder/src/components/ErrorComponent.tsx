@@ -1,7 +1,4 @@
-import {
-  FORBIDDEN,
-  NOT_FOUND,
-} from '@app-builder/utils/http/http-status-codes';
+import { FORBIDDEN, NOT_FOUND } from '@app-builder/utils/http/http-status-codes';
 import { isRouteErrorResponse, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';

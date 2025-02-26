@@ -1,8 +1,4 @@
-import {
-  CursorPaginationButtons,
-  Page,
-  paginationSchema,
-} from '@app-builder/components';
+import { CursorPaginationButtons, Page, paginationSchema } from '@app-builder/components';
 import { casesI18n, CasesList } from '@app-builder/components/Cases';
 import { CaseRightPanel } from '@app-builder/components/Cases/CaseRightPanel';
 import {
@@ -17,10 +13,7 @@ import { FiltersButton } from '@app-builder/components/Filters';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { type Case } from '@app-builder/models/cases';
-import {
-  type PaginatedResponse,
-  type PaginationParams,
-} from '@app-builder/models/pagination';
+import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
 import { serverServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
@@ -150,8 +143,7 @@ export default function Cases() {
   >({
     transform: (fetcherData) => fetcherData.casesData,
     initialData: initialCasesData,
-    getQueryParams: (cursor) =>
-      buildQueryParams(filters, cursor, initialPagination.order ?? null),
+    getQueryParams: (cursor) => buildQueryParams(filters, cursor, initialPagination.order ?? null),
     validateData: (data) => data.items.length > 0,
   });
 
@@ -197,13 +189,10 @@ export default function Cases() {
             pathname: getRoute('/cases/inboxes/:inboxId', {
               inboxId: fromUUID(inboxId),
             }),
-            search: qs.stringify(
-              buildQueryParams(casesFilters, null, pagination.order),
-              {
-                addQueryPrefix: true,
-                skipNulls: true,
-              },
-            ),
+            search: qs.stringify(buildQueryParams(casesFilters, null, pagination.order), {
+              addQueryPrefix: true,
+              skipNulls: true,
+            }),
           },
           { replace: true },
         );
@@ -217,10 +206,7 @@ export default function Cases() {
       <Page.Container>
         <Page.Content>
           <div className="flex flex-col gap-4">
-            <CasesFiltersProvider
-              submitCasesFilters={navigateCasesList}
-              filterValues={filters}
-            >
+            <CasesFiltersProvider submitCasesFilters={navigateCasesList} filterValues={filters}>
               <div className="flex justify-between">
                 <SearchByName
                   initialValue={filters.name}
@@ -255,8 +241,7 @@ export default function Cases() {
                     }),
                   };
 
-                  if (hasAlreadyOrdered)
-                    navigateCasesList(filters, paginationParams);
+                  if (hasAlreadyOrdered) navigateCasesList(filters, paginationParams);
                   hasAlreadyOrdered = true;
                 }}
               />

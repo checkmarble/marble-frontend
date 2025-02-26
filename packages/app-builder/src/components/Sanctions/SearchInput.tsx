@@ -8,9 +8,7 @@ export type SearchInputProps = {
 };
 
 export const SearchInputDisplay = ({ searchInput }: SearchInputProps) => {
-  const searchInfos = R.map(searchInput, (input) =>
-    R.entries(input.properties),
-  );
+  const searchInfos = R.map(searchInput, (input) => R.entries(input.properties));
 
   return (
     <div className="bg-grey-100 border-grey-90 text-s flex flex-col gap-2 rounded border p-2">
@@ -22,9 +20,7 @@ export const SearchInputDisplay = ({ searchInput }: SearchInputProps) => {
                 return <span key={property}>{propValue.join(', ')}</span>;
               })}
             </div>
-            {i < searchInfos.length - 1 ? (
-              <Separator className="bg-grey-90" />
-            ) : null}
+            {i < searchInfos.length - 1 ? <Separator className="bg-grey-90" /> : null}
           </Fragment>
         );
       })}
