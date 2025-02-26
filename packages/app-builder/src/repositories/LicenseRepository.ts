@@ -15,7 +15,7 @@ export const makeGetLicenseRepository =
   (client: LicenseApi): LicenseRepository => ({
     isSsoEnabled: async () => (await client.isSsoEnabled()).is_sso_enabled,
     getEntitlements: async (organizationId) =>
-      organizationId === 'tata'
+      organizationId
         ? adaptLicenseEntitlements((await client.getEntitlements(organizationId)).feature_access)
         : emptyLicenseEntitlements(),
   });
