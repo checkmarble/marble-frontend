@@ -104,9 +104,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 const editRuleFormSchema = z.object({
-  name: z.string().min(1),
-  description: z.string(),
-  ruleGroup: z.string().min(1),
+  name: z.string().nonempty(),
+  description: z.string().optional(),
+  ruleGroup: z.string().optional(),
   scoreModifier: z.coerce.number().int().min(-1000).max(1000),
   formula: z.any(),
 });
@@ -238,7 +238,7 @@ export default function RuleDetail() {
           >
             <div
               className={cn(
-                'bg-purple-99 sticky top-0 z-20 flex h-[88px] items-center justify-between',
+                'bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between',
                 {
                   'border-b-grey-90 border-b': !intersection?.isIntersecting,
                 },

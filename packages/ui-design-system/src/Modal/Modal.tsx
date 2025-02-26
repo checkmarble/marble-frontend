@@ -75,7 +75,7 @@ export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(
           size,
           fixedHeight,
           className: clsx(
-            'z-50 scale-95 opacity-0 transition-all data-[enter]:scale-100 data-[enter]:opacity-100',
+            'scale-95 opacity-0 transition-all data-[enter]:scale-100 data-[enter]:opacity-100',
             className,
           ),
         })}
