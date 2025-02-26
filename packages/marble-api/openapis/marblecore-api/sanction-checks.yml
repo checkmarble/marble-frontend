@@ -85,6 +85,31 @@
           application/json:
             schema:
               $ref: '#/components/schemas/SanctionCheckMatchDto'
+/sanction-checks/matches/{matchId}/enrich:
+  post:
+    tags:
+      - Sanction Check
+    summary: Enrich the match payload with complete data
+    operationId: enrichSanctionCheckMatch
+    parameters:
+      - name: matchId
+        description: ID of the match to update
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The match returned ?
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SanctionCheckMatchDto'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '409':
+        $ref: 'components.yml#/responses/409'
 /sanction-checks/search:
   post:
     tags:
@@ -308,6 +333,7 @@ components:
         - status
         - datasets
         - payload
+        - enriched
         - comments
       properties:
         id:
@@ -327,6 +353,8 @@ components:
           type: string
         payload:
           $ref: '#/components/schemas/SanctionCheckMatchPayloadDto'
+        enriched:
+          type: boolean
         comments:
           type: array
           items:
