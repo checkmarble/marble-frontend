@@ -44,8 +44,6 @@ function makeServerServices(repositories: ServerRepositories) {
 function initServerServices() {
   checkEnv();
 
-  const devEnvironment = getServerEnv('FIREBASE_CONFIG').withEmulator;
-
   const { getMarbleCoreAPIClientWithAuth, marbleCoreApiClient } = initializeMarbleCoreAPIClient({
     baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
   });
@@ -59,7 +57,6 @@ function initServerServices() {
   });
 
   const serverRepositories = makeServerRepositories({
-    devEnvironment,
     getLicenseApiClientWithoutAuth: () => licenseApi,
     getLicenseAPIClientWithAuth,
     marbleCoreApiClient,

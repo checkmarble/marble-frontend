@@ -13,6 +13,18 @@ export interface LicenseEntitlements {
   sanctions: FeatureAccessDto;
 }
 
+export function emptyLicenseEntitlements(): LicenseEntitlements {
+  return {
+    workflows: 'restricted',
+    analytics: 'restricted',
+    userRoles: 'restricted',
+    webhooks: 'restricted',
+    ruleSnoozes: 'restricted',
+    testRun: 'restricted',
+    sanctions: 'restricted',
+  };
+}
+
 export function adaptLicenseEntitlements(dto: LicenseEntitlementsDto): LicenseEntitlements {
   return {
     /**
