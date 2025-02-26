@@ -1,3 +1,4 @@
+import { type AppVersions } from '@app-builder/models/version';
 import {
   blockingReviewDocHref,
   executeAScenarioDocHref,
@@ -43,6 +44,7 @@ interface HelpCenterProps {
   resources: Record<string, Resource[]>;
   MenuButton: React.ReactElement;
   ChatWithUsButton?: React.ReactElement;
+  versions: AppVersions;
 }
 
 export function HelpCenter({
@@ -50,6 +52,7 @@ export function HelpCenter({
   resources,
   ChatWithUsButton,
   MenuButton: renderMenuButton,
+  versions,
 }: HelpCenterProps) {
   const { i18n } = useTranslation();
   const [searchValue, setSearchValue] = React.useState('');
@@ -71,6 +74,7 @@ export function HelpCenter({
           resources={resources}
           ChatWithUsButton={ChatWithUsButton}
           searchValue={deferredSearchValue}
+          versions={versions}
         />
       </MenuPopover>
     </MenuRoot>
@@ -82,6 +86,7 @@ interface HelpCenterContentProps {
   resources: Record<string, Resource[]>;
   ChatWithUsButton?: React.ReactElement;
   searchValue: string;
+  versions: AppVersions;
 }
 
 function HelpCenterContent({
@@ -89,6 +94,7 @@ function HelpCenterContent({
   resources,
   ChatWithUsButton,
   searchValue,
+  versions,
 }: HelpCenterContentProps) {
   const { t, i18n } = useTranslation(['common']);
   const language = useFormatLanguage();
@@ -218,6 +224,16 @@ function HelpCenterContent({
           </Kbd>
           {t('common:help_center.to_switch_tabs')}
         </div>
+      </div>
+
+      <div className="border-t-grey-90 bg-grey-95 text-grey-50 flex items-center gap-2 border-t p-2 text-xs">
+        <span>Versions</span>
+        <span className="ml-auto">
+          App: <strong>{versions.appVersion}</strong>
+        </span>
+        <span className="">
+          API: <strong>{versions.apiVersion}</strong>
+        </span>
       </div>
     </Ariakit.TabProvider>
   );

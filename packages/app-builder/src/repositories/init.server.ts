@@ -2,7 +2,10 @@ import {
   type GetLicenseAPIClientWithAuth,
   type LicenseApi,
 } from '@app-builder/infra/license-api';
-import { type GetMarbleCoreAPIClientWithAuth } from '@app-builder/infra/marblecore-api';
+import {
+  type GetMarbleCoreAPIClientWithAuth,
+  type MarbleCoreApi,
+} from '@app-builder/infra/marblecore-api';
 import { type GetTransfercheckAPIClientWithAuth } from '@app-builder/infra/transfercheck-api';
 
 import { makeGetAnalyticsRepository } from './AnalyticsRepository';
@@ -32,6 +35,7 @@ import { makeGetTestRunRepository } from './TestRunRepository';
 import { makeGetTransferAlertRepository } from './TransferAlertRepository';
 import { makeGetTransferRepository } from './TransferRepository';
 import { makeGetUserRepository } from './UserRepository';
+import { makeGetVersionRepository } from './VersionRepository';
 import { makeGetWebhookRepository } from './WebhookRepository';
 
 export function makeServerRepositories({
@@ -39,6 +43,7 @@ export function makeServerRepositories({
   sessionStorageRepositoryOptions,
   getLicenseApiClientWithoutAuth,
   getLicenseAPIClientWithAuth,
+  marbleCoreApiClient,
   getMarbleCoreAPIClientWithAuth,
   getTransfercheckAPIClientWithAuth,
 }: {
@@ -46,6 +51,7 @@ export function makeServerRepositories({
   sessionStorageRepositoryOptions: SessionStorageRepositoryOptions;
   getLicenseApiClientWithoutAuth: () => LicenseApi;
   getLicenseAPIClientWithAuth: GetLicenseAPIClientWithAuth;
+  marbleCoreApiClient: MarbleCoreApi;
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
   getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
 }) {
@@ -62,6 +68,7 @@ export function makeServerRepositories({
     ),
     getLicenseApiClientWithoutAuth,
     getLicenseAPIClientWithAuth,
+    marbleCoreApiClient,
     getMarbleCoreAPIClientWithAuth,
     getTransfercheckAPIClientWithAuth,
     getUserRepository: makeGetUserRepository(),
@@ -87,6 +94,7 @@ export function makeServerRepositories({
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     getTestRunRepository: makeGetTestRunRepository(),
     getLicenseRepository: makeGetLicenseRepository(devEnvironment),
+    getVersionRepository: makeGetVersionRepository(),
   };
 }
 

@@ -819,6 +819,9 @@ export type TestRunRuleExecutionDataDto = {
     total: number;
     stable_rule_id?: string;
 };
+export type VersionDto = {
+    version: string;
+};
 /**
  * Get an access token
  */
@@ -3209,6 +3212,17 @@ export function getRuleData(testRunId: string, opts?: Oazapfts.RequestOpts) {
         status: 404;
         data: string;
     }>(`/scenario-testruns/${encodeURIComponent(testRunId)}/data_by_rule_execution`, {
+        ...opts
+    }));
+}
+/**
+ * Retrieves the backend version
+ */
+export function getBackendVersion(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: VersionDto;
+    }>("/version", {
         ...opts
     }));
 }

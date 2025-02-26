@@ -23,7 +23,7 @@ import {
 import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
 import { CONFLICT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { type LoaderFunctionArgs } from '@remix-run/node';
 import {
   Form,
   isRouteErrorResponse,
@@ -38,7 +38,7 @@ import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService, versionRepository } = serverServices;
   const { user, partnerRepository } = await authService.isAuthenticated(
     request,
     {
@@ -56,7 +56,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const partner = await partnerRepository.getPartner(user.partnerId);
 
-  return json({ user, partner });
+  return {
+    user,
+    partner,
+    versions: await versionRepository.getBackendVersion(),
+  };
 }
 
 export const handle = {
@@ -64,7 +68,7 @@ export const handle = {
 };
 
 export default function Builder() {
-  const { user, partner } = useLoaderData<typeof loader>();
+  const { user, partner, versions } = useLoaderData<typeof loader>();
   useSegmentIdentification(user);
 
   // Refresh is done in the JSX because it needs to be done in the browser
@@ -115,6 +119,7 @@ export default function Builder() {
                     Icon={(props) => <Icon icon="helpcenter" {...props} />}
                   />
                 }
+                versions={versions}
               />
             </li>
             <li>

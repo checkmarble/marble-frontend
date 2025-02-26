@@ -64,6 +64,7 @@ jobs:
             SENTRY_ORG=checkmarble
             SENTRY_PROJECT=marble-frontend
             SENTRY_RELEASE=${{ inputs.SENTRY_RELEASE }}
+            APP_VERSION=${{ inputs.VERSION }}
           secrets: |
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
 

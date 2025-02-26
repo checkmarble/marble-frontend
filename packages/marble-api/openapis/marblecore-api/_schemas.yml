@@ -316,3 +316,8 @@ TestRunRuleExecutionDataDto:
   $ref: scenario-testrun.yml#/components/schemas/TestRunRuleExecutionDataDto
 TestRunCreateInputDto:
   $ref: scenario-testrun.yml#/components/schemas/TestRunCreateInputDto
+
+# VERSION
+
+VersionDto:
+  $ref: version.yml#/components/schemas/VersionDto
