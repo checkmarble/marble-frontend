@@ -38,6 +38,7 @@ import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
+import { match } from 'ts-pattern';
 import { Button, CtaClassName, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
@@ -173,22 +174,24 @@ export default function ScenarioHome() {
                 scheduledExecutions={scheduledExecutions}
                 liveScenarioIteration={liveScenarioIteration}
               />
-              {featureAccess.isTestRunAvailable === 'restricted' ? (
-                <TestRunNudge />
-              ) : (
-                <TestRunSection
-                  scenarioId={currentScenario.id}
-                  access={featureAccess.isTestRunAvailable}
-                />
-              )}
-              {featureAccess.isWorkflowsAvailable === 'restricted' ? (
-                <WorkflowNudge />
-              ) : (
-                <WorkflowSection
-                  scenario={currentScenario}
-                  access={featureAccess.isWorkflowsAvailable}
-                />
-              )}
+              {match(featureAccess.isTestRunAvailable)
+                .with('missing_configuration', (status) => <TestRunNudge kind={status} />)
+                .with('restricted', (status) => <TestRunNudge kind={status} />)
+                .otherwise(() => (
+                  <TestRunSection
+                    scenarioId={currentScenario.id}
+                    access={featureAccess.isTestRunAvailable}
+                  />
+                ))}
+              {match(featureAccess.isWorkflowsAvailable)
+                .with('missing_configuration', (status) => <WorkflowNudge kind={status} />)
+                .with('restricted', (status) => <WorkflowNudge kind={status} />)
+                .otherwise(() => (
+                  <WorkflowSection
+                    scenario={currentScenario}
+                    access={featureAccess.isWorkflowsAvailable}
+                  />
+                ))}
             </div>
           </section>
           <ResourcesSection />

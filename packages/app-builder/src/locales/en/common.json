@@ -12,6 +12,8 @@
   "upgrade": "Upgrade now",
   "auth.logout": "Log out",
   "search": "Search",
+  "missing_configuration_title": "Missing Configuration",
+  "missing_configuration": "Marble identified missing configuration for this feature. Please check the docs for the correct configuration setup.",
   "error_one": "{{count}} error",
   "error_other": "{{count}} errors",
   "validation_error_one": "{{count}} validation error",

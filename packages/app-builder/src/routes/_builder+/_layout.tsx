@@ -138,6 +138,19 @@ export default function Builder() {
                           <Nudge className="size-6" content={t('navigation:analytics.nudge')} />
                         </div>
                       ))
+                      .with('missing_configuration', () => (
+                        <div className="text-grey-80 relative flex gap-2 p-2">
+                          <Icon icon="analytics" className="size-6 shrink-0" />
+                          <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+                            {t('navigation:analytics')}
+                          </span>
+                          <Nudge
+                            kind="missing_configuration"
+                            className="size-6"
+                            content={t('navigation:analytics.nudge')}
+                          />
+                        </div>
+                      ))
                       .with('test', () =>
                         featuresAccess.isAnalyticsAvailable ? (
                           <SidebarLink

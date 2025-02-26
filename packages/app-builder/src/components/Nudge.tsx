@@ -1,14 +1,16 @@
 import { Hovercard, HovercardAnchor, HovercardProvider } from '@ariakit/react/hovercard';
 import clsx from 'clsx';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import { useTranslation } from 'react-i18next';
-import { CtaClassName } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { match } from 'ts-pattern';
+import { cn, CtaClassName } from 'ui-design-system';
+import { Icon, type IconName } from 'ui-icons';
 
 type NudgeProps = {
   content: string;
   className?: string;
   link?: string;
-  kind?: 'test' | 'restricted';
+  kind?: Exclude<FeatureAccessDto, 'allowed'>;
 };
 
 export const Nudge = ({ content, link, className, kind = 'restricted' }: NudgeProps) => {
@@ -22,11 +24,16 @@ export const Nudge = ({ content, link, className, kind = 'restricted' }: NudgePr
           'text-grey-100 flex flex-row items-center justify-center rounded',
           { 'bg-purple-65': kind === 'test' },
           { 'bg-purple-82': kind === 'restricted' },
+          { 'bg-yellow-50': kind === 'missing_configuration' },
           className,
         )}
       >
         <Icon
-          icon={kind === 'restricted' ? 'lock' : 'unlock-right'}
+          icon={match<typeof kind, IconName>(kind)
+            .with('restricted', () => 'lock')
+            .with('test', () => 'unlock-right')
+            .with('missing_configuration', () => 'warning')
+            .exhaustive()}
           className="size-3.5"
           aria-hidden
         />
@@ -34,11 +41,25 @@ export const Nudge = ({ content, link, className, kind = 'restricted' }: NudgePr
       <Hovercard
         portal
         gutter={8}
-        className="bg-grey-100 border-purple-82 z-50 flex w-60 flex-col items-center gap-6 rounded border p-4 shadow-lg"
+        className={cn(
+          'bg-grey-100 z-50 flex w-60 flex-col items-center gap-6 rounded border p-4 shadow-lg',
+          {
+            'border-purple-82': kind !== 'missing_configuration',
+            'border-yellow-50': kind === 'missing_configuration',
+          },
+        )}
       >
-        <span className="text-m font-bold">{t('common:premium')}</span>
+        <span className="text-m font-bold">
+          {match<typeof kind, string>(kind)
+            .with('missing_configuration', () => t('common:missing_configuration_title'))
+            .otherwise(() => t('common:premium'))}
+        </span>
         <div className="flex w-full flex-col items-center gap-2">
-          <p className="text-s w-full text-center font-medium">{content}</p>
+          <p className="text-s w-full text-center font-medium">
+            {match<typeof kind, string>(kind)
+              .with('missing_configuration', () => t('common:missing_configuration'))
+              .otherwise(() => content)}
+          </p>
           {link ? (
             <a
               className="text-s text-purple-65 inline-block w-full text-center hover:underline"
@@ -50,18 +71,20 @@ export const Nudge = ({ content, link, className, kind = 'restricted' }: NudgePr
             </a>
           ) : null}
         </div>
-        <a
-          className={CtaClassName({
-            variant: 'primary',
-            color: 'purple',
-            className: 'mt-4',
-          })}
-          href="https://checkmarble.com/upgrade"
-          target="_blank"
-          rel="noreferrer"
-        >
-          {t('common:upgrade')}
-        </a>
+        {kind !== 'missing_configuration' ? (
+          <a
+            className={CtaClassName({
+              variant: 'primary',
+              color: 'purple',
+              className: 'mt-4',
+            })}
+            href="https://checkmarble.com/upgrade"
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t('common:upgrade')}
+          </a>
+        ) : null}
       </Hovercard>
     </HovercardProvider>
   );

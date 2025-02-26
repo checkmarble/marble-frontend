@@ -137,6 +137,18 @@ export function RuleSnoozes({
                       />
                     </Button>
                   ))
+                  .with('missing_configuration', () => (
+                    <Button className="relative h-8 w-fit pl-2" disabled>
+                      <Icon icon="snooze" className="size-6" />
+                      {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
+                      <Nudge
+                        kind="missing_configuration"
+                        className="border-red-47 absolute -right-3 -top-3 size-6 border"
+                        content={t('common:missing_configuration')}
+                        link="https://docs.checkmarble.com/docs/rule-snoozes"
+                      />
+                    </Button>
+                  ))
                   .with('test', () =>
                     isCreateSnoozeAvailable ? (
                       <AddRuleSnooze decisionId={decisionId} ruleId={ruleId}>
