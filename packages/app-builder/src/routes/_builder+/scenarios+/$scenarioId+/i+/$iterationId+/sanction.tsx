@@ -115,7 +115,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 const editSanctionFormSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().optional(),
-  ruleGroup: z.string().nonempty(),
+  ruleGroup: z.string().optional(),
   forcedOutcome: z.union([
     z.literal('review'),
     z.literal('decline'),
@@ -285,7 +285,7 @@ export default function SanctionDetail() {
           >
             <div
               className={cn(
-                'bg-purple-99 sticky top-0 z-20 flex h-[88px] items-center justify-between',
+                'bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between',
                 {
                   'border-b-grey-90 border-b': !intersection?.isIntersecting,
                 },
