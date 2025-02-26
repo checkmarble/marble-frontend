@@ -1,10 +1,14 @@
 import { type CurrentUser } from '@app-builder/models';
 import { type LicenseEntitlements } from '@app-builder/models/license';
+import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+
+const isAccessible = (featureAccess: FeatureAccessDto) =>
+  featureAccess !== 'restricted' && featureAccess !== 'missing_configuration';
 
 export const isAnalyticsAvailable = (
   { permissions }: CurrentUser,
   entitlements: LicenseEntitlements,
-) => entitlements.analytics !== 'restricted' && permissions.canReadAnalytics;
+) => isAccessible(entitlements.analytics) && permissions.canReadAnalytics;
 
 export const isReadUserAvailable = ({ role }: CurrentUser) =>
   role === 'ADMIN' || role === 'MARBLE_ADMIN';
@@ -25,12 +29,12 @@ export const isCreateInboxAvailable = ({ permissions }: CurrentUser) => permissi
 export const isReadSnoozeAvailable = (
   { permissions }: CurrentUser,
   entitlements: LicenseEntitlements,
-) => entitlements.ruleSnoozes !== 'restricted' && permissions.canReadSnoozes;
+) => isAccessible(entitlements.ruleSnoozes) && permissions.canReadSnoozes;
 
 export const isCreateSnoozeAvailable = (
   { permissions }: CurrentUser,
   entitlements: LicenseEntitlements,
-) => entitlements.ruleSnoozes !== 'restricted' && permissions.canCreateSnoozes;
+) => isAccessible(entitlements.ruleSnoozes) && permissions.canCreateSnoozes;
 
 export const isCreateDataModelTableAvailable = ({ permissions }: CurrentUser) =>
   permissions.canEditDataModel;
@@ -71,10 +75,10 @@ export const isManualTriggerScenarioAvailable = ({ permissions }: CurrentUser) =
   permissions.canManageDecision;
 
 export const isWorkflowsAvailable = (entitlements: LicenseEntitlements) =>
-  entitlements.workflows !== 'restricted';
+  isAccessible(entitlements.workflows);
 
 export const isTestRunAvailable = (entitlements: LicenseEntitlements) =>
-  entitlements.testRun !== 'restricted';
+  isAccessible(entitlements.testRun);
 
 export const isDeploymentActionsAvailable = ({ permissions }: CurrentUser) =>
   permissions.canPublishScenario;
@@ -89,7 +93,7 @@ export const isDeleteApiKeyAvailable = ({ permissions }: CurrentUser) =>
   permissions.canCreateApiKey;
 
 export const getInboxUserRoles = (entitlements: LicenseEntitlements) =>
-  entitlements.userRoles !== 'restricted' ? (['admin', 'member'] as const) : (['admin'] as const);
+  isAccessible(entitlements.userRoles) ? (['admin', 'member'] as const) : (['admin'] as const);
 
 export const isEditInboxAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
@@ -111,7 +115,7 @@ export const isEditTagAvailable = ({ permissions }: CurrentUser) => permissions.
 export const isDeleteTagAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
 export const getUserRoles = (entitlements: LicenseEntitlements) =>
-  entitlements.userRoles !== 'restricted'
+  isAccessible(entitlements.userRoles)
     ? (['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'] as const)
     : (['ADMIN'] as const);
 
