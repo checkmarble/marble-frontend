@@ -25,10 +25,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }),
   ]);
 
-  const { createdAt, name, ...rest } =
-    await scenarioIterationRuleRepository.getRule({
-      ruleId: data.get('ruleId') as string,
-    });
+  const { createdAt, name, ...rest } = await scenarioIterationRuleRepository.getRule({
+    ruleId: data.get('ruleId') as string,
+  });
 
   await scenarioIterationRuleRepository.createRule({
     name: t('clone_rule.default_name', { name }),
@@ -66,15 +65,11 @@ export function DuplicateRule({
             <div className="bg-purple-96 mb-8 box-border rounded-[90px] p-4">
               <Icon icon="copy" className="text-purple-65 size-16" />
             </div>
-            <h1 className="text-l font-semibold">
-              {t('scenarios:clone_rule.title')}
-            </h1>
+            <h1 className="text-l font-semibold">{t('scenarios:clone_rule.title')}</h1>
             <p className="text-center">{t('scenarios:clone_rule.content')}</p>
           </div>
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
             <Button

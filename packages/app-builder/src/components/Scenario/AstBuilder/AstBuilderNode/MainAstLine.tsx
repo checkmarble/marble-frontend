@@ -122,11 +122,7 @@ export function MainAstBinaryOperatorLine({
   // remove the <div> root wrapper to flatten the structure and use a single root flex-wrap
   if (!root) return children;
 
-  return (
-    <div className="inline-flex flex-row flex-wrap items-center gap-2">
-      {children}
-    </div>
-  );
+  return <div className="inline-flex flex-row flex-wrap items-center gap-2">{children}</div>;
 }
 
 export function MainAstUnaryOperatorLine({
@@ -165,11 +161,7 @@ export function MainAstUnaryOperatorLine({
   return (
     <div className="group/nest contents">
       {!root ? (
-        <NestingParenthesis
-          unary
-          removeNesting={removeNesting}
-          addRightNesting={addRightNesting}
-        >
+        <NestingParenthesis unary removeNesting={removeNesting} addRightNesting={addRightNesting}>
           (
         </NestingParenthesis>
       ) : null}
@@ -191,11 +183,7 @@ export function MainAstUnaryOperatorLine({
         operators={operators}
       />
       {!root ? (
-        <NestingParenthesis
-          unary
-          removeNesting={removeNesting}
-          addRightNesting={addRightNesting}
-        >
+        <NestingParenthesis unary removeNesting={removeNesting} addRightNesting={addRightNesting}>
           )
         </NestingParenthesis>
       ) : null}
@@ -232,11 +220,7 @@ const NestingParenthesis = ({
             onClick={props.invertOperands}
             className="data-[active-item]:bg-purple-98 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
           >
-            <Icon
-              aria-hidden="true"
-              className="col-start-1 size-5 shrink-0"
-              icon="swap"
-            />
+            <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon="swap" />
             <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
               <div className="text-grey-00 text-s w-full break-all text-start font-normal">
                 {t('scenarios:nesting.swap_operands')}
@@ -248,11 +232,7 @@ const NestingParenthesis = ({
           onClick={addRightNesting}
           className="data-[active-item]:bg-purple-98 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
         >
-          <Icon
-            aria-hidden="true"
-            className="col-start-1 size-5 shrink-0"
-            icon="parentheses"
-          />
+          <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon="parentheses" />
           <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
             <div className="text-grey-00 text-s w-full break-all text-start font-normal">
               {t('scenarios:nesting.add_right_nesting')}

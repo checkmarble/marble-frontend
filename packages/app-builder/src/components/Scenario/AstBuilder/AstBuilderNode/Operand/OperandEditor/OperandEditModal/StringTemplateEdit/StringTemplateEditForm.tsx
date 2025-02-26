@@ -44,9 +44,7 @@ export const StringTemplateEditForm = ({
         <Input
           value={template}
           onChange={handleTemplateChange}
-          placeholder={t(
-            'scenarios:edit_string_template.template_field.placeholder',
-          )}
+          placeholder={t('scenarios:edit_string_template.template_field.placeholder')}
         />
         <EvaluationErrors errors={templateErrors.map(getCommonError)} />
       </div>

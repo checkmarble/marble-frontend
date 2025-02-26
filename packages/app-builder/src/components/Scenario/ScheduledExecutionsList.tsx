@@ -1,9 +1,5 @@
 import { type ScheduledExecution } from '@app-builder/models/decision';
-import {
-  formatDateTime,
-  formatNumber,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatDateTime, formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
@@ -65,9 +61,7 @@ export function ScheduledExecutionsList({
             </span>
           );
         },
-        header: t(
-          'scenarios:scheduled_execution.number_of_evaluated_decisions',
-        ),
+        header: t('scenarios:scheduled_execution.number_of_evaluated_decisions'),
         size: 100,
       }),
       columnHelper.accessor((s) => s.numberOfPlannedDecisions, {
@@ -106,9 +100,7 @@ export function ScheduledExecutionsList({
         header: t('scenarios:scheduled_execution.created_at'),
         size: 100,
         cell: ({ getValue, cell }) => {
-          return (
-            <time dateTime={cell.row.original.startedAt}>{getValue()}</time>
-          );
+          return <time dateTime={cell.row.original.startedAt}>{getValue()}</time>;
         },
       }),
     ],
@@ -123,10 +115,7 @@ export function ScheduledExecutionsList({
   });
 
   return (
-    <Table.Container
-      {...getContainerProps()}
-      className="bg-grey-100 max-h-[70dvh]"
-    >
+    <Table.Container {...getContainerProps()} className="bg-grey-100 max-h-[70dvh]">
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {
@@ -163,8 +152,6 @@ const getStatusTKey = (status: string): ParseKeys<['scenarios']> => {
   return 'scenarios:scheduled_execution.status_pending';
 };
 
-function getDecisionRoute(
-  decisionFilters: Pick<DecisionFilters, 'scheduledExecutionId'>,
-) {
+function getDecisionRoute(decisionFilters: Pick<DecisionFilters, 'scheduledExecutionId'>) {
   return `${getRoute('/decisions')}?${qs.stringify(decisionFilters)}`;
 }

@@ -14,7 +14,4 @@ export function getCurrentBrowser(userAgent: string) {
   }
 }
 
-export type KnownBrowser = Exclude<
-  ReturnType<typeof getCurrentBrowser>,
-  'Unknown Browser'
->;
+export type KnownBrowser = Exclude<ReturnType<typeof getCurrentBrowser>, 'Unknown Browser'>;

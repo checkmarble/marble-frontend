@@ -71,10 +71,7 @@ export function NewFuzzyMatchAnyOfAstNode({
 export interface FuzzyMatchComparatorAstNode {
   name: '>';
   constant?: undefined;
-  children: [
-    FuzzyMatchAstNode | FuzzyMatchAnyOfAstNode,
-    ConstantAstNode<number>,
-  ];
+  children: [FuzzyMatchAstNode | FuzzyMatchAnyOfAstNode, ConstantAstNode<number>];
   namedChildren: Record<string, never>;
 }
 
@@ -116,15 +113,11 @@ export function isFuzzyMatch(node: AstNode): node is FuzzyMatchAstNode {
   return node.name === fuzzyMatchAstNodeName;
 }
 
-export function isFuzzyMatchAnyOf(
-  node: AstNode,
-): node is FuzzyMatchAnyOfAstNode {
+export function isFuzzyMatchAnyOf(node: AstNode): node is FuzzyMatchAnyOfAstNode {
   return node.name === fuzzyMatchAnyOfAstNodeName;
 }
 
-export function isFuzzyMatchComparator(
-  node: AstNode,
-): node is FuzzyMatchComparatorAstNode {
+export function isFuzzyMatchComparator(node: AstNode): node is FuzzyMatchComparatorAstNode {
   if (node.name !== '>') {
     return false;
   }
@@ -162,9 +155,7 @@ export function NewStringTemplateAstNode(
   };
 }
 
-export function isStringTemplateAstNode(
-  node: AstNode,
-): node is StringTemplateAstNode {
+export function isStringTemplateAstNode(node: AstNode): node is StringTemplateAstNode {
   return node.name === stringTemplateAstNodeName;
 }
 
@@ -185,28 +176,19 @@ export interface StringConcatAstNode {
 
 export function NewStringConcatAstNode(
   children: AstNode[],
-  {
-    withSeparator,
-    separator,
-  }: { withSeparator?: boolean; separator?: string } = {},
+  { withSeparator, separator }: { withSeparator?: boolean; separator?: string } = {},
 ): StringConcatAstNode {
   return {
     name: stringConcatAstNodeName,
     constant: undefined,
     children,
     namedChildren: {
-      with_separator: withSeparator
-        ? NewConstantAstNode({ constant: withSeparator })
-        : undefined,
-      separator: separator
-        ? NewConstantAstNode({ constant: separator })
-        : undefined,
+      with_separator: withSeparator ? NewConstantAstNode({ constant: withSeparator }) : undefined,
+      separator: separator ? NewConstantAstNode({ constant: separator }) : undefined,
     },
   };
 }
 
-export function isStringConcatAstNode(
-  node: AstNode,
-): node is StringConcatAstNode {
+export function isStringConcatAstNode(node: AstNode): node is StringConcatAstNode {
   return node.name === stringConcatAstNodeName;
 }

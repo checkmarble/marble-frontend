@@ -33,8 +33,7 @@ export function CasesFiltersBar() {
     [onCasesFilterClose],
   );
 
-  const { undefinedCasesFilterNames, definedCasesFilterNames } =
-    useCasesFiltersPartition();
+  const { undefinedCasesFilterNames, definedCasesFilterNames } = useCasesFiltersPartition();
   const clearFilter = useClearFilter();
 
   if (definedCasesFilterNames.length === 0) {
@@ -55,9 +54,7 @@ export function CasesFiltersBar() {
                 <FilterItem.Root>
                   <FilterItem.Trigger>
                     <Icon icon={icon} className="size-5" />
-                    <span className="text-s font-semibold first-letter:capitalize">
-                      {t(tKey)}
-                    </span>
+                    <span className="text-s font-semibold first-letter:capitalize">{t(tKey)}</span>
                   </FilterItem.Trigger>
                   <FilterItem.Clear
                     onClick={() => {

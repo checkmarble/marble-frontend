@@ -1,8 +1,4 @@
-import {
-  fetchWithAuthMiddleware,
-  type TokenService,
-  transfercheckApi,
-} from 'marble-api';
+import { fetchWithAuthMiddleware, type TokenService, transfercheckApi } from 'marble-api';
 import * as R from 'remeda';
 import { type FunctionKeys } from 'typescript-utils';
 
@@ -41,11 +37,7 @@ export type GetTransfercheckAPIClientWithAuth = (
   tokenService: TokenService<string>,
 ) => TransfercheckApi;
 
-export function initializeTransfercheckAPIClient({
-  baseUrl,
-}: {
-  baseUrl: string;
-}): {
+export function initializeTransfercheckAPIClient({ baseUrl }: { baseUrl: string }): {
   transfercheckApi: TransfercheckApi;
   getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
 } {

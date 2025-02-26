@@ -6,12 +6,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -99,11 +94,7 @@ export function UpdateScenario({
   );
 }
 
-function UpdateScenarioContent({
-  defaultValue,
-}: {
-  defaultValue: UpdateScenarioForm;
-}) {
+function UpdateScenarioContent({ defaultValue }: { defaultValue: UpdateScenarioForm }) {
   const { t } = useTranslation(['scenarios', 'common']);
   const fetcher = useFetcher<typeof action>();
 
@@ -132,34 +123,21 @@ function UpdateScenarioContent({
             {...getInputProps(fields.scenarioId, { type: 'hidden' })}
             key={fields.scenarioId.key}
           />
-          <FormField
-            name={fields.name.name}
-            className="group flex w-full flex-col gap-2"
-          >
+          <FormField name={fields.name.name} className="group flex w-full flex-col gap-2">
             <FormLabel>{t('scenarios:create_scenario.name')}</FormLabel>
-            <FormInput
-              type="text"
-              placeholder={t('scenarios:create_scenario.name_placeholder')}
-            />
+            <FormInput type="text" placeholder={t('scenarios:create_scenario.name_placeholder')} />
             <FormErrorOrDescription />
           </FormField>
-          <FormField
-            name={fields.description.name}
-            className="group flex w-full flex-col gap-2"
-          >
+          <FormField name={fields.description.name} className="group flex w-full flex-col gap-2">
             <FormLabel>{t('scenarios:create_scenario.description')}</FormLabel>
             <FormInput
               type="text"
-              placeholder={t(
-                'scenarios:create_scenario.description_placeholder',
-              )}
+              placeholder={t('scenarios:create_scenario.description_placeholder')}
             />
             <FormErrorOrDescription />
           </FormField>
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
             <Button className="flex-1" variant="primary" type="submit">

@@ -167,11 +167,7 @@ function UpdateWebhookContent({
                   />
                 ))
                 .with('test', () => (
-                  <Nudge
-                    kind="test"
-                    content={t('settings:webhooks.nudge')}
-                    className="size-6"
-                  />
+                  <Nudge kind="test" content={t('settings:webhooks.nudge')} className="size-6" />
                 ))
                 .exhaustive()}
             </FormLabel>
@@ -200,17 +196,10 @@ function UpdateWebhookContent({
           </FormField>
 
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="update"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="update">
               <LoadingIcon
                 icon="edit-square"
                 className="size-5"

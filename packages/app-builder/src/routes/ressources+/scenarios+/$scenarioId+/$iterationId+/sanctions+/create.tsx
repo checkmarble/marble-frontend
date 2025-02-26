@@ -17,10 +17,9 @@ export const handle = {
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { scenarioIterationSanctionRepository } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const { scenarioIterationSanctionRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
 
@@ -66,13 +65,10 @@ export function CreateSanction({
   return (
     <fetcher.Form
       method="POST"
-      action={getRoute(
-        '/ressources/scenarios/:scenarioId/:iterationId/sanctions/create',
-        {
-          scenarioId: fromUUID(scenarioId),
-          iterationId: fromUUID(iterationId),
-        },
-      )}
+      action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/sanctions/create', {
+        scenarioId: fromUUID(scenarioId),
+        iterationId: fromUUID(iterationId),
+      })}
     >
       <Button
         type="submit"
@@ -84,13 +80,10 @@ export function CreateSanction({
         <div className="flex items-center gap-4">
           <Icon icon="plus" className="size-5" />
           <div className="flex w-full flex-col items-start">
-            <span className="text-s font-normal">
-              {t('scenarios:create_sanction.title')}
-            </span>
+            <span className="text-s font-normal">{t('scenarios:create_sanction.title')}</span>
             <span
               className={clsx('text-grey-50 font-normal', {
-                'text-grey-80':
-                  isSanctionAvailable === 'restricted' || hasAlreadyASanction,
+                'text-grey-80': isSanctionAvailable === 'restricted' || hasAlreadyASanction,
               })}
             >
               {hasAlreadyASanction

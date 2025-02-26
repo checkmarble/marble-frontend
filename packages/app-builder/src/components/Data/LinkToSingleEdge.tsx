@@ -13,9 +13,7 @@ export interface LinkToSingleData {
   original: LinkToSingle;
 }
 
-export function adaptLinkToSingleData(
-  linkToSingle: LinkToSingle,
-): LinkToSingleData {
+export function adaptLinkToSingleData(linkToSingle: LinkToSingle): LinkToSingleData {
   return {
     original: linkToSingle,
   };
@@ -82,8 +80,7 @@ export function LinkToSingleEdge({
     curvature: 0.75,
   });
 
-  const opacity =
-    displayPivot && !isLinkPartOfPivot(data?.original.id) ? 0.2 : 1;
+  const opacity = displayPivot && !isLinkPartOfPivot(data?.original.id) ? 0.2 : 1;
 
   return (
     <BaseEdge

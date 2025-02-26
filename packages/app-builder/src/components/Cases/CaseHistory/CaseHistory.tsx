@@ -15,13 +15,7 @@ import {
 } from './Filters';
 import { caseHistoryFilterNames } from './Filters/filters';
 
-export function CaseHistory({
-  events,
-  className,
-}: {
-  events: CaseEvent[];
-  className?: string;
-}) {
+export function CaseHistory({ events, className }: { events: CaseEvent[]; className?: string }) {
   const { t } = useTranslation(casesI18n);
   const [filterValues, setFilterValues] = React.useState<CaseHistoryFilters>({
     caseEventTypes: [],
@@ -39,10 +33,7 @@ export function CaseHistory({
     });
 
   return (
-    <CaseHistoryFiltersProvider
-      filterValues={filterValues}
-      submitCasesFilters={setFilterValues}
-    >
+    <CaseHistoryFiltersProvider filterValues={filterValues} submitCasesFilters={setFilterValues}>
       <div className={clsx('relative flex flex-col gap-4 lg:gap-6', className)}>
         <div className="flex flex-row items-center justify-between gap-4">
           <span className="text-m text-grey-00 ml-2 font-bold">

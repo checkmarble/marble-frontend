@@ -52,9 +52,7 @@ export function MatchDetails({ entity }: MatchDetailsProps) {
       {entityPropertyList.map(({ property, values, restItemsCount }) => {
         return (
           <Fragment key={property}>
-            <span className="font-bold">
-              {t(`sanctions:entity.property.${property}`)}
-            </span>
+            <span className="font-bold">{t(`sanctions:entity.property.${property}`)}</span>
             <span className="flex flex-wrap gap-1">
               {values.map((v, i) => (
                 <Fragment key={i}>

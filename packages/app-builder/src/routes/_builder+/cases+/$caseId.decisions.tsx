@@ -13,8 +13,7 @@ export const handle = {
 
 export default function CasePage() {
   const { t } = useTranslation(handle.i18n);
-  const { caseDetail, caseDecisionsPromise, featureAccess, entitlements } =
-    useCurrentCase();
+  const { caseDetail, caseDecisionsPromise, featureAccess, entitlements } = useCurrentCase();
 
   if (caseDetail.decisions.length === 0) {
     return (

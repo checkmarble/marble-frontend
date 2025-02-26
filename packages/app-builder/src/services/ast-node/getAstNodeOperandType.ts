@@ -14,11 +14,7 @@ import {
   isFuzzyMatchComparator,
   isStringTemplateAstNode,
 } from '@app-builder/models/astNode/strings';
-import {
-  isTimeAdd,
-  isTimeNow,
-  isTimestampExtract,
-} from '@app-builder/models/astNode/time';
+import { isTimeAdd, isTimeNow, isTimestampExtract } from '@app-builder/models/astNode/time';
 import { type OperandType } from '@app-builder/models/operand-type';
 import * as R from 'remeda';
 

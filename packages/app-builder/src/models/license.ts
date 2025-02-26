@@ -13,9 +13,7 @@ export interface LicenseEntitlements {
   sanctions: FeatureAccessDto;
 }
 
-export function adaptLicenseEntitlements(
-  dto: LicenseEntitlementsDto,
-): LicenseEntitlements {
+export function adaptLicenseEntitlements(dto: LicenseEntitlementsDto): LicenseEntitlements {
   return {
     /**
      * When adding a new entitlement, there is a "chicken egg" problem.

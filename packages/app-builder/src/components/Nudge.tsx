@@ -1,8 +1,4 @@
-import {
-  Hovercard,
-  HovercardAnchor,
-  HovercardProvider,
-} from '@ariakit/react/hovercard';
+import { Hovercard, HovercardAnchor, HovercardProvider } from '@ariakit/react/hovercard';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { CtaClassName } from 'ui-design-system';
@@ -15,12 +11,7 @@ type NudgeProps = {
   kind?: 'test' | 'restricted';
 };
 
-export const Nudge = ({
-  content,
-  link,
-  className,
-  kind = 'restricted',
-}: NudgeProps) => {
+export const Nudge = ({ content, link, className, kind = 'restricted' }: NudgeProps) => {
   const { t } = useTranslation(['scenarios', 'common']);
 
   return (

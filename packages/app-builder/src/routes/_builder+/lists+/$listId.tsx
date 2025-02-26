@@ -39,25 +39,15 @@ import { useDropzone } from 'react-dropzone-esm';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
-import {
-  Button,
-  type ButtonProps,
-  Input,
-  ModalV2,
-  Table,
-  useVirtualTable,
-} from 'ui-design-system';
+import { Button, type ButtonProps, Input, ModalV2, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import * as z from 'zod';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { user, customListsRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { user, customListsRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const listId = fromParams(params, 'listId');
   const customList = await customListsRepository.getCustomList(listId);
@@ -80,10 +70,7 @@ export const handle = {
       const { customList } = useLoaderData<typeof loader>();
 
       return (
-        <BreadCrumbLink
-          to={getRoute('/lists/:listId', { listId: customList.id })}
-          isLast={isLast}
-        >
+        <BreadCrumbLink to={getRoute('/lists/:listId', { listId: customList.id })} isLast={isLast}>
           {customList.name}
         </BreadCrumbLink>
       );
@@ -117,11 +104,7 @@ export default function Lists() {
             <div className="group flex items-center justify-between">
               <p className="text-grey-00 text-s font-medium">{value}</p>
               {listFeatureAccess.isDeleteListValueAvailable ? (
-                <DeleteListValue
-                  listId={customList.id}
-                  listValueId={row.original.id}
-                  value={value}
-                >
+                <DeleteListValue listId={customList.id} listValueId={row.original.id} value={value}>
                   <button
                     className="group-hover:text-grey-00 text-transparent transition-colors duration-200 ease-in-out"
                     name="delete"
@@ -137,12 +120,7 @@ export default function Lists() {
         },
       }),
     ],
-    [
-      t,
-      listValues.length,
-      listFeatureAccess.isDeleteListValueAvailable,
-      customList.id,
-    ],
+    [t, listValues.length, listFeatureAccess.isDeleteListValueAvailable, customList.id],
   );
 
   const virtualTable = useVirtualTable({
@@ -170,9 +148,7 @@ export default function Lists() {
           <Page.Description>{customList.description}</Page.Description>
         ) : null}
         <Page.Content className="max-w-screen-xl">
-          {listValues.length > 0 ? (
-            <DownloadAsCSV listId={customList.id} />
-          ) : null}
+          {listValues.length > 0 ? <DownloadAsCSV listId={customList.id} /> : null}
           <UploadAsCsv listId={customList.id} />
           <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
             <div className="flex flex-row gap-2 lg:gap-4">
@@ -205,9 +181,7 @@ export default function Lists() {
               <Table.Default {...virtualTable}></Table.Default>
             )}
           </div>
-          {listFeatureAccess.isDeleteListAvailable ? (
-            <DeleteList listId={customList.id} />
-          ) : null}
+          {listFeatureAccess.isDeleteListAvailable ? <DeleteList listId={customList.id} /> : null}
         </Page.Content>
       </Page.Container>
     </Page.Main>
@@ -225,17 +199,8 @@ const DownloadAsCSVButton = React.forwardRef<
 >(function DownloadAsCSVButton({ className, loading, ...props }, ref) {
   const { t } = useTranslation(handle.i18n);
   return (
-    <Button
-      ref={ref}
-      variant="secondary"
-      className={clsx('w-fit', className)}
-      {...props}
-    >
-      <LoadingIcon
-        icon="download"
-        loading={loading ?? false}
-        className="size-6"
-      />
+    <Button ref={ref} variant="secondary" className={clsx('w-fit', className)} {...props}>
+      <LoadingIcon icon="download" loading={loading ?? false} className="size-6" />
       {t('lists:download_values_as_csv')}
     </Button>
   );
@@ -243,9 +208,7 @@ const DownloadAsCSVButton = React.forwardRef<
 
 function ClientDownloadAsCSV({ listId }: { listId: string }) {
   const { t } = useTranslation(handle.i18n);
-  const { getAccessToken, backendUrl } = useBackendInfo(
-    clientServices.authenticationClientService,
-  );
+  const { getAccessToken, backendUrl } = useBackendInfo(clientServices.authenticationClientService);
 
   const [downloadCsv, { loading }] = useAsync(async (listId: string) => {
     try {
@@ -254,15 +217,12 @@ function ClientDownloadAsCSV({ listId }: { listId: string }) {
         toast.error(t('common:errors.firebase_auth_error'));
         return;
       }
-      const response = await fetch(
-        `${backendUrl}/custom-lists/${listId}/values`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${tokenResponse.accessToken}`,
-          },
+      const response = await fetch(`${backendUrl}/custom-lists/${listId}/values`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${tokenResponse.accessToken}`,
         },
-      );
+      });
 
       if (!response.ok) {
         toast.error(t('common:errors.unknown'));
@@ -308,29 +268,26 @@ function parseContentDisposition(header: string | null) {
 
 function DownloadAsCSV({ listId }: { listId: string }) {
   return (
-    <ClientOnly
-      fallback={<DownloadAsCSVButton className="cursor-wait" disabled />}
-    >
+    <ClientOnly fallback={<DownloadAsCSVButton className="cursor-wait" disabled />}>
       {() => <ClientDownloadAsCSV listId={listId} />}
     </ClientOnly>
   );
 }
 
-const UploadAsCsvDropzone = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentPropsWithoutRef<'div'>
->(function UploadAsCsvDropzone({ className, ...props }, ref) {
-  return (
-    <div
-      ref={ref}
-      className={clsx(
-        'text-s flex h-40 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
-        className,
-      )}
-      {...props}
-    />
-  );
-});
+const UploadAsCsvDropzone = React.forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<'div'>>(
+  function UploadAsCsvDropzone({ className, ...props }, ref) {
+    return (
+      <div
+        ref={ref}
+        className={clsx(
+          'text-s flex h-40 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
+          className,
+        )}
+        {...props}
+      />
+    );
+  },
+);
 
 type State =
   | {
@@ -400,9 +357,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
   const { t } = useTranslation(handle.i18n);
   const [modalState, dispatch] = React.useReducer(modalReducer, initialState);
 
-  const { getAccessToken, backendUrl } = useBackendInfo(
-    clientServices.authenticationClientService,
-  );
+  const { getAccessToken, backendUrl } = useBackendInfo(clientServices.authenticationClientService);
 
   const revalidator = useRevalidator();
   const [onDrop, { loading }] = useAsync(async (acceptedFiles: File[]) => {
@@ -420,16 +375,13 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
         return;
       }
 
-      const response = await fetch(
-        `${backendUrl}/custom-lists/${listId}/values/batch`,
-        {
-          method: 'POST',
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${tokenResponse.accessToken}`,
-          },
+      const response = await fetch(`${backendUrl}/custom-lists/${listId}/values/batch`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${tokenResponse.accessToken}`,
         },
-      );
+      });
       if (!response.ok) {
         if (response.status === REQUEST_TIMEOUT) {
           toast.error(t('lists:errors.request_timeout'));
@@ -479,8 +431,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
     } catch (error) {
       dispatch({
         type: 'error',
-        message:
-          error instanceof Error ? error.message : t('common:global_error'),
+        message: error instanceof Error ? error.message : t('common:global_error'),
       });
     }
   });
@@ -496,11 +447,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
   return (
     <UploadAsCsvDropzone
       {...getRootProps()}
-      className={
-        isDragActive
-          ? 'bg-purple-96 border-purple-82 opacity-90'
-          : 'border-grey-50'
-      }
+      className={isDragActive ? 'bg-purple-96 border-purple-82 opacity-90' : 'border-grey-50'}
     >
       <input {...getInputProps()} />
       <p>{t('lists:drop_csv_here')}</p>
@@ -528,9 +475,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
               )}
             />
             <div className="flex flex-col items-center gap-2 text-center">
-              <p className="text-l font-semibold">
-                {t('lists:upload_csv.results')}
-              </p>
+              <p className="text-l font-semibold">{t('lists:upload_csv.results')}</p>
               {modalState.success ? (
                 <div className="flex flex-col items-start">
                   <p>{t('lists:upload_csv.success')}</p>

@@ -13,10 +13,10 @@ type NonEmptySplit<
     ? []
     : [Value];
 
-export type GetPathParams<
-  Path extends string,
-  Parts = NonEmptySplit<Path, '/'>,
-> = Parts extends [infer Head, ...infer Tail]
+export type GetPathParams<Path extends string, Parts = NonEmptySplit<Path, '/'>> = Parts extends [
+  infer Head,
+  ...infer Tail,
+]
   ? Head extends `:${infer Name}`
     ? { [K in Name]: string } & GetPathParams<Path, Tail>
     : GetPathParams<Path, Tail>
@@ -25,9 +25,7 @@ export type GetPathParams<
 
 export function getRoute<Path extends RoutePath>(
   path: Path,
-  ...args: GetPathParams<Path> extends Record<string, never>
-    ? []
-    : [params: GetPathParams<Path>]
+  ...args: GetPathParams<Path> extends Record<string, never> ? [] : [params: GetPathParams<Path>]
 ) {
   const params = args.length === 1 ? args[0] : {};
   return path

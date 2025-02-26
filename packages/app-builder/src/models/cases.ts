@@ -15,12 +15,7 @@ import { assertNever } from 'typescript-utils';
 import { type ReviewStatus } from './decision';
 import { type Outcome } from './outcome';
 
-export const caseStatuses = [
-  'open',
-  'investigating',
-  'discarded',
-  'resolved',
-] as const;
+export const caseStatuses = ['open', 'investigating', 'discarded', 'resolved'] as const;
 export type CaseStatus = (typeof caseStatuses)[number];
 
 export interface CaseContributor {
@@ -103,8 +98,7 @@ interface CaseEventBase<T extends CaseEventType> {
 export interface CaseCreatedEvent extends CaseEventBase<'case_created'> {
   userId?: string;
 }
-export interface CaseStatusUpdatedEvent
-  extends CaseEventBase<'status_updated'> {
+export interface CaseStatusUpdatedEvent extends CaseEventBase<'status_updated'> {
   userId: string;
   newStatus: CaseStatus;
 }
@@ -131,14 +125,12 @@ export interface InboxChangedEvent extends CaseEventBase<'inbox_changed'> {
   newInboxId: string;
   userId: string;
 }
-export interface RuleSnoozeCreatedEvent
-  extends CaseEventBase<'rule_snooze_created'> {
+export interface RuleSnoozeCreatedEvent extends CaseEventBase<'rule_snooze_created'> {
   ruleSnoozeId: string;
   userId: string;
   comment: string;
 }
-export interface DecisionReviewedEvent
-  extends CaseEventBase<'decision_reviewed'> {
+export interface DecisionReviewedEvent extends CaseEventBase<'decision_reviewed'> {
   userId: string;
   reviewComment: string;
   finalStatus: 'approve' | 'decline';
@@ -207,10 +199,7 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
       return {
         ...caseEvent,
         eventType: 'tags_updated',
-        tagIds:
-          caseEventDto.new_value === ''
-            ? []
-            : caseEventDto.new_value.split(','),
+        tagIds: caseEventDto.new_value === '' ? [] : caseEventDto.new_value.split(','),
         userId: caseEventDto.user_id,
       };
     }
@@ -306,12 +295,10 @@ export function adaptCaseDetail(dto: CaseDetailDto): CaseDetail {
       triggerObjectType: decisionDto.trigger_object_type,
       outcome: decisionDto.outcome,
       reviewStatus: decisionDto.review_status,
-      pivotValues: decisionDto.pivot_values.map(
-        ({ pivot_id, pivot_value }) => ({
-          id: pivot_id ?? undefined,
-          value: pivot_value ?? undefined,
-        }),
-      ),
+      pivotValues: decisionDto.pivot_values.map(({ pivot_id, pivot_value }) => ({
+        id: pivot_id ?? undefined,
+        value: pivot_value ?? undefined,
+      })),
       scenario: {
         id: decisionDto.scenario.id,
         name: decisionDto.scenario.name,
@@ -346,9 +333,7 @@ export interface CaseUpdateBody {
   status?: CaseStatus;
 }
 
-export function adaptUpdateCaseBodyDto(
-  body: CaseUpdateBody,
-): UpdateCaseBodyDto {
+export function adaptUpdateCaseBodyDto(body: CaseUpdateBody): UpdateCaseBodyDto {
   return {
     name: body.name,
     inbox_id: body.inboxId,

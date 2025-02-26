@@ -71,16 +71,12 @@ export function adaptTableModelNodeData(
     linksToThisTable: dataModel
       .filter((table) => table.id !== tableModel.id)
       .flatMap((table) =>
-        table.linksToSingle.filter(
-          (link) => link.parentTableName === tableModel.name,
-        ),
+        table.linksToSingle.filter((link) => link.parentTableName === tableModel.name),
       ),
     otherTablesWithUnique: dataModel
       .filter((table) => table.id !== tableModel.id)
       .filter((table) =>
-        table.fields.some(
-          (field) => field.unicityConstraint === 'active_unique_constraint',
-        ),
+        table.fields.some((field) => field.unicityConstraint === 'active_unique_constraint'),
       ),
     id: tableModel.id,
     name: tableModel.name,
@@ -103,13 +99,11 @@ export function getTableModelNodeDataId(data: TableModelNodeData): string {
   return data.name;
 }
 
-const columnHelper =
-  createColumnHelper<TableModelNodeData['columns'][number]>();
+const columnHelper = createColumnHelper<TableModelNodeData['columns'][number]>();
 
 export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   const { t } = useTranslation(dataI18n);
-  const { displayPivot, isFieldPartOfPivot, isTablePartOfPivot } =
-    useSelectedPivot();
+  const { displayPivot, isFieldPartOfPivot, isTablePartOfPivot } = useSelectedPivot();
   const { isEditDataModelFieldAvailable } = useDataModelFeatureAccess();
 
   const columns = React.useMemo(
@@ -136,9 +130,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               </span>
             ),
             cell: ({ getValue }) => {
-              return (
-                <span className="text-grey-00 font-semibold">{getValue()}</span>
-              );
+              return <span className="text-grey-00 font-semibold">{getValue()}</span>;
             },
           }),
           columnHelper.accessor((row) => row.displayType, {
@@ -157,9 +149,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               </span>
             ),
             cell: ({ getValue }) => {
-              return (
-                <FormatDescription description={getValue<string>() || ''} />
-              );
+              return <FormatDescription description={getValue<string>() || ''} />;
             },
           }),
           ...(isEditDataModelFieldAvailable
@@ -199,18 +189,12 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
       >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr
-              key={headerGroup.id}
-              className="bg-grey-98 border-b-grey-80 border-b"
-            >
+            <tr key={headerGroup.id} className="bg-grey-98 border-b-grey-80 border-b">
               {/* This is the handle for the left side of the table */}
               <th></th>
               {headerGroup.headers.map((header) => (
                 <th key={header.id} colSpan={header.colSpan}>
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
+                  {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
               ))}
               {/* This is the handle for the right side of the table */}
@@ -226,15 +210,9 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
                 key={row.id}
                 className={clsx(
                   'border-t-grey-80 relative scale-100 border-t',
-                  !displayPivot &&
-                    isEditDataModelFieldAvailable &&
-                    'hover:bg-purple-96 group',
-                  displayPivot &&
-                    isFieldPartOfPivot(row.original.id) &&
-                    'bg-purple-96',
-                  displayPivot &&
-                    !isFieldPartOfPivot(row.original.id) &&
-                    'opacity-20',
+                  !displayPivot && isEditDataModelFieldAvailable && 'hover:bg-purple-96 group',
+                  displayPivot && isFieldPartOfPivot(row.original.id) && 'bg-purple-96',
+                  displayPivot && !isFieldPartOfPivot(row.original.id) && 'opacity-20',
                 )}
               >
                 <td className="relative">
@@ -250,10 +228,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
                 {visibleCells.map((cell) => {
                   return (
                     <td key={cell.id} className="max-w-96 p-2">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   );
                 })}
@@ -361,10 +336,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
       </CreateField>,
     );
   }
-  if (
-    isCreateDataModelLinkAvailable &&
-    R.hasAtLeast(data.otherTablesWithUnique, 1)
-  ) {
+  if (isCreateDataModelLinkAvailable && R.hasAtLeast(data.otherTablesWithUnique, 1)) {
     menuItems.push(
       <CreateLink
         key="create-link"
@@ -393,11 +365,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
     );
   } else if (isCreateDataModelPivotAvailable) {
     menuItems.push(
-      <CreatePivot
-        key="create-pivot"
-        tableModel={data.original}
-        dataModel={data.dataModel}
-      >
+      <CreatePivot key="create-pivot" tableModel={data.original} dataModel={data.dataModel}>
         <SchemaMenuMenuItem>
           <Icon icon="plus" className="size-6" />
           {t('data:create_pivot.title')}

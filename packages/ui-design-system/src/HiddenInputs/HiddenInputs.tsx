@@ -1,8 +1,5 @@
 export function HiddenInputs<
-  Props extends Record<
-    string,
-    React.InputHTMLAttributes<HTMLInputElement>['value']
-  >,
+  Props extends Record<string, React.InputHTMLAttributes<HTMLInputElement>['value']>,
 >(props: Props) {
   return (
     <>
@@ -13,14 +10,7 @@ export function HiddenInputs<
          */
         .filter(([_, value]) => value !== undefined)
         .map(([name, value]) => (
-          <input
-            hidden
-            readOnly
-            key={name}
-            id={name}
-            name={name}
-            value={value}
-          />
+          <input hidden readOnly key={name} id={name} name={name} value={value} />
         ))}
     </>
   );

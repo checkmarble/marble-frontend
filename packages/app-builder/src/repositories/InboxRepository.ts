@@ -22,14 +22,8 @@ export interface InboxRepository {
   updateInbox(inboxId: string, data: InboxUpdateBody): Promise<Inbox>;
   deleteInbox(inboxId: string): Promise<void>;
   listAllInboxUsers(): Promise<InboxUser[]>;
-  createInboxUser(
-    inboxId: string,
-    data: InboxUserCreateBody,
-  ): Promise<InboxUser>;
-  updateInboxUser(
-    inboxUserId: string,
-    data: InboxUserUpdateBody,
-  ): Promise<InboxUser>;
+  createInboxUser(inboxId: string, data: InboxUserCreateBody): Promise<InboxUser>;
+  updateInboxUser(inboxUserId: string, data: InboxUserUpdateBody): Promise<InboxUser>;
   deleteInboxUser(inboxUserId: string): Promise<void>;
 }
 
@@ -80,10 +74,7 @@ export function makeGetInboxRepository() {
       return adaptInboxUser(inbox_user);
     },
     updateInboxUser: async (inboxUserId, data) => {
-      const { inbox_user } = await marbleCoreApiClient.updateInboxUser(
-        inboxUserId,
-        data,
-      );
+      const { inbox_user } = await marbleCoreApiClient.updateInboxUser(inboxUserId, data);
       return adaptInboxUser(inbox_user);
     },
     deleteInboxUser: async (inboxUserId) => {

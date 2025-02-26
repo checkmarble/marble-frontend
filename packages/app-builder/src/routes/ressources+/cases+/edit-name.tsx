@@ -4,12 +4,7 @@ import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { serverServices } from '@app-builder/services/init.server';
 import { submitOnBlur } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -65,10 +60,7 @@ export function EditCaseName(defaultValue: z.infer<typeof schema>) {
         action={getRoute('/ressources/cases/edit-name')}
         {...getFormProps(form)}
       >
-        <input
-          {...getInputProps(fields.caseId, { type: 'hidden' })}
-          key={fields.caseId.key}
-        />
+        <input {...getInputProps(fields.caseId, { type: 'hidden' })} key={fields.caseId.key} />
         <FormField
           name={fields.name.name}
           className="col-span-2 grid grid-cols-subgrid items-center"

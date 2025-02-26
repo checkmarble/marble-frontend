@@ -21,8 +21,7 @@ import { FilterDetail } from './FilterDetail';
 import { type AlertsFilterName, getFilterIcon, getFilterTKey } from './filters';
 
 export function AlertsFiltersBar() {
-  const { undefinedAlertsFilterNames, definedAlertsFilterNames } =
-    useAlertsFiltersPartition();
+  const { undefinedAlertsFilterNames, definedAlertsFilterNames } = useAlertsFiltersPartition();
   const clearAllFilters = useClearAllFilters();
 
   if (definedAlertsFilterNames.length === 0) {
@@ -71,9 +70,7 @@ function FiltersBarItem({ filterName }: { filterName: AlertsFilterName }) {
       <FilterItem.Root>
         <FilterItem.Trigger>
           <Icon icon={icon} className="size-5" />
-          <span className="text-s font-semibold first-letter:capitalize">
-            {t(tKey)}
-          </span>
+          <span className="text-s font-semibold first-letter:capitalize">{t(tKey)}</span>
         </FilterItem.Trigger>
         <FilterItem.Clear
           onClick={() => {

@@ -55,9 +55,7 @@ export function RulesDetail({
               <RuleExecutionCollapsible key={ruleExecution.ruleId}>
                 <RuleExecutionTitle ruleExecution={ruleExecution} />
                 <RuleExecutionContent>
-                  <RuleExecutionDescription
-                    description={ruleExecution.description}
-                  />
+                  <RuleExecutionDescription description={ruleExecution.description} />
 
                   <React.Suspense fallback={t('common:loading')}>
                     <Await resolve={astRuleData}>
@@ -146,8 +144,7 @@ export function RuleExecutionDetail({
 
 function DisplayReturnValuesSwitch() {
   const { t } = useTranslation(decisionsI18n);
-  const [displayReturnValues, setDisplayReturnValues] =
-    useDisplayReturnValues();
+  const [displayReturnValues, setDisplayReturnValues] = useDisplayReturnValues();
 
   const id = React.useId();
 
@@ -156,11 +153,7 @@ function DisplayReturnValuesSwitch() {
       <label htmlFor={id} className="text-s select-none font-medium">
         {t('decisions:rules.show_contextual_values')}
       </label>
-      <Switch
-        id={id}
-        checked={displayReturnValues}
-        onCheckedChange={setDisplayReturnValues}
-      />
+      <Switch id={id} checked={displayReturnValues} onCheckedChange={setDisplayReturnValues} />
     </div>
   );
 }

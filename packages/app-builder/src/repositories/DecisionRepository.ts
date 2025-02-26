@@ -45,16 +45,11 @@ export type DecisionFilters = {
   triggerObject?: string[];
 };
 
-export type DecisionFiltersWithPagination =
-  FiltersWithPagination<DecisionFilters>;
+export type DecisionFiltersWithPagination = FiltersWithPagination<DecisionFilters>;
 
 export interface DecisionRepository {
-  listDecisions(
-    args: DecisionFiltersWithPagination,
-  ): Promise<PaginatedResponse<Decision>>;
-  listScheduledExecutions(args?: {
-    scenarioId?: string;
-  }): Promise<ScheduledExecution[]>;
+  listDecisions(args: DecisionFiltersWithPagination): Promise<PaginatedResponse<Decision>>;
+  listScheduledExecutions(args?: { scenarioId?: string }): Promise<ScheduledExecution[]>;
   getDecisionById(id: string): Promise<DecisionDetail>;
   getDecisionActiveSnoozes(decisionId: string): Promise<SnoozesOfDecision>;
   createSnoozeForDecision(
@@ -112,30 +107,23 @@ export function makeGetDecisionRepository() {
     getDecisionById: async (id) => {
       const decisionDetailDto = await marbleCoreApiClient.getDecision(id);
       const decision = adaptDecisionDetail(decisionDetailDto);
-      decision.rules = decision.rules.sort((lhs, rhs) =>
-        lhs.name.localeCompare(rhs.name),
-      );
+      decision.rules = decision.rules.sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
       return decision;
     },
     listScheduledExecutions: async (args = {}) => {
-      const { scheduled_executions } =
-        await marbleCoreApiClient.listScheduledExecutions(args);
+      const { scheduled_executions } = await marbleCoreApiClient.listScheduledExecutions(args);
       return scheduled_executions.map(adaptScheduledExecution);
     },
     getDecisionActiveSnoozes: async (decisionId) => {
-      const { snoozes } =
-        await marbleCoreApiClient.getDecisionActiveSnoozes(decisionId);
+      const { snoozes } = await marbleCoreApiClient.getDecisionActiveSnoozes(decisionId);
       return adaptSnoozesOfDecision(snoozes);
     },
     createSnoozeForDecision: async (decisionId, snoozeDecisionInput) => {
-      const { snoozes } = await marbleCoreApiClient.createSnoozeForDecision(
-        decisionId,
-        {
-          rule_id: snoozeDecisionInput.ruleId,
-          duration: adaptGoTimeDuration(snoozeDecisionInput.duration),
-          comment: snoozeDecisionInput.comment,
-        },
-      );
+      const { snoozes } = await marbleCoreApiClient.createSnoozeForDecision(decisionId, {
+        rule_id: snoozeDecisionInput.ruleId,
+        duration: adaptGoTimeDuration(snoozeDecisionInput.duration),
+        comment: snoozeDecisionInput.comment,
+      });
       return adaptSnoozesOfDecision(snoozes);
     },
   });

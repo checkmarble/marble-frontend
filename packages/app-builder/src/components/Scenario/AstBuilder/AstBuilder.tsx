@@ -25,11 +25,7 @@ export interface AstBuilderProps {
   viewOnly?: boolean;
 }
 
-export function AstBuilder({
-  options,
-  viewOnly,
-  astEditorStore,
-}: AstBuilderProps) {
+export function AstBuilder({ options, viewOnly, astEditorStore }: AstBuilderProps) {
   return (
     <OptionsProvider {...options}>
       <CopyPasteASTContextProvider>

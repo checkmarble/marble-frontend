@@ -15,9 +15,7 @@ export type OpenSanctionsCatalog = {
   sections: OpenSanctionsCatalogSection[];
 };
 
-export function adaptOpenSanctionsCatalog(
-  catalog: OpenSanctionsCatalogDto,
-): OpenSanctionsCatalog {
+export function adaptOpenSanctionsCatalog(catalog: OpenSanctionsCatalogDto): OpenSanctionsCatalog {
   return {
     sections: catalog.sections.map((s) => ({
       name: s.name,

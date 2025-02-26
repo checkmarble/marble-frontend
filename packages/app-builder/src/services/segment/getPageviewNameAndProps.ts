@@ -8,9 +8,7 @@ interface PageViewNameAndProps {
   properties: Record<string, string> | undefined;
 }
 
-export function getPageViewNameAndProps(
-  thisPage: UIMatch,
-): PageViewNameAndProps | undefined {
+export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps | undefined {
   switch (thisPage.id as RouteID) {
     case 'routes/_builder+/scenarios+/_index': {
       return { name: 'Scenarios', properties: undefined };

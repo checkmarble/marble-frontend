@@ -12,33 +12,23 @@ export function isHttpError(error: unknown): error is Oazapfts.HttpError {
   return error instanceof Error && 'status' in error;
 }
 
-export function isStatusConflictHttpError(
-  error: unknown,
-): error is Oazapfts.HttpError {
+export function isStatusConflictHttpError(error: unknown): error is Oazapfts.HttpError {
   return isHttpError(error) && error.status === CONFLICT;
 }
 
-export function isStatusBadRequestHttpError(
-  error: unknown,
-): error is Oazapfts.HttpError {
+export function isStatusBadRequestHttpError(error: unknown): error is Oazapfts.HttpError {
   return isHttpError(error) && error.status === BAD_REQUEST;
 }
 
-export function isNotFoundHttpError(
-  error: unknown,
-): error is Oazapfts.HttpError {
+export function isNotFoundHttpError(error: unknown): error is Oazapfts.HttpError {
   return isHttpError(error) && error.status === NOT_FOUND;
 }
 
-export function isUnauthorizedHttpError(
-  error: unknown,
-): error is Oazapfts.HttpError {
+export function isUnauthorizedHttpError(error: unknown): error is Oazapfts.HttpError {
   return isHttpError(error) && error.status === UNAUTHORIZED;
 }
 
-export function isForbiddenHttpError(
-  error: unknown,
-): error is Oazapfts.HttpError {
+export function isForbiddenHttpError(error: unknown): error is Oazapfts.HttpError {
   return isHttpError(error) && error.status === FORBIDDEN;
 }
 

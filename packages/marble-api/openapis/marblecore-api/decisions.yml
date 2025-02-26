@@ -446,5 +446,4 @@ components:
           type: string
         status:
           type: string
-          enum:
-            ['pending', 'processing', 'success', 'failure', 'partial_failure']
+          enum: ['pending', 'processing', 'success', 'failure', 'partial_failure']

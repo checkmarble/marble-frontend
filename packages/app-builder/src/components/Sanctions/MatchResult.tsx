@@ -8,16 +8,12 @@ import { sanctionsI18n } from './sanctions-i18n';
 export function MatchResult({ entity }: { entity: SanctionCheckMatchPayload }) {
   const { t } = useTranslation(sanctionsI18n);
 
-  const entitySchema = entity.schema.toLowerCase() as Lowercase<
-    typeof entity.schema
-  >;
+  const entitySchema = entity.schema.toLowerCase() as Lowercase<typeof entity.schema>;
 
   return (
     <div className="text-s bg-grey-98 flex items-center rounded">
       <div className="flex items-center gap-2 p-4">
-        <span className="max-w-60 truncate font-semibold">
-          {entity.caption}
-        </span>
+        <span className="max-w-60 truncate font-semibold">{entity.caption}</span>
         <span>{t(`sanctions:entity.schema.${entitySchema}`)}</span>
         <Tag color="grey" className="shrink-0">
           {t('sanctions:match.similarity', {

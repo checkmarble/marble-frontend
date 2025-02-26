@@ -3,11 +3,7 @@ import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
-import {
-  createColumnHelper,
-  getCoreRowModel,
-  type SortingState,
-} from '@tanstack/react-table';
+import { createColumnHelper, getCoreRowModel, type SortingState } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,9 +40,7 @@ export function CasesList({
         header: t('cases:case.status'),
         size: 50,
         enableSorting: false,
-        cell: ({ getValue }) => (
-          <CaseStatus size="big" type="first-letter" status={getValue()} />
-        ),
+        cell: ({ getValue }) => <CaseStatus size="big" type="first-letter" status={getValue()} />,
       }),
       columnHelper.accessor(({ name }) => name, {
         id: 'name',
@@ -58,9 +52,7 @@ export function CasesList({
           const caseName = getValue();
           return (
             <Tooltip.Default content={caseName}>
-              <span className="text-grey-00 text-s line-clamp-2 w-fit font-normal">
-                {caseName}
-              </span>
+              <span className="text-grey-00 text-s line-clamp-2 w-fit font-normal">{caseName}</span>
             </Tooltip.Default>
           );
         },
@@ -129,10 +121,7 @@ export function CasesList({
   });
 
   return (
-    <Table.Container
-      {...getContainerProps()}
-      className={clsx('bg-grey-100', className)}
-    >
+    <Table.Container {...getContainerProps()} className={clsx('bg-grey-100', className)}>
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {

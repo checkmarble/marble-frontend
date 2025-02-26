@@ -24,26 +24,13 @@ import {
   isManualTriggerScenarioAvailable,
 } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
-import {
-  formatDateRelative,
-  formatSchedule,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatDateRelative, formatSchedule, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
-import {
-  type ActionFunctionArgs,
-  json,
-  type LoaderFunctionArgs,
-} from '@remix-run/node';
+import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace, type ParseKeys } from 'i18next';
@@ -159,11 +146,7 @@ export default function ScenarioHome() {
                 description: currentScenario.description,
               }}
             >
-              <Button
-                variant="secondary"
-                className="isolate h-10 w-fit"
-                disabled={!hydrated}
-              >
+              <Button variant="secondary" className="isolate h-10 w-fit" disabled={!hydrated}>
                 <Icon icon="edit-square" className="size-6" />
                 <p>{t('scenarios:update_scenario.title')}</p>
               </Button>
@@ -178,9 +161,7 @@ export default function ScenarioHome() {
         <Page.Content>
           <VersionSection scenarioIterations={scenarioIterations} />
           <section className="flex flex-col gap-4">
-            <h2 className="text-grey-00 text-m font-semibold">
-              {t('scenarios:home.execution')}
-            </h2>
+            <h2 className="text-grey-00 text-m font-semibold">{t('scenarios:home.execution')}</h2>
             <div className="grid max-w-[1000px] grid-cols-2 gap-8">
               <RealTimeSection
                 scenarioId={currentScenario.id}
@@ -188,9 +169,7 @@ export default function ScenarioHome() {
               />
               <BatchSection
                 scenarioId={currentScenario.id}
-                isManualTriggerScenarioAvailable={
-                  featureAccess.isManualTriggerScenarioAvailable
-                }
+                isManualTriggerScenarioAvailable={featureAccess.isManualTriggerScenarioAvailable}
                 scheduledExecutions={scheduledExecutions}
                 liveScenarioIteration={liveScenarioIteration}
               />
@@ -229,9 +208,7 @@ function VersionSection({
 
   const { quickDraft, quickVersion, otherVersions } = React.useMemo(() => {
     let quickVersion: ScenarioIterationWithType | undefined;
-    const liveVersion = scenarioIterations.find(
-      (si) => si.type === 'live version',
-    );
+    const liveVersion = scenarioIterations.find((si) => si.type === 'live version');
     if (liveVersion) {
       quickVersion = liveVersion;
     } else {
@@ -282,16 +259,10 @@ function VersionSection({
         })}
       </h2>
       <div className="flex flex-row gap-3">
-        {quickVersion ? (
-          <QuickVersionAccess scenarioIteration={quickVersion} />
-        ) : null}
-        {quickDraft ? (
-          <QuickVersionAccess scenarioIteration={quickDraft} />
-        ) : null}
+        {quickVersion ? <QuickVersionAccess scenarioIteration={quickVersion} /> : null}
+        {quickDraft ? <QuickVersionAccess scenarioIteration={quickDraft} /> : null}
         {labelledOtherVersions.length > 0 ? (
-          <ScenarioIterationMenu
-            labelledScenarioIteration={labelledOtherVersions}
-          >
+          <ScenarioIterationMenu labelledScenarioIteration={labelledOtherVersions}>
             <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 font-semibold outline-none transition-colors">
               {t('scenarios:home.other_versions', {
                 count: otherVersions.length,
@@ -334,27 +305,15 @@ function QuickVersionAccess({
   );
 }
 
-function TestRunSection({
-  scenarioId,
-  access,
-}: {
-  scenarioId: string;
-  access: FeatureAccessDto;
-}) {
+function TestRunSection({ scenarioId, access }: { scenarioId: string; access: FeatureAccessDto }) {
   const { t } = useTranslation();
   const currentScenario = useCurrentScenario();
   const scenarioIterations = useScenarioIterations();
   const { testRuns } = useLoaderData<typeof loader>();
 
-  const currentTestRun = React.useMemo(
-    () => testRuns.filter((r) => r.status === 'up'),
-    [testRuns],
-  );
+  const currentTestRun = React.useMemo(() => testRuns.filter((r) => r.status === 'up'), [testRuns]);
 
-  const isExecutionOngoing = React.useMemo(
-    () => currentTestRun.length > 0,
-    [currentTestRun],
-  );
+  const isExecutionOngoing = React.useMemo(() => currentTestRun.length > 0, [currentTestRun]);
 
   return (
     <section
@@ -363,9 +322,7 @@ function TestRunSection({
         isExecutionOngoing && 'border-purple-65',
       )}
     >
-      <h3 className="text-grey-00 text-l font-bold">
-        {t('scenarios:home.testrun')}
-      </h3>
+      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.testrun')}</h3>
 
       {access === 'test' ? (
         <Nudge
@@ -437,9 +394,7 @@ function RealTimeSection({
 
   return (
     <div className="bg-grey-100 border-grey-90 flex h-fit flex-1 flex-col gap-4 rounded-lg border p-8">
-      <h3 className="text-grey-00 text-l font-bold">
-        {t('scenarios:home.execution.real_time')}
-      </h3>
+      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.execution.real_time')}</h3>
       <CalloutV2>
         <div className="flex flex-col gap-4">
           <span>
@@ -452,10 +407,9 @@ function RealTimeSection({
             />
           </span>
           <span
-            className={clsx(
-              'text-grey-00 text-s inline-flex items-center font-semibold',
-              { 'whitespace-pre': isLive },
-            )}
+            className={clsx('text-grey-00 text-s inline-flex items-center font-semibold', {
+              'whitespace-pre': isLive,
+            })}
           >
             {isLive ? (
               <Trans
@@ -527,9 +481,7 @@ function BatchSection({
           {t('scenarios:home.execution.batch.ongoing')}
         </div>
       ) : null}
-      <h3 className="text-grey-00 text-l font-bold">
-        {t('scenarios:home.execution.batch')}
-      </h3>
+      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.execution.batch')}</h3>
       <CalloutV2>
         <div className="flex flex-col gap-4">
           <span>{t('scenarios:home.execution.batch.callout')}</span>
@@ -609,13 +561,7 @@ function ManualTriggerScenarioExecutionForm({
   );
 }
 
-function WorkflowSection({
-  scenario,
-  access,
-}: {
-  scenario: Scenario;
-  access: FeatureAccessDto;
-}) {
+function WorkflowSection({ scenario, access }: { scenario: Scenario; access: FeatureAccessDto }) {
   const { t } = useTranslation(['common', 'scenarios', 'workflows']);
 
   const isEdit = scenario.decisionToCaseWorkflowType !== 'DISABLED';
@@ -625,18 +571,14 @@ function WorkflowSection({
   if (scenario.decisionToCaseWorkflowType === 'CREATE_CASE') {
     tag = t('scenarios:home.workflow_type.create_case');
     tooltip = t('scenarios:home.workflow_type.create_case.tooltip');
-  } else if (
-    scenario.decisionToCaseWorkflowType === 'ADD_TO_CASE_IF_POSSIBLE'
-  ) {
+  } else if (scenario.decisionToCaseWorkflowType === 'ADD_TO_CASE_IF_POSSIBLE') {
     tag = t('scenarios:home.workflow_type.add_to_case_if_possible');
     tooltip = t('scenarios:home.workflow_type.add_to_case_if_possible.tooltip');
   }
 
   return (
     <section className="bg-grey-100 border-grey-90 relative flex h-fit max-w-[500px] flex-col gap-4 rounded-lg border p-8">
-      <h3 className="text-grey-00 text-l font-bold">
-        {t('scenarios:home.workflow')}
-      </h3>
+      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.workflow')}</h3>
 
       {access === 'test' ? (
         <Nudge
@@ -654,11 +596,7 @@ function WorkflowSection({
           <div className="bg-purple-98 text-s text-purple-65 flex h-10 flex-row items-center gap-2 rounded px-2 uppercase">
             {tag}
             {tooltip ? (
-              <Ariakit.HovercardProvider
-                showTimeout={0}
-                hideTimeout={0}
-                placement="right"
-              >
+              <Ariakit.HovercardProvider showTimeout={0} hideTimeout={0} placement="right">
                 <Ariakit.HovercardAnchor
                   tabIndex={-1}
                   className="text-purple-82 hover:text-purple-65 cursor-pointer transition-colors"
@@ -687,13 +625,7 @@ function WorkflowSection({
           })}
         >
           <Icon icon={isEdit ? 'edit-square' : 'plus'} className="size-6" />
-          <p>
-            {t(
-              isEdit
-                ? 'scenarios:home.workflow.edit'
-                : 'scenarios:home.workflow.create',
-            )}
-          </p>
+          <p>{t(isEdit ? 'scenarios:home.workflow.edit' : 'scenarios:home.workflow.create')}</p>
         </Link>
       </div>
     </section>
@@ -732,9 +664,7 @@ function ResourcesSection() {
   const { t } = useTranslation(handle.i18n);
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-grey-00 text-m font-semibold">
-        {t('scenarios:home.resources')}
-      </h2>
+      <h2 className="text-grey-00 text-m font-semibold">{t('scenarios:home.resources')}</h2>
       <div className="flex flex-row gap-4">
         {resources.map(({ tKey, href, src }) => (
           <a

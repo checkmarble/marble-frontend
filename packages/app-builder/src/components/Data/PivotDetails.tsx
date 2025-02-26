@@ -14,14 +14,10 @@ export function PivotDetails({ pivot }: { pivot: Pivot }) {
         <span className="text-grey-50 text-s">{t('data:view_pivot.type')}</span>
         <PivotType type="field" />
 
-        <span className="text-grey-50 text-s">
-          {t('data:view_pivot.table')}
-        </span>
+        <span className="text-grey-50 text-s">{t('data:view_pivot.table')}</span>
         <span className="text-m text-grey-00">{pivot.baseTable}</span>
 
-        <span className="text-grey-50 text-s">
-          {t('data:view_pivot.definition')}
-        </span>
+        <span className="text-grey-50 text-s">{t('data:view_pivot.definition')}</span>
         <span>{getPivotDisplayValue(pivot)}</span>
       </div>
     );
@@ -37,9 +33,7 @@ export function PivotDetails({ pivot }: { pivot: Pivot }) {
         {pivot.baseTable}→{pivot.pivotTable}
       </span>
 
-      <span className="text-grey-50 text-s">
-        {t('data:view_pivot.definition')}
-      </span>
+      <span className="text-grey-50 text-s">{t('data:view_pivot.definition')}</span>
       <span>{getPivotDisplayValue(pivot)}</span>
     </div>
   );

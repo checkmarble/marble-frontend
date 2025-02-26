@@ -20,9 +20,7 @@ export type ReturnValueType = 'string' | 'int' | 'float' | 'bool';
 
 export type NonOmittedReturnValue = { value: ConstantType; isOmitted: false };
 
-export function hasReturnValue(
-  returnValue: ReturnValue,
-): returnValue is NonOmittedReturnValue {
+export function hasReturnValue(returnValue: ReturnValue): returnValue is NonOmittedReturnValue {
   return !returnValue.isOmitted;
 }
 
@@ -78,9 +76,7 @@ export function adaptNodeEvaluation(dto: NodeEvaluationDto): NodeEvaluation {
     returnValue,
     errors: dto.errors ? dto.errors.map(adaptEvaluationError) : [],
     children: dto.children ? dto.children.map(adaptNodeEvaluation) : [],
-    namedChildren: dto.named_children
-      ? R.mapValues(dto.named_children, adaptNodeEvaluation)
-      : {},
+    namedChildren: dto.named_children ? R.mapValues(dto.named_children, adaptNodeEvaluation) : {},
     skipped: dto.skipped,
   };
 }

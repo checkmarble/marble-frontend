@@ -1,12 +1,7 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useCallback, useMemo } from 'react';
-import {
-  FormProvider,
-  useController,
-  useForm,
-  useFormContext,
-} from 'react-hook-form';
+import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
 import * as z from 'zod';
 
@@ -25,9 +20,7 @@ interface RulesFiltersContextValue {
   onRulesFilterClose: () => void;
 }
 
-const RulesFiltersContext = createSimpleContext<RulesFiltersContextValue>(
-  'RulesFiltersContext',
-);
+const RulesFiltersContext = createSimpleContext<RulesFiltersContextValue>('RulesFiltersContext');
 
 export type RulesFiltersForm = {
   ruleGroup: string[];
@@ -88,9 +81,7 @@ export function RulesFiltersProvider({
   );
   return (
     <FormProvider {...formMethods}>
-      <RulesFiltersContext.Provider value={value}>
-        {children}
-      </RulesFiltersContext.Provider>
+      <RulesFiltersContext.Provider value={value}>{children}</RulesFiltersContext.Provider>
     </FormProvider>
   );
 }

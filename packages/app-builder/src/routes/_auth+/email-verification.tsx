@@ -35,12 +35,7 @@ export default function SignUp() {
           t={t}
           i18nKey="auth:email-verification.wrong_place"
           components={{
-            SignIn: (
-              <Link
-                className="text-purple-65 underline"
-                to={getRoute('/sign-in')}
-              />
-            ),
+            SignIn: <Link className="text-purple-65 underline" to={getRoute('/sign-in')} />,
           }}
           values={{
             signIn: t('auth:sign_in'),

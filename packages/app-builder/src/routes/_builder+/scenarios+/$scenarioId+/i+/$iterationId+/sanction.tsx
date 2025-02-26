@@ -18,10 +18,7 @@ import { FieldToolTip } from '@app-builder/components/Scenario/Sanction/FieldToo
 import { FieldTrigger } from '@app-builder/components/Scenario/Sanction/FieldTrigger';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type AstNode } from '@app-builder/models';
-import {
-  knownOutcomes,
-  type SanctionOutcome,
-} from '@app-builder/models/outcome';
+import { knownOutcomes, type SanctionOutcome } from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
 import { useEditorMode } from '@app-builder/services/editor';
 import { OptionsProvider } from '@app-builder/services/editor/options';
@@ -29,11 +26,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
-import {
-  type ActionFunctionArgs,
-  json,
-  type LoaderFunctionArgs,
-} from '@remix-run/node';
+import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace, t as rawT } from 'i18next';
@@ -102,17 +95,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       failureRedirect: getRoute('/sign-in'),
     });
 
-  const [
-    { databaseAccessors, payloadAccessors },
-    dataModel,
-    customLists,
-    { sections },
-  ] = await Promise.all([
-    editor.listAccessors({ scenarioId }),
-    dataModelRepository.getDataModel(),
-    customListsRepository.listCustomLists(),
-    sanctionCheck.listDatasets(),
-  ]);
+  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, { sections }] =
+    await Promise.all([
+      editor.listAccessors({ scenarioId }),
+      dataModelRepository.getDataModel(),
+      customListsRepository.listCustomLists(),
+      sanctionCheck.listDatasets(),
+    ]);
 
   return {
     databaseAccessors,
@@ -161,14 +150,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
 
-  const [session, data, { scenarioIterationSanctionRepository }] =
-    await Promise.all([
-      getSession(request),
-      request.json(),
-      authService.isAuthenticated(request, {
-        failureRedirect: getRoute('/sign-in'),
-      }),
-    ]);
+  const [session, data, { scenarioIterationSanctionRepository }] = await Promise.all([
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
   const iterationId = fromParams(params, 'iterationId');
   const result = editSanctionFormSchema.safeParse(data);
@@ -224,19 +212,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function SanctionDetail() {
   const { t } = useTranslation(handle.i18n);
-  const {
-    databaseAccessors,
-    payloadAccessors,
-    dataModel,
-    customLists,
-    sections,
-  } = useLoaderData<typeof loader>();
+  const { databaseAccessors, payloadAccessors, dataModel, customLists, sections } =
+    useLoaderData<typeof loader>();
   const editor = useEditorMode();
   const fetcher = useFetcher<typeof action>();
   const scenario = useCurrentScenario();
   const ruleGroups = useRuleGroups();
-  const { id: iterationId, sanctionCheckConfig } =
-    useCurrentScenarioIteration();
+  const { id: iterationId, sanctionCheckConfig } = useCurrentScenarioIteration();
   const descriptionRef = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const intersection = useIntersection(descriptionRef, {
@@ -261,9 +243,7 @@ export default function SanctionDetail() {
       description: sanctionCheckConfig?.description ?? '',
       ruleGroup: sanctionCheckConfig?.ruleGroup ?? 'Sanction Check',
       datasets: sanctionCheckConfig?.datasets ?? [],
-      forcedOutcome:
-        (sanctionCheckConfig?.forcedOutcome as SanctionOutcome) ??
-        'block_and_review',
+      forcedOutcome: (sanctionCheckConfig?.forcedOutcome as SanctionOutcome) ?? 'block_and_review',
       triggerRule: sanctionCheckConfig?.triggerRule,
       query: {
         name: sanctionCheckConfig?.query?.name,
@@ -319,9 +299,7 @@ export default function SanctionDetail() {
                       name={field.name}
                       disabled={editor === 'view'}
                       value={field.state.value}
-                      onChange={(e) =>
-                        field.handleChange(e.currentTarget.value)
-                      }
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
                       className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
                       placeholder={t('scenarios:sanction_name_placeholder')}
@@ -346,10 +324,7 @@ export default function SanctionDetail() {
                       shift={-80}
                       className="bg-grey-100 border-grey-90 mt-2 flex flex-col gap-2 rounded border p-2"
                     >
-                      <DeleteSanction
-                        iterationId={iterationId}
-                        scenarioId={scenario.id}
-                      >
+                      <DeleteSanction iterationId={iterationId} scenarioId={scenario.id}>
                         <Button color="red" className="w-fit">
                           <Icon icon="delete" className="size-5" aria-hidden />
                           {t('common:delete')}
@@ -369,26 +344,17 @@ export default function SanctionDetail() {
               <div className="border-grey-90 flex flex-col items-start gap-6 border-b pb-6">
                 <form.Field name="description">
                   {(field) => (
-                    <div
-                      ref={descriptionRef}
-                      className="flex w-full flex-col gap-1"
-                    >
+                    <div ref={descriptionRef} className="flex w-full flex-col gap-1">
                       <textarea
                         name={field.name}
                         value={field.state.value}
                         disabled={editor === 'view'}
-                        onChange={(e) =>
-                          field.handleChange(e.currentTarget.value)
-                        }
+                        onChange={(e) => field.handleChange(e.currentTarget.value)}
                         onBlur={field.handleBlur}
                         className="form-textarea text-grey-50 text-s w-full resize-none border-none bg-transparent font-medium outline-none"
-                        placeholder={t(
-                          'scenarios:sanction_description_placeholder',
-                        )}
+                        placeholder={t('scenarios:sanction_description_placeholder')}
                       />
-                      <FormErrorOrDescription
-                        errors={field.state.meta.errors}
-                      />
+                      <FormErrorOrDescription errors={field.state.meta.errors} />
                     </div>
                   )}
                 </form.Field>
@@ -402,9 +368,7 @@ export default function SanctionDetail() {
                         selectedRuleGroup={field.state.value}
                         ruleGroups={ruleGroups}
                       />
-                      <FormErrorOrDescription
-                        errors={field.state.meta.errors}
-                      />
+                      <FormErrorOrDescription errors={field.state.meta.errors} />
                     </div>
                   )}
                 </form.Field>
@@ -456,15 +420,9 @@ export default function SanctionDetail() {
                             onChange={field.handleChange}
                             onBlur={field.handleBlur}
                             selectedOutcome={field.state.value}
-                            outcomes={
-                              difference(knownOutcomes, [
-                                'approve',
-                              ]) as SanctionOutcome[]
-                            }
+                            outcomes={difference(knownOutcomes, ['approve']) as SanctionOutcome[]}
                           />
-                          <FormErrorOrDescription
-                            errors={field.state.meta.errors}
-                          />
+                          <FormErrorOrDescription errors={field.state.meta.errors} />
                         </div>
                       )}
                     </form.Field>
@@ -475,9 +433,7 @@ export default function SanctionDetail() {
               <div className="flex flex-col gap-2">
                 <span className="text-s inline-flex items-center gap-2 font-medium">
                   {t('scenarios:sanction_counterparty_id')}
-                  <FieldToolTip>
-                    {t('scenarios:sanction_counterparty_id.tooltip')}
-                  </FieldToolTip>
+                  <FieldToolTip>{t('scenarios:sanction_counterparty_id.tooltip')}</FieldToolTip>
                 </span>
                 <form.Field name="counterPartyId">
                   {(field) => (
@@ -488,14 +444,10 @@ export default function SanctionDetail() {
                           value={field.state.value}
                           onChange={field.handleChange}
                           onBlur={field.handleBlur}
-                          placeholder={t(
-                            'scenarios:sanction_counterparty_id_placeholder',
-                          )}
+                          placeholder={t('scenarios:sanction_counterparty_id_placeholder')}
                         />
                       </OptionsProvider>
-                      <FormErrorOrDescription
-                        errors={field.state.meta.errors}
-                      />
+                      <FormErrorOrDescription errors={field.state.meta.errors} />
                     </div>
                   )}
                 </form.Field>
@@ -515,15 +467,10 @@ export default function SanctionDetail() {
                     <form.Field name="query.name">
                       {(field) => (
                         <div className="flex flex-col gap-4">
-                          <FormLabel
-                            className="inline-flex items-center gap-1"
-                            name={field.name}
-                          >
+                          <FormLabel className="inline-flex items-center gap-1" name={field.name}>
                             {t('scenarios:sanction_counterparty_name')}
                             <FieldToolTip>
-                              {t(
-                                'scenarios:sanction_counterparty_name.tooltip',
-                              )}
+                              {t('scenarios:sanction_counterparty_name.tooltip')}
                             </FieldToolTip>
                           </FormLabel>
                           <OptionsProvider {...options}>
@@ -532,15 +479,11 @@ export default function SanctionDetail() {
                               value={sanctionCheckConfig?.query?.name}
                               onChange={field.handleChange}
                               onBlur={field.handleBlur}
-                              placeholder={t(
-                                'scenarios:sanction_counterparty_name_placeholder',
-                              )}
+                              placeholder={t('scenarios:sanction_counterparty_name_placeholder')}
                               limit={5}
                             />
                           </OptionsProvider>
-                          <FormErrorOrDescription
-                            errors={field.state.meta.errors}
-                          />
+                          <FormErrorOrDescription errors={field.state.meta.errors} />
                         </div>
                       )}
                     </form.Field>
@@ -556,14 +499,10 @@ export default function SanctionDetail() {
                               value={field.state.value}
                               onChange={field.handleChange}
                               onBlur={field.handleBlur}
-                              placeholder={t(
-                                'scenarios:sanction_transaction_label_placeholder',
-                              )}
+                              placeholder={t('scenarios:sanction_transaction_label_placeholder')}
                             />
                           </OptionsProvider>
-                          <FormErrorOrDescription
-                            errors={field.state.meta.errors}
-                          />
+                          <FormErrorOrDescription errors={field.state.meta.errors} />
                         </div>
                       )}
                     </form.Field>
@@ -572,9 +511,7 @@ export default function SanctionDetail() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <span className="text-s font-medium">
-                  {t('scenarios:sanction.lists.title')}
-                </span>
+                <span className="text-s font-medium">{t('scenarios:sanction.lists.title')}</span>
                 <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded border p-6">
                   <Callout variant="outlined" className="mb-4 lg:mb-6">
                     <p className="whitespace-pre text-wrap">
@@ -590,9 +527,7 @@ export default function SanctionDetail() {
                           onBlur={field.handleBlur}
                           sections={sections}
                         />
-                        <FormErrorOrDescription
-                          errors={field.state.meta.errors}
-                        />
+                        <FormErrorOrDescription errors={field.state.meta.errors} />
                       </div>
                     )}
                   </form.Field>

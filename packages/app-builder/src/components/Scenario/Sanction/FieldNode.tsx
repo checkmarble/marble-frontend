@@ -22,9 +22,7 @@ export const FieldNode = ({
       node={value}
       placeholder={placeholder}
       onSave={(node) => {
-        onChange?.(
-          hasSubObject(NewUndefinedAstNode() as AstNode, node) ? null : node,
-        );
+        onChange?.(hasSubObject(NewUndefinedAstNode() as AstNode, node) ? null : node);
       }}
     />
   </div>

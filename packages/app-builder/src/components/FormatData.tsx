@@ -16,22 +16,12 @@ type Data =
       value: unknown;
     };
 
-export function FormatData({
-  data,
-  language,
-}: {
-  data: Data;
-  language: string;
-}) {
+export function FormatData({ data, language }: { data: Data; language: string }) {
   switch (data.type) {
     case 'url':
       return <ExternalLink href={data.value}>{data.value}</ExternalLink>;
     case 'datetime':
-      return (
-        <time dateTime={data.value}>
-          {formatDateTime(data.value, { language })}
-        </time>
-      );
+      return <time dateTime={data.value}>{formatDateTime(data.value, { language })}</time>;
     case 'number':
       return <span>{formatNumber(data.value, { language })}</span>;
     case 'unknown':

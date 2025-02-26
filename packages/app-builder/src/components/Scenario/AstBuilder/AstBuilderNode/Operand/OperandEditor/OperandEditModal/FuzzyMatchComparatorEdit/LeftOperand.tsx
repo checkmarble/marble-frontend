@@ -34,9 +34,7 @@ export function LeftOperand({
   const defaultCoerceToConstant = useDefaultCoerceToConstant();
   const coerceToConstant = React.useCallback(
     (searchValue: string) =>
-      defaultCoerceToConstant(searchValue).filter(
-        (option) => option.dataType === 'String',
-      ),
+      defaultCoerceToConstant(searchValue).filter((option) => option.dataType === 'String'),
     [defaultCoerceToConstant],
   );
 
@@ -47,9 +45,7 @@ export function LeftOperand({
 
   return (
     <Operand
-      placeholder={t(
-        'scenarios:edit_operand.data_type.string.field_placeholder',
-      )}
+      placeholder={t('scenarios:edit_operand.data_type.string.field_placeholder')}
       onSave={onChange}
       options={leftOptions}
       coerceToConstant={coerceToConstant}

@@ -89,9 +89,7 @@ export function RefineSearchModal({
     },
   });
 
-  const [searchResults, setSearchResults] = useState<
-    SanctionCheckMatchPayload[] | null
-  >(null);
+  const [searchResults, setSearchResults] = useState<SanctionCheckMatchPayload[] | null>(null);
   useEffect(() => {
     if (searchFetcher.data?.success) {
       setSearchResults(searchFetcher.data.data);
@@ -110,10 +108,7 @@ export function RefineSearchModal({
     if (value) {
       form.setFieldValue(
         'fields',
-        setAdditionalFields(
-          SEARCH_ENTITIES[value].fields,
-          form.state.values.fields,
-        ),
+        setAdditionalFields(SEARCH_ENTITIES[value].fields, form.state.values.fields),
       );
     }
   };
@@ -152,9 +147,7 @@ export function RefineSearchModal({
                     })}
                   </div>
                 </Field>
-                <Callout bordered>
-                  {t('sanctions:refine_modal.refine_callout')}
-                </Callout>
+                <Callout bordered>{t('sanctions:refine_modal.refine_callout')}</Callout>
               </>
             ) : (
               <>
@@ -187,10 +180,7 @@ export function RefineSearchModal({
                 className="flex-1"
                 variant="primary"
                 onClick={handleRefine}
-                disabled={
-                  searchResults.length >
-                  (sanctionCheck.request?.limit ?? Infinity)
-                }
+                disabled={searchResults.length > (sanctionCheck.request?.limit ?? Infinity)}
               >
                 {t('sanctions:refine_modal.apply_search')}
               </Button>
@@ -200,13 +190,8 @@ export function RefineSearchModal({
       ) : (
         <searchFetcher.Form onSubmit={handleSubmit(form)} className="contents">
           <div className="flex h-full flex-col gap-6 overflow-y-scroll p-8">
-            {sanctionCheck.request ? (
-              <SearchInput request={sanctionCheck.request} />
-            ) : null}
-            <form.Field
-              name="entityType"
-              listeners={{ onChange: onSearchEntityChange }}
-            >
+            {sanctionCheck.request ? <SearchInput request={sanctionCheck.request} /> : null}
+            <form.Field name="entityType" listeners={{ onChange: onSearchEntityChange }}>
               {(field) => (
                 <Field label="Counterparty Entity">
                   <EntitySelect
@@ -235,22 +220,12 @@ export function RefineSearchModal({
           <ModalV2.Footer>
             <div className="bg-grey-100 flex gap-2 p-8">
               <ModalV2.Close
-                render={
-                  <Button
-                    className="flex-1"
-                    variant="secondary"
-                    name="cancel"
-                  />
-                }
+                render={<Button className="flex-1" variant="secondary" name="cancel" />}
               >
                 {t('common:cancel')}
               </ModalV2.Close>
               <form.Subscribe
-                selector={(state) => [
-                  state.isPristine,
-                  state.canSubmit,
-                  state.isSubmitting,
-                ]}
+                selector={(state) => [state.isPristine, state.canSubmit, state.isSubmitting]}
               >
                 {([isPristine, canSubmit, isSubmitting]) => (
                   <Button
@@ -259,9 +234,7 @@ export function RefineSearchModal({
                     className="flex-1"
                     variant="primary"
                   >
-                    {isSubmitting
-                      ? '...'
-                      : t('sanctions:refine_modal.test_search')}
+                    {isSubmitting ? '...' : t('sanctions:refine_modal.test_search')}
                   </Button>
                 )}
               </form.Subscribe>
@@ -308,16 +281,11 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
     <Select.Root name={name} value={value} onValueChange={handleChange}>
       <Select.Trigger className="grow">
         <Select.Value align="start" placeholder={'Select'}>
-          {lowerCasedSchema
-            ? t(`sanctions:refine_modal.schema.${lowerCasedSchema}`)
-            : ''}
+          {lowerCasedSchema ? t(`sanctions:refine_modal.schema.${lowerCasedSchema}`) : ''}
         </Select.Value>
         <Select.Arrow />
       </Select.Trigger>
-      <Select.Content
-        className="min-w-[var(--radix-select-trigger-width)]"
-        align="start"
-      >
+      <Select.Content className="min-w-[var(--radix-select-trigger-width)]" align="start">
         <Select.Viewport>
           {schemas.map((schema) => {
             const schemaKey = schema.toLowerCase() as Lowercase<typeof schema>;
@@ -328,14 +296,10 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
                 <div className="flex items-center gap-2 p-2">
                   <Icon icon="plus" className="size-5" />
                   <div className="flex flex-col">
-                    <span>
-                      {t(`sanctions:refine_modal.schema.${schemaKey}`)}
-                    </span>
+                    <span>{t(`sanctions:refine_modal.schema.${schemaKey}`)}</span>
                     <span className="text-grey-50 text-xs">
                       {t('sanctions:refine_modal.search_by')}{' '}
-                      {fieldForSchema
-                        .map((f) => t(`sanctions:entity.property.${f}`))
-                        .join(', ')}
+                      {fieldForSchema.map((f) => t(`sanctions:entity.property.${f}`)).join(', ')}
                     </span>
                   </div>
                 </div>
@@ -348,11 +312,7 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
   );
 }
 
-function SearchInput({
-  request,
-}: {
-  request: NonNullable<SanctionCheck['request']>;
-}) {
+function SearchInput({ request }: { request: NonNullable<SanctionCheck['request']> }) {
   const { t } = useTranslation(['sanctions']);
   const searchInputs = R.pipe(
     R.values(request.queries),
@@ -363,10 +323,7 @@ function SearchInput({
   return (
     <Field label={t('sanctions:refine_modal.search_input_label')}>
       {searchInputs.map((input, i) => (
-        <div
-          key={i}
-          className="border-grey-90 flex items-center gap-2 rounded border p-2"
-        >
+        <div key={i} className="border-grey-90 flex items-center gap-2 rounded border p-2">
           <span className="bg-grey-95 size-6 rounded-sm p-1">
             <Icon icon="string" className="size-4" />
           </span>

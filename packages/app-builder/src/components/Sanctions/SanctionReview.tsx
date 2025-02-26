@@ -21,16 +21,10 @@ export type SanctionReviewSectionProps = {
   sanctionCheck: SanctionCheck;
 };
 
-export function SanctionReviewSection({
-  decisionId,
-  sanctionCheck,
-}: SanctionReviewSectionProps) {
+export function SanctionReviewSection({ decisionId, sanctionCheck }: SanctionReviewSectionProps) {
   const { t } = useTranslation(sanctionsI18n);
   const [isRefining, setIsRefining] = useState(false);
-  const matchesToReviewCount = filter(
-    sanctionCheck.matches,
-    (m) => m.status === 'pending',
-  ).length;
+  const matchesToReviewCount = filter(sanctionCheck.matches, (m) => m.status === 'pending').length;
   const hasError = isSanctionCheckError(sanctionCheck);
   const isRefinable = !isSanctionCheckReviewCompleted(sanctionCheck);
 
@@ -46,20 +40,14 @@ export function SanctionReviewSection({
             })}
           </span>
           {isRefinable ? (
-            <Button
-              className="ml-auto"
-              variant="secondary"
-              onClick={() => setIsRefining(true)}
-            >
+            <Button className="ml-auto" variant="secondary" onClick={() => setIsRefining(true)}>
               <Icon icon="restart-alt" className="size-5" />
               {t('sanctions:refine_search')}
             </Button>
           ) : null}
         </div>
         {match(sanctionCheck)
-          .when(isSanctionCheckError, (sc) => (
-            <SanctionCheckErrors sanctionCheck={sc} />
-          ))
+          .when(isSanctionCheckError, (sc) => <SanctionCheckErrors sanctionCheck={sc} />)
           .otherwise((sc) => {
             return !sc.partial ? (
               <Callout bordered>{t('sanctions:callout.review')}</Callout>

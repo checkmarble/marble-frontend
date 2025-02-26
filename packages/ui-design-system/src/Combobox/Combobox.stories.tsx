@@ -2,13 +2,7 @@ import { type Meta, type StoryFn } from '@storybook/react';
 import * as React from 'react';
 
 import { ScrollAreaV2 } from '../ScrollArea/ScrollArea';
-import {
-  Combobox,
-  ComboboxItem,
-  ComboboxLabel,
-  ComboboxPopover,
-  ComboboxRoot,
-} from './Combobox';
+import { Combobox, ComboboxItem, ComboboxLabel, ComboboxPopover, ComboboxRoot } from './Combobox';
 
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple', 'pear'];
 

@@ -11,9 +11,7 @@ export const fuzzyMatchAlgorithms = [
 ] as const;
 export type FuzzyMatchAlgorithm = (typeof fuzzyMatchAlgorithms)[number];
 
-export function isFuzzyMatchAlgorithm(
-  value: string,
-): value is FuzzyMatchAlgorithm {
+export function isFuzzyMatchAlgorithm(value: string): value is FuzzyMatchAlgorithm {
   return (fuzzyMatchAlgorithms as ReadonlyArray<string>).includes(value);
 }
 
@@ -50,15 +48,10 @@ export const editableFuzzyMatchAlgorithms = [
   'ratio',
   'token_set_ratio',
 ] satisfies FuzzyMatchAlgorithm[];
-type EditableFuzzyMatchAlgorithm =
-  (typeof editableFuzzyMatchAlgorithms)[number];
+type EditableFuzzyMatchAlgorithm = (typeof editableFuzzyMatchAlgorithms)[number];
 
-export function isEditableFuzzyMatchAlgorithm(
-  value: string,
-): value is EditableFuzzyMatchAlgorithm {
-  return (editableFuzzyMatchAlgorithms as ReadonlyArray<string>).includes(
-    value,
-  );
+export function isEditableFuzzyMatchAlgorithm(value: string): value is EditableFuzzyMatchAlgorithm {
+  return (editableFuzzyMatchAlgorithms as ReadonlyArray<string>).includes(value);
 }
 
 export const defaultEditableFuzzyMatchAlgorithm = 'token_set_ratio';
@@ -69,20 +62,15 @@ export const fuzzyMatchComparatorLevelData = [
   { level: 'medium', threshold: 70 },
   { level: 'high', threshold: 85 },
 ] as const;
-export type FuzzyMatchComparatorLevel =
-  (typeof fuzzyMatchComparatorLevelData)[number]['level'];
+export type FuzzyMatchComparatorLevel = (typeof fuzzyMatchComparatorLevelData)[number]['level'];
 
 export function adaptFuzzyMatchComparatorLevel(threshold: number) {
-  return fuzzyMatchComparatorLevelData.find(
-    (data) => data.threshold === threshold,
-  )?.level;
+  return fuzzyMatchComparatorLevelData.find((data) => data.threshold === threshold)?.level;
 }
 
-export function adaptFuzzyMatchComparatorThreshold(
-  level: FuzzyMatchComparatorLevel,
-) {
+export function adaptFuzzyMatchComparatorThreshold(level: FuzzyMatchComparatorLevel) {
   return (
-    fuzzyMatchComparatorLevelData.find((data) => data.level === level)
-      ?.threshold ?? defaultFuzzyMatchComparatorThreshold
+    fuzzyMatchComparatorLevelData.find((data) => data.level === level)?.threshold ??
+    defaultFuzzyMatchComparatorThreshold
   );
 }

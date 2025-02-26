@@ -33,9 +33,7 @@ export interface RuleSnoozeWithRuleId extends RuleSnooze {
   ruleId: string;
 }
 
-export function adaptRuleSnoozeWithRuleId(
-  dto: RuleSnoozeWithRuleIdDto,
-): RuleSnoozeWithRuleId {
+export function adaptRuleSnoozeWithRuleId(dto: RuleSnoozeWithRuleIdDto): RuleSnoozeWithRuleId {
   return {
     ...adaptRuleSnooze(dto),
     ruleId: dto.rule_id,
@@ -62,9 +60,7 @@ export interface SnoozesOfDecision {
   ruleSnoozes: RuleSnoozeWithRuleId[];
 }
 
-export function adaptSnoozesOfDecision(
-  dto: SnoozesOfDecisionDto,
-): SnoozesOfDecision {
+export function adaptSnoozesOfDecision(dto: SnoozesOfDecisionDto): SnoozesOfDecision {
   return {
     decisionId: dto.decision_id,
     ruleSnoozes: dto.rule_snoozes.map(adaptRuleSnoozeWithRuleId),
@@ -83,9 +79,7 @@ export interface RuleSnoozeInformation {
   hasSnoozesActive: boolean;
 }
 
-function adaptRuleSnoozeInformation(
-  dto: RuleSnoozeInformationDto,
-): RuleSnoozeInformation {
+function adaptRuleSnoozeInformation(dto: RuleSnoozeInformationDto): RuleSnoozeInformation {
   return {
     ruleId: dto.rule_id,
     snoozeGroupId: dto.snooze_group_id,
@@ -98,9 +92,7 @@ export interface SnoozesOfIteration {
   ruleSnoozes: RuleSnoozeInformation[];
 }
 
-export function adaptSnoozesOfIteration(
-  dto: SnoozesOfIterationDto,
-): SnoozesOfIteration {
+export function adaptSnoozesOfIteration(dto: SnoozesOfIterationDto): SnoozesOfIteration {
   return {
     iterationId: dto.iteration_id,
     ruleSnoozes: dto.rule_snoozes.map(adaptRuleSnoozeInformation),

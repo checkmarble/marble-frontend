@@ -1,7 +1,4 @@
-import {
-  createRightPanel,
-  type RightPanelRootProps,
-} from '@app-builder/components/RightPanel';
+import { createRightPanel, type RightPanelRootProps } from '@app-builder/components/RightPanel';
 import { CreateCase } from '@app-builder/routes/ressources+/cases+/create-case';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { type DialogTriggerProps } from '@radix-ui/react-dialog';
@@ -58,25 +55,17 @@ const CaseRightPanelContext = createSimpleContext<{
 }>('CaseRightPanelContext');
 export const useCaseRightPanelContext = CaseRightPanelContext.useValue;
 
-function CaseRightPanelRoot({
-  children,
-  ...props
-}: Omit<RightPanelRootProps, 'open' | 'onClose'>) {
+function CaseRightPanelRoot({ children, ...props }: Omit<RightPanelRootProps, 'open' | 'onClose'>) {
   const [state, dispatch] = useReducer(caseRightPanelReducer, initialState);
 
   return (
     <CaseRightPanelContext.Provider
       value={{
         data: state.open ? state.data : undefined,
-        onTriggerClick: (data: Data) =>
-          dispatch({ type: 'triggerClicked', payload: { data } }),
+        onTriggerClick: (data: Data) => dispatch({ type: 'triggerClicked', payload: { data } }),
       }}
     >
-      <RightPanel.Root
-        open={state.open}
-        onClose={() => dispatch({ type: 'close' })}
-        {...props}
-      >
+      <RightPanel.Root open={state.open} onClose={() => dispatch({ type: 'close' })} {...props}>
         <RightPanel.Viewport>{children}</RightPanel.Viewport>
         <CaseRightPanelContent />
       </RightPanel.Root>
@@ -89,9 +78,7 @@ const CaseRightPanelContent = () => {
   return (
     <RightPanel.Content className="flex max-w-md flex-col gap-4">
       <RightPanel.Title>
-        <span className="w-full first-letter:capitalize">
-          {t('cases:case.new_case')}
-        </span>
+        <span className="w-full first-letter:capitalize">{t('cases:case.new_case')}</span>
         <RightPanel.Close />
       </RightPanel.Title>
       <CreateCase />

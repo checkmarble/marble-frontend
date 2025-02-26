@@ -18,10 +18,9 @@ import { z } from 'zod';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { organization: repository, user } = await authService.isAuthenticated(
-    request,
-    { failureRedirect: getRoute('/sign-in') },
-  );
+  const { organization: repository, user } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   return json({
     organization: await repository.getCurrentOrganization(),
@@ -129,16 +128,10 @@ export default function Users() {
           </div>
           <CollapsiblePaper.Container>
             <CollapsiblePaper.Title>
-              <span className="flex-1">
-                {t('settings:scenenario_execution')}
-              </span>
+              <span className="flex-1">{t('settings:scenenario_execution')}</span>
             </CollapsiblePaper.Title>
             <CollapsiblePaper.Content>
-              <input
-                type="hidden"
-                name="organizationId"
-                value={organization.id}
-              />
+              <input type="hidden" name="organizationId" value={organization.id} />
               <form.Field name="defaultScenarioTimezone">
                 {(field) => (
                   <div className="flex w-full items-center justify-between">
@@ -160,9 +153,7 @@ export default function Users() {
           </CollapsiblePaper.Container>
           <CollapsiblePaper.Container>
             <CollapsiblePaper.Title>
-              <span className="flex-1">
-                {t('settings:scenario_sanction_settings')}
-              </span>
+              <span className="flex-1">{t('settings:scenario_sanction_settings')}</span>
             </CollapsiblePaper.Title>
             <CollapsiblePaper.Content>
               <div className="flex flex-col gap-6 lg:gap-8">
@@ -181,17 +172,11 @@ export default function Users() {
                         type="number"
                         name={field.name}
                         onBlur={field.handleBlur}
-                        onChange={(e) =>
-                          field.handleChange(+e.currentTarget.value)
-                        }
-                        placeholder={t(
-                          'settings:scenario_sanction_limit_placeholder',
-                        )}
+                        onChange={(e) => field.handleChange(+e.currentTarget.value)}
+                        placeholder={t('settings:scenario_sanction_limit_placeholder')}
                         valid={field.state.meta.errors.length === 0}
                       />
-                      <FormErrorOrDescription
-                        errors={field.state.meta.errors}
-                      />
+                      <FormErrorOrDescription errors={field.state.meta.errors} />
                     </div>
                   )}
                 </form.Field>
@@ -210,17 +195,11 @@ export default function Users() {
                         type="number"
                         name={field.name}
                         onBlur={field.handleBlur}
-                        onChange={(e) =>
-                          field.handleChange(+e.currentTarget.value)
-                        }
-                        placeholder={t(
-                          'settings:scenario_sanction_threshold_placeholder',
-                        )}
+                        onChange={(e) => field.handleChange(+e.currentTarget.value)}
+                        placeholder={t('settings:scenario_sanction_threshold_placeholder')}
                         valid={field.state.meta.errors.length === 0}
                       />
-                      <FormErrorOrDescription
-                        errors={field.state.meta.errors}
-                      />
+                      <FormErrorOrDescription errors={field.state.meta.errors} />
                     </div>
                   )}
                 </form.Field>

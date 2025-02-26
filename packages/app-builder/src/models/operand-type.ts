@@ -11,9 +11,7 @@ export type OperandType =
   | 'Modeling'
   | 'unknown';
 
-export function getOperandTypeIcon(
-  operandType: OperandType,
-): IconName | undefined {
+export function getOperandTypeIcon(operandType: OperandType): IconName | undefined {
   switch (operandType) {
     case 'CustomList':
       return 'list';
@@ -30,9 +28,7 @@ export function getOperandTypeIcon(
   }
 }
 
-export function getOperandTypeTKey(
-  operandType: OperandType,
-): ParseKeys<'scenarios'> | undefined {
+export function getOperandTypeTKey(operandType: OperandType): ParseKeys<'scenarios'> | undefined {
   switch (operandType) {
     case 'CustomList':
       return 'edit_operand.operator_type.list';

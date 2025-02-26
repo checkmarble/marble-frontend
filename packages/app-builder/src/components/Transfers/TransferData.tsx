@@ -1,8 +1,4 @@
-import {
-  formatCurrency,
-  formatDateTime,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatCurrency, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { type Currency } from 'dinero.js';
 import { Trans, useTranslation } from 'react-i18next';
@@ -111,10 +107,7 @@ export function TransferData(props: TransferDataProps) {
       <table className="border-grey-90 h-fit w-full table-auto border-separate border-spacing-0 overflow-hidden rounded-lg border">
         <thead>
           <tr>
-            <th
-              className="bg-grey-98 h-12 px-4 first-letter:capitalize"
-              colSpan={2}
-            >
+            <th className="bg-grey-98 h-12 px-4 first-letter:capitalize" colSpan={2}>
               {t('transfercheck:transfer_detail.transfer_data.sender')}
             </th>
           </tr>
@@ -140,9 +133,7 @@ export function TransferData(props: TransferDataProps) {
             <td className="text-grey-50 text-s border-grey-90 border-t p-4 capitalize">
               {t('transfercheck:transfer_detail.transfer_data.bic')}
             </td>
-            <td className="text-grey-00 text-s border-grey-90 border-t p-4">
-              {props.senderBic}
-            </td>
+            <td className="text-grey-00 text-s border-grey-90 border-t p-4">{props.senderBic}</td>
           </tr>
           <tr>
             <td className="text-grey-50 text-s border-grey-90 border-t p-4 first-letter:capitalize">
@@ -156,9 +147,7 @@ export function TransferData(props: TransferDataProps) {
             <td className="text-grey-50 text-s border-grey-90 border-t p-4 capitalize">
               {t('transfercheck:transfer_detail.transfer_data.ip')}
             </td>
-            <td className="text-grey-00 text-s border-grey-90 border-t p-4">
-              {props.senderIp}
-            </td>
+            <td className="text-grey-00 text-s border-grey-90 border-t p-4">{props.senderIp}</td>
           </tr>
         </tbody>
       </table>
@@ -166,10 +155,7 @@ export function TransferData(props: TransferDataProps) {
       <table className="border-grey-90 h-fit w-full table-auto border-separate border-spacing-0 overflow-hidden rounded-lg border">
         <thead>
           <tr>
-            <th
-              className="bg-grey-98 h-12 px-4 first-letter:capitalize"
-              colSpan={2}
-            >
+            <th className="bg-grey-98 h-12 px-4 first-letter:capitalize" colSpan={2}>
               {t('transfercheck:transfer_detail.transfer_data.beneficiary')}
             </th>
           </tr>

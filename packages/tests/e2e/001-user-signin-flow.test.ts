@@ -39,10 +39,7 @@ test('Users can sign in with Microsoft', async ({ page, firebase }) => {
   await expect(page.getByText(user.email)).toBeVisible();
 });
 
-test('Users can sign up with email and password', async ({
-  page,
-  firebase,
-}) => {
+test('Users can sign up with email and password', async ({ page, firebase }) => {
   const signInPage = new SignInPage(page);
   await signInPage.goto();
   await page.getByRole('link', { name: 'Sign up' }).click();

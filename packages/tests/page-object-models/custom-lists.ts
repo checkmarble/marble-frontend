@@ -24,9 +24,7 @@ export class CustomListsPage {
     }
     await this.page.getByRole('button', { name: 'Create' }).click();
     await expect(
-      this.page.getByText(
-        'This list is empty. Add its first value to see it here.',
-      ),
+      this.page.getByText('This list is empty. Add its first value to see it here.'),
     ).toBeVisible();
   }
 
@@ -52,12 +50,10 @@ export class CustomListDetailPage {
   async update({ name, description }: { name?: string; description?: string }) {
     await this.page.getByRole('button', { name: 'edit' }).click();
     if (name) await this.page.getByLabel('name').fill(name);
-    if (description)
-      await this.page.getByLabel('description').fill(description);
+    if (description) await this.page.getByLabel('description').fill(description);
     await this.page.getByRole('button', { name: 'Save' }).click();
     if (name) await expect(this.page.getByText(name)).toBeVisible();
-    if (description)
-      await expect(this.page.getByText(description)).toBeVisible();
+    if (description) await expect(this.page.getByText(description)).toBeVisible();
   }
 
   @boxedStep
@@ -75,9 +71,7 @@ export class CustomListDetailPage {
       .getByRole('button', { name: 'delete' })
       .click();
     await this.page.getByRole('button', { name: 'delete' }).click();
-    await expect(
-      this.page.getByRole('cell', { name: value }),
-    ).not.toBeVisible();
+    await expect(this.page.getByRole('cell', { name: value })).not.toBeVisible();
   }
 
   @boxedStep

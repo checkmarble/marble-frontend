@@ -15,9 +15,7 @@ export const DistributionOfDecisionChart = ({
 
   return (
     <Collapsible.Container className="bg-grey-100" defaultOpen={true}>
-      <Collapsible.Title>
-        {t('scenarios:testrun.distribution')}
-      </Collapsible.Title>
+      <Collapsible.Title>{t('scenarios:testrun.distribution')}</Collapsible.Title>
       <Collapsible.Content>
         {decisions.length === 0 ? (
           <span className="text-grey-50 inline-block w-full text-center font-semibold">

@@ -14,11 +14,7 @@ import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import {
-  createColumnHelper,
-  getCoreRowModel,
-  getSortedRowModel,
-} from '@tanstack/react-table';
+import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,10 +28,9 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { webhookRepository, user, entitlements } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const { webhookRepository, user, entitlements } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   if (!isReadWebhookAvailable(user)) return redirect(getRoute('/'));
 
@@ -53,12 +48,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export default function WebhookDetail() {
   const { t } = useTranslation(['settings']);
-  const {
-    webhook,
-    isEditWebhookAvailable,
-    isDeleteWebhookAvailable,
-    webhookStatus,
-  } = useLoaderData<typeof loader>();
+  const { webhook, isEditWebhookAvailable, isDeleteWebhookAvailable, webhookStatus } =
+    useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -70,10 +61,7 @@ export default function WebhookDetail() {
               // Necessary to prevent click events from propagating to the Collapsible
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <span onClick={(e) => e.stopPropagation()}>
-                <UpdateWebhook
-                  defaultValue={webhook}
-                  webhookStatus={webhookStatus}
-                >
+                <UpdateWebhook defaultValue={webhook} webhookStatus={webhookStatus}>
                   <Button>
                     <Icon icon="plus" className="size-6" />
                     {t('settings:webhooks.update_webhook')}
@@ -102,9 +90,7 @@ export default function WebhookDetail() {
               <WebhookLabel>{t('settings:webhooks.rate_limit')}</WebhookLabel>
               <WebhookValue>{webhook.rateLimit}</WebhookValue>
 
-              <WebhookLabel>
-                {t('settings:webhooks.rate_limit_duration')}
-              </WebhookLabel>
+              <WebhookLabel>{t('settings:webhooks.rate_limit_duration')}</WebhookLabel>
               <WebhookValue>{webhook.rateLimitDuration}</WebhookValue>
             </div>
           </CollapsiblePaper.Content>

@@ -19,8 +19,7 @@ import {
 import { RulesFiltersMenu } from './RulesFiltersMenu';
 
 export function RulesFiltersBar() {
-  const { undefinedRulesFilterNames, definedRulesFilterNames } =
-    useRulesFiltersPartition();
+  const { undefinedRulesFilterNames, definedRulesFilterNames } = useRulesFiltersPartition();
   const clearAllFilters = useClearAllFilters();
 
   if (definedRulesFilterNames.length === 0) {
@@ -68,9 +67,7 @@ function FiltersBarItem({ filterName }: { filterName: RulesFilterName }) {
       <FilterItem.Root>
         <FilterItem.Trigger>
           <Icon icon={icon} className="size-5" />
-          <span className="text-s font-semibold first-letter:capitalize">
-            {label}
-          </span>
+          <span className="text-s font-semibold first-letter:capitalize">{label}</span>
         </FilterItem.Trigger>
         <FilterItem.Clear
           onClick={() => {

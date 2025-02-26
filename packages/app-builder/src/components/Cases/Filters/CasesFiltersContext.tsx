@@ -1,17 +1,9 @@
 import { type CaseStatus, caseStatuses } from '@app-builder/models/cases';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import {
-  type DateRangeFilterForm,
-  dateRangeSchema,
-} from '@app-builder/utils/schema/filterSchema';
+import { type DateRangeFilterForm, dateRangeSchema } from '@app-builder/utils/schema/filterSchema';
 import { useCallback, useMemo } from 'react';
-import {
-  FormProvider,
-  useController,
-  useForm,
-  useFormContext,
-} from 'react-hook-form';
+import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
 import * as z from 'zod';
 
@@ -31,9 +23,7 @@ interface CasesFiltersContextValue {
   onCasesFilterClose: () => void;
 }
 
-const CasesFiltersContext = createSimpleContext<CasesFiltersContextValue>(
-  'CasesFiltersContext',
-);
+const CasesFiltersContext = createSimpleContext<CasesFiltersContextValue>('CasesFiltersContext');
 
 export type CasesFiltersForm = {
   statuses: CaseStatus[];
@@ -46,10 +36,7 @@ const emptyCasesFilters: CasesFiltersForm = {
   dateRange: null,
 };
 
-function adaptFilterValues({
-  dateRange,
-  ...otherFilters
-}: CasesFilters): CasesFiltersForm {
+function adaptFilterValues({ dateRange, ...otherFilters }: CasesFilters): CasesFiltersForm {
   const adaptedFilterValues: CasesFiltersForm = {
     ...emptyCasesFilters,
     ...otherFilters,
@@ -107,9 +94,7 @@ export function CasesFiltersProvider({
   );
   return (
     <FormProvider {...formMethods}>
-      <CasesFiltersContext.Provider value={value}>
-        {children}
-      </CasesFiltersContext.Provider>
+      <CasesFiltersContext.Provider value={value}>{children}</CasesFiltersContext.Provider>
     </FormProvider>
   );
 }

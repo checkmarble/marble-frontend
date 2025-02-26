@@ -39,18 +39,17 @@ export function makeGetCustomListRepository() {
       return adaptCustomListWithValues(custom_list);
     },
     updateCustomList: async (id, body) => {
-      const { custom_list } = await marbleCoreApiClient.updateCustomList(
-        id,
-        body,
-      );
+      const { custom_list } = await marbleCoreApiClient.updateCustomList(id, body);
       return adaptCustomList(custom_list);
     },
     deleteCustomList: async (id) => {
       await marbleCoreApiClient.deleteCustomList(id);
     },
     createCustomListValue: async (customListId, body) => {
-      const { custom_list_value } =
-        await marbleCoreApiClient.createCustomListValue(customListId, body);
+      const { custom_list_value } = await marbleCoreApiClient.createCustomListValue(
+        customListId,
+        body,
+      );
       return adaptCustomListValue(custom_list_value);
     },
     deleteCustomListValue: async (customListId, valueId) => {

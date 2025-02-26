@@ -7,8 +7,7 @@ interface OrganizationTagsContext {
   getTagById: (tagId: string) => Tag | undefined;
 }
 
-const OrganizationTagsContext =
-  createSimpleContext<OrganizationTagsContext>('OrganizationTags');
+const OrganizationTagsContext = createSimpleContext<OrganizationTagsContext>('OrganizationTags');
 
 export function OrganizationTagsContextProvider({
   orgTags,
@@ -18,9 +17,7 @@ export function OrganizationTagsContextProvider({
   children: React.ReactNode;
 }) {
   const value = useMemo(() => {
-    const orgUserMap = new Map<string, Tag>(
-      orgTags.map((tag) => [tag.id, tag]),
-    );
+    const orgUserMap = new Map<string, Tag>(orgTags.map((tag) => [tag.id, tag]));
 
     return {
       orgTags,
@@ -28,9 +25,7 @@ export function OrganizationTagsContextProvider({
     };
   }, [orgTags]);
   return (
-    <OrganizationTagsContext.Provider value={value}>
-      {children}
-    </OrganizationTagsContext.Provider>
+    <OrganizationTagsContext.Provider value={value}>{children}</OrganizationTagsContext.Provider>
   );
 }
 

@@ -12,8 +12,7 @@ export function CreatorsFilter() {
   const { orgUsers } = useOrganizationUsers();
 
   const matches = useMemo(
-    () =>
-      matchSorter(orgUsers, deferredValue, { keys: ['firstName', 'lastName'] }),
+    () => matchSorter(orgUsers, deferredValue, { keys: ['firstName', 'lastName'] }),
     [deferredValue, orgUsers],
   );
 
@@ -35,11 +34,7 @@ export function CreatorsFilter() {
                 className="align-baseline"
               >
                 <div className="flex flex-row items-center gap-4">
-                  <Avatar
-                    firstName={user.firstName}
-                    lastName={user.lastName}
-                    size="m"
-                  />
+                  <Avatar firstName={user.firstName} lastName={user.lastName} size="m" />
                   <span className="text-grey-00 text-s">
                     {user.firstName} {user.lastName}
                   </span>

@@ -14,13 +14,7 @@ import {
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-const RuleGroup = ({
-  ruleGroup,
-  onClear,
-}: {
-  ruleGroup: string;
-  onClear?: () => void;
-}) => (
+const RuleGroup = ({ ruleGroup, onClear }: { ruleGroup: string; onClear?: () => void }) => (
   <div className="bg-purple-96 flex size-fit flex-row items-center gap-2 rounded-full px-2 py-1">
     <span className="text-purple-65 text-xs">{ruleGroup}</span>
     {onClear ? (
@@ -51,10 +45,7 @@ export const FieldRuleGroup = ({
   const [value, setValue] = useState<string | undefined>();
 
   const finalRuleGroups = useMemo(
-    () =>
-      unique(
-        [selectedRuleGroup, newRule, ...ruleGroups].filter(Boolean),
-      ) as string[],
+    () => unique([selectedRuleGroup, newRule, ...ruleGroups].filter(Boolean)) as string[],
     [selectedRuleGroup, ruleGroups, newRule],
   );
 
@@ -77,13 +68,8 @@ export const FieldRuleGroup = ({
             size={selectedRuleGroup ? 'icon' : undefined}
             className={clsx({ 'w-fit': !selectedRuleGroup })}
           >
-            <Icon
-              icon={selectedRuleGroup ? 'edit-square' : 'plus'}
-              className="size-4"
-            />
-            {!selectedRuleGroup ? (
-              <span>{t('scenarios:rules.add_group')}</span>
-            ) : null}
+            <Icon icon={selectedRuleGroup ? 'edit-square' : 'plus'} className="size-4" />
+            {!selectedRuleGroup ? <span>{t('scenarios:rules.add_group')}</span> : null}
           </Button>
         </Trigger>
       </div>
@@ -91,10 +77,7 @@ export const FieldRuleGroup = ({
         <Command className="flex flex-col gap-2 p-2">
           <div className="border-grey-90 flex items-center gap-2 border-b p-2 pb-3">
             {selectedRuleGroup ? (
-              <RuleGroup
-                ruleGroup={selectedRuleGroup}
-                onClear={() => onChange?.('')}
-              />
+              <RuleGroup ruleGroup={selectedRuleGroup} onClear={() => onChange?.('')} />
             ) : null}
             <CommandInput
               placeholder={t('scenarios:rules.new_group')}
@@ -114,9 +97,7 @@ export const FieldRuleGroup = ({
             ) : (
               <CommandEmpty className="flex items-center gap-2 p-2">
                 <Icon icon="plus" className="text-grey-80 size-4" />
-                <span className="text-grey-80">
-                  {t('scenarios:rules.empty_groups')}
-                </span>
+                <span className="text-grey-80">{t('scenarios:rules.empty_groups')}</span>
               </CommandEmpty>
             )}
             {value && !finalRuleGroups.includes(value) ? (

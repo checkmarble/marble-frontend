@@ -62,10 +62,7 @@ export interface LinkToSingle {
   childFieldId: string;
 }
 
-function adaptLinkToSingle(
-  linkName: string,
-  linksToSingleDto: LinkToSingleDto,
-): LinkToSingle {
+function adaptLinkToSingle(linkName: string, linksToSingleDto: LinkToSingleDto): LinkToSingle {
   return {
     id: linksToSingleDto.id,
     name: linkName,
@@ -169,9 +166,7 @@ export type CreatePivotInput =
       pathLinkIds: string[];
     };
 
-export function adaptCreatePivotInputDto(
-  createPivotInput: CreatePivotInput,
-): CreatePivotInputDto {
+export function adaptCreatePivotInputDto(createPivotInput: CreatePivotInput): CreatePivotInputDto {
   if ('fieldId' in createPivotInput) {
     return {
       base_table_id: createPivotInput.baseTableId,
@@ -194,9 +189,7 @@ export interface CreateFieldInput {
   isUnique?: boolean;
 }
 
-export function adaptCreateTableFieldDto(
-  createFieldInput: CreateFieldInput,
-): CreateTableFieldDto {
+export function adaptCreateTableFieldDto(createFieldInput: CreateFieldInput): CreateTableFieldDto {
   return {
     name: createFieldInput.name,
     description: createFieldInput.description,
@@ -213,9 +206,7 @@ export interface UpdateFieldInput {
   isUnique?: boolean;
 }
 
-export function adaptUpdateFieldDto(
-  updateFieldInput: UpdateFieldInput,
-): UpdateTableFieldDto {
+export function adaptUpdateFieldDto(updateFieldInput: UpdateFieldInput): UpdateTableFieldDto {
   return {
     description: updateFieldInput.description,
     is_enum: updateFieldInput.isEnum,
@@ -296,9 +287,7 @@ export function getDataTypeIcon(dataType?: DataType): IconName | undefined {
   }
 }
 
-export function getDataTypeTKey(
-  dataType?: DataType,
-): ParseKeys<'scenarios'> | undefined {
+export function getDataTypeTKey(dataType?: DataType): ParseKeys<'scenarios'> | undefined {
   switch (dataType) {
     case 'String':
       return 'edit_operand.data_type.string';
@@ -319,9 +308,7 @@ export function getDataTypeTKey(
   }
 }
 
-export function getConstantDataTypeTKey(
-  dataType?: DataType,
-): ParseKeys<'scenarios'> | undefined {
+export function getConstantDataTypeTKey(dataType?: DataType): ParseKeys<'scenarios'> | undefined {
   switch (dataType) {
     case 'String':
       return 'edit_operand.constant.use_data_type.string';

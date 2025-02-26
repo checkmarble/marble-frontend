@@ -1,21 +1,9 @@
-import {
-  type ValidTimestampExtractParts,
-  validTimestampExtractParts,
-} from './astNode/time';
+import { type ValidTimestampExtractParts, validTimestampExtractParts } from './astNode/time';
 
-export const aggregatorOperators = [
-  'AVG',
-  'COUNT',
-  'COUNT_DISTINCT',
-  'MAX',
-  'MIN',
-  'SUM',
-] as const;
+export const aggregatorOperators = ['AVG', 'COUNT', 'COUNT_DISTINCT', 'MAX', 'MIN', 'SUM'] as const;
 export type AggregatorOperator = (typeof aggregatorOperators)[number];
 
-export function isAggregatorOperator(
-  value: string,
-): value is AggregatorOperator {
+export function isAggregatorOperator(value: string): value is AggregatorOperator {
   return (aggregatorOperators as ReadonlyArray<string>).includes(value);
 }
 
@@ -26,10 +14,6 @@ export function isTimeAddOperator(value: string): value is TimeAddOperator {
   return (timeAddOperators as ReadonlyArray<string>).includes(value);
 }
 
-export function isTimestampPart(
-  value: string,
-): value is ValidTimestampExtractParts {
-  return validTimestampExtractParts.includes(
-    value as ValidTimestampExtractParts,
-  );
+export function isTimestampPart(value: string): value is ValidTimestampExtractParts {
+  return validTimestampExtractParts.includes(value as ValidTimestampExtractParts);
 }

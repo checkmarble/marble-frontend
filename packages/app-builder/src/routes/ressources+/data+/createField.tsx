@@ -6,11 +6,7 @@ import {
   FormLabel,
 } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import {
-  EnumDataTypes,
-  isStatusConflictHttpError,
-  UniqueDataTypes,
-} from '@app-builder/models';
+import { EnumDataTypes, isStatusConflictHttpError, UniqueDataTypes } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { captureUnexpectedRemixError } from '@app-builder/services/monitoring';
 import { getRoute } from '@app-builder/utils/routes';
@@ -21,14 +17,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { Form, FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import {
-  Button,
-  Checkbox,
-  HiddenInputs,
-  Input,
-  Modal,
-  Select,
-} from 'ui-design-system';
+import { Button, Checkbox, HiddenInputs, Input, Modal, Select } from 'ui-design-system';
 import { z } from 'zod';
 
 export const handle = {
@@ -81,8 +70,7 @@ export async function action({ request }: ActionFunctionArgs) {
       error: parsedData.error.format(),
     });
   }
-  const { name, description, type, required, tableId, isEnum, isUnique } =
-    parsedData.data;
+  const { name, description, type, required, tableId, isEnum, isUnique } = parsedData.data;
 
   try {
     await dataModelRepository.postDataModelTableField(tableId, {
@@ -134,13 +122,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function CreateField({
-  tableId,
-  children,
-}: {
-  tableId: string;
-  children: React.ReactNode;
-}) {
+export function CreateField({ tableId, children }: { tableId: string; children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -158,13 +140,7 @@ export function CreateField({
   );
 }
 
-function CreateFieldContent({
-  tableId,
-  closeModal,
-}: {
-  tableId: string;
-  closeModal: () => void;
-}) {
+function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeModal: () => void }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
@@ -236,9 +212,7 @@ function CreateFieldContent({
                   <FormControl>
                     <Input
                       type="text"
-                      placeholder={t(
-                        'data:create_field.description_placeholder',
-                      )}
+                      placeholder={t('data:create_field.description_placeholder')}
                       {...field}
                     />
                   </FormControl>
@@ -319,9 +293,7 @@ function CreateFieldContent({
                     </FormControl>
                     <FormLabel>
                       <p>{t('data:create_field.is_enum.title')}</p>
-                      <p className="text-xs">
-                        {t('data:create_field.is_enum.subtitle')}
-                      </p>
+                      <p className="text-xs">{t('data:create_field.is_enum.subtitle')}</p>
                     </FormLabel>
                     <FormError />
                   </FormItem>
@@ -345,14 +317,10 @@ function CreateFieldContent({
                     </FormControl>
                     <FormLabel>
                       <p>{t('data:edit_field.is_unique.title')}</p>
-                      <p className="text-xs">
-                        {t('data:edit_field.is_unique.toggle')}
-                      </p>
+                      <p className="text-xs">{t('data:edit_field.is_unique.toggle')}</p>
                       {field.value ? (
                         <p className="text-red-47 text-xs">
-                          {t(
-                            'data:edit_field.is_unique.warning_creation_asynchronous',
-                          )}
+                          {t('data:edit_field.is_unique.warning_creation_asynchronous')}
                         </p>
                       ) : null}
                     </FormLabel>
@@ -368,12 +336,7 @@ function CreateFieldContent({
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="create"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="create">
               {t('data:create_field.button_accept')}
             </Button>
           </div>

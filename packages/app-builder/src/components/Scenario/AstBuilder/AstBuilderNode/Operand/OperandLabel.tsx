@@ -29,8 +29,7 @@ const operandContainerClassnames = cva(
     variants: {
       interactionMode: {
         viewer: 'bg-grey-98',
-        editor:
-          'bg-grey-100 aria-expanded:bg-purple-98 aria-expanded:border-purple-65',
+        editor: 'bg-grey-100 aria-expanded:bg-purple-98 aria-expanded:border-purple-65',
       },
       validationStatus: {
         valid: '',
@@ -82,8 +81,7 @@ const operandContainerClassnames = cva(
   },
 );
 
-interface OperandLabelProps
-  extends VariantProps<typeof operandContainerClassnames> {
+interface OperandLabelProps extends VariantProps<typeof operandContainerClassnames> {
   astNode: AstNode;
   dataType: DataType;
   operandType: OperandType;
@@ -93,104 +91,97 @@ interface OperandLabelProps
 }
 
 // TODO: split this comp in separate components for use in Editor, Viewer and ReturnValues
-export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(
-  function OperandLabel(
-    {
-      astNode,
-      placeholder,
-      interactionMode,
-      returnValue,
-      dataType,
-      operandType,
-      displayName,
-      validationStatus,
-      ...props
-    },
-    ref,
-  ) {
-    const { t } = useTranslation(['scenarios']);
-
-    const shouldDisplayPlaceholder = isUndefinedAstNode(astNode);
-    const [displayReturnValues] = useDisplayReturnValues();
-    const shouldDisplayReturnValue =
-      displayReturnValues && returnValue !== undefined;
-
-    let children;
-    if (shouldDisplayPlaceholder) {
-      children = (
-        <span
-          className={operandDisplayName({
-            type: 'placeholder',
-          })}
-        >
-          {placeholder ?? t('scenarios:edit_operand.placeholder')}
-        </span>
-      );
-    } else if (shouldDisplayReturnValue) {
-      children = (
-        <>
-          <span className={operandDisplayName()}>{returnValue}</span>
-          <OperandInfos
-            gutter={16}
-            shift={-16}
-            className="group-hover:hover:text-purple-65 group-hover:text-purple-82 size-5 shrink-0 text-transparent transition-colors"
-            astNode={astNode}
-            dataType={dataType}
-            operandType={operandType}
-            displayName={displayName}
-          />
-        </>
-      );
-    } else {
-      children = (
-        <>
-          <TypeInfos
-            interactionMode={interactionMode}
-            operandType={operandType}
-            dataType={dataType}
-          />
-          <span className={operandDisplayName()}>{displayName}</span>
-          <OperandInfos
-            gutter={16}
-            shift={-16}
-            className="group-hover:hover:text-purple-65 group-hover:text-purple-82 size-5 shrink-0 text-transparent transition-colors"
-            astNode={astNode}
-            dataType={dataType}
-            operandType={operandType}
-            displayName={displayName}
-          />
-        </>
-      );
-    }
-
-    return (
-      <Ariakit.Role
-        ref={ref}
-        {...props}
-        className={operandContainerClassnames({
-          interactionMode,
-          validationStatus,
-        })}
-        render={interactionMode === 'editor' ? <button /> : <div />}
-      >
-        {children}
-      </Ariakit.Role>
-    );
-  },
-);
-
-const typeInfosClassnames = cva(
-  'flex items-center justify-center rounded-sm p-1 text-grey-00',
+export const OperandLabel = forwardRef<HTMLDivElement, OperandLabelProps>(function OperandLabel(
   {
-    variants: {
-      interactionMode: {
-        viewer: 'bg-grey-90',
-        editor:
-          'bg-grey-98 group-aria-expanded:bg-purple-96 group-aria-expanded:text-purple-65',
-      },
+    astNode,
+    placeholder,
+    interactionMode,
+    returnValue,
+    dataType,
+    operandType,
+    displayName,
+    validationStatus,
+    ...props
+  },
+  ref,
+) {
+  const { t } = useTranslation(['scenarios']);
+
+  const shouldDisplayPlaceholder = isUndefinedAstNode(astNode);
+  const [displayReturnValues] = useDisplayReturnValues();
+  const shouldDisplayReturnValue = displayReturnValues && returnValue !== undefined;
+
+  let children;
+  if (shouldDisplayPlaceholder) {
+    children = (
+      <span
+        className={operandDisplayName({
+          type: 'placeholder',
+        })}
+      >
+        {placeholder ?? t('scenarios:edit_operand.placeholder')}
+      </span>
+    );
+  } else if (shouldDisplayReturnValue) {
+    children = (
+      <>
+        <span className={operandDisplayName()}>{returnValue}</span>
+        <OperandInfos
+          gutter={16}
+          shift={-16}
+          className="group-hover:hover:text-purple-65 group-hover:text-purple-82 size-5 shrink-0 text-transparent transition-colors"
+          astNode={astNode}
+          dataType={dataType}
+          operandType={operandType}
+          displayName={displayName}
+        />
+      </>
+    );
+  } else {
+    children = (
+      <>
+        <TypeInfos
+          interactionMode={interactionMode}
+          operandType={operandType}
+          dataType={dataType}
+        />
+        <span className={operandDisplayName()}>{displayName}</span>
+        <OperandInfos
+          gutter={16}
+          shift={-16}
+          className="group-hover:hover:text-purple-65 group-hover:text-purple-82 size-5 shrink-0 text-transparent transition-colors"
+          astNode={astNode}
+          dataType={dataType}
+          operandType={operandType}
+          displayName={displayName}
+        />
+      </>
+    );
+  }
+
+  return (
+    <Ariakit.Role
+      ref={ref}
+      {...props}
+      className={operandContainerClassnames({
+        interactionMode,
+        validationStatus,
+      })}
+      render={interactionMode === 'editor' ? <button /> : <div />}
+    >
+      {children}
+    </Ariakit.Role>
+  );
+});
+
+const typeInfosClassnames = cva('flex items-center justify-center rounded-sm p-1 text-grey-00', {
+  variants: {
+    interactionMode: {
+      viewer: 'bg-grey-90',
+      editor: 'bg-grey-98 group-aria-expanded:bg-purple-96 group-aria-expanded:text-purple-65',
     },
   },
-);
+});
 
 interface TypeInfosProps extends VariantProps<typeof typeInfosClassnames> {
   operandType: OperandType;
@@ -210,8 +201,7 @@ function TypeInfos({ operandType, dataType, interactionMode }: TypeInfosProps) {
     },
   ];
 
-  if (typeInfos.filter(({ icon }) => icon !== undefined).length === 0)
-    return null;
+  if (typeInfos.filter(({ icon }) => icon !== undefined).length === 0) return null;
 
   return (
     <div className="flex flex-row gap-1">
@@ -219,11 +209,7 @@ function TypeInfos({ operandType, dataType, interactionMode }: TypeInfosProps) {
         if (!icon) return null;
         return (
           <div key={tKey} className={typeInfosClassnames({ interactionMode })}>
-            <Icon
-              icon={icon}
-              className="size-4 shrink-0"
-              aria-label={tKey ? t(tKey) : undefined}
-            />
+            <Icon icon={icon} className="size-4 shrink-0" aria-label={tKey ? t(tKey) : undefined} />
           </div>
         );
       })}
@@ -231,17 +217,14 @@ function TypeInfos({ operandType, dataType, interactionMode }: TypeInfosProps) {
   );
 }
 
-const operandDisplayName = cva(
-  'text-s font-medium group-aria-expanded:text-purple-65 break-all',
-  {
-    variants: {
-      type: {
-        placeholder: 'text-grey-80',
-        value: 'text-grey-00',
-      },
-    },
-    defaultVariants: {
-      type: 'value',
+const operandDisplayName = cva('text-s font-medium group-aria-expanded:text-purple-65 break-all', {
+  variants: {
+    type: {
+      placeholder: 'text-grey-80',
+      value: 'text-grey-00',
     },
   },
-);
+  defaultVariants: {
+    type: 'value',
+  },
+});

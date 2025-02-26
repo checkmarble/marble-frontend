@@ -10,10 +10,7 @@ import {
   isEditableAstNode,
 } from '@app-builder/models/astNode/builder-ast-node';
 import { type ConstantAstNode } from '@app-builder/models/astNode/constant';
-import {
-  isDatabaseAccess,
-  isPayload,
-} from '@app-builder/models/astNode/data-accessor';
+import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
 import { useOptionalCopyPasteAST } from '@app-builder/services/editor/copy-paste-ast';
 import { useTriggerObjectTable } from '@app-builder/services/editor/options';
 import { type AstNodeErrors } from '@app-builder/services/validation/ast-node-validation';
@@ -71,19 +68,15 @@ type OperandEditorStore = OperandEditorState & {
   actions: OperandEditorActions;
 };
 
-const OperandEditorContext = createSimpleContext<StoreApi<OperandEditorStore>>(
-  'OperandEditorContext',
-);
+const OperandEditorContext =
+  createSimpleContext<StoreApi<OperandEditorStore>>('OperandEditorContext');
 
 interface OperandEditorProviderProps {
   children: React.ReactNode;
   onSave: (astNode: AstNode) => void;
 }
 
-export function OperandEditorProvider({
-  children,
-  onSave,
-}: OperandEditorProviderProps) {
+export function OperandEditorProvider({ children, onSave }: OperandEditorProviderProps) {
   const onSaveCallbackRef = useCallbackRef(onSave);
 
   const [store] = React.useState(() =>
@@ -123,13 +116,7 @@ export function OperandEditorProvider({
             searchValue,
           });
         },
-        setOperandEditorOpen(
-          open,
-          astNode,
-          options,
-          coerceToConstant,
-          evaluationErrors,
-        ) {
+        setOperandEditorOpen(open, astNode, options, coerceToConstant, evaluationErrors) {
           if (open) {
             set({
               operandEditorOpen: true,
@@ -152,11 +139,7 @@ export function OperandEditorProvider({
     })),
   );
 
-  return (
-    <OperandEditorContext.Provider value={store}>
-      {children}
-    </OperandEditorContext.Provider>
-  );
+  return <OperandEditorContext.Provider value={store}>{children}</OperandEditorContext.Provider>;
 }
 
 function createInitialState(): OperandEditorState {
@@ -175,9 +158,7 @@ function createInitialState(): OperandEditorState {
   };
 }
 
-function useOperandEditorStore<Out>(
-  selector: (state: OperandEditorStore) => Out,
-) {
+function useOperandEditorStore<Out>(selector: (state: OperandEditorStore) => Out) {
   const store = OperandEditorContext.useValue();
   return useStore(store, selector);
 }

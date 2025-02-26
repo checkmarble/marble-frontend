@@ -1,9 +1,6 @@
 import { casesI18n } from '@app-builder/components/Cases';
 import { FilesList } from '@app-builder/components/Files/FilesList';
-import {
-  getCaseFileDownloadEndpoint,
-  getCaseFileUploadEndpoint,
-} from '@app-builder/utils/files';
+import { getCaseFileDownloadEndpoint, getCaseFileUploadEndpoint } from '@app-builder/utils/files';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { type Namespace } from 'i18next';
 

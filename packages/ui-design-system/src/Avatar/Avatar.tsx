@@ -1,9 +1,4 @@
-import {
-  type AvatarProps as RootAvatarProps,
-  Fallback,
-  Image,
-  Root,
-} from '@radix-ui/react-avatar';
+import { type AvatarProps as RootAvatarProps, Fallback, Image, Root } from '@radix-ui/react-avatar';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const avatar = cva(
@@ -31,14 +26,7 @@ export type AvatarProps = Omit<RootAvatarProps, 'asChild'> &
     src?: string;
   };
 
-export function Avatar({
-  firstName,
-  lastName,
-  src,
-  size,
-  className,
-  ...props
-}: AvatarProps) {
+export function Avatar({ firstName, lastName, src, size, className, ...props }: AvatarProps) {
   return (
     <Root
       className={avatar({
@@ -51,11 +39,7 @@ export function Avatar({
         referrerPolicy="no-referrer"
         className="size-full object-cover"
         src={src}
-        alt={
-          firstName || lastName
-            ? `${firstName ?? ''} ${lastName ?? ''}`
-            : 'Unknown user'
-        }
+        alt={firstName || lastName ? `${firstName ?? ''} ${lastName ?? ''}` : 'Unknown user'}
       />
       <Fallback
         className="text-grey-00 flex size-full items-center justify-center text-center font-normal uppercase"

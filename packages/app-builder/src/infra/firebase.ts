@@ -1,8 +1,4 @@
-import {
-  type FirebaseApp,
-  type FirebaseOptions,
-  initializeApp,
-} from 'firebase/app';
+import { type FirebaseApp, type FirebaseOptions, initializeApp } from 'firebase/app';
 import {
   type Auth,
   connectAuthEmulator,
@@ -42,9 +38,7 @@ export type FirebaseConfig =
       options: FirebaseOptions;
     };
 
-export function initializeFirebaseClient(
-  config: FirebaseConfig,
-): FirebaseClientWrapper {
+export function initializeFirebaseClient(config: FirebaseConfig): FirebaseClientWrapper {
   const app = initializeApp(config.options);
 
   const clientAuth = getAuth(app);

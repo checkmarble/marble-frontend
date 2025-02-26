@@ -1,8 +1,4 @@
-import {
-  type DataModel,
-  type DataModelField,
-  getDataTypeIcon,
-} from '@app-builder/models';
+import { type DataModel, type DataModelField, getDataTypeIcon } from '@app-builder/models';
 import * as Ariakit from '@ariakit/react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -30,9 +26,7 @@ function getDataModelFieldLabel(dataModelField: DataModelFieldOption | null) {
 
   return {
     rawValue: dataModelField,
-    value: [dataModelField?.tableName, dataModelField?.fieldName]
-      .filter(Boolean)
-      .join('.'),
+    value: [dataModelField?.tableName, dataModelField?.fieldName].filter(Boolean).join('.'),
   };
 }
 
@@ -80,11 +74,7 @@ export const EditDataModelField = ({
           <div>{placeholder}</div>
         ) : (
           <div>
-            <Trans
-              t={t}
-              i18nKey="scenarios:edit_aggregation.field_in_table"
-              values={rawValue}
-            />
+            <Trans t={t} i18nKey="scenarios:edit_aggregation.field_in_table" values={rawValue} />
           </div>
         )}
         <Icon icon="arrow-2-down" className="size-5" />
@@ -112,11 +102,7 @@ export const EditDataModelField = ({
           </MenuContent>
         </MenuPopover>
       ) : (
-        <EditDataModelFieldTableMenu
-          tableName={tableName}
-          fields={options}
-          onChange={onChange}
-        />
+        <EditDataModelFieldTableMenu tableName={tableName} fields={options} onChange={onChange} />
       )}
     </MenuRoot>
   );
@@ -153,12 +139,7 @@ export const EditDataModelFieldTableMenu = ({
                 className="data-[active-item]:bg-purple-98 group grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
                 onClick={() => onChange(field)}
               >
-                {typeIcon ? (
-                  <Icon
-                    icon={typeIcon}
-                    className="col-start-1 size-5 shrink-0"
-                  />
-                ) : null}
+                {typeIcon ? <Icon icon={typeIcon} className="col-start-1 size-5 shrink-0" /> : null}
                 <div className="col-start-2 flex items-center justify-between">
                   <span>{field.fieldName}</span>
                   <FieldInfo field={field.field} />

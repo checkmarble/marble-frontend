@@ -1,23 +1,12 @@
-import {
-  type ReviewStatus,
-  reviewStatuses,
-} from '@app-builder/models/decision';
+import { type ReviewStatus, reviewStatuses } from '@app-builder/models/decision';
 import { type Inbox } from '@app-builder/models/inbox';
 import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
 import { type Scenario } from '@app-builder/models/scenario';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import {
-  type DateRangeFilterForm,
-  dateRangeSchema,
-} from '@app-builder/utils/schema/filterSchema';
+import { type DateRangeFilterForm, dateRangeSchema } from '@app-builder/utils/schema/filterSchema';
 import * as React from 'react';
-import {
-  FormProvider,
-  useController,
-  useForm,
-  useFormContext,
-} from 'react-hook-form';
+import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
 import * as z from 'zod';
 
@@ -53,9 +42,8 @@ interface DecisionFiltersContextValue {
   onDecisionFilterClose: () => void;
 }
 
-const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>(
-  'DecisionFiltersContext',
-);
+const DecisionFiltersContext =
+  createSimpleContext<DecisionFiltersContextValue>('DecisionFiltersContext');
 
 export type DecisionFiltersForm = {
   dateRange: DateRangeFilterForm;
@@ -81,10 +69,7 @@ const emptyDecisionFilters: DecisionFiltersForm = {
   triggerObject: [],
 };
 
-function adaptFilterValues({
-  dateRange,
-  ...otherFilters
-}: DecisionFilters): DecisionFiltersForm {
+function adaptFilterValues({ dateRange, ...otherFilters }: DecisionFilters): DecisionFiltersForm {
   const adaptedFilterValues: DecisionFiltersForm = {
     ...emptyDecisionFilters,
     ...otherFilters,
@@ -150,20 +135,11 @@ export function DecisionFiltersProvider({
       hasPivots,
       inboxes,
     }),
-    [
-      filterValues,
-      hasPivots,
-      onDecisionFilterClose,
-      scenarios,
-      inboxes,
-      submitDecisionFilters,
-    ],
+    [filterValues, hasPivots, onDecisionFilterClose, scenarios, inboxes, submitDecisionFilters],
   );
   return (
     <FormProvider {...formMethods}>
-      <DecisionFiltersContext.Provider value={value}>
-        {children}
-      </DecisionFiltersContext.Provider>
+      <DecisionFiltersContext.Provider value={value}>{children}</DecisionFiltersContext.Provider>
     </FormProvider>
   );
 }
@@ -189,10 +165,7 @@ export function useHasCaseFilter() {
 }
 
 export function useOutcomeAndReviewStatusFilter() {
-  const { field } = useController<
-    DecisionFiltersForm,
-    'outcomeAndReviewStatus'
-  >({
+  const { field } = useController<DecisionFiltersForm, 'outcomeAndReviewStatus'>({
     name: 'outcomeAndReviewStatus',
   });
   const selectedOutcomeAndReviewStatus = field.value;

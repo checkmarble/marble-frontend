@@ -24,9 +24,7 @@ export interface TestRunRepository {
   launchTestRun(args: TestRunCreateInput): Promise<TestRun>;
   listTestRuns(args: { scenarioId: string }): Promise<TestRun[]>;
   listDecisions(args: { testRunId: string }): Promise<TestRunDecision[]>;
-  listRuleExecutions(args: {
-    testRunId: string;
-  }): Promise<TestRunRuleExecutionCount[]>;
+  listRuleExecutions(args: { testRunId: string }): Promise<TestRunRuleExecutionCount[]>;
 }
 
 const testruns: TestRun[] = [
@@ -42,9 +40,7 @@ const testruns: TestRun[] = [
   },
 ];
 
-const testrunDecisions: TestRunDecision[] = [
-  ...(Array(200000) as number[]),
-].map(() => ({
+const testrunDecisions: TestRunDecision[] = [...(Array(200000) as number[])].map(() => ({
   version: Math.random() > 0.5 ? '1' : '4',
   outcome: knownOutcomes[randomInteger(0, testRunStatuses.length - 1)]!,
   count: randomInteger(1, 100),
@@ -162,9 +158,7 @@ export const makeGetTestRunRepository2 = () => {
   return (_: MarbleCoreApi): TestRunRepository => ({
     getTestRun: ({ testRunId }) => {
       const run = testruns.find((run) => run.id === testRunId);
-      return run
-        ? Promise.resolve(run)
-        : Promise.reject(new Error('Test run not found'));
+      return run ? Promise.resolve(run) : Promise.reject(new Error('Test run not found'));
     },
     cancelTestRun: ({ testRunId }) => {
       const run = testruns.find((run) => run.id === testRunId);
@@ -197,9 +191,7 @@ export const makeGetTestRunRepository2 = () => {
         creatorId: '96762987-8895-4af2-9c0a-2dffde09985c',
         status: (!testruns.some((r) => r.status === 'up')
           ? testRunStatuses[0]
-          : testRunStatuses[
-              randomInteger(1, testRunStatuses.length - 1)
-            ]) as TestRunStatus,
+          : testRunStatuses[randomInteger(1, testRunStatuses.length - 1)]) as TestRunStatus,
       };
 
       testruns.push(testRun);
@@ -230,13 +222,11 @@ export const makeGetTestRunRepository = () => {
       return result.scenario_test_runs.map(adaptTestRun);
     },
     listDecisions: async ({ testRunId }) => {
-      const { decisions: result } =
-        await marbleCoreApiClient.getDecisionData(testRunId);
+      const { decisions: result } = await marbleCoreApiClient.getDecisionData(testRunId);
       return result.map(adaptTestRunDecision);
     },
     listRuleExecutions: async ({ testRunId }) => {
-      const { rules: result } =
-        await marbleCoreApiClient.getRuleData(testRunId);
+      const { rules: result } = await marbleCoreApiClient.getRuleData(testRunId);
       return result.map(adaptTestRunRuleExecution);
     },
   });

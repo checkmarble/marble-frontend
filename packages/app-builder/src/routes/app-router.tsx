@@ -38,9 +38,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(getRoute('/transfercheck'));
   }
 
-  return forbidden(
-    'You are not allowed to access any page on this application.',
-  );
+  return forbidden('You are not allowed to access any page on this application.');
 }
 
 export function ErrorBoundary() {
@@ -55,9 +53,7 @@ export function ErrorBoundary() {
         <h1 className="text-l text-purple-60 font-semibold">
           {t('common:error_boundary.marble_admin.title')}
         </h1>
-        <p className="text-s mb-6">
-          {t('common:error_boundary.marble_admin.subtitle')}
-        </p>
+        <p className="text-s mb-6">{t('common:error_boundary.marble_admin.subtitle')}</p>
         <div className="mb-1">
           <Form action={getRoute('/ressources/auth/logout')} method="post">
             <Button
@@ -81,9 +77,7 @@ export function ErrorBoundary() {
 
   return (
     <div className="bg-purple-98 flex size-full items-center justify-center">
-      <div className="bg-grey-100 flex max-w-md rounded-2xl p-10 shadow-md">
-        {errorComponent}
-      </div>
+      <div className="bg-grey-100 flex max-w-md rounded-2xl p-10 shadow-md">{errorComponent}</div>
     </div>
   );
 }

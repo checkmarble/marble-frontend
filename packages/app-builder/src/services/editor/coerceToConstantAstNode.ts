@@ -1,7 +1,4 @@
-import {
-  type ConstantAstNode,
-  NewConstantAstNode,
-} from '@app-builder/models/astNode/constant';
+import { type ConstantAstNode, NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import * as R from 'remeda';
 
 export interface CoerceToConstantAstNodeOptions {
@@ -12,9 +9,7 @@ export function coerceToConstantAstNode(
   search: string,
   options: CoerceToConstantAstNodeOptions,
 ): ConstantAstNode[] {
-  const { isCoerceableToBoolean, coerceToBoolean } = getBooleanCoercionLogic(
-    options.booleans,
-  );
+  const { isCoerceableToBoolean, coerceToBoolean } = getBooleanCoercionLogic(options.booleans);
   const results: ConstantAstNode[] = [];
 
   const searchLowerCase = search.trim().toLocaleLowerCase();
@@ -87,9 +82,7 @@ function coerceToConstantArray(search: string): ConstantAstNode[] {
   return [];
 }
 
-function getBooleanCoercionLogic(
-  options: CoerceToConstantAstNodeOptions['booleans'],
-) {
+function getBooleanCoercionLogic(options: CoerceToConstantAstNodeOptions['booleans']) {
   const sanitizedOptions = {
     true: options.true.map((value) => value.trim().toLocaleLowerCase()),
     false: options.false.map((value) => value.trim().toLocaleLowerCase()),

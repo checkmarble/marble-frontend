@@ -3,13 +3,7 @@ import { type Meta, type StoryFn } from '@storybook/react';
 import { Icon } from 'ui-icons';
 
 import { Button } from '../Button/Button';
-import {
-  Command,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from './Command';
+import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from './Command';
 
 function CommandExample() {
   return (

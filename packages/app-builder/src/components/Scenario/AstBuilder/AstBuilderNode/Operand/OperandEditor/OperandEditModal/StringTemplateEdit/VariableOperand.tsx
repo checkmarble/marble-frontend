@@ -1,8 +1,5 @@
 import { type AstNode } from '@app-builder/models';
-import {
-  useGetAstNodeOperandProps,
-  useOperandOptions,
-} from '@app-builder/services/editor/options';
+import { useGetAstNodeOperandProps, useOperandOptions } from '@app-builder/services/editor/options';
 import {
   type AstNodeErrors,
   type ValidationStatus,
@@ -29,9 +26,7 @@ export const VariableOperand = ({
     () =>
       options.filter(
         (option) =>
-          option.dataType === 'String' ||
-          option.dataType === 'Int' ||
-          option.dataType === 'Float',
+          option.dataType === 'String' || option.dataType === 'Int' || option.dataType === 'Float',
       ),
     [options],
   );

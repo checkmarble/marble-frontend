@@ -37,18 +37,13 @@ function NewPermissionsList() {
   } as const;
 }
 
-export type UserPermissions = Record<
-  keyof ReturnType<typeof NewPermissionsList>,
-  boolean
->;
+export type UserPermissions = Record<keyof ReturnType<typeof NewPermissionsList>, boolean>;
 
 export function NewPermissions(): UserPermissions {
   return R.mapValues(NewPermissionsList(), () => false);
 }
 
-export function adaptCurrentUser(
-  credentials: CredentialsDto['credentials'],
-): CurrentUser {
+export function adaptCurrentUser(credentials: CredentialsDto['credentials']): CurrentUser {
   return {
     organizationId: credentials.organization_id,
     partnerId: credentials.partner_id,
@@ -61,9 +56,7 @@ export function adaptCurrentUser(
     },
     permissions: R.pipe(
       NewPermissionsList(),
-      R.mapValues((permissionList) =>
-        credentials.permissions.includes(permissionList),
-      ),
+      R.mapValues((permissionList) => credentials.permissions.includes(permissionList)),
     ),
   };
 }
@@ -90,8 +83,7 @@ export function adaptUser(user: UserDto): User {
 
 export const isAdmin = (user: CurrentUser) => user.role === 'ADMIN';
 
-export const isMarbleAdmin = (user: CurrentUser) =>
-  user.role === 'MARBLE_ADMIN';
+export const isMarbleAdmin = (user: CurrentUser) => user.role === 'MARBLE_ADMIN';
 
 export const isTransferCheckUser = (
   user: CurrentUser,

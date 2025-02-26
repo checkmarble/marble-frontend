@@ -1,7 +1,4 @@
-import {
-  type AggregationFilterOperator,
-  isAggregationFilterOperator,
-} from './astNode/aggregation';
+import { type AggregationFilterOperator, isAggregationFilterOperator } from './astNode/aggregation';
 import type { undefinedAstNodeName } from './astNode/ast-node';
 import {
   isMainAstOperatorFunction,

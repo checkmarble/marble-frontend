@@ -7,15 +7,14 @@ import { filtersI18n } from './filters-i18n';
 
 type AddNewFilterButtonProps = Omit<ButtonProps, 'variant' | 'color' | 'ref'>;
 
-export const AddNewFilterButton = forwardRef<
-  HTMLButtonElement,
-  AddNewFilterButtonProps
->(function AddNewFilterButton(props, ref) {
-  const { t } = useTranslation(filtersI18n);
-  return (
-    <Button variant="tertiary" ref={ref} {...props}>
-      <Icon icon="plus" className="size-5" />
-      <span className="line-clamp-1 capitalize">{t('filters:new_filter')}</span>
-    </Button>
-  );
-});
+export const AddNewFilterButton = forwardRef<HTMLButtonElement, AddNewFilterButtonProps>(
+  function AddNewFilterButton(props, ref) {
+    const { t } = useTranslation(filtersI18n);
+    return (
+      <Button variant="tertiary" ref={ref} {...props}>
+        <Icon icon="plus" className="size-5" />
+        <span className="line-clamp-1 capitalize">{t('filters:new_filter')}</span>
+      </Button>
+    );
+  },
+);

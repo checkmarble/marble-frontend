@@ -1,12 +1,6 @@
 import invariant from 'tiny-invariant';
 
-import {
-  getAtPath,
-  getParentPath,
-  parsePath,
-  removeAtPath,
-  setAtPath,
-} from './tree';
+import { getAtPath, getParentPath, parsePath, removeAtPath, setAtPath } from './tree';
 
 describe('parsePath', () => {
   it.each([
@@ -63,10 +57,7 @@ describe('getParentPath', () => {
   });
 
   it.each([
-    [
-      'root.children.0.namedChildren.foo.children.1',
-      'root.children.0.namedChildren.foo',
-    ],
+    ['root.children.0.namedChildren.foo.children.1', 'root.children.0.namedChildren.foo'],
     [
       'root.namedChildren.foo.namedChildren.bar.children.15',
       'root.namedChildren.foo.namedChildren.bar',
@@ -77,9 +68,7 @@ describe('getParentPath', () => {
     const parentPath = getParentPath(parsedPath);
     invariant(parentPath, 'parentPath should not be null');
     expect(parentPath.path).toStrictEqual(expectedPath);
-    expect(parentPath.childPathSegment).toStrictEqual(
-      parsedPath[parsedPath.length - 1],
-    );
+    expect(parentPath.childPathSegment).toStrictEqual(parsedPath[parsedPath.length - 1]);
   });
 });
 

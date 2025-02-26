@@ -43,10 +43,7 @@ export function Callout({
   if (!children) return null;
 
   return (
-    <div
-      className={callout({ color, variant, className, bordered })}
-      {...otherProps}
-    >
+    <div className={callout({ color, variant, className, bordered })} {...otherProps}>
       <Icon icon="lightbulb" className="size-6 shrink-0" />
       {children}
     </div>

@@ -1,16 +1,6 @@
-import {
-  navigationI18n,
-  SidebarButton,
-  SidebarLink,
-} from '@app-builder/components';
-import {
-  HelpCenter,
-  useMarbleCoreResources,
-} from '@app-builder/components/HelpCenter';
-import {
-  LeftSidebar,
-  ToggleSidebar,
-} from '@app-builder/components/Layout/LeftSidebar';
+import { navigationI18n, SidebarButton, SidebarLink } from '@app-builder/components';
+import { HelpCenter, useMarbleCoreResources } from '@app-builder/components/HelpCenter';
+import { LeftSidebar, ToggleSidebar } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleCoreUser } from '@app-builder/models';
@@ -34,10 +24,9 @@ import { getSettings } from './settings+/_layout';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService, versionRepository } = serverServices;
-  const { user, organization, entitlements } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const { user, organization, entitlements } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   if (!isMarbleCoreUser(user)) {
     throw forbidden('Only Marble Core users can access this app.');
@@ -136,9 +125,7 @@ export default function Builder() {
                           <SidebarLink
                             labelTKey="navigation:analytics"
                             to={getRoute('/analytics')}
-                            Icon={(props) => (
-                              <Icon icon="analytics" {...props} />
-                            )}
+                            Icon={(props) => <Icon icon="analytics" {...props} />}
                           />
                         ) : null,
                       )
@@ -148,10 +135,7 @@ export default function Builder() {
                           <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
                             {t('navigation:analytics')}
                           </span>
-                          <Nudge
-                            className="size-6"
-                            content={t('navigation:analytics.nudge')}
-                          />
+                          <Nudge className="size-6" content={t('navigation:analytics.nudge')} />
                         </div>
                       ))
                       .with('test', () =>
@@ -159,9 +143,7 @@ export default function Builder() {
                           <SidebarLink
                             labelTKey="navigation:analytics"
                             to={getRoute('/analytics')}
-                            Icon={(props) => (
-                              <Icon icon="analytics" {...props} />
-                            )}
+                            Icon={(props) => <Icon icon="analytics" {...props} />}
                           >
                             <Nudge
                               className="size-6"
@@ -207,9 +189,7 @@ export default function Builder() {
                       MenuButton={
                         <SidebarButton
                           labelTKey="navigation:helpCenter"
-                          Icon={(props) => (
-                            <Icon icon="helpcenter" {...props} />
-                          )}
+                          Icon={(props) => <Icon icon="helpcenter" {...props} />}
                         />
                       }
                       versions={versions}

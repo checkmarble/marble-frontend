@@ -18,19 +18,14 @@ export interface OrganizationRepository {
 }
 
 export function makeGetOrganizationRepository() {
-  return (
-    marbleCoreApiClient: MarbleCoreApi,
-    organizationId: string,
-  ): OrganizationRepository => ({
+  return (marbleCoreApiClient: MarbleCoreApi, organizationId: string): OrganizationRepository => ({
     getCurrentOrganization: async () => {
-      const { organization } =
-        await marbleCoreApiClient.getOrganization(organizationId);
+      const { organization } = await marbleCoreApiClient.getOrganization(organizationId);
 
       return adaptOrganizationDto(organization);
     },
     listUsers: async () => {
-      const { users } =
-        await marbleCoreApiClient.listOrganizationUsers(organizationId);
+      const { users } = await marbleCoreApiClient.listOrganizationUsers(organizationId);
       return users.map(adaptUser);
     },
     listTags: async (args) => {
@@ -39,14 +34,11 @@ export function makeGetOrganizationRepository() {
       return tags;
     },
     updateOrganization: async (args) => {
-      const { organization } = await marbleCoreApiClient.updateOrganization(
-        organizationId,
-        {
-          default_scenario_timezone: args.changes.defaultScenarioTimezone,
-          sanctions_limit: args.changes.sanctionLimit,
-          sanctions_threshold: args.changes.sanctionThreshold,
-        },
-      );
+      const { organization } = await marbleCoreApiClient.updateOrganization(organizationId, {
+        default_scenario_timezone: args.changes.defaultScenarioTimezone,
+        sanctions_limit: args.changes.sanctionLimit,
+        sanctions_threshold: args.changes.sanctionThreshold,
+      });
 
       return adaptOrganizationDto(organization);
     },

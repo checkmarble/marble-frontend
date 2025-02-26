@@ -6,12 +6,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -105,10 +100,7 @@ export function CreateInbox({
         {t('settings:inboxes.new_inbox.create')}
       </ModalV2.Trigger>
       <ModalV2.Content onClick={(e) => e.stopPropagation()}>
-        <CreateInboxContent
-          redirectRoutePath={redirectRoutePath}
-          setOpen={setOpen}
-        />
+        <CreateInboxContent redirectRoutePath={redirectRoutePath} setOpen={setOpen} />
       </ModalV2.Content>
     </ModalV2.Root>
   );
@@ -155,26 +147,16 @@ export function CreateInboxContent({
             {...getInputProps(fields.redirectRoute, { type: 'hidden' })}
             key={fields.redirectRoute.key}
           />
-          <FormField
-            name={fields.name.name}
-            className="group flex flex-col gap-2"
-          >
+          <FormField name={fields.name.name} className="group flex flex-col gap-2">
             <FormLabel>{t('settings:inboxes.new_inbox.name')}</FormLabel>
             <FormInput type="text" />
             <FormErrorOrDescription />
           </FormField>
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="create"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="create">
               <Icon icon="new-inbox" className="size-5" />
               {t('settings:inboxes.new_inbox.create')}
             </Button>

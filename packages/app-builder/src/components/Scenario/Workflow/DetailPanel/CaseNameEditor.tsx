@@ -7,14 +7,7 @@ import {
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useAstValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { useTriggerObjectTable } from '@app-builder/services/editor/options';
-import {
-  Fragment,
-  type ReactNode,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, ModalV2 } from 'ui-design-system';
@@ -33,11 +26,7 @@ export type CaseNameEditorProps = {
   onChange: (astNode: StringTemplateAstNode | null) => void;
 };
 
-export const CaseNameEditor = ({
-  label,
-  value,
-  onChange,
-}: CaseNameEditorProps) => {
+export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) => {
   const { t } = useTranslation(['scenarios']);
   const triggerObjectTable = useTriggerObjectTable();
   const [isEditing, setIsEditing] = useState(false);
@@ -53,9 +42,7 @@ export const CaseNameEditor = ({
 
   const caseNameContent = value ? getAstNodeDisplayElement(value) : '';
   const isDefaultCaseName = useMemo(() => {
-    return value
-      ? R.isDeepEqual(value, initialValueRef.current ?? defaultCaseNameNode)
-      : true;
+    return value ? R.isDeepEqual(value, initialValueRef.current ?? defaultCaseNameNode) : true;
   }, [value, initialValueRef, defaultCaseNameNode]);
 
   const handleAstNodeChange = (newAstNode: AstNode) => {
@@ -85,14 +72,10 @@ export const CaseNameEditor = ({
           <Button
             size="icon"
             variant="secondary"
-            onClick={() =>
-              onChange(initialValueRef.current ?? defaultCaseNameNode)
-            }
+            onClick={() => onChange(initialValueRef.current ?? defaultCaseNameNode)}
           >
             <Icon icon="restart-alt" className="size-4" />
-            <span className="line-clamp-1">
-              {t('scenarios:edit_operand.clear_operand')}
-            </span>
+            <span className="line-clamp-1">{t('scenarios:edit_operand.clear_operand')}</span>
           </Button>
         ) : null}
         <ModalV2.Content
@@ -119,9 +102,7 @@ export const CaseNameEditor = ({
 
 function getAstNodeDisplayElement(astNode: StringTemplateAstNode): ReactNode {
   const template = astNode.children[0]?.constant ?? '';
-  const splittedTemplate = template.split(
-    STRING_TEMPLATE_VARIABLE_CAPTURE_REGEXP,
-  );
+  const splittedTemplate = template.split(STRING_TEMPLATE_VARIABLE_CAPTURE_REGEXP);
 
   return (
     <span className="truncate whitespace-pre-wrap text-nowrap">

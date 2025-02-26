@@ -123,55 +123,33 @@ interface MakeAuthenticationServerServiceArgs {
   getUserRepository: (marbleCoreApiClient: MarbleCoreApi) => UserRepository;
   getInboxRepository: (marbleCoreApiClient: MarbleCoreApi) => InboxRepository;
   getEditorRepository: (marbleCoreApiClient: MarbleCoreApi) => EditorRepository;
-  getDecisionRepository: (
-    marbleCoreApiClient: MarbleCoreApi,
-  ) => DecisionRepository;
+  getDecisionRepository: (marbleCoreApiClient: MarbleCoreApi) => DecisionRepository;
   getCaseRepository: (marbleCoreApiClient: MarbleCoreApi) => CaseRepository;
-  getSanctionCheckRepository: (
-    marbleCoreApiClient: MarbleCoreApi,
-  ) => SanctionCheckRepository;
-  getCustomListRepository: (
-    marbleCoreApiClient: MarbleCoreApi,
-  ) => CustomListsRepository;
+  getSanctionCheckRepository: (marbleCoreApiClient: MarbleCoreApi) => SanctionCheckRepository;
+  getCustomListRepository: (marbleCoreApiClient: MarbleCoreApi) => CustomListsRepository;
   getOrganizationRepository: (
     marbleCoreApiClient: MarbleCoreApi,
     organizationId: string,
   ) => OrganizationRepository;
-  getScenarioRepository: (
-    marbleCoreApiClient: MarbleCoreApi,
-  ) => ScenarioRepository;
+  getScenarioRepository: (marbleCoreApiClient: MarbleCoreApi) => ScenarioRepository;
   getScenarioIterationRuleRepository: (
     marbleCoreApiClient: MarbleCoreApi,
   ) => ScenarioIterationRuleRepository;
   getScenarioIterationSanctionRepository: (
     marbleCoreApiClient: MarbleCoreApi,
   ) => ScenarioIterationSanctionRepository;
-  getDataModelRepository: (
-    marbleCoreApiClient: MarbleCoreApi,
-  ) => DataModelRepository;
+  getDataModelRepository: (marbleCoreApiClient: MarbleCoreApi) => DataModelRepository;
   getApiKeyRepository: (marbleCoreApiClient: MarbleCoreApi) => ApiKeyRepository;
-  getAnalyticsRepository: (
-    marbleCoreApiClient: MarbleCoreApi,
-  ) => AnalyticsRepository;
-  getTransferRepository: (
-    transfercheckApi: TransfercheckApi,
-  ) => TransferRepository;
-  getTestRunRepository: (
-    marbleCoreApiClient: MarbleCoreApi,
-  ) => TestRunRepository;
-  getPartnerRepository: (
-    transfercheckApi: TransfercheckApi,
-  ) => PartnerRepository;
+  getAnalyticsRepository: (marbleCoreApiClient: MarbleCoreApi) => AnalyticsRepository;
+  getTransferRepository: (transfercheckApi: TransfercheckApi) => TransferRepository;
+  getTestRunRepository: (marbleCoreApiClient: MarbleCoreApi) => TestRunRepository;
+  getPartnerRepository: (transfercheckApi: TransfercheckApi) => PartnerRepository;
   getTransferAlertRepository: (
     transfercheckApi: TransfercheckApi,
     partnerId?: string,
   ) => TransferAlertRepository;
-  getWebhookRepository: (
-    marbleCoreApiClient: MarbleCoreApi,
-  ) => WebhookRepository;
-  getRuleSnoozeRepository: (
-    marbleCoreApiClient: MarbleCoreApi,
-  ) => RuleSnoozeRepository;
+  getWebhookRepository: (marbleCoreApiClient: MarbleCoreApi) => WebhookRepository;
+  getRuleSnoozeRepository: (marbleCoreApiClient: MarbleCoreApi) => RuleSnoozeRepository;
   getLicenseRepository: ReturnType<typeof makeGetLicenseRepository>;
   authSessionService: SessionService<AuthData, AuthFlashData>;
   csrfService: CSRF;
@@ -344,19 +322,16 @@ export function makeAuthenticationServerService({
 
     const tokenService = getTokenService(marbleToken.access_token);
     const marbleCoreApiClient = getMarbleCoreAPIClientWithAuth(tokenService);
-    const licenseApiClient = getLicenseAPIClientWithAuth(
-      getTokenService(marbleToken.access_token),
-    );
-    const transfercheckAPIClient =
-      getTransfercheckAPIClientWithAuth(tokenService);
+    const licenseApiClient = getLicenseAPIClientWithAuth(getTokenService(marbleToken.access_token));
+    const transfercheckAPIClient = getTransfercheckAPIClientWithAuth(tokenService);
 
     let user: CurrentUser;
     let entitlements: LicenseEntitlements;
     try {
       user = await getUserRepository(marbleCoreApiClient).getCurrentUser();
-      entitlements = await getLicenseRepository(
-        licenseApiClient,
-      ).getEntitlements(user.organizationId);
+      entitlements = await getLicenseRepository(licenseApiClient).getEntitlements(
+        user.organizationId,
+      );
     } catch (err) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
       else return null;
@@ -372,24 +347,17 @@ export function makeAuthenticationServerService({
       sanctionCheck: getSanctionCheckRepository(marbleCoreApiClient),
       customListsRepository: getCustomListRepository(marbleCoreApiClient),
       scenario: getScenarioRepository(marbleCoreApiClient),
-      scenarioIterationRuleRepository:
-        getScenarioIterationRuleRepository(marbleCoreApiClient),
+      scenarioIterationRuleRepository: getScenarioIterationRuleRepository(marbleCoreApiClient),
       scenarioIterationSanctionRepository:
         getScenarioIterationSanctionRepository(marbleCoreApiClient),
-      organization: getOrganizationRepository(
-        marbleCoreApiClient,
-        user.organizationId,
-      ),
+      organization: getOrganizationRepository(marbleCoreApiClient, user.organizationId),
       dataModelRepository: getDataModelRepository(marbleCoreApiClient),
       apiKey: getApiKeyRepository(marbleCoreApiClient),
       analytics: getAnalyticsRepository(marbleCoreApiClient),
       transferRepository: getTransferRepository(transfercheckAPIClient),
       testRun: getTestRunRepository(marbleCoreApiClient),
       partnerRepository: getPartnerRepository(transfercheckAPIClient),
-      transferAlertRepository: getTransferAlertRepository(
-        transfercheckAPIClient,
-        user.partnerId,
-      ),
+      transferAlertRepository: getTransferAlertRepository(transfercheckAPIClient, user.partnerId),
       webhookRepository: getWebhookRepository(marbleCoreApiClient),
       ruleSnoozeRepository: getRuleSnoozeRepository(marbleCoreApiClient),
       user,
@@ -398,10 +366,7 @@ export function makeAuthenticationServerService({
     };
   }
 
-  async function logout(
-    request: Request,
-    options: { redirectTo: string },
-  ): Promise<never> {
+  async function logout(request: Request, options: { redirectTo: string }): Promise<never> {
     const authSession = await authSessionService.getSession(request);
 
     throw redirect(options.redirectTo, {

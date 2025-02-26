@@ -1,9 +1,5 @@
 import { LogicalOperatorLabel } from '@app-builder/components/Scenario/AstBuilder/RootAstBuilderNode/LogicalOperator';
-import {
-  type AstNode,
-  NewAstNode,
-  NewUndefinedAstNode,
-} from '@app-builder/models';
+import { type AstNode, NewAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   type AndAstNode,
   type OrWithAndAstNode,
@@ -71,22 +67,14 @@ export function RootOrWithAnd({
             {/* OR separator row */}
             {!isFirstChild ? (
               <>
-                <LogicalOperatorLabel
-                  operator="or"
-                  className="uppercase"
-                  type="contained"
-                />
+                <LogicalOperatorLabel operator="or" className="uppercase" type="contained" />
                 <div className="col-span-2 flex flex-1 items-center">
                   <div className="bg-grey-90 h-px w-full" />
                 </div>
               </>
             ) : null}
 
-            <OrOperand
-              treePath={treePath}
-              andAstNode={child}
-              viewOnly={viewOnly}
-            />
+            <OrOperand treePath={treePath} andAstNode={child} viewOnly={viewOnly} />
           </Fragment>
         );
       })}
@@ -143,10 +131,7 @@ function OrOperand({
 
       {/* [+ Condition] row */}
       {viewOnly ? (
-        <EvaluationErrors
-          errors={errorMessages}
-          className="col-span-2 col-start-2"
-        />
+        <EvaluationErrors errors={errorMessages} className="col-span-2 col-start-2" />
       ) : (
         <div className="col-span-2 col-start-2 flex flex-row flex-wrap gap-2">
           <AddLogicalOperatorButton onClick={appendAndChild} operator="and" />
@@ -174,8 +159,7 @@ function AndOperand({
   const [displayReturnValues] = useDisplayReturnValues();
   const evaluation = useEvaluation(treePath);
 
-  const { errorMessages, hasArgumentIndexErrorsFromParent } =
-    useRootOrAndChildValidation(treePath);
+  const { errorMessages, hasArgumentIndexErrorsFromParent } = useRootOrAndChildValidation(treePath);
 
   let rightComponent = null;
   if (!viewOnly) {
@@ -202,18 +186,10 @@ function AndOperand({
             border="square"
             className="w-full"
             color={
-              evaluation.skipped
-                ? 'grey'
-                : value === null
-                  ? 'orange'
-                  : value
-                    ? 'green'
-                    : 'red'
+              evaluation.skipped ? 'grey' : value === null ? 'orange' : value ? 'green' : 'red'
             }
           >
-            {t(
-              `common:${evaluation.skipped ? 'skipped' : value === null ? 'null' : value}`,
-            )}
+            {t(`common:${evaluation.skipped ? 'skipped' : value === null ? 'null' : value}`)}
           </Tag>
         </div>
       );
@@ -227,18 +203,8 @@ function AndOperand({
         type="text"
         validationStatus={hasArgumentIndexErrorsFromParent ? 'error' : 'valid'}
       />
-      <div
-        className={clsx(
-          'flex flex-col gap-2',
-          rightComponent === null && 'col-span-2',
-        )}
-      >
-        <AstBuilderNode
-          treePath={treePath}
-          astNode={astNode}
-          viewOnly={viewOnly}
-          root
-        />
+      <div className={clsx('flex flex-col gap-2', rightComponent === null && 'col-span-2')}>
+        <AstBuilderNode treePath={treePath} astNode={astNode} viewOnly={viewOnly} root />
         <EvaluationErrors errors={errorMessages} />
       </div>
       {rightComponent}

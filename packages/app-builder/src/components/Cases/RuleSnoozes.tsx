@@ -39,14 +39,10 @@ export function RuleSnoozes({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="text-grey-00 text-xs font-medium">
-        {t('cases:case_detail.pivot_values')}
-      </div>
+      <div className="text-grey-00 text-xs font-medium">{t('cases:case_detail.pivot_values')}</div>
       <div className="grid grid-cols-[repeat(4,_max-content)] items-center gap-2">
         {pivotValues.map(({ pivot, value }) => {
-          const snooze = ruleSnoozes.find(
-            (snooze) => snooze.pivotValue === value,
-          );
+          const snooze = ruleSnoozes.find((snooze) => snooze.pivotValue === value);
           return (
             <React.Fragment key={pivot.id}>
               <Tag
@@ -65,10 +61,8 @@ export function RuleSnoozes({
                     tabIndex={-1}
                     className={clsx(
                       'cursor-pointer transition-colors',
-                      pivot.type === 'field' &&
-                        'text-grey-80 hover:text-grey-50',
-                      pivot.type === 'link' &&
-                        'hover:text-purple-65 text-purple-82',
+                      pivot.type === 'field' && 'text-grey-80 hover:text-grey-50',
+                      pivot.type === 'link' && 'hover:text-purple-65 text-purple-82',
                     )}
                   >
                     <Icon icon="tip" className="size-5" />
@@ -83,17 +77,13 @@ export function RuleSnoozes({
                 </Ariakit.HovercardProvider>
               </Tag>
               <CopyToClipboardButton toCopy={value} className="bg-grey-100">
-                <span className="text-s line-clamp-1 max-w-40 font-normal">
-                  {value}
-                </span>
+                <span className="text-s line-clamp-1 max-w-40 font-normal">{value}</span>
               </CopyToClipboardButton>
 
               {snooze ? (
                 <div className="text-s text-grey-100 flex h-8 flex-row items-center justify-center gap-1 rounded bg-[#AAA6CC] p-2 font-semibold">
                   <Icon icon="snooze" className="size-6" />
-                  <span className="flex-1">
-                    {t('cases:case_detail.add_rule_snooze.snoozed')}
-                  </span>
+                  <span className="flex-1">{t('cases:case_detail.add_rule_snooze.snoozed')}</span>
 
                   <Ariakit.HovercardProvider
                     showTimeout={0}
@@ -127,9 +117,7 @@ export function RuleSnoozes({
                       <AddRuleSnooze decisionId={decisionId} ruleId={ruleId}>
                         <Button className="h-8 w-fit pl-2">
                           <Icon icon="snooze" className="size-6" />
-                          {t(
-                            'cases:case_detail.add_rule_snooze.snooze_this_value',
-                          )}
+                          {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
                         </Button>
                       </AddRuleSnooze>
                     ) : (
@@ -154,15 +142,11 @@ export function RuleSnoozes({
                       <AddRuleSnooze decisionId={decisionId} ruleId={ruleId}>
                         <Button className="relative h-8 w-fit pl-2">
                           <Icon icon="snooze" className="size-6" />
-                          {t(
-                            'cases:case_detail.add_rule_snooze.snooze_this_value',
-                          )}
+                          {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
                           <Nudge
                             className="border-purple-82 absolute -right-3 -top-3 size-6 border"
                             kind="test"
-                            content={t(
-                              'cases:case_detail.add_rule_snooze.nudge',
-                            )}
+                            content={t('cases:case_detail.add_rule_snooze.nudge')}
                             link="https://docs.checkmarble.com/docs/rule-snoozes"
                           />
                         </Button>

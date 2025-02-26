@@ -1,10 +1,6 @@
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import {
-  formatDateTime,
-  formatDuration,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatDateTime, formatDuration, useFormatLanguage } from '@app-builder/utils/format';
 import { clsx } from 'clsx';
 import { add, sub } from 'date-fns';
 import { useCallback } from 'react';
@@ -28,10 +24,7 @@ type DateRangeFilterType =
   | null
   | undefined;
 
-function adaptStaticDateRangeFilterType({
-  from,
-  to,
-}: DateRange): StaticDateRangeFilterType {
+function adaptStaticDateRangeFilterType({ from, to }: DateRange): StaticDateRangeFilterType {
   const startDate = from?.toISOString() ?? '';
   // Add a day to the end date because the user expects the end date to be included.
   // To fully understand that, think about the special case where the user selects the same day in the Calendar picker (from = to)
@@ -45,10 +38,7 @@ function adaptStaticDateRangeFilterType({
   };
 }
 
-function adaptDateRange({
-  startDate,
-  endDate,
-}: StaticDateRangeFilterType): DateRange | undefined {
+function adaptDateRange({ startDate, endDate }: StaticDateRangeFilterType): DateRange | undefined {
   const from = startDate ? new Date(startDate) : undefined;
   // look at adaptStaticDateRangeFilterType for the reason why we substract a day
   const to = endDate ? sub(new Date(endDate), { days: 1 }) : undefined;
@@ -77,21 +67,16 @@ function DateRangeFilterRoot({
   className?: string;
 }) {
   const calendarSelected =
-    dateRangeFilter?.type === 'static'
-      ? adaptDateRange(dateRangeFilter)
-      : undefined;
+    dateRangeFilter?.type === 'static' ? adaptDateRange(dateRangeFilter) : undefined;
 
   const onCalendarSelect = useCallback(
     (range?: DateRange) => {
-      setDateRangeFilter(
-        adaptStaticDateRangeFilterType(range ?? { from: undefined }),
-      );
+      setDateRangeFilter(adaptStaticDateRangeFilterType(range ?? { from: undefined }));
     },
     [setDateRangeFilter],
   );
 
-  const fromNow =
-    dateRangeFilter?.type === 'dynamic' ? dateRangeFilter.fromNow : undefined;
+  const fromNow = dateRangeFilter?.type === 'dynamic' ? dateRangeFilter.fromNow : undefined;
   const onFromNowSelect = useCallback(
     (fromNow: string) => {
       setDateRangeFilter({
@@ -124,22 +109,14 @@ export const fromNowDurations = [
   Temporal.Duration.from({ months: -12 }).toString(),
 ] as const;
 
-function DateRangeFilterFromNowPicker({
-  title,
-  className,
-}: {
-  title: string;
-  className?: string;
-}) {
+function DateRangeFilterFromNowPicker({ title, className }: { title: string; className?: string }) {
   const language = useFormatLanguage();
   const { onFromNowSelect } = useDateRangeFilterContext();
 
   return (
     <div className={clsx('flex flex-col gap-4 p-4', className)}>
       <div className="flex items-center">
-        <p className="text-grey-80 text-s font-normal first-letter:capitalize">
-          {title}
-        </p>
+        <p className="text-grey-80 text-s font-normal first-letter:capitalize">{title}</p>
       </div>
       <div className="flex flex-col gap-1">
         {fromNowDurations.map((duration) => (
@@ -150,9 +127,7 @@ function DateRangeFilterFromNowPicker({
             }}
             className="text-s hover:bg-purple-98 active:bg-purple-96 bg-grey-100 text-grey-00 border-grey-100 hover:text-purple-65 focus:border-purple-65 flex h-10 items-center rounded border p-2 outline-none"
           >
-            <time dateTime={duration}>
-              {formatDuration(duration, language)}
-            </time>
+            <time dateTime={duration}>{formatDuration(duration, language)}</time>
           </button>
         ))}
       </div>
@@ -183,12 +158,7 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
 
   if (fromNow) {
     return (
-      <div
-        className={clsx(
-          'm-4 flex h-10 w-full items-center justify-center',
-          className,
-        )}
-      >
+      <div className={clsx('m-4 flex h-10 w-full items-center justify-center', className)}>
         <time className="text-grey-00" dateTime={fromNow}>
           {formatDuration(fromNow, language)}
         </time>
@@ -197,29 +167,15 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
   }
 
   return (
-    <div
-      className={clsx(
-        'grid grid-cols-[1fr_max-content_1fr] gap-1 p-4',
-        className,
-      )}
-    >
-      <FormatStaticDate
-        className="justify-self-end"
-        date={calendarSelected?.from}
-      />
+    <div className={clsx('grid grid-cols-[1fr_max-content_1fr] gap-1 p-4', className)}>
+      <FormatStaticDate className="justify-self-end" date={calendarSelected?.from} />
       <span className="text-l self-center">→</span>
       <FormatStaticDate date={calendarSelected?.to} />
     </div>
   );
 }
 
-function FormatStaticDate({
-  date,
-  className,
-}: {
-  date?: string | Date;
-  className?: string;
-}) {
+function FormatStaticDate({ date, className }: { date?: string | Date; className?: string }) {
   const language = useFormatLanguage();
 
   const dateTime = typeof date === 'string' ? date : date?.toDateString();

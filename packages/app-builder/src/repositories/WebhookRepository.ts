@@ -13,9 +13,7 @@ import {
 export interface WebhookRepository {
   listWebhooks(): Promise<Webhook[]>;
   getWebhook(args: { webhookId: string }): Promise<WebhookWithSecret>;
-  createWebhook(args: {
-    webhookCreateBody: WebhookCreateBody;
-  }): Promise<WebhookWithSecret>;
+  createWebhook(args: { webhookCreateBody: WebhookCreateBody }): Promise<WebhookWithSecret>;
   updateWebhook(args: {
     webhookId: string;
     webhookUpdateBody: WebhookUpdateBody;

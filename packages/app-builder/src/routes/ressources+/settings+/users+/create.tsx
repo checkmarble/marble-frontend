@@ -5,19 +5,11 @@ import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
-import {
-  isStatusConflictHttpError,
-  tKeyForUserRole,
-} from '@app-builder/models';
+import { isStatusConflictHttpError, tKeyForUserRole } from '@app-builder/models';
 import { getUserRoles } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -47,12 +39,9 @@ function getCreateUserFormSchema(userRoles: readonly [string, ...string[]]) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService, csrfService } = serverServices;
-  const { apiClient, entitlements } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { apiClient, entitlements } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
   await csrfService.validate(request);
 
   const formData = await request.formData();
@@ -126,11 +115,7 @@ export function CreateUser({
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <CreateUserContent
-          orgId={orgId}
-          access={access}
-          userRoles={userRoles}
-        />
+        <CreateUserContent orgId={orgId} access={access} userRoles={userRoles} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -147,10 +132,7 @@ function CreateUserContent({
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
-  const schema = React.useMemo(
-    () => getCreateUserFormSchema(userRoles),
-    [userRoles],
-  );
+  const schema = React.useMemo(() => getCreateUserFormSchema(userRoles), [userRoles]);
 
   const defaultValue = {
     firstName: '',
@@ -197,35 +179,23 @@ function CreateUserContent({
               key={fields.organizationId.key}
             />
             <div className="flex gap-2">
-              <FormField
-                name={fields.firstName.name}
-                className="group flex w-full flex-col gap-2"
-              >
+              <FormField name={fields.firstName.name} className="group flex w-full flex-col gap-2">
                 <FormLabel>{t('settings:users.first_name')}</FormLabel>
                 <FormInput type="text" />
                 <FormErrorOrDescription />
               </FormField>
-              <FormField
-                name={fields.lastName.name}
-                className="group flex w-full flex-col gap-2"
-              >
+              <FormField name={fields.lastName.name} className="group flex w-full flex-col gap-2">
                 <FormLabel>{t('settings:users.last_name')}</FormLabel>
                 <FormInput type="text" />
                 <FormErrorOrDescription />
               </FormField>
             </div>
-            <FormField
-              name={fields.email.name}
-              className="group flex flex-col gap-2"
-            >
+            <FormField name={fields.email.name} className="group flex flex-col gap-2">
               <FormLabel>{t('settings:users.email')}</FormLabel>
               <FormInput type="text" />
               <FormErrorOrDescription />
             </FormField>
-            <FormField
-              name={fields.role.name}
-              className="group flex flex-col gap-2"
-            >
+            <FormField name={fields.role.name} className="group flex flex-col gap-2">
               <FormLabel className="flex flex-row gap-2">
                 <span
                   className={clsx({
@@ -242,10 +212,7 @@ function CreateUserContent({
                   />
                 )}
               </FormLabel>
-              <FormSelect.Default
-                options={userRoleOptions}
-                disabled={access === 'restricted'}
-              >
+              <FormSelect.Default options={userRoleOptions} disabled={access === 'restricted'}>
                 {userRoleOptions.map((role) => (
                   <FormSelect.DefaultItem key={role.value} value={role.value}>
                     {role.label}
@@ -261,12 +228,7 @@ function CreateUserContent({
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="create"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="create">
               {t('settings:users.new_user.create')}
             </Button>
           </div>

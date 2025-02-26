@@ -31,19 +31,14 @@ function SelectFruitWithCombobox() {
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
 
-      <SelectWithCombobox.Popover
-        className="flex flex-col gap-2 p-2"
-        fitViewport
-      >
+      <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2" fitViewport>
         <SelectWithCombobox.Combobox
           render={<Input className="shrink-0" placeholder="Search..." />}
         />
 
         <SelectWithCombobox.ComboboxList>
           {matches.map((fruit) => {
-            return (
-              <SelectWithCombobox.ComboboxItem key={fruit} value={fruit} />
-            );
+            return <SelectWithCombobox.ComboboxItem key={fruit} value={fruit} />;
           })}
         </SelectWithCombobox.ComboboxList>
       </SelectWithCombobox.Popover>

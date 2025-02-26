@@ -3,12 +3,9 @@ import { type IconName } from 'ui-icons';
 
 export const caseHistoryFilterNames = ['dateRange', 'caseEventTypes'] as const;
 
-export type CaseHistoryFilterFilterName =
-  (typeof caseHistoryFilterNames)[number];
+export type CaseHistoryFilterFilterName = (typeof caseHistoryFilterNames)[number];
 
-export function getFilterIcon(
-  filterName: CaseHistoryFilterFilterName,
-): IconName {
+export function getFilterIcon(filterName: CaseHistoryFilterFilterName): IconName {
   switch (filterName) {
     case 'dateRange':
       return 'calendar-month';

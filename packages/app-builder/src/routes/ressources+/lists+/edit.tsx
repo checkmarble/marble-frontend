@@ -140,9 +140,7 @@ export function EditList({
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder={t(
-                            'lists:create_list.description_placeholder',
-                          )}
+                          placeholder={t('lists:create_list.description_placeholder')}
                           {...field}
                         />
                       </FormControl>
@@ -157,12 +155,7 @@ export function EditList({
                     {t('common:cancel')}
                   </Button>
                 </Modal.Close>
-                <Button
-                  className="flex-1"
-                  variant="primary"
-                  type="submit"
-                  name="editList"
-                >
+                <Button className="flex-1" variant="primary" type="submit" name="editList">
                   {t('common:save')}
                 </Button>
               </div>

@@ -7,8 +7,7 @@ export type PropertyForSchema<
   _R = never,
 > = (typeof schemaInheritence)[Schema] extends null
   ? _R | (typeof schemaProperties)[Schema][number]
-  : (typeof schemaInheritence)[Schema] extends infer P extends
-        SanctionCheckEntitySchema
+  : (typeof schemaInheritence)[Schema] extends infer P extends SanctionCheckEntitySchema
     ? PropertyForSchema<P, _R | (typeof schemaProperties)[Schema][number]>
     : never;
 
@@ -185,10 +184,7 @@ export function getSanctionEntityProperties(schema: SanctionCheckEntitySchema) {
   return properties;
 }
 
-export function createPropertyTransformer(ctx: {
-  language: string;
-  formatLanguage: string;
-}) {
+export function createPropertyTransformer(ctx: { language: string; formatLanguage: string }) {
   const intlCountry = new Intl.DisplayNames(ctx.language, { type: 'region' });
   const intlDate = new Intl.DateTimeFormat(ctx.formatLanguage, {
     dateStyle: 'short',

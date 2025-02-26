@@ -16,10 +16,7 @@ export function inputFromSearch(queryString: string, options?: IParseOptions) {
 }
 
 export function inputFromUrl(request: Request, options?: IParseOptions) {
-  return inputFromSearch(
-    decodeURIComponent(new URL(request.url).search),
-    options,
-  );
+  return inputFromSearch(decodeURIComponent(new URL(request.url).search), options);
 }
 
 /**
@@ -45,11 +42,10 @@ export async function inputFromForm(request: Request, options?: IParseOptions) {
 /**
  * Parse and validate Params from LoaderFunctionArgs or ActionFunctionArgs. Doesn't throw if validation fails.
  */
-export async function parseParamsSafe<
-  Output,
-  Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output,
->(params: Params, schema: ZodType<Output, Def, Input>) {
+export async function parseParamsSafe<Output, Def extends ZodTypeDef = ZodTypeDef, Input = Output>(
+  params: Params,
+  schema: ZodType<Output, Def, Input>,
+) {
   const result = await schema.safeParseAsync(params);
   if (!result.success) {
     return {
@@ -63,22 +59,20 @@ export async function parseParamsSafe<
 /**
  * Parse and validate Params from LoaderFunctionArgs or ActionFunctionArgs. Throws if validation fails.
  */
-export async function parseParams<
-  Output,
-  Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output,
->(params: Params, schema: ZodType<Output, Def, Input>) {
+export async function parseParams<Output, Def extends ZodTypeDef = ZodTypeDef, Input = Output>(
+  params: Params,
+  schema: ZodType<Output, Def, Input>,
+) {
   return schema.parseAsync(params);
 }
 
 /**
  * Parse and validate a Request. Doesn't throw if validation fails.
  */
-export async function parseQuerySafe<
-  Output,
-  Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output,
->(request: Request, schema: ZodType<Output, Def, Input>) {
+export async function parseQuerySafe<Output, Def extends ZodTypeDef = ZodTypeDef, Input = Output>(
+  request: Request,
+  schema: ZodType<Output, Def, Input>,
+) {
   const searchParams = inputFromUrl(request);
   const result = await schema.safeParseAsync(searchParams);
   if (!result.success) {
@@ -93,11 +87,10 @@ export async function parseQuerySafe<
 /**
  * Parse and validate a Request. Throws if validation fails.
  */
-export async function parseQuery<
-  Output,
-  Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output,
->(request: Request, schema: ZodType<Output, Def, Input>) {
+export async function parseQuery<Output, Def extends ZodTypeDef = ZodTypeDef, Input = Output>(
+  request: Request,
+  schema: ZodType<Output, Def, Input>,
+) {
   const searchParams = inputFromUrl(request);
   return schema.parseAsync(searchParams);
 }
@@ -105,11 +98,10 @@ export async function parseQuery<
 /**
  * Parse and validate FormData from a Request. Doesn't throw if validation fails.
  */
-export async function parseFormSafe<
-  Output,
-  Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output,
->(request: Request, schema: ZodType<Output, Def, Input>) {
+export async function parseFormSafe<Output, Def extends ZodTypeDef = ZodTypeDef, Input = Output>(
+  request: Request,
+  schema: ZodType<Output, Def, Input>,
+) {
   const formData = await inputFromForm(request);
   const result = await schema.safeParseAsync(formData);
   if (!result.success) {
@@ -124,11 +116,10 @@ export async function parseFormSafe<
 /**
  * Parse and validate FormData from a Request. Throws if validation fails.
  */
-export async function parseForm<
-  Output,
-  Def extends ZodTypeDef = ZodTypeDef,
-  Input = Output,
->(request: Request, schema: ZodType<Output, Def, Input>) {
+export async function parseForm<Output, Def extends ZodTypeDef = ZodTypeDef, Input = Output>(
+  request: Request,
+  schema: ZodType<Output, Def, Input>,
+) {
   const formData = await inputFromForm(request);
   return schema.parseAsync(formData);
 }

@@ -12,8 +12,7 @@ export const CtaClassName = cva(
         tertiary: 'text-grey-80 border-transparent',
         outline:
           'hover:bg-purple-96 active:bg-purple-96 bg-purple-98 border-purple-65 text-purple-65 disabled:text-grey-50 aria-disabled:text-grey-50 disabled:border-grey-95 aria-disabled:border-grey-95 disabled:bg-grey-95 aria-disabled:bg-grey-95 focus:border-purple-60',
-        dropdown:
-          'text-grey-00 border-transparent disabled:text-grey-80 disabled:bg-transparent',
+        dropdown: 'text-grey-00 border-transparent disabled:text-grey-80 disabled:bg-transparent',
       },
       color: {
         purple:
@@ -36,29 +35,24 @@ export const CtaClassName = cva(
 );
 
 export type ButtonProps = VariantProps<typeof CtaClassName> &
-  React.DetailedHTMLProps<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    HTMLButtonElement
-  >;
+  React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  function Button(
-    {
-      variant = 'primary',
-      color = variant === 'primary' ? 'purple' : 'grey',
-      size = 'default',
-      className,
-      ...props
-    },
-    ref,
-  ) {
-    return (
-      <button
-        ref={ref}
-        type="button"
-        className={CtaClassName({ variant, color, className, size })}
-        {...props}
-      />
-    );
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    variant = 'primary',
+    color = variant === 'primary' ? 'purple' : 'grey',
+    size = 'default',
+    className,
+    ...props
   },
-);
+  ref,
+) {
+  return (
+    <button
+      ref={ref}
+      type="button"
+      className={CtaClassName({ variant, color, className, size })}
+      {...props}
+    />
+  );
+});

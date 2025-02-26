@@ -7,8 +7,7 @@ import { useScenarioFilter } from '../DecisionFiltersContext';
 
 export function ScenarioFilter() {
   const [value, setSearchValue] = useState('');
-  const { scenarios, selectedScenarioIds, setSelectedScenarioIds } =
-    useScenarioFilter();
+  const { scenarios, selectedScenarioIds, setSelectedScenarioIds } = useScenarioFilter();
   const searchValue = useDeferredValue(value);
 
   const matches = useMemo(
@@ -28,10 +27,7 @@ export function ScenarioFilter() {
         <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((scenario) => {
             return (
-              <SelectWithCombobox.ComboboxItem
-                key={scenario.id}
-                value={scenario.id}
-              >
+              <SelectWithCombobox.ComboboxItem key={scenario.id} value={scenario.id}>
                 <Highlight text={scenario.name} query={searchValue} />
               </SelectWithCombobox.ComboboxItem>
             );

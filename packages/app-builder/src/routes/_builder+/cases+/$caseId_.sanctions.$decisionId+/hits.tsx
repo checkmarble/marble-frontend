@@ -24,10 +24,7 @@ export default function CaseSanctionsHitsPage() {
   return (
     <div className="bg-grey-100 border-grey-90 grid grid-cols-[max-content_2fr_1fr_repeat(3,_max-content)] gap-x-6 gap-y-2 rounded-md border">
       <div className="col-span-full flex flex-row gap-12 p-4">
-        <SanctionReviewSection
-          decisionId={decision.id}
-          sanctionCheck={sanctionCheck}
-        />
+        <SanctionReviewSection decisionId={decision.id} sanctionCheck={sanctionCheck} />
         <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
           {sanctionCheck.request ? (
             <SanctionCheckSearchInput request={sanctionCheck.request} />
@@ -52,9 +49,7 @@ export default function CaseSanctionsHitsPage() {
               dataModel={dataModel}
               triggerObject={decision.triggerObject}
               triggerObjectType={decision.triggerObjectType}
-              onLinkClicked={(tableName, objectId) =>
-                setObjectLink({ tableName, objectId })
-              }
+              onLinkClicked={(tableName, objectId) => setObjectLink({ tableName, objectId })}
             />
             {objectLink ? (
               <IngestedObjectDetailModal
@@ -71,11 +66,7 @@ export default function CaseSanctionsHitsPage() {
   );
 }
 
-function SanctionCheckSearchInput({
-  request,
-}: {
-  request: NonNullable<SanctionCheck['request']>;
-}) {
+function SanctionCheckSearchInput({ request }: { request: NonNullable<SanctionCheck['request']> }) {
   const { t } = useTranslation(casesI18n);
   const searchInput = R.values(request.queries);
 

@@ -9,8 +9,7 @@ export function assertNever(
   x: never,
 ): // @ts-expect-error assertNever
 never {
-  const env =
-    isomorphicGetEnv('NODE_ENV') ?? isomorphicGetEnv('ENV') ?? 'development';
+  const env = isomorphicGetEnv('NODE_ENV') ?? isomorphicGetEnv('ENV') ?? 'development';
   if (env !== 'production') {
     console.error(`[AssertNever]: ${prefix}`, x);
   }

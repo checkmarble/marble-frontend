@@ -1,7 +1,4 @@
-import {
-  createRightPanel,
-  type RightPanelRootProps,
-} from '@app-builder/components/RightPanel';
+import { createRightPanel, type RightPanelRootProps } from '@app-builder/components/RightPanel';
 import { AddToCase } from '@app-builder/routes/ressources+/cases+/add-to-case';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useReducer } from 'react';
@@ -96,9 +93,7 @@ function DecisionRightPanelContent() {
   return (
     <RightPanel.Content className="flex max-w-md flex-col gap-4">
       <RightPanel.Title>
-        <span className="w-full first-letter:capitalize">
-          {t('decisions:add_to_case')}
-        </span>
+        <span className="w-full first-letter:capitalize">{t('decisions:add_to_case')}</span>
         <RightPanel.Close />
       </RightPanel.Title>
       <AddToCase />

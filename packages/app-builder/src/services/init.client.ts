@@ -18,9 +18,7 @@ function makeClientServices(repositories: ClientRepositories) {
 }
 
 function initClientServices() {
-  const firebaseClient = initializeFirebaseClient(
-    getClientEnv('FIREBASE_CONFIG'),
-  );
+  const firebaseClient = initializeFirebaseClient(getClientEnv('FIREBASE_CONFIG'));
   const clientRepositories = makeClientRepositories({ firebaseClient });
   return makeClientServices(clientRepositories);
 }

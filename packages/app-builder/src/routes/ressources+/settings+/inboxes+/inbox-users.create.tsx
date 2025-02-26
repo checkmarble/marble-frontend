@@ -10,12 +10,7 @@ import { getInboxUserRoles } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -32,9 +27,7 @@ export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
 };
 
-function getCreateInboxUserFormSchema(
-  inboxUserRoles: readonly [string, ...string[]],
-) {
+function getCreateInboxUserFormSchema(inboxUserRoles: readonly [string, ...string[]]) {
   return z.object({
     userId: z.string().uuid(),
     inboxId: z.string().uuid(),
@@ -169,18 +162,10 @@ export function CreateInboxUserContent({
         action={getRoute('/ressources/settings/inboxes/inbox-users/create')}
         {...getFormProps(form)}
       >
-        <Modal.Title>
-          {t('settings:inboxes.inbox_details.add_member')}
-        </Modal.Title>
+        <Modal.Title>{t('settings:inboxes.inbox_details.add_member')}</Modal.Title>
         <div className="bg-grey-100 flex flex-col gap-6 p-6">
-          <input
-            {...getInputProps(fields.inboxId, { type: 'hidden' })}
-            key={fields.inboxId.key}
-          />
-          <FormField
-            name={fields.userId.name}
-            className="group flex flex-col gap-2"
-          >
+          <input {...getInputProps(fields.inboxId, { type: 'hidden' })} key={fields.inboxId.key} />
+          <FormField name={fields.userId.name} className="group flex flex-col gap-2">
             <FormLabel>{t('settings:inboxes.inbox_details.user')}</FormLabel>
             <FormSelect.Default options={userOptions}>
               {userOptions.map(({ value, label }) => (
@@ -191,28 +176,16 @@ export function CreateInboxUserContent({
             </FormSelect.Default>
             <FormErrorOrDescription />
           </FormField>
-          <FormField
-            name={fields.role.name}
-            className="group flex flex-col gap-2"
-          >
+          <FormField name={fields.role.name} className="group flex flex-col gap-2">
             <FormLabel className="flex gap-2">
-              <span
-                className={clsx({ 'text-grey-80': access === 'restricted' })}
-              >
+              <span className={clsx({ 'text-grey-80': access === 'restricted' })}>
                 {t('settings:inboxes.inbox_details.role')}
               </span>
               {access === 'allowed' ? null : (
-                <Nudge
-                  content={t('settings:users.role.nudge')}
-                  className="size-6"
-                  kind={access}
-                />
+                <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
               )}
             </FormLabel>
-            <FormSelect.Default
-              options={inboxUserRoles}
-              disabled={access === 'restricted'}
-            >
+            <FormSelect.Default options={inboxUserRoles} disabled={access === 'restricted'}>
               {inboxUserRoles.map((role) => (
                 <FormSelect.DefaultItem key={role} value={role}>
                   {t(tKeyForInboxUserRole(role))}
@@ -227,12 +200,7 @@ export function CreateInboxUserContent({
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="create"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="create">
               <Icon icon="new-inbox" className="size-6" />
               {t('settings:inboxes.inbox_details.create_user')}
             </Button>

@@ -20,11 +20,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getSanctionCheckFileUploadEndpoint } from '@app-builder/utils/files';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import {
-  defer,
-  type LoaderFunctionArgs,
-  type SerializeFrom,
-} from '@remix-run/node';
+import { defer, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
 import {
   isRouteErrorResponse,
   Outlet,
@@ -77,9 +73,7 @@ export const handle = {
             to={getRoute('/cases/:caseId', { caseId: fromUUID(caseDetail.id) })}
             isLast={isLast}
           >
-            <span className="line-clamp-2 text-start">
-              {t('cases:case.page_title')}
-            </span>
+            <span className="line-clamp-2 text-start">{t('cases:case.page_title')}</span>
           </BreadCrumbLink>
           <span className="text-s border-grey-90 text-grey-50 inline-flex gap-2 rounded border px-2 font-normal">
             <span className="font-medium">ID</span>
@@ -90,8 +84,7 @@ export const handle = {
       );
     },
     ({ isLast }: BreadCrumbProps) => {
-      const { caseDetail, decision, sanctionCheck } =
-        useLoaderData<typeof loader>();
+      const { caseDetail, decision, sanctionCheck } = useLoaderData<typeof loader>();
 
       return (
         <div className="flex items-center gap-2">
@@ -130,9 +123,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   try {
     const caseDetail = await cases.getCase({ caseId });
     const decision = caseDetail.decisions.find((d) => d.id === decisionId);
-    const sanctionCheck = (
-      await sanctionCheckRepository.listSanctionChecks({ decisionId })
-    )[0];
+    const sanctionCheck = (await sanctionCheckRepository.listSanctionChecks({ decisionId }))[0];
     const currentInbox = await inbox.getInbox(caseDetail.inboxId);
 
     if (!decision || !sanctionCheck) {
@@ -173,9 +164,7 @@ export default function CaseSanctionReviewPage() {
     <Page.Main>
       <Page.Header className="justify-between gap-8">
         <div className="flex gap-4">
-          <Page.BackLink
-            to={getRoute('/cases/:caseId', { caseId: fromUUID(caseDetail.id) })}
-          />
+          <Page.BackLink to={getRoute('/cases/:caseId', { caseId: fromUUID(caseDetail.id) })} />
           <BreadCrumbs />
         </div>
       </Page.Header>
@@ -221,15 +210,8 @@ export default function CaseSanctionReviewPage() {
           </RightSidebarProvider>
         </div>
         <div className="bg-grey-100 border-t-grey-90 flex shrink-0 flex-row items-center justify-end gap-4 border-t p-4">
-          <UploadFile
-            uploadFileEndpoint={getSanctionCheckFileUploadEndpoint(
-              sanctionCheck,
-            )}
-          >
-            <Button
-              className="h-14 w-fit whitespace-nowrap"
-              variant="secondary"
-            >
+          <UploadFile uploadFileEndpoint={getSanctionCheckFileUploadEndpoint(sanctionCheck)}>
+            <Button className="h-14 w-fit whitespace-nowrap" variant="secondary">
               <Icon icon="attachment" className="size-5" />
               {t('cases:add_file')}
             </Button>

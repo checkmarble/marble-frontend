@@ -55,9 +55,7 @@ function ClientSignInWithMicrosoft({
   loading?: boolean;
 }) {
   const { t } = useTranslation(['common', 'auth']);
-  const microsoftSignIn = useMicrosoftSignIn(
-    clientServices.authenticationClientService,
-  );
+  const microsoftSignIn = useMicrosoftSignIn(clientServices.authenticationClientService);
 
   const [handleMicrosoftSignIn, _state] = useAsync(async () => {
     try {
@@ -68,9 +66,7 @@ function ClientSignInWithMicrosoft({
       signIn({ type: 'microsoft', idToken, csrf });
     } catch (error) {
       if (error instanceof AccountExistsWithDifferentCredential) {
-        toast.error(
-          t('common:errors.account_exists_with_different_credential'),
-        );
+        toast.error(t('common:errors.account_exists_with_different_credential'));
       } else if (error instanceof PopupBlockedByClient) {
         toast.error(<PopupBlockedError />);
       } else if (error instanceof NetworkRequestFailed) {

@@ -7,11 +7,7 @@ import { Avatar, Tooltip } from 'ui-design-system';
 
 import { casesI18n } from '.';
 
-export function CaseContributors({
-  contributors,
-}: {
-  contributors: CaseContributor[];
-}) {
+export function CaseContributors({ contributors }: { contributors: CaseContributor[] }) {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
 
@@ -22,10 +18,7 @@ export function CaseContributors({
           {contributors.map((contributor) => {
             const user = getOrgUserById(contributor.userId);
             return (
-              <div
-                key={contributor.id}
-                className="flex flex-row items-center gap-1"
-              >
+              <div key={contributor.id} className="flex flex-row items-center gap-1">
                 <Avatar
                   key={contributor.id}
                   size="xs"
@@ -62,9 +55,7 @@ export function CaseContributors({
           })}
         </div>
         {contributors.length > 3 ? (
-          <div className="text-s text-grey-00 font-normal">
-            +{contributors.length - 3}
-          </div>
+          <div className="text-s text-grey-00 font-normal">+{contributors.length - 3}</div>
         ) : null}
       </div>
     </Tooltip.Default>

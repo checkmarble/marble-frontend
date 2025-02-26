@@ -3,10 +3,7 @@ import clsx from 'clsx';
 import * as React from 'react';
 
 interface FormErrorOrDescriptionProps
-  extends Omit<
-    React.HTMLAttributes<HTMLParagraphElement>,
-    'id' | 'children' | 'className'
-  > {
+  extends Omit<React.HTMLAttributes<HTMLParagraphElement>, 'id' | 'children' | 'className'> {
   errorClassName?: string;
   descriptionClassName?: string;
   errors?: ValidationError[];
@@ -16,10 +13,7 @@ interface FormErrorOrDescriptionProps
 export const FormErrorOrDescription = React.forwardRef<
   HTMLParagraphElement,
   FormErrorOrDescriptionProps
->(function FormErrorOrDescription(
-  { errorClassName, descriptionClassName, ...props },
-  ref,
-) {
+>(function FormErrorOrDescription({ errorClassName, descriptionClassName, ...props }, ref) {
   if (props.errors?.length) {
     return (
       <p

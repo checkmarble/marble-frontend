@@ -76,10 +76,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const ENV = getClientEnvVars();
 
   const headers = new Headers();
-  headers.append(
-    'set-cookie',
-    await toastSessionService.commitSession(toastSession),
-  );
+  headers.append('set-cookie', await toastSessionService.commitSession(toastSession));
   if (csrfCookieHeader) headers.append('set-cookie', csrfCookieHeader);
 
   const segmentApiKey = getServerEnv('SEGMENT_WRITE_KEY');
@@ -90,9 +87,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       locale,
       csrf: csrfToken,
       toastMessage,
-      segmentScript: segmentApiKey
-        ? getSegmentScript(segmentApiKey)
-        : undefined,
+      segmentScript: segmentApiKey ? getSegmentScript(segmentApiKey) : undefined,
     },
     {
       headers,
@@ -128,9 +123,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <Meta />
         <Links />
-        {loaderData?.segmentScript ? (
-          <SegmentScript script={loaderData.segmentScript} />
-        ) : null}
+        {loaderData?.segmentScript ? <SegmentScript script={loaderData.segmentScript} /> : null}
         <ExternalScripts />
       </head>
       <body className="selection:text-grey-100 selection:bg-purple-65 h-screen w-full overflow-hidden antialiased">
@@ -144,9 +137,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         />
         <ScrollRestoration />
         <Scripts />
-        <ClientOnly>
-          {() => <MarbleToaster toastMessage={loaderData?.toastMessage} />}
-        </ClientOnly>
+        <ClientOnly>{() => <MarbleToaster toastMessage={loaderData?.toastMessage} />}</ClientOnly>
       </body>
     </html>
   );

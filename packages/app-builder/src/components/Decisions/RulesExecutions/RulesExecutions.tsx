@@ -12,10 +12,7 @@ export function RulesExecutionsContainer({
 }: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <div
-      className={clsx(
-        'grid grid-cols-[max-content_1fr_max-content] gap-2',
-        className,
-      )}
+      className={clsx('grid grid-cols-[max-content_1fr_max-content] gap-2', className)}
       {...props}
     />
   );
@@ -38,11 +35,7 @@ export function RuleExecutionCollapsible({
   );
 }
 
-export function RuleExecutionTitle({
-  ruleExecution,
-}: {
-  ruleExecution: RuleExecution;
-}) {
+export function RuleExecutionTitle({ ruleExecution }: { ruleExecution: RuleExecution }) {
   return (
     <CollapsibleV2.Title className="bg-grey-98 group col-span-full grid grid-cols-subgrid items-center outline-none">
       <Icon
@@ -50,9 +43,7 @@ export function RuleExecutionTitle({
         aria-hidden
         className="size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180 rtl:-rotate-90 rtl:group-aria-expanded:-rotate-180 rtl:group-data-[initial]:-rotate-180"
       />
-      <span className="text-s line-clamp-1 text-start font-semibold">
-        {ruleExecution.name}
-      </span>
+      <span className="text-s line-clamp-1 text-start font-semibold">{ruleExecution.name}</span>
       <RuleExecutionStatus ruleExecution={ruleExecution} />
     </CollapsibleV2.Title>
   );
@@ -69,11 +60,7 @@ export function RuleExecutionContent({
   );
 }
 
-export function RuleExecutionDescription({
-  description,
-}: {
-  description?: string;
-}) {
+export function RuleExecutionDescription({ description }: { description?: string }) {
   if (!description) return null;
   return (
     <div className="bg-purple-98 border-purple-96 flex flex-row gap-2 rounded border p-2">

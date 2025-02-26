@@ -9,11 +9,7 @@ import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import {
-  createColumnHelper,
-  getCoreRowModel,
-  getSortedRowModel,
-} from '@tanstack/react-table';
+import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,12 +17,9 @@ import { Table, useVirtualTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { user, customListsRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { user, customListsRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
   const customLists = await customListsRepository.listCustomLists();
 
   return json({
@@ -63,21 +56,20 @@ export default function ListsPage() {
     [t],
   );
 
-  const { table, isEmpty, getBodyProps, rows, getContainerProps } =
-    useVirtualTable({
-      data: customLists,
-      columns,
-      columnResizeMode: 'onChange',
-      getCoreRowModel: getCoreRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-      rowLink: ({ id }) => (
-        <Link
-          to={getRoute('/lists/:listId', {
-            listId: fromUUID(id),
-          })}
-        />
-      ),
-    });
+  const { table, isEmpty, getBodyProps, rows, getContainerProps } = useVirtualTable({
+    data: customLists,
+    columns,
+    columnResizeMode: 'onChange',
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    rowLink: ({ id }) => (
+      <Link
+        to={getRoute('/lists/:listId', {
+          listId: fromUUID(id),
+        })}
+      />
+    ),
+  });
 
   return (
     <Page.Main>
@@ -92,15 +84,10 @@ export default function ListsPage() {
             </div>
             {isEmpty ? (
               <div className="bg-grey-100 border-grey-90 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
-                <p className="text-s font-medium">
-                  {t('lists:empty_custom_lists_list')}
-                </p>
+                <p className="text-s font-medium">{t('lists:empty_custom_lists_list')}</p>
               </div>
             ) : (
-              <Table.Container
-                {...getContainerProps()}
-                className="bg-grey-100 max-h-[70dvh]"
-              >
+              <Table.Container {...getContainerProps()} className="bg-grey-100 max-h-[70dvh]">
                 <Table.Header headerGroups={table.getHeaderGroups()} />
                 <Table.Body {...getBodyProps()}>
                   {rows.map((row) => (

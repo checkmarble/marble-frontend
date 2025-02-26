@@ -24,23 +24,22 @@ interface FormInputProps extends Omit<InputProps, 'borderColor' | 'type'> {
     | 'week';
 }
 
-export const FormInput = React.forwardRef<
-  React.ElementRef<typeof Input>,
-  FormInputProps
->(function FormInput({ type, ...inputProps }, ref) {
-  const { name, description } = useFieldName();
-  const [meta] = useField<string>(name);
+export const FormInput = React.forwardRef<React.ElementRef<typeof Input>, FormInputProps>(
+  function FormInput({ type, ...inputProps }, ref) {
+    const { name, description } = useFieldName();
+    const [meta] = useField<string>(name);
 
-  return (
-    <Input
-      ref={ref}
-      borderColor={meta.valid ? 'greyfigma-90' : 'redfigma-47'}
-      {...inputProps}
-      {...getInputProps(meta, {
-        type,
-        ariaDescribedBy: description ? meta.descriptionId : undefined,
-      })}
-      key={meta.key}
-    />
-  );
-});
+    return (
+      <Input
+        ref={ref}
+        borderColor={meta.valid ? 'greyfigma-90' : 'redfigma-47'}
+        {...inputProps}
+        {...getInputProps(meta, {
+          type,
+          ariaDescribedBy: description ? meta.descriptionId : undefined,
+        })}
+        key={meta.key}
+      />
+    );
+  },
+);

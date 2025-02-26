@@ -28,9 +28,7 @@ export function AddToCaseIfPossibleNode({
   if (!hasPivotValue) {
     return (
       <>
-        <Callout>
-          {t('workflows:detail_panel.add_to_case_if_possible.description')}
-        </Callout>
+        <Callout>{t('workflows:detail_panel.add_to_case_if_possible.description')}</Callout>
 
         <Callout color="red">
           <span className="whitespace-pre-wrap">
@@ -49,9 +47,7 @@ export function AddToCaseIfPossibleNode({
 
   return (
     <>
-      <Callout>
-        {t('workflows:detail_panel.add_to_case_if_possible.description')}
-      </Callout>
+      <Callout>{t('workflows:detail_panel.add_to_case_if_possible.description')}</Callout>
       <SelectInbox
         selectedInboxId={data.inboxId ?? undefined}
         onSelectedInboxIdChange={(inboxId) => {
@@ -62,9 +58,7 @@ export function AddToCaseIfPossibleNode({
       />
 
       <CaseNameEditor
-        label={t(
-          'workflows:detail_panel.add_to_case_if_possible.case_name.label',
-        )}
+        label={t('workflows:detail_panel.add_to_case_if_possible.case_name.label')}
         value={data.caseName}
         onChange={(astNode) => {
           updateNode(id, { ...data, caseName: astNode });

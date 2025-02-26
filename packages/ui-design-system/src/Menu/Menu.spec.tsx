@@ -4,14 +4,7 @@ import { mockResizeObserver } from 'jsdom-testing-mocks';
 import { useDeferredValue, useMemo, useState } from 'react';
 
 import { Input } from '../Input/Input';
-import {
-  MenuButton,
-  MenuCombobox,
-  MenuContent,
-  MenuItem,
-  MenuPopover,
-  MenuRoot,
-} from './Menu';
+import { MenuButton, MenuCombobox, MenuContent, MenuItem, MenuPopover, MenuRoot } from './Menu';
 
 mockResizeObserver();
 
@@ -68,9 +61,7 @@ function MenuWithCombobox() {
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue}>
       <MenuButton>Open</MenuButton>
       <MenuPopover className="flex flex-col gap-2 p-2">
-        <MenuCombobox
-          render={<Input className="shrink-0" placeholder="Search..." />}
-        />
+        <MenuCombobox render={<Input className="shrink-0" placeholder="Search..." />} />
         <MenuContent>
           {items.map((item) => (
             <MenuItem key={item}>{item}</MenuItem>

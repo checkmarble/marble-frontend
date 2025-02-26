@@ -12,12 +12,7 @@ import {
 } from '@app-builder/models/transfer-alert';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -43,12 +38,9 @@ export async function action({ request }: ActionFunctionArgs) {
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { transferAlertRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { transferAlertRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: createAlertFormSchema });
@@ -147,10 +139,7 @@ function CreateAlertContent({
             {...getInputProps(fields.transferId, { type: 'hidden' })}
             key={fields.transferId.key}
           />
-          <FormField
-            name={fields.message.name}
-            className="flex flex-col items-start gap-2"
-          >
+          <FormField name={fields.message.name} className="flex flex-col items-start gap-2">
             <FormLabel>{t('transfercheck:alert.create.message')}</FormLabel>
             <FormTextArea
               className="w-full"
@@ -162,59 +151,38 @@ function CreateAlertContent({
             name={fields.transferEndToEndId.name}
             className="flex flex-col items-start gap-2"
           >
-            <FormLabel>
-              {t('transfercheck:alert.transfer_end_to_end_id')}
-            </FormLabel>
+            <FormLabel>{t('transfercheck:alert.transfer_end_to_end_id')}</FormLabel>
             <FormInput
               type="text"
               className="w-full"
-              placeholder={t(
-                'transfercheck:alert.create.transfer_end_to_end_id.placeholder',
-              )}
+              placeholder={t('transfercheck:alert.create.transfer_end_to_end_id.placeholder')}
             />
             <FormErrorOrDescription />
           </FormField>
-          <FormField
-            name={fields.senderIban.name}
-            className="flex flex-col items-start gap-2"
-          >
+          <FormField name={fields.senderIban.name} className="flex flex-col items-start gap-2">
             <FormLabel>{t('transfercheck:alert.sender_iban')}</FormLabel>
             <FormInput
               type="text"
               className="w-full"
-              placeholder={t(
-                'transfercheck:alert.create.sender_iban.placeholder',
-              )}
+              placeholder={t('transfercheck:alert.create.sender_iban.placeholder')}
             />
             <FormErrorOrDescription />
           </FormField>
-          <FormField
-            name={fields.beneficiaryIban.name}
-            className="flex flex-col items-start gap-2"
-          >
+          <FormField name={fields.beneficiaryIban.name} className="flex flex-col items-start gap-2">
             <FormLabel>{t('transfercheck:alert.beneficiary_iban')}</FormLabel>
             <FormInput
               type="text"
               className="w-full"
-              placeholder={t(
-                'transfercheck:alert.create.beneficiary_iban.placeholder',
-              )}
+              placeholder={t('transfercheck:alert.create.beneficiary_iban.placeholder')}
             />
             <FormErrorOrDescription />
           </FormField>
 
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="create"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="create">
               <Icon icon="add-alert" className="size-5" />
               {t('transfercheck:alert.create.new_alert')}
             </Button>

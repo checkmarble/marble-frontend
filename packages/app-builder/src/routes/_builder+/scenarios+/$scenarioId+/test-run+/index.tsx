@@ -9,11 +9,7 @@ import {
 } from '@app-builder/components/Scenario/TestRun/Filters';
 import { testRunsFilterNames } from '@app-builder/components/Scenario/TestRun/Filters/filters';
 import { TestRunSelector } from '@app-builder/components/Scenario/TestRun/TestRunSelector';
-import {
-  isForbiddenHttpError,
-  isNotFoundHttpError,
-  type User,
-} from '@app-builder/models';
+import { isForbiddenHttpError, isNotFoundHttpError, type User } from '@app-builder/models';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { serverServices } from '@app-builder/services/init.server';
@@ -62,10 +58,7 @@ export default function TestRuns() {
     () =>
       mapToObj(scenarioIterations, (i) => [
         i.id,
-        pick(adaptScenarioIterationWithType(i, currentScenario.liveVersionId), [
-          'version',
-          'type',
-        ]),
+        pick(adaptScenarioIterationWithType(i, currentScenario.liveVersionId), ['version', 'type']),
       ]),
     [scenarioIterations, currentScenario],
   );
@@ -73,24 +66,15 @@ export default function TestRuns() {
   const atLeastOneActiveTestRun = runs.some((run) => run.status === 'up');
 
   const filteredRuns = useMemo(() => {
-    const { statuses, startedAfter, creators, ref_versions, test_versions } =
-      filters;
+    const { statuses, startedAfter, creators, ref_versions, test_versions } = filters;
 
     return filter(runs, (r) =>
       allPass(r, [
         (r) => !statuses || !statuses.length || statuses.includes(r.status),
-        (r) =>
-          !startedAfter ||
-          new Date(r.startDate).getTime() > startedAfter.getTime(),
+        (r) => !startedAfter || new Date(r.startDate).getTime() > startedAfter.getTime(),
         (r) => !creators || !creators.length || creators.includes(r.creatorId),
-        (r) =>
-          !ref_versions ||
-          !ref_versions.length ||
-          ref_versions.includes(r.refIterationId),
-        (r) =>
-          !test_versions ||
-          !test_versions.length ||
-          test_versions.includes(r.testIterationId),
+        (r) => !ref_versions || !ref_versions.length || ref_versions.includes(r.refIterationId),
+        (r) => !test_versions || !test_versions.length || test_versions.includes(r.testIterationId),
       ]),
     );
   }, [runs, filters]);
@@ -120,10 +104,7 @@ export default function TestRuns() {
       <Page.Container>
         <Page.Content className="max-w-screen-lg">
           <div className="flex flex-col gap-4">
-            <TestRunsFiltersProvider
-              submitTestRunsFilters={setFilters}
-              filterValues={filters}
-            >
+            <TestRunsFiltersProvider submitTestRunsFilters={setFilters} filterValues={filters}>
               <div className="flex flex-row items-center justify-between">
                 <span className="text-grey-00 text-l font-semibold">
                   {t('scenarios:testrun.home')}
@@ -147,26 +128,13 @@ export default function TestRuns() {
               <TestRunsFiltersBar />
               <div className="flex flex-col gap-2">
                 <div className="text-s grid grid-cols-[30%_30%_8%_auto] font-semibold">
-                  <span className="px-4">
-                    {t('scenarios:testrun.filters.version')}
-                  </span>
-                  <span className="px-4">
-                    {t('scenarios:testrun.filters.started_after')}
-                  </span>
-                  <span className="text-center">
-                    {t('scenarios:testrun.filters.creator')}
-                  </span>
-                  <span className="px-4">
-                    {t('scenarios:testrun.filters.status')}
-                  </span>
+                  <span className="px-4">{t('scenarios:testrun.filters.version')}</span>
+                  <span className="px-4">{t('scenarios:testrun.filters.started_after')}</span>
+                  <span className="text-center">{t('scenarios:testrun.filters.creator')}</span>
+                  <span className="px-4">{t('scenarios:testrun.filters.status')}</span>
                 </div>
                 {filteredRuns.map((run) => (
-                  <TestRunSelector
-                    {...run}
-                    key={run.id}
-                    users={users}
-                    iterations={iterations}
-                  />
+                  <TestRunSelector {...run} key={run.id} users={users} iterations={iterations} />
                 ))}
               </div>
             </TestRunsFiltersProvider>

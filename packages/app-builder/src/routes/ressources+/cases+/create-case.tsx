@@ -1,21 +1,11 @@
 import { useCaseRightPanelContext } from '@app-builder/components';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@app-builder/components/Form';
+import { FormControl, FormField, FormItem, FormLabel } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  type ActionFunctionArgs,
-  json,
-  type LoaderFunctionArgs,
-  redirect,
-} from '@remix-run/node';
+import { type ActionFunctionArgs, json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useEffect } from 'react';
 import { Form, FormProvider, useForm } from 'react-hook-form';
@@ -63,9 +53,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   try {
     const createdCase = await cases.createCase(parsedForm.data);
-    return redirect(
-      getRoute('/cases/:caseId', { caseId: fromUUID(createdCase.id) }),
-    );
+    return redirect(getRoute('/cases/:caseId', { caseId: fromUUID(createdCase.id) }));
   } catch (error) {
     setToastMessage(session, {
       type: 'error',

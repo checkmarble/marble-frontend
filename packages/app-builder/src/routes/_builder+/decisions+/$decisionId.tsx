@@ -27,12 +27,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs } from '@remix-run/node';
-import {
-  isRouteErrorResponse,
-  useLoaderData,
-  useNavigate,
-  useRouteError,
-} from '@remix-run/react';
+import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -56,9 +51,7 @@ export const handle = {
               decisionId: fromUUID(decision.id),
             })}
           >
-            <span className="line-clamp-1 text-start">
-              {t('decisions:decision')}
-            </span>
+            <span className="line-clamp-1 text-start">{t('decisions:decision')}</span>
           </BreadCrumbLink>
           <CopyToClipboardButton toCopy={decision.id}>
             <span className="text-s line-clamp-1 max-w-40 font-normal">
@@ -73,20 +66,11 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const {
-    decision,
-    editor,
-    customListsRepository,
-    scenario,
-    dataModelRepository,
-    sanctionCheck,
-  } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  const parsedParam = await parseParamsSafe(
-    params,
-    z.object({ decisionId: shortUUIDSchema }),
-  );
+  const { decision, editor, customListsRepository, scenario, dataModelRepository, sanctionCheck } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
+  const parsedParam = await parseParamsSafe(params, z.object({ decisionId: shortUUIDSchema }));
   if (!parsedParam.success) {
     return handleParseParamError(request, parsedParam.error);
   }
@@ -117,9 +101,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return defer({
       decision: currentDecision,
       pivots: await pivotsPromise,
-      sanctionCheck: (
-        await sanctionCheck.listSanctionChecks({ decisionId })
-      )?.[0],
+      sanctionCheck: (await sanctionCheck.listSanctionChecks({ decisionId }))?.[0],
       astRuleData,
     });
   } catch (error) {
@@ -132,8 +114,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function DecisionPage() {
-  const { decision, pivots, astRuleData, sanctionCheck } =
-    useLoaderData<typeof loader>();
+  const { decision, pivots, astRuleData, sanctionCheck } = useLoaderData<typeof loader>();
 
   const pivotValues = R.pipe(
     decision.pivotValues,
@@ -174,18 +155,14 @@ export default function DecisionPage() {
                   triggerObjectType={decision.triggerObjectType}
                   astRuleData={astRuleData}
                 />
-                {sanctionCheck ? (
-                  <SanctionCheckDetail sanctionCheck={sanctionCheck} />
-                ) : null}
+                {sanctionCheck ? <SanctionCheckDetail sanctionCheck={sanctionCheck} /> : null}
               </div>
               <div className="flex flex-col gap-4 lg:gap-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
                   <ScorePanel score={decision.score} />
                   <OutcomePanel outcome={decision.outcome} />
                 </div>
-                <DecisionDetailTriggerObject
-                  triggerObject={decision.triggerObject}
-                />
+                <DecisionDetailTriggerObject triggerObject={decision.triggerObject} />
               </div>
             </div>
           </Page.Content>

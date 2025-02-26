@@ -10,12 +10,7 @@ import {
   transfercheckApiConfig,
 } from './config';
 
-async function openapiGenerator({
-  apiName,
-  apiSpec,
-  generatedApi,
-  apiOptions,
-}: Config) {
+async function openapiGenerator({ apiName, apiSpec, generatedApi, apiOptions }: Config) {
   const spinner = ora(`Start to generate ${apiName} client...`).start();
   try {
     const code = await Oazapfts.generateSource(apiSpec, apiOptions);

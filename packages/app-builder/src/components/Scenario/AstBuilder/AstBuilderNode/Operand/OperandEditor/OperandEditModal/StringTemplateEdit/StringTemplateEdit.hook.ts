@@ -30,9 +30,7 @@ const editStringTemplateReducer = (
   switch (action.type) {
     case 'setTemplate': {
       const nextState = { ...prevState, template: action.payload.template };
-      const variablesNames = extractVariablesNamesFromTemplate(
-        action.payload.template,
-      );
+      const variablesNames = extractVariablesNamesFromTemplate(action.payload.template);
       const variables = { ...prevState.variables };
       if (hasEmptyVariable(variables, variablesNames)) {
         for (const variableName of variablesNames) {
@@ -55,13 +53,8 @@ const editStringTemplateReducer = (
   }
 };
 
-const hasEmptyVariable = (
-  variables: Record<string, AstNode>,
-  variableNames: string[],
-) => {
-  return (
-    variableNames.filter((variableName) => !variables[variableName]).length > 0
-  );
+const hasEmptyVariable = (variables: Record<string, AstNode>, variableNames: string[]) => {
+  return variableNames.filter((variableName) => !variables[variableName]).length > 0;
 };
 
 const adaptStringTemplateEditState = ({

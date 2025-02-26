@@ -10,10 +10,7 @@ import { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect';
  */
 export function useInterval(
   callback: () => void,
-  {
-    delay,
-    executeImmediately = false,
-  }: { delay: number | null; executeImmediately?: boolean },
+  { delay, executeImmediately = false }: { delay: number | null; executeImmediately?: boolean },
 ) {
   const savedCallback = useRef(callback);
 

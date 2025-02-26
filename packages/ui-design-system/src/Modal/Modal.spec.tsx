@@ -10,9 +10,7 @@ describe('Modal', () => {
         <Modal.Trigger>Trigger</Modal.Trigger>
         <Modal.Content>
           <Modal.Title>Modal title</Modal.Title>
-          <Modal.Description>
-            This is the the modal description
-          </Modal.Description>
+          <Modal.Description>This is the the modal description</Modal.Description>
           <Modal.Close>Cancel</Modal.Close>
         </Modal.Content>
       </Modal.Root>,
@@ -24,9 +22,7 @@ describe('Modal', () => {
     await userEvent.click(trigger);
 
     expect(screen.getByText(/modal title/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/This is the the modal description/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/This is the the modal description/i)).toBeInTheDocument();
 
     const close = screen.getByRole('button', { name: /cancel/i });
     await userEvent.click(close);

@@ -4,20 +4,12 @@ import { FormLabel } from '@app-builder/components/Form/FormLabel';
 import { FormSelect } from '@app-builder/components/Form/FormSelect';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
-import {
-  type InboxUser,
-  tKeyForInboxUserRole,
-} from '@app-builder/models/inbox';
+import { type InboxUser, tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { getInboxUserRoles } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -34,9 +26,7 @@ export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
 };
 
-function getUpdateInboxUserFormSchema(
-  inboxUserRoles: readonly [string, ...string[]],
-) {
+function getUpdateInboxUserFormSchema(inboxUserRoles: readonly [string, ...string[]]) {
   return z.object({
     id: z.string().uuid(),
     inboxId: z.string().uuid(),
@@ -173,18 +163,9 @@ export function UpdateInboxUserContent({
       >
         <Modal.Title>{t('settings:inboxes.inbox_user.update')}</Modal.Title>
         <div className="bg-grey-100 flex flex-col gap-6 p-6">
-          <input
-            {...getInputProps(fields.id, { type: 'hidden' })}
-            key={fields.id.key}
-          />
-          <input
-            {...getInputProps(fields.inboxId, { type: 'hidden' })}
-            key={fields.inboxId.key}
-          />
-          <FormField
-            name={fields.role.name}
-            className="group flex flex-col gap-2"
-          >
+          <input {...getInputProps(fields.id, { type: 'hidden' })} key={fields.id.key} />
+          <input {...getInputProps(fields.inboxId, { type: 'hidden' })} key={fields.inboxId.key} />
+          <FormField name={fields.role.name} className="group flex flex-col gap-2">
             <FormLabel className="flex gap-2">
               <span
                 className={clsx({
@@ -194,17 +175,10 @@ export function UpdateInboxUserContent({
                 {t('settings:inboxes.inbox_details.role')}
               </span>
               {access === 'allowed' ? null : (
-                <Nudge
-                  content={t('settings:users.role.nudge')}
-                  className="size-6"
-                  kind={access}
-                />
+                <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
               )}
             </FormLabel>
-            <FormSelect.Default
-              options={inboxUserRoleOptions}
-              disabled={access === 'restricted'}
-            >
+            <FormSelect.Default options={inboxUserRoleOptions} disabled={access === 'restricted'}>
               {inboxUserRoleOptions.map((role) => (
                 <FormSelect.DefaultItem key={role.value} value={role.value}>
                   {role.label}
@@ -219,12 +193,7 @@ export function UpdateInboxUserContent({
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="update"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="update">
               {t('common:save')}
             </Button>
           </div>

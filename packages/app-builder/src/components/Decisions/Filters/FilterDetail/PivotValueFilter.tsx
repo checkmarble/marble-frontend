@@ -1,8 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
-import {
-  ExternalLink,
-  linkClasses,
-} from '@app-builder/components/ExternalLink';
+import { ExternalLink, linkClasses } from '@app-builder/components/ExternalLink';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
@@ -14,8 +11,7 @@ import { usePivotValueFilter } from '../DecisionFiltersContext';
 
 export function PivotValueFilter() {
   const { t } = useTranslation(decisionsI18n);
-  const { hasPivots, selectedPivotValue, setSelectedPivotValue } =
-    usePivotValueFilter();
+  const { hasPivots, selectedPivotValue, setSelectedPivotValue } = usePivotValueFilter();
 
   if (hasPivots) {
     return (
@@ -49,9 +45,7 @@ export function PivotValueFilter() {
           t={t}
           i18nKey="decisions:pivot_detail.missing_pivot_definition"
           components={{
-            DataModelLink: (
-              <Link to={getRoute('/data/schema')} className={linkClasses} />
-            ),
+            DataModelLink: <Link to={getRoute('/data/schema')} className={linkClasses} />,
             DocLink: <ExternalLink href={pivotValuesDocHref} />,
           }}
         />

@@ -28,10 +28,7 @@ export function TriggerObjectFilter() {
         <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((triggerObject) => {
             return (
-              <SelectWithCombobox.ComboboxItem
-                key={triggerObject}
-                value={triggerObject}
-              >
+              <SelectWithCombobox.ComboboxItem key={triggerObject} value={triggerObject}>
                 <Highlight
                   className="first-letter:capitalize"
                   text={triggerObject}

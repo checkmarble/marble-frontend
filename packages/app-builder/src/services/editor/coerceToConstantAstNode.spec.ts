@@ -21,12 +21,8 @@ describe('coerceToConstantAstNode', () => {
 
   it('return a constant string given a random string', () => {
     const valueToCoerce = 'some string ';
-    const expected = [
-      helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
-    ];
-    expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(
-      expected,
-    );
+    const expected = [helperConstantOperandOption({ valueToCoerce, dataType: 'String' })];
+    expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(expected);
   });
 
   it('returns two contants string and number given a string convertible to a numbers', () => {
@@ -35,9 +31,7 @@ describe('coerceToConstantAstNode', () => {
       helperConstantOperandOption({ valueToCoerce, dataType: 'Int' }),
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
-    expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(
-      expected,
-    );
+    expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(expected);
   });
 
   it('returns constant true true and constant string given "True"', () => {
@@ -46,9 +40,7 @@ describe('coerceToConstantAstNode', () => {
       helperConstantOperandOption({ valueToCoerce, dataType: 'Bool' }),
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
-    expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(
-      expected,
-    );
+    expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(expected);
   });
 
   it('returns constant false and constant string given "FALSE"', () => {
@@ -57,9 +49,7 @@ describe('coerceToConstantAstNode', () => {
       helperConstantOperandOption({ valueToCoerce, dataType: 'Bool' }),
       helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
     ];
-    expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(
-      expected,
-    );
+    expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(expected);
   });
 
   describe('return an array given a string convertible to an array', () => {
@@ -71,9 +61,7 @@ describe('coerceToConstantAstNode', () => {
         }),
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
       ];
-      expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(
-        expected,
-      );
+      expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(expected);
     });
 
     it('Int[]', () => {
@@ -84,9 +72,7 @@ describe('coerceToConstantAstNode', () => {
         }),
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
       ];
-      expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(
-        expected,
-      );
+      expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(expected);
     });
 
     it('Float[]', () => {
@@ -97,9 +83,7 @@ describe('coerceToConstantAstNode', () => {
         }),
         helperConstantOperandOption({ valueToCoerce, dataType: 'String' }),
       ];
-      expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(
-        expected,
-      );
+      expect(coerceToConstantAstNode(valueToCoerce, options)).toMatchObject(expected);
     });
   });
 });

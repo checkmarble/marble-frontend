@@ -1,9 +1,4 @@
-import {
-  Callout,
-  CollapsiblePaper,
-  CopyToClipboardButton,
-  Page,
-} from '@app-builder/components';
+import { Callout, CollapsiblePaper, CopyToClipboardButton, Page } from '@app-builder/components';
 import { type ApiKey, type CreatedApiKey } from '@app-builder/models/api-keys';
 import { CreateApiKey } from '@app-builder/routes/ressources+/settings+/api-keys+/create';
 import { DeleteApiKey } from '@app-builder/routes/ressources+/settings+/api-keys+/delete';
@@ -34,10 +29,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const createdApiKey = authSession.get('createdApiKey');
   const headers = new Headers();
   if (createdApiKey) {
-    headers.set(
-      'Set-Cookie',
-      await authSessionService.commitSession(authSession),
-    );
+    headers.set('Set-Cookie', await authSessionService.commitSession(authSession));
   }
 
   return json(
@@ -57,12 +49,8 @@ const columnHelper = createColumnHelper<ApiKey>();
 
 export default function ApiKeys() {
   const { t } = useTranslation(['settings']);
-  const {
-    apiKeys,
-    createdApiKey,
-    isCreateApiKeyAvailable,
-    isDeleteApiKeyAvailable,
-  } = useLoaderData<typeof loader>();
+  const { apiKeys, createdApiKey, isCreateApiKeyAvailable, isDeleteApiKeyAvailable } =
+    useLoaderData<typeof loader>();
 
   const columns = useMemo(() => {
     return [
@@ -125,13 +113,7 @@ export default function ApiKeys() {
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>
                 {rows.map((row) => {
-                  return (
-                    <Table.Row
-                      key={row.id}
-                      className="hover:bg-purple-98 group"
-                      row={row}
-                    />
-                  );
+                  return <Table.Row key={row.id} className="hover:bg-purple-98 group" row={row} />;
                 })}
               </Table.Body>
             </Table.Container>
@@ -150,9 +132,7 @@ function CreatedAPIKey({ createdApiKey }: { createdApiKey: CreatedApiKey }) {
         <span className="font-bold">{t('settings:api_keys.new_api_key')}</span>
         <span>{t('settings:api_keys.copy_api_key')}</span>
         <CopyToClipboardButton toCopy={createdApiKey.key}>
-          <span className="text-s line-clamp-1 font-semibold">
-            {createdApiKey.key}
-          </span>
+          <span className="text-s line-clamp-1 font-semibold">{createdApiKey.key}</span>
         </CopyToClipboardButton>
       </div>
     </Callout>

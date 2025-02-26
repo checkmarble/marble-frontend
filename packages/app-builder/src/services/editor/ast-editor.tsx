@@ -54,9 +54,7 @@ type AstNodeEditorStore = AstNodeEditorState & {
 
 export type AstEditorStore = StoreApi<AstNodeEditorStore>;
 
-const AstNodeEditorContext = createSimpleContext<AstEditorStore>(
-  'AstNodeEditorContext',
-);
+const AstNodeEditorContext = createSimpleContext<AstEditorStore>('AstNodeEditorContext');
 
 export function useAstNodeEditor({
   initialAstNode,
@@ -117,11 +115,7 @@ export function useAstNodeEditor({
           const path = parsePath(stringPath);
           set({
             rootAstNode: removeAtPath(rootAstNode, path),
-            rootEvaluation: removeAtPath(
-              rootEvaluation,
-              path,
-              NewNodeEvaluation(),
-            ),
+            rootEvaluation: removeAtPath(rootEvaluation, path, NewNodeEvaluation()),
           });
         },
       },
@@ -132,10 +126,7 @@ export function useAstNodeEditor({
 }
 
 function newNChildren(n: number, currentChildren: AstNode[]) {
-  return Array.from(
-    { length: n },
-    (_, i) => currentChildren[i] ?? NewUndefinedAstNode(),
-  );
+  return Array.from({ length: n }, (_, i) => currentChildren[i] ?? NewUndefinedAstNode());
 }
 
 export function AstNodeEditorProvider({
@@ -145,11 +136,7 @@ export function AstNodeEditorProvider({
   children: React.ReactNode;
   store: AstEditorStore;
 }) {
-  return (
-    <AstNodeEditorContext.Provider value={store}>
-      {children}
-    </AstNodeEditorContext.Provider>
-  );
+  return <AstNodeEditorContext.Provider value={store}>{children}</AstNodeEditorContext.Provider>;
 }
 
 function createInitialState(initialState: {
@@ -162,17 +149,12 @@ function createInitialState(initialState: {
   };
 }
 
-function useAstNodeEditorStore<Out>(
-  selector: (state: AstNodeEditorStore) => Out,
-) {
+function useAstNodeEditorStore<Out>(selector: (state: AstNodeEditorStore) => Out) {
   const store = AstNodeEditorContext.useValue();
   return useStore(store, selector);
 }
 
-export function useSaveAstNode(
-  store: AstEditorStore,
-  onSave: (astNode: AstNode) => void,
-) {
+export function useSaveAstNode(store: AstEditorStore, onSave: (astNode: AstNode) => void) {
   const onSaveCallbackRef = useCallbackRef(onSave);
   return React.useCallback(() => {
     const { rootAstNode } = store.getState();
@@ -283,8 +265,7 @@ export function useParentEvaluationErrors(parentPath: ParentPath) {
 }
 
 export function useRootOrAndValidation(stringPath: string) {
-  const getOrAndNodeEvaluationErrorMessage =
-    useGetOrAndNodeEvaluationErrorMessage();
+  const getOrAndNodeEvaluationErrorMessage = useGetOrAndNodeEvaluationErrorMessage();
   const errors = useEvaluationErrors(stringPath);
   return React.useMemo(() => {
     const { nodeErrors } = separateChildrenErrors(errors);
@@ -304,8 +285,7 @@ export function useRootOrAndChildValidation(stringPath: string) {
   const parentAstNode = useParentAstNode(parentPath);
   const parentEvaluation = useParentEvaluation(parentPath);
   return React.useMemo(() => {
-    const lineErrors =
-      astNode && evaluation ? computeLineErrors(astNode, evaluation) : [];
+    const lineErrors = astNode && evaluation ? computeLineErrors(astNode, evaluation) : [];
     const argumentIndexErrorsFromParent =
       parentAstNode && parentEvaluation && parentPath?.childPathSegment
         ? findArgumentErrorsFromParent(
@@ -321,8 +301,7 @@ export function useRootOrAndChildValidation(stringPath: string) {
 
     return {
       errorMessages,
-      hasArgumentIndexErrorsFromParent:
-        argumentIndexErrorsFromParent.length > 0,
+      hasArgumentIndexErrorsFromParent: argumentIndexErrorsFromParent.length > 0,
     };
   }, [
     astNode,
@@ -334,18 +313,13 @@ export function useRootOrAndChildValidation(stringPath: string) {
   ]);
 }
 
-export function useValidationStatus(
-  stringPath: string,
-  returnValue?: ReturnValue,
-) {
+export function useValidationStatus(stringPath: string, returnValue?: ReturnValue) {
   const path = usePath(stringPath);
   const evaluationErrors = useEvaluationErrors(stringPath);
   const parentPath = useParentPath(path);
   const parentNode = useParentAstNode(parentPath);
   const isDivByZeroField =
-    isDivisionDenominator(parentNode, path) &&
-    !returnValue?.isOmitted &&
-    returnValue?.value === 0;
+    isDivisionDenominator(parentNode, path) && !returnValue?.isOmitted && returnValue?.value === 0;
   const valueIsNull = !returnValue?.isOmitted && returnValue?.value === null;
   const parentEvaluationErrors = useParentEvaluationErrors(parentPath);
 
@@ -364,10 +338,7 @@ export function useValidationStatus(
   }, [evaluationErrors, indirectEvaluationErrors]);
 }
 
-function isDivisionDenominator(
-  parentNode: Tree<AstNode> | undefined,
-  path: Path,
-) {
+function isDivisionDenominator(parentNode: Tree<AstNode> | undefined, path: Path) {
   const pathLastPart = path.at(-1);
   if (!pathLastPart) {
     return false;
@@ -376,9 +347,5 @@ function isDivisionDenominator(
     return false;
   }
 
-  return (
-    parentNode?.name === '/' &&
-    pathLastPart.type === 'children' &&
-    pathLastPart.index === 1
-  );
+  return parentNode?.name === '/' && pathLastPart.type === 'children' && pathLastPart.index === 1;
 }

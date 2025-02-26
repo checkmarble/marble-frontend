@@ -3,10 +3,7 @@ import { type Meta, type StoryFn } from '@storybook/react';
 import { Select, type SelectProps } from './Select';
 import { selectBorder, selectBorderColor } from './Select.constants';
 
-type StoryProps = Pick<
-  SelectProps,
-  'disabled' | 'placeholder' | 'border' | 'borderColor'
->;
+type StoryProps = Pick<SelectProps, 'disabled' | 'placeholder' | 'border' | 'borderColor'>;
 
 const Story: Meta<StoryProps> = {
   component: Select.Default,

@@ -23,16 +23,10 @@ CopyPasteASTContext.displayName = 'CopyPasteASTContext';
  *
  * If needed, you can nest multiple CopyPasteASTContextProvider instances to create multiple copy/paste contexts (e.g., inside a specific edit modal).
  */
-export function CopyPasteASTContextProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function CopyPasteASTContextProvider({ children }: { children: React.ReactNode }) {
   const [ast, setAst] = useState<CopyPasteAST['ast']>(null);
   return (
-    <CopyPasteASTContext.Provider value={{ ast, setAst }}>
-      {children}
-    </CopyPasteASTContext.Provider>
+    <CopyPasteASTContext.Provider value={{ ast, setAst }}>{children}</CopyPasteASTContext.Provider>
   );
 }
 

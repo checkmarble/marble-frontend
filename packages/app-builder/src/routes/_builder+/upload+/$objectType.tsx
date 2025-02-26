@@ -6,11 +6,7 @@ import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-h
 import { isIngestDataAvailable } from '@app-builder/services/feature-access';
 import { clientServices } from '@app-builder/services/init.client';
 import { serverServices } from '@app-builder/services/init.server';
-import {
-  formatDateTime,
-  formatNumber,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatDateTime, formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -33,10 +29,9 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient, user, dataModelRepository } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const { apiClient, user, dataModelRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   if (!isIngestDataAvailable(user)) redirect(getRoute('/data'));
 
@@ -72,9 +67,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
   });
   const revalidator = useRevalidator();
 
-  const { getAccessToken, backendUrl } = useBackendInfo(
-    clientServices.authenticationClientService,
-  );
+  const { getAccessToken, backendUrl } = useBackendInfo(clientServices.authenticationClientService);
 
   const computeModalMessage = useCallback(
     ({
@@ -124,16 +117,13 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         return;
       }
 
-      const response = await fetch(
-        `${backendUrl}/ingestion/${objectType}/batch`,
-        {
-          method: 'POST',
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${tokenResponse.accessToken}`,
-          },
+      const response = await fetch(`${backendUrl}/ingestion/${objectType}/batch`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${tokenResponse.accessToken}`,
         },
-      );
+      });
       if (!response.ok) {
         setIsModalOpen(true);
         let errorMessage: string | undefined;
@@ -162,8 +152,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
       setIsModalOpen(true);
       computeModalMessage({
         success: false,
-        errorMessage:
-          error instanceof Error ? error.message : t('common:global_error'),
+        errorMessage: error instanceof Error ? error.message : t('common:global_error'),
       });
     } finally {
       setLoading(false);
@@ -185,9 +174,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         {...getRootProps()}
         className={clsx(
           'text-s flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
-          isDragActive
-            ? 'bg-purple-96 border-purple-82 opacity-90'
-            : 'border-grey-50',
+          isDragActive ? 'bg-purple-96 border-purple-82 opacity-90' : 'border-grey-50',
         )}
       >
         <input {...getInputProps()} />
@@ -282,11 +269,7 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
         size: 200,
         cell: ({ getValue }) => {
           const dateTime = getValue();
-          return (
-            <time dateTime={dateTime}>
-              {formatDateTime(dateTime, { language })}
-            </time>
-          );
+          return <time dateTime={dateTime}>{formatDateTime(dateTime, { language })}</time>;
         },
       }),
       columnHelper.accessor((row) => row.finished_at, {
@@ -296,26 +279,18 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
         cell: ({ getValue }) => {
           const dateTime = getValue();
           if (!dateTime) return '';
-          return (
-            <time dateTime={dateTime}>
-              {formatDateTime(dateTime, { language })}
-            </time>
-          );
+          return <time dateTime={dateTime}>{formatDateTime(dateTime, { language })}</time>;
         },
       }),
       columnHelper.accessor((row) => row.lines_processed, {
         id: 'upload.lines_processed',
-        cell: ({ getValue }) => (
-          <span>{formatNumber(getValue(), { language })}</span>
-        ),
+        cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
         header: t('upload:lines_processed'),
         size: 200,
       }),
       columnHelper.accessor((row) => row.num_rows_ingested, {
         id: 'upload.num_rows_ingested',
-        cell: ({ getValue }) => (
-          <span>{formatNumber(getValue(), { language })}</span>
-        ),
+        cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
         header: t('upload:num_rows_ingested'),
         size: 200,
       }),
@@ -427,9 +402,7 @@ export default function Upload() {
           <ClientOnly fallback={<Loading />}>
             {() => <UploadForm objectType={objectType} />}
           </ClientOnly>
-          {uploadLogs.length > 0 ? (
-            <PastUploads uploadLogs={uploadLogs} />
-          ) : null}
+          {uploadLogs.length > 0 ? <PastUploads uploadLogs={uploadLogs} /> : null}
         </Page.Content>
       </Page.Container>
     </Page.Main>

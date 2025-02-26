@@ -92,9 +92,7 @@ interface ServerEnvVars {
 /**
  * Used to access env vars inside loaders/actions code
  */
-export function getServerEnv<K extends keyof ServerEnvVars>(
-  serverEnvVarName: K,
-) {
+export function getServerEnv<K extends keyof ServerEnvVars>(serverEnvVarName: K) {
   if (serverEnvVarName === 'FIREBASE_CONFIG') {
     return parseFirebaseConfigFromEnv() as ServerEnvVars[K];
   }
@@ -129,9 +127,7 @@ export function getClientEnvVars(): ClientEnvVars {
 /**
  * Used to access env vars inside components code (SSR and CSR)
  */
-export function getClientEnv<K extends keyof ClientEnvVars>(
-  clientEnvVarName: K,
-) {
+export function getClientEnv<K extends keyof ClientEnvVars>(clientEnvVarName: K) {
   let clientEnv: ClientEnvVars;
   if (typeof window === 'undefined') {
     clientEnv = getClientEnvVars();
@@ -139,9 +135,7 @@ export function getClientEnv<K extends keyof ClientEnvVars>(
     //@ts-expect-error ENV is a custom global variable injected in root.tsx
     clientEnv = window.ENV as ClientEnvVars;
     if (clientEnv === undefined) {
-      throw new Error(
-        `[MissingEnv] window.ENV is not defined. Check the root.tsx loader`,
-      );
+      throw new Error(`[MissingEnv] window.ENV is not defined. Check the root.tsx loader`);
     }
   }
 
@@ -165,17 +159,13 @@ function parseFirebaseConfigFromEnv(): FirebaseConfig {
   }
 
   try {
-    const authEmulatorUrl = new URL(
-      'http://' + firebaseAuthEmulatorHost,
-    ).toString();
+    const authEmulatorUrl = new URL('http://' + firebaseAuthEmulatorHost).toString();
     return {
       withEmulator: true as const,
       authEmulatorUrl,
       options,
     };
   } catch (e) {
-    throw new Error(
-      `Invalid FIREBASE_AUTH_EMULATOR_HOST: ${firebaseAuthEmulatorHost}`,
-    );
+    throw new Error(`Invalid FIREBASE_AUTH_EMULATOR_HOST: ${firebaseAuthEmulatorHost}`);
   }
 }

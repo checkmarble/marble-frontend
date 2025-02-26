@@ -25,16 +25,8 @@ function PaperContainer({
 function PaperTitle({
   className,
   ...props
-}: React.DetailedHTMLProps<
-  React.HTMLAttributes<HTMLParagraphElement>,
-  HTMLParagraphElement
->) {
-  return (
-    <p
-      className={clsx('text-m text-grey-00 font-semibold', className)}
-      {...props}
-    />
-  );
+}: React.DetailedHTMLProps<React.HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>) {
+  return <p className={clsx('text-m text-grey-00 font-semibold', className)} {...props} />;
 }
 
 export const Paper = {
@@ -46,13 +38,7 @@ const CollapsiblePaperContainer = forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<typeof Collapsible.Container>
 >(function CollapsiblePaperContainer({ className, ...props }, ref) {
-  return (
-    <Collapsible.Container
-      ref={ref}
-      className={clsx('bg-grey-100', className)}
-      {...props}
-    />
-  );
+  return <Collapsible.Container ref={ref} className={clsx('bg-grey-100', className)} {...props} />;
 });
 
 const CollapsiblePaperTitle = forwardRef<
@@ -62,10 +48,7 @@ const CollapsiblePaperTitle = forwardRef<
   return (
     <Collapsible.Title ref={ref} className="bg-grey-98" {...props}>
       <div
-        className={clsx(
-          'flex flex-1 flex-row items-center gap-2 text-start font-bold',
-          className,
-        )}
+        className={clsx('flex flex-1 flex-row items-center gap-2 text-start font-bold', className)}
       >
         {children}
       </div>

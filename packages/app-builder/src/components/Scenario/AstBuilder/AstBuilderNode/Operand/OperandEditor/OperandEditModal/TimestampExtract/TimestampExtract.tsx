@@ -87,9 +87,8 @@ export function TimestampExtractEdit({
   const { t } = useTranslation(['scenarios', 'common']);
   const { org, currentUser } = useOrganizationDetails();
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
-  const [viewModel, setViewModel] = React.useState<TimestampExtractViewModel>(
-    () =>
-      adaptTimestampExtractViewModel(timestampExtractAstNode, astNodeErrors),
+  const [viewModel, setViewModel] = React.useState<TimestampExtractViewModel>(() =>
+    adaptTimestampExtractViewModel(timestampExtractAstNode, astNodeErrors),
   );
 
   const handleSave = () => {
@@ -98,9 +97,7 @@ export function TimestampExtractEdit({
 
   return (
     <>
-      <ModalV2.Title>
-        {t('scenarios:edit_timestamp_extract.title')}
-      </ModalV2.Title>
+      <ModalV2.Title>{t('scenarios:edit_timestamp_extract.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <Callout variant="outlined">
           <ModalV2.Description className="whitespace-pre text-wrap">
@@ -149,15 +146,13 @@ export function TimestampExtractEdit({
                   },
                 })
               }
-              validationStatus={
-                viewModel.errors.timestamp.length > 0 ? 'error' : 'valid'
-              }
+              validationStatus={viewModel.errors.timestamp.length > 0 ? 'error' : 'valid'}
             />
           </div>
           <EvaluationErrors
-            errors={adaptEvaluationErrorViewModels([
-              ...viewModel.errors.timestamp,
-            ]).map(getNodeEvaluationErrorMessage)}
+            errors={adaptEvaluationErrorViewModels([...viewModel.errors.timestamp]).map(
+              getNodeEvaluationErrorMessage,
+            )}
           />
         </div>
         <p>{returnTimestampExtractInformation(t, viewModel.part)}</p>
@@ -170,19 +165,10 @@ export function TimestampExtractEdit({
         </p>
 
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close
-            render={
-              <Button className="flex-1" variant="secondary" name="cancel" />
-            }
-          >
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
             {t('common:cancel')}
           </ModalV2.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            name="save"
-            onClick={() => handleSave()}
-          >
+          <Button className="flex-1" variant="primary" name="save" onClick={() => handleSave()}>
             {t('common:save')}
           </Button>
         </div>

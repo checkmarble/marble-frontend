@@ -1,7 +1,4 @@
-import {
-  type ReviewStatus,
-  reviewStatuses,
-} from '@app-builder/models/decision';
+import { type ReviewStatus, reviewStatuses } from '@app-builder/models/decision';
 import { type ParseKeys } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,11 +36,7 @@ export function useReviewStatuses() {
   );
 }
 
-export function ReviewStatusTag({
-  reviewStatus,
-  disabled,
-  ...tagProps
-}: OutcomeProps) {
+export function ReviewStatusTag({ reviewStatus, disabled, ...tagProps }: OutcomeProps) {
   const { t } = useTranslation(decisionsI18n);
 
   const { color, tKey } = reviewStatusMapping[reviewStatus];

@@ -1,24 +1,13 @@
 import { type CaseEventType, caseEventTypes } from '@app-builder/models/cases';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import {
-  type DateRangeFilterForm,
-  dateRangeSchema,
-} from '@app-builder/utils/schema/filterSchema';
+import { type DateRangeFilterForm, dateRangeSchema } from '@app-builder/utils/schema/filterSchema';
 import { useCallback, useMemo } from 'react';
-import {
-  FormProvider,
-  useController,
-  useForm,
-  useFormContext,
-} from 'react-hook-form';
+import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
 import * as z from 'zod';
 
-import {
-  type CaseHistoryFilterFilterName,
-  caseHistoryFilterNames,
-} from './filters';
+import { type CaseHistoryFilterFilterName, caseHistoryFilterNames } from './filters';
 
 export const caseHistoryFiltersSchema = z.object({
   caseEventTypes: z.array(z.enum(caseEventTypes)),
@@ -33,10 +22,9 @@ interface CaseHistoryFiltersContextValue {
   onCaseHistoryFilterClose: () => void;
 }
 
-const CaseHistoryFiltersContext =
-  createSimpleContext<CaseHistoryFiltersContextValue>(
-    'CaseHistoryFiltersContext',
-  );
+const CaseHistoryFiltersContext = createSimpleContext<CaseHistoryFiltersContextValue>(
+  'CaseHistoryFiltersContext',
+);
 
 export type CaseHistoryFiltersForm = {
   caseEventTypes: CaseEventType[];
@@ -143,16 +131,15 @@ export function useDateRangeFilter() {
 export function useCaseHistoryFiltersPartition() {
   const { filterValues } = useCaseHistoryFiltersContext();
 
-  const [undefinedCaseHistoryFilterNames, definedCaseHistoryFilterNames] =
-    R.pipe(
-      caseHistoryFilterNames,
-      R.partition((filterName) => {
-        const value = filterValues[filterName];
-        if (R.isArray(value)) return value.length === 0;
-        if (R.isPlainObject(value)) return R.isEmpty(value);
-        return R.isNullish(value);
-      }),
-    );
+  const [undefinedCaseHistoryFilterNames, definedCaseHistoryFilterNames] = R.pipe(
+    caseHistoryFilterNames,
+    R.partition((filterName) => {
+      const value = filterValues[filterName];
+      if (R.isArray(value)) return value.length === 0;
+      if (R.isPlainObject(value)) return R.isEmpty(value);
+      return R.isNullish(value);
+    }),
+  );
   return {
     undefinedCaseHistoryFilterNames,
     definedCaseHistoryFilterNames,

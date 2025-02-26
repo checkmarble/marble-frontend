@@ -37,24 +37,12 @@ export const FormSelectTimezone = ({
       onSearchValueChange={setSearchValue}
       onSelectedValueChange={onSelectedValueChange}
     >
-      <SelectWithCombobox.Select
-        name={name}
-        disabled={disabled}
-        onBlur={onBlur}
-        className="w-fit"
-      >
+      <SelectWithCombobox.Select name={name} disabled={disabled} onBlur={onBlur} className="w-fit">
         {selectedTimezone}
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
-      <SelectWithCombobox.Popover
-        className="z-50 flex flex-col gap-2 p-2"
-        unmountOnHide
-      >
-        <SelectWithCombobox.Combobox
-          render={<Input className="shrink-0" />}
-          autoSelect
-          autoFocus
-        />
+      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2" unmountOnHide>
+        <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} autoSelect autoFocus />
         <SelectWithCombobox.ComboboxList>
           {matches.slice(0, MAX_TIMEZONE_MATCHES).map((tz) => (
             <SelectWithCombobox.ComboboxItem key={tz} value={tz}>

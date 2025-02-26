@@ -32,10 +32,7 @@ function getRoutesPaths(routes: readonly Route[], prefix?: string): string[] {
           : '';
 
     return Array.from(
-      new Set([
-        joinedPath || '/',
-        ...getRoutesPaths(route.children ?? [], joinedPath),
-      ]),
+      new Set([joinedPath || '/', ...getRoutesPaths(route.children ?? [], joinedPath)]),
     );
   });
 }

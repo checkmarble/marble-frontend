@@ -37,9 +37,7 @@ export function ScheduleOptionEditor({
             })
           }
         />
-        <Label htmlFor="scheduleScenario">
-          {t('scenarios:trigger.schedule_scenario.option')}
-        </Label>
+        <Label htmlFor="scheduleScenario">{t('scenarios:trigger.schedule_scenario.option')}</Label>
       </div>
       {scheduleOption.isScenarioScheduled ? (
         <>
@@ -47,10 +45,7 @@ export function ScheduleOptionEditor({
             {t('scenarios:trigger.schedule_scenario.frequency_label')}
             <ScheduleFrequencySelect
               onChange={(frequency) => {
-                const scheduleDetail = getScheduleDetailOptions(
-                  frequency,
-                  language,
-                )[0];
+                const scheduleDetail = getScheduleDetailOptions(frequency, language)[0];
                 if (!scheduleDetail) return;
 
                 setScheduleOption({
@@ -138,27 +133,22 @@ const ScheduleDetailSelect = ({
   } = useTranslation(scenarioI18n);
   const scheduleDetailOptions = getScheduleDetailOptions(frequency, language);
 
-  const displayNameForFrequency =
-    (frequency: ScheduleOption['frequency']) => (option: string) => {
-      switch (frequency) {
-        case 'daily':
-          return option.padStart(2, '0') + ':00';
-        case 'weekly':
-          return getWeekDayName(option, language);
-        case 'monthly':
-          return option;
-      }
-    };
+  const displayNameForFrequency = (frequency: ScheduleOption['frequency']) => (option: string) => {
+    switch (frequency) {
+      case 'daily':
+        return option.padStart(2, '0') + ':00';
+      case 'weekly':
+        return getWeekDayName(option, language);
+      case 'monthly':
+        return option;
+    }
+  };
   const displayName = displayNameForFrequency(frequency);
 
   return (
     <Select.Default value={value} onValueChange={onChange}>
       {scheduleDetailOptions.map((option) => (
-        <Select.DefaultItem
-          className="min-w-[110px]"
-          key={option}
-          value={option}
-        >
+        <Select.DefaultItem className="min-w-[110px]" key={option} value={option}>
           <span className="text-s text-grey-00">{displayName(option)}</span>
         </Select.DefaultItem>
       ))}
@@ -166,10 +156,7 @@ const ScheduleDetailSelect = ({
   );
 };
 
-const getScheduleDetailOptions = (
-  frequency: ScheduleOption['frequency'],
-  locale: string,
-) => {
+const getScheduleDetailOptions = (frequency: ScheduleOption['frequency'], locale: string) => {
   switch (frequency) {
     case 'daily':
       return dailyScheduleOptions;
@@ -207,11 +194,7 @@ const weeklyScheduleOptions = (locale: string) => {
 
 const monthlyScheduleOptions = Array.from({ length: 31 }, (_, i) => `${i + 1}`);
 
-const getWeekDayName = (
-  option: string,
-  locale: string,
-  format?: 'long' | 'short' | 'narrow',
-) => {
+const getWeekDayName = (option: string, locale: string, format?: 'long' | 'short' | 'narrow') => {
   const formatter = new Intl.DateTimeFormat(locale, {
     weekday: format ?? 'long',
     timeZone: 'UTC',

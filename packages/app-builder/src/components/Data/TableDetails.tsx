@@ -12,11 +12,7 @@ import { EditTable } from '@app-builder/routes/ressources+/data+/editTable';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { getRoute } from '@app-builder/utils/routes';
 import { NavLink } from '@remix-run/react';
-import {
-  createColumnHelper,
-  getCoreRowModel,
-  getSortedRowModel,
-} from '@tanstack/react-table';
+import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -45,9 +41,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
       dataModel
         .filter((table) => table.id !== tableModel.id)
         .filter((table) =>
-          table.fields.some(
-            (field) => field.unicityConstraint === 'active_unique_constraint',
-          ),
+          table.fields.some((field) => field.unicityConstraint === 'active_unique_constraint'),
         ),
     [dataModel, tableModel],
   );
@@ -123,9 +117,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
             <div className="before:hover:bg-grey-95 text-grey-00 group relative flex w-fit flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded before:transition-colors before:ease-in-out hover:cursor-pointer">
               <EditTable table={tableModel}>
                 <div className="flex flex-row gap-5">
-                  <FormatDescription
-                    description={tableModel.description || ''}
-                  />
+                  <FormatDescription description={tableModel.description || ''} />
                   <Icon
                     icon="edit-square"
                     className="group-hover:text-grey-00 relative size-6 text-transparent transition-colors ease-in-out"
@@ -137,11 +129,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
             <FormatDescription description={tableModel.description || ''} />
           )}
 
-          <TableDetailFields
-            fields={fields}
-            tableModel={tableModel}
-            dataModel={dataModel}
-          />
+          <TableDetailFields fields={fields} tableModel={tableModel} dataModel={dataModel} />
 
           {links.length > 0 ? (
             <>
@@ -161,12 +149,8 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
             </>
           ) : null}
 
-          {isCreateDataModelLinkAvailable &&
-          R.hasAtLeast(otherTablesWithUnique, 1) ? (
-            <CreateLink
-              thisTable={tableModel}
-              otherTables={otherTablesWithUnique}
-            >
+          {isCreateDataModelLinkAvailable && R.hasAtLeast(otherTablesWithUnique, 1) ? (
+            <CreateLink thisTable={tableModel} otherTables={otherTablesWithUnique}>
               <Button className="w-fit" variant="secondary">
                 <Icon icon="plus" className="size-6" />
                 {t('data:create_link.title')}
@@ -195,14 +179,9 @@ interface TableDetailColumnsProps {
   dataModel: DataModel;
 }
 
-const fieldsColumnHelper =
-  createColumnHelper<TableDetailColumnsProps['fields'][number]>();
+const fieldsColumnHelper = createColumnHelper<TableDetailColumnsProps['fields'][number]>();
 
-function TableDetailFields({
-  fields,
-  tableModel,
-  dataModel,
-}: TableDetailColumnsProps) {
+function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumnsProps) {
   const { t } = useTranslation(dataI18n);
   const { isEditDataModelFieldAvailable } = useDataModelFeatureAccess();
 
@@ -211,9 +190,7 @@ function TableDetailFields({
       dataModel
         .filter((table) => table.id !== tableModel.id)
         .flatMap((table) =>
-          table.linksToSingle.filter(
-            (link) => link.parentTableName === tableModel.name,
-          ),
+          table.linksToSingle.filter((link) => link.parentTableName === tableModel.name),
         ),
     [dataModel, tableModel],
   );
@@ -247,20 +224,14 @@ function TableDetailFields({
           if (unicityConstraint === 'active_unique_constraint') {
             return (
               <div className="flex size-full items-center justify-center">
-                <Icon
-                  icon="tick"
-                  className="text-green-38 size-6 shrink-0 justify-center"
-                />
+                <Icon icon="tick" className="text-green-38 size-6 shrink-0 justify-center" />
               </div>
             );
           }
           if (unicityConstraint === 'pending_unique_constraint') {
             return (
               <div className="flex size-full items-center justify-center">
-                <Icon
-                  icon="restart-alt"
-                  className="text-grey-50 size-6 shrink-0"
-                />
+                <Icon icon="restart-alt" className="text-grey-50 size-6 shrink-0" />
               </div>
             );
           }
@@ -308,11 +279,7 @@ function TableDetailFields({
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => (
-          <Table.Row
-            key={row.id}
-            className="group mb-4 break-words"
-            row={row}
-          />
+          <Table.Row key={row.id} className="group mb-4 break-words" row={row} />
         ))}
       </Table.Body>
     </Table.Container>
@@ -328,8 +295,7 @@ interface TableDetailLinksProps {
   }>;
 }
 
-const linksColumnHelper =
-  createColumnHelper<TableDetailLinksProps['links'][number]>();
+const linksColumnHelper = createColumnHelper<TableDetailLinksProps['links'][number]>();
 
 function TableDetailLinks({ links }: TableDetailLinksProps) {
   const { t } = useTranslation(dataI18n);

@@ -94,11 +94,7 @@ export function CreateWebhook({
   );
 }
 
-function CreateWebhookContent({
-  webhookStatus,
-}: {
-  webhookStatus: FeatureAccessDto;
-}) {
+function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessDto }) {
   const { t } = useTranslation(['common', 'settings']);
 
   const fetcher = useFetcher<typeof action>();
@@ -127,10 +123,7 @@ function CreateWebhookContent({
       >
         <ModalV2.Title>{t('settings:webhooks.new_webhook')}</ModalV2.Title>
         <div className="flex flex-col gap-6 p-6">
-          <FormField
-            name={fields.url.name}
-            className="flex flex-col items-start gap-2"
-          >
+          <FormField name={fields.url.name} className="flex flex-col items-start gap-2">
             <FormLabel>{t('settings:webhooks.url')}</FormLabel>
             <FormInput type="url" className="w-full" />
             <FormErrorOrDescription />
@@ -163,11 +156,7 @@ function CreateWebhookContent({
                   />
                 ))
                 .with('test', () => (
-                  <Nudge
-                    kind="test"
-                    content={t('settings:webhooks.nudge')}
-                    className="size-6"
-                  />
+                  <Nudge kind="test" content={t('settings:webhooks.nudge')} className="size-6" />
                 ))
                 .exhaustive()}
             </FormLabel>
@@ -196,17 +185,10 @@ function CreateWebhookContent({
           </FormField>
 
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close
-              render={<Button className="flex-1" variant="secondary" />}
-            >
+            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
               {t('common:cancel')}
             </ModalV2.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              type="submit"
-              name="create"
-            >
+            <Button className="flex-1" variant="primary" type="submit" name="create">
               <LoadingIcon
                 icon="plus"
                 className="size-5"

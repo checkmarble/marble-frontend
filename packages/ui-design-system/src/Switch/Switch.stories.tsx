@@ -13,9 +13,7 @@ const Story: Meta<typeof Switch> = {
 };
 export default Story;
 
-export const WithoutLabel: StoryFn<typeof Switch> = (args) => (
-  <Switch {...args} />
-);
+export const WithoutLabel: StoryFn<typeof Switch> = (args) => <Switch {...args} />;
 
 export const WithLabel: StoryFn<typeof Switch> = (args) => (
   <form>

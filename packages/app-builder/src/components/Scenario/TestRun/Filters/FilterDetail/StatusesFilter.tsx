@@ -11,10 +11,7 @@ export function StatusesFilter() {
   const { selectedStatuses, setSelectedStatuses } = useStatusesFilter();
   const deferredValue = useDeferredValue(value);
 
-  const matches = useMemo(
-    () => matchSorter(statuses, deferredValue),
-    [deferredValue],
-  );
+  const matches = useMemo(() => matchSorter(statuses, deferredValue), [deferredValue]);
 
   return (
     <div className="flex flex-col gap-2 p-2">

@@ -40,10 +40,7 @@ Sentry.init({
   tracesSampleRate: 0.2,
 
   // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
-  tracePropagationTargets: [
-    getClientEnv('MARBLE_APP_DOMAIN'),
-    getClientEnv('MARBLE_API_DOMAIN'),
-  ],
+  tracePropagationTargets: [getClientEnv('MARBLE_APP_DOMAIN'), getClientEnv('MARBLE_API_DOMAIN')],
 
   // Capture Replay for 10% of all sessions,
   // plus for 100% of sessions with an error
@@ -53,8 +50,7 @@ Sentry.init({
 
 function isBrowserExtensionError(exception: unknown): boolean {
   if (exception instanceof Error && exception.stack) {
-    const extensionPattern =
-      /chrome-extension:|moz-extension:|extensions|anonymous scripts/;
+    const extensionPattern = /chrome-extension:|moz-extension:|extensions|anonymous scripts/;
     return extensionPattern.test(exception.stack);
   }
 

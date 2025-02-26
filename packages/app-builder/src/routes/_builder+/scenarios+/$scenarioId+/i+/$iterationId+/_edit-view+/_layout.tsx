@@ -53,10 +53,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     });
   }
 
-  const publicationPreparationStatus =
-    await scenario.getPublicationPreparationStatus({
-      iterationId,
-    });
+  const publicationPreparationStatus = await scenario.getPublicationPreparationStatus({
+    iterationId,
+  });
 
   return json({
     isDeploymentActionsAvailable: true as const,
@@ -69,20 +68,15 @@ export default function ScenarioEditLayout() {
   const { t } = useTranslation(handle.i18n);
   const currentScenario = useCurrentScenario();
   const scenarioValidation = useCurrentScenarioValidation();
-  const { isCreateDraftAvailable, ...loaderData } =
-    useLoaderData<typeof loader>();
+  const { isCreateDraftAvailable, ...loaderData } = useLoaderData<typeof loader>();
 
   const scenarioIterations = useScenarioIterations();
 
   const iterationId = useParam('iterationId');
 
   const { currentIteration, draftIteration } = React.useMemo(() => {
-    const currentIteration = scenarioIterations.find(
-      ({ id }) => id === iterationId,
-    );
-    const draftIteration = scenarioIterations.find(
-      ({ version }) => version === null,
-    );
+    const currentIteration = scenarioIterations.find(({ id }) => id === iterationId);
+    const draftIteration = scenarioIterations.find(({ version }) => version === null);
     invariant(currentIteration, 'currentIteration is required');
     return { currentIteration, draftIteration };
   }, [iterationId, scenarioIterations]);
@@ -90,8 +84,7 @@ export default function ScenarioEditLayout() {
   const editorMode = useEditorMode();
 
   const withEditTag = editorMode === 'edit';
-  const withCreateDraftIteration =
-    isCreateDraftAvailable && currentIteration.type !== 'draft';
+  const withCreateDraftIteration = isCreateDraftAvailable && currentIteration.type !== 'draft';
 
   return (
     <Page.Main>
@@ -129,8 +122,7 @@ export default function ScenarioEditLayout() {
                 status: loaderData.publicationPreparationStatus.status,
               }}
               isPreparationServiceOccupied={
-                loaderData.publicationPreparationStatus.serviceStatus ===
-                'occupied'
+                loaderData.publicationPreparationStatus.serviceStatus === 'occupied'
               }
             />
           ) : null}
@@ -227,14 +219,10 @@ function DeploymentActions({
 }) {
   switch (iteration.type) {
     case 'draft':
-      return (
-        <CommitScenarioDraft scenarioId={scenario.id} iteration={iteration} />
-      );
+      return <CommitScenarioDraft scenarioId={scenario.id} iteration={iteration} />;
     case 'version':
       if (iteration.status === 'ready_to_activate') {
-        return (
-          <ActivateScenarioVersion scenario={scenario} iteration={iteration} />
-        );
+        return <ActivateScenarioVersion scenario={scenario} iteration={iteration} />;
       }
       return (
         <PrepareScenarioVersion
@@ -244,12 +232,7 @@ function DeploymentActions({
         />
       );
     case 'live version':
-      return (
-        <DeactivateScenarioVersion
-          scenarioId={scenario.id}
-          iterationId={iteration.id}
-        />
-      );
+      return <DeactivateScenarioVersion scenarioId={scenario.id} iterationId={iteration.id} />;
     default:
       return null;
   }

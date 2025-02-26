@@ -14,12 +14,9 @@ export const handle = {
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService, i18nextService } = serverServices;
-  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { scenarioIterationRuleRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
   const t = await i18nextService.getFixedT(request, 'scenarios');
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
@@ -63,13 +60,10 @@ export function CreateRule({
   return (
     <fetcher.Form
       method="POST"
-      action={getRoute(
-        '/ressources/scenarios/:scenarioId/:iterationId/rules/create',
-        {
-          scenarioId: fromUUID(scenarioId),
-          iterationId: fromUUID(iterationId),
-        },
-      )}
+      action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/rules/create', {
+        scenarioId: fromUUID(scenarioId),
+        iterationId: fromUUID(iterationId),
+      })}
     >
       <Button
         type="submit"
@@ -83,9 +77,7 @@ export function CreateRule({
           <span className="text-grey-00 text-s font-normal">
             {t('scenarios:create_rule.title')}
           </span>
-          <span className="text-grey-50 font-normal">
-            {t('scenarios:create_rule.description')}
-          </span>
+          <span className="text-grey-50 font-normal">{t('scenarios:create_rule.description')}</span>
         </div>
       </Button>
     </fetcher.Form>

@@ -29,10 +29,7 @@ export const Checkbox = forwardRef<
     color?: 'purple' | 'red';
     circle?: boolean;
   }
->(function Checkbox(
-  { className, color = 'purple', circle, checked, ...props },
-  ref,
-) {
+>(function Checkbox({ className, color = 'purple', circle, checked, ...props }, ref) {
   return (
     <Root
       ref={ref}
@@ -42,15 +39,9 @@ export const Checkbox = forwardRef<
     >
       <Indicator className="size-6" asChild>
         {checked === undefined ? (
-          <Icon
-            icon="tick"
-            className="text-grey-100 group-disabled:text-grey-50"
-          />
+          <Icon icon="tick" className="text-grey-100 group-disabled:text-grey-50" />
         ) : checked === true ? (
-          <Icon
-            icon="tick"
-            className="text-grey-100 group-disabled:text-grey-50"
-          />
+          <Icon icon="tick" className="text-grey-100 group-disabled:text-grey-50" />
         ) : checked === 'indeterminate' ? (
           <Icon
             icon="check-indeterminate-small"

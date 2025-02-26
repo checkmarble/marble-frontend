@@ -1,8 +1,5 @@
 import { outcomes } from '@app-builder/models/outcome';
-import {
-  type Scenario,
-  type ScenarioUpdateWorkflowInput,
-} from '@app-builder/models/scenario';
+import { type Scenario, type ScenarioUpdateWorkflowInput } from '@app-builder/models/scenario';
 import * as R from 'remeda';
 import { assertNever } from 'typescript-utils';
 import * as z from 'zod';
@@ -48,15 +45,9 @@ export interface GlobalChecklistVM {
   hasGraphLoop: boolean;
 }
 
-export function adaptGlobalChecklistVM(
-  errors: WorkflowError[],
-): GlobalChecklistVM {
-  const hasMissingTriggerNode = errors.some(
-    (error) => error.type === 'missing-trigger-node',
-  );
-  const hasMultipleTriggerNodes = errors.some(
-    (error) => error.type === 'multiple-trigger-nodes',
-  );
+export function adaptGlobalChecklistVM(errors: WorkflowError[]): GlobalChecklistVM {
+  const hasMissingTriggerNode = errors.some((error) => error.type === 'missing-trigger-node');
+  const hasMultipleTriggerNodes = errors.some((error) => error.type === 'multiple-trigger-nodes');
   const hasEmptyNodes = errors.some((error) => error.type === 'empty-nodes');
   const hasGraphLoop = errors.some((error) => error.type === 'graph-loop');
 
@@ -77,32 +68,18 @@ export interface NodeChecklistVM {
   noOutgoingNodeRequired: boolean;
 }
 
-export function adaptNodeChecklistVM(
-  errors: WorkflowError[],
-): Record<string, NodeChecklistVM> {
+export function adaptNodeChecklistVM(errors: WorkflowError[]): Record<string, NodeChecklistVM> {
   return R.pipe(
     errors,
     R.filter(isNodeError),
     R.groupBy((error) => error.nodeId),
     R.mapValues((errors) => ({
-      hasInvalidConfig: errors.some(
-        (error) => error.type === 'invalid-node-config',
-      ),
-      isNotConnectedToTrigger: errors.some(
-        (error) => error.type === 'not-connected-to-trigger',
-      ),
-      hasMultipleOutgoingNode: errors.some(
-        (error) => error.type === 'multiple-outgoing-nodes',
-      ),
-      hasMissingOutgoingNode: errors.some(
-        (error) => error.type === 'missing-outgoing-node',
-      ),
-      hasWrongOutgoinNode: errors.some(
-        (error) => error.type === 'wrong-outgoing-node',
-      ),
-      noOutgoingNodeRequired: errors.some(
-        (error) => error.type === 'no-outgoing-node-required',
-      ),
+      hasInvalidConfig: errors.some((error) => error.type === 'invalid-node-config'),
+      isNotConnectedToTrigger: errors.some((error) => error.type === 'not-connected-to-trigger'),
+      hasMultipleOutgoingNode: errors.some((error) => error.type === 'multiple-outgoing-nodes'),
+      hasMissingOutgoingNode: errors.some((error) => error.type === 'missing-outgoing-node'),
+      hasWrongOutgoinNode: errors.some((error) => error.type === 'wrong-outgoing-node'),
+      noOutgoingNodeRequired: errors.some((error) => error.type === 'no-outgoing-node-required'),
     })),
   );
 }
@@ -111,9 +88,7 @@ export const decisionCreatedTriggerSchema = z.object({
   scenarioId: z.string(),
   outcomes: z.array(z.enum(outcomes)).nonempty(),
 });
-export type ValidDecisionCreatedTrigger = z.infer<
-  typeof decisionCreatedTriggerSchema
->;
+export type ValidDecisionCreatedTrigger = z.infer<typeof decisionCreatedTriggerSchema>;
 
 export const createCaseActionSchema = z.object({
   inboxId: z.string(),
@@ -125,9 +100,7 @@ export const addToCaseIfPossibleActionSchema = z.object({
   inboxId: z.string(),
   caseName: z.any(),
 });
-export type ValidAddToCaseIfPossibleAction = z.infer<
-  typeof addToCaseIfPossibleActionSchema
->;
+export type ValidAddToCaseIfPossibleAction = z.infer<typeof addToCaseIfPossibleActionSchema>;
 
 export type ValidDecisionCreatedWorkflow =
   | {
@@ -143,9 +116,7 @@ export type ValidDecisionCreatedWorkflow =
 
 export type ValidWorkflow = ValidDecisionCreatedWorkflow;
 
-export function adaptValidWorkflow(
-  scenario: Scenario,
-): ValidWorkflow | undefined {
+export function adaptValidWorkflow(scenario: Scenario): ValidWorkflow | undefined {
   switch (scenario.decisionToCaseWorkflowType) {
     case 'DISABLED':
       return undefined;
@@ -171,10 +142,7 @@ export function adaptValidWorkflow(
       };
     }
     default:
-      assertNever(
-        'Unknown decisionToCaseWorkflowType',
-        scenario.decisionToCaseWorkflowType,
-      );
+      assertNever('Unknown decisionToCaseWorkflowType', scenario.decisionToCaseWorkflowType);
   }
 }
 

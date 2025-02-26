@@ -53,18 +53,10 @@ export function Hamburger<T extends string>({
 
   return (
     <div className="flex size-full flex-col items-center gap-4">
-      <Tag
-        size="big"
-        color="grey-light"
-        className="border-grey-90 gap-1 border px-4 py-2"
-      >
-        <span className="text-grey-00 font-semibold">
-          {`V${version.value}`}
-        </span>
+      <Tag size="big" color="grey-light" className="border-grey-90 gap-1 border px-4 py-2">
+        <span className="text-grey-00 font-semibold">{`V${version.value}`}</span>
         {version.type === 'live version' ? (
-          <span className="text-purple-65 font-semibold">
-            {t('common:live')}
-          </span>
+          <span className="text-purple-65 font-semibold">{t('common:live')}</span>
         ) : null}
       </Tag>
       <div className="flex size-full flex-col gap-1">
@@ -82,9 +74,7 @@ export function Hamburger<T extends string>({
                 mapping[status].background,
               )}
             >
-              <span
-                className={clsx('text-s font-medium', mapping[status].text)}
-              >
+              <span className={clsx('text-s font-medium', mapping[status].text)}>
                 {type === 'percentage'
                   ? formatNumber((count * 100) / summary.total / 100, {
                       language,
@@ -147,8 +137,7 @@ export function HamburgerChart<T extends string>({
           ...omitBy(
             mapValues(
               groupBy(itemsByVersion, (d) => d.option),
-              (itemsByOption) =>
-                sumBy(itemsByOption as Item<T>[], (d) => d.count),
+              (itemsByOption) => sumBy(itemsByOption as Item<T>[], (d) => d.count),
             ),
             (count) => count === 0,
           ),
@@ -205,8 +194,7 @@ export function HamburgerChart<T extends string>({
           >
             <div
               className={clsx('size-4 rounded-[4px]', {
-                [`${mapping[option].border} border-2`]:
-                  !legend.includes(option),
+                [`${mapping[option].border} border-2`]: !legend.includes(option),
                 [mapping[option].background]: legend.includes(option),
               })}
             />

@@ -19,16 +19,8 @@ const entitySchemas = [
   'Vessel',
 ] as const;
 
-export type SanctionCheckStatus =
-  | 'in_review'
-  | 'confirmed_hit'
-  | 'no_hit'
-  | 'error';
-export type SanctionCheckMatchStatus =
-  | 'pending'
-  | 'confirmed_hit'
-  | 'no_hit'
-  | 'skipped';
+export type SanctionCheckStatus = 'in_review' | 'confirmed_hit' | 'no_hit' | 'error';
+export type SanctionCheckMatchStatus = 'pending' | 'confirmed_hit' | 'no_hit' | 'skipped';
 export type SanctionCheckEntitySchema = (typeof entitySchemas)[number];
 
 export type SanctionCheckMatchPayload = {
@@ -40,9 +32,7 @@ export type SanctionCheckMatchPayload = {
   properties: Record<string, string[]>;
 };
 
-function isKnownEntitySchema(
-  schema: string,
-): schema is SanctionCheckEntitySchema {
+function isKnownEntitySchema(schema: string): schema is SanctionCheckEntitySchema {
   return (entitySchemas as ReadonlyArray<string>).includes(schema);
 }
 
@@ -71,9 +61,7 @@ export type SanctionCheckMatch = {
   }[];
 };
 
-export function adaptSanctionCheckMatch(
-  dto: SanctionCheckMatchDto,
-): SanctionCheckMatch {
+export function adaptSanctionCheckMatch(dto: SanctionCheckMatchDto): SanctionCheckMatch {
   return {
     id: dto.id,
     entityId: dto.entity_id,
@@ -114,9 +102,7 @@ function adaptQueries(dto: SanctionCheckRequestDto['search_input']['queries']) {
   });
 }
 
-export function adaptSanctionCheckRequest(
-  dto: SanctionCheckRequestDto,
-): SanctionCheckRequest {
+export function adaptSanctionCheckRequest(dto: SanctionCheckRequestDto): SanctionCheckRequest {
   return {
     threshold: dto.threshold,
     limit: dto.limit,
@@ -168,9 +154,7 @@ export function adaptSanctionCheck(dto: SanctionCheckDto): SanctionCheck {
   };
 }
 
-export function adapatSanctionCheckFile(
-  dto: SanctionCheckFileDto,
-): SanctionCheckFile {
+export function adapatSanctionCheckFile(dto: SanctionCheckFileDto): SanctionCheckFile {
   return {
     id: dto.id,
     fileName: dto.filename,
@@ -191,8 +175,5 @@ export function isSanctionCheckError(
 }
 
 export function isSanctionCheckReviewCompleted(sanctionCheck: SanctionCheck) {
-  return (
-    sanctionCheck.status === 'no_hit' ||
-    sanctionCheck.status === 'confirmed_hit'
-  );
+  return sanctionCheck.status === 'no_hit' || sanctionCheck.status === 'confirmed_hit';
 }

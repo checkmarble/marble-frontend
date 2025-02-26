@@ -1,15 +1,8 @@
 import { adaptCurrency } from '@app-builder/utils/currencies';
 import { type Currency } from 'dinero.js';
-import {
-  type TransferDataDto,
-  type TransferDto,
-} from 'marble-api/generated/transfercheck-api';
+import { type TransferDataDto, type TransferDto } from 'marble-api/generated/transfercheck-api';
 
-export const transferStatuses = [
-  'neutral',
-  'suspected_fraud',
-  'confirmed_fraud',
-] as const;
+export const transferStatuses = ['neutral', 'suspected_fraud', 'confirmed_fraud'] as const;
 export type TransferStatus = (typeof transferStatuses)[number];
 
 export interface TransferData {
@@ -32,9 +25,7 @@ export interface TransferData {
   value: number;
 }
 
-export function adaptTransferData(
-  transferDataDto: TransferDataDto,
-): TransferData {
+export function adaptTransferData(transferDataDto: TransferDataDto): TransferData {
   return {
     beneficiaryBic: transferDataDto.beneficiary_bic,
     beneficiaryIban: transferDataDto.beneficiary_iban,

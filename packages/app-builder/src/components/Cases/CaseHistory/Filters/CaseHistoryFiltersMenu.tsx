@@ -6,11 +6,7 @@ import { Icon } from 'ui-icons';
 import { casesI18n } from '../../cases-i18n';
 import { useCaseHistoryFiltersContext } from './CaseHistoryFiltersContext';
 import { FilterDetail } from './FilterDetail';
-import {
-  type CaseHistoryFilterFilterName,
-  getFilterIcon,
-  getFilterTKey,
-} from './filters';
+import { type CaseHistoryFilterFilterName, getFilterIcon, getFilterTKey } from './filters';
 
 export function CaseHistoryFiltersMenu({
   children,
@@ -19,8 +15,7 @@ export function CaseHistoryFiltersMenu({
   children: React.ReactNode;
   filterNames: readonly CaseHistoryFilterFilterName[];
 }) {
-  const { onCaseHistoryFilterClose: onCasesFilterClose } =
-    useCaseHistoryFiltersContext();
+  const { onCaseHistoryFilterClose: onCasesFilterClose } = useCaseHistoryFiltersContext();
 
   const onOpenChange = useCallback(
     (open: boolean) => {
@@ -33,9 +28,7 @@ export function CaseHistoryFiltersMenu({
 
   return (
     <FiltersDropdownMenu.Root onOpenChange={onOpenChange}>
-      <FiltersDropdownMenu.Trigger asChild>
-        {children}
-      </FiltersDropdownMenu.Trigger>
+      <FiltersDropdownMenu.Trigger asChild>{children}</FiltersDropdownMenu.Trigger>
       <FiltersDropdownMenu.Content>
         <FilterContent filterNames={filterNames} />
       </FiltersDropdownMenu.Content>
@@ -56,21 +49,14 @@ const FiltersMenuItem = forwardRef<
   return (
     <FiltersDropdownMenu.Item {...props} ref={ref}>
       <Icon icon={icon} className="size-5" />
-      <span className="text-s text-grey-00 font-normal first-letter:capitalize">
-        {t(tKey)}
-      </span>
+      <span className="text-s text-grey-00 font-normal first-letter:capitalize">{t(tKey)}</span>
     </FiltersDropdownMenu.Item>
   );
 });
 FiltersMenuItem.displayName = 'FiltersMenuItem';
 
-function FilterContent({
-  filterNames,
-}: {
-  filterNames: readonly CaseHistoryFilterFilterName[];
-}) {
-  const [selectedFilter, setSelectedFilter] =
-    useState<CaseHistoryFilterFilterName>();
+function FilterContent({ filterNames }: { filterNames: readonly CaseHistoryFilterFilterName[] }) {
+  const [selectedFilter, setSelectedFilter] = useState<CaseHistoryFilterFilterName>();
 
   if (selectedFilter) {
     return <FilterDetail filterName={selectedFilter} />;

@@ -21,12 +21,8 @@ import {
   type WorkflowError,
 } from './models/validation';
 
-function validateSingleTriggerNode(
-  nodes: Node<NodeData>[],
-): ValidationPayload<Node<TriggerData>> {
-  const triggerNodes = nodes.filter((node): node is Node<TriggerData> =>
-    isTriggerData(node.data),
-  );
+function validateSingleTriggerNode(nodes: Node<NodeData>[]): ValidationPayload<Node<TriggerData>> {
+  const triggerNodes = nodes.filter((node): node is Node<TriggerData> => isTriggerData(node.data));
   if (triggerNodes.length > 1) {
     return {
       isValid: false,
@@ -107,9 +103,7 @@ function validateNoOutgoer(
 }
 
 function validatNoEmptyNodes(nodes: Node<NodeData>[]): ValidationPayload {
-  const emptyNodeIds = nodes
-    .filter((node) => isEmptyNodeData(node.data))
-    .map((node) => node.id);
+  const emptyNodeIds = nodes.filter((node) => isEmptyNodeData(node.data)).map((node) => node.id);
   if (emptyNodeIds.length > 0) {
     return {
       isValid: false,
@@ -187,11 +181,7 @@ export function validateWorkflow(
     errors.push(...graph.errors);
   }
 
-  const workflowBusinessLogic = validateWorkflowBusinessLogic(
-    triggerNode.value,
-    nodes,
-    edges,
-  );
+  const workflowBusinessLogic = validateWorkflowBusinessLogic(triggerNode.value, nodes, edges);
   if (!workflowBusinessLogic.isValid) {
     errors.push(...workflowBusinessLogic.errors);
   }
@@ -220,9 +210,7 @@ function validateDecisionCreatedWorkflow(
   edges: Edge[],
 ): ValidationPayload<ValidDecisionCreatedWorkflow> {
   const errors: WorkflowError[] = [];
-  const decisionCreatedTrigger = decisionCreatedTriggerSchema.safeParse(
-    trigger.data,
-  );
+  const decisionCreatedTrigger = decisionCreatedTriggerSchema.safeParse(trigger.data);
   if (!decisionCreatedTrigger.success) {
     errors.push({
       type: 'invalid-node-config',
@@ -270,9 +258,7 @@ function validateDecisionCreatedWorkflow(
   }
 
   if (isAddToCaseIfPossibleAction(action.data)) {
-    const addToCaseIfPossibleAction = addToCaseIfPossibleActionSchema.safeParse(
-      action.data,
-    );
+    const addToCaseIfPossibleAction = addToCaseIfPossibleActionSchema.safeParse(action.data);
 
     if (!addToCaseIfPossibleAction.success) {
       errors.push({

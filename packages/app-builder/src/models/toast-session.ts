@@ -33,15 +33,10 @@ const newToastMessageSchema = z.object({
   message: z.string(),
 });
 
-export const toastMessageSchema = z.union([
-  oldToastMessageSchema,
-  newToastMessageSchema,
-]);
+export const toastMessageSchema = z.union([oldToastMessageSchema, newToastMessageSchema]);
 
 export type NewToastMessage = z.infer<typeof newToastMessageSchema>;
-export function isNewToastMessage(
-  message: ToastMessage,
-): message is NewToastMessage {
+export function isNewToastMessage(message: ToastMessage): message is NewToastMessage {
   return Object.hasOwn(message, 'message');
 }
 

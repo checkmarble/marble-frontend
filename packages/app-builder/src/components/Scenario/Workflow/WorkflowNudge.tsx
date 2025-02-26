@@ -9,14 +9,9 @@ export const WorkflowNudge = () => {
 
   return (
     <section className="bg-grey-100 border-purple-82 relative flex h-fit max-w-[500px] flex-col gap-4 rounded-lg border-2 p-8">
-      <h3 className="text-grey-00 text-l font-bold">
-        {t('scenarios:home.workflow')}
-      </h3>
+      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.workflow')}</h3>
 
-      <Nudge
-        className="absolute -right-3 -top-3 size-6"
-        content={t('workflows:nudge')}
-      />
+      <Nudge className="absolute -right-3 -top-3 size-6" content={t('workflows:nudge')} />
 
       <CalloutV2>{t('scenarios:home.workflow_description')}</CalloutV2>
 

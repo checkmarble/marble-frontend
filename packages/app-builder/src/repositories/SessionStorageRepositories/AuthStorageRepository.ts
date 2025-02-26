@@ -1,7 +1,4 @@
-import {
-  type AuthData,
-  type AuthFlashData,
-} from '@app-builder/models/marble-session';
+import { type AuthData, type AuthFlashData } from '@app-builder/models/marble-session';
 import { createCookie, createCookieSessionStorage } from '@remix-run/node';
 
 import { type SessionStorageRepositoryOptions } from './SessionStorageRepository';

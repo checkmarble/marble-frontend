@@ -30,8 +30,7 @@ export function useRefreshToken() {
   useInterval(
     () => {
       const { firebaseIdToken } =
-        clientServices.authenticationClientService
-          .authenticationClientRepository;
+        clientServices.authenticationClientService.authenticationClientRepository;
 
       firebaseIdToken().then(
         (idToken: string) => {
@@ -44,10 +43,7 @@ export function useRefreshToken() {
           let redirectUrl = getRoute('/ressources/auth/logout');
           if (window) {
             const searchParams = new URLSearchParams();
-            searchParams.set(
-              'redirectTo',
-              `${window.location.pathname}${window.location.search}`,
-            );
+            searchParams.set('redirectTo', `${window.location.pathname}${window.location.search}`);
             redirectUrl = `${redirectUrl}?${searchParams.toString()}`;
           }
           navigate(redirectUrl);

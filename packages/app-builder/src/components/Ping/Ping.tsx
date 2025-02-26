@@ -8,12 +8,7 @@ import clsx from 'clsx';
  */
 export function Ping({ className }: { className?: string }) {
   return (
-    <span
-      className={clsx(
-        'flex items-center justify-center rounded-full',
-        className,
-      )}
-    >
+    <span className={clsx('flex items-center justify-center rounded-full', className)}>
       <span className="animate-ping-slow absolute inline-flex size-full rounded-full bg-current opacity-75"></span>
       <span className="relative inline-flex size-full rounded-full bg-current"></span>
     </span>

@@ -11,10 +11,7 @@ import { badRequest } from './http-responses';
  * If the error is due to a UUID being invalid, it will redirect to the same URL with the UUID replaced by its short form.
  * Otherwise, it will return a 400 Bad Request response.
  */
-export function handleParseParamError<Input>(
-  request: Request,
-  error: ZodError<Input>,
-) {
+export function handleParseParamError<Input>(request: Request, error: ZodError<Input>) {
   const { issues } = error;
   if (issues.some(isRawUUIDIssue)) {
     const redirectURL = (issues as ZodIssueOptionalMessage[])

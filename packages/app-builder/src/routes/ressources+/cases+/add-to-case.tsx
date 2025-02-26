@@ -1,10 +1,5 @@
 import { useDecisionRightPanelContext } from '@app-builder/components';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@app-builder/components/Form';
+import { FormControl, FormField, FormItem, FormLabel } from '@app-builder/components/Form';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusBadRequestHttpError } from '@app-builder/models';
 import { type Inbox } from '@app-builder/models/inbox';
@@ -12,22 +7,11 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  type ActionFunctionArgs,
-  json,
-  type LoaderFunctionArgs,
-  redirect,
-} from '@remix-run/node';
+import { type ActionFunctionArgs, json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useEffect } from 'react';
-import {
-  type Control,
-  Form,
-  FormProvider,
-  useForm,
-  useWatch,
-} from 'react-hook-form';
+import { type Control, Form, FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Select, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -86,9 +70,7 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     if (parsedForm.data.newCase) {
       const createdCase = await cases.createCase(parsedForm.data);
-      return redirect(
-        getRoute('/cases/:caseId', { caseId: fromUUID(createdCase.id) }),
-      );
+      return redirect(getRoute('/cases/:caseId', { caseId: fromUUID(createdCase.id) }));
     } else {
       await cases.addDecisionsToCase(parsedForm.data);
       setToastMessage(session, {
@@ -286,9 +268,7 @@ const AddToCaseFields = ({ control }: { control: Control<AddToCaseForm> }) => {
               <Input
                 type="text"
                 {...field}
-                placeholder={t(
-                  'decisions:add_to_case.new_case.case_id.placeholder',
-                )}
+                placeholder={t('decisions:add_to_case.new_case.case_id.placeholder')}
               />
             </FormControl>
           </FormItem>

@@ -10,10 +10,7 @@ import {
 } from '@app-builder/models/fuzzy-match';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
-import {
-  useDataModel,
-  useTriggerObjectTable,
-} from '@app-builder/services/editor/options';
+import { useDataModel, useTriggerObjectTable } from '@app-builder/services/editor/options';
 import { type AstNodeErrors } from '@app-builder/services/validation/ast-node-validation';
 import * as React from 'react';
 
@@ -127,14 +124,12 @@ function adaptEditFuzzyMatchComparatorState({
   initialFuzzyMatchComparatorAstNode: FuzzyMatchComparatorAstNode;
   initialAstNodeErrors: AstNodeErrors;
 }): EditFuzzyMatchComparatorState {
-  const algorithmNode =
-    initialFuzzyMatchComparatorAstNode.children[0].namedChildren.algorithm;
+  const algorithmNode = initialFuzzyMatchComparatorAstNode.children[0].namedChildren.algorithm;
   const algorithmErrors =
     initialAstNodeErrors.children[0]?.namedChildren['algorithm']?.errors ?? [];
 
   const thresholdNode = initialFuzzyMatchComparatorAstNode.children[1];
-  const initialThreshold =
-    thresholdNode.constant ?? defaultFuzzyMatchComparatorThreshold;
+  const initialThreshold = thresholdNode.constant ?? defaultFuzzyMatchComparatorThreshold;
   const initialLevel = adaptFuzzyMatchComparatorLevel(initialThreshold);
   const thresholdErrors = initialAstNodeErrors.children[1]?.errors ?? [];
 

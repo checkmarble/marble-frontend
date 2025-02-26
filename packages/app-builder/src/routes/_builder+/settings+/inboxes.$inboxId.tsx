@@ -1,12 +1,6 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-} from '@app-builder/components/Breadcrumbs';
-import {
-  type InboxUser,
-  tKeyForInboxUserRole,
-} from '@app-builder/models/inbox';
+import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
+import { type InboxUser, tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { DeleteInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/delete';
 import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.create';
 import { DeleteInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.delete';
@@ -24,18 +18,9 @@ import { serverServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import {
-  json,
-  type LoaderFunctionArgs,
-  redirect,
-  type SerializeFrom,
-} from '@remix-run/node';
+import { json, type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
 import { useLoaderData, useRouteLoaderData } from '@remix-run/react';
-import {
-  createColumnHelper,
-  getCoreRowModel,
-  getSortedRowModel,
-} from '@tanstack/react-table';
+import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -194,23 +179,16 @@ export default function Inbox() {
       <Page.Content className="max-w-screen-xl">
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
-            <span className="flex-1">
-              {t('settings:inboxes.inbox_details.title')}
-            </span>
+            <span className="flex-1">{t('settings:inboxes.inbox_details.title')}</span>
             {isEditInboxAvailable ? (
-              <UpdateInbox
-                inbox={inbox}
-                redirectRoutePath="/settings/inboxes/:inboxId"
-              />
+              <UpdateInbox inbox={inbox} redirectRoutePath="/settings/inboxes/:inboxId" />
             ) : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-4">
               <span className="font-bold">{t('settings:inboxes.name')}</span>
               {inbox.name}
-              <span className="font-bold">
-                {t('settings:inboxes.inbox_details.case_count')}
-              </span>
+              <span className="font-bold">{t('settings:inboxes.inbox_details.case_count')}</span>
               {caseCount}
             </div>
           </CollapsiblePaper.Content>
@@ -218,9 +196,7 @@ export default function Inbox() {
 
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
-            <span className="flex-1">
-              {t('settings:inboxes.inbox_details.members')}
-            </span>
+            <span className="flex-1">{t('settings:inboxes.inbox_details.members')}</span>
             {isCreateInboxUserAvailable ? (
               <CreateInboxUser
                 inboxId={inbox.id}
@@ -235,13 +211,7 @@ export default function Inbox() {
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>
                 {rows.map((row) => {
-                  return (
-                    <Table.Row
-                      key={row.id}
-                      className="hover:bg-purple-98 group"
-                      row={row}
-                    />
-                  );
+                  return <Table.Row key={row.id} className="hover:bg-purple-98 group" row={row} />;
                 })}
               </Table.Body>
             </Table.Container>
@@ -254,9 +224,7 @@ export default function Inbox() {
           ) : (
             <Tooltip.Default
               content={
-                <p className="p-2">
-                  {t('settings:inboxes.inbox_details.delete_inbox.tooltip')}
-                </p>
+                <p className="p-2">{t('settings:inboxes.inbox_details.delete_inbox.tooltip')}</p>
               }
             >
               <span className="w-fit">

@@ -55,9 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
       description: description,
     });
 
-    return redirect(
-      getRoute('/lists/:listId', { listId: fromUUID(result.id) }),
-    );
+    return redirect(getRoute('/lists/:listId', { listId: fromUUID(result.id) }));
   } catch (error) {
     if (isStatusConflictHttpError(error)) {
       const { getSession, commitSession } = serverServices.toastSessionService;
@@ -147,9 +145,7 @@ export function CreateList() {
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder={t(
-                            'lists:create_list.description_placeholder',
-                          )}
+                          placeholder={t('lists:create_list.description_placeholder')}
                           {...field}
                         />
                       </FormControl>
@@ -164,12 +160,7 @@ export function CreateList() {
                     {t('common:cancel')}
                   </Button>
                 </Modal.Close>
-                <Button
-                  className="flex-1"
-                  variant="primary"
-                  type="submit"
-                  name="create"
-                >
+                <Button className="flex-1" variant="primary" type="submit" name="create">
                   {t('lists:create_list.button_accept')}
                 </Button>
               </div>

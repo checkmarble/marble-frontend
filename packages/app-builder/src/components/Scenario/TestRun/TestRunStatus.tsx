@@ -9,12 +9,7 @@ export const TestRunStatus = ({ status }: { status: TestRStatus }) => {
 
   return match(status)
     .with('up', () => (
-      <Tag
-        border="square"
-        size="big"
-        color="purple"
-        className="bg-purple-65 gap-2"
-      >
+      <Tag border="square" size="big" color="purple" className="bg-purple-65 gap-2">
         <Spinner className="text-grey-100 size-3" />
         <span className="text-s text-grey-100 font-semibold">
           {t('scenarios:testrun.status.up')}
@@ -23,23 +18,17 @@ export const TestRunStatus = ({ status }: { status: TestRStatus }) => {
     ))
     .with('down', () => (
       <Tag border="square" size="big" color="red">
-        <span className="text-s font-semibold">
-          {t('scenarios:testrun.status.down')}
-        </span>
+        <span className="text-s font-semibold">{t('scenarios:testrun.status.down')}</span>
       </Tag>
     ))
     .with('unknown', () => (
       <Tag border="square" size="big" color="orange">
-        <span className="text-s font-semibold">
-          {t('scenarios:testrun.status.unknown')}
-        </span>
+        <span className="text-s font-semibold">{t('scenarios:testrun.status.unknown')}</span>
       </Tag>
     ))
     .with('pending', () => (
       <Tag border="square" size="big" color="yellow">
-        <span className="text-s font-semibold">
-          {t('scenarios:testrun.status.pending')}
-        </span>
+        <span className="text-s font-semibold">{t('scenarios:testrun.status.pending')}</span>
       </Tag>
     ))
     .exhaustive();

@@ -1,9 +1,4 @@
-import {
-  CopyToClipboardButton,
-  ErrorComponent,
-  Page,
-  TabLink,
-} from '@app-builder/components';
+import { CopyToClipboardButton, ErrorComponent, Page, TabLink } from '@app-builder/components';
 import {
   BreadCrumbLink,
   type BreadCrumbProps,
@@ -30,11 +25,7 @@ import { serverServices } from '@app-builder/services/init.server';
 import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import {
-  defer,
-  type LoaderFunctionArgs,
-  type SerializeFrom,
-} from '@remix-run/node';
+import { defer, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
 import {
   isRouteErrorResponse,
   Outlet,
@@ -249,13 +240,8 @@ export default function CasePage() {
         </div>
         <div className="bg-grey-100 border-t-grey-90 flex shrink-0 flex-row items-center gap-4 border-t p-4">
           <AddComment caseId={caseDetail.id} />
-          <UploadFile
-            uploadFileEndpoint={getCaseFileUploadEndpoint(caseDetail)}
-          >
-            <Button
-              className="h-14 w-fit whitespace-nowrap"
-              variant="secondary"
-            >
+          <UploadFile uploadFileEndpoint={getCaseFileUploadEndpoint(caseDetail)}>
+            <Button className="h-14 w-fit whitespace-nowrap" variant="secondary">
               <Icon icon="attachment" className="size-5" />
               {t('cases:add_file')}
             </Button>

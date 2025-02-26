@@ -4,17 +4,7 @@ import clsx from 'clsx';
 import { t } from 'i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  entries,
-  flat,
-  groupBy,
-  isDeepEqual,
-  keys,
-  mapValues,
-  omit,
-  omitBy,
-  values,
-} from 'remeda';
+import { entries, flat, groupBy, isDeepEqual, keys, mapValues, omit, omitBy, values } from 'remeda';
 import { Collapsible, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -77,10 +67,7 @@ const TestRunRuleHitPercentage = ({
   const language = useFormatLanguage();
 
   const refRuleHitPercentage = useMemo(() => {
-    const refRuleTotal = rulesByVersion[ref.value]?.reduce(
-      (acc, rule) => acc + rule.total,
-      0,
-    );
+    const refRuleTotal = rulesByVersion[ref.value]?.reduce((acc, rule) => acc + rule.total, 0);
 
     const refRuleHitTotal = rulesByVersion[ref.value]
       ?.filter((r) => r.status === 'hit')
@@ -96,10 +83,7 @@ const TestRunRuleHitPercentage = ({
   }, [rulesByVersion, ref]);
 
   const testRuleHitPercentage = useMemo(() => {
-    const testRuleTotal = rulesByVersion[test.value]?.reduce(
-      (acc, rule) => acc + rule.total,
-      0,
-    );
+    const testRuleTotal = rulesByVersion[test.value]?.reduce((acc, rule) => acc + rule.total, 0);
 
     const testRuleHitTotal = rulesByVersion[test.value]
       ?.filter((r) => r.status === 'hit')
@@ -116,10 +100,7 @@ const TestRunRuleHitPercentage = ({
 
   let direction = 'equal';
 
-  if (
-    refRuleHitPercentage !== undefined &&
-    testRuleHitPercentage !== undefined
-  ) {
+  if (refRuleHitPercentage !== undefined && testRuleHitPercentage !== undefined) {
     direction =
       refRuleHitPercentage - testRuleHitPercentage < 0
         ? 'up'
@@ -139,24 +120,16 @@ const TestRunRuleHitPercentage = ({
         </span>
       ) : null}
       <div
-        className={clsx(
-          'flex flex-row items-center justify-center rounded p-1.5',
-          {
-            'bg-purple-96': direction === 'up' || direction === 'down',
-            'bg-grey-95': direction === 'equal',
-          },
-        )}
+        className={clsx('flex flex-row items-center justify-center rounded p-1.5', {
+          'bg-purple-96': direction === 'up' || direction === 'down',
+          'bg-grey-95': direction === 'equal',
+        })}
       >
         <Icon
-          icon={
-            direction === 'up' || direction === 'down'
-              ? 'arrow-forward'
-              : 'dash'
-          }
+          icon={direction === 'up' || direction === 'down' ? 'arrow-forward' : 'dash'}
           className={clsx({
             'size-1.5': direction === 'equal',
-            'text-purple-65 size-2.5':
-              direction === 'up' || direction === 'down',
+            'text-purple-65 size-2.5': direction === 'up' || direction === 'down',
             'rotate-90': direction === 'down',
             '-rotate-90': direction === 'up',
             'text-green-38': direction === 'equal',
@@ -165,9 +138,8 @@ const TestRunRuleHitPercentage = ({
       </div>
       <span className="text-s text-grey-00 font-medium">
         {formatNumber(
-          (testRuleHitPercentage !== undefined
-            ? testRuleHitPercentage
-            : refRuleHitPercentage)! / 100,
+          (testRuleHitPercentage !== undefined ? testRuleHitPercentage : refRuleHitPercentage)! /
+            100,
           { language, style: 'percent' },
         )}
       </span>
@@ -259,9 +231,7 @@ export const FilterTransactionByDecision = ({
 
   return (
     <Collapsible.Container className="bg-grey-100">
-      <Collapsible.Title>
-        {t('scenarios:testrun.transaction_by_decision')}
-      </Collapsible.Title>
+      <Collapsible.Title>{t('scenarios:testrun.transaction_by_decision')}</Collapsible.Title>
       <Collapsible.Content>
         {rules.length === 0 ? (
           <span className="text-grey-50 inline-block w-full text-center font-semibold">
@@ -273,10 +243,7 @@ export const FilterTransactionByDecision = ({
               <span className="text-s text-grey-00 font-medium">
                 {t('scenarios:testrun.show_rules_changes')}
               </span>
-              <Switch
-                checked={displayChangedRules}
-                onCheckedChange={toggleChangedRulesDisplay}
-              />
+              <Switch checked={displayChangedRules} onCheckedChange={toggleChangedRulesDisplay} />
             </div>
             {keys(rulesByRuleId).length ? (
               <div className="flex flex-col gap-2">
@@ -286,11 +253,7 @@ export const FilterTransactionByDecision = ({
                   <span>{t('testrun.filters.hit')}</span>
                 </div>
                 {entries(rulesByRuleId).map(([ruleId, rules]) => (
-                  <RuleExecution
-                    key={ruleId}
-                    rules={rules}
-                    versions={versions}
-                  />
+                  <RuleExecution key={ruleId} rules={rules} versions={versions} />
                 ))}
               </div>
             ) : null}

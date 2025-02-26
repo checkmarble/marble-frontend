@@ -34,19 +34,14 @@ function renderItems(items: typeof groceries, group?: string) {
 
     const element =
       typeof item === 'string' ? (
-        <MenuItem
-          name={group}
-          className="data-[active-item]:bg-purple-98 rounded p-2 outline-none"
-        >
+        <MenuItem name={group} className="data-[active-item]:bg-purple-98 rounded p-2 outline-none">
           {item}
         </MenuItem>
       ) : (
         <Fragment>
           <MenuSeparator />
           <MenuGroup>
-            <MenuGroupLabel className="text-grey-50 text-xs">
-              {item.label}
-            </MenuGroupLabel>
+            <MenuGroupLabel className="text-grey-50 text-xs">{item.label}</MenuGroupLabel>
             {renderItems(item.items, item.label)}
           </MenuGroup>
         </Fragment>
@@ -69,8 +64,7 @@ function MenuWithCombobox({ items }: { items: typeof groceries }) {
   const deferredSearchValue = useDeferredValue(searchValue);
 
   const flattenedItems = useMemo(
-    () =>
-      items.flatMap((item) => (typeof item === 'string' ? [item] : item.items)),
+    () => items.flatMap((item) => (typeof item === 'string' ? [item] : item.items)),
     [items],
   );
   const matches = useMemo(() => {
@@ -84,9 +78,7 @@ function MenuWithCombobox({ items }: { items: typeof groceries }) {
       <MenuPopover className="flex flex-col gap-2 p-2">
         <MenuCombobox render={<Input className="shrink-0" />} />
         <MenuContent>
-          <ScrollAreaV2 type="auto">
-            {renderMatches(matches) || renderItems(items)}
-          </ScrollAreaV2>
+          <ScrollAreaV2 type="auto">{renderMatches(matches) || renderItems(items)}</ScrollAreaV2>
         </MenuContent>
       </MenuPopover>
     </MenuRoot>
@@ -116,10 +108,7 @@ function renderNestedItems(items: typeof groceries, group?: string) {
 
     const element =
       typeof item === 'string' ? (
-        <MenuItem
-          name={group}
-          className="data-[active-item]:bg-purple-98 rounded p-2 outline-none"
-        >
+        <MenuItem name={group} className="data-[active-item]:bg-purple-98 rounded p-2 outline-none">
           {item}
         </MenuItem>
       ) : (
@@ -132,9 +121,7 @@ function renderNestedItems(items: typeof groceries, group?: string) {
             </SubMenuButton>
             <MenuPopover className="flex flex-col gap-2 p-2" gutter={16}>
               <MenuContent>
-                <ScrollAreaV2 type="auto">
-                  {renderItems(item.items, item.label)}
-                </ScrollAreaV2>
+                <ScrollAreaV2 type="auto">{renderItems(item.items, item.label)}</ScrollAreaV2>
               </MenuContent>
             </MenuPopover>
           </SubMenuRoot>
@@ -160,9 +147,7 @@ function NestedMenuWithCombobox({ items }: { items: typeof groceries }) {
   );
   const matches = useMemo(() => {
     if (!deferredSearchValue) return null;
-    const matches = flattenedItems.filter((item) =>
-      item.label.includes(deferredSearchValue),
-    );
+    const matches = flattenedItems.filter((item) => item.label.includes(deferredSearchValue));
     return matches.reduce<typeof items>((acc, item) => {
       if (item.group) {
         const group = acc.find(
@@ -196,9 +181,7 @@ function NestedMenuWithCombobox({ items }: { items: typeof groceries }) {
   );
 }
 
-export const Nested: StoryFn = () => (
-  <NestedMenuWithCombobox items={groceries} />
-);
+export const Nested: StoryFn = () => <NestedMenuWithCombobox items={groceries} />;
 
 export const NestedWithoutCombobox: StoryFn = () => (
   <MenuRoot>

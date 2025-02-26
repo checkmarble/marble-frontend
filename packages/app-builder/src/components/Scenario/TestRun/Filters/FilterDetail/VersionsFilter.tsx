@@ -3,10 +3,7 @@ import { matchSorter } from '@app-builder/utils/search';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
-import {
-  useRefVersionFilter,
-  useTestVersionFilter,
-} from '../TestRunsFiltersContext';
+import { useRefVersionFilter, useTestVersionFilter } from '../TestRunsFiltersContext';
 
 export function VersionsFilter({ type }: { type: 'ref' | 'test' }) {
   const [value, setSearchValue] = useState('');
@@ -42,9 +39,7 @@ export function VersionsFilter({ type }: { type: 'ref' | 'test' }) {
                 value={iteration.id}
                 className="align-baseline"
               >
-                <span className="text-grey-00 text-s">
-                  {`V${iteration.version}`}
-                </span>
+                <span className="text-grey-00 text-s">{`V${iteration.version}`}</span>
               </SelectWithCombobox.ComboboxItem>
             );
           })}

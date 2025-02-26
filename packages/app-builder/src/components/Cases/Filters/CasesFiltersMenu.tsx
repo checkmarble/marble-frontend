@@ -28,9 +28,7 @@ export function CasesFiltersMenu({
 
   return (
     <FiltersDropdownMenu.Root onOpenChange={onOpenChange}>
-      <FiltersDropdownMenu.Trigger asChild>
-        {children}
-      </FiltersDropdownMenu.Trigger>
+      <FiltersDropdownMenu.Trigger asChild>{children}</FiltersDropdownMenu.Trigger>
       <FiltersDropdownMenu.Content>
         <FilterContent filterNames={filterNames} />
       </FiltersDropdownMenu.Content>
@@ -51,19 +49,13 @@ const FiltersMenuItem = forwardRef<
   return (
     <FiltersDropdownMenu.Item {...props} ref={ref}>
       <Icon icon={icon} className="size-5" />
-      <span className="text-s text-grey-00 font-normal first-letter:capitalize">
-        {t(tKey)}
-      </span>
+      <span className="text-s text-grey-00 font-normal first-letter:capitalize">{t(tKey)}</span>
     </FiltersDropdownMenu.Item>
   );
 });
 FiltersMenuItem.displayName = 'FiltersMenuItem';
 
-function FilterContent({
-  filterNames,
-}: {
-  filterNames: readonly CasesFilterName[];
-}) {
+function FilterContent({ filterNames }: { filterNames: readonly CasesFilterName[] }) {
   const [selectedFilter, setSelectedFilter] = useState<CasesFilterName>();
 
   if (selectedFilter) {

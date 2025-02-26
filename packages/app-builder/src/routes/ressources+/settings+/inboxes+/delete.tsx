@@ -31,13 +31,7 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(getRoute('/settings/inboxes/'));
 }
 
-export function DeleteInbox({
-  inbox,
-  disabled,
-}: {
-  inbox: Inbox;
-  disabled?: boolean;
-}) {
+export function DeleteInbox({ inbox, disabled }: { inbox: Inbox; disabled?: boolean }) {
   const { t } = useTranslation(handle.i18n);
 
   const [open, setOpen] = useState(false);
@@ -52,18 +46,8 @@ export function DeleteInbox({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button
-          color="red"
-          variant="primary"
-          name="delete"
-          disabled={disabled}
-          className="w-fit"
-        >
-          <Icon
-            icon="delete"
-            className="size-6"
-            aria-label={t('settings:inboxes.delete_inbox')}
-          />
+        <Button color="red" variant="primary" name="delete" disabled={disabled} className="w-fit">
+          <Icon icon="delete" className="size-6" aria-label={t('settings:inboxes.delete_inbox')} />
           {t('settings:inboxes.delete_inbox')}
         </Button>
       </Modal.Trigger>
@@ -78,17 +62,12 @@ const DeleteInboxContent = ({ inboxId }: { inboxId: string }) => {
   const { t } = useTranslation(handle.i18n);
 
   return (
-    <Form
-      action={getRoute('/ressources/settings/inboxes/delete')}
-      method="DELETE"
-    >
+    <Form action={getRoute('/ressources/settings/inboxes/delete')} method="DELETE">
       <Modal.Title>{t('settings:inboxes.delete_inbox')}</Modal.Title>
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
         <div className="text-s flex flex-1 flex-col gap-4">
           <input name="inboxId" value={inboxId} type="hidden" />
-          <p className="text-center">
-            {t('settings:inboxes.delete_inbox.content')}
-          </p>
+          <p className="text-center">{t('settings:inboxes.delete_inbox.content')}</p>
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>
@@ -96,13 +75,7 @@ const DeleteInboxContent = ({ inboxId }: { inboxId: string }) => {
               {t('common:cancel')}
             </Button>
           </Modal.Close>
-          <Button
-            color="red"
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="delete"
-          >
+          <Button color="red" className="flex-1" variant="primary" type="submit" name="delete">
             <Icon icon="delete" className="size-6" />
             {t('common:delete')}
           </Button>

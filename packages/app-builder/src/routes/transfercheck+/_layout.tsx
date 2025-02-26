@@ -4,33 +4,18 @@ import {
   SidebarButton,
   SidebarLink,
 } from '@app-builder/components';
-import {
-  HelpCenter,
-  useTransfercheckResources,
-} from '@app-builder/components/HelpCenter';
-import {
-  LeftSidebar,
-  ToggleSidebar,
-} from '@app-builder/components/Layout/LeftSidebar';
+import { HelpCenter, useTransfercheckResources } from '@app-builder/components/HelpCenter';
+import { LeftSidebar, ToggleSidebar } from '@app-builder/components/Layout/LeftSidebar';
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleAdmin, isTransferCheckUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
 import { serverServices } from '@app-builder/services/init.server';
-import {
-  segment,
-  useSegmentIdentification,
-} from '@app-builder/services/segment';
+import { segment, useSegmentIdentification } from '@app-builder/services/segment';
 import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
 import { CONFLICT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
-import {
-  Form,
-  isRouteErrorResponse,
-  Outlet,
-  useLoaderData,
-  useRouteError,
-} from '@remix-run/react';
+import { Form, isRouteErrorResponse, Outlet, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -39,12 +24,9 @@ import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService, versionRepository } = serverServices;
-  const { user, partnerRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { user, partnerRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   if (isMarbleAdmin(user)) {
     throw conflict("Marble Admins can't access the app builder.");
@@ -147,9 +129,7 @@ export function ErrorBoundary() {
           <h1 className="text-l text-purple-60 font-semibold">
             {t('common:error_boundary.marble_admin.title')}
           </h1>
-          <p className="text-s mb-6">
-            {t('common:error_boundary.marble_admin.subtitle')}
-          </p>
+          <p className="text-s mb-6">{t('common:error_boundary.marble_admin.subtitle')}</p>
           <div className="mb-1">
             <Form action={getRoute('/ressources/auth/logout')} method="POST">
               <Button
@@ -174,9 +154,7 @@ export function ErrorBoundary() {
 
   return (
     <div className="bg-purple-98 flex size-full items-center justify-center">
-      <div className="bg-grey-100 flex max-w-md rounded-2xl p-10 shadow-md">
-        {errorComponent}
-      </div>
+      <div className="bg-grey-100 flex max-w-md rounded-2xl p-10 shadow-md">{errorComponent}</div>
     </div>
   );
 }

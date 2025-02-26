@@ -12,10 +12,7 @@ import { Icon } from 'ui-icons';
 
 import { headerHeight } from './Page';
 
-export function setToastMessage(
-  session: ToastSession,
-  toastMessage: ToastMessage,
-) {
+export function setToastMessage(session: ToastSession, toastMessage: ToastMessage) {
   session.flash('toastMessage', toastMessage);
 }
 
@@ -27,11 +24,7 @@ export function getToastMessage(session: ToastSession) {
   }
 }
 
-export function MarbleToaster({
-  toastMessage,
-}: {
-  toastMessage?: ToastMessage;
-}) {
+export function MarbleToaster({ toastMessage }: { toastMessage?: ToastMessage }) {
   const { t } = useTranslation(['common']);
 
   useEffect(() => {

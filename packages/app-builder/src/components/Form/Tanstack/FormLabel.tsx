@@ -3,10 +3,7 @@ import clsx from 'clsx';
 import * as React from 'react';
 
 interface FormLabelProps
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>,
-    'htmlFor'
-  > {
+  extends Omit<React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>, 'htmlFor'> {
   name: string;
   valid?: boolean;
 }

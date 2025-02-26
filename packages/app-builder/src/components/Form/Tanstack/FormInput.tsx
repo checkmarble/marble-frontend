@@ -22,15 +22,8 @@ interface FormInputProps extends Omit<InputProps, 'borderColor' | 'type'> {
     | 'week';
 }
 
-export const FormInput = React.forwardRef<
-  React.ElementRef<typeof Input>,
-  FormInputProps
->(function FormInput({ type, valid, ...props }, ref) {
-  return (
-    <Input
-      ref={ref}
-      borderColor={valid ? 'greyfigma-90' : 'redfigma-47'}
-      {...props}
-    />
-  );
-});
+export const FormInput = React.forwardRef<React.ElementRef<typeof Input>, FormInputProps>(
+  function FormInput({ type, valid, ...props }, ref) {
+    return <Input ref={ref} borderColor={valid ? 'greyfigma-90' : 'redfigma-47'} {...props} />;
+  },
+);

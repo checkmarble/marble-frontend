@@ -23,23 +23,19 @@ export type CopyToClipboardButtonProps = ComponentPropsWithoutRef<'button'> &
     toCopy: string;
   };
 
-export const CopyToClipboardButton = forwardRef<
-  HTMLButtonElement,
-  CopyToClipboardButtonProps
->(function CopyToClipboardButton(
-  { children, className, toCopy, dimmed, ...props },
-  ref,
-) {
-  const getCopyToClipboardProps = useGetCopyToClipboard();
-  return (
-    <button
-      ref={ref}
-      className={variances({ dimmed, className })}
-      {...getCopyToClipboardProps(toCopy)}
-      {...props}
-    >
-      {children}
-      <Icon icon="copy" className="size-4 shrink-0 text-current" />
-    </button>
-  );
-});
+export const CopyToClipboardButton = forwardRef<HTMLButtonElement, CopyToClipboardButtonProps>(
+  function CopyToClipboardButton({ children, className, toCopy, dimmed, ...props }, ref) {
+    const getCopyToClipboardProps = useGetCopyToClipboard();
+    return (
+      <button
+        ref={ref}
+        className={variances({ dimmed, className })}
+        {...getCopyToClipboardProps(toCopy)}
+        {...props}
+      >
+        {children}
+        <Icon icon="copy" className="size-4 shrink-0 text-current" />
+      </button>
+    );
+  },
+);

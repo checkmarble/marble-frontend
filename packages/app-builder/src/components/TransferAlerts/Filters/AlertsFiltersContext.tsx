@@ -1,20 +1,9 @@
-import {
-  transferAlerStatuses,
-  type TransferAlertStatus,
-} from '@app-builder/models/transfer-alert';
+import { transferAlerStatuses, type TransferAlertStatus } from '@app-builder/models/transfer-alert';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import {
-  type DateRangeFilterForm,
-  dateRangeSchema,
-} from '@app-builder/utils/schema/filterSchema';
+import { type DateRangeFilterForm, dateRangeSchema } from '@app-builder/utils/schema/filterSchema';
 import * as React from 'react';
-import {
-  FormProvider,
-  useController,
-  useForm,
-  useFormContext,
-} from 'react-hook-form';
+import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
 import * as z from 'zod';
 
@@ -34,9 +23,7 @@ interface AlertsFiltersContextValue {
   onAlertsFilterClose: () => void;
 }
 
-const AlertsFiltersContext = createSimpleContext<AlertsFiltersContextValue>(
-  'AlertsFiltersContext',
-);
+const AlertsFiltersContext = createSimpleContext<AlertsFiltersContextValue>('AlertsFiltersContext');
 
 export type AlertsFiltersForm = {
   message: string | null;
@@ -49,10 +36,7 @@ const emptyAlertsFilters: AlertsFiltersForm = {
   dateRange: null,
 };
 
-function adaptAlertsFiltersForm({
-  dateRange,
-  ...otherFilters
-}: AlertsFilters): AlertsFiltersForm {
+function adaptAlertsFiltersForm({ dateRange, ...otherFilters }: AlertsFilters): AlertsFiltersForm {
   const adaptedFilterValues: AlertsFiltersForm = {
     ...emptyAlertsFilters,
     ...otherFilters,
@@ -132,9 +116,7 @@ export function AlertsFiltersProvider({
   );
   return (
     <FormProvider {...formMethods}>
-      <AlertsFiltersContext.Provider value={value}>
-        {children}
-      </AlertsFiltersContext.Provider>
+      <AlertsFiltersContext.Provider value={value}>{children}</AlertsFiltersContext.Provider>
     </FormProvider>
   );
 }

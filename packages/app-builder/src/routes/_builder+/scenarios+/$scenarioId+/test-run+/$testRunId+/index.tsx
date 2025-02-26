@@ -69,8 +69,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function TestRun() {
-  const { run, decisionsPromise, rulesPromise } =
-    useLoaderData<typeof loader>();
+  const { run, decisionsPromise, rulesPromise } = useLoaderData<typeof loader>();
   const currentScenario = useCurrentScenario();
   const sourceIterations = useScenarioIterations();
   const { orgUsers } = useOrganizationUsers();
@@ -80,10 +79,7 @@ export default function TestRun() {
     () =>
       mapToObj(sourceIterations, (i) => [
         i.id,
-        pick(adaptScenarioIterationWithType(i, currentScenario.liveVersionId), [
-          'version',
-          'type',
-        ]),
+        pick(adaptScenarioIterationWithType(i, currentScenario.liveVersionId), ['version', 'type']),
       ]),
     [sourceIterations, currentScenario],
   );
@@ -114,15 +110,9 @@ export default function TestRun() {
         <BreadCrumbs />
         {run.status === 'up' ? (
           <CancelTestRun testRunId={run.id}>
-            <Button
-              variant="secondary"
-              color="red"
-              className="isolate h-10 w-fit"
-            >
+            <Button variant="secondary" color="red" className="isolate h-10 w-fit">
               <Icon icon="stop" className="text-grey-100 size-6" />
-              <span className="text-grey-100">
-                {t('scenarios:testrun.cancel')}
-              </span>
+              <span className="text-grey-100">{t('scenarios:testrun.cancel')}</span>
             </Button>
           </CancelTestRun>
         ) : null}
@@ -134,21 +124,13 @@ export default function TestRun() {
           <Suspense fallback={<DistributionOfDecisionChartSkeleton />}>
             <Await resolve={decisionsPromise}>
               {(decisions) => (
-                <DistributionOfDecisionChart
-                  versions={versions}
-                  decisions={decisions}
-                />
+                <DistributionOfDecisionChart versions={versions} decisions={decisions} />
               )}
             </Await>
           </Suspense>
           <Suspense fallback={<FilterTransactionByDecisionSkeleton />}>
             <Await resolve={rulesPromise}>
-              {(rules) => (
-                <FilterTransactionByDecision
-                  versions={versions}
-                  rules={rules}
-                />
-              )}
+              {(rules) => <FilterTransactionByDecision versions={versions} rules={rules} />}
             </Await>
           </Suspense>
         </Page.Content>

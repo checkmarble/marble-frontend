@@ -94,10 +94,7 @@ function disableEditUnique({
   linksToThisTable: LinkToSingle[];
   selectedEnum: boolean;
 }) {
-  if (
-    field.unicityConstraint !== 'no_unicity_constraint' &&
-    field.name === 'object_id'
-  ) {
+  if (field.unicityConstraint !== 'no_unicity_constraint' && field.name === 'object_id') {
     return {
       disabled: true,
       reason: 'object_id_must_be_unique',
@@ -115,13 +112,8 @@ function disableEditUnique({
       reason: 'cannot_toggle_index_pending',
     };
   }
-  const linksToThisField = linksToThisTable.filter(
-    (link) => link.parentFieldName === field.name,
-  );
-  if (
-    field.unicityConstraint !== 'no_unicity_constraint' &&
-    linksToThisField.length > 0
-  ) {
+  const linksToThisField = linksToThisTable.filter((link) => link.parentFieldName === field.name);
+  if (field.unicityConstraint !== 'no_unicity_constraint' && linksToThisField.length > 0) {
     return {
       disabled: true,
       reason: 'cannot_untoggle_field_linked',
@@ -205,9 +197,7 @@ export function EditField({
                       <FormControl>
                         <Input
                           type="text"
-                          placeholder={t(
-                            'data:create_field.description_placeholder',
-                          )}
+                          placeholder={t('data:create_field.description_placeholder')}
                           {...field}
                         />
                       </FormControl>
@@ -233,9 +223,7 @@ export function EditField({
                       </FormControl>
                       <FormLabel>
                         <p>{t('data:create_field.is_enum.title')}</p>
-                        <p className="text-xs">
-                          {t('data:create_field.is_enum.subtitle')}
-                        </p>
+                        <p className="text-xs">{t('data:create_field.is_enum.subtitle')}</p>
                       </FormLabel>
                       <FormError />
                     </FormItem>
@@ -259,39 +247,26 @@ export function EditField({
                       </FormControl>
                       <FormLabel>
                         <p>{t('data:edit_field.is_unique.title')}</p>
-                        {inputField.unicityConstraint ===
-                        'no_unicity_constraint' ? (
-                          <p className="text-xs">
-                            {t('data:edit_field.is_unique.toggle')}
-                          </p>
+                        {inputField.unicityConstraint === 'no_unicity_constraint' ? (
+                          <p className="text-xs">{t('data:edit_field.is_unique.toggle')}</p>
                         ) : null}
-                        {uniqueSettingDisabled.reason ===
-                        'cannot_toggle_index_pending' ? (
+                        {uniqueSettingDisabled.reason === 'cannot_toggle_index_pending' ? (
                           <p className="text-red-74 text-xs">
-                            {t(
-                              'data:edit_field.is_unique.cannot_toggle_index_pending',
-                            )}
+                            {t('data:edit_field.is_unique.cannot_toggle_index_pending')}
                           </p>
                         ) : null}
-                        {uniqueSettingDisabled.reason ===
-                        'cannot_untoggle_field_linked' ? (
+                        {uniqueSettingDisabled.reason === 'cannot_untoggle_field_linked' ? (
                           <p className="text-red-74 text-xs">
-                            {t(
-                              'data:edit_field.is_unique.cannot_untoggle_field_linked',
-                            )}
+                            {t('data:edit_field.is_unique.cannot_untoggle_field_linked')}
                           </p>
                         ) : null}
-                        {field.value &&
-                        inputField.unicityConstraint ===
-                          'no_unicity_constraint' ? (
+                        {field.value && inputField.unicityConstraint === 'no_unicity_constraint' ? (
                           <p className="text-red-74 text-xs">
-                            {t(
-                              'data:edit_field.is_unique.warning_creation_asynchronous',
-                            )}
+                            {t('data:edit_field.is_unique.warning_creation_asynchronous')}
                           </p>
                         ) : null}
-                        {inputField.unicityConstraint ===
-                          'active_unique_constraint' && !field.value ? (
+                        {inputField.unicityConstraint === 'active_unique_constraint' &&
+                        !field.value ? (
                           <p className="text-red-74 text-xs">
                             {t('data:edit_field.is_unique.warning_untoggle')}
                           </p>
@@ -308,12 +283,7 @@ export function EditField({
                     {t('common:cancel')}
                   </Button>
                 </Modal.Close>
-                <Button
-                  className="flex-1"
-                  variant="primary"
-                  type="submit"
-                  name="edit"
-                >
+                <Button className="flex-1" variant="primary" type="submit" name="edit">
                   {t('data:edit_field.button_accept')}
                 </Button>
               </div>

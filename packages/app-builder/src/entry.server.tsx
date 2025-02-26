@@ -23,23 +23,15 @@ export default async function handleRequest(
   remixContext: EntryContext,
 ) {
   const { i18nextService } = serverServices;
-  const i18n = await i18nextService.getI18nextServerInstance(
-    request,
-    remixContext,
-  );
+  const i18n = await i18nextService.getI18nextServerInstance(request, remixContext);
 
   const App = (
     <I18nextProvider i18n={i18n}>
-      <RemixServer
-        context={remixContext}
-        url={request.url}
-        abortDelay={ABORT_DELAY}
-      />
+      <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />
     </I18nextProvider>
   );
 
-  const prohibitOutOfOrderStreaming =
-    isBotRequest(request) || remixContext.isSpaMode;
+  const prohibitOutOfOrderStreaming = isBotRequest(request) || remixContext.isSpaMode;
 
   return prohibitOutOfOrderStreaming
     ? handleBotRequest(responseStatusCode, responseHeaders, App)
@@ -55,11 +47,7 @@ function isBotRequest(request: Request) {
   return isbot(userAgent);
 }
 
-function handleBotRequest(
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  App: JSX.Element,
-) {
+function handleBotRequest(responseStatusCode: number, responseHeaders: Headers, App: JSX.Element) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(App, {

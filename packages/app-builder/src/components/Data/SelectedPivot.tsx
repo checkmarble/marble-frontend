@@ -19,9 +19,7 @@ interface SelectedPivotContextValue {
   isTablePartOfPivot: (tableId: string) => boolean;
 }
 
-const SelectedPivotContext = createSimpleContext<SelectedPivotContextValue>(
-  'SelectedPivotContext',
-);
+const SelectedPivotContext = createSimpleContext<SelectedPivotContextValue>('SelectedPivotContext');
 
 export function useSelectedPivot() {
   return SelectedPivotContext.useValue();
@@ -34,14 +32,9 @@ export function SelectedPivotProvider({
   dataModel: DataModel;
   children: React.ReactNode;
 }) {
-  const linksToSingleMap = React.useMemo(
-    () => getLinksToSingleMap(dataModel),
-    [dataModel],
-  );
+  const linksToSingleMap = React.useMemo(() => getLinksToSingleMap(dataModel), [dataModel]);
 
-  const [selectedPivot, setSelectedPivot] = React.useState<Pivot | undefined>(
-    undefined,
-  );
+  const [selectedPivot, setSelectedPivot] = React.useState<Pivot | undefined>(undefined);
 
   const displayPivot = selectedPivot !== undefined;
 
@@ -74,8 +67,7 @@ export function SelectedPivotProvider({
       }
 
       return selectedPathLinks.some(
-        (link) =>
-          link?.childFieldId === fieldId || link?.parentFieldId === fieldId,
+        (link) => link?.childFieldId === fieldId || link?.parentFieldId === fieldId,
       );
     },
     [selectedPivot, selectedPathLinks],
@@ -89,8 +81,7 @@ export function SelectedPivotProvider({
       }
 
       return selectedPathLinks.some(
-        (link) =>
-          link?.childTableId === tableId || link?.parentTableId === tableId,
+        (link) => link?.childTableId === tableId || link?.parentTableId === tableId,
       );
     },
     [selectedPivot, selectedPathLinks],
@@ -128,9 +119,7 @@ export function SelectedPivotPanel() {
           {selectedPivot ? <PivotDetails pivot={selectedPivot} /> : null}
 
           <div className="flex flex-row-reverse">
-            <Button onClick={() => setSelectedPivot(undefined)}>
-              {t('common:close')}
-            </Button>
+            <Button onClick={() => setSelectedPivot(undefined)}>{t('common:close')}</Button>
           </div>
         </div>
       </div>

@@ -7,8 +7,7 @@ interface FieldNameContextValue {
   description?: React.ReactNode;
 }
 
-const FieldNameContext =
-  createSimpleContext<FieldNameContextValue>('FieldName');
+const FieldNameContext = createSimpleContext<FieldNameContextValue>('FieldName');
 export const useFieldName = FieldNameContext.useValue;
 
 interface FormFieldProps<Schema> extends React.ComponentPropsWithoutRef<'div'> {
@@ -16,11 +15,7 @@ interface FormFieldProps<Schema> extends React.ComponentPropsWithoutRef<'div'> {
   description?: React.ReactNode;
 }
 
-export function FormField<Schema>({
-  name,
-  description,
-  ...props
-}: FormFieldProps<Schema>) {
+export function FormField<Schema>({ name, description, ...props }: FormFieldProps<Schema>) {
   const value = React.useMemo(
     () => ({
       name,

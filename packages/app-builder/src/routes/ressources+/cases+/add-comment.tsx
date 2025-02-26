@@ -4,12 +4,7 @@ import { FormTextArea } from '@app-builder/components/Form/FormTextArea';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import {
-  FormProvider,
-  getFormProps,
-  getInputProps,
-  useForm,
-} from '@conform-to/react';
+import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -67,9 +62,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function AddComment(
-  defaultValue: Pick<z.infer<typeof schema>, 'caseId'>,
-) {
+export function AddComment(defaultValue: Pick<z.infer<typeof schema>, 'caseId'>) {
   const { t } = useTranslation(['cases', 'common']);
   const fetcher = useFetcher<typeof action>();
 
@@ -92,14 +85,9 @@ export function AddComment(
         action={getRoute('/ressources/cases/add-comment')}
         {...getFormProps(form)}
       >
-        <input
-          {...getInputProps(fields.caseId, { type: 'hidden' })}
-          key={fields.caseId.key}
-        />
+        <input {...getInputProps(fields.caseId, { type: 'hidden' })} key={fields.caseId.key} />
         <FormField name={fields.comment.name} className="w-full">
-          <FormLabel className="sr-only">
-            {t('cases:case_detail.add_a_comment.label')}
-          </FormLabel>
+          <FormLabel className="sr-only">{t('cases:case_detail.add_a_comment.label')}</FormLabel>
           <FormTextArea
             className="w-full"
             placeholder={t('cases:case_detail.add_a_comment.placeholder')}

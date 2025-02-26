@@ -1,17 +1,15 @@
 import type { FormApi } from '@tanstack/react-form';
 import type { FormEvent } from 'react';
 
-export const submitOnBlur: React.FocusEventHandler<
-  HTMLInputElement | HTMLTextAreaElement
-> = (event) => {
+export const submitOnBlur: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement> = (
+  event,
+) => {
   if (event.currentTarget.value !== event.currentTarget.defaultValue) {
     event.currentTarget.form?.requestSubmit();
   }
 };
 
-export function adaptToStringArray(
-  value: string | (string | undefined)[] | undefined,
-): string[] {
+export function adaptToStringArray(value: string | (string | undefined)[] | undefined): string[] {
   if (value === undefined) {
     return [];
   }

@@ -34,7 +34,6 @@ const dateFnsLocales = {
 } satisfies Record<(typeof supportedLngs)[number], Locale>;
 
 export function getDateFnsLocale(locale: string): Locale {
-  const supportedLocale =
-    supportedLngs.find((lng) => locale === lng) ?? fallbackLng;
+  const supportedLocale = supportedLngs.find((lng) => locale === lng) ?? fallbackLng;
   return dateFnsLocales[supportedLocale];
 }

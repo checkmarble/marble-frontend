@@ -3,19 +3,16 @@ import clsx from 'clsx';
 
 import { Ping } from './Ping';
 
-const corner_ping = cva(
-  'border-grey-100 absolute box-content size-[6px] border-2 text-red-47',
-  {
-    variants: {
-      position: {
-        'top-right': 'top-0 end-0',
-        'top-left': 'top-0 start-0',
-        'bottom-right': 'bottom-0 end-0',
-        'bottom-left': 'bottom-0 start-0',
-      },
+const corner_ping = cva('border-grey-100 absolute box-content size-[6px] border-2 text-red-47', {
+  variants: {
+    position: {
+      'top-right': 'top-0 end-0',
+      'top-left': 'top-0 start-0',
+      'bottom-right': 'bottom-0 end-0',
+      'bottom-left': 'bottom-0 start-0',
     },
   },
-);
+});
 
 export function CornerPing({
   children,

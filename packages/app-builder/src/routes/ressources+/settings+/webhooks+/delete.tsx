@@ -57,34 +57,19 @@ function DeleteWebhookContent({ webhookId }: { webhookId: string }) {
   const navigation = useNavigation();
 
   return (
-    <Form
-      action={getRoute('/ressources/settings/webhooks/delete')}
-      method="DELETE"
-    >
-      <ModalV2.Title>
-        {t('settings:webhooks.delete_webhook.title')}
-      </ModalV2.Title>
+    <Form action={getRoute('/ressources/settings/webhooks/delete')} method="DELETE">
+      <ModalV2.Title>{t('settings:webhooks.delete_webhook.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <div className="text-s flex flex-1 flex-col gap-4">
           <input name="webhookId" value={webhookId} type="hidden" />
-          <p className="text-center">
-            {t('settings:webhooks.delete_webhook.content')}
-          </p>
+          <p className="text-center">{t('settings:webhooks.delete_webhook.content')}</p>
         </div>
 
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close
-            render={<Button className="flex-1" variant="secondary" />}
-          >
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
             {t('common:cancel')}
           </ModalV2.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            color="red"
-            type="submit"
-            name="create"
-          >
+          <Button className="flex-1" variant="primary" color="red" type="submit" name="create">
             <LoadingIcon
               icon="delete"
               className="size-5"

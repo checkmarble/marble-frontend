@@ -3,13 +3,7 @@ import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
 import * as React from 'react';
 
-import {
-  Combobox,
-  ComboboxItem,
-  ComboboxLabel,
-  ComboboxPopover,
-  ComboboxRoot,
-} from './Combobox';
+import { Combobox, ComboboxItem, ComboboxLabel, ComboboxPopover, ComboboxRoot } from './Combobox';
 
 mockResizeObserver();
 

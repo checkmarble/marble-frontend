@@ -13,11 +13,7 @@ interface EditThresholdProps {
   errors: EvaluationError[];
 }
 
-export function EditThreshold({
-  threshold,
-  setThreshold,
-  errors,
-}: EditThresholdProps) {
+export function EditThreshold({ threshold, setThreshold, errors }: EditThresholdProps) {
   const { t } = useTranslation(['common', 'scenarios']);
   const getNodeEvaluationErrorMessage = useGetNodeEvaluationErrorMessage();
 
@@ -51,9 +47,7 @@ export function EditThreshold({
         max={100}
       />
       <EvaluationErrors
-        errors={adaptEvaluationErrorViewModels(errors).map(
-          getNodeEvaluationErrorMessage,
-        )}
+        errors={adaptEvaluationErrorViewModels(errors).map(getNodeEvaluationErrorMessage)}
       />
     </div>
   );

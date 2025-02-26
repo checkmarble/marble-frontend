@@ -22,18 +22,11 @@ import {
   scenarioUpdateWorkflowInputSchema,
 } from '@app-builder/models/scenario';
 import { OptionsProvider } from '@app-builder/services/editor/options';
-import {
-  isCreateInboxAvailable,
-  isWorkflowsAvailable,
-} from '@app-builder/services/feature-access';
+import { isCreateInboxAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import {
-  type LinksFunction,
-  type LoaderFunctionArgs,
-  redirect,
-} from '@remix-run/node';
+import { type LinksFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
@@ -62,9 +55,7 @@ export const handle = {
   ],
 };
 
-export const links: LinksFunction = () => [
-  { rel: 'stylesheet', href: workflowFlowStyles },
-];
+export const links: LinksFunction = () => [{ rel: 'stylesheet', href: workflowFlowStyles }];
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
@@ -133,10 +124,9 @@ export async function action({ request, params }: LoaderFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
   const scenarioId = fromParams(params, 'scenarioId');
-  const { scenario, entitlements } = await authService.isAuthenticated(
-    request,
-    { failureRedirect: getRoute('/sign-in') },
-  );
+  const { scenario, entitlements } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   if (!isWorkflowsAvailable(entitlements)) {
     return redirect(
@@ -187,13 +177,8 @@ export async function action({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Workflow() {
-  const {
-    scenarios,
-    inboxes,
-    hasPivotValue,
-    workflowDataFeatureAccess,
-    builderOptions,
-  } = useLoaderData<typeof loader>();
+  const { scenarios, inboxes, hasPivotValue, workflowDataFeatureAccess, builderOptions } =
+    useLoaderData<typeof loader>();
 
   const currentScenario = useCurrentScenario();
   const initialWorkflow = adaptValidWorkflow(currentScenario);

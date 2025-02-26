@@ -1,7 +1,4 @@
-import {
-  type NonOmittedReturnValue,
-  type ReturnValue,
-} from '@app-builder/models/node-evaluation';
+import { type NonOmittedReturnValue, type ReturnValue } from '@app-builder/models/node-evaluation';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type TFunction } from 'i18next';
 import { createContext, useCallback, useContext, useState } from 'react';
@@ -28,16 +25,12 @@ export function useFormatReturnValue() {
   const language = useFormatLanguage();
 
   return useCallback(
-    (returnValue?: ReturnValue) =>
-      formatReturnValue(returnValue, { t, language }),
+    (returnValue?: ReturnValue) => formatReturnValue(returnValue, { t, language }),
     [t, language],
   );
 }
 
-const DisplayReturnValues = createContext<[boolean, (val: boolean) => void]>([
-  false,
-  noop,
-]);
+const DisplayReturnValues = createContext<[boolean, (val: boolean) => void]>([false, noop]);
 DisplayReturnValues.displayName = 'DisplayReturnValues';
 
 export function DisplayReturnValuesProvider({
@@ -48,20 +41,14 @@ export function DisplayReturnValuesProvider({
   initialDisplayReturnValues?: boolean;
 }) {
   const value = useState(initialDisplayReturnValues ?? false);
-  return (
-    <DisplayReturnValues.Provider value={value}>
-      {children}
-    </DisplayReturnValues.Provider>
-  );
+  return <DisplayReturnValues.Provider value={value}>{children}</DisplayReturnValues.Provider>;
 }
 
 export function useDisplayReturnValues() {
   return useContext(DisplayReturnValues);
 }
 
-export function adaptBooleanOrNullReturnValue(
-  returnValue: NonOmittedReturnValue,
-) {
+export function adaptBooleanOrNullReturnValue(returnValue: NonOmittedReturnValue) {
   if (typeof returnValue.value === 'boolean' || returnValue.value === null) {
     return { value: returnValue.value, isBooleanOrNull: true as const };
   }

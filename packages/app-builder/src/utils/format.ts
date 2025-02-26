@@ -25,10 +25,7 @@ import { Temporal } from 'temporal-polyfill';
  */
 export function useFormatLanguage() {
   return useMemo(
-    () =>
-      typeof window === 'undefined'
-        ? 'fr-FR'
-        : (navigator?.languages[0] ?? 'fr-FR'),
+    () => (typeof window === 'undefined' ? 'fr-FR' : (navigator?.languages[0] ?? 'fr-FR')),
     [],
   );
 }
@@ -96,25 +93,14 @@ export function formatSchedule(
 
 const date = new Date();
 export function formatDuration(duration: string, language: string) {
-  return formatDistanceStrict(
-    add(date, Temporal.Duration.from(duration)),
-    date,
-    {
-      addSuffix: true,
-      locale: getDateFnsLocale(language),
-    },
-  );
+  return formatDistanceStrict(add(date, Temporal.Duration.from(duration)), date, {
+    addSuffix: true,
+    locale: getDateFnsLocale(language),
+  });
 }
 
-export function formatDateRelative(
-  date: string | Date,
-  options: { language: string },
-) {
-  return formatRelative(
-    typeof date === 'string' ? new Date(date) : date,
-    new Date(),
-    {
-      locale: getDateFnsLocale(options.language),
-    },
-  );
+export function formatDateRelative(date: string | Date, options: { language: string }) {
+  return formatRelative(typeof date === 'string' ? new Date(date) : date, new Date(), {
+    locale: getDateFnsLocale(options.language),
+  });
 }

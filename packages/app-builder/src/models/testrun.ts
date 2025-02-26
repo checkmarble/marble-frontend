@@ -15,12 +15,7 @@ export type TestRunStatus = TestRunStatusDto;
 export const testRunStatuses = ['up', 'down', 'pending', 'unknown'] as const;
 
 export type TestRunRuleStatus = TestRunRuleExecutionDataDto['status'];
-export const testRunRuleStatuses = [
-  'hit',
-  'no_hit',
-  'error',
-  'snoozed',
-] as const;
+export const testRunRuleStatuses = ['hit', 'no_hit', 'error', 'snoozed'] as const;
 
 export interface TestRunRuleExecutionCount {
   version: string;
@@ -48,9 +43,7 @@ export interface TestRunDecision {
   count: number;
 }
 
-export function adaptTestRunDecision(
-  dto: TestRunDecisionDataDto,
-): TestRunDecision {
+export function adaptTestRunDecision(dto: TestRunDecisionDataDto): TestRunDecision {
   return {
     version: toUpperCase(dto.version),
     outcome: dto.outcome as Outcome,
@@ -88,9 +81,7 @@ export interface TestRunCreateInput {
   endDate: string;
 }
 
-export function adaptTestRunCreateInputDto(
-  input: TestRunCreateInput,
-): TestRunCreateInputDto {
+export function adaptTestRunCreateInputDto(input: TestRunCreateInput): TestRunCreateInputDto {
   return {
     scenario_id: input.scenarioId,
     test_iteration_id: input.testIterationId,

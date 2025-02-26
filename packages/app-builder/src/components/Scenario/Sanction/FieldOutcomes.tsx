@@ -34,23 +34,12 @@ export const FieldOutcomes = ({
       onSearchValueChange={setSearchValue}
       onSelectedValueChange={onChange}
     >
-      <SelectWithCombobox.Select
-        name={name}
-        disabled={disabled}
-        onBlur={onBlur}
-        className="w-full"
-      >
-        {selectedOutcome ? (
-          <OutcomeTag border="square" outcome={selectedOutcome} />
-        ) : null}
+      <SelectWithCombobox.Select name={name} disabled={disabled} onBlur={onBlur} className="w-full">
+        {selectedOutcome ? <OutcomeTag border="square" outcome={selectedOutcome} /> : null}
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
       <SelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
-        <SelectWithCombobox.Combobox
-          render={<Input className="shrink-0" />}
-          autoSelect
-          autoFocus
-        />
+        <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} autoSelect autoFocus />
         <SelectWithCombobox.ComboboxList>
           {matches.map((outcome) => (
             <SelectWithCombobox.ComboboxItem key={outcome} value={outcome}>

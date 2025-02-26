@@ -1,8 +1,5 @@
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
-import {
-  useGetAstNodeOperandProps,
-  useOperandOptions,
-} from '@app-builder/services/editor/options';
+import { useGetAstNodeOperandProps, useOperandOptions } from '@app-builder/services/editor/options';
 import { memo } from 'react';
 
 import { Operand } from '../AstBuilder/AstBuilderNode/Operand';

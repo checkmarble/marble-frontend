@@ -39,8 +39,6 @@ export function isPayload(node: AstNode): node is PayloadAstNode {
 
 export type DataAccessorAstNode = DatabaseAccessAstNode | PayloadAstNode;
 
-export function isDataAccessorAstNode(
-  node: AstNode,
-): node is DataAccessorAstNode {
+export function isDataAccessorAstNode(node: AstNode): node is DataAccessorAstNode {
   return isDatabaseAccess(node) || isPayload(node);
 }

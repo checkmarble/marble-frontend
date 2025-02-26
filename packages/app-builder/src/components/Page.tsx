@@ -11,10 +11,7 @@ import { GithubBanner } from './GithubBanner';
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <main
-      className={cn(
-        'bg-purple-99 flex flex-1 flex-col overflow-hidden',
-        className,
-      )}
+      className={cn('bg-purple-99 flex flex-1 flex-col overflow-hidden', className)}
       {...props}
     />
   );
@@ -34,11 +31,7 @@ export const headerHeight = cva(undefined, {
   },
 });
 
-function PageHeader({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<'div'>) {
+function PageHeader({ className, children, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
@@ -57,11 +50,7 @@ function PageHeader({
 const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(
   function PageContainer({ className, ...props }, ref) {
     return (
-      <div
-        ref={ref}
-        className="scrollbar-gutter-stable size-full overflow-y-scroll"
-        {...props}
-      />
+      <div ref={ref} className="scrollbar-gutter-stable size-full overflow-y-scroll" {...props} />
     );
   },
 );
@@ -97,19 +86,12 @@ const pageBack = cva(
   'border-grey-90 hover:bg-grey-98 flex items-center justify-center rounded-md border p-2',
 );
 
-function PageBackButton({
-  className,
-  ...props
-}: React.ComponentProps<'button'>) {
+function PageBackButton({ className, ...props }: React.ComponentProps<'button'>) {
   const navigate = useNavigate();
   const { t } = useTranslation(['common']);
   return (
     <Tooltip.Default content={t('common:go_back')}>
-      <button
-        className={pageBack({ className })}
-        onClick={() => navigate(-1)}
-        {...props}
-      >
+      <button className={pageBack({ className })} onClick={() => navigate(-1)} {...props}>
         <Icon icon="arrow-left" className="size-5 rtl:rotate-180" aria-hidden />
         <span className="sr-only">{t('common:go_back')}</span>
       </button>
@@ -117,10 +99,7 @@ function PageBackButton({
   );
 }
 
-function PageBackLink({
-  className,
-  ...props
-}: React.ComponentProps<typeof Link>) {
+function PageBackLink({ className, ...props }: React.ComponentProps<typeof Link>) {
   return (
     <Link className={pageBack({ className })} {...props}>
       <Icon icon="arrow-left" className="size-5 rtl:rotate-180" aria-hidden />

@@ -42,10 +42,6 @@ export async function downloadFile(url: string, filename: string) {
 
 export class DownloadError extends Error {
   constructor(error: unknown) {
-    super(
-      `Internal error: ${
-        error instanceof Error ? error.message : 'unknown error'
-      }`,
-    );
+    super(`Internal error: ${error instanceof Error ? error.message : 'unknown error'}`);
   }
 }

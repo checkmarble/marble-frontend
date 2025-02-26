@@ -15,11 +15,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { FormProvider, getFormProps, useForm } from '@conform-to/react';
 import { getZodConstraint, parseWithZod } from '@conform-to/zod';
-import {
-  type ActionFunctionArgs,
-  json,
-  type LoaderFunctionArgs,
-} from '@remix-run/node';
+import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import clsx from 'clsx';
 import * as React from 'react';
@@ -44,8 +40,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const iterationId = fromParams(params, 'iterationId');
 
   try {
-    const { ruleSnoozes } =
-      await scenario.getScenarioIterationActiveSnoozes(iterationId);
+    const { ruleSnoozes } = await scenario.getScenarioIterationActiveSnoozes(iterationId);
 
     return json({
       success: true as const,
@@ -95,13 +90,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
     if (error instanceof ValidationError) {
       formError = t('scenarios:deployment_modal.activate.validation_error');
     } else if (error instanceof PreparationIsRequiredError) {
-      formError = t(
-        'scenarios:deployment_modal.activate.preparation_is_required_error',
-      );
+      formError = t('scenarios:deployment_modal.activate.preparation_is_required_error');
     } else if (error instanceof PreparationServiceOccupied) {
-      formError = t(
-        'scenarios:deployment_modal.activate.preparation_service_occupied_error',
-      );
+      formError = t('scenarios:deployment_modal.activate.preparation_service_occupied_error');
     } else if (error instanceof IsDraftError) {
       formError = t('scenarios:deployment_modal.activate.is_draft_error');
     } else {
@@ -164,10 +155,7 @@ export function ActivateScenarioVersion({
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>{button}</Modal.Trigger>
       <Modal.Content>
-        <ActivateScenarioVersionContent
-          scenario={scenario}
-          iterationId={iteration.id}
-        />
+        <ActivateScenarioVersionContent scenario={scenario} iterationId={iteration.id} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -204,25 +192,18 @@ function ActivateScenarioVersionContent({
   return (
     <FormProvider context={form.context}>
       <fetcher.Form
-        action={getRoute(
-          '/ressources/scenarios/:scenarioId/:iterationId/activate',
-          {
-            scenarioId: fromUUID(scenario.id),
-            iterationId: fromUUID(iterationId),
-          },
-        )}
+        action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/activate', {
+          scenarioId: fromUUID(scenario.id),
+          iterationId: fromUUID(iterationId),
+        })}
         method="POST"
         {...getFormProps(form)}
       >
-        <Modal.Title>
-          {t('scenarios:deployment_modal.activate.title')}
-        </Modal.Title>
+        <Modal.Title>{t('scenarios:deployment_modal.activate.title')}</Modal.Title>
         <div className="flex flex-col gap-6 p-6">
           <AuthenticityTokenInput />
           <div className="text-s flex flex-col gap-4 font-medium">
-            <p className="font-semibold">
-              {t('scenarios:deployment_modal.activate.confirm')}
-            </p>
+            <p className="font-semibold">{t('scenarios:deployment_modal.activate.confirm')}</p>
             <FormField
               name={fields.willBeLive.name}
               className="group flex flex-row items-center gap-2"
@@ -230,24 +211,17 @@ function ActivateScenarioVersionContent({
               <FormCheckbox />
               <FormLabel>
                 {scenario.isLive
-                  ? t(
-                      'scenarios:deployment_modal.activate.replace_current_live_version',
-                    )
+                  ? t('scenarios:deployment_modal.activate.replace_current_live_version')
                   : t('scenarios:deployment_modal.activate.will_be_live')}
               </FormLabel>
               <Tooltip.Default
                 content={
                   <p className="max-w-60">
-                    {t(
-                      'scenarios:deployment_modal.activate.live_version.tooltip',
-                    )}
+                    {t('scenarios:deployment_modal.activate.live_version.tooltip')}
                   </p>
                 }
               >
-                <Icon
-                  icon="tip"
-                  className="hover:text-purple-65 text-purple-82 size-6"
-                />
+                <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-6" />
               </Tooltip.Default>
             </FormField>
             <FormField
@@ -255,9 +229,7 @@ function ActivateScenarioVersionContent({
               className="group flex flex-row items-center gap-2"
             >
               <FormCheckbox />
-              <FormLabel>
-                {t('scenarios:deployment_modal.activate.change_is_immediate')}
-              </FormLabel>
+              <FormLabel>{t('scenarios:deployment_modal.activate.change_is_immediate')}</FormLabel>
             </FormField>
             <div className="min-h-6 w-full">
               <RuleSnoozeDetail />
@@ -302,14 +274,10 @@ function RuleSnoozeDetail() {
   if (showSpinner) return <Spinner className="size-5 shrink-0" />;
 
   if (isError) {
-    return (
-      <div className="text-s text-red-47">{t('common:errors.unknown')}</div>
-    );
+    return <div className="text-s text-red-47">{t('common:errors.unknown')}</div>;
   }
 
-  const hasSnoozesActive = data?.ruleSnoozes.some(
-    (snooze) => snooze.hasSnoozesActive,
-  );
+  const hasSnoozesActive = data?.ruleSnoozes.some((snooze) => snooze.hasSnoozesActive);
 
   if (!hasSnoozesActive) {
     return (
@@ -348,9 +316,7 @@ function RuleSnoozeDetail() {
                     )}
                     icon={hasSnoozesActive ? 'tick' : 'cross'}
                   />
-                  <span className="text-s text-grey-00 font-normal">
-                    {rule.name}
-                  </span>
+                  <span className="text-s text-grey-00 font-normal">{rule.name}</span>
                 </li>
               );
             })}

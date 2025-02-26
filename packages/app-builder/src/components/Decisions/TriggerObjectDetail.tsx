@@ -29,9 +29,7 @@ export function DecisionDetailTriggerObject({
 
   return (
     <Collapsible.Container className="bg-grey-100">
-      <Collapsible.Title>
-        {t('decisions:trigger_object.type')}
-      </Collapsible.Title>
+      <Collapsible.Title>{t('decisions:trigger_object.type')}</Collapsible.Title>
       <Collapsible.Content>
         <div className="grid grid-cols-[max-content_1fr] gap-2 break-all">
           {parsedTriggerObject.map(([property, data]) => (
@@ -61,9 +59,7 @@ export function CaseDetailTriggerObject({
 }) {
   const language = useFormatLanguage();
   const parsedTriggerObject = useParsedTriggerObject(triggerObject);
-  const dataModelTable = dataModel.find(
-    (table) => table.name === triggerObjectType,
-  );
+  const dataModelTable = dataModel.find((table) => table.name === triggerObjectType);
   const links = R.pipe(
     dataModelTable?.linksToSingle ?? [],
     R.mapToObj((link) => {
@@ -85,9 +81,7 @@ export function CaseDetailTriggerObject({
             {links[property] && !!data.value ? (
               <button
                 className="text-purple-65 group flex items-center gap-1 text-left"
-                onClick={() =>
-                  onLinkClicked(links[property] as string, data.value as string)
-                }
+                onClick={() => onLinkClicked(links[property] as string, data.value as string)}
               >
                 <FormatData data={data} language={language} />
               </button>

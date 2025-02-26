@@ -6,10 +6,7 @@ import * as React from 'react';
 import { useFieldName } from './FormField';
 
 interface FormLabelProps
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>,
-    'htmlFor'
-  > {}
+  extends Omit<React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>, 'htmlFor'> {}
 
 export const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,

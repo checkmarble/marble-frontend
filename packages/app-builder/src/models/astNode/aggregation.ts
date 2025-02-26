@@ -1,12 +1,8 @@
 import { type AstNode } from './ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
-export const unaryAggregationFilterOperators = [
-  'IsEmpty',
-  'IsNotEmpty',
-] as const;
-export type UnaryAggregationFilterOperator =
-  (typeof unaryAggregationFilterOperators)[number];
+export const unaryAggregationFilterOperators = ['IsEmpty', 'IsNotEmpty'] as const;
+export type UnaryAggregationFilterOperator = (typeof unaryAggregationFilterOperators)[number];
 
 export const binaryAggregationFilterOperators = [
   '=',
@@ -20,15 +16,13 @@ export const binaryAggregationFilterOperators = [
   'StringStartsWith',
   'StringEndsWith',
 ] as const;
-export type BinaryAggregationFilterOperator =
-  (typeof binaryAggregationFilterOperators)[number];
+export type BinaryAggregationFilterOperator = (typeof binaryAggregationFilterOperators)[number];
 
 export const aggregationFilterOperators = [
   ...binaryAggregationFilterOperators,
   ...unaryAggregationFilterOperators,
 ];
-export type AggregationFilterOperator =
-  (typeof aggregationFilterOperators)[number];
+export type AggregationFilterOperator = (typeof aggregationFilterOperators)[number];
 
 export const aggregationFilterAstNodeName = 'Filter';
 export type UnaryAggregationFilterAstNode = {
@@ -49,9 +43,7 @@ export type BinaryAggregationFilterAstNode = {
   namedChildren: {
     tableName: ConstantAstNode<string | null>;
     fieldName: ConstantAstNode<string | null>;
-    operator: ConstantAstNode<
-      (typeof binaryAggregationFilterOperators)[number] | null
-    >;
+    operator: ConstantAstNode<(typeof binaryAggregationFilterOperators)[number] | null>;
     value: AstNode;
   };
 };
@@ -84,9 +76,7 @@ export interface AggregationAstNode {
   };
 }
 
-export function NewAggregatorAstNode(
-  aggregatorName: string,
-): AggregationAstNode {
+export function NewAggregatorAstNode(aggregatorName: string): AggregationAstNode {
   return {
     name: aggregationAstNodeName,
     constant: undefined,
@@ -106,18 +96,14 @@ export function NewAggregatorAstNode(
   };
 }
 
-export function isAggregationFilterOperator(
-  value: string,
-): value is AggregationFilterOperator {
+export function isAggregationFilterOperator(value: string): value is AggregationFilterOperator {
   return (aggregationFilterOperators as ReadonlyArray<string>).includes(value);
 }
 
 export function isUnaryAggregationFilterOperator(
   value: string | null,
 ): value is AggregationFilterOperator {
-  return (
-    unaryAggregationFilterOperators as ReadonlyArray<string | null>
-  ).includes(value);
+  return (unaryAggregationFilterOperators as ReadonlyArray<string | null>).includes(value);
 }
 
 export function isUnaryAggregationFilter(
@@ -134,9 +120,9 @@ export function isBinaryAggregationFilter(
   const operator = node.namedChildren.operator.constant;
   return (
     operator === null ||
-    (
-      binaryAggregationFilterOperators as ReadonlyArray<AggregationFilterOperator>
-    ).includes(operator)
+    (binaryAggregationFilterOperators as ReadonlyArray<AggregationFilterOperator>).includes(
+      operator,
+    )
   );
 }
 

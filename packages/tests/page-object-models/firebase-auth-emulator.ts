@@ -53,9 +53,7 @@ export class FirebaseAuthEmulatorPage {
       await page.getByLabel(`Open menu for user ${email}`).click();
       await page.getByRole('menuitem', { name: 'Delete user' }).click();
       await page.getByRole('button', { name: 'Delete' }).click();
-      await expect(
-        page.getByLabel(`Open menu for user ${email}`),
-      ).not.toBeVisible();
+      await expect(page.getByLabel(`Open menu for user ${email}`)).not.toBeVisible();
     });
   }
 
@@ -98,12 +96,8 @@ export class FirebaseAuthEmulatorPopup {
   @boxedStep
   async signUpWithSSO(email: string) {
     const firebasePopup = await this.firebasePopupPromise;
-    await firebasePopup
-      .getByRole('button', { name: 'Add new account' })
-      .click({ timeout: 1000 });
+    await firebasePopup.getByRole('button', { name: 'Add new account' }).click({ timeout: 1000 });
     await firebasePopup.locator('#email-input').fill(email);
-    await firebasePopup
-      .getByRole('button', { name: 'Sign in' })
-      .click({ timeout: 1000 });
+    await firebasePopup.getByRole('button', { name: 'Sign in' }).click({ timeout: 1000 });
   }
 }

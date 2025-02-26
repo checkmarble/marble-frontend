@@ -33,13 +33,26 @@ export const FilterPopover = {
   Content: FilterPopoverContent,
 };
 
-const FilterItemRoot = forwardRef<HTMLDivElement, Popover.PopoverAnchorProps>(
+const FilterItemRoot = forwardRef<HTMLDivElement, Popover.PopoverAnchorProps>(function FilterItem(
+  { className, ...props },
+  ref,
+) {
+  return (
+    <FilterPopover.Anchor
+      ref={ref}
+      className={clsx('bg-purple-98 flex h-10 flex-row items-center rounded', className)}
+      {...props}
+    />
+  );
+});
+
+const FilterItemTrigger = forwardRef<HTMLButtonElement, Popover.PopoverTriggerProps>(
   function FilterItem({ className, ...props }, ref) {
     return (
-      <FilterPopover.Anchor
+      <FilterPopover.Trigger
         ref={ref}
         className={clsx(
-          'bg-purple-98 flex h-10 flex-row items-center rounded',
+          'text-purple-65 focus:border-purple-65 -mr-1 flex h-full flex-row items-center gap-1 rounded border border-solid border-transparent px-2 outline-none',
           className,
         )}
         {...props}
@@ -48,39 +61,22 @@ const FilterItemRoot = forwardRef<HTMLDivElement, Popover.PopoverAnchorProps>(
   },
 );
 
-const FilterItemTrigger = forwardRef<
-  HTMLButtonElement,
-  Popover.PopoverTriggerProps
->(function FilterItem({ className, ...props }, ref) {
-  return (
-    <FilterPopover.Trigger
-      ref={ref}
-      className={clsx(
-        'text-purple-65 focus:border-purple-65 -mr-1 flex h-full flex-row items-center gap-1 rounded border border-solid border-transparent px-2 outline-none',
-        className,
-      )}
-      {...props}
-    />
-  );
-});
-
-const FilterItemClear = forwardRef<
-  HTMLButtonElement,
-  ComponentPropsWithoutRef<'button'>
->(function FilterItem({ className, ...props }, ref) {
-  return (
-    <button
-      ref={ref}
-      className={clsx(
-        'focus:border-purple-65 -ml-1 h-full rounded border border-solid border-transparent px-2 outline-none',
-        className,
-      )}
-      {...props}
-    >
-      <Icon icon="cross" className="text-purple-65 size-5 shrink-0" />
-    </button>
-  );
-});
+const FilterItemClear = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<'button'>>(
+  function FilterItem({ className, ...props }, ref) {
+    return (
+      <button
+        ref={ref}
+        className={clsx(
+          'focus:border-purple-65 -ml-1 h-full rounded border border-solid border-transparent px-2 outline-none',
+          className,
+        )}
+        {...props}
+      >
+        <Icon icon="cross" className="text-purple-65 size-5 shrink-0" />
+      </button>
+    );
+  },
+);
 
 export const FilterItem = {
   Root: FilterItemRoot,
