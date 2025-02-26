@@ -148,17 +148,9 @@ function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessD
               {t('settings:webhooks.event_types')}
               {match(webhookStatus)
                 .with('allowed', () => null)
-                .with('restricted', () => (
-                  <Nudge
-                    kind="restricted"
-                    content={t('settings:webhooks.nudge')}
-                    className="size-6"
-                  />
-                ))
-                .with('test', () => (
-                  <Nudge kind="test" content={t('settings:webhooks.nudge')} className="size-6" />
-                ))
-                .exhaustive()}
+                .otherwise((status) => (
+                  <Nudge kind={status} content={t('settings:webhooks.nudge')} className="size-6" />
+                ))}
             </FormLabel>
             <FormSelectWithCombobox.Control
               multiple
