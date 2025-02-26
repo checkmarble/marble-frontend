@@ -510,6 +510,7 @@ export type SanctionCheckMatchDto = {
     datasets: any;
     unique_counterparty_identifier?: string;
     payload: SanctionCheckMatchPayloadDto;
+    enriched: boolean;
     comments: {
         id: string;
         author_id: string;
@@ -1948,6 +1949,24 @@ export function updateSanctionCheckMatch(matchId: string, updateSanctionCheckMat
         method: "PATCH",
         body: updateSanctionCheckMatchDto
     })));
+}
+/**
+ * Enrich the match payload with complete data
+ */
+export function enrichSanctionCheckMatch(matchId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SanctionCheckMatchDto;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 409;
+        data: string;
+    }>(`/sanction-checks/matches/${encodeURIComponent(matchId)}/enrich`, {
+        ...opts,
+        method: "POST"
+    }));
 }
 /**
  * Search possible matches
