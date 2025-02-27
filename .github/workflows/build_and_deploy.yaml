@@ -51,6 +51,10 @@ jobs:
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
 
+      - name: Extract version from tag
+        id: version
+        run: echo "MARBLE_VERSION=$(git describe --tags)" >> "$GITHUB_OUTPUT"
+
       # source: https://github.com/docker/build-push-action
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -64,7 +68,7 @@ jobs:
             SENTRY_ORG=checkmarble
             SENTRY_PROJECT=marble-frontend
             SENTRY_RELEASE=${{ inputs.SENTRY_RELEASE }}
-            APP_VERSION=${{ inputs.VERSION }}
+            APP_VERSION=${{ steps.version.outputs.MARBLE_VERSION }}
           secrets: |
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
 
