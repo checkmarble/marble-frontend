@@ -1,11 +1,9 @@
 import { type AndAstNode } from '@app-builder/models/astNode/builder-ast-node';
 
-import { AstBuilderDataState } from '../Provider';
+import { AstBuilderDataSharpFactory } from '../Provider';
 
 export function AstBuilderRootAnd(_props: { node: AndAstNode }) {
-  const triggerObjectType = AstBuilderDataState.useStore(
-    (s) => s.triggerObjectType,
-  );
+  const triggerObjectType = AstBuilderDataSharpFactory.useSharp().value.data.triggerObjectType;
 
   return (
     <>

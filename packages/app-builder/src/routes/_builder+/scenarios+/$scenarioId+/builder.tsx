@@ -1,15 +1,14 @@
 import { Page } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
-import {
-  type AstNode,
-  NewAstNode,
-  NewUndefinedAstNode,
-} from '@app-builder/models';
+import { type AstBuilderNodeSharpFactory } from '@app-builder/components/AstBuilder/node-store';
+import { NewAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, toUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useParams } from '@remix-run/react';
+import { useRef } from 'react';
+import { type InferSharpApi } from 'sharpstate';
 import invariant from 'tiny-invariant';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -21,15 +20,14 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const [currentScenario, accessors, dataModel, customLists] =
-    await Promise.all([
-      scenario.getScenario({ scenarioId }),
-      editor.listAccessors({
-        scenarioId,
-      }),
-      dataModelRepository.getDataModel(),
-      customListsRepository.listCustomLists(),
-    ]);
+  const [currentScenario, accessors, dataModel, customLists] = await Promise.all([
+    scenario.getScenario({ scenarioId }),
+    editor.listAccessors({
+      scenarioId,
+    }),
+    dataModelRepository.getDataModel(),
+    customListsRepository.listCustomLists(),
+  ]);
 
   return {
     scenarioId,
@@ -43,7 +41,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export default function ScenarioBuilderPage() {
   const data = useLoaderData<typeof loader>();
-  // const node = NewConstantAstNode({ constant: 3 });
+  const nodeStoreRef = useRef<InferSharpApi<typeof AstBuilderNodeSharpFactory>>();
+
   const node = NewAstNode({
     name: '=',
     children: [
@@ -55,16 +54,16 @@ export default function ScenarioBuilderPage() {
     ],
   });
   const { scenarioId } = useParams();
-  const handleChange = (_node: AstNode) => {
-    // Do whatever on change
-  };
 
   invariant(scenarioId, 'scenario id is not in the url');
 
   return (
     <Page.Content>
       <AstBuilder.Provider scenarioId={toUUID(scenarioId)} initialData={data}>
-        <AstBuilder.Root initialNode={node} nodeStoreRef={() => {}} />
+        <AstBuilder.Root
+          initialNode={node}
+          nodeStoreRef={(nodeStore) => (nodeStoreRef.current = nodeStore)}
+        />
       </AstBuilder.Provider>
     </Page.Content>
   );

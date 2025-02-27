@@ -1,4 +1,5 @@
 import {
+  type AstNode,
   type EnumValue,
   findDataModelTableByName,
   isUndefinedAstNode,
@@ -20,35 +21,42 @@ import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDat
 import { getAstNodeOperandType } from '@app-builder/services/ast-node/getAstNodeOperandType';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import { createComponentState } from '@marble/shared';
 import { cva } from 'class-variance-authority';
 import { forwardRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { createSharpFactory } from 'sharpstate';
 import { match } from 'ts-pattern';
 import { MenuCommand } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 import { type AstBuilderOperandProps } from '../Operand';
 import { OperandTypeInfos } from '../OperandTypeInfos';
-import { AstBuilderDataState } from '../Provider';
-import {
-  type AstBuilderBaseProps,
-  type AstNodeStringifierContext,
-} from '../types';
-import { type OperandMenuOption } from './base-options';
-import { getOperandMenuOptions } from './helpers';
+import { AstBuilderDataSharpFactory } from '../Provider';
+import { type AstBuilderBaseProps, type AstNodeStringifierContext } from '../types';
+import { type EnrichedMenuOption, getOperandMenuOptions } from './helpers';
 import { AstBuilderOperandMenu } from './OperandMenu';
 
 type InternalOperandStore = {
   enumValues: EnumValue[] | undefined;
-  options: OperandMenuOption[];
+  options: EnrichedMenuOption[];
 };
 
-export const InternalOperandState = createComponentState({
+export const InternalOperandSharpFactory = createSharpFactory({
   name: 'InternalOperand',
-  factory: (initialData: InternalOperandStore) => () => ({
+  initializer: (initialData: InternalOperandStore) => ({
     ...initialData,
   }),
+}).withActions({
+  setEnumsAndOptions(api, enums: EnumValue[] | undefined, options: EnrichedMenuOption[]) {
+    api.batch(() => {
+      api.value.enumValues = enums;
+      api.value.options = options;
+    });
+  },
+  updateNodeAtPath(_api, path: string, newNode: AstNode) {
+    console.log(path, newNode);
+  },
 });
 
 const operandLabelClassnames = cva(
@@ -61,10 +69,8 @@ const operandLabelClassnames = cva(
   {
     variants: {
       validationStatus: {
-        valid:
-          'border enabled:border-grey-90 enabled:aria-[expanded=false]:focus:border-purple-65',
-        error:
-          'border enabled:border-red-47 enabled:aria-[expanded=false]:focus:border-purple-65',
+        valid: 'border enabled:border-grey-90 enabled:aria-[expanded=false]:focus:border-purple-65',
+        error: 'border enabled:border-red-47 enabled:aria-[expanded=false]:focus:border-purple-65',
         'light-error':
           'border enabled:border-red-87 enabled:aria-[expanded=false]:focus:border-purple-65',
       },
@@ -90,111 +96,97 @@ const operandDisplayNameClassnames = cva(
   },
 );
 
-export function Internal_EditionAstBuilderOperand({
-  onChange,
-  ...props
-}: AstBuilderOperandProps) {
+export function Internal_EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOperandProps) {
   const { t } = useTranslation(['common', 'scenarios']);
-  const dataState = AstBuilderDataState.useStore((s) => s);
+  const language = useFormatLanguage();
+  const data = AstBuilderDataSharpFactory.useSharp().value.$data!.value;
 
-  const operandState = InternalOperandState.createStore({
+  const operandSharp = InternalOperandSharpFactory.createSharp({
     enumValues: props.enumValues,
-    options: getOperandMenuOptions(props.enumValues, dataState, props.node, t),
+    options: getOperandMenuOptions(props.enumValues, data, props.node, language, t),
   });
   const onSelect = useCallbackRef(onChange);
 
   useEffect(() => {
-    operandState.setState({
-      enumValues: props.enumValues,
-      options: getOperandMenuOptions(
-        props.enumValues,
-        dataState,
-        props.node,
-        t,
-      ),
-    });
-  }, [operandState, props.enumValues, dataState, props.node, t]);
+    operandSharp.actions.setEnumsAndOptions(
+      props.enumValues,
+      getOperandMenuOptions(props.enumValues, data, props.node, language, t),
+    );
+  }, [operandSharp, props.enumValues, data, props.node, t, language]);
 
   return (
-    <InternalOperandState.Provider value={operandState}>
+    <InternalOperandSharpFactory.Provider value={operandSharp}>
       <AstBuilderOperandMenu onSelect={onSelect}>
         <MenuCommand.Trigger>
           <OperandLabel {...props} />
         </MenuCommand.Trigger>
       </AstBuilderOperandMenu>
-    </InternalOperandState.Provider>
+    </InternalOperandSharpFactory.Provider>
   );
 }
 
-type OperandLabelProps = Omit<
-  AstBuilderBaseProps<KnownOperandAstNode>,
-  'onChange'
-> & {
+type OperandLabelProps = Omit<AstBuilderBaseProps<KnownOperandAstNode>, 'onChange'> & {
   enumValues?: EnumValue[];
   placeholder?: string;
 };
-const OperandLabel = forwardRef<HTMLButtonElement, OperandLabelProps>(
-  function OperandLabel({ node, placeholder, enumValues, ...props }, ref) {
-    const { t } = useTranslation(['common', 'scenarios']);
-    const language = useFormatLanguage();
-    const dataState = AstBuilderDataState.useStore((s) => s);
-    const triggerObjectTable = findDataModelTableByName({
-      dataModel: dataState.dataModel,
-      tableName: dataState.triggerObjectType,
-    });
+const OperandLabel = forwardRef<HTMLButtonElement, OperandLabelProps>(function OperandLabel(
+  { node, placeholder, enumValues, ...props },
+  ref,
+) {
+  const { t } = useTranslation(['common', 'scenarios']);
+  const language = useFormatLanguage();
+  const data = AstBuilderDataSharpFactory.useSharp().value.$data!.value;
+  const triggerObjectTable = findDataModelTableByName({
+    dataModel: data.dataModel,
+    tableName: data.triggerObjectType,
+  });
 
-    const displayName = getOperandDisplayName(node, {
-      t,
-      language,
-      customLists: dataState.customLists,
-    });
-    const dataType = getAstNodeDataType(node, {
-      triggerObjectTable,
-      dataModel: dataState.dataModel,
-    });
-    const operandType = getAstNodeOperandType(node, {
-      enumValues,
-    });
+  const displayName = getOperandDisplayName(node, {
+    t,
+    language,
+    customLists: data.customLists,
+  });
+  const dataType = getAstNodeDataType(node, {
+    triggerObjectTable,
+    dataModel: data.dataModel,
+  });
+  const operandType = getAstNodeOperandType(node, {
+    enumValues,
+  });
 
-    return (
-      <button
-        ref={ref}
-        type="button"
-        className={operandLabelClassnames({ validationStatus: 'valid' })}
-        {...props}
-      >
-        {match(node)
-          .when(isUndefinedAstNode, () => (
-            <span
-              className={operandDisplayNameClassnames({
-                type: 'placeholder',
-              })}
-            >
-              {placeholder ?? t('scenarios:edit_operand.placeholder')}
-            </span>
-          ))
-          .otherwise(() => (
-            <>
-              <OperandTypeInfos
-                t={t}
-                dataType={dataType}
-                operandType={operandType}
-              />
-              <span className={operandDisplayNameClassnames()}>
-                {displayName}
-              </span>
-              <span>i</span>
-            </>
-          ))}
-      </button>
-    );
-  },
-);
+  return (
+    <button
+      ref={ref}
+      type="button"
+      className={operandLabelClassnames({ validationStatus: 'valid' })}
+      {...props}
+    >
+      {match(node)
+        .when(isUndefinedAstNode, () => (
+          <span
+            className={operandDisplayNameClassnames({
+              type: 'placeholder',
+            })}
+          >
+            {placeholder ?? t('scenarios:edit_operand.placeholder')}
+          </span>
+        ))
+        .otherwise(() => (
+          <>
+            <OperandTypeInfos t={t} dataType={dataType} operandType={operandType} />
+            <span className={operandDisplayNameClassnames()}>{displayName}</span>
+            <Icon
+              icon="tip"
+              className="group-hover:hover:text-purple-65 group-hover:text-purple-82 size-5 shrink-0 text-transparent"
+            />
+          </>
+        ))}
+      <MenuCommand.Arrow />
+    </button>
+  );
+});
 
-function getOperandDisplayName(
-  node: KnownOperandAstNode,
-  ctx: AstNodeStringifierContext,
-): string {
+function getOperandDisplayName(node: KnownOperandAstNode, ctx: AstNodeStringifierContext): string {
   return match(node)
     .when(isConstant, (n) => formatConstant(n.constant, ctx))
     .when(isCustomListAccess, (n) => getCustomListDisplayName(n, ctx))
@@ -203,10 +195,7 @@ function getOperandDisplayName(
     .otherwise((n) => n.name);
 }
 
-function getCustomListDisplayName(
-  node: CustomListAccessAstNode,
-  ctx: AstNodeStringifierContext,
-) {
+function getCustomListDisplayName(node: CustomListAccessAstNode, ctx: AstNodeStringifierContext) {
   const listId = node.namedChildren.customListId.constant;
   const customListAccess = R.pipe(
     ctx.customLists,

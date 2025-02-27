@@ -7,9 +7,7 @@ import React from 'react';
  */
 export function createSimpleContext<ContextType>(name: string) {
   const defaultValue = Symbol(`Default ${name} context value`);
-  const Context = React.createContext<ContextType | null | typeof defaultValue>(
-    defaultValue,
-  );
+  const Context = React.createContext<ContextType | null | typeof defaultValue>(defaultValue);
   Context.displayName = name;
 
   function useValue() {

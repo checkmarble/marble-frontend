@@ -21,19 +21,11 @@ export function AstBuilderOperandMenu({
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       {children}
-      <MenuCommand.Content
-        sameWidth
-        sideOffset={4}
-        align="start"
-        className="w-96"
-      >
+      <MenuCommand.Content sameWidth sideOffset={4} align="start" className="w-96">
         <MenuCommand.Combobox placeholder="Select or create an operand" />
         <SmartMenuList onSelect={onSelect} />
         <div className="border-grey-90 border-t p-2">
-          <MenuCommand.HeadlessItem
-            forceMount
-            onSelect={() => onSelect(NewUndefinedAstNode())}
-          >
+          <MenuCommand.HeadlessItem forceMount onSelect={() => onSelect(NewUndefinedAstNode())}>
             <Button type="button" variant="secondary">
               <Icon icon="restart-alt" className="size-4" />
               Clean
@@ -46,7 +38,7 @@ export function AstBuilderOperandMenu({
 }
 
 function SmartMenuList(props: SmartMenuListProps) {
-  const search = MenuCommand.useStore((s) => s.search);
+  const search = MenuCommand.State.useSharp().value.search;
 
   return search.length === 0 ? (
     <DiscoveryList {...props} />

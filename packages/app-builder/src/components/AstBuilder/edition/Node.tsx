@@ -1,66 +1,96 @@
-import { findDataModelTableByName } from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
 import {
   isKnownOperandAstNode,
   isMainAstBinaryNode,
-  isMainAstNode,
   isMainAstUnaryNode,
 } from '@app-builder/models/astNode/builder-ast-node';
-import { getEnumValuesFromNeighbour } from '@app-builder/services/editor/getEnumOptionsFromNeighbour';
+import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
+import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { getAtPath, getParentPath, parsePath } from '@app-builder/utils/tree';
-import { memo, type PropsWithChildren, useMemo } from 'react';
+import { computed } from '@preact/signals-react';
+import { cva } from 'class-variance-authority';
+import { memo, type PropsWithChildren, useState } from 'react';
 import invariant from 'tiny-invariant';
 import { match } from 'ts-pattern';
+import { MenuCommand } from 'ui-design-system';
 
-import { AstBuilderNodeState } from '../node-store';
-import { AstBuilderDataState } from '../Provider';
-import { getEnumValues } from './helpers';
+import { AstBuilderNodeSharpFactory } from '../node-store';
+import { AstBuilderDataSharpFactory } from '../Provider';
 import { Internal_EditionAstBuilderOperand } from './InternalOperand';
 
+function useSiblings(stringPath: string) {
+  const rootNode = AstBuilderNodeSharpFactory.useSharp().value.node;
+
+  const path = parsePath(stringPath);
+  const parentPath = getParentPath(path);
+  if (!parentPath || parentPath.childPathSegment?.type !== 'children') {
+    return [];
+  }
+  const childIndex = parentPath.childPathSegment.index;
+  const parentNode = getAtPath(rootNode, parentPath.path);
+  if (!parentNode || parentNode.name !== '=') {
+    return [];
+  }
+
+  return [
+    ...parentNode.children.slice(0, childIndex),
+    ...parentNode.children.slice(childIndex + 1),
+  ];
+}
+
 export const AstBuilderNode = memo(function (props: { path: string }) {
-  const node = AstBuilderNodeState.useStore((s) =>
-    getAtPath(s.node, parsePath(props.path)),
-  );
-  invariant(node, `Couldn't find node at path: ${props.path}`);
+  const data = AstBuilderDataSharpFactory.useSharp().value.$data!.value;
+  const astBuilderSharp = AstBuilderNodeSharpFactory.useSharp();
 
-  const parentPath = useMemo(
-    () => getParentPath(parsePath(props.path)),
-    [props.path],
-  );
-  const parentNode = AstBuilderNodeState.useStore((s) =>
-    !parentPath ? null : getAtPath(s.node, parentPath.path),
-  );
+  const node = computed(() => getAtPath(astBuilderSharp.value.node, parsePath(props.path)));
+  invariant(node.value, `Couldn't find node at path: ${props.path}`);
+  const siblings = useSiblings(props.path);
 
-  const setNodeAtPath = AstBuilderNodeState.useStore((s) => s.setNodeAtPath);
-  const dataStore = AstBuilderDataState.useStore((s) => s);
-  const enumValues = useMemo(() => {
-    const triggerObjectTable = findDataModelTableByName({
-      dataModel: dataStore.dataModel,
-      tableName: dataStore.triggerObjectType,
-    });
-    const nodeSegment = parsePath(props.path)?.pop() ?? null;
-    if (!nodeSegment || !parentNode) return [];
+  const enumValues = computed(() => {
+    const enums = [];
+    const triggerTable = data.dataModel.find((t) => t.name === data.triggerObjectType);
+    if (!triggerTable) {
+      return;
+    }
 
-    return getEnumValues(nodeSegment, {
-      parentNode,
-      context: { dataModel: dataStore.dataModel, triggerObjectTable },
-    });
-  }, [props.path, parentNode, dataStore]);
+    for (const neighbourNode of siblings) {
+      if (isDataAccessorAstNode(neighbourNode)) {
+        const field = getDataAccessorAstNodeField(neighbourNode, {
+          dataModel: data.dataModel,
+          triggerObjectTable: triggerTable,
+        });
+        if (field.isEnum) {
+          enums.push(...(field.values ?? []));
+        }
+      }
+    }
 
-  const children = match(node)
-    .when(isMainAstBinaryNode, () => {
+    return enums;
+  });
+
+  const setNode = (newNode: AstNode) => {
+    astBuilderSharp.actions.setNodeAtPath(props.path, newNode);
+  };
+  const setOperator = (operator: string) => {
+    if (node.value) {
+      node.value.name = operator;
+    }
+  };
+
+  const children = match(node.value)
+    .when(isMainAstBinaryNode, (node) => {
       const children = (
-        <Brackets>
+        <>
           <AstBuilderNode path={`${props.path}.children.0`} />
+          <OperatorSelector operator={node.name} onOperatorChange={setOperator} />
           <AstBuilderNode path={`${props.path}.children.1`} />
-        </Brackets>
+        </>
       );
 
       return props.path !== 'root' ? (
-        children
+        <Brackets>{children}</Brackets>
       ) : (
-        <div className="inline-flex flex-row flex-wrap items-center gap-2">
-          {children}
-        </div>
+        <div className="inline-flex flex-row flex-wrap items-center gap-2">{children}</div>
       );
     })
     .when(isMainAstUnaryNode, (_node) => 'unary')
@@ -68,8 +98,8 @@ export const AstBuilderNode = memo(function (props: { path: string }) {
       return (
         <Internal_EditionAstBuilderOperand
           node={node}
-          onChange={(newNode) => setNodeAtPath(props.path, newNode)}
-          enumValues={enumValues}
+          onChange={setNode}
+          enumValues={enumValues.value}
         />
       );
     })
@@ -88,5 +118,69 @@ export function NodeErrorTypePlaceholder() {
 }
 
 function Brackets({ children }: PropsWithChildren) {
-  return <div className="contents">{children}</div>;
+  const className =
+    'text-grey-00 border-grey-90 [.group/nest:hover:not(:has(.group/nest:hover))_>_&]:bg-grey-95 [.group/nest:hover:not(:has(.group/nest:hover))_>_&]:border-grey-50 flex h-10 items-center justify-center rounded border px-2';
+  return (
+    <div className="group/nest contents">
+      <button type="button" className={className}>
+        (
+      </button>
+      {children}
+      <button type="button" className={className}>
+        )
+      </button>
+    </div>
+  );
+}
+
+export const operatorContainerClassnames = cva(
+  [
+    'flex h-10 min-w-[40px] items-center justify-between outline-none gap-2 rounded px-2 border',
+    'bg-grey-100 disabled:border-grey-98 disabled:bg-grey-98',
+    'radix-state-open:border-purple-65  radix-state-open:bg-purple-98',
+  ],
+  {
+    variants: {
+      validationStatus: {
+        valid: 'border-grey-90 focus:border-purple-65',
+        error: 'border-red-47 focus:border-purple-65',
+      },
+    },
+    defaultVariants: {
+      validationStatus: 'valid',
+    },
+  },
+);
+
+const ops = ['+', '-', '/', '*', '=', '!='];
+function OperatorSelector({
+  operator,
+  onOperatorChange,
+}: {
+  operator: string;
+  onOperatorChange: (v: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+      <MenuCommand.Trigger>
+        <button type="button" className={operatorContainerClassnames()}>
+          <span className="text-s text-grey-00 w-full text-center font-medium">{operator}</span>
+        </button>
+      </MenuCommand.Trigger>
+      <MenuCommand.Content sideOffset={4} align="start" className="min-w-24">
+        <MenuCommand.List>
+          {ops.map((op) => (
+            <MenuCommand.Item
+              selected={operator === op}
+              key={op}
+              onSelect={() => onOperatorChange(op)}
+            >
+              {op}
+            </MenuCommand.Item>
+          ))}
+        </MenuCommand.List>
+      </MenuCommand.Content>
+    </MenuCommand.Menu>
+  );
 }

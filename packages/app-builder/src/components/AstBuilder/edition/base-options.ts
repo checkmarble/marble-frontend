@@ -1,8 +1,4 @@
-import {
-  type AstNode,
-  type DataType,
-  NewUndefinedAstNode,
-} from '@app-builder/models';
+import { type AstNode, type DataType, NewUndefinedAstNode } from '@app-builder/models';
 import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import { NewIsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
 import { NewFuzzyMatchComparatorAstNode } from '@app-builder/models/astNode/strings';

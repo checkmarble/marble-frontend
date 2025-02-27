@@ -1,8 +1,4 @@
-import {
-  type DataType,
-  getDataTypeIcon,
-  getDataTypeTKey,
-} from '@app-builder/models';
+import { type DataType, getDataTypeIcon, getDataTypeTKey } from '@app-builder/models';
 import {
   getOperandTypeIcon,
   getOperandTypeTKey,
@@ -18,8 +14,7 @@ const operandTypeInfosClassnames = cva(
     variants: {
       interactionMode: {
         viewer: 'bg-grey-90',
-        editor:
-          'bg-grey-98 group-aria-expanded:bg-purple-96 group-aria-expanded:text-purple-65',
+        editor: 'bg-grey-98 group-aria-expanded:bg-purple-96 group-aria-expanded:text-purple-65',
       },
     },
     defaultVariants: {
@@ -51,18 +46,14 @@ export function OperandTypeInfos({
     },
   ];
 
-  if (typeInfos.filter(({ icon }) => icon !== undefined).length === 0)
-    return null;
+  if (typeInfos.filter(({ icon }) => icon !== undefined).length === 0) return null;
 
   return (
     <div className="flex flex-row gap-1">
       {typeInfos.map(({ icon, tKey }) => {
         if (!icon) return null;
         return (
-          <div
-            key={tKey}
-            className={operandTypeInfosClassnames({ interactionMode })}
-          >
+          <div key={tKey} className={operandTypeInfosClassnames({ interactionMode })}>
             <Icon
               icon={icon}
               className="size-4 shrink-0"

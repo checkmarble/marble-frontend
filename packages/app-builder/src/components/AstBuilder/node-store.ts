@@ -1,12 +1,7 @@
 import { type AstNode } from '@app-builder/models';
-import {
-  getAtPath,
-  getParentPath,
-  parsePath,
-  setAtPath,
-  setAtPathSegment,
-} from '@app-builder/utils/tree';
-import { createComponentState, type StateCreator } from '@marble/shared';
+import { getAtPath, getParentPath, parsePath } from '@app-builder/utils/tree';
+import { createSharpFactory, type InferSharpApi } from 'sharpstate';
+import { match, P } from 'ts-pattern';
 
 export type AstBuilderNodeStore = {
   node: AstNode;
@@ -15,32 +10,32 @@ export type AstBuilderNodeStore = {
   setNodeAtPath: (path: string, node: AstNode) => void;
 };
 
-export const AstBuilderNodeState = createComponentState({
-  name: 'AstBuilderNodeState',
-  factory: ({
-    initialNode,
-  }: {
-    initialNode: AstNode;
-  }): StateCreator<AstBuilderNodeStore> => {
-    return (set, get) => ({
-      node: initialNode,
+export const AstBuilderNodeSharpFactory = createSharpFactory({
+  name: 'AstBuilderNode',
+  initializer({ initialNode }: { initialNode: AstNode }) {
+    return { node: initialNode };
+  },
+}).withActions({
+  setNodeAtPath(api, path: string, newNode: AstNode) {
+    const parentPath = getParentPath(parsePath(path));
+    if (!parentPath) {
+      api.value.node = newNode;
+    } else {
+      const parentNode = getAtPath(api.value.node, parentPath.path);
+      if (!parentNode) {
+        return;
+      }
 
-      getParentNode: (path: string) => {
-        const parentPath = getParentPath(parsePath(path));
-        if (!parentPath) {
-          throw new Error(`Could find parent node for: ${path}`);
-        }
-        return getAtPath(get().node, parentPath.path) ?? null;
-      },
-
-      setNode: (node: AstNode) => {
-        set({ node });
-      },
-      setNodeAtPath: (stringPath: string, node: AstNode) => {
-        set((state) => ({
-          node: setAtPath(state.node, parsePath(stringPath), node),
-        }));
-      },
-    });
+      match(parentPath.childPathSegment)
+        .with({ type: 'children', index: P.select() }, (index) => {
+          parentNode.children[index] = newNode;
+        })
+        .with({ type: 'namedChildren', key: P.select() }, (key) => {
+          parentNode.namedChildren[key] = newNode;
+        })
+        .exhaustive();
+    }
   },
 });
+
+type A = InferSharpApi<typeof AstBuilderNodeSharpFactory>;

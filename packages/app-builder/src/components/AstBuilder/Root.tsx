@@ -1,24 +1,29 @@
 import { type AstNode } from '@app-builder/models';
-import { type ComponentStateType } from '@app-builder/utils/component-store';
-import { parsePath, setAtPath } from '@app-builder/utils/tree';
+import { useCallbackRef } from '@marble/shared';
+import { useEffect } from 'react';
+import { type InferSharpApi } from 'sharpstate';
 
 import { Internal_AstBuilderRoot } from './edition/InternalRoot';
-import { AstBuilderNodeState } from './node-store';
+import { AstBuilderNodeSharpFactory } from './node-store';
 
 type AstBuilderRootProps = {
   initialNode: AstNode;
-  nodeStoreRef: (
-    nodeStore: ComponentStateType<typeof AstBuilderNodeState>,
-  ) => void;
+  nodeStoreRef?: (nodeStore: InferSharpApi<typeof AstBuilderNodeSharpFactory>) => void;
 };
+
 export function AstBuilderRoot(props: AstBuilderRootProps) {
-  const nodeStore = AstBuilderNodeState.createStore({
+  const nodeStoreRefFn = useCallbackRef(props.nodeStoreRef);
+  const nodeStore = AstBuilderNodeSharpFactory.createSharp({
     initialNode: props.initialNode,
   });
 
+  useEffect(() => {
+    nodeStoreRefFn(nodeStore);
+  }, [nodeStoreRefFn, nodeStore]);
+
   return (
-    <AstBuilderNodeState.Provider value={nodeStore}>
+    <AstBuilderNodeSharpFactory.Provider value={nodeStore}>
       <Internal_AstBuilderRoot />
-    </AstBuilderNodeState.Provider>
+    </AstBuilderNodeSharpFactory.Provider>
   );
 }

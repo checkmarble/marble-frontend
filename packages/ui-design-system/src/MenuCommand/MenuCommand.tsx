@@ -1,37 +1,28 @@
-import {
-  createComponentState,
-  type StateCreator,
-  useCallbackRef,
-} from '@marble/shared';
+import { useCallbackRef } from '@marble/shared';
 import * as HoverCard from '@radix-ui/react-hover-card';
 import * as Popover from '@radix-ui/react-popover';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Command } from 'cmdk';
 import * as React from 'react';
+import { createSharpFactory } from 'sharpstate';
 import { Icon } from 'ui-icons';
 
 import { input as inputClassname } from '../Input/Input';
 import { assertValue, cn } from '../utils';
 
-type MenuCommandStore = {
-  search: string;
-  setSearch: (value: string) => void;
-};
-
-const MenuCommandState = createComponentState({
+const MenuCommandSharpFactory = createSharpFactory({
   name: 'MenuCommand',
-  factory: (): StateCreator<MenuCommandStore> => {
-    return (set) => ({
-      search: '',
-      setSearch: (value: string) => set({ search: value }),
-    });
+  initializer: () => ({
+    search: '',
+  }),
+}).withActions({
+  setSearch(api, value: string) {
+    api.value.search = value;
   },
 });
 
 type MenuCommandContextValue = { hover: boolean; onSelect: () => void };
-const MenuCommandContext = React.createContext<
-  MenuCommandContextValue | undefined
->(undefined);
+const MenuCommandContext = React.createContext<MenuCommandContextValue | undefined>(undefined);
 const useMenuCommandContext = () => {
   return assertValue(
     React.useContext(MenuCommandContext),
@@ -39,10 +30,7 @@ const useMenuCommandContext = () => {
   );
 };
 
-type RootProps = Omit<
-  React.ComponentProps<typeof Popover.Root>,
-  'className'
-> & {
+type RootProps = Omit<React.ComponentProps<typeof Popover.Root>, 'className'> & {
   parentCtx?: MenuCommandContextValue;
   hover?: boolean;
 };
@@ -70,12 +58,12 @@ type RootProps = Omit<
  *  </MenuCommand.Menu>
  */
 function Menu(props: RootProps) {
-  const menuStore = MenuCommandState.createStore();
+  const menuSharp = MenuCommandSharpFactory.createSharp();
 
   return (
-    <MenuCommandState.Provider value={menuStore}>
+    <MenuCommandSharpFactory.Provider value={menuSharp}>
       <Root {...props} />
-    </MenuCommandState.Provider>
+    </MenuCommandSharpFactory.Provider>
   );
 }
 
@@ -104,13 +92,7 @@ type SubMenuProps = Omit<RootProps, 'open' | 'onOpenChange'> & {
   trigger: React.ReactNode;
   forceMount?: boolean;
 };
-function SubMenu({
-  children,
-  trigger,
-  forceMount,
-  className,
-  ...props
-}: SubMenuProps) {
+function SubMenu({ children, trigger, forceMount, className, ...props }: SubMenuProps) {
   const [open, setOpen] = React.useState(false);
   const ctx = useMenuCommandContext();
 
@@ -127,12 +109,7 @@ function SubMenu({
             />
           </Item>
         </Trigger>
-        <Content
-          side="right"
-          align="start"
-          sideOffset={12}
-          className={className}
-        >
+        <Content side="right" align="start" sideOffset={12} className={className}>
           {children}
         </Content>
       </Root>
@@ -152,12 +129,15 @@ function Trigger({ children }: React.PropsWithChildren) {
   return <TriggerEl asChild>{children}</TriggerEl>;
 }
 
+function Arrow() {
+  return <Icon icon="caret-down" className="size-4 shrink-0" />;
+}
+
 const contentClassname = cva('flex', {
   variants: {
     hover: {
       true: 'max-h-[min(var(--radix-hover-card-content-available-height),_500px)]',
-      false:
-        'max-h-[min(var(--radix-popover-content-available-height),_500px)]',
+      false: 'max-h-[min(var(--radix-popover-content-available-height),_500px)]',
     },
   },
   defaultVariants: {
@@ -190,40 +170,25 @@ type ContentProps = React.ComponentProps<typeof Popover.Content> &
   VariantProps<typeof commandClassname> & {
     bottom?: React.ReactNode;
   };
-function Content({
-  children,
-  className,
-  sameWidth,
-  bottom,
-  ...props
-}: ContentProps) {
+function Content({ children, className, sameWidth, bottom, ...props }: ContentProps) {
   const ctx = useMenuCommandContext();
   const Portal = ctx.hover ? HoverCard.Portal : Popover.Portal;
   const ContentEl = ctx.hover ? HoverCard.Content : Popover.Content;
 
   return (
     <Portal>
-      <ContentEl
-        className={cn(contentClassname({ hover: ctx.hover }), className)}
-        {...props}
-      >
-        <Command className={cn(commandClassname({ sameWidth }))}>
-          {children}
-        </Command>
+      <ContentEl className={cn(contentClassname({ hover: ctx.hover }), className)} {...props}>
+        <Command className={cn(commandClassname({ sameWidth }))}>{children}</Command>
       </ContentEl>
     </Portal>
   );
 }
 
-type ComboboxProps = Omit<
-  React.ComponentProps<typeof Command.Input>,
-  'value'
-> & {};
+type ComboboxProps = Omit<React.ComponentProps<typeof Command.Input>, 'value'> & {};
 function Combobox({ className, onValueChange, ...props }: ComboboxProps) {
-  const searchValue = MenuCommandState.useStore((s) => s.search);
-  const internalSetSearch = MenuCommandState.useStore((s) => s.setSearch);
+  const menuState = MenuCommandSharpFactory.useSharp();
   const setSearch = useCallbackRef((value: string) => {
-    internalSetSearch(value);
+    menuState.actions.setSearch(value);
     onValueChange?.(value);
   });
 
@@ -231,7 +196,7 @@ function Combobox({ className, onValueChange, ...props }: ComboboxProps) {
     <div className="relative m-2 h-10">
       <Command.Input
         className={cn(inputClassname(), 'ps-10', className)}
-        value={searchValue}
+        value={menuState.value.search}
         onValueChange={setSearch}
         {...props}
       />
@@ -242,47 +207,44 @@ function Combobox({ className, onValueChange, ...props }: ComboboxProps) {
   );
 }
 
-type ItemProps = Omit<
-  React.ComponentProps<typeof Command.Item>,
-  'asChild'
-> & {};
-const HeadlessItem = React.forwardRef<
-  React.ElementRef<typeof Command.Item>,
-  ItemProps
->(function HeadlessItem({ onSelect, ...props }, ref) {
-  const ctx = useMenuCommandContext();
-  const menuOnSelect = React.useCallback(
-    (value: string) => {
-      onSelect?.(value);
-      ctx.onSelect();
-    },
-    [onSelect, ctx],
-  );
-
-  return <Command.Item ref={ref} onSelect={menuOnSelect} {...props} />;
-});
-const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
-  function Item({ className, ...props }, ref) {
-    return (
-      <HeadlessItem
-        ref={ref}
-        className={cn(
-          [
-            'hover:bg-purple-98 data-[state=open]:bg-purple-98 outline-none',
-            'flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2',
-          ],
-          className,
-        )}
-        {...props}
-      />
+type ItemProps = Omit<React.ComponentProps<typeof Command.Item>, 'asChild'> & {
+  selected?: boolean;
+};
+const HeadlessItem = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
+  function HeadlessItem({ onSelect, ...props }, ref) {
+    const ctx = useMenuCommandContext();
+    const menuOnSelect = React.useCallback(
+      (value: string) => {
+        onSelect?.(value);
+        ctx.onSelect();
+      },
+      [onSelect, ctx],
     );
+
+    return <Command.Item ref={ref} onSelect={menuOnSelect} {...props} />;
   },
 );
+const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(function Item(
+  { className, selected = false, ...props },
+  ref,
+) {
+  return (
+    <HeadlessItem
+      ref={ref}
+      className={cn(
+        [
+          'hover:bg-purple-98 data-[state=open]:bg-purple-98 outline-none',
+          'flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2',
+        ],
+        { '': selected },
+        className,
+      )}
+      {...props}
+    />
+  );
+});
 
-type ListProps = Omit<
-  React.ComponentProps<typeof Command.List>,
-  'asChild'
-> & {};
+type ListProps = Omit<React.ComponentProps<typeof Command.List>, 'asChild'> & {};
 function List({ className, ...props }: ListProps) {
   return (
     <Command.List
@@ -293,14 +255,15 @@ function List({ className, ...props }: ListProps) {
 }
 
 export const MenuCommand = {
+  Arrow,
   Combobox,
   Content,
-  Item,
+  Group: Command.Group,
   HeadlessItem,
+  Item,
   List,
   Menu,
   SubMenu,
   Trigger,
-  Group: Command.Group,
-  useStore: MenuCommandState.useStore,
+  State: MenuCommandSharpFactory,
 };

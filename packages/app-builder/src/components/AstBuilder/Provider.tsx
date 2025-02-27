@@ -6,11 +6,8 @@ import {
 import { type CustomList } from '@app-builder/models/custom-list';
 import { useBuilderOptionsQuery } from '@app-builder/queries/builder-options';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
-import {
-  type ComponentStateType,
-  createComponentState,
-} from '@app-builder/utils/component-store';
 import { type ReactNode, type RefObject } from 'react';
+import { createSharpFactory, type InferSharpApi } from 'sharpstate';
 
 export type AstBuilderDataStoreObject = {
   triggerObjectType: string;
@@ -21,13 +18,17 @@ export type AstBuilderDataStoreObject = {
   // validate: (astNode: AstNode, expectedReturnType?: ReturnValueType) => Promise<NodeEvaluation>;
 };
 
-export const AstBuilderDataState =
-  createComponentState<AstBuilderDataStoreObject>('AstBuilderDataState');
+export const AstBuilderDataSharpFactory = createSharpFactory({
+  name: 'AstBuilderData',
+  initializer(data: BuilderOptionsResource) {
+    return { data };
+  },
+});
 
 type AstBuilderDataProviderProps = {
   scenarioId: string;
   children: ReactNode;
-  nodeRef?: RefObject<ComponentStateType<typeof AstBuilderDataState>>;
+  nodeRef?: RefObject<InferSharpApi<typeof AstBuilderDataSharpFactory>>;
   renderError?: (error: Error) => ReactNode;
   renderLoading?: () => ReactNode;
   initialData?: BuilderOptionsResource;
@@ -38,13 +39,11 @@ type AstBuilderInternalProviderProps = {
   children: ReactNode;
 };
 function AstBuilderInternalProvider(props: AstBuilderInternalProviderProps) {
-  const store = AstBuilderDataState.createComponentStore((_set) => ({
-    ...props.data,
-  }));
+  const store = AstBuilderDataSharpFactory.createSharp(props.data);
   return (
-    <AstBuilderDataState.Provider value={store}>
+    <AstBuilderDataSharpFactory.Provider value={store}>
       {props.children}
-    </AstBuilderDataState.Provider>
+    </AstBuilderDataSharpFactory.Provider>
   );
 }
 
@@ -55,9 +54,7 @@ export function AstBuilderProvider(props: AstBuilderDataProviderProps) {
     return props.renderLoading ? props.renderLoading() : 'Loading...';
   }
   if (builderOptionsQuery.isError) {
-    return props.renderError
-      ? props.renderError(builderOptionsQuery.error)
-      : 'Error...';
+    return props.renderError ? props.renderError(builderOptionsQuery.error) : 'Error...';
   }
 
   return (

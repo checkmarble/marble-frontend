@@ -124,6 +124,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     <html lang={loaderData?.locale ?? 'en'} dir={i18n.dir()}>
       <head>
         <Meta />
+        {/* <script crossOrigin="anonymous" src="//unpkg.com/react-scan/dist/auto.global.js" /> */}
         <Links />
         {loaderData?.segmentScript ? <SegmentScript script={loaderData.segmentScript} /> : null}
         <ExternalScripts />

@@ -1,16 +1,13 @@
-import {
-  isAndAstNode,
-  isOrWithAndAstNode,
-} from '@app-builder/models/astNode/builder-ast-node';
+import { isAndAstNode, isOrWithAndAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { match } from 'ts-pattern';
 
-import { AstBuilderNodeState } from '../node-store';
+import { AstBuilderNodeSharpFactory } from '../node-store';
 import { AstBuilderNode } from './Node';
 import { AstBuilderRootAnd } from './RootAnd';
 import { AstBuilderRootOrWithAnd } from './RootOrWithAnd';
 
 export function Internal_AstBuilderRoot() {
-  const node = AstBuilderNodeState.useStore((s) => s.node);
+  const node = AstBuilderNodeSharpFactory.useSharp().value.node;
 
   return match(node)
     .when(isOrWithAndAstNode, (node) => <AstBuilderRootOrWithAnd node={node} />)

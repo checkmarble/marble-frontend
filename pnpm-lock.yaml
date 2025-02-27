@@ -82,6 +82,9 @@ importers:
       '@oazapfts/runtime':
         specifier: ^1.0.3
         version: 1.0.3
+      '@preact/signals-react':
+        specifier: ^3.0.1
+        version: 3.0.1(react@18.3.1)
       '@radix-ui/react-avatar':
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@18.3.1)(@types/react@18.3.11)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -178,6 +181,9 @@ importers:
       decode-formdata:
         specifier: ^0.8.0
         version: 0.8.0
+      deepsignal:
+        specifier: ^1.6.0
+        version: 1.6.0(@preact/signals-core@1.8.0)(@preact/signals-react@3.0.1(react@18.3.1))
       dinero.js:
         specifier: 2.0.0-alpha.14
         version: 2.0.0-alpha.14
@@ -250,6 +256,9 @@ importers:
       remix-utils:
         specifier: ^7.7.0
         version: 7.7.0(@remix-run/node@2.15.1(typescript@5.6.3))(@remix-run/react@2.15.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.3))(@remix-run/router@1.21.1)(crypto-js@4.2.0)(react@18.3.1)(zod@3.24.1)
+      sharpstate:
+        specifier: ^0.0.7
+        version: 0.0.7(@preact/signals-core@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       short-uuid:
         specifier: ^5.2.0
         version: 5.2.0
@@ -426,6 +435,12 @@ importers:
 
   packages/shared:
     dependencies:
+      '@preact/signals-react':
+        specifier: ^3.0.1
+        version: 3.0.1(react@18.3.1)
+      deepsignal:
+        specifier: ^1.6.0
+        version: 1.6.0(@preact/signals-core@1.8.0)(@preact/signals-react@3.0.1(react@18.3.1))
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -580,6 +595,9 @@ importers:
       react-dom:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
+      sharpstate:
+        specifier: ^0.0.7
+        version: 0.0.7(@preact/signals-core@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwind-merge:
         specifier: ^2.5.5
         version: 2.5.5
@@ -2073,6 +2091,14 @@ packages:
 
   '@polka/url@1.0.0-next.28':
     resolution: {integrity: sha512-8LduaNlMZGwdZ6qWrKlfa+2M4gahzFkprZiAt2TF8uS0qQgBizKXpXURqvTJ4WtmupWxaLqjRb2UCTe72mu+Aw==}
+
+  '@preact/signals-core@1.8.0':
+    resolution: {integrity: sha512-OBvUsRZqNmjzCZXWLxkZfhcgT+Fk8DDcT/8vD6a1xhDemodyy87UJRJfASMuSD8FaAIeGgGm85ydXhm7lr4fyA==}
+
+  '@preact/signals-react@3.0.1':
+    resolution: {integrity: sha512-HkM5Q2IsETO1M0bUzy4JB0EPQCf99SMbWP9K6GYlYVHfOX1HLKJ6Dl9L1/1rQnmrQpUsTw0R+IJQDh6tYWar2g==}
+    peerDependencies:
+      react: ^16.14.0 || 17.x || 18.x || 19.x
 
   '@prisma/instrumentation@5.22.0':
     resolution: {integrity: sha512-LxccF392NN37ISGxIurUljZSh1YWnphO34V5a0+T7FVQG2u9bhAXRTJpgmQ3483woVhkraQZFF7cbRrpbw/F4Q==}
@@ -5101,6 +5127,23 @@ packages:
   deepmerge@4.3.1:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
+
+  deepsignal@1.6.0:
+    resolution: {integrity: sha512-oplhhOSfBRKmx96B0PzbhRaX2W7iDpH6BEqvyGLIZPO2pdHQD+/P3u4Z8wi/sKXjCE7ht8C7ULTEzLSJbgwccA==}
+    peerDependencies:
+      '@preact/signals': ^1.1.4 || ^2.0.0
+      '@preact/signals-core': ^1.5.1
+      '@preact/signals-react': ^1.3.8 || ^2.0.0 || ^3.0.0
+      preact: ^10.16.0
+    peerDependenciesMeta:
+      '@preact/signals':
+        optional: true
+      '@preact/signals-core':
+        optional: true
+      '@preact/signals-react':
+        optional: true
+      preact:
+        optional: true
 
   defaults@1.0.4:
     resolution: {integrity: sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==}
@@ -8184,6 +8227,12 @@ packages:
     resolution: {integrity: sha512-QMEp5B7cftE7APOjk5Y6xgrbWu+WkLVQwk8JNjZ8nKRciZaByEW6MubieAiToS7+dwvrjGhH8jRXz3MVd0AYqQ==}
     hasBin: true
 
+  sharpstate@0.0.7:
+    resolution: {integrity: sha512-3c4zf6xM8JABGWABZ2C3cRXfOhM/ANo6c6VWAe+3K1WybQBTnAyRUmvsUR8NmFk/FfOOl4eTTUvIBRcestKQDA==}
+    peerDependencies:
+      react: '>=18||19'
+      react-dom: '>=18||19'
+
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
     engines: {node: '>=8'}
@@ -10831,6 +10880,14 @@ snapshots:
       playwright: 1.48.1
 
   '@polka/url@1.0.0-next.28': {}
+
+  '@preact/signals-core@1.8.0': {}
+
+  '@preact/signals-react@3.0.1(react@18.3.1)':
+    dependencies:
+      '@preact/signals-core': 1.8.0
+      react: 18.3.1
+      use-sync-external-store: 1.4.0(react@18.3.1)
 
   '@prisma/instrumentation@5.22.0':
     dependencies:
@@ -14519,6 +14576,11 @@ snapshots:
 
   deepmerge@4.3.1: {}
 
+  deepsignal@1.6.0(@preact/signals-core@1.8.0)(@preact/signals-react@3.0.1(react@18.3.1)):
+    optionalDependencies:
+      '@preact/signals-core': 1.8.0
+      '@preact/signals-react': 3.0.1(react@18.3.1)
+
   defaults@1.0.4:
     dependencies:
       clone: 1.0.4
@@ -18032,6 +18094,17 @@ snapshots:
     dependencies:
       inherits: 2.0.4
       safe-buffer: 5.2.1
+
+  sharpstate@0.0.7(@preact/signals-core@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@preact/signals-react': 3.0.1(react@18.3.1)
+      deepsignal: 1.6.0(@preact/signals-core@1.8.0)(@preact/signals-react@3.0.1(react@18.3.1))
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    transitivePeerDependencies:
+      - '@preact/signals'
+      - '@preact/signals-core'
+      - preact
 
   shebang-command@2.0.0:
     dependencies:

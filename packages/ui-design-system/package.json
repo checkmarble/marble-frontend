@@ -60,6 +60,7 @@
     "cmdk": "^1.0.4",
     "date-fns": "^4.1.0",
     "react-day-picker": "^9.1.4",
+    "sharpstate": "^0.0.7",
     "tailwind-merge": "^2.5.5",
     "ui-icons": "workspace:*"
   },
