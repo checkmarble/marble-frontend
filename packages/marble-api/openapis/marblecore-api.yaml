@@ -149,6 +149,8 @@ paths:
     $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1{sanctionCheckId}~1files
   /sanction-checks/matches/{matchId}:
     $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1matches~1{matchId}
+  /sanction-checks/matches/{matchId}/enrich:
+    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1matches~1{matchId}~1enrich
   /sanction-checks/search:
     $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1search
   /sanction-checks/refine:
