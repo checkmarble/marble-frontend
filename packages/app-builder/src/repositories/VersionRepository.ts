@@ -11,7 +11,7 @@ export function makeGetVersionRepository() {
     async getBackendVersion() {
       const { version: apiVersion } = await marbleCoreApiClient.getBackendVersion();
       return {
-        appVersion: getServerEnv('APP_VERSION') ?? 'unknown',
+        appVersion: getServerEnv('APP_VERSION') ?? 'dev',
         apiVersion,
       };
     },
