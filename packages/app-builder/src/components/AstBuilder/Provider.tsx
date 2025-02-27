@@ -6,10 +6,7 @@ import {
 import { type CustomList } from '@app-builder/models/custom-list';
 import { useBuilderOptionsQuery } from '@app-builder/queries/builder-options';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
-import {
-  type ComponentStateType,
-  createComponentState,
-} from '@app-builder/utils/component-store';
+import { type ComponentStateType, createComponentState } from '@app-builder/utils/component-store';
 import { type ReactNode, type RefObject } from 'react';
 
 export type AstBuilderDataStoreObject = {
@@ -42,9 +39,7 @@ function AstBuilderInternalProvider(props: AstBuilderInternalProviderProps) {
     ...props.data,
   }));
   return (
-    <AstBuilderDataState.Provider value={store}>
-      {props.children}
-    </AstBuilderDataState.Provider>
+    <AstBuilderDataState.Provider value={store}>{props.children}</AstBuilderDataState.Provider>
   );
 }
 
@@ -55,9 +50,7 @@ export function AstBuilderProvider(props: AstBuilderDataProviderProps) {
     return props.renderLoading ? props.renderLoading() : 'Loading...';
   }
   if (builderOptionsQuery.isError) {
-    return props.renderError
-      ? props.renderError(builderOptionsQuery.error)
-      : 'Error...';
+    return props.renderError ? props.renderError(builderOptionsQuery.error) : 'Error...';
   }
 
   return (

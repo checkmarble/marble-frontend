@@ -1,10 +1,4 @@
-import {
-  type AstNode,
-  type DataModel,
-  type EnumValue,
-  isUndefinedAstNode,
-  type TableModel,
-} from '@app-builder/models';
+import { type AstNode, type EnumValue, isUndefinedAstNode } from '@app-builder/models';
 import { isAggregation } from '@app-builder/models/astNode/aggregation';
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';

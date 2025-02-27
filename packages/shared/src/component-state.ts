@@ -1,114 +1,112 @@
-import { type Provider, useState } from 'react';
-import {
-  createStore as zustandCreateStore,
-  type StateCreator,
-  type StoreApi,
-  type StoreMutatorIdentifier,
-  useStore,
-} from 'zustand';
+/* eslint-disable @typescript-eslint/no-explicit-any -- Generic are too cumbersome to manage without constraining on any */
+
+import { batch, effect } from '@preact/signals-react';
+import { useSignals } from '@preact/signals-react/runtime';
+import { type DeepSignal, deepSignal } from 'deepsignal/react';
+import { type Provider } from 'react';
 
 import { createSimpleContext } from './simple-context';
+import { useRefFn } from './use-ref-fn';
 
-type CreateStoreFn<K> = (i: never) => StoreApi<K>;
-// prettier-ignore
-export type ComponentStateType<T> = T extends { createComponentStore: CreateStoreFn<infer K> }
-  ? StoreApi<K>
-  : never;
+type ComponentStateValue<S, A> = StateApi<S, A>;
+type EffectFn = () => void | (() => void);
 
-export const createStore = function useCreateComponentStore<
-  T,
-  U extends any[],
-  Mos extends [StoreMutatorIdentifier, unknown][] = [],
->(
-  comp: any,
-  fn: (...initialData: U) => StateCreator<T, [], Mos>,
-  ...initialData: U
-): StoreApi<T> {
-  const [store] = useState(() => {
-    const sc = fn(...initialData);
-    return zustandCreateStore<T, Mos>(comp ? comp(sc) : sc);
-  });
-  return store;
+export type ComponentState<ID extends any[], S, A> = {
+  createStore: (...initialData: ID) => ComponentStateValue<S, A>;
+  Provider: Provider<ComponentStateValue<S, A>>;
+  useStore(): ComponentStateValue<S, A>;
+  useStoreValue<Value>(selector: (s: S) => Value): DeepSignal<Value>;
+  effect: (fn: EffectFn) => () => void;
 };
 
-type CreateComponentStateConfig<
-  F extends (...args: any) => StateCreator<any>,
-  Comp extends
-    | InferComputed<(sc: ReturnType<F>) => StateCreator<any>>
-    | undefined,
-> = {
+export type ComponentStateType<T> =
+  T extends ComponentState<any, infer S, infer A> ? ComponentStateValue<S, A> : never;
+
+type ActionApi<S> = {
+  value: S;
+  batch: (fn: () => void) => void;
+};
+
+type StateFactory<Params extends any[], Ret> = (...args: Params) => Ret;
+type StateAction<Params extends any[]> = (...args: Params) => void;
+type ActionsConfig<S> = (api: ActionApi<S>) => Record<string, StateAction<any>>;
+
+type Config<F extends StateFactory<any, any>> = {
   name: string;
   factory: F;
-  computed?: Comp;
+};
+type ConfigWithActions<
+  F extends StateFactory<any, any>,
+  A extends ActionsConfig<ReturnType<F>>,
+> = Config<F> & {
+  actions: A;
 };
 
-type InferFactory<F extends (...args: any) => StateCreator<any>> = F extends (
-  ...args: infer U
-) => StateCreator<infer R>
-  ? (...args: U) => StateCreator<R>
-  : never;
+type InferStateFactoryRet<F> = F extends StateFactory<any, infer R> ? R : never;
 
-type InferComputed<C> = undefined extends C
-  ? never
-  : C extends (sc: infer I) => StateCreator<infer O>
-    ? (sc: I) => StateCreator<O>
-    : never;
+type StateFromConfig<C> = C extends Config<infer F> ? InferStateFactoryRet<F> : never;
+type ParamsFromConfig<C> = C extends Config<infer F> ? Parameters<F> : never;
+type ActionFromConfig<C> = C extends ConfigWithActions<any, infer A> ? A : never;
 
-type InferConfig<C> =
-  C extends CreateComponentStateConfig<infer F, infer Comp>
-    ? CreateComponentStateConfig<F, Comp>
-    : never;
+type StateUpdateFn<S> = (state: S) => void;
+export type StateApi<S, A = never> = {
+  value: DeepSignal<S>;
+  update: (fn: StateUpdateFn<S>) => void;
+} & ([A] extends [never]
+  ? Record<string, never>
+  : { actions: A extends ActionsConfig<S> ? ReturnType<A> : never });
 
-type InferConfigFactory<C> =
-  C extends CreateComponentStateConfig<infer F, any> ? InferFactory<F> : never;
-
-type InferConfigInitData<C> =
-  C extends CreateComponentStateConfig<infer F, any>
-    ? F extends (...args: infer P) => any
-      ? P
-      : never
-    : never;
-type InferConfigIn<C> =
-  C extends CreateComponentStateConfig<infer F, any>
-    ? F extends (...args: any) => StateCreator<infer R>
-      ? R
-      : never
-    : never;
-type InferConfigComputed<C> =
-  C extends CreateComponentStateConfig<any, infer Comp> ? Comp : never;
-type InferOutComp<Comp> = Comp extends (
-  sc: StateCreator<any>,
-) => StateCreator<infer O>
-  ? O
-  : never;
-
-export { StateCreator };
+export function withActions<
+  F extends StateFactory<any, any>,
+  A extends ActionsConfig<ReturnType<F>>,
+>(cfg: { config: Config<F>; actions: A }): ConfigWithActions<F, A> {
+  return { ...cfg.config, actions: cfg.actions };
+}
 
 export function createComponentState<
-  C extends CreateComponentStateConfig<any, any>,
-  U extends InferConfigInitData<C> = InferConfigInitData<C>,
-  I extends InferConfigIn<C> = InferConfigIn<C>,
-  Comp extends InferConfigComputed<C> = InferConfigComputed<C>,
-  O extends [InferComputed<Comp>] extends [never] ? I : InferOutComp<Comp> = [
-    InferComputed<Comp>,
-  ] extends [never]
-    ? I
-    : InferOutComp<Comp>,
-  Mos extends [StoreMutatorIdentifier, unknown][] = [],
+  F extends StateFactory<any, any>,
+  A extends ActionsConfig<ReturnType<F>>,
+  C extends Config<F> | ConfigWithActions<F, A>,
 >(config: C) {
-  const Ctx = createSimpleContext<StoreApi<O>>(config.name);
+  type S = StateFromConfig<C>;
+  type ID = ParamsFromConfig<C>;
+  type InternalA = ActionFromConfig<C>;
+  type CtxValue = ComponentStateValue<S, InternalA>;
+
+  const Ctx = createSimpleContext<CtxValue>(config.name);
+  const useContextValue = () => {
+    useSignals();
+    return Ctx.useValue();
+  };
 
   return {
-    createStore(...initialData: U) {
-      return createStore<O, U, Mos>(
-        config.computed,
-        config.factory,
-        ...initialData,
-      );
+    createStore: function useCreateStore(...initialData: ID): StateApi<S, InternalA> {
+      const stateApi = useRefFn<StateApi<S, InternalA>>(() => {
+        const value: StateApi<S, never>['value'] = deepSignal<S>(config.factory(...initialData));
+        const update: StateApi<S, never>['update'] = (fn) => {
+          batch(() => {
+            fn(value as S);
+          });
+        };
+
+        return {
+          value,
+          update,
+          ...('actions' in config
+            ? {
+                actions: config.actions({ value: value as S, batch }),
+              }
+            : {}),
+        } as StateApi<S, InternalA>;
+      });
+
+      return stateApi.current;
     },
-    Provider: Ctx.Provider as Provider<StoreApi<O>>,
-    useStore<Value>(selector: (state: O) => Value): Value {
-      return useStore(Ctx.useValue(), selector);
+    Provider: Ctx.Provider as Provider<CtxValue>,
+    useStore: useContextValue,
+    useStoreValue<Value>(selector: (state: S) => Value): DeepSignal<Value> {
+      return selector(useContextValue().value as S) as DeepSignal<Value>;
     },
+    effect,
   };
 }

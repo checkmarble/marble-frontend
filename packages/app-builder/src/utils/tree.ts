@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
 import * as React from 'react';
+import * as R from 'remeda';
 import invariant from 'tiny-invariant';
 
 export type Tree<T> = T & {
@@ -55,20 +56,17 @@ export function parsePath(stringPath: string): Path {
 }
 
 export function getParentPath(path: Path) {
-  if (path.length === 0) {
-    return undefined;
+  if (R.hasAtLeast(path, 1)) {
+    return {
+      path: path.slice(0, -1),
+      childPathSegment: path[path.length - 1]!,
+    };
   }
-  return {
-    path: path.slice(0, -1),
-    childPathSegment: path[path.length - 1],
-  };
+  return undefined;
 }
 export type ParentPath = ReturnType<typeof getParentPath>;
 
-function getAtPathSegment<T>(
-  tree: Tree<T>,
-  pathSegment: PathSegment,
-): Tree<T> | undefined {
+function getAtPathSegment<T>(tree: Tree<T>, pathSegment: PathSegment): Tree<T> | undefined {
   switch (pathSegment.type) {
     case 'children': {
       const { index } = pathSegment;
@@ -103,11 +101,7 @@ export function setAtPathSegment<T>(
       const { index } = pathSegment;
       return {
         ...tree,
-        children: [
-          ...tree.children.slice(0, index),
-          value,
-          ...tree.children.slice(index + 1),
-        ],
+        children: [...tree.children.slice(0, index), value, ...tree.children.slice(index + 1)],
       };
     }
     case 'namedChildren': {
@@ -123,11 +117,7 @@ export function setAtPathSegment<T>(
   }
 }
 
-export function setAtPath<T>(
-  tree: Tree<T>,
-  path: Path,
-  value: Tree<T>,
-): Tree<T> {
+export function setAtPath<T>(tree: Tree<T>, path: Path, value: Tree<T>): Tree<T> {
   const [pathSegment, ...restPath] = path;
   if (pathSegment === undefined) {
     return value;
@@ -140,19 +130,13 @@ export function setAtPath<T>(
   return setAtPathSegment(tree, pathSegment, newChild);
 }
 
-function removeAtPathSegment<T>(
-  tree: Tree<T>,
-  pathSegment: PathSegment,
-): Tree<T> {
+function removeAtPathSegment<T>(tree: Tree<T>, pathSegment: PathSegment): Tree<T> {
   switch (pathSegment.type) {
     case 'children': {
       const { index } = pathSegment;
       return {
         ...tree,
-        children: [
-          ...tree.children.slice(0, index),
-          ...tree.children.slice(index + 1),
-        ],
+        children: [...tree.children.slice(0, index), ...tree.children.slice(index + 1)],
       };
     }
     case 'namedChildren': {
@@ -166,11 +150,7 @@ function removeAtPathSegment<T>(
   }
 }
 
-export function removeAtPath<T>(
-  tree: Tree<T>,
-  path: Path,
-  emptyTree?: Tree<T>,
-): Tree<T> {
+export function removeAtPath<T>(tree: Tree<T>, path: Path, emptyTree?: Tree<T>): Tree<T> {
   const [pathSegment, ...restPath] = path;
   if (pathSegment === undefined) {
     // This is the root node, return an empty tree

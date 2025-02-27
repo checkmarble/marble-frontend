@@ -26,13 +26,12 @@ export async function loader({ request, params }: ActionFunctionArgs) {
     });
 
   const scenarioId = fromParams(params, 'scenarioId');
-  const [currentScenario, customLists, dataModel, accessors] =
-    await Promise.all([
-      scenario.getScenario({ scenarioId }),
-      customListsRepository.listCustomLists(),
-      dataModelRepository.getDataModel(),
-      editor.listAccessors({ scenarioId }),
-    ]);
+  const [currentScenario, customLists, dataModel, accessors] = await Promise.all([
+    scenario.getScenario({ scenarioId }),
+    customListsRepository.listCustomLists(),
+    dataModelRepository.getDataModel(),
+    editor.listAccessors({ scenarioId }),
+  ]);
 
   return Response.json({
     scenarioId,

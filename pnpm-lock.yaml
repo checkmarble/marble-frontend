@@ -82,6 +82,9 @@ importers:
       '@oazapfts/runtime':
         specifier: ^1.0.3
         version: 1.0.3
+      '@preact/signals-react':
+        specifier: ^3.0.1
+        version: 3.0.1(react@18.3.1)
       '@radix-ui/react-avatar':
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@18.3.1)(@types/react@18.3.11)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -178,6 +181,9 @@ importers:
       decode-formdata:
         specifier: ^0.8.0
         version: 0.8.0
+      deepsignal:
+        specifier: ^1.6.0
+        version: 1.6.0(@preact/signals-core@1.8.0)(@preact/signals-react@3.0.1(react@18.3.1))
       dinero.js:
         specifier: 2.0.0-alpha.14
         version: 2.0.0-alpha.14
@@ -426,6 +432,12 @@ importers:
 
   packages/shared:
     dependencies:
+      '@preact/signals-react':
+        specifier: ^3.0.1
+        version: 3.0.1(react@18.3.1)
+      deepsignal:
+        specifier: ^1.6.0
+        version: 1.6.0(@preact/signals-core@1.8.0)(@preact/signals-react@3.0.1(react@18.3.1))
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -2073,6 +2085,14 @@ packages:
 
   '@polka/url@1.0.0-next.28':
     resolution: {integrity: sha512-8LduaNlMZGwdZ6qWrKlfa+2M4gahzFkprZiAt2TF8uS0qQgBizKXpXURqvTJ4WtmupWxaLqjRb2UCTe72mu+Aw==}
+
+  '@preact/signals-core@1.8.0':
+    resolution: {integrity: sha512-OBvUsRZqNmjzCZXWLxkZfhcgT+Fk8DDcT/8vD6a1xhDemodyy87UJRJfASMuSD8FaAIeGgGm85ydXhm7lr4fyA==}
+
+  '@preact/signals-react@3.0.1':
+    resolution: {integrity: sha512-HkM5Q2IsETO1M0bUzy4JB0EPQCf99SMbWP9K6GYlYVHfOX1HLKJ6Dl9L1/1rQnmrQpUsTw0R+IJQDh6tYWar2g==}
+    peerDependencies:
+      react: ^16.14.0 || 17.x || 18.x || 19.x
 
   '@prisma/instrumentation@5.22.0':
     resolution: {integrity: sha512-LxccF392NN37ISGxIurUljZSh1YWnphO34V5a0+T7FVQG2u9bhAXRTJpgmQ3483woVhkraQZFF7cbRrpbw/F4Q==}
@@ -5101,6 +5121,23 @@ packages:
   deepmerge@4.3.1:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
+
+  deepsignal@1.6.0:
+    resolution: {integrity: sha512-oplhhOSfBRKmx96B0PzbhRaX2W7iDpH6BEqvyGLIZPO2pdHQD+/P3u4Z8wi/sKXjCE7ht8C7ULTEzLSJbgwccA==}
+    peerDependencies:
+      '@preact/signals': ^1.1.4 || ^2.0.0
+      '@preact/signals-core': ^1.5.1
+      '@preact/signals-react': ^1.3.8 || ^2.0.0 || ^3.0.0
+      preact: ^10.16.0
+    peerDependenciesMeta:
+      '@preact/signals':
+        optional: true
+      '@preact/signals-core':
+        optional: true
+      '@preact/signals-react':
+        optional: true
+      preact:
+        optional: true
 
   defaults@1.0.4:
     resolution: {integrity: sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==}
@@ -10832,6 +10869,14 @@ snapshots:
 
   '@polka/url@1.0.0-next.28': {}
 
+  '@preact/signals-core@1.8.0': {}
+
+  '@preact/signals-react@3.0.1(react@18.3.1)':
+    dependencies:
+      '@preact/signals-core': 1.8.0
+      react: 18.3.1
+      use-sync-external-store: 1.4.0(react@18.3.1)
+
   '@prisma/instrumentation@5.22.0':
     dependencies:
       '@opentelemetry/api': 1.9.0
@@ -14518,6 +14563,11 @@ snapshots:
   deep-object-diff@1.1.9: {}
 
   deepmerge@4.3.1: {}
+
+  deepsignal@1.6.0(@preact/signals-core@1.8.0)(@preact/signals-react@3.0.1(react@18.3.1)):
+    optionalDependencies:
+      '@preact/signals-core': 1.8.0
+      '@preact/signals-react': 3.0.1(react@18.3.1)
 
   defaults@1.0.4:
     dependencies:

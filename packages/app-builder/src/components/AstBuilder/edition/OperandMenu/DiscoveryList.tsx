@@ -1,15 +1,9 @@
-import {
-  type AstNode,
-  findDataModelTableByName,
-  getDataTypeIcon,
-} from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
 import {
   getOperandTypeIcon,
   getOperandTypeTKey,
   type OperandType,
 } from '@app-builder/models/operand-type';
-import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
-import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
 import { type ReactNode, useMemo } from 'react';
@@ -18,20 +12,15 @@ import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { AstBuilderDataState } from '../../Provider';
-import {
-  type EnrichedMenuOption,
-  getOptionDisplayName,
-  groupByOperandType,
-} from '../helpers';
+import { type EnrichedMenuOption, getOptionDisplayName, groupByOperandType } from '../helpers';
 import { InternalOperandState } from '../InternalOperand';
+import { MenuOption } from './MenuOption';
 import { type SmartMenuListProps } from './types';
 
 export function DiscoveryList({ onSelect }: SmartMenuListProps) {
-  const triggerObjectType = AstBuilderDataState.useStore(
-    (s) => s.triggerObjectType,
-  );
-  const options = InternalOperandState.useStore((s) => s.options);
-  const enumValues = InternalOperandState.useStore((s) => s.enumValues);
+  const triggerObjectType = AstBuilderDataState.useStore((s) => s.triggerObjectType);
+  const options = InternalOperandState.useStore().value.options;
+  const enumValues = InternalOperandState.useStore().value.enumValues;
 
   const groupedOptions = useMemo(() => {
     return groupByOperandType(options, {
@@ -40,13 +29,8 @@ export function DiscoveryList({ onSelect }: SmartMenuListProps) {
     });
   }, [triggerObjectType, enumValues, options]);
 
-  const {
-    enumOptions,
-    fieldOptions,
-    functionOptions,
-    modelingOptions,
-    customListOptions,
-  } = groupedOptions;
+  const { enumOptions, fieldOptions, functionOptions, modelingOptions, customListOptions } =
+    groupedOptions;
   const subMenus = [
     { options: customListOptions, type: 'CustomList' },
     { options: functionOptions, type: 'Function' },
@@ -59,9 +43,7 @@ export function DiscoveryList({ onSelect }: SmartMenuListProps) {
         {enumOptions.length > 0 ? (
           <SubMenu
             onSelect={onSelect}
-            trigger={
-              <MenuTitle operandType="Enum" count={enumOptions.length} />
-            }
+            trigger={<MenuTitle operandType="Enum" count={enumOptions.length} />}
             options={enumOptions}
           />
         ) : null}
@@ -72,10 +54,7 @@ export function DiscoveryList({ onSelect }: SmartMenuListProps) {
             heading={
               <MenuTitle
                 operandType="Field"
-                count={fieldOptions.reduce(
-                  (acc, [_, subOpts]) => acc + subOpts.length,
-                  0,
-                )}
+                count={fieldOptions.reduce((acc, [_, subOpts]) => acc + subOpts.length, 0)}
                 className="min-h-10 p-2"
               />
             }
@@ -96,12 +75,7 @@ export function DiscoveryList({ onSelect }: SmartMenuListProps) {
             <SubMenu
               key={subMenu.type}
               onSelect={onSelect}
-              trigger={
-                <MenuTitle
-                  operandType={subMenu.type}
-                  count={subMenu.options.length}
-                />
-              }
+              trigger={<MenuTitle operandType={subMenu.type} count={subMenu.options.length} />}
               options={subMenu.options}
             />
           ) : null,
@@ -129,9 +103,7 @@ function SubMenuFieldTrigger(props: SubMenuFieldTriggerProps) {
           }}
           values={{ path: props.path }}
         />
-        <span className="text-grey-80 text-xs font-medium">
-          {props.options.length}
-        </span>
+        <span className="text-grey-80 text-xs font-medium">{props.options.length}</span>
       </span>
     </>
   );
@@ -148,18 +120,9 @@ function MenuTitle({ operandType, count, className }: MenuTitleProps) {
   const tKey = getOperandTypeTKey(operandType);
 
   return (
-    <div
-      className={clsx(
-        'flex grow select-none flex-row items-center gap-1',
-        className,
-      )}
-    >
+    <div className={clsx('flex grow select-none flex-row items-center gap-1', className)}>
       {icon ? (
-        <Icon
-          aria-hidden="true"
-          className="text-purple-65 size-5 shrink-0"
-          icon={icon}
-        />
+        <Icon aria-hidden="true" className="text-purple-65 size-5 shrink-0" icon={icon} />
       ) : null}
       {tKey ? (
         <span className="text-grey-00 text-m flex flex-1 flex-row items-baseline gap-1 break-all">
@@ -192,80 +155,10 @@ function SubMenu({ trigger, options, onSelect }: SubMenuProps) {
               t,
             });
 
-            return (
-              <MenuOption
-                key={displayName}
-                option={option}
-                onSelect={onSelect}
-              />
-            );
+            return <MenuOption key={displayName} option={option} onSelect={onSelect} />;
           })}
         </MenuCommand.Group>
       </MenuCommand.List>
     </MenuCommand.SubMenu>
-  );
-}
-
-function MenuOption({
-  option,
-  onSelect,
-}: {
-  option: EnrichedMenuOption;
-  onSelect: (node: AstNode) => void;
-}) {
-  const { t } = useTranslation(['common', 'scenarios']);
-  const language = useFormatLanguage();
-  const dataState = AstBuilderDataState.useStore((s) => s);
-
-  const triggerObjectTable = findDataModelTableByName({
-    dataModel: dataState.dataModel,
-    tableName: dataState.triggerObjectType,
-  });
-
-  const displayName =
-    option.displayName ??
-    getAstNodeDisplayName(option.astNode, {
-      customLists: dataState.customLists,
-      t,
-      language,
-    });
-  const dataType =
-    option.dataType ??
-    getAstNodeDataType(option.astNode, {
-      triggerObjectTable,
-      dataModel: dataState.dataModel,
-    });
-  const leftIcon = option.icon ?? getDataTypeIcon(dataType);
-
-  return (
-    <MenuCommand.Item onSelect={() => onSelect(option.astNode)}>
-      <div className="grid w-full grid-cols-[20px_1fr] gap-1">
-        {leftIcon ? (
-          <Icon
-            aria-hidden="true"
-            className="col-start-1 size-5 shrink-0"
-            icon={leftIcon}
-          />
-        ) : null}
-        <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
-          <div
-            className={clsx(
-              'text-grey-00 text-s w-full break-all text-start font-normal',
-            )}
-          >
-            {displayName}
-          </div>
-          {/* <OperandInfos
-            gutter={24}
-            shift={-8}
-            className="group-hover:hover:text-purple-65 group-hover:text-purple-82 size-5 shrink-0 text-transparent"
-            astNode={option.astNode}
-            dataType={dataType}
-            operandType={option.operandType}
-            displayName={displayName}
-          /> */}
-        </div>
-      </div>
-    </MenuCommand.Item>
   );
 }

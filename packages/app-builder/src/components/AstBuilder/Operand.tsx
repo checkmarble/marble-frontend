@@ -4,12 +4,11 @@ import { type KnownOperandAstNode } from '@app-builder/models/astNode/builder-as
 import { Internal_EditionAstBuilderOperand } from './edition/InternalOperand';
 import { type AstBuilderBaseProps } from './types';
 
-export type AstBuilderOperandProps =
-  AstBuilderBaseProps<KnownOperandAstNode> & {
-    enumValues?: EnumValue[];
-    onChange?: (node: AstNode) => void;
-    placeholder?: string;
-  };
+export type AstBuilderOperandProps = AstBuilderBaseProps<KnownOperandAstNode> & {
+  enumValues?: EnumValue[];
+  onChange?: (node: AstNode) => void;
+  placeholder?: string;
+};
 
 export function AstBuilderOperand(props: AstBuilderOperandProps) {
   return <Internal_EditionAstBuilderOperand {...props} />;

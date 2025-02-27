@@ -13,11 +13,7 @@ type UseBuilderOptionsQueryParams = {
   initialData?: BuilderOptionsResource;
 };
 export function useBuilderOptionsQuery(params: UseBuilderOptionsQueryParams) {
-  const queryKey = [
-    'resources',
-    'builder-options',
-    fromUUID(params.scenarioId),
-  ] as const;
+  const queryKey = ['resources', 'builder-options', fromUUID(params.scenarioId)] as const;
 
   return useQuery({
     queryKey,

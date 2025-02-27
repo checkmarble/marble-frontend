@@ -1,50 +1,74 @@
-import { findDataModelTableByName } from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
 import {
   isKnownOperandAstNode,
   isMainAstBinaryNode,
-  isMainAstNode,
   isMainAstUnaryNode,
 } from '@app-builder/models/astNode/builder-ast-node';
-import { getEnumValuesFromNeighbour } from '@app-builder/services/editor/getEnumOptionsFromNeighbour';
+import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
+import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { getAtPath, getParentPath, parsePath } from '@app-builder/utils/tree';
-import { memo, type PropsWithChildren, useMemo } from 'react';
+import { computed } from '@preact/signals-react';
+import { memo, type PropsWithChildren } from 'react';
 import invariant from 'tiny-invariant';
 import { match } from 'ts-pattern';
 
 import { AstBuilderNodeState } from '../node-store';
 import { AstBuilderDataState } from '../Provider';
-import { getEnumValues } from './helpers';
 import { Internal_EditionAstBuilderOperand } from './InternalOperand';
 
+function useSiblings(stringPath: string) {
+  const rootNode = AstBuilderNodeState.useStore().value.node;
+
+  const path = parsePath(stringPath);
+  const parentPath = getParentPath(path);
+  if (!parentPath || parentPath.childPathSegment?.type !== 'children') {
+    return [];
+  }
+  const childIndex = parentPath.childPathSegment.index;
+  const parentNode = getAtPath(rootNode, parentPath.path);
+  if (!parentNode || parentNode.name !== '=') {
+    return [];
+  }
+
+  return [
+    ...parentNode.children.slice(0, childIndex),
+    ...parentNode.children.slice(childIndex + 1),
+  ];
+}
+
 export const AstBuilderNode = memo(function (props: { path: string }) {
-  const node = AstBuilderNodeState.useStore((s) =>
-    getAtPath(s.node, parsePath(props.path)),
-  );
-  invariant(node, `Couldn't find node at path: ${props.path}`);
-
-  const parentPath = useMemo(
-    () => getParentPath(parsePath(props.path)),
-    [props.path],
-  );
-  const parentNode = AstBuilderNodeState.useStore((s) =>
-    !parentPath ? null : getAtPath(s.node, parentPath.path),
-  );
-
-  const setNodeAtPath = AstBuilderNodeState.useStore((s) => s.setNodeAtPath);
   const dataStore = AstBuilderDataState.useStore((s) => s);
-  const enumValues = useMemo(() => {
-    const triggerObjectTable = findDataModelTableByName({
-      dataModel: dataStore.dataModel,
-      tableName: dataStore.triggerObjectType,
-    });
-    const nodeSegment = parsePath(props.path)?.pop() ?? null;
-    if (!nodeSegment || !parentNode) return [];
+  const astBuilderStore = AstBuilderNodeState.useStore();
 
-    return getEnumValues(nodeSegment, {
-      parentNode,
-      context: { dataModel: dataStore.dataModel, triggerObjectTable },
-    });
-  }, [props.path, parentNode, dataStore]);
+  const node = AstBuilderNodeState.useStoreValue((s) => getAtPath(s.node, parsePath(props.path)));
+  invariant(node, `Couldn't find node at path: ${props.path}`);
+  const siblings = useSiblings(props.path);
+
+  const enumValues = computed(() => {
+    const enums = [];
+    const triggerTable = dataStore.dataModel.find((t) => t.name === dataStore.triggerObjectType);
+    if (!triggerTable) {
+      return;
+    }
+
+    for (const neighbourNode of siblings) {
+      if (isDataAccessorAstNode(neighbourNode)) {
+        const field = getDataAccessorAstNodeField(neighbourNode, {
+          dataModel: dataStore.dataModel,
+          triggerObjectTable: triggerTable,
+        });
+        if (field.isEnum) {
+          enums.push(...(field.values ?? []));
+        }
+      }
+    }
+
+    return enums;
+  });
+
+  const setNode = (newNode: AstNode) => {
+    astBuilderStore.actions.setNodeAtPath(props.path, newNode);
+  };
 
   const children = match(node)
     .when(isMainAstBinaryNode, () => {
@@ -58,9 +82,7 @@ export const AstBuilderNode = memo(function (props: { path: string }) {
       return props.path !== 'root' ? (
         children
       ) : (
-        <div className="inline-flex flex-row flex-wrap items-center gap-2">
-          {children}
-        </div>
+        <div className="inline-flex flex-row flex-wrap items-center gap-2">{children}</div>
       );
     })
     .when(isMainAstUnaryNode, (_node) => 'unary')
@@ -68,8 +90,8 @@ export const AstBuilderNode = memo(function (props: { path: string }) {
       return (
         <Internal_EditionAstBuilderOperand
           node={node}
-          onChange={(newNode) => setNodeAtPath(props.path, newNode)}
-          enumValues={enumValues}
+          onChange={setNode}
+          enumValues={enumValues.value}
         />
       );
     })
@@ -88,5 +110,11 @@ export function NodeErrorTypePlaceholder() {
 }
 
 function Brackets({ children }: PropsWithChildren) {
-  return <div className="contents">{children}</div>;
+  return (
+    <div className="contents">
+      <span>(</span>
+      {children}
+      <span>)</span>
+    </div>
+  );
 }

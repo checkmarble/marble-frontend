@@ -1,7 +1,4 @@
-import {
-  isAndAstNode,
-  isOrWithAndAstNode,
-} from '@app-builder/models/astNode/builder-ast-node';
+import { isAndAstNode, isOrWithAndAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { match } from 'ts-pattern';
 
 import { AstBuilderNodeState } from '../node-store';
@@ -10,7 +7,7 @@ import { AstBuilderRootAnd } from './RootAnd';
 import { AstBuilderRootOrWithAnd } from './RootOrWithAnd';
 
 export function Internal_AstBuilderRoot() {
-  const node = AstBuilderNodeState.useStore((s) => s.node);
+  const node = AstBuilderNodeState.useStore().value.node;
 
   return match(node)
     .when(isOrWithAndAstNode, (node) => <AstBuilderRootOrWithAnd node={node} />)

@@ -1,24 +1,11 @@
-import {
-  type AstNode,
-  type DataModel,
-  type EnumValue,
-  type TableModel,
-} from '@app-builder/models';
+import { type AstNode, type DataModel, type EnumValue, type TableModel } from '@app-builder/models';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { NewCustomListAstNode } from '@app-builder/models/astNode/custom-list';
-import {
-  isDatabaseAccess,
-  isPayload,
-} from '@app-builder/models/astNode/data-accessor';
+import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
 import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getAstNodeOperandType } from '@app-builder/services/ast-node/getAstNodeOperandType';
 import { getEnumValuesFromNeighbour } from '@app-builder/services/editor/getEnumOptionsFromNeighbour';
-import {
-  getAtPath,
-  getParentPath,
-  parsePath,
-  type PathSegment,
-} from '@app-builder/utils/tree';
+import { type PathSegment } from '@app-builder/utils/tree';
 import { type TFunction } from 'i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
@@ -34,10 +21,11 @@ import {
 type GroupByOperandTypeContext = {
   enumValues: EnumValue[] | undefined;
   triggerObjectType: string;
-};
+} & AstNodeStringifierContext;
 
-export type EnrichedMenuOption = Omit<OperandMenuOption, 'operandType'> & {
+export type EnrichedMenuOption = Omit<OperandMenuOption, 'operandType' | 'displayName'> & {
   operandType: NonNullable<OperandMenuOption['operandType']>;
+  displayName: NonNullable<OperandMenuOption['displayName']>;
 };
 
 function getFieldName(astNode: AstNode) {
@@ -51,8 +39,17 @@ export function getOperandMenuOptions(
   enums: EnumValue[] | undefined,
   data: AstBuilderDataStoreObject,
   node: AstNode,
+  language: string,
   t: TFunction<['common', 'scenarios'], undefined>,
 ) {
+  const mapOption = createMapOption({
+    enumValues: enums,
+    triggerObjectType: data.triggerObjectType,
+    customLists: data.customLists,
+    language,
+    t,
+  });
+
   return [
     ...AST_BUILDER_STATIC_OPTIONS,
     ...data.databaseAccessors.map((a) => ({ astNode: a })),
@@ -64,16 +61,15 @@ export function getOperandMenuOptions(
       astNode: NewConstantAstNode({ constant: enumValue }),
     })),
     ...MODELING_OPTIONS({ currentNode: node, t }),
-  ];
+  ].map(mapOption);
 }
 
 export function groupByOperandType(
-  operandMenuOptions: OperandMenuOption[],
+  operandMenuOptions: EnrichedMenuOption[],
   context: GroupByOperandTypeContext,
 ) {
-  const mapOption = createMapOption(context);
   return R.pipe(
-    R.pipe(operandMenuOptions, R.map(mapOption)),
+    operandMenuOptions,
     R.groupBy((option) => option.operandType),
     ({ Enum, CustomList, Function, Field, Modeling }) => {
       const fieldOptions = Field
@@ -89,9 +85,7 @@ export function groupByOperandType(
                 return context.triggerObjectType;
               }
             }),
-            R.mapValues((value) =>
-              R.sortBy(value, (opt) => getFieldName(opt.astNode)),
-            ),
+            R.mapValues((value) => R.sortBy(value, (opt) => getFieldName(opt.astNode))),
             R.entries(),
             R.sortBy(([path]) => path),
           )
@@ -108,14 +102,26 @@ export function groupByOperandType(
   );
 }
 
-function createMapOption({ enumValues }: GroupByOperandTypeContext) {
-  return function ({ astNode, operandType, ...rest }: OperandMenuOption) {
+function createMapOption({ enumValues, customLists, language, t }: GroupByOperandTypeContext) {
+  return function ({
+    astNode,
+    operandType,
+    displayName,
+    ...rest
+  }: OperandMenuOption): EnrichedMenuOption {
     return {
       astNode,
       operandType:
         operandType ??
         getAstNodeOperandType(astNode, {
           enumValues,
+        }),
+      displayName:
+        displayName ??
+        getAstNodeDisplayName(astNode, {
+          customLists,
+          language,
+          t,
         }),
       ...rest,
     };
