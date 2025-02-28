@@ -1,4 +1,5 @@
 import { Nudge } from '@app-builder/components/Nudge';
+import { isAccessible } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -7,6 +8,7 @@ import { useFetcher } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -62,6 +64,11 @@ export function CreateSanction({
   const { t } = useTranslation(['scenarios']);
   const fetcher = useFetcher<typeof action>();
 
+  const disabled = useMemo(
+    () => hasAlreadyASanction || !isAccessible(isSanctionAvailable),
+    [hasAlreadyASanction, isSanctionAvailable],
+  );
+
   return (
     <fetcher.Form
       method="POST"
@@ -74,7 +81,7 @@ export function CreateSanction({
         type="submit"
         variant="dropdown"
         size="dropdown"
-        disabled={hasAlreadyASanction || isSanctionAvailable === 'restricted'}
+        disabled={disabled}
         className="w-full"
       >
         <div className="flex items-center gap-4">
@@ -83,7 +90,7 @@ export function CreateSanction({
             <span className="text-s font-normal">{t('scenarios:create_sanction.title')}</span>
             <span
               className={clsx('text-grey-50 font-normal', {
-                'text-grey-80': isSanctionAvailable === 'restricted' || hasAlreadyASanction,
+                'text-grey-80': disabled,
               })}
             >
               {hasAlreadyASanction

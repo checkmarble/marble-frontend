@@ -4,8 +4,10 @@ import {
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
+import { Nudge } from '@app-builder/components/Nudge';
 import { type CurrentUser } from '@app-builder/models';
 import {
+  isAccessible,
   isReadAllInboxesAvailable,
   isReadApiKeyAvailable,
   isReadTagAvailable,
@@ -101,7 +103,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Settings() {
   const { t } = useTranslation(handle.i18n);
-  const { sections } = useLoaderData<typeof loader>();
+  const { sections, entitlements } = useLoaderData<typeof loader>();
 
   return (
     <Page.Main>
@@ -128,22 +130,32 @@ export default function Settings() {
                     <p className="font-bold">{t(`settings:${section}`)}</p>
                   </div>
                   <ul className="flex flex-col gap-1 pb-6">
-                    {settings.map((setting) => (
-                      <NavLink
-                        key={setting.title}
-                        className={({ isActive }) =>
-                          clsx(
-                            'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
-                            isActive
-                              ? 'bg-purple-96 text-purple-65'
-                              : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
-                          )
-                        }
-                        to={setting.to}
-                      >
-                        {t(`settings:${setting.title}`)}
-                      </NavLink>
-                    ))}
+                    {settings.map((setting) =>
+                      setting.title === 'webhooks' && !isAccessible(entitlements.webhooks) ? (
+                        <span
+                          key={setting.title}
+                          className="text-s bg-grey-100 text-grey-80 inline-flex w-full gap-2 p-2 font-medium first-letter:capitalize"
+                        >
+                          {t(`settings:${setting.title}`)}
+                          <Nudge content="" kind={entitlements.webhooks} className="size-5" />
+                        </span>
+                      ) : (
+                        <NavLink
+                          key={setting.title}
+                          className={({ isActive }) =>
+                            clsx(
+                              'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
+                              isActive
+                                ? 'bg-purple-96 text-purple-65'
+                                : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+                            )
+                          }
+                          to={setting.to}
+                        >
+                          {t(`settings:${setting.title}`)}
+                        </NavLink>
+                      ),
+                    )}
                   </ul>
                 </nav>
               );
