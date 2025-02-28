@@ -23,9 +23,9 @@ const PublicEnvVarsSchema = z.object({
   APP_VERSION: z.string().optional(),
 
   SESSION_MAX_AGE: z.string(),
-  MARBLE_API_DOMAIN_CLIENT: z.string(),
-  MARBLE_API_DOMAIN_SERVER: z.string(),
-  MARBLE_APP_DOMAIN: z.string(),
+  MARBLE_API_URL_CLIENT: z.string(),
+  MARBLE_API_URL_SERVER: z.string(),
+  MARBLE_APP_URL: z.string(),
 
   FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
   FIREBASE_API_KEY: z.string(),
@@ -79,9 +79,9 @@ interface ServerEnvVars {
   NODE_ENV: string;
   APP_VERSION?: string;
   SESSION_MAX_AGE: string;
-  MARBLE_API_DOMAIN_CLIENT: string;
-  MARBLE_API_DOMAIN_SERVER: string;
-  MARBLE_APP_DOMAIN: string;
+  MARBLE_API_URL_CLIENT: string;
+  MARBLE_API_URL_SERVER: string;
+  MARBLE_APP_URL: string;
   FIREBASE_CONFIG: FirebaseConfig;
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT?: string;
@@ -108,8 +108,8 @@ export function getServerEnv<K extends keyof ServerEnvVars>(serverEnvVarName: K)
 interface ClientEnvVars {
   ENV: string;
   FIREBASE_CONFIG: FirebaseConfig;
-  MARBLE_API_DOMAIN: string;
-  MARBLE_APP_DOMAIN: string;
+  MARBLE_API_URL: string;
+  MARBLE_APP_URL: string;
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT?: string;
 }
@@ -117,8 +117,8 @@ export function getClientEnvVars(): ClientEnvVars {
   return {
     ENV: getServerEnv('ENV'),
     FIREBASE_CONFIG: getServerEnv('FIREBASE_CONFIG'),
-    MARBLE_API_DOMAIN: getServerEnv('MARBLE_API_DOMAIN_CLIENT'),
-    MARBLE_APP_DOMAIN: getServerEnv('MARBLE_APP_DOMAIN'),
+    MARBLE_API_URL: getServerEnv('MARBLE_API_URL_CLIENT'),
+    MARBLE_APP_URL: getServerEnv('MARBLE_APP_URL'),
     SENTRY_DSN: getServerEnv('SENTRY_DSN'),
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
   };
