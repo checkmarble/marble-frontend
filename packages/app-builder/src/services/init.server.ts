@@ -45,15 +45,15 @@ function initServerServices() {
   checkEnv();
 
   const { getMarbleCoreAPIClientWithAuth, marbleCoreApiClient } = initializeMarbleCoreAPIClient({
-    baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
+    baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
   });
 
   const { getTransfercheckAPIClientWithAuth } = initializeTransfercheckAPIClient({
-    baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
+    baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
   });
 
   const { getLicenseAPIClientWithAuth, licenseApi } = initializeLicenseAPIClient({
-    baseUrl: getServerEnv('MARBLE_API_DOMAIN_SERVER'),
+    baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
   });
 
   const serverRepositories = makeServerRepositories({
@@ -70,7 +70,7 @@ function initServerServices() {
           ? // Outside of development, we always want to set secure cookies
             true
           : // User agent only allows secure cookies to be set on secure connections (useful for people deploying Docker compose outside localhost and whithout SSL)
-            new URL(getServerEnv('MARBLE_APP_DOMAIN')).protocol === 'https:',
+            new URL(getServerEnv('MARBLE_APP_URL')).protocol === 'https:',
     },
   });
 
