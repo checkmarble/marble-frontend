@@ -10,8 +10,6 @@ ARG SENTRY_PROJECT
 ENV SENTRY_PROJECT=$SENTRY_PROJECT
 ARG SENTRY_RELEASE
 ENV SENTRY_RELEASE=$SENTRY_RELEASE
-ARG APP_VERSION
-ENV APP_VERSION=$APP_VERSION
 
 RUN apt-get update
 RUN apt-get -y install ca-certificates
@@ -27,6 +25,8 @@ RUN pnpm --filter=app-builder --prod deploy /prod/app-builder
 FROM gcr.io/distroless/nodejs22-debian12 AS app-builder
 ENV NODE_ENV=production
 ENV PORT=${PORT:-8080}
+ARG APP_VERSION
+ENV APP_VERSION=$APP_VERSION
 COPY --from=build /prod/app-builder/node_modules /prod/app-builder/node_modules
 COPY --from=build /prod/app-builder/build /prod/app-builder/build
 WORKDIR /prod/app-builder
