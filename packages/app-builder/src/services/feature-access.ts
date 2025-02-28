@@ -2,7 +2,7 @@ import { type CurrentUser } from '@app-builder/models';
 import { type LicenseEntitlements } from '@app-builder/models/license';
 import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 
-const isAccessible = (featureAccess: FeatureAccessDto) =>
+export const isAccessible = (featureAccess: FeatureAccessDto) =>
   featureAccess !== 'restricted' && featureAccess !== 'missing_configuration';
 
 export const isAnalyticsAvailable = (

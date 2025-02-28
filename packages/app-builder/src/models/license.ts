@@ -15,13 +15,13 @@ export interface LicenseEntitlements {
 
 export function emptyLicenseEntitlements(): LicenseEntitlements {
   return {
-    workflows: 'missing_configuration',
-    analytics: 'missing_configuration',
-    userRoles: 'missing_configuration',
-    webhooks: 'missing_configuration',
-    ruleSnoozes: 'missing_configuration',
-    testRun: 'missing_configuration',
-    sanctions: 'missing_configuration',
+    workflows: 'restricted',
+    analytics: 'restricted',
+    userRoles: 'restricted',
+    webhooks: 'restricted',
+    ruleSnoozes: 'restricted',
+    testRun: 'restricted',
+    sanctions: 'restricted',
   };
 }
 
