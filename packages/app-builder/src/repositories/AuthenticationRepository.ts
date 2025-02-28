@@ -67,7 +67,7 @@ export function getAuthenticationClientRepository(
   }
 
   const emailVerificationActionCodeSettings = {
-    url: new URL(getRoute('/sign-in'), getClientEnv('MARBLE_APP_DOMAIN')).href,
+    url: new URL(getRoute('/sign-in'), getClientEnv('MARBLE_APP_URL')).href,
   };
 
   async function emailAndPassswordSignUp(locale: string, email: string, password: string) {
@@ -96,7 +96,7 @@ export function getAuthenticationClientRepository(
   }
 
   const passwordResetEmailActionCodeSettings = {
-    url: new URL(getRoute('/sign-in'), getClientEnv('MARBLE_APP_DOMAIN')).href,
+    url: new URL(getRoute('/sign-in'), getClientEnv('MARBLE_APP_URL')).href,
   };
 
   async function sendPasswordResetEmail(locale: string, email: string) {
