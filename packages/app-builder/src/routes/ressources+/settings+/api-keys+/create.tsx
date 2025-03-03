@@ -1,21 +1,17 @@
-import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
-import { FormField } from '@app-builder/components/Form/FormField';
-import { FormInput } from '@app-builder/components/Form/FormInput';
-import { FormLabel } from '@app-builder/components/Form/FormLabel';
-import { FormSelect } from '@app-builder/components/Form/FormSelect';
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { apiKeyRoleOptions } from '@app-builder/models/api-keys';
 import { tKeyForApiKeyRole } from '@app-builder/services/i18n/translation-keys/api-key';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { FormProvider, getFormProps, useForm } from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
-import * as React from 'react';
+import { useForm } from '@tanstack/react-form';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
-import { Button, ModalV2 } from 'ui-design-system';
+import { Button, ModalV2, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -27,59 +23,61 @@ const createApiKeyFormSchema = z.object({
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
-    csrfService,
-    toastSessionService,
-    authSessionService,
+    toastSessionService: { getSession, commitSession },
+    authSessionService: { getSession: getAuthSession, commitSession: commitAuthSession },
     i18nextService: { getFixedT },
   } = serverServices;
-  const { apiKey } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  await csrfService.validate(request);
 
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, { schema: createApiKeyFormSchema });
+  const [data, { apiKey }, session, authSession, t] = await Promise.all([
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+    getSession(request),
+    getAuthSession(request),
+    getFixedT(request, ['common']),
+  ]);
 
-  if (submission.status !== 'success') {
-    return json(submission.reply());
+  const result = createApiKeyFormSchema.safeParse(data);
+
+  if (!result.success) {
+    return json(
+      { status: 'error', errors: result.error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 
   try {
-    const createdApiKey = await apiKey.createApiKey(submission.value);
-
-    const authSession = await authSessionService.getSession(request);
-    authSession.flash('createdApiKey', createdApiKey);
+    authSession.flash('createdApiKey', await apiKey.createApiKey(data));
 
     return redirect(getRoute('/settings/api-keys'), {
       headers: {
-        'Set-Cookie': await authSessionService.commitSession(authSession),
+        'Set-Cookie': await commitAuthSession(authSession),
       },
     });
   } catch (error) {
-    const toastSession = await toastSessionService.getSession(request);
-    const t = await getFixedT(request, ['common']);
-
-    const formError = t('common:errors.unknown');
-
-    setToastMessage(toastSession, {
+    setToastMessage(session, {
       type: 'error',
-      message: formError,
+      message: t('common:errors.unknown'),
     });
 
-    return json(submission.reply({ formErrors: [formError] }), {
-      headers: {
-        'Set-Cookie': await toastSessionService.commitSession(toastSession),
+    return json(
+      { status: 'error', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
       },
-    });
+    );
   }
 }
 
 export function CreateApiKey() {
   const { t } = useTranslation(['settings']);
-  const [open, setOpen] = React.useState(false);
-
+  const [open, setOpen] = useState(false);
   const navigation = useNavigation();
-  React.useEffect(() => {
+
+  useEffect(() => {
     if (navigation.state === 'loading') {
       setOpen(false);
     }
@@ -87,7 +85,7 @@ export function CreateApiKey() {
 
   return (
     <ModalV2.Root open={open} setOpen={setOpen}>
-      <ModalV2.Trigger onClick={(e) => e.stopPropagation()} render={<Button />}>
+      <ModalV2.Trigger onClick={(e) => e.stopPropagation()} render={<Button type="button" />}>
         <Icon icon="plus" className="size-6" />
         {t('settings:api_keys.new_api_key')}
       </ModalV2.Trigger>
@@ -102,57 +100,78 @@ const CreateApiKeyContent = () => {
   const { t } = useTranslation(['settings', 'common']);
   const fetcher = useFetcher<typeof action>();
 
-  const [form, fields] = useForm({
-    shouldRevalidate: 'onInput',
-    defaultValue: { description: '', role: 'API_CLIENT' },
-    lastResult: fetcher.data,
-    constraint: getZodConstraint(createApiKeyFormSchema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, {
-        schema: createApiKeyFormSchema,
-      });
+  const form = useForm({
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'PATCH',
+          action: getRoute('/ressources/settings/api-keys/create'),
+          encType: 'application/json',
+        });
+      }
+    },
+    defaultValues: { description: '', role: 'API_CLIENT' },
+    validators: {
+      onChangeAsync: createApiKeyFormSchema,
+      onBlurAsync: createApiKeyFormSchema,
+      onSubmitAsync: createApiKeyFormSchema,
     },
   });
 
   return (
-    <FormProvider context={form.context}>
-      <fetcher.Form
-        action={getRoute('/ressources/settings/api-keys/create')}
-        method="POST"
-        {...getFormProps(form)}
-      >
-        <ModalV2.Title>{t('settings:api_keys.new_api_key')}</ModalV2.Title>
-        <div className="bg-grey-100 flex flex-col gap-6 p-6">
-          <AuthenticityTokenInput />
-          <FormField name={fields.description.name} className="group flex flex-col gap-2">
-            <FormLabel>{t('settings:api_keys.description')}</FormLabel>
-            <FormInput type="text" />
-            <FormErrorOrDescription />
-          </FormField>
-          <FormField name={fields.role.name} className="group flex flex-col gap-2">
-            <FormLabel>{t('settings:api_keys.role')}</FormLabel>
-            <FormSelect.Default
-              disabled={apiKeyRoleOptions.length === 1}
-              options={apiKeyRoleOptions}
-            >
-              {apiKeyRoleOptions.map((role) => (
-                <FormSelect.DefaultItem key={role} value={role}>
-                  {t(tKeyForApiKeyRole(role))}
-                </FormSelect.DefaultItem>
-              ))}
-            </FormSelect.Default>
-            <FormErrorOrDescription />
-          </FormField>
-          <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
-              {t('common:cancel')}
-            </ModalV2.Close>
-            <Button className="flex-1" variant="primary" type="submit" name="create">
-              {t('settings:api_keys.create')}
-            </Button>
-          </div>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <ModalV2.Title>{t('settings:api_keys.new_api_key')}</ModalV2.Title>
+      <div className="bg-grey-100 flex flex-col gap-6 p-6">
+        <form.Field name="description">
+          {(field) => (
+            <div className="group flex flex-col gap-2">
+              <FormLabel name={field.name}>{t('settings:api_keys.description')}</FormLabel>
+              <FormInput
+                name={field.name}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.currentTarget.value)}
+                valid={field.state.meta.errors.length === 0}
+                type="text"
+              />
+              <FormErrorOrDescription errors={field.state.meta.errors} />
+            </div>
+          )}
+        </form.Field>
+        <form.Field name="role">
+          {(field) => (
+            <div className="group flex flex-col gap-2">
+              <FormLabel name={field.name}>{t('settings:api_keys.role')}</FormLabel>
+              <Select.Default
+                name={field.name}
+                disabled={apiKeyRoleOptions.length === 1}
+                defaultValue={field.state.value}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+              >
+                {apiKeyRoleOptions.map((role) => (
+                  <Select.DefaultItem key={role} value={role}>
+                    {t(tKeyForApiKeyRole(role))}
+                  </Select.DefaultItem>
+                ))}
+              </Select.Default>
+              <FormErrorOrDescription />
+            </div>
+          )}
+        </form.Field>
+        <div className="flex flex-1 flex-row gap-2">
+          <ModalV2.Close render={<Button type="button" className="flex-1" variant="secondary" />}>
+            {t('common:cancel')}
+          </ModalV2.Close>
+          <Button className="flex-1" variant="primary" type="submit">
+            {t('settings:api_keys.create')}
+          </Button>
         </div>
-      </fetcher.Form>
-    </FormProvider>
+      </div>
+    </form>
   );
 };
