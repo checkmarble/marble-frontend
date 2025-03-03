@@ -28,10 +28,9 @@ import { formatDateRelative, formatSchedule, useFormatLanguage } from '@app-buil
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
-import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
-import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
+import { Link, useFetcher, useLoaderData } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { type Namespace, type ParseKeys } from 'i18next';
 import { type FeatureAccessDto } from 'marble-api/generated/license-api';
@@ -39,7 +38,7 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { match } from 'ts-pattern';
-import { Button, CtaClassName, MenuButton } from 'ui-design-system';
+import { Button, CtaClassName, HiddenInputs, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -69,7 +68,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     }),
   ]);
 
-  return json({
+  return {
     featureAccess: {
       isEditScenarioAvailable: isEditScenarioAvailable(user),
       isManualTriggerScenarioAvailable: isManualTriggerScenarioAvailable(user),
@@ -78,46 +77,66 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     },
     scheduledExecutions,
     testRuns,
-  });
+  };
 }
 
-const schema = z.object({
+const scenarioExecutionSchema = z.object({
   iterationId: z.string(),
 });
+
+type ScenarioExecutionForm = z.infer<typeof scenarioExecutionSchema>;
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const session = await getSession(request);
 
-  const { scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const [session, data, { scenario }] = await Promise.all([
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, { schema });
+  const result = scenarioExecutionSchema.safeParse(data);
 
-  if (submission.status !== 'success') {
-    return json(submission.reply());
+  if (!result.success) {
+    return json(
+      { status: 'error', errors: result.error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 
   try {
-    await scenario.scheduleScenarioExecution({
-      iterationId: submission.value.iterationId,
+    await scenario.scheduleScenarioExecution(data);
+
+    setToastMessage(session, {
+      type: 'success',
+      messageKey: 'common:success.save',
     });
 
-    return json(submission.reply({ resetForm: true }));
+    return json(
+      { status: 'success', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',
     });
 
-    return json(submission, {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { status: 'error', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 }
 
@@ -535,32 +554,36 @@ function ManualTriggerScenarioExecutionForm({
   disabled: boolean;
 }) {
   const { t } = useTranslation(['scenarios']);
-  const lastResult = useActionData<typeof action>();
+  const fetcher = useFetcher<typeof action>();
 
-  const [form, fields] = useForm({
-    defaultValue: { iterationId },
-    lastResult,
-    constraint: getZodConstraint(schema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, {
-        schema,
-      });
+  const form = useForm<ScenarioExecutionForm>({
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, { method: 'POST', encType: 'application/json' });
+      }
+    },
+    defaultValues: { iterationId },
+    validators: {
+      onChangeAsync: scenarioExecutionSchema,
+      onBlurAsync: scenarioExecutionSchema,
+      onSubmitAsync: scenarioExecutionSchema,
     },
   });
 
   return (
-    <FormProvider context={form.context}>
-      <Form method="post" {...getFormProps(form)}>
-        <input
-          {...getInputProps(fields.iterationId, { type: 'hidden' })}
-          key={fields.iterationId.key}
-        />
-        <Button type="submit" disabled={disabled}>
-          <Icon icon="play" className="size-6 shrink-0" aria-hidden />
-          {t('scenarios:home.execution.batch.trigger_manual_execution')}
-        </Button>
-      </Form>
-    </FormProvider>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <HiddenInputs iterationId={iterationId} />
+      <Button type="submit" disabled={disabled}>
+        <Icon icon="play" className="size-6 shrink-0" aria-hidden />
+        {t('scenarios:home.execution.batch.trigger_manual_execution')}
+      </Button>
+    </form>
   );
 }
 
