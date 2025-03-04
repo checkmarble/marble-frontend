@@ -144,7 +144,11 @@ export function CreateInboxContent({
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        fetcher.submit(value, { method: 'POST', encType: 'application/json' });
+        fetcher.submit(value, {
+          method: 'POST',
+          action: getRoute('/ressources/settings/inboxes/create'),
+          encType: 'application/json',
+        });
       }
     },
   });
