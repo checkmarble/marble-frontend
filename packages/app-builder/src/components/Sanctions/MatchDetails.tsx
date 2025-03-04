@@ -53,7 +53,7 @@ export function MatchDetails({ entity }: MatchDetailsProps) {
         return (
           <Fragment key={property}>
             <span className="font-bold">{t(`sanctions:entity.property.${property}`)}</span>
-            <span className="flex flex-wrap gap-1">
+            <span className="flex flex-wrap gap-1 break-all">
               {values.map((v, i) => (
                 <Fragment key={i}>
                   <TransformProperty property={property} value={v} />
