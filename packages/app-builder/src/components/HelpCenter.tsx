@@ -28,6 +28,7 @@ import {
   MenuRoot,
   Tag,
 } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 interface Resource {
   label: string;
@@ -209,13 +210,14 @@ function HelpCenterContent({
         </div>
       </div>
 
-      <div className="border-t-grey-90 bg-grey-95 text-grey-50 flex items-center gap-2 border-t p-2 text-xs">
-        <span>Versions</span>
-        <span className="ml-auto">
-          App: <strong>{versions.appVersion}</strong>
+      <div className="border-t-grey-90 bg-grey-95 text-grey-50 flex items-center justify-end gap-4 border-t p-2 text-xs">
+        <span className="flex items-center gap-1">
+          <Icon icon="monitor" className="size-4" />
+          <span>{versions.appVersion}</span>
         </span>
-        <span className="">
-          API: <strong>{versions.apiVersion}</strong>
+        <span className="flex items-center gap-1">
+          <Icon icon="dns" className="size-4" />
+          <span>{versions.apiVersion}</span>
         </span>
       </div>
     </Ariakit.TabProvider>
