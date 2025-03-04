@@ -113,7 +113,7 @@
   "rules.rule_group": "Rule group",
   "rules.add_group": "Add a rule group",
   "rules.new_group": "new rule group",
-  "rules.empty_groups": "Start typing to create a new group",
+  "rules.empty_groups": "Create a new group",
   "rules.heading": "Select a rule group or create one",
   "rules.create": "Create",
   "logical_operator.or": "or",
