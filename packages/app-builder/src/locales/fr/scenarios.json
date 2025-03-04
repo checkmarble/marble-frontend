@@ -427,7 +427,7 @@
   "edit_sanction.global_settings": "Paramètres globaux",
   "rules.add_group": "Ajouter un groupe de règles",
   "rules.create": "Créer",
-  "rules.empty_groups": "Commencez à taper pour créer un nouveau groupe",
+  "rules.empty_groups": "Créer un nouveau groupe",
   "rules.heading": "Sélectionnez un groupe de règles ou créez-en un",
   "rules.new_group": "Nouveau groupe de règles",
   "sanction.trigger_object.callout": "Détermine si la vérification des sanctions est pertinente pour chaque objet déclencheur (<DocLink> en savoir plus </DocLink>)",

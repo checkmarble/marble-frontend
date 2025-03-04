@@ -83,13 +83,24 @@ export const FieldRuleGroup = ({
               placeholder={t('scenarios:rules.new_group')}
               value={value}
               onInput={(e) => setValue(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && value) {
+                  setNewRule(value);
+                  onChange?.(value);
+                  setValue('');
+                }
+              }}
             />
           </div>
           <CommandList>
             {finalRuleGroups.length ? (
               <CommandGroup heading={t('scenarios:rules.heading')}>
                 {finalRuleGroups.map((r) => (
-                  <CommandItem key={r} onSelect={() => onChange?.(r)}>
+                  <CommandItem
+                    className="data-[selected=true]:bg-purple-98 rounded"
+                    key={r}
+                    onSelect={() => onChange?.(r)}
+                  >
                     <RuleGroup ruleGroup={r} />
                   </CommandItem>
                 ))}
