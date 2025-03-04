@@ -121,7 +121,7 @@ const editSanctionFormSchema = z.object({
     z.literal('decline'),
     z.literal('block_and_review'),
   ]),
-  triggerRule: z.any().nullish(),
+  triggerRule: z.any(),
   query: z
     .object({
       name: z.any().nullish(),
