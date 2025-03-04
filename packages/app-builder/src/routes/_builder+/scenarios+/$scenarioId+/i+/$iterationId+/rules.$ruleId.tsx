@@ -238,7 +238,7 @@ export default function RuleDetail() {
           >
             <div
               className={cn(
-                'bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between',
+                'bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between gap-4',
                 {
                   'border-b-grey-90 border-b': !intersection?.isIntersecting,
                 },
@@ -246,7 +246,7 @@ export default function RuleDetail() {
             >
               <form.Field name="name">
                 {(field) => (
-                  <div className="flex flex-col gap-1">
+                  <div className="flex w-full flex-col gap-1">
                     <input
                       type="text"
                       name={field.name}
