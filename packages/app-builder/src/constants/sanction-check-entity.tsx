@@ -1,7 +1,7 @@
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type SanctionCheckEntitySchema } from '@app-builder/models/sanction-check';
 
-export type PropertyDataType = 'string' | 'country' | 'url' | 'date';
+export type PropertyDataType = 'string' | 'country' | 'url' | 'date' | 'wikidataId';
 export type PropertyForSchema<
   Schema extends SanctionCheckEntitySchema,
   _R = never,
@@ -169,7 +169,7 @@ const propertyMetadata = {
   weakAlias: { type: 'string' },
   website: { type: 'url' },
   weight: { type: 'string' },
-  wikidataId: { type: 'string' },
+  wikidataId: { type: 'wikidataId' },
 } satisfies Record<SanctionCheckEntityProperty, { type: PropertyDataType }>;
 
 export function getSanctionEntityProperties(schema: SanctionCheckEntitySchema) {
@@ -212,6 +212,12 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
         }
       case 'date':
         return <time dateTime={value}>{intlDate.format(new Date(value))}</time>;
+      case 'wikidataId':
+        return (
+          <ExternalLink href={`https://wikidata.org/wiki/${value}`} className="normal-case">
+            {value}
+          </ExternalLink>
+        );
     }
   };
 }
