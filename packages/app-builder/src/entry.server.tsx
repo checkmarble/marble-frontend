@@ -14,6 +14,8 @@ import { initServerServices } from './services/init.server';
 import { captureUnexpectedRemixError } from './services/monitoring';
 import { checkEnv, getServerEnv } from './utils/environment';
 
+import crypto from 'crypto';
+
 const ABORT_DELAY = 70000;
 
 export default async function handleRequest(
@@ -99,6 +101,18 @@ function handleBrowserRequest(
         const stream = createReadableStreamFromReadable(body);
 
         responseHeaders.set('Content-Type', 'text/html');
+
+        const cspOrigins = [
+          ['default-src', "'self'"],
+          ['frame-ancestors', "'none'"],
+          ['object-src', "'none'"],
+          ['style-src', "'self' 'unsafe-inline'"],
+          ['script-src', `'self' 'unsafe-inline' cdn.segment.com`],
+          ['connect-src', "'self' localhost:9099"],
+          ['frame-src', 'your_subdomain.metabaseapp.com'],
+        ];
+
+        responseHeaders.set('content-security-policy', cspOrigins.flatMap(rule => rule.join(' ')).join('; '));
 
         resolve(
           new Response(stream, {
