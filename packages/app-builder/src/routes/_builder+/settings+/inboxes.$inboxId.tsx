@@ -219,7 +219,7 @@ export default function Inbox() {
         </CollapsiblePaper.Container>
 
         {isDeleteInboxAvailable ? (
-          caseCount > 0 ? (
+          caseCount === 0 ? (
             <DeleteInbox inbox={inbox} />
           ) : (
             <Tooltip.Default
