@@ -229,7 +229,6 @@ export default function SanctionDetail() {
 
   const form = useForm<EditSanctionForm>({
     onSubmit: ({ value, formApi }) => {
-      console.log('hello');
       if (formApi.state.isValid) {
         fetcher.submit(value, { method: 'PATCH', encType: 'application/json' });
       }
