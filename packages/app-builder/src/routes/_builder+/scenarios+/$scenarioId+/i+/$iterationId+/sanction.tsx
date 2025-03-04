@@ -121,7 +121,7 @@ const editSanctionFormSchema = z.object({
     z.literal('decline'),
     z.literal('block_and_review'),
   ]),
-  triggerRule: z.any().nullish(),
+  triggerRule: z.any(),
   query: z
     .object({
       name: z.any().nullish(),
@@ -229,6 +229,7 @@ export default function SanctionDetail() {
 
   const form = useForm<EditSanctionForm>({
     onSubmit: ({ value, formApi }) => {
+      console.log('hello');
       if (formApi.state.isValid) {
         fetcher.submit(value, { method: 'PATCH', encType: 'application/json' });
       }
