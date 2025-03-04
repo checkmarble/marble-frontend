@@ -153,6 +153,8 @@ paths:
     $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1search
   /sanction-checks/refine:
     $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1refine
+  /sanction-checks/freshness:
+    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1freshness
 
   # RULES
 

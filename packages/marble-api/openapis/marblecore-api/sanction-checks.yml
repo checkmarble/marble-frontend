@@ -34,6 +34,19 @@
           application/json:
             schema:
               $ref: '#/components/schemas/OpenSanctionsCatalogDto'
+/sanction-checks/freshness:
+  get:
+    tags:
+      - Sanction Check
+    summary: Retrieve the freshness of sanction datasets
+    operationId: getDatasetsFreshness
+    responses:
+      '200':
+        description: Freshness descriptor
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpenSanctionsDatasetFreshnessDto'
 /sanction-checks/{sanctionCheckId}/files:
   get:
     tags:
@@ -162,6 +175,33 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OpenSanctionsCatalogSection'
+    OpenSanctionsDatasetFreshnessDto:
+      type: object
+      required:
+        - upstream
+        - version
+        - up_to_date
+      properties:
+        upstream:
+          $ref: '#/components/schemas/OpenSanctionsUpstreamDatasetFreshnessDto'
+        version:
+          type: string
+        up_to_date:
+          type: boolean
+    OpenSanctionsUpstreamDatasetFreshnessDto:
+      type: object
+      required:
+        - version
+        - name
+        - last_export
+      properties:
+        version:
+          type: string
+        name:
+          type: string
+        last_export:
+          type: string
+          format: date-time
     SanctionCheckConfigDto:
       type: object
       properties:
