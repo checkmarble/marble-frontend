@@ -7,7 +7,7 @@ interface FormErrorOrDescriptionProps
   errorClassName?: string;
   descriptionClassName?: string;
   errors?: ValidationError[];
-  description?: string;
+  description?: string | React.ReactNode;
 }
 
 export const FormErrorOrDescription = React.forwardRef<
@@ -30,7 +30,7 @@ export const FormErrorOrDescription = React.forwardRef<
   }
 
   if (props.description) {
-    return (
+    return typeof props.description === 'string' ? (
       <p
         ref={ref}
         className={clsx(
@@ -41,7 +41,10 @@ export const FormErrorOrDescription = React.forwardRef<
       >
         {props.description}
       </p>
+    ) : (
+      props.description
     );
   }
+
   return null;
 });
