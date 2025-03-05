@@ -290,6 +290,7 @@ export function AggregationEdit({
   );
   const currentScenario = useCurrentScenario();
   const { validation, validate } = useAstValidationFetcher(currentScenario.id);
+  const [label, setLabel] = useState(aggregation.label ?? '');
 
   useEffect(() => {
     if (validation) {
@@ -301,7 +302,7 @@ export function AggregationEdit({
   }, [validation, dataModel]);
 
   const handleSave = () => {
-    onSave(adaptAggregationAstNode(aggregation));
+    onSave(adaptAggregationAstNode({ ...aggregation, label }));
   };
 
   const handleChange = (agg: AggregationViewModel) => {
@@ -344,17 +345,10 @@ export function AggregationEdit({
               type="text"
               id="aggregation.label"
               placeholder={t('scenarios:edit_aggregation.label_placeholder')}
-              value={aggregation.label}
-              onChange={(e) =>
-                handleChange({
-                  ...aggregation,
-                  label: e.target.value,
-                  errors: {
-                    ...aggregation.errors,
-                    label: [],
-                  },
-                })
-              }
+              value={label}
+              onChange={(e) => {
+                setLabel(e.target.value);
+              }}
               borderColor={aggregation.errors.label.length > 0 ? 'redfigma-47' : 'greyfigma-90'}
             />
             <EvaluationErrors
