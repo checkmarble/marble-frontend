@@ -1,13 +1,13 @@
 import { ExternalLink } from '@app-builder/components/ExternalLink';
-import { type SanctionCheckEntitySchema } from '@app-builder/models/sanction-check';
+import { type OpenSanctionEntitySchema } from '@app-builder/models/sanction-check';
 
 export type PropertyDataType = 'string' | 'country' | 'url' | 'date' | 'wikidataId';
 export type PropertyForSchema<
-  Schema extends SanctionCheckEntitySchema,
+  Schema extends OpenSanctionEntitySchema,
   _R = never,
 > = (typeof schemaInheritence)[Schema] extends null
   ? _R | (typeof schemaProperties)[Schema][number]
-  : (typeof schemaInheritence)[Schema] extends infer P extends SanctionCheckEntitySchema
+  : (typeof schemaInheritence)[Schema] extends infer P extends OpenSanctionEntitySchema
     ? PropertyForSchema<P, _R | (typeof schemaProperties)[Schema][number]>
     : never;
 
@@ -88,7 +88,21 @@ export const schemaProperties = {
   Vehicle: ['registrationNumber'] as const,
   Airplane: [] as const,
   Vessel: [] as const,
-} satisfies Record<SanctionCheckEntitySchema, string[]>;
+  Sanction: [
+    'country',
+    'authority',
+    'authorityId',
+    'program',
+    'startDate',
+    'endDate',
+    'listingDate',
+    'sourceUrl',
+    'reason',
+    'summary',
+    'programId',
+    'programUrl',
+  ] as const,
+} satisfies Record<OpenSanctionEntitySchema, string[]>;
 
 export type SanctionCheckEntityProperty =
   (typeof schemaProperties)[keyof typeof schemaProperties][number];
@@ -102,7 +116,8 @@ const schemaInheritence = {
   Vehicle: 'Thing',
   Vessel: 'Vehicle',
   Airplane: 'Vehicle',
-} satisfies Record<SanctionCheckEntitySchema, SanctionCheckEntitySchema | null>;
+  Sanction: null,
+} satisfies Record<OpenSanctionEntitySchema, OpenSanctionEntitySchema | null>;
 
 const propertyMetadata = {
   address: { type: 'string' },
@@ -170,10 +185,18 @@ const propertyMetadata = {
   website: { type: 'url' },
   weight: { type: 'string' },
   wikidataId: { type: 'wikidataId' },
+  authority: { type: 'string' },
+  authorityId: { type: 'string' },
+  startDate: { type: 'date' },
+  endDate: { type: 'date' },
+  programId: { type: 'string' },
+  programUrl: { type: 'url' },
+  reason: { type: 'string' },
+  listingDate: { type: 'date' },
 } satisfies Record<SanctionCheckEntityProperty, { type: PropertyDataType }>;
 
-export function getSanctionEntityProperties(schema: SanctionCheckEntitySchema) {
-  let currentSchema: SanctionCheckEntitySchema | null = schema;
+export function getSanctionEntityProperties(schema: OpenSanctionEntitySchema) {
+  let currentSchema: OpenSanctionEntitySchema | null = schema;
   const properties: SanctionCheckEntityProperty[] = [];
 
   do {

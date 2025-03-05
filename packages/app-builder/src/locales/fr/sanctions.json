@@ -117,5 +117,16 @@
   "error_label_one": "Le filtrage de sanction est erronée pour la raison suivante",
   "error_label_others": "Le filtrage de sanction est erronée pour les raisons suivantes",
   "match.not_reviewable": "Non révisable",
-  "refine_modal.search_input_label": "La recherche couvre les champs suivants:"
+  "refine_modal.search_input_label": "La recherche couvre les champs suivants:",
+  "entity.property.authority": "Autorité",
+  "entity.property.authorityId": "Identifiant émis par l'autorité",
+  "entity.property.endDate": "Date de fin",
+  "entity.property.listingDate": "Date d'inscription",
+  "entity.property.programId": "ID du programme",
+  "entity.property.programUrl": "URL du programme",
+  "entity.property.reason": "Raison",
+  "entity.property.startDate": "Date de début",
+  "enrich_button": "Enrichir",
+  "entity.property.sanctions": "Sanctions",
+  "sanction_detail.title": "Détails de sanction"
 }

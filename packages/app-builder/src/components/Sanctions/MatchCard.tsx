@@ -1,5 +1,6 @@
 import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
 import { SanctionCheckReviewModal } from '@app-builder/routes/ressources+/cases+/review-sanction-match';
+import { EnrichMatchButton } from '@app-builder/routes/ressources+/sanction-check+/enrich-match.$matchId';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
@@ -34,7 +35,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
     <div className="grid grid-cols-[max-content_1fr_max-content] gap-x-6 gap-y-2">
       <CollapsibleV2.Provider defaultOpen={defaultOpen}>
         <div className="bg-grey-98 col-span-full grid grid-cols-subgrid rounded-md">
-          <div className="col-span-full flex items-center justify-between px-4 py-3">
+          <div className="col-span-full flex items-center justify-between gap-2 px-4 py-3">
             <CollapsibleV2.Title className="focus-visible:text-purple-65 group flex grow items-center gap-2 rounded outline-none transition-colors">
               <Icon
                 icon="smallarrow-up"
@@ -51,6 +52,11 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                 </Tag>
               </div>
             </CollapsibleV2.Title>
+            {!match.enriched ? (
+              <div>
+                <EnrichMatchButton matchId={match.id} />
+              </div>
+            ) : null}
             <div className="inline-flex h-8">
               {unreviewable ? (
                 <Tag border="square" color="grey">

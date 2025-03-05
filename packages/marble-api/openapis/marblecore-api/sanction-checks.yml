@@ -338,6 +338,25 @@ components:
         created_at:
           type: string
           format: date-time
+    SanctionCheckSanctionEntityDto:
+      type: object
+      required:
+        - id
+        - schema
+        - properties
+      properties:
+        id:
+          type: string
+        schema:
+          type: string
+          enum: ['Sanction']
+        properties:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
     SanctionCheckMatchPayloadDto:
       type: object
       required:
@@ -359,11 +378,18 @@ components:
         caption:
           type: string
         properties:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
+          allOf:
+            - type: object
+              properties:
+                sanctions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/SanctionCheckSanctionEntityDto'
+            - type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
     SanctionCheckMatchDto:
       type: object
       required:

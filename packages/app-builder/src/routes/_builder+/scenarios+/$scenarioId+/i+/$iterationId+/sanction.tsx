@@ -24,7 +24,7 @@ import { useEditorMode } from '@app-builder/services/editor';
 import { OptionsProvider } from '@app-builder/services/editor/options';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUID, toUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
@@ -275,6 +275,7 @@ export default function SanctionDetail() {
       </Page.Header>
       <Page.Container ref={containerRef}>
         <Page.Content className="pt-0 lg:pt-0">
+          {toUUID('pQ323VAW6WpSSrfJL7QU5r')}
           <form
             className="relative flex max-w-3xl flex-col"
             onSubmit={(e) => {

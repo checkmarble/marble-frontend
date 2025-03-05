@@ -190,6 +190,8 @@ SanctionCheckErrorDto:
   $ref: sanction-checks.yml#/components/schemas/SanctionCheckErrorDto
 SanctionCheckFileDto:
   $ref: sanction-checks.yml#/components/schemas/SanctionCheckFileDto
+SanctionCheckSanctionEntityDto:
+  $ref: sanction-checks.yml#/components/schemas/SanctionCheckSanctionEntityDto
 SanctionCheckMatchPayloadDto:
   $ref: sanction-checks.yml#/components/schemas/SanctionCheckMatchPayloadDto
 SanctionCheckMatchDto:

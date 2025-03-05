@@ -109,6 +109,15 @@
   "entity.property.hairColor": "Hair color",
   "entity.property.appearance": "Appearance",
   "entity.property.political": "Political association",
+  "entity.property.sanctions": "Sanctions",
+  "entity.property.programId": "Program ID",
+  "entity.property.programUrl": "Program URL",
+  "entity.property.authority": "Authority",
+  "entity.property.authorityId": "Authority-issued Identifier",
+  "entity.property.startDate": "Start date",
+  "entity.property.endDate": "End date",
+  "entity.property.listingDate": "Listing date",
+  "entity.property.reason": "Reason",
   "entity.schema.airplane": "Airplane",
   "entity.schema.company": "Company",
   "entity.schema.person": "Person",
@@ -117,5 +126,7 @@
   "entity.schema.legalentity": "Legal Entity",
   "entity.schema.vehicle": "Vehicle",
   "entity.schema.vessel": "Vessel",
-  "refine_modal.schema.legalentity": "Legal Entity"
+  "refine_modal.schema.legalentity": "Legal Entity",
+  "sanction_detail.title": "Sanction details",
+  "enrich_button": "Enrich"
 }

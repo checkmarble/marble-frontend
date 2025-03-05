@@ -1,12 +1,9 @@
 import { vitePlugin as remix } from '@remix-run/dev';
-import { installGlobals } from '@remix-run/node';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { remixDevTools } from 'remix-development-tools';
 import { flatRoutes } from 'remix-flat-routes';
 import { defineConfig, type PluginOption } from 'vite';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
-
-installGlobals();
 
 const isSentryConfigured = !!process.env['SENTRY_AUTH_TOKEN'];
 const appDirectory = 'src';
