@@ -6,9 +6,10 @@ import {
 } from '@app-builder/components/Breadcrumbs';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
-import { FieldTrigger } from '@app-builder/components/Scenario/Sanction/FieldTrigger';
 import useIntersection from '@app-builder/hooks/useIntersection';
+import { NewEmptyRuleAstNode } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
 import { DuplicateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate';
@@ -346,7 +347,7 @@ export default function RuleDetail() {
                 <div className="bg-grey-100 border-grey-90 rounded-md border p-6">
                   <form.Field name="formula">
                     {(field) => (
-                      <FieldTrigger
+                      <FieldAstFormula
                         type="rule"
                         scenarioId={scenario.id}
                         iterationId={iterationId}
@@ -354,6 +355,7 @@ export default function RuleDetail() {
                         onBlur={field.handleBlur}
                         onChange={field.handleChange}
                         trigger={field.state.value}
+                        defaultValue={NewEmptyRuleAstNode()}
                       />
                     )}
                   </form.Field>
