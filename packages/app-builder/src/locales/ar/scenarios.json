@@ -152,6 +152,8 @@
   "validation.evaluation_error.division_by_zero_other": "{{count}} قسمة على صفر.",
   "validation.evaluation_error.payload_field_not_found_one": "لم يتم العثور على حقل الحمولة",
   "validation.evaluation_error.payload_field_not_found_other": "{{count}} payload fields not found",
+  "validation.evaluation_error.aggregation_field_incompatible_with_aggregator": "نوع حقل التجميع غير متوافق مع وظيفة التجميع",
+  "validation.evaluation_error.aggregation_field_not_chosen": "يجب اختيار مجال التجميع",
   "edit_aggregation.title": "إنشاء متغير",
   "edit_aggregation.subtitle": "من قاعدة بيانات Marble",
   "edit_aggregation.description": "يتم حساب التجميعات على البيانات التي تم استيرادها. (<DocLink>لمعرفة المزيد</DocLink>)",
