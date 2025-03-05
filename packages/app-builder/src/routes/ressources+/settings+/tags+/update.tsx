@@ -1,20 +1,17 @@
-import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
-import { FormField } from '@app-builder/components/Form/FormField';
-import { FormInput } from '@app-builder/components/Form/FormInput';
-import { FormLabel } from '@app-builder/components/Form/FormLabel';
-import { FormSelect } from '@app-builder/components/Form/FormSelect';
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { type Tag } from 'marble-api';
-import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -36,42 +33,52 @@ export async function action({ request }: ActionFunctionArgs) {
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, { schema: updateTagFormSchema });
 
-  if (submission.status !== 'success') {
-    return json(submission.reply());
+  const [t, session, rawData, { apiClient }] = await Promise.all([
+    getFixedT(request, ['common']),
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
+
+  const { data, success, error } = updateTagFormSchema.safeParse(rawData);
+
+  if (!success) {
+    return json(
+      { status: 'error', errors: error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 
   try {
-    await apiClient.updateTag(submission.value.id, submission.value);
+    await apiClient.updateTag(data.id, data);
+
     return redirect(getRoute('/settings/tags'));
   } catch (error) {
-    const session = await getSession(request);
-    const t = await getFixedT(request, ['common']);
-
-    const formError = t('common:errors.unknown');
-
     setToastMessage(session, {
       type: 'error',
-      message: formError,
+      message: t('common:errors.unknown'),
     });
 
-    return json(submission.reply({ formErrors: [formError] }), {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { status: 'error', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 }
 
 export function UpdateTag({ tag }: { tag: Tag }) {
   const { t } = useTranslation(handle.i18n);
-  const [open, setOpen] = React.useState(false);
-
   const navigation = useNavigation();
-  React.useEffect(() => {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
     if (navigation.state === 'loading') {
       setOpen(false);
     }
@@ -97,58 +104,81 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const [form, fields] = useForm({
-    shouldRevalidate: 'onInput',
-    defaultValue: tag,
-    lastResult: fetcher.data,
-    constraint: getZodConstraint(updateTagFormSchema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, {
-        schema: updateTagFormSchema,
-      });
+  const form = useForm<z.infer<typeof updateTagFormSchema>>({
+    defaultValues: tag as Tag & { color: (typeof tagColors)[number] },
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'PATCH',
+          action: getRoute('/ressources/settings/tags/update'),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: updateTagFormSchema,
+      onBlurAsync: updateTagFormSchema,
+      onSubmitAsync: updateTagFormSchema,
     },
   });
 
   return (
-    <FormProvider context={form.context}>
-      <fetcher.Form
-        action={getRoute('/ressources/settings/tags/update')}
-        method="PATCH"
-        {...getFormProps(form)}
-      >
-        <Modal.Title>{t('settings:tags.update_tag')}</Modal.Title>
-        <div className="flex flex-col gap-6 p-6">
-          <div className="flex gap-2">
-            <input {...getInputProps(fields.id, { type: 'hidden' })} key={fields.id.key} />
-            <FormField name={fields.name.name} className="group flex w-full flex-col gap-2">
-              <FormLabel>{t('settings:tags.name')}</FormLabel>
-              <FormInput type="text" />
-              <FormErrorOrDescription />
-            </FormField>
-            <FormField name={fields.color.name} className="group flex flex-col gap-2">
-              <FormLabel>{t('settings:tags.color')}</FormLabel>
-              <FormSelect.Default options={tagColors}>
-                {tagColors.map((color) => (
-                  <FormSelect.DefaultItem key={color} value={color}>
-                    <div className="size-4 rounded-full" style={{ backgroundColor: color }}></div>
-                  </FormSelect.DefaultItem>
-                ))}
-              </FormSelect.Default>
-              <FormErrorOrDescription />
-            </FormField>
-          </div>
-          <div className="flex flex-1 flex-row gap-2">
-            <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary" name="cancel">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button className="flex-1" variant="primary" type="submit" name="update">
-              {t('common:save')}
-            </Button>
-          </div>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <Modal.Title>{t('settings:tags.update_tag')}</Modal.Title>
+      <div className="flex flex-col gap-6 p-6">
+        <div className="flex gap-2">
+          <form.Field name="name">
+            {(field) => (
+              <div className="group flex w-full flex-col gap-2">
+                <FormLabel name={field.name}>{t('settings:tags.name')}</FormLabel>
+                <FormInput
+                  type="text"
+                  name={field.name}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.currentTarget.value)}
+                  defaultValue={field.state.value}
+                  valid={field.state.meta.errors.length === 0}
+                />
+                <FormErrorOrDescription errors={field.state.meta.errors} />
+              </div>
+            )}
+          </form.Field>
+          <form.Field name="color">
+            {(field) => (
+              <div className="group flex flex-col gap-2">
+                <FormLabel name={field.name}>{t('settings:tags.color')}</FormLabel>
+                <Select.Default
+                  defaultValue={field.state.value}
+                  onValueChange={(e) => field.handleChange(e as (typeof tagColors)[number])}
+                >
+                  {tagColors.map((color) => (
+                    <Select.DefaultItem key={color} value={color}>
+                      <div className="size-4 rounded-full" style={{ backgroundColor: color }}></div>
+                    </Select.DefaultItem>
+                  ))}
+                </Select.Default>
+                <FormErrorOrDescription />
+              </div>
+            )}
+          </form.Field>
         </div>
-      </fetcher.Form>
-    </FormProvider>
+        <div className="flex flex-1 flex-row gap-2">
+          <Modal.Close asChild>
+            <Button className="flex-1" variant="secondary" type="button" name="cancel">
+              {t('common:cancel')}
+            </Button>
+          </Modal.Close>
+          <Button className="flex-1" variant="primary" type="submit" name="update">
+            {t('common:save')}
+          </Button>
+        </div>
+      </div>
+    </form>
   );
 };
