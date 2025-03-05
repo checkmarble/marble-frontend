@@ -37,7 +37,11 @@ export type EvaluationErrorViewModel =
       count: number;
     }
   | {
-      error: 'WRONG_NUMBER_OF_ARGUMENTS' | 'FILTERS_TABLE_NOT_MATCH';
+      error:
+        | 'WRONG_NUMBER_OF_ARGUMENTS'
+        | 'FILTERS_TABLE_NOT_MATCH'
+        | 'AGGREGATION_FIELD_NOT_CHOSEN'
+        | 'AGGREGATION_FIELD_INCOMPATIBLE_WITH_AGGREGATOR';
     };
 
 export function adaptEvaluationErrorViewModels(
@@ -144,6 +148,12 @@ const commonErrorMessages =
         return t('scenarios:validation.evaluation_error.wrong_number_of_arguments');
       case 'FILTERS_TABLE_NOT_MATCH':
         return t('scenarios:validation.evaluation_error.filters_table_not_match');
+      case 'AGGREGATION_FIELD_NOT_CHOSEN':
+        return t('scenarios:validation.evaluation_error.aggregation_field_not_chosen');
+      case 'AGGREGATION_FIELD_INCOMPATIBLE_WITH_AGGREGATOR':
+        return t(
+          'scenarios:validation.evaluation_error.aggregation_field_incompatible_with_aggregator',
+        );
       case 'MISSING_NAMED_ARGUMENT':
         return t('scenarios:validation.evaluation_error.missing_named_argument', {
           count: evaluationError.count,
