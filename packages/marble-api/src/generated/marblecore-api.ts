@@ -561,6 +561,16 @@ export type UpdateSanctionCheckMatchDto = {
     whitelist?: boolean;
 };
 export type SanctionCheckRefineDto = object;
+export type OpenSanctionsUpstreamDatasetFreshnessDto = {
+    version: string;
+    name: string;
+    last_export: string;
+};
+export type OpenSanctionsDatasetFreshnessDto = {
+    upstream: OpenSanctionsUpstreamDatasetFreshnessDto;
+    version: string;
+    up_to_date: boolean;
+};
 export type UpdateScenarioIterationRuleBodyDto = {
     display_order?: number;
     name?: string;
@@ -1993,6 +2003,17 @@ export function refineSanctionCheck(sanctionCheckRefineDto?: SanctionCheckRefine
         method: "POST",
         body: sanctionCheckRefineDto
     })));
+}
+/**
+ * Retrieve the freshness of sanction datasets
+ */
+export function getDatasetsFreshness(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: OpenSanctionsDatasetFreshnessDto;
+    }>("/sanction-checks/freshness", {
+        ...opts
+    }));
 }
 /**
  * List rules

@@ -174,6 +174,10 @@ OpenSanctionsCatalogDataset:
   $ref: sanction-checks.yml#/components/schemas/OpenSanctionsCatalogDataset
 OpenSanctionsCatalogSection:
   $ref: sanction-checks.yml#/components/schemas/OpenSanctionsCatalogSection
+OpenSanctionsDatasetFreshnessDto:
+  $ref: sanction-checks.yml#/components/schemas/OpenSanctionsDatasetFreshnessDto
+OpenSanctionsUpstreamDatasetFreshnessDto:
+  $ref: sanction-checks.yml#/components/schemas/OpenSanctionsUpstreamDatasetFreshnessDto
 OpenSanctionsCatalogDto:
   $ref: sanction-checks.yml#/components/schemas/OpenSanctionsCatalogDto
 SanctionCheckConfigDto:
