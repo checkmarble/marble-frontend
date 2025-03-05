@@ -13,13 +13,16 @@ import {
 } from '@app-builder/models/sanction-check';
 import {
   adaptOpenSanctionsCatalog,
+  adaptOpenSanctionsDatasetFreshness,
   type OpenSanctionsCatalog,
+  type OpenSanctionsDatasetFreshness,
 } from '@app-builder/models/sanction-check-dataset';
 import * as R from 'remeda';
 
 export interface SanctionCheckRepository {
   listSanctionChecks(args: { decisionId: string }): Promise<SanctionCheck[]>;
   listDatasets(): Promise<OpenSanctionsCatalog>;
+  getDatasetFreshness(): Promise<OpenSanctionsDatasetFreshness>;
   updateMatchStatus(args: {
     matchId: string;
     status: Extract<SanctionCheckMatchStatus, 'no_hit' | 'confirmed_hit'>;
@@ -43,6 +46,9 @@ export function makeGetSanctionCheckRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): SanctionCheckRepository => ({
     listDatasets: async () => {
       return adaptOpenSanctionsCatalog(await marbleCoreApiClient.listOpenSanctionDatasets());
+    },
+    getDatasetFreshness: async () => {
+      return adaptOpenSanctionsDatasetFreshness(await marbleCoreApiClient.getDatasetsFreshness());
     },
     listSanctionChecks: async ({ decisionId }) => {
       return R.map(await marbleCoreApiClient.listSanctionChecks(decisionId), adaptSanctionCheck);
