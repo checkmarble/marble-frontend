@@ -9,15 +9,15 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type AstBuilderProps } from '@app-builder/components/Scenario/AstBuilder';
+import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
 import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
 import { FieldNodeConcat } from '@app-builder/components/Scenario/Sanction/FieldNodeConcat';
 import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
 import { FieldSanction } from '@app-builder/components/Scenario/Sanction/FieldSanction';
 import { FieldToolTip } from '@app-builder/components/Scenario/Sanction/FieldToolTip';
-import { FieldTrigger } from '@app-builder/components/Scenario/Sanction/FieldTrigger';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { type AstNode } from '@app-builder/models';
+import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { knownOutcomes, type SanctionOutcome } from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
 import { useEditorMode } from '@app-builder/services/editor';
@@ -394,7 +394,7 @@ export default function SanctionDetail() {
                   </Callout>
                   <form.Field name="triggerRule">
                     {(field) => (
-                      <FieldTrigger
+                      <FieldAstFormula
                         type="sanction"
                         scenarioId={scenario.id}
                         iterationId={iterationId}
@@ -402,6 +402,7 @@ export default function SanctionDetail() {
                         onBlur={field.handleBlur}
                         onChange={field.handleChange}
                         trigger={field.state.value}
+                        defaultValue={NewUndefinedAstNode()}
                       />
                     )}
                   </form.Field>
