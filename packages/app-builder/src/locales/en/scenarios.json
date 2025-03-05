@@ -303,6 +303,8 @@
   "validation.evaluation_error.payload_field_not_found_one": "payload field not found",
   "validation.evaluation_error.payload_field_not_found_other": "{{count}} payload fields not found",
   "validation.evaluation_error.filters_table_not_match": "filter must be applied on the same table than aggregate",
+  "validation.evaluation_error.aggregation_field_not_chosen": "You must select a field and entity to compute the aggregate on",
+  "validation.evaluation_error.aggregation_field_incompatible_with_aggregator": "This aggregation function is incompatible with the data type of the field you selected",
   "edit_aggregation.title": "Create a variable",
   "edit_aggregation.subtitle": "From Marble database",
   "edit_aggregation.description": "Computes aggregates on your ingested data (<DocLink>learn more</DocLink>)",
