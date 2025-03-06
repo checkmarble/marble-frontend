@@ -223,20 +223,20 @@ function ReviewDecisionContent({
             </div>
           )}
         </form.Field>
-      </div>
 
-      <div className="flex flex-1 flex-row gap-2">
-        <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
-          {t('common:cancel')}
-        </ModalV2.Close>
-        <Button className="flex-1" variant="primary" type="submit">
-          <LoadingIcon
-            icon="case-manager"
-            className="size-5"
-            loading={fetcher.state === 'submitting'}
-          />
-          {t('cases:case_detail.review_decision')}
-        </Button>
+        <div className="flex flex-1 flex-row gap-2">
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
+            {t('common:cancel')}
+          </ModalV2.Close>
+          <Button className="flex-1" variant="primary" type="submit">
+            <LoadingIcon
+              icon="case-manager"
+              className="size-5"
+              loading={fetcher.state === 'submitting'}
+            />
+            {t('cases:case_detail.review_decision')}
+          </Button>
+        </div>
       </div>
     </form>
   );

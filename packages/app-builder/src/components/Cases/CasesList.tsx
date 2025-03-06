@@ -1,4 +1,5 @@
 import { type Case } from '@app-builder/models/cases';
+import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -28,6 +29,7 @@ export function CasesList({
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
   const [sorting, setSorting] = useState<SortingState>([]);
+  const { orgTags } = useOrganizationTags();
 
   useEffect(() => {
     onSortingChange(sorting);
@@ -90,7 +92,7 @@ export function CasesList({
         enableSorting: false,
         cell: ({ getValue }) => (
           <div className="p-2">
-            <CaseTags caseTagIds={getValue().map(({ tagId }) => tagId)} />
+            <CaseTags caseTagIds={getValue().map(({ tagId }) => tagId)} orgTags={orgTags} />
           </div>
         ),
       }),
@@ -103,7 +105,7 @@ export function CasesList({
         cell: ({ getValue }) => <CaseContributors contributors={getValue()} />,
       }),
     ],
-    [language, t],
+    [language, t, orgTags],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({

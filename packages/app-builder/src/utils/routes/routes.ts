@@ -415,9 +415,9 @@ export const routes = [
         "file": "routes/ressources+/cases+/edit-status.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/edit-tags",
-        "path": "ressources/cases/edit-tags",
-        "file": "routes/ressources+/cases+/edit-tags.tsx"
+        "id": "routes/ressources+/cases+/edit",
+        "path": "ressources/cases/edit",
+        "file": "routes/ressources+/cases+/edit.tsx"
       },
       {
         "id": "routes/ressources+/cases+/review-decision",

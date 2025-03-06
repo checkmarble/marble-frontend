@@ -1,28 +1,27 @@
-import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { type Tag } from 'marble-api';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Tooltip } from 'ui-design-system';
+import { Input, SelectWithCombobox, Tooltip } from 'ui-design-system';
 
-import { FormSelectWithCombobox } from '../Form/FormSelectWithCombobox';
 import { casesI18n } from './cases-i18n';
 
-export function CaseTags({ caseTagIds }: { caseTagIds: string[] }) {
+export function CaseTags({ caseTagIds, orgTags }: { caseTagIds: string[]; orgTags: Tag[] }) {
   const { t } = useTranslation(casesI18n);
+
   return (
     <Tooltip.Default
       content={
         <div className="flex max-w-sm flex-wrap gap-1">
           {caseTagIds.map((caseTagId) => (
-            <CaseTag key={caseTagId} tagId={caseTagId} />
+            <CaseTag key={caseTagId} tag={orgTags.find((t) => t.id === caseTagId)} />
           ))}
         </div>
       }
     >
       <div className="flex w-fit flex-wrap items-center gap-1">
         {caseTagIds.slice(0, 3).map((caseTagId) => (
-          <CaseTag key={caseTagId} tagId={caseTagId} />
+          <CaseTag key={caseTagId} tag={orgTags.find((t) => t.id === caseTagId)} />
         ))}
         {caseTagIds.length > 3 ? (
           <div className="text-grey-00 bg-grey-95 flex h-6 items-center rounded-s px-2 text-xs font-normal">
@@ -36,11 +35,8 @@ export function CaseTags({ caseTagIds }: { caseTagIds: string[] }) {
   );
 }
 
-export function CaseTag({ tagId }: { tagId: string }) {
-  const { getTagById } = useOrganizationTags();
+export function CaseTag({ tag }: { tag?: Tag }) {
   const { t } = useTranslation(casesI18n);
-
-  const tag = getTagById(tagId);
 
   return (
     <div
@@ -54,14 +50,16 @@ export function CaseTag({ tagId }: { tagId: string }) {
   );
 }
 
-export function FormSelectCaseTags({
-  selectedTagIds,
+export function SelectCaseTags({
+  name,
   orgTags,
-  onOpenChange,
+  selectedTagIds,
+  onChange,
 }: {
-  selectedTagIds: string[];
+  name?: string;
   orgTags: Tag[];
-  onOpenChange?: (open: boolean) => void;
+  selectedTagIds: string[];
+  onChange?: (value: string[]) => void;
 }) {
   const { t } = useTranslation(['cases']);
   const [searchValue, setSearchValue] = React.useState('');
@@ -73,35 +71,31 @@ export function FormSelectCaseTags({
   );
 
   return (
-    <FormSelectWithCombobox.Root
+    <SelectWithCombobox.Root
       selectedValue={selectedTagIds}
       searchValue={searchValue}
       onSearchValueChange={setSearchValue}
-      onOpenChange={onOpenChange}
+      onSelectedValueChange={onChange}
     >
-      <FormSelectWithCombobox.Select className="w-full">
-        <CaseTags caseTagIds={selectedTagIds} />
-        <FormSelectWithCombobox.Arrow />
-      </FormSelectWithCombobox.Select>
-      <FormSelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
-        <FormSelectWithCombobox.Combobox
-          render={<Input className="shrink-0" />}
-          autoSelect
-          autoFocus
-        />
-        <FormSelectWithCombobox.ComboboxList>
+      <SelectWithCombobox.Select name={name} className="w-full">
+        <CaseTags caseTagIds={selectedTagIds} orgTags={orgTags} />
+        <SelectWithCombobox.Arrow />
+      </SelectWithCombobox.Select>
+      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
+        <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} autoSelect autoFocus />
+        <SelectWithCombobox.ComboboxList>
           {matches.map((tag) => (
-            <FormSelectWithCombobox.ComboboxItem key={tag.id} value={tag.id}>
-              <CaseTag tagId={tag.id} />
-            </FormSelectWithCombobox.ComboboxItem>
+            <SelectWithCombobox.ComboboxItem key={tag.id} value={tag.id}>
+              <CaseTag tag={tag} />
+            </SelectWithCombobox.ComboboxItem>
           ))}
           {matches.length === 0 ? (
             <p className="text-grey-50 flex items-center justify-center p-2">
               {t('cases:case_detail.tags.empty_matches')}
             </p>
           ) : null}
-        </FormSelectWithCombobox.ComboboxList>
-      </FormSelectWithCombobox.Popover>
-    </FormSelectWithCombobox.Root>
+        </SelectWithCombobox.ComboboxList>
+      </SelectWithCombobox.Popover>
+    </SelectWithCombobox.Root>
   );
 }
