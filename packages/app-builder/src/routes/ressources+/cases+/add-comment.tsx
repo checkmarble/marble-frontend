@@ -1,15 +1,12 @@
-import { FormField } from '@app-builder/components/Form/FormField';
-import { FormLabel } from '@app-builder/components/Form/FormLabel';
-import { FormTextArea } from '@app-builder/components/Form/FormTextArea';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, TextArea } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -21,44 +18,59 @@ const schema = z.object({
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
+    i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const session = await getSession(request);
 
-  const { cases } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const [t, session, rawData, { cases }] = await Promise.all([
+    getFixedT(request, ['common']),
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, { schema });
+  const { data, success, error } = schema.safeParse(rawData);
 
-  if (submission.status !== 'success') {
-    return json(submission.reply());
+  if (!success) {
+    return json(
+      { status: 'error', errors: error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 
   try {
     await cases.addComment({
-      caseId: submission.value.caseId,
-      body: { comment: submission.value.comment },
+      caseId: data.caseId,
+      body: { comment: data.comment },
     });
 
     setToastMessage(session, {
       type: 'success',
-      messageKey: 'common:success.save',
+      messageKey: t('common:success.save'),
     });
 
-    return json(submission.reply({ resetForm: true }), {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { status: 'success', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
-      messageKey: 'common:errors.unknown',
+      messageKey: t('common:errors.unknown'),
     });
 
-    return json(submission, {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { status: 'error', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 }
 
@@ -66,41 +78,54 @@ export function AddComment(defaultValue: Pick<z.infer<typeof schema>, 'caseId'>)
   const { t } = useTranslation(['cases', 'common']);
   const fetcher = useFetcher<typeof action>();
 
-  const [form, fields] = useForm({
-    defaultValue: { ...defaultValue, comment: '' },
-    lastResult: fetcher.data,
-    constraint: getZodConstraint(schema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, {
-        schema,
-      });
+  const form = useForm({
+    defaultValues: { ...defaultValue, comment: '' },
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'POST',
+          action: getRoute('/ressources/cases/add-comment'),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: schema,
+      onBlurAsync: schema,
+      onSubmitAsync: schema,
     },
   });
 
   return (
-    <FormProvider context={form.context}>
-      <fetcher.Form
-        className="flex w-full flex-row items-center gap-4"
-        method="post"
-        action={getRoute('/ressources/cases/add-comment')}
-        {...getFormProps(form)}
-      >
-        <input {...getInputProps(fields.caseId, { type: 'hidden' })} key={fields.caseId.key} />
-        <FormField name={fields.comment.name} className="w-full">
-          <FormLabel className="sr-only">{t('cases:case_detail.add_a_comment.label')}</FormLabel>
-          <FormTextArea
-            className="w-full"
-            placeholder={t('cases:case_detail.add_a_comment.placeholder')}
-          />
-        </FormField>
-        <Button
-          type="submit"
-          className="h-14"
-          aria-label={t('cases:case_detail.add_a_comment.post')}
-        >
-          <Icon icon="send" className="size-4 shrink-0" />
-        </Button>
-      </fetcher.Form>
-    </FormProvider>
+    <form
+      className="flex w-full flex-row items-center gap-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <form.Field name="comment">
+        {(field) => (
+          <div className="w-full">
+            <FormLabel name={field.name} className="sr-only">
+              {t('cases:case_detail.add_a_comment.label')}
+            </FormLabel>
+            <TextArea
+              className="w-full"
+              defaultValue={field.state.value}
+              onChange={(e) => field.handleChange(e.currentTarget.value)}
+              onBlur={field.handleBlur}
+              name={field.name}
+              borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+              placeholder={t('cases:case_detail.add_a_comment.placeholder')}
+            />
+          </div>
+        )}
+      </form.Field>
+      <Button type="submit" className="h-14" aria-label={t('cases:case_detail.add_a_comment.post')}>
+        <Icon icon="send" className="size-4 shrink-0" />
+      </Button>
+    </form>
   );
 }
