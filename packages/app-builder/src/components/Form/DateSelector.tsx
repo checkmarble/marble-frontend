@@ -1,41 +1,26 @@
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { Popover, PopoverDisclosure, PopoverProvider } from '@ariakit/react';
-import { getInputProps, useField, useInputControl } from '@conform-to/react';
 import clsx from 'clsx';
 import { type ElementRef, forwardRef, useState } from 'react';
 import { Button, Calendar, type Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-interface FormDateSelectorProps extends React.ComponentPropsWithoutRef<typeof Input> {
+interface DateSelectorProps {
   name: string;
   description?: string;
+  placeholder?: string;
+  onChange?: (value: Date) => void;
+  defaultValue?: Date;
 }
 
-export const FormDateSelector = forwardRef<ElementRef<typeof Input>, FormDateSelectorProps>(
-  function FormDateSelector({ name, description, ...props }, ref) {
-    const [field, _] = useField<string>(name);
-    const [selectedDate, selectDate] = useState<Date>();
+export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorProps>(
+  function DateSelector({ name, description, ...props }, ref) {
+    const [selectedDate, selectDate] = useState<Date | undefined>(props.defaultValue);
     const [open, setOpen] = useState(false);
-    const input = useInputControl(field);
     const language = useFormatLanguage();
 
-    const handleSelect = (date?: Date) => {
-      if (date) {
-        selectDate(date);
-        input.change(date.toISOString());
-        setOpen(false);
-      }
-    };
-
     return (
-      <div className="flex flex-row items-center gap-2">
-        <input
-          {...getInputProps(field, { type: 'hidden' })}
-          ref={ref}
-          value={selectedDate?.toISOString()}
-          readOnly
-          {...props}
-        />
+      <div ref={ref} className="flex flex-row items-center gap-2">
         <PopoverProvider open={open} setOpen={setOpen}>
           <PopoverDisclosure render={<Button variant="secondary" />}>
             <Icon
@@ -63,8 +48,14 @@ export const FormDateSelector = forwardRef<ElementRef<typeof Input>, FormDateSel
             <Calendar
               mode="single"
               hidden={{ before: new Date() }}
-              selected={selectedDate}
-              onSelect={handleSelect}
+              selected={props.defaultValue}
+              onSelect={(date) => {
+                if (date) {
+                  selectDate(date);
+                  props.onChange?.(date);
+                  setOpen(false);
+                }
+              }}
             />
           </Popover>
         </PopoverProvider>
