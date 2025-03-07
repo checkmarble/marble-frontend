@@ -5,14 +5,14 @@ import {
   caseStatusVariants,
   useCaseStatuses,
 } from '@app-builder/components/Cases';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { caseStatuses } from '@app-builder/models/cases';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { getFormProps, getInputProps, useForm } from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -29,27 +29,66 @@ const schema = z.object({
   status: z.enum(caseStatuses),
   nextStatus: z.enum(caseStatuses),
 });
+
 type Schema = z.infer<typeof schema>;
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
-  const { cases } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const {
+    authService,
+    i18nextService: { getFixedT },
+    toastSessionService: { getSession, commitSession },
+  } = serverServices;
 
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, { schema });
+  const [t, session, data, { cases }] = await Promise.all([
+    getFixedT(request, ['common']),
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-  if (submission.status !== 'success') {
-    return json(submission.reply());
+  const result = schema.safeParse(data);
+
+  if (!result.success) {
+    return json(
+      { status: 'error', errors: result.error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 
-  await cases.updateCase({
-    caseId: submission.value.caseId,
-    body: { status: submission.value.nextStatus },
-  });
+  try {
+    await cases.updateCase({
+      caseId: data.caseId,
+      body: { status: data.nextStatus },
+    });
 
-  return json(submission.reply());
+    setToastMessage(session, {
+      type: 'success',
+      message: t('common:success.save'),
+    });
+
+    return json(
+      { status: 'success', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
+  } catch (error) {
+    setToastMessage(session, {
+      type: 'error',
+      message: t('common:errors.unknown'),
+    });
+
+    return json(
+      { status: 'error', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
+  }
 }
 
 export function EditCaseStatus({ status, caseId }: Pick<Schema, 'caseId' | 'status'>) {
@@ -149,14 +188,21 @@ function ModalContent({
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const [form, fields] = useForm({
-    defaultValue: { caseId, status, nextStatus },
-    lastResult: fetcher.data,
-    constraint: getZodConstraint(schema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, {
-        schema,
-      });
+  const form = useForm({
+    defaultValues: { caseId, status, nextStatus },
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'PATCH',
+          action: getRoute('/ressources/cases/edit-status'),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: schema,
+      onBlurAsync: schema,
+      onSubmitAsync: schema,
     },
   });
 
@@ -164,22 +210,18 @@ function ModalContent({
     if (fetcher.data?.status === 'success') {
       onSubmitSuccess();
     }
-  }, [fetcher.data?.intent, fetcher.data?.status, onSubmitSuccess]);
+  }, [fetcher.data?.status, onSubmitSuccess]);
 
   return (
-    <fetcher.Form
-      method="post"
-      action={getRoute('/ressources/cases/edit-status')}
-      {...getFormProps(form)}
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
     >
       <Modal.Title>{t('cases:change_status_modal.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
-        <input {...getInputProps(fields.caseId, { type: 'hidden' })} key={fields.caseId.key} />
-        <input {...getInputProps(fields.status, { type: 'hidden' })} key={fields.status.key} />
-        <input
-          {...getInputProps(fields.nextStatus, { type: 'hidden' })}
-          key={fields.nextStatus.key}
-        />
         <div className="text-grey-00 text-s flex flex-row items-center justify-center gap-6 font-medium capitalize">
           <div className="flex w-full flex-1 flex-row items-center justify-end gap-2">
             <Trans
@@ -202,7 +244,7 @@ function ModalContent({
         </div>
         <div className="flex w-full flex-row gap-2">
           <Modal.Close asChild>
-            <Button variant="secondary" className="flex-1 first-letter:capitalize">
+            <Button variant="secondary" type="button" className="flex-1 first-letter:capitalize">
               {t('common:close')}
             </Button>
           </Modal.Close>
@@ -212,6 +254,6 @@ function ModalContent({
           </Button>
         </div>
       </div>
-    </fetcher.Form>
+    </form>
   );
 }

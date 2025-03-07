@@ -22,6 +22,7 @@ const editInboxSchema = z.object({
   tags: z.array(z.string()),
   inboxId: z.string().min(1),
   name: z.string().min(1),
+  tagsHasChanged: z.boolean(),
 });
 
 type EditInboxForm = z.infer<typeof editInboxSchema>;
@@ -54,16 +55,23 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    await Promise.all([
+    const promises = [
       cases.updateCase({
         caseId: data.id,
         body: pick(data, ['inboxId', 'name']),
       }),
-      cases.setTags({
-        caseId: data.id,
-        tagIds: data.tags,
-      }),
-    ]);
+    ];
+
+    if (data.tagsHasChanged) {
+      promises.push(
+        cases.setTags({
+          caseId: data.id,
+          tagIds: data.tags,
+        }),
+      );
+    }
+
+    await Promise.all(promises);
 
     setToastMessage(session, {
       type: 'success',
@@ -101,6 +109,7 @@ export function EditCase({ detail, inboxes }: { detail: CaseDetail; inboxes: Inb
     defaultValues: {
       ...pick(detail, ['id', 'name', 'inboxId']),
       tags: detail.tags.map(({ tagId }) => tagId),
+      tagsHasChanged: false,
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
@@ -109,6 +118,7 @@ export function EditCase({ detail, inboxes }: { detail: CaseDetail; inboxes: Inb
           action: getRoute('/ressources/cases/edit'),
           encType: 'application/json',
         });
+        formApi.setFieldValue('tagsHasChanged', false);
       }
     },
     validators: {
@@ -185,7 +195,10 @@ export function EditCase({ detail, inboxes }: { detail: CaseDetail; inboxes: Inb
               name={field.name}
               orgTags={orgTags}
               selectedTagIds={field.state.value}
-              onChange={field.handleChange}
+              onChange={(newTags) => {
+                field.handleChange(newTags);
+                form.setFieldValue('tagsHasChanged', true);
+              }}
             />
           </div>
         )}
