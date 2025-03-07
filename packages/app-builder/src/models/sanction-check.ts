@@ -8,7 +8,7 @@ import {
 } from 'marble-api';
 import * as R from 'remeda';
 
-const entitySchemas = [
+const matchEntitySchemas = [
   'Thing',
   'LegalEntity',
   'Person',
@@ -18,22 +18,53 @@ const entitySchemas = [
   'Airplane',
   'Vessel',
 ] as const;
+const sanctionEntitySchemas = ['Sanction'] as const;
+export const openSanctionEntitySchemas = [...matchEntitySchemas, ...sanctionEntitySchemas] as const;
 
 export type SanctionCheckStatus = 'in_review' | 'confirmed_hit' | 'no_hit' | 'error';
 export type SanctionCheckMatchStatus = 'pending' | 'confirmed_hit' | 'no_hit' | 'skipped';
-export type SanctionCheckEntitySchema = (typeof entitySchemas)[number];
+export type OpenSanctionEntitySchema = (typeof openSanctionEntitySchemas)[number];
+
+export type OpenSanctionEntity = {
+  id: string;
+  schema: OpenSanctionEntitySchema;
+  properties: Record<string, string[]>;
+};
+
+export type SanctionCheckSanctionEntity = {
+  id: string;
+  schema: 'Sanction';
+  properties: Record<string, string[]>;
+};
+
+export type SanctionCheckMatchEntitySchema = Extract<
+  OpenSanctionEntitySchema,
+  | 'Thing'
+  | 'LegalEntity'
+  | 'Person'
+  | 'Organization'
+  | 'Company'
+  | 'Vehicle'
+  | 'Airplane'
+  | 'Vessel'
+>;
 
 export type SanctionCheckMatchPayload = {
   id: string;
   match: boolean;
   score: number;
-  schema: SanctionCheckEntitySchema;
+  schema: SanctionCheckMatchEntitySchema;
   caption: string;
-  properties: Record<string, string[]>;
+  properties: {
+    sanctions?: SanctionCheckSanctionEntity[];
+  } & Record<string, string[]>;
 };
 
-function isKnownEntitySchema(schema: string): schema is SanctionCheckEntitySchema {
-  return (entitySchemas as ReadonlyArray<string>).includes(schema);
+function isKnownEntitySchema<K extends OpenSanctionEntitySchema>(
+  schema: string,
+  schemaList: readonly K[],
+): schema is K {
+  return (schemaList as ReadonlyArray<string>).includes(schema);
 }
 
 export function adapatSanctionCheckMatchPayload(
@@ -41,7 +72,7 @@ export function adapatSanctionCheckMatchPayload(
 ): SanctionCheckMatchPayload {
   return {
     ...dto,
-    schema: isKnownEntitySchema(dto.schema) ? dto.schema : 'Thing',
+    schema: isKnownEntitySchema(dto.schema, matchEntitySchemas) ? dto.schema : 'Thing',
   };
 }
 
@@ -50,6 +81,7 @@ export type SanctionCheckMatch = {
   entityId: string;
   queryIds: string[];
   status: SanctionCheckMatchStatus;
+  enriched: boolean;
   // datasets: unknown[];
   uniqueCounterpartyIdentifier?: string;
   payload: SanctionCheckMatchPayload;
@@ -67,6 +99,7 @@ export function adaptSanctionCheckMatch(dto: SanctionCheckMatchDto): SanctionChe
     entityId: dto.entity_id,
     queryIds: dto.query_ids,
     status: dto.status,
+    enriched: dto.enriched,
     payload: adapatSanctionCheckMatchPayload(dto.payload),
     uniqueCounterpartyIdentifier: dto.unique_counterparty_identifier,
     comments: R.map(dto.comments, (comment) => ({
@@ -79,7 +112,7 @@ export function adaptSanctionCheckMatch(dto: SanctionCheckMatchDto): SanctionChe
 }
 
 export type SanctionCheckQuery = {
-  schema: SanctionCheckEntitySchema;
+  schema: OpenSanctionEntitySchema;
   properties: {
     [key: string]: string[];
   };
@@ -96,7 +129,7 @@ export type SanctionCheckRequest = {
 function adaptQueries(dto: SanctionCheckRequestDto['search_input']['queries']) {
   return R.mapValues(dto, (value) => {
     return {
-      schema: isKnownEntitySchema(value.schema) ? value.schema : 'Thing',
+      schema: isKnownEntitySchema(value.schema, matchEntitySchemas) ? value.schema : 'Thing',
       properties: value.properties,
     };
   });

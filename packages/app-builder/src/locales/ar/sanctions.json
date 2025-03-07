@@ -117,5 +117,18 @@
   "error_label_one": "التحقق من العقوبة خطأ للسبب التالي",
   "error_label_others": "فحص العقوبة خطأ للأسباب التالية",
   "match.not_reviewable": "غير قابل للمراجعة",
-  "refine_modal.search_input_label": "يغطي البحث الحقول التالية:"
+  "refine_modal.search_input_label": "يغطي البحث الحقول التالية:",
+  "entity.property.authority": "سلطة",
+  "entity.property.authorityId": "المعرف الصادر عن السلطة",
+  "entity.property.endDate": "تاريخ الانتهاء",
+  "entity.property.listingDate": "تاريخ الإدراج",
+  "entity.property.programId": "معرف البرنامج",
+  "entity.property.programUrl": "برنامج URL",
+  "entity.property.reason": "سبب",
+  "entity.property.startDate": "تاريخ البدء",
+  "enrich_button": "إثراء",
+  "entity.property.sanctions": "العقوبات",
+  "sanction_detail.title": "تفاصيل العقوبات",
+  "error.match_already_enriched": "تطابق المخصب بالفعل",
+  "success.match_enriched": "تطابق المباراة بنجاح"
 }

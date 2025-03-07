@@ -492,6 +492,13 @@ export type SanctionCheckRequestDto = {
         };
     };
 };
+export type SanctionCheckSanctionEntityDto = {
+    id: string;
+    schema: "Sanction";
+    properties: {
+        [key: string]: string[];
+    };
+};
 export type SanctionCheckMatchPayloadDto = {
     id: string;
     match: boolean;
@@ -499,6 +506,8 @@ export type SanctionCheckMatchPayloadDto = {
     schema: SanctionCheckEntityDto;
     caption: string;
     properties: {
+        sanctions?: SanctionCheckSanctionEntityDto[];
+    } & {
         [key: string]: string[];
     };
 };

@@ -4,8 +4,8 @@ import {
   adapatSanctionCheckMatchPayload,
   adaptSanctionCheck,
   adaptSanctionCheckMatch,
+  type OpenSanctionEntitySchema,
   type SanctionCheck,
-  type SanctionCheckEntitySchema,
   type SanctionCheckFile,
   type SanctionCheckMatch,
   type SanctionCheckMatchPayload,
@@ -31,15 +31,16 @@ export interface SanctionCheckRepository {
   }): Promise<SanctionCheckMatch>;
   searchSanctionCheckMatches(args: {
     decisionId: string;
-    entityType: SanctionCheckEntitySchema;
+    entityType: OpenSanctionEntitySchema;
     fields: Record<string, string>;
   }): Promise<SanctionCheckMatchPayload[]>;
   refineSanctionCheck(args: {
     decisionId: string;
-    entityType: SanctionCheckEntitySchema;
+    entityType: OpenSanctionEntitySchema;
     fields: Record<string, string>;
   }): Promise<SanctionCheck>;
   listSanctionCheckFiles(args: { sanctionCheckId: string }): Promise<SanctionCheckFile[]>;
+  enrichMatch(args: { matchId: string }): Promise<SanctionCheckMatch>;
 }
 
 export function makeGetSanctionCheckRepository() {
@@ -88,6 +89,9 @@ export function makeGetSanctionCheckRepository() {
         await marbleCoreApiClient.listSanctionCheckFiles(sanctionCheckId),
         adapatSanctionCheckFile,
       );
+    },
+    enrichMatch: async ({ matchId }) => {
+      return adaptSanctionCheckMatch(await marbleCoreApiClient.enrichSanctionCheckMatch(matchId));
     },
   });
 }

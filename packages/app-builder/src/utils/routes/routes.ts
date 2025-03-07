@@ -495,6 +495,11 @@ export const routes = [
         "file": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId.tsx"
       },
       {
+        "id": "routes/ressources+/sanction-check+/enrich-match.$matchId",
+        "path": "ressources/sanction-check/enrich-match/:matchId",
+        "file": "routes/ressources+/sanction-check+/enrich-match.$matchId.tsx"
+      },
+      {
         "id": "routes/ressources+/sanction-check+/refine",
         "path": "ressources/sanction-check/refine",
         "file": "routes/ressources+/sanction-check+/refine.tsx"
@@ -593,11 +598,6 @@ export const routes = [
         "id": "routes/ressources+/settings+/api-keys+/delete",
         "path": "ressources/settings/api-keys/delete",
         "file": "routes/ressources+/settings+/api-keys+/delete.tsx"
-      },
-      {
-        "id": "routes/ressources+/settings+/edit-org-default-timezone",
-        "path": "ressources/settings/edit-org-default-timezone",
-        "file": "routes/ressources+/settings+/edit-org-default-timezone.tsx"
       },
       {
         "id": "routes/ressources+/settings+/inboxes+/create",

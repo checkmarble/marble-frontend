@@ -1,83 +1,83 @@
+import { type PropertyForSchema } from '@app-builder/constants/sanction-check-entity';
 import {
-  createPropertyTransformer,
-  getSanctionEntityProperties,
-  type SanctionCheckEntityProperty,
-} from '@app-builder/constants/sanction-check-entity';
-import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
-import { useFormatLanguage } from '@app-builder/utils/format';
-import { Fragment, useMemo, useState } from 'react';
+  type SanctionCheckMatch,
+  type SanctionCheckSanctionEntity,
+} from '@app-builder/models/sanction-check';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ModalV2 } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
+import { EntityProperties } from './EntityProperties';
 import { sanctionsI18n } from './sanctions-i18n';
 
 export type MatchDetailsProps = {
   entity: SanctionCheckMatch['payload'];
 };
 
-export function MatchDetails({ entity }: MatchDetailsProps) {
-  const { t, i18n } = useTranslation(sanctionsI18n);
-  const language = useFormatLanguage();
-  const [displayAll, setDisplayAll] = useState<
-    Partial<Record<SanctionCheckEntityProperty, boolean>>
-  >({});
+const sanctionProps = [
+  'country',
+  'authority',
+  'authorityId',
+  'startDate',
+  'endDate',
+  'listingDate',
+  'program',
+  'programId',
+  'programUrl',
+  'summary',
+  'reason',
+  'sourceUrl',
+] satisfies PropertyForSchema<'Sanction'>[];
 
-  const TransformProperty = useMemo(
-    () =>
-      createPropertyTransformer({
-        language: i18n.language,
-        formatLanguage: language,
-      }),
-    [i18n.language, language],
+export function MatchDetails({ entity }: MatchDetailsProps) {
+  const { t } = useTranslation(sanctionsI18n);
+  const [selectedSanction, setSelectedSanction] = useState<SanctionCheckSanctionEntity | null>(
+    null,
   );
 
-  const displayProperties = getSanctionEntityProperties(entity.schema);
-  const entityPropertyList = displayProperties
-    .map((property) => {
-      const items = entity.properties[property] ?? [];
-      const itemsToDisplay = displayAll[property] ? items : items.slice(0, 5);
-      return {
-        property,
-        values: itemsToDisplay,
-        restItemsCount: Math.max(0, items.length - itemsToDisplay.length),
-      };
-    })
-    .filter((prop) => prop.values.length > 0);
-
-  const handleShowMore = (prop: string) => {
-    setDisplayAll((prev) => ({ ...prev, [prop]: true }));
-  };
-
   return (
-    <div className="grid grid-cols-[168px,_1fr] gap-2">
-      {entityPropertyList.map(({ property, values, restItemsCount }) => {
-        return (
-          <Fragment key={property}>
-            <span className="font-bold">{t(`sanctions:entity.property.${property}`)}</span>
-            <span className="flex flex-wrap gap-1 break-all">
-              {values.map((v, i) => (
-                <Fragment key={i}>
-                  <TransformProperty property={property} value={v} />
-                  {i === values.length - 1 ? null : <span>·</span>}
-                </Fragment>
-              ))}
-              {restItemsCount > 0 ? (
-                <>
-                  <span>·</span>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleShowMore(property);
-                    }}
-                    className="text-purple-65 font-semibold"
+    <div className="flex flex-col gap-4">
+      <EntityProperties
+        entity={entity}
+        after={
+          entity.properties.sanctions ? (
+            <>
+              <span className="font-bold">{t('sanctions:entity.property.sanctions')}</span>
+              <div className="flex flex-col gap-2">
+                {entity.properties.sanctions.map((sanction) => (
+                  <div
+                    key={sanction.id}
+                    className="group/sanction bg-grey-100 grid grid-cols-[1fr_20px] gap-2 rounded p-2"
                   >
-                    + {restItemsCount} more
-                  </button>
-                </>
-              ) : null}
-            </span>
-          </Fragment>
-        );
-      })}
+                    <span className="truncate">{sanction.properties['authority']}</span>
+                    <button type="button" onClick={() => setSelectedSanction(sanction)}>
+                      <Icon
+                        icon="visibility-on"
+                        className="text-grey-90 hover:text-purple-65 size-5 cursor-pointer"
+                      />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <ModalV2.Content
+                open={!!selectedSanction}
+                onClose={() => setSelectedSanction(null)}
+                size="large"
+                className="max-h-[80vh]"
+              >
+                <ModalV2.Title>{t('sanctions:sanction_detail.title')}</ModalV2.Title>
+                <div className="overflow-y-auto p-6">
+                  {selectedSanction ? (
+                    <EntityProperties entity={selectedSanction} forcedProperties={sanctionProps} />
+                  ) : null}
+                </div>
+              </ModalV2.Content>
+            </>
+          ) : null
+        }
+      />
     </div>
   );
 }
