@@ -128,5 +128,7 @@
   "entity.property.startDate": "تاريخ البدء",
   "enrich_button": "إثراء",
   "entity.property.sanctions": "العقوبات",
-  "sanction_detail.title": "تفاصيل العقوبات"
+  "sanction_detail.title": "تفاصيل العقوبات",
+  "error.match_already_enriched": "تطابق المخصب بالفعل",
+  "success.match_enriched": "تطابق المباراة بنجاح"
 }

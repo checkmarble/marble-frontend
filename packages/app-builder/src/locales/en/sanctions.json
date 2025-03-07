@@ -128,5 +128,7 @@
   "entity.schema.vessel": "Vessel",
   "refine_modal.schema.legalentity": "Legal Entity",
   "sanction_detail.title": "Sanction details",
-  "enrich_button": "Enrich"
+  "enrich_button": "Enrich",
+  "success.match_enriched": "Match successfully enriched",
+  "error.match_already_enriched": "Match already enriched"
 }
