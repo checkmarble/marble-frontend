@@ -133,9 +133,9 @@ function CreateScenarioContent() {
       }
     },
     validators: {
-      onChangeAsync: createScenarioFormSchema,
-      onBlurAsync: createScenarioFormSchema,
-      onSubmitAsync: createScenarioFormSchema,
+      onChange: createScenarioFormSchema,
+      onBlur: createScenarioFormSchema,
+      onSubmit: createScenarioFormSchema,
     },
   });
 
@@ -225,7 +225,11 @@ function CreateScenarioContent() {
                 <Select.Default
                   placeholder={t('scenarios:create_scenario.trigger_object_placeholder')}
                   defaultValue={field.state.value}
-                  onValueChange={field.handleChange}
+                  onValueChange={(value) => {
+                    console.log('Value', value);
+                    field.handleChange(value);
+                    field.handleBlur();
+                  }}
                 >
                   {dataModelFetcher.state === 'loading' ? <p>{t('common:loading')}</p> : null}
                   {dataModel.map((tableName) => {
@@ -239,13 +243,13 @@ function CreateScenarioContent() {
                     <p>{t('scenarios:create_scenario.no_trigger_object')}</p>
                   ) : null}
                 </Select.Default>
-                <FormErrorOrDescription />
+                <FormErrorOrDescription errors={field.state.meta.errors} />
               </div>
             )}
           </form.Field>
         </div>
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
+          <ModalV2.Close render={<Button className="flex-1" type="button" variant="secondary" />}>
             {t('common:cancel')}
           </ModalV2.Close>
           <Button className="flex-1" variant="primary" type="submit">
