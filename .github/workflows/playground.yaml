@@ -1,0 +1,24 @@
+name: E2E tests
+
+on:
+  push:
+    branches: [poc/playwright]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter tests exec playwright install
+      - run: pnpm --filter tests run test
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: |
+            packages/tests/playwright-report/
+            packages/tests/trace.zip
+          retention-days: 1

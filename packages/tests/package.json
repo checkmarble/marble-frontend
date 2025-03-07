@@ -5,8 +5,8 @@
   "sideEffect": false,
   "type": "module",
   "scripts": {
-    "test": "playwright test",
-    "test:ui": "playwright test --ui",
+    "test": "NODE_OPTIONS=--disable-warning=ExperimentalWarning playwright test",
+    "test:ui": "NODE_OPTIONS=--disable-warning=ExperimentalWarning playwright test --ui",
     "lint": "eslint ."
   },
   "keywords": [],
@@ -14,7 +14,9 @@
   "license": "ISC",
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",
-    "@playwright/test": "^1.48.1",
-    "@types/node": "22.7.7"
+    "@playwright/test": "^1.51.0",
+    "@types/node": "22.7.7",
+    "playwright": "^1.51.0",
+    "testcontainers": "^10.18.0"
   }
 }
