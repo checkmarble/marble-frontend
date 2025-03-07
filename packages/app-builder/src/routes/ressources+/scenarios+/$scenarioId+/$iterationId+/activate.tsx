@@ -17,7 +17,6 @@ import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
 import { redirectBack } from 'remix-utils/redirect-back';
 import { useSpinDelay } from 'spin-delay';
 import { Button, Checkbox, CollapsibleV2, Modal, Tooltip } from 'ui-design-system';
@@ -216,7 +215,6 @@ function ActivateScenarioVersionContent({
     >
       <Modal.Title>{t('scenarios:deployment_modal.activate.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
-        <AuthenticityTokenInput />
         <div className="text-s flex flex-col gap-4 font-medium">
           <p className="font-semibold">{t('scenarios:deployment_modal.activate.confirm')}</p>
           <form.Field name="willBeLive">
