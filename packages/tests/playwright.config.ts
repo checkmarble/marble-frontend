@@ -1,60 +1,51 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+import setup from './e2e/setup';
 
-const isCI = !!process.env['CI'];
+await setup();
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
 export default defineConfig({
   testDir: './e2e',
-  /* Run tests in files in parallel */
-  fullyParallel: false,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: isCI,
-  /* Retry on CI only */
-  retries: isCI ? 2 : 0,
-  /* Opt out of parallel tests for now. */
-  workers: 1,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+  fullyParallel: true,
   reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
+    headless: !process.env['PW_DEBUG'],
     baseURL: 'http://localhost:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
-    navigationTimeout: 3000,
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
   },
-  /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
+      name: 'auth',
       use: { ...devices['Desktop Chrome'] },
+      testMatch: 'auth.spec.ts',
     },
-
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'auth.json',
+      },
+      testMatch: /.spec.ts/,
+      testIgnore: 'auth.spec.ts',
+      dependencies: ['auth'],
+    },
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  webServer: {
+    command: 'pnpm --filter app-builder run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: false,
+    env: {
+      ENV: 'development',
+      NODE_ENV: 'development',
+      SESSION_SECRET: 'secret',
+      SESSION_MAX_AGE: '43200',
+      MARBLE_APP_URL: 'http://localhost:3000',
+      MARBLE_API_URL_SERVER: `http://localhost:${process.env['API_PORT']}`,
+      MARBLE_API_URL_CLIENT: `http://localhost:${process.env['API_PORT']}`,
+      FIREBASE_AUTH_EMULATOR_HOST: `localhost:${process.env['FIREBASE_PORT']}`,
+      FIREBASE_API_KEY: 'dummy',
+      FIREBASE_PROJECT_ID: 'test-project',
+    },
+  },
 });
