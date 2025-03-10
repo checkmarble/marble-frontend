@@ -1,6 +1,4 @@
-import { FormField } from '@app-builder/components/Form/FormField';
-import { FormLabel } from '@app-builder/components/Form/FormLabel';
-import { FormSelect } from '@app-builder/components/Form/FormSelect';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import {
   AlertStatus,
@@ -11,12 +9,11 @@ import {
 import { transferAlerStatuses } from '@app-builder/models/transfer-alert';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import * as React from 'react';
+import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
+import { Select } from 'ui-design-system';
 import { z } from 'zod';
 
 const updateAlertStatusFormSchema = z.object({
@@ -32,47 +29,53 @@ export async function action({ request }: ActionFunctionArgs) {
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { transferAlertRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
 
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, {
-    schema: updateAlertStatusFormSchema,
-  });
+  const [session, t, rawData, { transferAlertRepository }] = await Promise.all([
+    getSession(request),
+    getFixedT(request, ['transfercheck', 'common']),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-  if (submission.status !== 'success') {
-    return json(submission.reply());
+  const { error, success, data } = updateAlertStatusFormSchema.safeParse(rawData);
+
+  if (!success) {
+    return json(
+      { status: 'error', errors: error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 
   try {
-    await transferAlertRepository.updateReceivedAlert(submission.value);
-
-    const session = await getSession(request);
-    const t = await getFixedT(request, ['transfercheck']);
+    await transferAlertRepository.updateReceivedAlert(data);
 
     setToastMessage(session, {
       type: 'success',
       message: t('transfercheck:alert.update.success'),
     });
 
-    return json(submission.reply(), {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { status: 'success', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   } catch (error) {
-    const session = await getSession(request);
-    const t = await getFixedT(request, ['common']);
-
-    const formError = t('common:errors.unknown');
-
     setToastMessage(session, {
       type: 'error',
-      message: formError,
+      message: t('common:errors.unknown'),
     });
 
-    return json(submission.reply({ formErrors: [formError] }), {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { status: 'error', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 }
 
@@ -81,67 +84,76 @@ export function UpdateAlertStatus({ defaultValue }: { defaultValue: UpdateAlertS
   const fetcher = useFetcher<typeof action>();
   const alertStatuses = useAlertStatuses();
 
-  const [form, fields] = useForm({
-    defaultValue,
-    lastResult: fetcher.data,
-    constraint: getZodConstraint(updateAlertStatusFormSchema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, {
-        schema: updateAlertStatusFormSchema,
-      });
+  const form = useForm({
+    defaultValues: defaultValue,
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'PATCH',
+          action: getRoute('/transfercheck/ressources/alert/update/status'),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: updateAlertStatusFormSchema,
+      onBlurAsync: updateAlertStatusFormSchema,
+      onSubmitAsync: updateAlertStatusFormSchema,
     },
   });
 
-  const formRef = React.useRef<HTMLFormElement>(null);
-
-  const [status, setStatus] = React.useState(defaultValue.status);
-  const { color, tKey } = alertStatusMapping[status];
-
   return (
-    <FormProvider context={form.context}>
-      <fetcher.Form
-        ref={formRef}
-        method="post"
-        action={getRoute('/transfercheck/ressources/alert/update/status')}
-        {...getFormProps(form)}
-      >
-        <input {...getInputProps(fields.alertId, { type: 'hidden' })} key={fields.alertId.key} />
-        <FormField name={fields.status.name} className="group flex flex-row items-center gap-4">
-          <FormLabel className="sr-only">{t('transfercheck:alerts.status')}</FormLabel>
-          <FormSelect.Root
-            onValueChange={(value) => {
-              //@ts-expect-error value is string but indeed, it is a valid status
-              setStatus(value);
-              formRef.current?.requestSubmit();
-            }}
-            options={alertStatuses}
-          >
-            <FormSelect.Trigger>
-              <FormSelect.Value className={alertStatusVariants({ color, variant: 'text' })}>
-                {t(tKey)}
-              </FormSelect.Value>
-              <FormSelect.Arrow />
-            </FormSelect.Trigger>
-            <FormSelect.Content
-              className="max-h-60 min-w-[var(--radix-select-trigger-width)]"
-              align="start"
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <form.Field name="status">
+        {(field) => (
+          <div className="group flex flex-row items-center gap-4">
+            <FormLabel name={field.name} className="sr-only">
+              {t('transfercheck:alerts.status')}
+            </FormLabel>
+            <Select.Root
+              onValueChange={(value) => {
+                field.handleChange(value as UpdateAlertStatusForm['status']);
+                form.handleSubmit();
+              }}
             >
-              <FormSelect.Viewport>
-                {alertStatuses.map((status) => (
-                  <FormSelect.Item
-                    key={status.value}
-                    value={status.value}
-                    className="flex flex-row items-center gap-2"
-                  >
-                    <AlertStatus status={status.value} />
-                    <FormSelect.ItemText>{status.label}</FormSelect.ItemText>
-                  </FormSelect.Item>
-                ))}
-              </FormSelect.Viewport>
-            </FormSelect.Content>
-          </FormSelect.Root>
-        </FormField>
-      </fetcher.Form>
-    </FormProvider>
+              <Select.Trigger>
+                <Select.Value
+                  className={alertStatusVariants({
+                    color: alertStatusMapping[field.state.value].color,
+                    variant: 'text',
+                  })}
+                >
+                  {t(alertStatusMapping[field.state.value].tKey)}
+                </Select.Value>
+                <Select.Arrow />
+              </Select.Trigger>
+              <Select.Content
+                className="max-h-60 min-w-[var(--radix-select-trigger-width)]"
+                align="start"
+              >
+                <Select.Viewport>
+                  {alertStatuses.map((status) => (
+                    <Select.Item
+                      key={status.value}
+                      value={status.value}
+                      className="flex flex-row items-center gap-2"
+                    >
+                      <AlertStatus status={status.value} />
+                      <Select.ItemText>{status.label}</Select.ItemText>
+                    </Select.Item>
+                  ))}
+                </Select.Viewport>
+              </Select.Content>
+            </Select.Root>
+          </div>
+        )}
+      </form.Field>
+    </form>
   );
 }
