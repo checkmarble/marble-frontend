@@ -14,6 +14,8 @@ interface TransferStatusButtonProps {
   value: TransferStatus;
   name: string;
   defaultChecked: boolean;
+  onChange?: (value: TransferStatus) => void;
+  onBlur?: () => void;
 }
 
 const transferStatusRadioButtonVariants = cva(
@@ -33,6 +35,8 @@ export function TransferStatusRadioButton({
   value,
   name,
   defaultChecked,
+  onChange,
+  onBlur,
 }: TransferStatusButtonProps) {
   const { t } = useTranslation(transfersI18n);
 
@@ -44,6 +48,8 @@ export function TransferStatusRadioButton({
         type="radio"
         name={name}
         value={value}
+        onChange={(e) => onChange?.(e.currentTarget.value as typeof value)}
+        onBlur={onBlur}
         defaultChecked={defaultChecked}
       />
       <label htmlFor={value} className={transferStatusRadioButtonVariants({ status: value })}>
