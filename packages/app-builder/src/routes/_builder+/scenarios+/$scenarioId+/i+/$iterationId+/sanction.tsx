@@ -253,7 +253,7 @@ export default function SanctionDetail() {
     triggerObjectType: scenario.triggerObjectType,
   };
 
-  if (lastData.status === 'error' && lastData.errors) {
+  if (!form.state.isTouched && lastData.status === 'error' && lastData.errors) {
     Dict.entries(lastData.errors.fieldErrors).forEach(([field, errors]) =>
       form.setFieldMeta(field, (prev) => ({
         ...prev,
