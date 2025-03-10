@@ -204,9 +204,10 @@ export default function SanctionDetail() {
     useLoaderData<typeof loader>();
   const editor = useEditorMode();
   const { submit, data } = useFetcher<typeof action>();
-  const lastData = data as
-    | { status: 'success' }
-    | { status: 'error'; errors: z.typeToFlattenedError<EditSanctionForm> };
+  const lastData = data as {
+    status: 'error' | 'success';
+    errors?: z.typeToFlattenedError<EditSanctionForm>;
+  };
   const scenario = useCurrentScenario();
   const ruleGroups = useRuleGroups();
   const { id: iterationId, sanctionCheckConfig } = useCurrentScenarioIteration();
@@ -252,11 +253,11 @@ export default function SanctionDetail() {
     triggerObjectType: scenario.triggerObjectType,
   };
 
-  if (lastData.status === 'error') {
-    Dict.keys(lastData.errors.fieldErrors).forEach((field) =>
+  if (lastData.status === 'error' && lastData.errors) {
+    Dict.entries(lastData.errors.fieldErrors).forEach(([field, errors]) =>
       form.setFieldMeta(field, (prev) => ({
         ...prev,
-        errors: lastData.errors.fieldErrors[field] ?? [],
+        errors: errors ?? [],
       })),
     );
   }
