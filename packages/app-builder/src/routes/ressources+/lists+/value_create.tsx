@@ -7,6 +7,7 @@ import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2 as Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -46,7 +47,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export function NewListValue({ listId }: { listId: string }) {
   const { t } = useTranslation(handle.i18n);
-  const { submit } = useFetcher<typeof action>();
+  const { submit, state, data } = useFetcher<typeof action>();
+  const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<AddValueForm>({
     defaultValues: {
@@ -69,8 +71,16 @@ export function NewListValue({ listId }: { listId: string }) {
     },
   });
 
+  useEffect(() => {
+    if (state === 'idle' && data?.success) {
+      setIsOpen(false);
+      form.reset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.success, state]);
+
   return (
-    <Modal.Root>
+    <Modal.Root open={isOpen} setOpen={setIsOpen}>
       <Modal.Trigger render={<Button />}>
         <Icon icon="plus" className="size-6" />
         {t('lists:create_value.title')}
@@ -103,14 +113,25 @@ export function NewListValue({ listId }: { listId: string }) {
               )}
             </form.Field>
             <div className="flex flex-1 flex-row gap-2">
-              <Modal.Close render={<Button className="flex-1" type="button" variant="secondary" />}>
+              <Modal.Close
+                render={
+                  <Button
+                    className="flex-1"
+                    type="button"
+                    variant="secondary"
+                    key="cancel"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsOpen(false);
+                    }}
+                  />
+                }
+              >
                 {t('common:cancel')}
               </Modal.Close>
-              <Modal.Close
-                render={<Button className="flex-1" variant="primary" type="submit" name="create" />}
-              >
+              <Button className="flex-1" variant="primary" type="submit" key="create">
                 {t('common:save')}
-              </Modal.Close>
+              </Button>
             </div>
           </div>
         </form>
