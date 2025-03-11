@@ -6,13 +6,17 @@ await setup();
 
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: true,
   reporter: 'html',
+  fullyParallel: true,
+  workers: 4,
   use: {
     headless: !process.env['PW_DEBUG'],
     baseURL: 'http://localhost:3000',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
+    launchOptions: {
+      slowMo: 250,
+    }
   },
   projects: [
     {
