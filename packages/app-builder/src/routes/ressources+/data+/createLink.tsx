@@ -1,24 +1,18 @@
-import {
-  FormControl,
-  FormError,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@app-builder/components/Form';
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { type TableModel } from '@app-builder/models/data-model';
 import { serverServices } from '@app-builder/services/init.server';
-import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useEffect, useMemo, useState } from 'react';
-import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Modal, Select } from 'ui-design-system';
+import { Button, Modal, Select } from 'ui-design-system';
 import { z } from 'zod';
 
 export const handle = {
@@ -38,23 +32,28 @@ const createLinkFormSchema = z.object({
   childFieldId: z.string().min(1).uuid(),
 });
 
+type CreateLinkForm = z.infer<typeof createLinkFormSchema>;
+
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const {
+    authService,
+    i18nextService: { getFixedT },
+    toastSessionService: { getSession, commitSession },
+  } = serverServices;
 
-  const parsedForm = await parseFormSafe(request, createLinkFormSchema);
-  if (!parsedForm.success) {
-    parsedForm.error.flatten((issue) => issue);
+  const [session, t, raw, { apiClient }] = await Promise.all([
+    getSession(request),
+    getFixedT(request, ['common', 'data']),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-    return json({
-      success: false as const,
-      values: parsedForm.formData,
-      error: parsedForm.error.format(),
-    });
-  }
-  const { name, parentFieldId, childFieldId, parentTableId, childTableId } = parsedForm.data;
+  const { success, error, data } = createLinkFormSchema.safeParse(raw);
+
+  if (!success) return json({ success: 'false', errors: error.flatten() });
+  const { name, parentFieldId, childFieldId, parentTableId, childTableId } = data;
 
   try {
     await apiClient.postDataModelTableLink({
@@ -64,34 +63,20 @@ export async function action({ request }: ActionFunctionArgs) {
       parent_table_id: parentTableId,
       child_table_id: childTableId,
     });
-    return json({
-      success: true as const,
-      values: null,
-      error: null,
-    });
+
+    return json({ success: 'true', errors: [] });
   } catch (error) {
     if (isStatusConflictHttpError(error)) {
-      const { getSession, commitSession } = serverServices.toastSessionService;
-      const session = await getSession(request);
       setToastMessage(session, {
         type: 'error',
-        messageKey: 'common:errors.data.duplicate_link_name',
-      });
-      return json(
-        {
-          success: false as const,
-          values: parsedForm.data,
-          error: error,
-        },
-        { headers: { 'Set-Cookie': await commitSession(session) } },
-      );
-    } else {
-      return json({
-        success: false as const,
-        values: parsedForm.data,
-        error: error,
+        message: t('common:errors.data.duplicate_link_name'),
       });
     }
+
+    return json(
+      { success: 'false', errors: [] },
+      { headers: { 'Set-Cookie': await commitSession(session) } },
+    );
   }
 }
 
@@ -140,189 +125,179 @@ function CreateLinkContent({
     );
   }, [selectedParentTable]);
 
-  const formMethods = useForm<z.infer<typeof createLinkFormSchema>>({
-    progressive: true,
-    resolver: zodResolver(createLinkFormSchema),
+  const form = useForm<CreateLinkForm>({
     defaultValues: {
       name: '',
       parentTableId: otherTables[0].id,
-      parentFieldId: selectedParentTableFields[0]?.id,
+      parentFieldId: selectedParentTableFields[0]?.id as string,
       childTableId: thisTable.id,
-      childFieldId: thisTable.fields[0]?.id,
+      childFieldId: thisTable.fields[0]?.id as string,
+    },
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'POST',
+          action: getRoute('/ressources/data/createLink'),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: createLinkFormSchema,
+      onBlurAsync: createLinkFormSchema,
+      onSubmitAsync: createLinkFormSchema,
     },
   });
-  const { control, setValue } = formMethods;
 
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data?.success) {
       closeModal();
     }
   }, [closeModal, fetcher.data?.success, fetcher.state]);
+
   useEffect(() => {
     const parentFieldId = selectedParentTableFields[0]?.id;
     if (!parentFieldId) return;
-    setValue('parentFieldId', parentFieldId);
-  }, [setValue, selectedParentTableFields]);
+    form.setFieldValue('parentFieldId', parentFieldId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedParentTableFields]);
 
   return (
-    <Form
-      control={control}
-      onSubmit={({ formData }) => {
-        fetcher.submit(formData, {
-          method: 'POST',
-          action: getRoute('/ressources/data/createLink'),
-        });
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
       }}
     >
-      <FormProvider {...formMethods}>
-        <Modal.Title>{t('data:create_link.title')}</Modal.Title>
-        <div className="flex flex-col gap-6 p-6">
-          <div className="flex flex-1 flex-col gap-4">
-            <FormField
-              name="name"
-              control={control}
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-2">
-                  <FormLabel>{t('data:link_name')}</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder={t('data:create_link.name_placeholder')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormError />
-                </FormItem>
-              )}
-            />
+      <Modal.Title>{t('data:create_link.title')}</Modal.Title>
+      <div className="flex flex-col gap-6 p-6">
+        <div className="flex flex-1 flex-col gap-4">
+          <form.Field name="name">
+            {(field) => (
+              <div className="flex flex-col gap-2">
+                <FormLabel name={field.name}>{t('data:link_name')}</FormLabel>
+                <FormInput
+                  type="text"
+                  name={field.name}
+                  defaultValue={field.state.value as string}
+                  onChange={(e) => field.handleChange(e.currentTarget.value)}
+                  onBlur={field.handleBlur}
+                  valid={field.state.meta.errors.length === 0}
+                  placeholder={t('data:create_link.name_placeholder')}
+                />
+                <FormErrorOrDescription errors={field.state.meta.errors} />
+              </div>
+            )}
+          </form.Field>
 
-            <div className="flex flex-row justify-around gap-2">
-              <FormField
-                name="childTableId"
-                control={control}
-                render={({ field }) => (
-                  <FormItem className="flex flex-1 flex-col gap-2">
-                    <FormLabel>{t('data:create_link.child_table')}</FormLabel>
-                    <FormControl>
-                      <Select.Default
-                        disabled={true}
-                        onValueChange={(type) => {
-                          field.onChange(type);
-                        }}
-                        value={field.value}
-                      >
-                        {[thisTable].map(({ id, name }) => {
-                          return (
-                            <Select.DefaultItem key={id} value={id}>
-                              {name}
-                            </Select.DefaultItem>
-                          );
-                        })}
-                      </Select.Default>
-                    </FormControl>
-                    <FormError />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="childFieldId"
-                control={control}
-                render={({ field }) => (
-                  <FormItem className="flex flex-1 flex-col gap-2">
-                    <FormLabel>{t('data:create_link.child_field')}</FormLabel>
-                    <FormControl>
-                      <Select.Default
-                        onValueChange={(type) => {
-                          field.onChange(type);
-                        }}
-                        value={field.value}
-                      >
-                        {thisTable.fields.map(({ id, name }) => {
-                          return (
-                            <Select.DefaultItem key={id} value={id}>
-                              {name}
-                            </Select.DefaultItem>
-                          );
-                        })}
-                      </Select.Default>
-                    </FormControl>
-                    <FormError />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="flex flex-row justify-around gap-2">
-              <FormField
-                name="parentTableId"
-                control={control}
-                render={({ field }) => (
-                  <FormItem className="flex flex-1 flex-col gap-2">
-                    <FormLabel>{t('data:create_link.parent_table')}</FormLabel>
-                    <FormControl>
-                      <Select.Default
-                        onValueChange={(id) => {
-                          field.onChange(id);
-                          const newTable =
-                            otherTables.find(({ id: tableId }) => tableId === id) ?? otherTables[0];
-                          setSelectedParentTable(newTable);
-                        }}
-                        value={field.value}
-                      >
-                        {otherTables.map(({ id, name }) => {
-                          return (
-                            <Select.DefaultItem key={id} value={id}>
-                              {name}
-                            </Select.DefaultItem>
-                          );
-                        })}
-                      </Select.Default>
-                    </FormControl>
-                    <FormError />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                name="parentFieldId"
-                control={control}
-                render={({ field }) => (
-                  <FormItem className="flex flex-1 flex-col gap-2">
-                    <FormLabel>{t('data:create_link.parent_field')}</FormLabel>
-                    <FormControl>
-                      <Select.Default
-                        defaultValue={selectedParentTableFields[0]?.id}
-                        onValueChange={(type) => {
-                          field.onChange(type);
-                        }}
-                        value={field.value}
-                      >
-                        {selectedParentTableFields.map(({ id, name }) => {
-                          return (
-                            <Select.DefaultItem key={id} value={id}>
-                              {name}
-                            </Select.DefaultItem>
-                          );
-                        })}
-                      </Select.Default>
-                    </FormControl>
-                    <FormError />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <p>{t('data:create_link.must_point_to_unique_field')}</p>
+          <div className="flex flex-row justify-around gap-2">
+            <form.Field name="childTableId">
+              {(field) => (
+                <div className="flex flex-1 flex-col gap-2">
+                  <FormLabel name={field.name}>{t('data:create_link.child_table')}</FormLabel>
+                  <Select.Default
+                    disabled={true}
+                    defaultValue={field.state.value}
+                    onValueChange={(type) => {
+                      field.handleChange(type);
+                    }}
+                  >
+                    {[thisTable].map(({ id, name }) => {
+                      return (
+                        <Select.DefaultItem key={id} value={id}>
+                          {name}
+                        </Select.DefaultItem>
+                      );
+                    })}
+                  </Select.Default>
+                  v
+                </div>
+              )}
+            </form.Field>
+            <form.Field name="childFieldId">
+              {(field) => (
+                <div className="flex flex-1 flex-col gap-2">
+                  <FormLabel name={field.name}>{t('data:create_link.child_field')}</FormLabel>
+                  <Select.Default
+                    defaultValue={field.state.value}
+                    onValueChange={(type) => {
+                      field.handleChange(type);
+                    }}
+                  >
+                    {thisTable.fields.map(({ id, name }) => {
+                      return (
+                        <Select.DefaultItem key={id} value={id}>
+                          {name}
+                        </Select.DefaultItem>
+                      );
+                    })}
+                  </Select.Default>
+                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                </div>
+              )}
+            </form.Field>
           </div>
-          <div className="flex flex-1 flex-row gap-2">
-            <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button className="flex-1" variant="primary" type="submit" name="create">
-              {t('data:create_field.button_accept')}
-            </Button>
+          <div className="flex flex-row justify-around gap-2">
+            <form.Field name="parentTableId">
+              {(field) => (
+                <div className="flex flex-1 flex-col gap-2">
+                  <FormLabel name={field.name}>{t('data:create_link.parent_table')}</FormLabel>
+                  <Select.Default
+                    defaultValue={field.state.value}
+                    onValueChange={(id) => {
+                      field.handleChange(id);
+                      const newTable =
+                        otherTables.find(({ id: tableId }) => tableId === id) ?? otherTables[0];
+                      setSelectedParentTable(newTable);
+                    }}
+                  >
+                    {otherTables.map(({ id, name }) => {
+                      return (
+                        <Select.DefaultItem key={id} value={id}>
+                          {name}
+                        </Select.DefaultItem>
+                      );
+                    })}
+                  </Select.Default>
+                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                </div>
+              )}
+            </form.Field>
+            <form.Field name="parentFieldId">
+              {(field) => (
+                <div className="flex flex-1 flex-col gap-2">
+                  <FormLabel name={field.name}>{t('data:create_link.parent_field')}</FormLabel>
+                  <Select.Default
+                    defaultValue={selectedParentTableFields[0]?.id}
+                    onValueChange={field.handleChange}
+                  >
+                    {selectedParentTableFields.map(({ id, name }) => {
+                      return (
+                        <Select.DefaultItem key={id} value={id}>
+                          {name}
+                        </Select.DefaultItem>
+                      );
+                    })}
+                  </Select.Default>
+                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                </div>
+              )}
+            </form.Field>
           </div>
+          <p>{t('data:create_link.must_point_to_unique_field')}</p>
         </div>
-      </FormProvider>
-    </Form>
+        <div className="flex flex-1 flex-row gap-2">
+          <Modal.Close asChild>
+            <Button className="flex-1" variant="secondary">
+              {t('common:cancel')}
+            </Button>
+          </Modal.Close>
+          <Button className="flex-1" variant="primary" type="submit" name="create">
+            {t('data:create_field.button_accept')}
+          </Button>
+        </div>
+      </div>
+    </form>
   );
 }
