@@ -1,22 +1,16 @@
-import {
-  FormControl,
-  FormError,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@app-builder/components/Form';
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { type TableModel } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
-import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
-import { useEffect, useState } from 'react';
-import { Form, FormProvider, useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, HiddenInputs, Input, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { z } from 'zod';
 
 export const handle = {
@@ -28,39 +22,30 @@ const editTableFormSchema = z.object({
   tableId: z.string().uuid(),
 });
 
+type EditTableForm = z.infer<typeof editTableFormSchema>;
+
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { apiClient } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
 
-  const parsedForm = await parseFormSafe(request, editTableFormSchema);
-  if (!parsedForm.success) {
-    parsedForm.error.flatten((issue) => issue);
+  const [raw, { apiClient }] = await Promise.all([
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-    return json({
-      success: false as const,
-      values: parsedForm.formData,
-      error: parsedForm.error.format(),
-    });
-  }
-  const { description, tableId } = parsedForm.data;
+  const { success, error, data } = editTableFormSchema.safeParse(raw);
+
+  if (!success) return json({ success: 'false', errors: error.flatten() });
 
   try {
-    await apiClient.patchDataModelTable(tableId, {
-      description,
+    await apiClient.patchDataModelTable(data.tableId, {
+      description: data.description,
     });
-    return json({
-      success: true as const,
-      values: parsedForm.data,
-      error: null,
-    });
+
+    return json({ success: 'true', errors: [] });
   } catch (error) {
-    return json({
-      success: false as const,
-      values: parsedForm.data,
-      error: error,
-    });
+    return json({ success: 'false', errors: [] });
   }
 }
 
@@ -68,73 +53,73 @@ export function EditTable({ table, children }: { table: TableModel; children: Re
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const formMethods = useForm<z.infer<typeof editTableFormSchema>>({
-    progressive: true,
-    resolver: zodResolver(editTableFormSchema),
+  const form = useForm<EditTableForm>({
     defaultValues: {
       description: table.description,
       tableId: table.id,
     },
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'POST',
+          action: getRoute('/ressources/data/editTable'),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: editTableFormSchema,
+      onBlurAsync: editTableFormSchema,
+      onSubmitAsync: editTableFormSchema,
+    },
   });
-  const { control, register, setValue } = formMethods;
+
   const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    if (fetcher.state === 'idle' && fetcher.data?.success) {
-      setIsOpen(false);
-      setValue('description', fetcher.data?.values.description);
-    }
-  }, [fetcher.data?.success, fetcher.data?.values, fetcher.state, setValue]);
 
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content>
-        <Form
-          control={control}
-          onSubmit={({ formData }) => {
-            fetcher.submit(formData, {
-              method: 'POST',
-              action: getRoute('/ressources/data/editTable'),
-            });
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
           }}
         >
-          <FormProvider {...formMethods}>
-            <HiddenInputs tableId={'dummy value'} />
-            <Modal.Title>{t('data:edit_table.title')}</Modal.Title>
-            <div className="flex flex-col gap-6 p-6">
-              <div className="flex flex-1 flex-col gap-4">
-                <input hidden {...register('tableId')} />
-                <FormField
-                  name="description"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2">
-                      <FormLabel>{t('data:description')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder={t('data:create_table.description_placeholder')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormError />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="flex flex-1 flex-row gap-2">
-                <Modal.Close asChild>
-                  <Button className="flex-1" variant="secondary">
-                    {t('common:cancel')}
-                  </Button>
-                </Modal.Close>
-                <Button className="flex-1" variant="primary" type="submit" name="edit">
-                  {t('data:edit_table.button_accept')}
-                </Button>
-              </div>
+          <Modal.Title>{t('data:edit_table.title')}</Modal.Title>
+          <div className="flex flex-col gap-6 p-6">
+            <div className="flex flex-1 flex-col gap-4">
+              <form.Field name="description">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <FormLabel name={field.name}>{t('data:description')}</FormLabel>
+                    <FormInput
+                      type="text"
+                      name={field.name}
+                      defaultValue={field.state.value as string}
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
+                      onBlur={field.handleBlur}
+                      valid={field.state.meta.errors.length === 0}
+                      placeholder={t('data:create_table.description_placeholder')}
+                    />
+                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                  </div>
+                )}
+              </form.Field>
             </div>
-          </FormProvider>
-        </Form>
+            <div className="flex flex-1 flex-row gap-2">
+              <Modal.Close asChild>
+                <Button className="flex-1" variant="secondary">
+                  {t('common:cancel')}
+                </Button>
+              </Modal.Close>
+              <Button className="flex-1" variant="primary" type="submit" name="edit">
+                {t('data:edit_table.button_accept')}
+              </Button>
+            </div>
+          </div>
+        </form>
       </Modal.Content>
     </Modal.Root>
   );
