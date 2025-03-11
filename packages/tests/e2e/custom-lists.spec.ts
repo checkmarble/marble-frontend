@@ -4,7 +4,7 @@ import { waitForThen } from 'tests/common/utils';
 
 test('Create new list', async ({ page }) => {
   await page.goto('/lists');
-
+  
   const listName = crypto.randomUUID();
   const values = Array.from({ length: 5 }, () => crypto.randomUUID());
 
@@ -21,9 +21,10 @@ test('Create new list', async ({ page }) => {
   await page.waitForURL('/lists/**');
   await page.waitForLoadState();
 
+  
   for (const value of values) {
     await waitForThen(page, page.getByRole('button', { name: 'New value' }), async (button) =>
-      button.click(),
+      await button.click(),
     );
 
     await waitForThen(
