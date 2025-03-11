@@ -1,22 +1,16 @@
-import {
-  FormControl,
-  FormError,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@app-builder/components/Form';
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { serverServices } from '@app-builder/services/init.server';
-import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
-import { useEffect, useState } from 'react';
-import { Form, FormProvider, useForm } from 'react-hook-form';
+import { omit } from 'radash';
 import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
-import { Button, HiddenInputs, Input, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -30,33 +24,25 @@ const editListFormSchema = z.object({
   description: z.string(),
 });
 
+type EditListForm = z.infer<typeof editListFormSchema>;
+
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = serverServices;
-  const { customListsRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
 
-  const parsedForm = await parseFormSafe(request, editListFormSchema);
-  if (!parsedForm.success) {
-    parsedForm.error.flatten((issue) => issue);
+  const [raw, { customListsRepository }] = await Promise.all([
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-    return json({
-      success: false as const,
-      values: parsedForm.formData,
-      error: parsedForm.error.format(),
-    });
-  }
-  const { listId, name, description } = parsedForm.data;
-  await customListsRepository.updateCustomList(listId, {
-    name: name,
-    description: description,
-  });
+  const { success, error, data } = editListFormSchema.safeParse(raw);
 
-  return json({
-    success: true as const,
-    values: parsedForm.data,
-    error: null,
-  });
+  if (!success) return json({ success: 'false', errors: error.flatten() });
+
+  await customListsRepository.updateCustomList(data.listId, omit(data, ['listId']));
+
+  return json({ success: 'true' });
 }
 
 export function EditList({
@@ -69,29 +55,33 @@ export function EditList({
   description: string;
 }) {
   const { t } = useTranslation(handle.i18n);
-  const fetcher = useFetcher<typeof action>();
+  const { submit } = useFetcher<typeof action>();
+  const hydrated = useHydrated();
 
-  const formMethods = useForm<z.infer<typeof editListFormSchema>>({
-    progressive: true,
-    resolver: zodResolver(editListFormSchema),
+  const form = useForm<EditListForm>({
     defaultValues: {
       listId,
       name,
       description,
     },
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        submit(value, {
+          method: 'PATCH',
+          action: getRoute('/ressources/lists/edit'),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: editListFormSchema,
+      onBlurAsync: editListFormSchema,
+      onSubmitAsync: editListFormSchema,
+    },
   });
-  const { control, register } = formMethods;
-
-  const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    if (fetcher.state === 'idle' && fetcher.data?.success) {
-      setIsOpen(false);
-    }
-  }, [fetcher.data?.success, fetcher.state]);
-  const hydrated = useHydrated();
 
   return (
-    <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
+    <Modal.Root>
       <Modal.Trigger asChild>
         <Button variant="secondary" disabled={!hydrated}>
           <Icon icon="edit-square" className="size-6" />
@@ -99,69 +89,63 @@ export function EditList({
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <Form
-          control={control}
-          onSubmit={({ formData }) => {
-            fetcher.submit(formData, {
-              method: 'PATCH',
-              action: getRoute('/ressources/lists/edit'),
-            });
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
           }}
         >
-          <FormProvider {...formMethods}>
-            <HiddenInputs listId={listId} />
-            <Modal.Title>{t('lists:edit_list.title')}</Modal.Title>
-            <div className="flex flex-col gap-6 p-6">
-              <div className="flex flex-1 flex-col gap-4">
-                <input hidden {...register('listId')} />
-                <FormField
-                  name="name"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2">
-                      <FormLabel>{t('lists:name')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder={t('lists:create_list.name_placeholder')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormError />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  name="description"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2">
-                      <FormLabel>{t('lists:description')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder={t('lists:create_list.description_placeholder')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormError />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="flex flex-1 flex-row gap-2">
-                <Modal.Close asChild>
-                  <Button className="flex-1" variant="secondary">
-                    {t('common:cancel')}
-                  </Button>
-                </Modal.Close>
-                <Button className="flex-1" variant="primary" type="submit" name="editList">
-                  {t('common:save')}
-                </Button>
-              </div>
+          <Modal.Title>{t('lists:edit_list.title')}</Modal.Title>
+          <div className="flex flex-col gap-6 p-6">
+            <div className="flex flex-1 flex-col gap-4">
+              <form.Field name="name">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <FormLabel name={field.name}>{t('lists:name')}</FormLabel>
+                    <FormInput
+                      type="text"
+                      name={field.name}
+                      defaultValue={field.state.value}
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
+                      onBlur={field.handleBlur}
+                      valid={field.state.meta.errors.length === 0}
+                      placeholder={t('lists:create_list.name_placeholder')}
+                    />
+                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                  </div>
+                )}
+              </form.Field>
+              <form.Field name="description">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <FormLabel name={field.name}>{t('lists:description')}</FormLabel>
+                    <FormInput
+                      type="text"
+                      name={field.name}
+                      defaultValue={field.state.value}
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
+                      onBlur={field.handleBlur}
+                      valid={field.state.meta.errors.length === 0}
+                      placeholder={t('lists:create_list.description_placeholder')}
+                    />
+                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                  </div>
+                )}
+              </form.Field>
             </div>
-          </FormProvider>
-        </Form>
+            <div className="flex flex-1 flex-row gap-2">
+              <Modal.Close asChild>
+                <Button className="flex-1" type="button" variant="secondary">
+                  {t('common:cancel')}
+                </Button>
+              </Modal.Close>
+              <Button className="flex-1" variant="primary" type="submit" name="editList">
+                {t('common:save')}
+              </Button>
+            </div>
+          </div>
+        </form>
       </Modal.Content>
     </Modal.Root>
   );
