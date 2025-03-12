@@ -18,8 +18,8 @@ export interface CurrentUser {
 
 function NewPermissionsList() {
   return {
-    canManageList: 'CUSTOM_LISTS_PUBLISH',
-    canManageListItem: 'CUSTOM_LISTS_PUBLISH',
+    canManageList: 'CUSTOM_LISTS_EDIT',
+    canManageListItem: 'CUSTOM_LISTS_EDIT',
     canManageScenario: 'SCENARIO_CREATE',
     canPublishScenario: 'SCENARIO_PUBLISH',
     canIngestData: 'INGESTION',
