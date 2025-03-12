@@ -119,5 +119,6 @@
   "search.placeholder": "البحث بالاسم",
   "case.page_title": "قضية",
   "case_detail.review_decision.disabled_approve": "لا يمكن اختيار هذا الوضع لأن هناك شيكًا للعقوبة لمراجعة هذا القرار.",
-  "sanction.state.refine_needed": "صقل مطلوب"
+  "sanction.state.refine_needed": "صقل مطلوب",
+  "case.link": "وصلة"
 }
