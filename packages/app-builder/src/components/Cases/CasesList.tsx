@@ -35,6 +35,20 @@ export function CasesList({
 
   const columns = useMemo(
     () => [
+      columnHelper.accessor(({ id }) => id, {
+        id: 'link',
+        header: t('cases:case.link'),
+        size: 1,
+        enableSorting: false,
+        cell: ({ getValue }) => (
+          <Link
+            className="text-purple-65 underline"
+            to={getRoute('/cases/:caseId', { caseId: fromUUID(getValue()) })}
+          >
+            {t('cases:case.link')}
+          </Link>
+        ),
+      }),
       columnHelper.accessor(({ status }) => status, {
         id: 'status',
         header: t('cases:case.status'),
@@ -106,18 +120,10 @@ export function CasesList({
     columns,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
-    state: {
-      sorting,
-    },
+    state: { sorting },
     manualSorting: true,
     onSortingChange: setSorting,
-    rowLink: ({ id }) => (
-      <Link
-        to={getRoute('/cases/:caseId', {
-          caseId: fromUUID(id),
-        })}
-      />
-    ),
+    rowLink: ({ id }) => <Link to={getRoute('/cases/:caseId', { caseId: fromUUID(id) })} />,
   });
 
   return (
