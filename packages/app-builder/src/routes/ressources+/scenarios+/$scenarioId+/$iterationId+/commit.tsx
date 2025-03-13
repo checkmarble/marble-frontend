@@ -1,20 +1,16 @@
-import { FormCheckbox } from '@app-builder/components/Form/FormCheckbox';
-import { FormField } from '@app-builder/components/Form/FormField';
-import { FormLabel } from '@app-builder/components/Form/FormLabel';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusBadRequestHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import { FormProvider, getFormProps, useForm } from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
 import { redirectBack } from 'remix-utils/redirect-back';
-import { Button, Modal, Tooltip } from 'ui-design-system';
+import { Button, Checkbox, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -25,19 +21,33 @@ const commitFormSchema = z.object({
 });
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { authService, csrfService } = serverServices;
-  const { scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  await csrfService.validate(request);
+  const {
+    authService,
+    toastSessionService: { getSession, commitSession },
+    i18nextService: { getFixedT },
+  } = serverServices;
+
+  const [t, session, rawData, { scenario }] = await Promise.all([
+    getFixedT(request, ['common', 'scenarios']),
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
+
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
 
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, { schema: commitFormSchema });
+  const { error, success } = commitFormSchema.safeParse(rawData);
 
-  if (submission.status !== 'success') {
-    return json(submission.reply());
+  if (!success) {
+    return json(
+      { status: 'error', errors: error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 
   try {
@@ -52,23 +62,19 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }),
     });
   } catch (error) {
-    const {
-      i18nextService: { getFixedT },
-      toastSessionService: { getSession, commitSession },
-    } = serverServices;
-    const t = await getFixedT(request, ['scenarios', 'common']);
-    const session = await getSession(request);
-    const formError = isStatusBadRequestHttpError(error)
-      ? t('scenarios:deployment_modal.commit.validation_error')
-      : t('common:errors.unknown');
-
     setToastMessage(session, {
       type: 'error',
-      message: formError,
+      message: isStatusBadRequestHttpError(error)
+        ? t('scenarios:deployment_modal.commit.validation_error')
+        : t('common:errors.unknown'),
     });
-    return json(submission.reply({ formErrors: [formError] }), {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+
+    return json(
+      { status: 'error', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 }
 
@@ -130,90 +136,122 @@ function CommitScenarioDraftContent({
   const { t } = useTranslation(['common', 'scenarios']);
   const fetcher = useFetcher<typeof action>();
 
-  const [form, fields] = useForm({
-    shouldRevalidate: 'onInput',
-    defaultValue: {
+  const form = useForm({
+    defaultValues: {
       activateToGoInProd: false,
       draftIsReadOnly: false,
       changeIsImmediate: false,
     },
-    lastResult: fetcher.data,
-    constraint: getZodConstraint(commitFormSchema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, {
-        schema: commitFormSchema,
-      });
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'POST',
+          action: getRoute('/ressources/scenarios/:scenarioId/:iterationId/commit', {
+            scenarioId: fromUUID(scenarioId),
+            iterationId: fromUUID(iterationId),
+          }),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: commitFormSchema,
+      onBlurAsync: commitFormSchema,
+      onSubmitAsync: commitFormSchema,
     },
   });
 
   return (
-    <FormProvider context={form.context}>
-      <fetcher.Form
-        action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/commit', {
-          scenarioId: fromUUID(scenarioId),
-          iterationId: fromUUID(iterationId),
-        })}
-        method="POST"
-        {...getFormProps(form)}
-      >
-        <Modal.Title>{t('scenarios:deployment_modal.commit.title')}</Modal.Title>
-        <div className="flex flex-col gap-6 p-6">
-          <AuthenticityTokenInput />
-          <div className="text-s flex flex-col gap-4 font-medium">
-            <p className="font-semibold">{t('scenarios:deployment_modal.commit.confirm')}</p>
-            <FormField
-              name={fields.draftIsReadOnly.name}
-              className="group flex flex-row items-center gap-2"
-            >
-              <FormCheckbox />
-              <FormLabel>{t('scenarios:deployment_modal.commit.draft_is_readonly')}</FormLabel>
-              <Tooltip.Default
-                content={
-                  <p className="max-w-60">
-                    {t('scenarios:deployment_modal.commit.draft_is_readonly.tooltip')}
-                  </p>
-                }
-              >
-                <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-6" />
-              </Tooltip.Default>
-            </FormField>
-            <FormField
-              name={fields.activateToGoInProd.name}
-              className="group flex flex-row items-center gap-2"
-            >
-              <FormCheckbox />
-              <FormLabel>{t('scenarios:deployment_modal.commit.activate_to_go_in_prod')}</FormLabel>
-              <Tooltip.Default
-                content={
-                  <p className="max-w-60">
-                    {t('scenarios:deployment_modal.commit.activate_to_go_in_prod.tooltip')}
-                  </p>
-                }
-              >
-                <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-6" />
-              </Tooltip.Default>
-            </FormField>
-            <FormField
-              name={fields.changeIsImmediate.name}
-              className="group flex flex-row items-center gap-2"
-            >
-              <FormCheckbox />
-              <FormLabel>{t('scenarios:deployment_modal.commit.change_is_immediate')}</FormLabel>
-            </FormField>
-          </div>
-          <div className="flex flex-1 flex-row gap-2">
-            <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary" name="cancel">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button className="flex-1" variant="primary" type="submit">
-              <Icon icon="commit" className="size-6" />
-              {t('scenarios:deployment_modal.commit.button')}
-            </Button>
-          </div>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <Modal.Title>{t('scenarios:deployment_modal.commit.title')}</Modal.Title>
+      <div className="flex flex-col gap-6 p-6">
+        <div className="text-s flex flex-col gap-4 font-medium">
+          <p className="font-semibold">{t('scenarios:deployment_modal.commit.confirm')}</p>
+          <form.Field name="draftIsReadOnly">
+            {(field) => (
+              <div className="group flex flex-row items-center gap-2">
+                <Checkbox
+                  name={field.name}
+                  defaultChecked={field.state.value}
+                  onCheckedChange={(state) =>
+                    state !== 'indeterminate' && field.handleChange(state)
+                  }
+                />
+                <FormLabel name={field.name}>
+                  {t('scenarios:deployment_modal.commit.draft_is_readonly')}
+                </FormLabel>
+                <Tooltip.Default
+                  content={
+                    <p className="max-w-60">
+                      {t('scenarios:deployment_modal.commit.draft_is_readonly.tooltip')}
+                    </p>
+                  }
+                >
+                  <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-6" />
+                </Tooltip.Default>
+              </div>
+            )}
+          </form.Field>
+          <form.Field name="activateToGoInProd">
+            {(field) => (
+              <div className="group flex flex-row items-center gap-2">
+                <Checkbox
+                  name={field.name}
+                  defaultChecked={field.state.value}
+                  onCheckedChange={(state) =>
+                    state !== 'indeterminate' && field.handleChange(state)
+                  }
+                />
+                <FormLabel name={field.name}>
+                  {t('scenarios:deployment_modal.commit.activate_to_go_in_prod')}
+                </FormLabel>
+                <Tooltip.Default
+                  content={
+                    <p className="max-w-60">
+                      {t('scenarios:deployment_modal.commit.activate_to_go_in_prod.tooltip')}
+                    </p>
+                  }
+                >
+                  <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-6" />
+                </Tooltip.Default>
+              </div>
+            )}
+          </form.Field>
+          <form.Field name="changeIsImmediate">
+            {(field) => (
+              <div className="group flex flex-row items-center gap-2">
+                <Checkbox
+                  name={field.name}
+                  defaultChecked={field.state.value}
+                  onCheckedChange={(state) =>
+                    state !== 'indeterminate' && field.handleChange(state)
+                  }
+                />
+                <FormLabel name={field.name}>
+                  {t('scenarios:deployment_modal.commit.change_is_immediate')}
+                </FormLabel>
+              </div>
+            )}
+          </form.Field>
         </div>
-      </fetcher.Form>
-    </FormProvider>
+        <div className="flex flex-1 flex-row gap-2">
+          <Modal.Close asChild>
+            <Button className="flex-1" variant="secondary" name="cancel">
+              {t('common:cancel')}
+            </Button>
+          </Modal.Close>
+          <Button className="flex-1" variant="primary" type="submit">
+            <Icon icon="commit" className="size-6" />
+            {t('scenarios:deployment_modal.commit.button')}
+          </Button>
+        </div>
+      </div>
+    </form>
   );
 }

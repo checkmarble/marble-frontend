@@ -390,24 +390,14 @@ export const routes = [
         "file": "routes/ressources+/cases+/create-case.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/edit-inbox",
-        "path": "ressources/cases/edit-inbox",
-        "file": "routes/ressources+/cases+/edit-inbox.tsx"
-      },
-      {
-        "id": "routes/ressources+/cases+/edit-name",
-        "path": "ressources/cases/edit-name",
-        "file": "routes/ressources+/cases+/edit-name.tsx"
-      },
-      {
         "id": "routes/ressources+/cases+/edit-status",
         "path": "ressources/cases/edit-status",
         "file": "routes/ressources+/cases+/edit-status.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/edit-tags",
-        "path": "ressources/cases/edit-tags",
-        "file": "routes/ressources+/cases+/edit-tags.tsx"
+        "id": "routes/ressources+/cases+/edit",
+        "path": "ressources/cases/edit",
+        "file": "routes/ressources+/cases+/edit.tsx"
       },
       {
         "id": "routes/ressources+/cases+/review-decision",

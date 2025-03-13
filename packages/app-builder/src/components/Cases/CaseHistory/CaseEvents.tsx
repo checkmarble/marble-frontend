@@ -10,6 +10,7 @@ import {
   type RuleSnoozeCreatedEvent,
 } from '@app-builder/models/cases';
 import { useGetRuleSnoozeFetcher } from '@app-builder/routes/ressources+/rule-snoozes+/read.$ruleSnoozeId';
+import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { formatDateRelative, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
@@ -329,6 +330,7 @@ function DecisionReviewedEventDetail({ event }: { event: DecisionReviewedEvent }
 
 function TagsUpdatedEventDetail({ event }: { event: CaseTagsUpdatedEvent }) {
   const { t } = useTranslation(casesI18n);
+  const { orgTags } = useOrganizationTags();
   return (
     <div className="flex flex-col gap-2">
       <Author userId={event.userId} type="edited_by" />
@@ -342,7 +344,7 @@ function TagsUpdatedEventDetail({ event }: { event: CaseTagsUpdatedEvent }) {
             t={t}
             i18nKey="cases:case_detail.history.event_detail.case_tags.new"
             components={{
-              CaseTags: <CaseTags caseTagIds={event.tagIds} />,
+              CaseTags: <CaseTags caseTagIds={event.tagIds} orgTags={orgTags} />,
             }}
           />
         </div>

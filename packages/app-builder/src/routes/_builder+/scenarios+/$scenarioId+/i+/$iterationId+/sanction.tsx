@@ -28,6 +28,7 @@ import { fromParams, fromUUID, toUUID, useParam } from '@app-builder/utils/short
 import * as Ariakit from '@ariakit/react';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
+import { Dict } from '@swan-io/boxed';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace, t as rawT } from 'i18next';
 import { useRef } from 'react';
@@ -147,66 +148,50 @@ type EditSanctionForm = z.infer<typeof editSanctionFormSchema>;
 export async function action({ request, params }: ActionFunctionArgs) {
   const {
     authService,
+    i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
 
-  const [session, data, { scenarioIterationSanctionRepository }] = await Promise.all([
+  const [session, t, raw, { scenarioIterationSanctionRepository }] = await Promise.all([
     getSession(request),
+    getFixedT(request, ['common']),
     request.json(),
     authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     }),
   ]);
 
-  const iterationId = fromParams(params, 'iterationId');
-  const result = editSanctionFormSchema.safeParse(data);
+  const { error, data, success } = editSanctionFormSchema.safeParse(raw);
 
-  if (!result.success) {
-    return json(
-      { status: 'error', errors: result.error.flatten() },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  }
+  if (!success) return json({ status: 'error', errors: error.flatten() });
 
   try {
     await scenarioIterationSanctionRepository.upsertSanctionCheckConfig({
-      iterationId,
+      iterationId: fromParams(params, 'iterationId'),
       changes: {
-        ...result.data,
-        counterPartyId: result.data.counterPartyId as AstNode | undefined,
-        triggerRule: result.data.triggerRule as AstNode | undefined,
+        ...data,
+        counterPartyId: data.counterPartyId as AstNode | undefined,
+        triggerRule: data.triggerRule as AstNode | undefined,
         query: {
-          name: result.data.query?.name as AstNode | undefined,
-          label: result.data.query?.label as AstNode | undefined,
+          name: data.query?.name as AstNode | undefined,
+          label: data.query?.label as AstNode | undefined,
         },
       },
     });
 
     setToastMessage(session, {
       type: 'success',
-      messageKey: 'common:success.save',
+      message: t('common:success.save'),
     });
 
-    return json(
-      { status: 'success', errors: [] },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
+    return json({ status: 'success' }, { headers: { 'Set-Cookie': await commitSession(session) } });
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
-      messageKey: 'common:errors.unknown',
+      message: t('common:errors.unknown'),
     });
 
-    return json(
-      { status: 'error', errors: [] },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
+    return json({ status: 'error' }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }
 
@@ -215,7 +200,11 @@ export default function SanctionDetail() {
   const { databaseAccessors, payloadAccessors, dataModel, customLists, sections } =
     useLoaderData<typeof loader>();
   const editor = useEditorMode();
-  const fetcher = useFetcher<typeof action>();
+  const { submit, data } = useFetcher<typeof action>();
+  const lastData = data as {
+    status: 'error' | 'success';
+    errors?: z.typeToFlattenedError<EditSanctionForm>;
+  };
   const scenario = useCurrentScenario();
   const ruleGroups = useRuleGroups();
   const { id: iterationId, sanctionCheckConfig } = useCurrentScenarioIteration();
@@ -230,7 +219,7 @@ export default function SanctionDetail() {
   const form = useForm<EditSanctionForm>({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        fetcher.submit(value, { method: 'PATCH', encType: 'application/json' });
+        submit(value, { method: 'PATCH', encType: 'application/json' });
       }
     },
     validators: {
@@ -261,7 +250,14 @@ export default function SanctionDetail() {
     triggerObjectType: scenario.triggerObjectType,
   };
 
-  //TODO Add errors from the servers if they are present
+  if (!form.state.isTouched && lastData.status === 'error' && lastData.errors) {
+    Dict.entries(lastData.errors.fieldErrors).forEach(([field, errors]) =>
+      form.setFieldMeta(field, (prev) => ({
+        ...prev,
+        errors: errors ?? [],
+      })),
+    );
+  }
 
   return (
     <Page.Main>

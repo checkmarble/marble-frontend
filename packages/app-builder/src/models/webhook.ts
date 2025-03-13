@@ -19,7 +19,7 @@ export const eventTypes = [
   'case.decision_reviewed',
   'decision.created',
 ] as const;
-type EventType = (typeof eventTypes)[number];
+export type EventType = (typeof eventTypes)[number];
 
 function isEventType(value: string): value is EventType {
   return eventTypes.includes(value as EventType);
