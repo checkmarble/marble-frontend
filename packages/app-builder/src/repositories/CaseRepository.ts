@@ -41,6 +41,8 @@ export interface CaseRepository {
   createCase(data: { name: string; inboxId: string; decisionIds?: string[] }): Promise<CaseDetail>;
   getCase(args: { caseId: string }): Promise<CaseDetail>;
   updateCase(args: { caseId: string; body: CaseUpdateBody }): Promise<CaseDetail>;
+  snoozeCase(args: { caseId: string; snoozeUntil: string }): Promise<unknown>;
+  unsnoozeCase(args: { caseId: string }): Promise<unknown>;
   addComment(args: {
     caseId: string;
     body: {
@@ -83,6 +85,9 @@ export function makeGetCaseRepository() {
         ...adaptPagination(pagination),
       };
     },
+    unsnoozeCase: ({ caseId }) => marbleCoreApiClient.unsnoozeCase(caseId),
+    snoozeCase: ({ caseId, snoozeUntil }) =>
+      marbleCoreApiClient.snoozeCase(caseId, { until: snoozeUntil }),
     createCase: async (data) => {
       const result = await marbleCoreApiClient.createCase(adaptCaseCreateBody(data));
       return adaptCaseDetail(result.case);

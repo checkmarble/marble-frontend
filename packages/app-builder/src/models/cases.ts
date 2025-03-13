@@ -59,6 +59,7 @@ export interface Case {
   inboxId: string;
   contributors: CaseContributor[];
   tags: CaseTag[];
+  snoozedUntil?: string;
 }
 
 export function adaptCase(dto: CaseDto): Case {
@@ -71,6 +72,7 @@ export function adaptCase(dto: CaseDto): Case {
     inboxId: dto.inbox_id,
     contributors: dto.contributors.map(adaptCaseContributor),
     tags: dto.tags.map(adaptCaseTag),
+    snoozedUntil: dto.snoozed_until,
   };
 }
 

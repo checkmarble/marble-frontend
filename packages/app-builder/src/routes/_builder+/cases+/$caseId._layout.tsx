@@ -15,6 +15,7 @@ import {
 } from '@app-builder/components/Cases/CaseHistory/RightSidebar';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
+import { EditCaseSnooze } from '@app-builder/routes/ressources+/cases+/edit-snooze';
 import { EditCaseStatus } from '@app-builder/routes/ressources+/cases+/edit-status';
 import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
 import {
@@ -188,6 +189,7 @@ export default function CasePage() {
     <Page.Main>
       <Page.Header className="justify-between">
         <BreadCrumbs />
+        <EditCaseSnooze caseId={caseDetail.id} snoozeUntil={caseDetail.snoozedUntil} />
         <EditCaseStatus caseId={caseDetail.id} status={caseDetail.status} />
       </Page.Header>
       <div className="flex size-full flex-col overflow-hidden">
