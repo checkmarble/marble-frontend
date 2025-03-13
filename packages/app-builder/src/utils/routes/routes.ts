@@ -400,6 +400,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/edit-name.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/edit-snooze",
+        "path": "ressources/cases/edit-snooze",
+        "file": "routes/ressources+/cases+/edit-snooze.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/edit-status",
         "path": "ressources/cases/edit-status",
         "file": "routes/ressources+/cases+/edit-status.tsx"
