@@ -214,6 +214,20 @@ const ResultModal = ({
   const { t } = useTranslation(handle.i18n);
   const icon = modalContent.success ? 'tick' : 'cross';
 
+  const errorMessage = (errorString?: string): string | undefined => {
+    if (errorString) {
+      try {
+        const error = JSON.parse(errorString);
+
+        if ('message' in error) return error.message;
+      } catch (error) {
+        return errorString;
+      }
+    }
+
+    return errorString;
+  };
+
   return (
     <Modal.Root open={isOpen} onOpenChange={onOpenChange}>
       <Modal.Content>
@@ -232,7 +246,7 @@ const ResultModal = ({
             <p>{modalContent.message}</p>
             {!modalContent.success ? (
               <>
-                <p>{modalContent.error}</p>
+                <p className="first-letter:capitalize">{errorMessage(modalContent.error)}</p>
                 <p className="mt-6">
                   {t('upload:failure_additional_message', {
                     replace: { objectType },
