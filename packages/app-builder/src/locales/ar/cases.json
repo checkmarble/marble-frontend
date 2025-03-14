@@ -129,5 +129,7 @@
   "snooze.modal.heading": "إدارة الغفوة",
   "snooze.title": "غفوة",
   "unsnooze.callout": "من خلال الاستمرار ، ستحصل على القضية",
-  "unsnooze.title": "unnooze"
+  "unsnooze.title": "unnooze",
+  "case_detail.history.event_type.case_snoozed": "قضية غفوة",
+  "case_detail.history.event_type.case_unsnoozed": "قضية Unooozed"
 }

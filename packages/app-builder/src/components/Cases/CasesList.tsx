@@ -35,20 +35,6 @@ export function CasesList({
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor(({ id }) => id, {
-        id: 'link',
-        header: t('cases:case.link'),
-        size: 1,
-        enableSorting: false,
-        cell: ({ getValue }) => (
-          <Link
-            className="text-purple-65 underline"
-            to={getRoute('/cases/:caseId', { caseId: fromUUID(getValue()) })}
-          >
-            {t('cases:case.link')}
-          </Link>
-        ),
-      }),
       columnHelper.accessor(({ status }) => status, {
         id: 'status',
         header: t('cases:case.status'),
@@ -62,11 +48,16 @@ export function CasesList({
         size: 200,
         minSize: 120,
         enableSorting: false,
-        cell: ({ getValue }) => {
+        cell: ({ getValue, row }) => {
           const caseName = getValue();
           return (
             <Tooltip.Default content={caseName}>
-              <span className="text-grey-00 text-s line-clamp-2 w-fit font-normal">{caseName}</span>
+              <Link
+                className="text-purple-65 text-s line-clamp-2 w-fit font-normal underline"
+                to={getRoute('/cases/:caseId', { caseId: fromUUID(row.id) })}
+              >
+                {caseName}
+              </Link>
             </Tooltip.Default>
           );
         },

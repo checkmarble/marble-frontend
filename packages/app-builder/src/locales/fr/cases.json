@@ -129,5 +129,7 @@
   "snooze.modal.heading": "Gérer l'activation",
   "snooze.title": "Désactiver",
   "unsnooze.callout": "En continuant, vous réactiverez l'investigation",
-  "unsnooze.title": "Réactiver"
+  "unsnooze.title": "Réactiver",
+  "case_detail.history.event_type.case_snoozed": "Cas snoté",
+  "case_detail.history.event_type.case_unsnoozed": "Cas non rien"
 }
