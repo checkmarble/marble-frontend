@@ -57,6 +57,8 @@
   "case_detail.history.event_type.decision_reviewed": "Decision reviewed",
   "case_detail.history.event_type.status_updated": "Status updated",
   "case_detail.history.event_type.file_added": "File added",
+  "case_detail.history.event_type.case_snoozed": "Case snoozed",
+  "case_detail.history.event_type.case_unsnoozed": "Case unsnoozed",
   "case_detail.history.event_title.case_created": "Case created",
   "case_detail.history.event_title.case_created_automatically": "Case created automatically",
   "case_detail.history.event_title.comment_added": "Note",
