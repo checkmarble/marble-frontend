@@ -21,7 +21,6 @@ import {
   type ScenarioUpdateWorkflowInput,
   scenarioUpdateWorkflowInputSchema,
 } from '@app-builder/models/scenario';
-import { OptionsProvider } from '@app-builder/services/editor/options';
 import { isCreateInboxAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -61,17 +60,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = serverServices;
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const {
-    user,
-    scenario,
-    inbox,
-    dataModelRepository,
-    entitlements,
-    editor,
-    customListsRepository,
-  } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { user, scenario, inbox, dataModelRepository, entitlements } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   if (!isWorkflowsAvailable(entitlements)) {
     return redirect(
@@ -93,26 +85,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     (pivot) => pivot.baseTable === currentScenario?.triggerObjectType,
   );
 
-  const [accessors, dataModel, customLists] = await Promise.all([
-    editor.listAccessors({
-      scenarioId,
-    }),
-    dataModelRepository.getDataModel(),
-    customListsRepository.listCustomLists(),
-  ]);
-
   return {
     scenarios,
     inboxes,
     hasPivotValue,
     workflowDataFeatureAccess: {
       isCreateInboxAvailable: isCreateInboxAvailable(user),
-    },
-    builderOptions: {
-      databaseAccessors: accessors.databaseAccessors,
-      payloadAccessors: accessors.payloadAccessors,
-      dataModel,
-      customLists,
     },
   };
 }
@@ -177,7 +155,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Workflow() {
-  const { scenarios, inboxes, hasPivotValue, workflowDataFeatureAccess, builderOptions } =
+  const { scenarios, inboxes, hasPivotValue, workflowDataFeatureAccess } =
     useLoaderData<typeof loader>();
 
   const currentScenario = useCurrentScenario();
@@ -219,14 +197,7 @@ export default function Workflow() {
       >
         <div className="grid size-full grid-cols-[2fr_1fr]">
           <WorkflowFlow />
-          <OptionsProvider
-            {...{
-              ...builderOptions,
-              triggerObjectType: currentScenario.triggerObjectType,
-            }}
-          >
-            <DetailPanel onDelete={deleteWorkflow} onSave={saveWorkflow} />
-          </OptionsProvider>
+          <DetailPanel onDelete={deleteWorkflow} onSave={saveWorkflow} />
         </div>
       </WorkflowProvider>
     </Page.Main>

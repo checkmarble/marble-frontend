@@ -1,23 +1,19 @@
-import { type AstNode } from '@app-builder/models';
+import { AstBuilder } from '@app-builder/components/AstBuilder';
+import { type AstNode, stripIdFromNode } from '@app-builder/models';
 import {
   isStringTemplateAstNode,
   NewStringTemplateAstNode,
+  STRING_TEMPLATE_VARIABLE_CAPTURE_REGEXP,
+  STRING_TEMPLATE_VARIABLE_REGEXP,
   type StringTemplateAstNode,
 } from '@app-builder/models/astNode/strings';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
-import { useAstValidationFetcher } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
-import { useTriggerObjectTable } from '@app-builder/services/editor/options';
 import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, ModalV2 } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { StringTemplateEdit } from '../../AstBuilder/AstBuilderNode/Operand/OperandEditor/OperandEditModal/StringTemplateEdit/StringTemplateEdit';
-import {
-  STRING_TEMPLATE_VARIABLE_CAPTURE_REGEXP,
-  STRING_TEMPLATE_VARIABLE_REGEXP,
-} from '../../AstBuilder/AstBuilderNode/Operand/OperandEditor/OperandEditModal/StringTemplateEdit/StringTemplateEdit.hook';
 import { useDefaultCaseName } from './CaseNameEditor.hook';
 
 export type CaseNameEditorProps = {
@@ -28,21 +24,26 @@ export type CaseNameEditorProps = {
 
 export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) => {
   const { t } = useTranslation(['scenarios']);
-  const triggerObjectTable = useTriggerObjectTable();
-  const [isEditing, setIsEditing] = useState(false);
-  const { defaultCaseNameNode } = useDefaultCaseName(triggerObjectTable.name);
   const currentScenario = useCurrentScenario();
-  const { validate, validation } = useAstValidationFetcher(currentScenario.id);
+  const [isEditing, setIsEditing] = useState(false);
+  const { defaultCaseNameNode } = useDefaultCaseName(currentScenario.triggerObjectType);
+  // const { validate, validation } = useAstValidationFetcher(currentScenario.id);
   const initialValueRef = useRef(value);
-  const handleValidation = useMemo(() => {
-    return R.debounce((astNode: AstNode) => validate(astNode, 'string'), {
-      waitMs: 300,
-    }).call;
-  }, [validate]);
+  // const handleValidation = useMemo(() => {
+  //   return R.debounce((astNode: AstNode) => validate(astNode, 'string'), {
+  //     waitMs: 300,
+  //   }).call;
+  // }, [validate]);
 
   const caseNameContent = value ? getAstNodeDisplayElement(value) : '';
   const isDefaultCaseName = useMemo(() => {
-    return value ? R.isDeepEqual(value, initialValueRef.current ?? defaultCaseNameNode) : true;
+    if (!value) return true;
+
+    const strippedValue = stripIdFromNode(value);
+    const strippedInitial = stripIdFromNode(initialValueRef.current ?? defaultCaseNameNode);
+    const isEqual = R.isDeepEqual(strippedValue, strippedInitial);
+
+    return isEqual;
   }, [value, initialValueRef, defaultCaseNameNode]);
 
   const handleAstNodeChange = (newAstNode: AstNode) => {
@@ -78,23 +79,15 @@ export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) 
             <span className="line-clamp-1">{t('scenarios:edit_operand.clear_operand')}</span>
           </Button>
         ) : null}
-        <ModalV2.Content
-          hideOnInteractOutside={(event) => {
-            event.stopPropagation();
-            // Prevent people from losing their work by clicking accidentally outside the modal
-            return false;
-          }}
-          open={isEditing}
-          onClose={() => setIsEditing(false)}
-          size="medium"
-        >
-          <StringTemplateEdit
-            initialNode={value ?? NewStringTemplateAstNode()}
-            initialErrors={validation}
-            onSave={handleAstNodeChange}
-            onEdit={handleValidation}
-          />
-        </ModalV2.Content>
+        {isEditing ? (
+          <AstBuilder.Provider scenarioId={currentScenario.id} mode="edit">
+            <AstBuilder.EditModal
+              node={value ?? NewStringTemplateAstNode()}
+              onSave={handleAstNodeChange}
+              onCancel={() => setIsEditing(false)}
+            />
+          </AstBuilder.Provider>
+        ) : null}
       </div>
     </>
   );

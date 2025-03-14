@@ -117,11 +117,9 @@ export function OptionsProvider({
       } = {},
     ) =>
       getAstNodeOperandType(astNode, {
-        triggerObjectTable,
-        dataModel,
         ...context,
       }),
-    [dataModel, triggerObjectTable],
+    [],
   );
 
   const getAstNodeDisplayNameValue = React.useCallback(

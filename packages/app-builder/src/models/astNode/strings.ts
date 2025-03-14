@@ -1,9 +1,17 @@
+import { v7 as uuidv7 } from 'uuid';
+
 import {
   defaultEditableFuzzyMatchAlgorithm,
   defaultFuzzyMatchComparatorThreshold,
   type FuzzyMatchAlgorithm,
 } from '../fuzzy-match';
-import { type AstNode, NewUndefinedAstNode } from './ast-node';
+import {
+  type AstNode,
+  type CheckNodeId,
+  type IdLessAstNode,
+  NewUndefinedAstNode,
+} from './ast-node';
+import { type KnownOperandAstNode } from './builder-ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
 ////////////////////////
@@ -12,6 +20,7 @@ import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
 export const fuzzyMatchAstNodeName = 'FuzzyMatch';
 export interface FuzzyMatchAstNode {
+  id: string;
   name: typeof fuzzyMatchAstNodeName;
   constant?: undefined;
   children: [AstNode, AstNode];
@@ -30,6 +39,7 @@ export function NewFuzzyMatchAstNode({
   algorithm?: FuzzyMatchAlgorithm;
 }): FuzzyMatchAstNode {
   return {
+    id: uuidv7(),
     name: fuzzyMatchAstNodeName,
     constant: undefined,
     children: [left, right],
@@ -41,6 +51,7 @@ export function NewFuzzyMatchAstNode({
 
 export const fuzzyMatchAnyOfAstNodeName = 'FuzzyMatchAnyOf';
 export interface FuzzyMatchAnyOfAstNode {
+  id: string;
   name: typeof fuzzyMatchAnyOfAstNodeName;
   constant?: undefined;
   children: [AstNode, AstNode];
@@ -59,6 +70,7 @@ export function NewFuzzyMatchAnyOfAstNode({
   algorithm?: FuzzyMatchAlgorithm;
 }): FuzzyMatchAnyOfAstNode {
   return {
+    id: uuidv7(),
     name: fuzzyMatchAnyOfAstNodeName,
     constant: undefined,
     children: [left, right],
@@ -69,6 +81,7 @@ export function NewFuzzyMatchAnyOfAstNode({
 }
 
 export interface FuzzyMatchComparatorAstNode {
+  id: string;
   name: '>';
   constant?: undefined;
   children: [FuzzyMatchAstNode | FuzzyMatchAnyOfAstNode, ConstantAstNode<number>];
@@ -102,6 +115,7 @@ export function NewFuzzyMatchComparatorAstNode({
         });
 
   return {
+    id: uuidv7(),
     name: '>',
     constant: undefined,
     children: [fuzzyMatch, NewConstantAstNode({ constant: threshold })],
@@ -109,15 +123,21 @@ export function NewFuzzyMatchComparatorAstNode({
   };
 }
 
-export function isFuzzyMatch(node: AstNode): node is FuzzyMatchAstNode {
+export function isFuzzyMatch(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<FuzzyMatchAstNode, typeof node> {
   return node.name === fuzzyMatchAstNodeName;
 }
 
-export function isFuzzyMatchAnyOf(node: AstNode): node is FuzzyMatchAnyOfAstNode {
+export function isFuzzyMatchAnyOf(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<FuzzyMatchAnyOfAstNode, typeof node> {
   return node.name === fuzzyMatchAnyOfAstNodeName;
 }
 
-export function isFuzzyMatchComparator(node: AstNode): node is FuzzyMatchComparatorAstNode {
+export function isFuzzyMatchComparator(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<FuzzyMatchComparatorAstNode, typeof node> {
   if (node.name !== '>') {
     return false;
   }
@@ -135,11 +155,15 @@ export function isFuzzyMatchComparator(node: AstNode): node is FuzzyMatchCompara
 // String templating ///
 ////////////////////////
 
+export const STRING_TEMPLATE_VARIABLE_REGEXP = /%([a-z0-9_]+)%/gim;
+export const STRING_TEMPLATE_VARIABLE_CAPTURE_REGEXP = /(%[a-z0-9_]+%)/gim;
+
 export const stringTemplateAstNodeName = 'StringTemplate';
 export interface StringTemplateAstNode {
+  id: string;
   name: typeof stringTemplateAstNodeName;
   constant?: undefined;
-  children: ConstantAstNode<string>[];
+  children: [ConstantAstNode<string>];
   namedChildren: Record<string, AstNode>;
 }
 
@@ -148,6 +172,7 @@ export function NewStringTemplateAstNode(
   variables: Record<string, AstNode> = {},
 ): StringTemplateAstNode {
   return {
+    id: uuidv7(),
     name: stringTemplateAstNodeName,
     constant: undefined,
     children: [NewConstantAstNode({ constant: template })],
@@ -155,7 +180,9 @@ export function NewStringTemplateAstNode(
   };
 }
 
-export function isStringTemplateAstNode(node: AstNode): node is StringTemplateAstNode {
+export function isStringTemplateAstNode(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<StringTemplateAstNode, typeof node> {
   return node.name === stringTemplateAstNodeName;
 }
 
@@ -165,9 +192,10 @@ export function isStringTemplateAstNode(node: AstNode): node is StringTemplateAs
 
 export const stringConcatAstNodeName = 'StringConcat';
 export interface StringConcatAstNode {
+  id: string;
   name: typeof stringConcatAstNodeName;
   constant?: undefined;
-  children: AstNode[];
+  children: KnownOperandAstNode[];
   namedChildren: {
     with_separator?: ConstantAstNode<boolean>;
     separator?: ConstantAstNode<string>;
@@ -175,10 +203,11 @@ export interface StringConcatAstNode {
 }
 
 export function NewStringConcatAstNode(
-  children: AstNode[],
+  children: KnownOperandAstNode[],
   { withSeparator, separator }: { withSeparator?: boolean; separator?: string } = {},
 ): StringConcatAstNode {
   return {
+    id: uuidv7(),
     name: stringConcatAstNodeName,
     constant: undefined,
     children,

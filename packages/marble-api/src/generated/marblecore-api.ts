@@ -338,6 +338,7 @@ export type CreateCustomListValueBody = {
     value: string;
 };
 export type NodeDto = {
+    id?: string;
     name?: string;
     constant?: ConstantDto;
     children?: NodeDto[];
