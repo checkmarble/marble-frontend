@@ -85,6 +85,9 @@
   "case_detail.history.event_detail.rule_snooze_created.created_from_rule": "rule",
   "case_detail.history.event_detail.rule_snooze_created.rule_detail": "rule detail",
   "case_detail.history.event_detail.rule_snooze_created.validity": "validity",
+  "case_detail.history.event_detail.case_snoozed.title": "Snoozed",
+  "case_detail.history.event_detail.case_unsnoozed.title": "Unsnoozed",
+  "case_detail.history.event_detail.case_snoozed.snooze_until": "Until {{date}}",
   "case_detail.add_a_comment.label": "Comment",
   "case_detail.add_a_comment.placeholder": "Write a note",
   "case_detail.add_a_comment.post": "post a comment",
@@ -120,5 +123,11 @@
   "drop_file_accepted_types": "jpg, png, pdf, zip, doc, docx, xls, xlsx",
   "pick_file_cta": "Pick a file",
   "add_file": "Add a file",
-  "sanction.state.refine_needed": "Refine needed"
+  "sanction.state.refine_needed": "Refine needed",
+  "snooze.title": "Snooze",
+  "snooze.callout": "Snoozed until {{date}}",
+  "snooze.modal.heading": "Should snooze ?",
+  "unsnooze.callout": "By continuing, you will unsnooze the case",
+  "unsnooze.title": "Unsnooze",
+  "snooze.confirm": "Continue"
 }

@@ -680,7 +680,7 @@ components:
           inbox_changed: '#/components/schemas/InboxChangedEventDto'
           rule_snooze_created: '#/components/schemas/RuleSnoozeCreatedDto'
           decision_reviewed: '#/components/schemas/DecisionReviewedEventDto'
-          case_snooze: '#/components/schemas/CaseSnoozedDto'
+          case_snoozed: '#/components/schemas/CaseSnoozedDto'
           case_unsnoozed: '#/components/schemas/CaseUnsnoozedDto'
       required:
         - id

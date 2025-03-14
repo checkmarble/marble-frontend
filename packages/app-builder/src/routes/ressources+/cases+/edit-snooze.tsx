@@ -1,14 +1,14 @@
+import { CalloutV2 } from '@app-builder/components';
 import { casesI18n } from '@app-builder/components/Cases';
-import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Calendar, ModalV2 } from 'ui-design-system';
+import { Button, Calendar, ModalV2, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -18,7 +18,7 @@ export const handle = {
 
 const editSnoozeSchema = z.object({
   caseId: z.string(),
-  snoozeUntil: z.string().optional(),
+  snoozeUntil: z.string().nullable(),
 });
 
 type EditSnoozeForm = z.infer<typeof editSnoozeSchema>;
@@ -37,7 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!success) return { success: 'false' };
 
-  await (data.snoozeUntil !== undefined
+  await (data.snoozeUntil
     ? cases.snoozeCase({ caseId: data.caseId, snoozeUntil: data.snoozeUntil })
     : cases.unsnoozeCase(data));
 
@@ -50,11 +50,17 @@ export function EditCaseSnooze({
 }: Pick<EditSnoozeForm, 'caseId'> & { snoozeUntil?: string }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
+  const [isSnoozing, shouldSnooze] = useState(true);
 
   const form = useForm<EditSnoozeForm>({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        fetcher.submit(value, {
+        const finalValue = {
+          ...value,
+          snoozeUntil: isSnoozing ? value.snoozeUntil : null,
+        };
+
+        fetcher.submit(finalValue, {
           method: 'PATCH',
           action: getRoute('/ressources/cases/edit-snooze'),
           encType: 'application/json',
@@ -76,10 +82,10 @@ export function EditCaseSnooze({
     <ModalV2.Root>
       <ModalV2.Trigger render={<Button variant="primary" />}>
         <Icon icon="snooze" className="size-5" aria-hidden />
-        {t('rules.status.snoozed')}
+        {t('cases:snooze.title')}
       </ModalV2.Trigger>
       <ModalV2.Content>
-        <ModalV2.Title>{t('cases:change_status_modal.title')}</ModalV2.Title>
+        <ModalV2.Title>{t('cases:snooze.modal.heading')}</ModalV2.Title>
         <form
           className="flex flex-col gap-6 p-6"
           onSubmit={(e) => {
@@ -90,15 +96,25 @@ export function EditCaseSnooze({
         >
           <form.Field name="snoozeUntil">
             {(field) => (
-              <div className="flex flex-col gap-2">
-                <FormLabel name={field.name}>Snooze Until</FormLabel>
-                <Calendar
-                  mode="single"
-                  hidden={{ before: new Date() }}
-                  selected={new Date(field.state.value as string)}
-                  onSelect={(d) => d && field.handleChange(d.toISOString())}
-                />
-                <FormErrorOrDescription errors={field.state.meta.errors} />
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex flex-row items-center gap-2">
+                  <span className="text-s font-semibold">{t('cases:unsnooze.title')}</span>
+                  <Switch onCheckedChange={shouldSnooze} checked={isSnoozing} />
+                  <span className="text-s font-semibold">{t('cases:snooze.title')}</span>
+                </div>
+                {isSnoozing ? (
+                  <Calendar
+                    className="border-grey-90 w-fit rounded border p-2 shadow"
+                    mode="single"
+                    selected={new Date(field.state.value as string)}
+                    disabled={!isSnoozing}
+                    hidden={{ before: new Date() }}
+                    autoFocus
+                    onSelect={(d) => d && field.handleChange(d.toISOString())}
+                  />
+                ) : (
+                  <CalloutV2>{t('cases:unsnooze.callout')}</CalloutV2>
+                )}
               </div>
             )}
           </form.Field>
@@ -115,9 +131,11 @@ export function EditCaseSnooze({
               {t('common:cancel')}
             </ModalV2.Close>
 
-            <Button type="submit" className="flex-1 first-letter:capitalize">
-              {t('cases:change_status_modal.change_status')}
-            </Button>
+            <ModalV2.Close
+              render={<Button type="submit" className="flex-1 first-letter:capitalize" />}
+            >
+              {t('cases:snooze.confirm')}
+            </ModalV2.Close>
           </div>
         </form>
       </ModalV2.Content>

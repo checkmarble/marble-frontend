@@ -120,5 +120,14 @@
   "case.page_title": "قضية",
   "case_detail.review_decision.disabled_approve": "لا يمكن اختيار هذا الوضع لأن هناك شيكًا للعقوبة لمراجعة هذا القرار.",
   "sanction.state.refine_needed": "صقل مطلوب",
-  "case.link": "وصلة"
+  "case.link": "وصلة",
+  "case_detail.history.event_detail.case_snoozed.snooze_until": "حتى {{date}}",
+  "case_detail.history.event_detail.case_snoozed.title": "غفوة",
+  "case_detail.history.event_detail.case_unsnoozed.title": "Unooozed",
+  "snooze.callout": "غفوة حتى {{date}}",
+  "snooze.confirm": "يكمل",
+  "snooze.modal.heading": "إدارة الغفوة",
+  "snooze.title": "غفوة",
+  "unsnooze.callout": "من خلال الاستمرار ، ستحصل على القضية",
+  "unsnooze.title": "unnooze"
 }
