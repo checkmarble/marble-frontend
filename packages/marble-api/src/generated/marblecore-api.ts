@@ -215,7 +215,21 @@ export type DecisionReviewedEventDto = {
     resource_type: "decision";
     user_id: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto;
+export type CaseSnoozedDto = {
+    event_type: "case_snooze";
+} & CaseEventDtoBase & {
+    user_id?: string;
+    new_value: string;
+    previous_value?: string;
+};
+export type CaseUnsnoozedDto = {
+    event_type: "case_unsnoozed";
+} & CaseEventDtoBase & {
+    user_id: string;
+    new_value: string;
+    previous_value?: string;
+};
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;

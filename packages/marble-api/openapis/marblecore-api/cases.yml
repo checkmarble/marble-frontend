@@ -680,6 +680,8 @@ components:
           inbox_changed: '#/components/schemas/InboxChangedEventDto'
           rule_snooze_created: '#/components/schemas/RuleSnoozeCreatedDto'
           decision_reviewed: '#/components/schemas/DecisionReviewedEventDto'
+          case_snooze: '#/components/schemas/CaseSnoozedDto'
+          case_unsnoozed: '#/components/schemas/CaseUnsnoozedDto'
       required:
         - id
         - case_id
@@ -847,3 +849,36 @@ components:
             user_id:
               type: string
               format: uuid
+    CaseSnoozedDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - new_value
+          properties:
+            user_id:
+              type: string
+              format: uuid
+            new_value:
+              type: string
+              format: date-time
+            previous_value:
+              type: string
+              format: date-time
+    CaseUnsnoozedDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - user_id
+            - new_value
+          properties:
+            user_id:
+              type: string
+              format: uuid
+            new_value:
+              type: string
+              format: date-time
+            previous_value:
+              type: string
+              format: date-time
