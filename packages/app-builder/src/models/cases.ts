@@ -59,6 +59,7 @@ export interface Case {
   inboxId: string;
   contributors: CaseContributor[];
   tags: CaseTag[];
+  snoozedUntil?: string;
 }
 
 export function adaptCase(dto: CaseDto): Case {
@@ -71,10 +72,13 @@ export function adaptCase(dto: CaseDto): Case {
     inboxId: dto.inbox_id,
     contributors: dto.contributors.map(adaptCaseContributor),
     tags: dto.tags.map(adaptCaseTag),
+    snoozedUntil: dto.snoozed_until,
   };
 }
 
 export const caseEventTypes = [
+  'case_snoozed',
+  'case_unsnoozed',
   'case_created',
   'status_updated',
   'decision_added',
@@ -93,6 +97,15 @@ interface CaseEventBase<T extends CaseEventType> {
   caseId: string;
   createdAt: string;
   eventType: T;
+}
+
+export interface CaseSnoozedEvent extends CaseEventBase<'case_snoozed'> {
+  snoozeUntil: string;
+  userId: string;
+}
+
+export interface CaseUnsnoozedEvent extends CaseEventBase<'case_unsnoozed'> {
+  userId: string;
 }
 
 export interface CaseCreatedEvent extends CaseEventBase<'case_created'> {
@@ -138,6 +151,8 @@ export interface DecisionReviewedEvent extends CaseEventBase<'decision_reviewed'
 }
 
 export type CaseEvent =
+  | CaseSnoozedEvent
+  | CaseUnsnoozedEvent
   | CaseCreatedEvent
   | CaseStatusUpdatedEvent
   | DecisionAddedEvent
@@ -235,6 +250,21 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
         eventType: 'decision_reviewed',
         reviewComment: caseEventDto.additional_note,
         finalStatus: caseEventDto.new_value,
+        userId: caseEventDto.user_id,
+      };
+    }
+    case 'case_snoozed': {
+      return {
+        ...caseEvent,
+        eventType: 'case_snoozed',
+        snoozeUntil: caseEventDto.new_value,
+        userId: caseEventDto.user_id as string,
+      };
+    }
+    case 'case_unsnoozed': {
+      return {
+        ...caseEvent,
+        eventType: 'case_unsnoozed',
         userId: caseEventDto.user_id,
       };
     }

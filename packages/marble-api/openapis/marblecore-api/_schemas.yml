@@ -82,6 +82,10 @@ RuleSnoozeCreatedDto:
   $ref: cases.yml#/components/schemas/RuleSnoozeCreatedDto
 DecisionReviewedEventDto:
   $ref: cases.yml#/components/schemas/DecisionReviewedEventDto
+CaseSnoozedDto:
+  $ref: cases.yml#/components/schemas/CaseSnoozedDto
+CaseUnsnoozedDto:
+  $ref: cases.yml#/components/schemas/CaseUnsnoozedDto
 CaseContributorDto:
   $ref: cases.yml#/components/schemas/CaseContributorDto
 UpdateCaseBodyDto:

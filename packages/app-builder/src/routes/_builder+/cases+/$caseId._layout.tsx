@@ -1,4 +1,10 @@
-import { CopyToClipboardButton, ErrorComponent, Page, TabLink } from '@app-builder/components';
+import {
+  CalloutV2,
+  CopyToClipboardButton,
+  ErrorComponent,
+  Page,
+  TabLink,
+} from '@app-builder/components';
 import {
   BreadCrumbLink,
   type BreadCrumbProps,
@@ -15,6 +21,7 @@ import {
 } from '@app-builder/components/Cases/CaseHistory/RightSidebar';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
+import { EditCaseSnooze } from '@app-builder/routes/ressources+/cases+/edit-snooze';
 import { EditCaseStatus } from '@app-builder/routes/ressources+/cases+/edit-status';
 import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
 import {
@@ -23,6 +30,7 @@ import {
 } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
+import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
@@ -183,16 +191,29 @@ export function useCurrentCase() {
 export default function CasePage() {
   const { t } = useTranslation(handle.i18n);
   const { caseDetail } = useLoaderData<typeof loader>();
+  const language = useFormatLanguage();
 
   return (
     <Page.Main>
       <Page.Header className="justify-between">
         <BreadCrumbs />
-        <EditCaseStatus caseId={caseDetail.id} status={caseDetail.status} />
+        <div className="flex items-center gap-4">
+          <EditCaseStatus caseId={caseDetail.id} status={caseDetail.status} />
+          <EditCaseSnooze caseId={caseDetail.id} snoozeUntil={caseDetail.snoozedUntil} />
+        </div>
       </Page.Header>
       <div className="flex size-full flex-col overflow-hidden">
         <div className="flex flex-1 flex-row overflow-hidden">
           <Page.Container>
+            {caseDetail.snoozedUntil && caseDetail.snoozedUntil > new Date().toISOString() ? (
+              <CalloutV2>
+                <span className="font-bold">
+                  {t('cases:snooze.callout', {
+                    date: formatDateTime(caseDetail.snoozedUntil, { language }),
+                  })}
+                </span>
+              </CalloutV2>
+            ) : null}
             <Page.Content className="max-w-screen-xl">
               <nav>
                 <ul className="flex flex-row gap-2">

@@ -63,6 +63,7 @@ export type CaseDto = {
     inbox_id: string;
     contributors: CaseContributorDto[];
     tags: CaseTagDto[];
+    snoozed_until?: string;
 };
 export type Error = {
     code: number;
@@ -214,7 +215,21 @@ export type DecisionReviewedEventDto = {
     resource_type: "decision";
     user_id: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto;
+export type CaseSnoozedDto = {
+    event_type: "case_snoozed";
+} & CaseEventDtoBase & {
+    user_id?: string;
+    new_value: string;
+    previous_value?: string;
+};
+export type CaseUnsnoozedDto = {
+    event_type: "case_unsnoozed";
+} & CaseEventDtoBase & {
+    user_id: string;
+    new_value: string;
+    previous_value?: string;
+};
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;
@@ -954,7 +969,7 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
 /**
  * List cases
  */
-export function listCases({ status, inboxId, startDate, endDate, sorting, name, offsetId, limit, order }: {
+export function listCases({ status, inboxId, startDate, endDate, sorting, name, offsetId, limit, order, includeSnoozed }: {
     status?: CaseStatusDto[];
     inboxId?: string[];
     startDate?: string;
@@ -964,6 +979,7 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, name, 
     offsetId?: string;
     limit?: number;
     order?: "ASC" | "DESC";
+    includeSnoozed?: boolean;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -985,7 +1001,8 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, name, 
         name,
         offset_id: offsetId,
         limit,
-        order
+        order,
+        include_snoozed: includeSnoozed
     }))}`, {
         ...opts
     }));
@@ -1107,6 +1124,55 @@ export function addCommentToCase(caseId: string, body: {
         method: "POST",
         body
     })));
+}
+/**
+ * Snooze a case
+ */
+export function snoozeCase(caseId: string, body: {
+    until: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/snooze`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Snooze a case
+ */
+export function unsnoozeCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/snooze`, {
+        ...opts,
+        method: "DELETE"
+    }));
 }
 /**
  * Define tags for a case

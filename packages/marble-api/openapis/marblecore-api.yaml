@@ -68,6 +68,8 @@ paths:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1decisions
   /cases/{caseId}/comments:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1comments
+  /cases/{caseId}/snooze:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1snooze
   /cases/{caseId}/case_tags:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1case_tags
   /cases/files/${caseFileId}/download_link:

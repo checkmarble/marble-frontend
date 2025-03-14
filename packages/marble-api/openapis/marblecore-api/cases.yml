@@ -43,6 +43,13 @@
       - $ref: 'components.yml#/parameters/offset_id'
       - $ref: 'components.yml#/parameters/limit'
       - $ref: 'components.yml#/parameters/order'
+      - name: include_snoozed
+        description: Include cases that are currently snoozed
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
     responses:
       '200':
         description: List of corresponding cases
@@ -206,6 +213,72 @@
               properties:
                 case:
                   $ref: '#/components/schemas/CaseDetailDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/cases/{caseId}/snooze:
+  post:
+    tags:
+      - Cases
+    summary: Snooze a case
+    operationId: snoozeCase
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case that needs to be snoozed
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: 'Decision ids to add to case'
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - until
+            properties:
+              until:
+                type: string
+                format: date-time
+      required: true
+    responses:
+      '204':
+        description: The case was snoozed
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  delete:
+    tags:
+      - Cases
+    summary: Snooze a case
+    operationId: unsnoozeCase
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case that needs to be unsnoozed
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: The case was unsnoozed
+      '400':
+        $ref: 'components.yml#/responses/400'
       '401':
         $ref: 'components.yml#/responses/401'
       '403':
@@ -430,6 +503,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CaseTagDto'
+        snoozed_until:
+          type: string
+          format: date-time
     CaseDetailDto:
       allOf:
         - $ref: '#/components/schemas/CaseDto'
@@ -604,6 +680,8 @@ components:
           inbox_changed: '#/components/schemas/InboxChangedEventDto'
           rule_snooze_created: '#/components/schemas/RuleSnoozeCreatedDto'
           decision_reviewed: '#/components/schemas/DecisionReviewedEventDto'
+          case_snoozed: '#/components/schemas/CaseSnoozedDto'
+          case_unsnoozed: '#/components/schemas/CaseUnsnoozedDto'
       required:
         - id
         - case_id
@@ -771,3 +849,36 @@ components:
             user_id:
               type: string
               format: uuid
+    CaseSnoozedDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - new_value
+          properties:
+            user_id:
+              type: string
+              format: uuid
+            new_value:
+              type: string
+              format: date-time
+            previous_value:
+              type: string
+              format: date-time
+    CaseUnsnoozedDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - user_id
+            - new_value
+          properties:
+            user_id:
+              type: string
+              format: uuid
+            new_value:
+              type: string
+              format: date-time
+            previous_value:
+              type: string
+              format: date-time
