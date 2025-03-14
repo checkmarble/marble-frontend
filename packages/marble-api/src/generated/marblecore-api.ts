@@ -216,7 +216,7 @@ export type DecisionReviewedEventDto = {
     user_id: string;
 };
 export type CaseSnoozedDto = {
-    event_type: "case_snooze";
+    event_type: "case_snoozed";
 } & CaseEventDtoBase & {
     user_id?: string;
     new_value: string;

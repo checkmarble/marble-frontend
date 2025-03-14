@@ -120,5 +120,14 @@
   "search.placeholder": "Rechercher par nom",
   "case.page_title": "Investigation",
   "case_detail.review_decision.disabled_approve": "Ce statut ne peut pas être choisi car il y a un contrôle de sanction à examiner pour cette décision.",
-  "sanction.state.refine_needed": "Affinage nécessaire"
+  "sanction.state.refine_needed": "Affinage nécessaire",
+  "case_detail.history.event_detail.case_snoozed.snooze_until": "Jusqu'à {{date}}",
+  "case_detail.history.event_detail.case_snoozed.title": "Désactivé",
+  "case_detail.history.event_detail.case_unsnoozed.title": "Réactivé",
+  "snooze.callout": "Désactivé jusqu'à {{date}}",
+  "snooze.confirm": "Continuer",
+  "snooze.modal.heading": "Gérer l'activation",
+  "snooze.title": "Désactiver",
+  "unsnooze.callout": "En continuant, vous réactiverez l'investigation",
+  "unsnooze.title": "Réactiver"
 }

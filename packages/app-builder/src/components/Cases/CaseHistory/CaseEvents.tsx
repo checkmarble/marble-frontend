@@ -4,6 +4,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import {
   type CaseEvent,
   type CaseEventType,
+  type CaseSnoozedEvent,
   type CaseTagsUpdatedEvent,
   type CommentAddedEvent,
   type DecisionReviewedEvent,
@@ -86,6 +87,10 @@ export function getEventIcon(eventType: CaseEventType) {
       return <EventIcon className="bg-purple-96 text-purple-65" icon="snooze" />;
     case 'decision_reviewed':
       return <EventIcon className="bg-purple-96 text-purple-65" icon="case-manager" />;
+    case 'case_snoozed':
+      return <EventIcon className="bg-purple-96 text-purple-65" icon="snooze" />;
+    case 'case_unsnoozed':
+      return <EventIcon className="bg-purple-96 text-purple-65" icon="snooze" />;
     default:
       assertNever('[CaseEvent] unknown event:', eventType);
   }
@@ -211,6 +216,18 @@ export function getEventTitle(event: CaseEvent, t: TFunction<typeof casesI18n>) 
           />
         </span>
       );
+    case 'case_snoozed':
+      return (
+        <span className="text-s text-grey-00 font-semibold">
+          {t('cases:case_detail.history.event_detail.case_snoozed.title')}
+        </span>
+      );
+    case 'case_unsnoozed':
+      return (
+        <span className="text-s text-grey-00 font-semibold">
+          {t('cases:case_detail.history.event_detail.case_unsnoozed.title')}
+        </span>
+      );
     default:
       assertNever('[CaseEvent] unknown event:', eventType);
   }
@@ -283,6 +300,10 @@ export function getEventDetail(event: CaseEvent) {
     case 'file_added': {
       return <Author userId={event.userId} type="added_by" />;
     }
+    case 'case_snoozed': {
+      return <CaseSnoozedDetail event={event} />;
+    }
+    case 'case_unsnoozed':
     case 'name_updated':
     case 'status_updated':
     case 'inbox_changed': {
@@ -323,6 +344,21 @@ function DecisionReviewedEventDetail({ event }: { event: DecisionReviewedEvent }
       >
         {t('cases:case_detail.history.event_detail.rule_snooze_created.decision_detail')}
       </Link>
+    </div>
+  );
+}
+
+function CaseSnoozedDetail({ event }: { event: CaseSnoozedEvent }) {
+  const { t } = useTranslation(casesI18n);
+  const language = useFormatLanguage();
+  return (
+    <div className="flex flex-col gap-2">
+      <Author userId={event.userId} type="added_by" />
+      <div className="text-s text-grey-00 whitespace-break-spaces font-normal">
+        {t('cases:case_detail.history.event_detail.case_snoozed.snooze_until', {
+          date: formatDateTime(event.snoozeUntil, { language }),
+        })}
+      </div>
     </div>
   );
 }
