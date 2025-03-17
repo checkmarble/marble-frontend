@@ -8,6 +8,7 @@ import {
 } from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { clientServices } from '@app-builder/services/init.client';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { sleep } from '@app-builder/utils/sleep';
 import { useNavigate } from '@remix-run/react';
@@ -31,6 +32,8 @@ const emailAndPasswordFormSchema = z.object({
   }),
 });
 
+type EmailAndPasswordForm = z.infer<typeof emailAndPasswordFormSchema>;
+
 export function SignInWithEmailAndPassword({
   signIn,
   loading,
@@ -47,7 +50,7 @@ export function SignInWithEmailAndPassword({
   );
 
   const form = useForm({
-    defaultValues: { credentials: { email: '', password: '' } },
+    defaultValues: { credentials: { email: '', password: '' } } as EmailAndPasswordForm,
     validators: { onSubmit: emailAndPasswordFormSchema },
     onSubmit: async ({ value: { credentials }, formApi }) => {
       try {
@@ -111,7 +114,7 @@ export function SignInWithEmailAndPassword({
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               onBlur={field.handleBlur}
             />
-            <FormErrorOrDescription errors={field.state.meta.errors} />
+            <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
           </div>
         )}
       </form.Field>
@@ -131,7 +134,7 @@ export function SignInWithEmailAndPassword({
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               onBlur={field.handleBlur}
             />
-            <FormErrorOrDescription errors={field.state.meta.errors} />
+            <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
           </div>
         )}
       </form.Field>

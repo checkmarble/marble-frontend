@@ -10,6 +10,7 @@ import {
 } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { captureUnexpectedRemixError } from '@app-builder/services/monitoring';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -128,13 +129,13 @@ export function EditField({
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const form = useForm<EditFieldForm>({
+  const form = useForm({
     defaultValues: {
       description: inputField.description,
       fieldId: inputField.id,
       isEnum: inputField.isEnum,
       isUnique: inputField.unicityConstraint !== 'no_unicity_constraint',
-    },
+    } as EditFieldForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -192,7 +193,7 @@ export function EditField({
                       valid={field.state.meta.errors.length === 0}
                       placeholder={t('data:create_field.description_placeholder')}
                     />
-                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
               </form.Field>
@@ -212,7 +213,7 @@ export function EditField({
                       <p>{t('data:create_field.is_enum.title')}</p>
                       <p className="text-xs">{t('data:create_field.is_enum.subtitle')}</p>
                     </FormLabel>
-                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
               </form.Field>
@@ -256,7 +257,7 @@ export function EditField({
                         </p>
                       ) : null}
                     </FormLabel>
-                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
               </form.Field>

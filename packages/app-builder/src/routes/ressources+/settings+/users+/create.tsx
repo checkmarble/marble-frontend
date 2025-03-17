@@ -6,6 +6,7 @@ import { Nudge } from '@app-builder/components/Nudge';
 import { isStatusConflictHttpError, tKeyForUserRole } from '@app-builder/models';
 import { getUserRoles, isAccessible } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -136,14 +137,14 @@ function CreateUserContent({
   const fetcher = useFetcher<typeof action>();
   const schema = useMemo(() => getCreateUserFormSchema(userRoles), [userRoles]);
 
-  const form = useForm<z.infer<typeof schema>>({
+  const form = useForm({
     defaultValues: {
       firstName: '',
       lastName: '',
       email: '',
       role: 'ADMIN',
       organizationId: orgId,
-    },
+    } as z.infer<typeof schema>,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -154,9 +155,9 @@ function CreateUserContent({
       }
     },
     validators: {
-      onChangeAsync: schema,
-      onBlurAsync: schema,
-      onSubmitAsync: schema,
+      onChange: schema,
+      onBlur: schema,
+      onSubmit: schema,
     },
   });
 
@@ -184,7 +185,7 @@ function CreateUserContent({
                     defaultValue={field.state.value}
                     valid={field.state.meta.errors.length === 0}
                   />
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -200,7 +201,7 @@ function CreateUserContent({
                     defaultValue={field.state.value}
                     valid={field.state.meta.errors.length === 0}
                   />
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -217,7 +218,7 @@ function CreateUserContent({
                   defaultValue={field.state.value}
                   valid={field.state.meta.errors.length === 0}
                 />
-                <FormErrorOrDescription errors={field.state.meta.errors} />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>
@@ -252,7 +253,7 @@ function CreateUserContent({
                     </Select.DefaultItem>
                   ))}
                 </Select.Default>
-                <FormErrorOrDescription />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>

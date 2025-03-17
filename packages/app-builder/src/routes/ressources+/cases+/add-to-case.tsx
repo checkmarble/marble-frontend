@@ -3,7 +3,6 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusBadRequestHttpError } from '@app-builder/models';
-import { type Inbox } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -114,12 +113,12 @@ export function AddToCase() {
   const fetcher = useFetcher<typeof action>();
   const { data, closePanel } = useDecisionRightPanelContext();
 
-  const form = useForm<AddToCaseForm>({
+  const form = useForm({
     defaultValues: {
       newCase: false,
       decisionIds: data?.decisionIds ? data?.decisionIds : [],
       caseId: '',
-    },
+    } as AddToCaseForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -130,9 +129,9 @@ export function AddToCase() {
       }
     },
     validators: {
-      onChangeAsync: addToCaseFormSchema,
-      onBlurAsync: addToCaseFormSchema,
-      onSubmitAsync: addToCaseFormSchema,
+      onChange: addToCaseFormSchema,
+      onBlur: addToCaseFormSchema,
+      onSubmit: addToCaseFormSchema,
     },
   });
 
@@ -173,108 +172,86 @@ export function AddToCase() {
           )}
         </form.Field>
         {isNewCase ? (
-          <NewCaseFields form={form} inboxes={inboxes} />
+          <>
+            <p className="text-s text-grey-00 font-semibold first-letter:capitalize">
+              {t('decisions:add_to_case.new_case.informations')}
+            </p>
+            <form.Field name="name">
+              {(field) => (
+                <div className="flex flex-col gap-2">
+                  <FormLabel name={field.name} className="text-xs first-letter:capitalize">
+                    {t('decisions:add_to_case.new_case.new_case_name')}
+                  </FormLabel>
+                  <FormInput
+                    type="text"
+                    name={field.name}
+                    defaultValue={field.state.value as string}
+                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    onBlur={field.handleBlur}
+                    valid={field.state.meta.errors.length === 0}
+                  />
+                </div>
+              )}
+            </form.Field>
+            <form.Field name="inboxId">
+              {(field) => (
+                <div className="flex flex-1 flex-col gap-2">
+                  <FormLabel name={field.name} className="text-xs first-letter:capitalize">
+                    {t('decisions:add_to_case.new_case.select_inbox')}
+                  </FormLabel>
+                  <Select.Default
+                    className="w-full overflow-hidden"
+                    defaultValue={field.state.value as string}
+                    onValueChange={(type) => {
+                      field.handleChange(type);
+                    }}
+                  >
+                    {inboxes.map(({ name, id }) => {
+                      return (
+                        <Select.DefaultItem key={id} value={id}>
+                          {name}
+                        </Select.DefaultItem>
+                      );
+                    })}
+                  </Select.Default>
+                </div>
+              )}
+            </form.Field>
+            <Button type="submit">
+              <Icon icon="plus" className="size-5" />
+              {t('decisions:add_to_case.create_new_case')}
+            </Button>
+          </>
         ) : (
-          <AddToCaseFields form={form} />
+          <>
+            <p className="text-s text-grey-00 font-semibold first-letter:capitalize">
+              {t('decisions:add_to_case.new_case.attribution')}
+            </p>
+            <form.Field name="caseId">
+              {(field) => (
+                <div className="flex flex-col gap-2">
+                  <FormLabel name={field.name} className="text-xs first-letter:capitalize">
+                    {t('decisions:add_to_case.new_case.case_id.label')}
+                  </FormLabel>
+
+                  <FormInput
+                    type="text"
+                    name={field.name}
+                    defaultValue={field.state.value as string}
+                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    onBlur={field.handleBlur}
+                    valid={field.state.meta.errors.length === 0}
+                  />
+                </div>
+              )}
+            </form.Field>
+            <Button type="submit">
+              <Icon icon="plus" className="size-5" />
+              {t('decisions:add_to_case')}
+            </Button>
+          </>
         )}
       </div>
     </form>
   );
 }
-
-const NewCaseFields = ({
-  inboxes,
-  form,
-}: {
-  inboxes: Inbox[];
-  form: ReturnType<typeof useForm<AddToCaseForm>>;
-}) => {
-  const { t } = useTranslation(handle.i18n);
-
-  return (
-    <>
-      <p className="text-s text-grey-00 font-semibold first-letter:capitalize">
-        {t('decisions:add_to_case.new_case.informations')}
-      </p>
-      <form.Field name="name">
-        {(field) => (
-          <div className="flex flex-col gap-2">
-            <FormLabel name={field.name} className="text-xs first-letter:capitalize">
-              {t('decisions:add_to_case.new_case.new_case_name')}
-            </FormLabel>
-            <FormInput
-              type="text"
-              name={field.name}
-              defaultValue={field.state.value as string}
-              onChange={(e) => field.handleChange(e.currentTarget.value)}
-              onBlur={field.handleBlur}
-              valid={field.state.meta.errors.length === 0}
-            />
-          </div>
-        )}
-      </form.Field>
-      <form.Field name="inboxId">
-        {(field) => (
-          <div className="flex flex-1 flex-col gap-2">
-            <FormLabel name={field.name} className="text-xs first-letter:capitalize">
-              {t('decisions:add_to_case.new_case.select_inbox')}
-            </FormLabel>
-            <Select.Default
-              className="w-full overflow-hidden"
-              defaultValue={field.state.value as string}
-              onValueChange={(type) => {
-                field.handleChange(type);
-              }}
-            >
-              {inboxes.map(({ name, id }) => {
-                return (
-                  <Select.DefaultItem key={id} value={id}>
-                    {name}
-                  </Select.DefaultItem>
-                );
-              })}
-            </Select.Default>
-          </div>
-        )}
-      </form.Field>
-      <Button type="submit">
-        <Icon icon="plus" className="size-5" />
-        {t('decisions:add_to_case.create_new_case')}
-      </Button>
-    </>
-  );
-};
-
-const AddToCaseFields = ({ form }: { form: ReturnType<typeof useForm<AddToCaseForm>> }) => {
-  const { t } = useTranslation(handle.i18n);
-
-  return (
-    <>
-      <p className="text-s text-grey-00 font-semibold first-letter:capitalize">
-        {t('decisions:add_to_case.new_case.attribution')}
-      </p>
-      <form.Field name="caseId">
-        {(field) => (
-          <div className="flex flex-col gap-2">
-            <FormLabel name={field.name} className="text-xs first-letter:capitalize">
-              {t('decisions:add_to_case.new_case.case_id.label')}
-            </FormLabel>
-
-            <FormInput
-              type="text"
-              name={field.name}
-              defaultValue={field.state.value as string}
-              onChange={(e) => field.handleChange(e.currentTarget.value)}
-              onBlur={field.handleBlur}
-              valid={field.state.meta.errors.length === 0}
-            />
-          </div>
-        )}
-      </form.Field>
-      <Button type="submit">
-        <Icon icon="plus" className="size-5" />
-        {t('decisions:add_to_case')}
-      </Button>
-    </>
-  );
-};

@@ -6,6 +6,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
@@ -121,8 +122,8 @@ function CreateScenarioContent() {
 
   const createScenarioFetcher = useFetcher<typeof action>();
 
-  const form = useForm<CreateScenarioForm>({
-    defaultValues: { name: '', description: '', triggerObjectType: '' },
+  const form = useForm({
+    defaultValues: { name: '', description: '', triggerObjectType: '' } as CreateScenarioForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         createScenarioFetcher.submit(value, {
@@ -174,7 +175,7 @@ function CreateScenarioContent() {
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('scenarios:create_scenario.name_placeholder')}
                 />
-                <FormErrorOrDescription errors={field.state.meta.errors} />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>
@@ -193,7 +194,7 @@ function CreateScenarioContent() {
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('scenarios:create_scenario.description_placeholder')}
                 />
-                <FormErrorOrDescription errors={field.state.meta.errors} />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>
@@ -243,7 +244,7 @@ function CreateScenarioContent() {
                     <p>{t('scenarios:create_scenario.no_trigger_object')}</p>
                   ) : null}
                 </Select.Default>
-                <FormErrorOrDescription errors={field.state.meta.errors} />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>

@@ -9,6 +9,7 @@ import { nonPendingReviewStatuses } from '@app-builder/models/decision';
 import { type SanctionCheck } from '@app-builder/models/sanction-check';
 import { blockingReviewDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import type * as Ariakit from '@ariakit/react';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -24,6 +25,8 @@ const reviewDecisionSchema = z.object({
   reviewComment: z.string(),
   reviewStatus: z.enum(nonPendingReviewStatuses),
 });
+
+type ReviewDecisionForm = z.infer<typeof reviewDecisionSchema>;
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
@@ -124,7 +127,7 @@ function ReviewDecisionContent({
       decisionId,
       reviewComment: '',
       reviewStatus: 'decline',
-    },
+    } as ReviewDecisionForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -135,9 +138,9 @@ function ReviewDecisionContent({
       }
     },
     validators: {
-      onChangeAsync: reviewDecisionSchema,
-      onBlurAsync: reviewDecisionSchema,
-      onSubmitAsync: reviewDecisionSchema,
+      onChange: reviewDecisionSchema,
+      onBlur: reviewDecisionSchema,
+      onSubmit: reviewDecisionSchema,
     },
   });
 
@@ -172,7 +175,9 @@ function ReviewDecisionContent({
               <Select.Default
                 className="h-10 w-full"
                 defaultValue={field.state.value}
-                onValueChange={field.handleChange}
+                onValueChange={(status) =>
+                  field.handleChange(status as ReviewDecisionForm['reviewStatus'])
+                }
                 placeholder={t('cases:case_detail.review_decision.review_status.placeholder')}
                 //contentClassName="max-w-[var(--radix-select-trigger-width)]"
               >
@@ -199,7 +204,7 @@ function ReviewDecisionContent({
                   );
                 })}
               </Select.Default>
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>
@@ -219,7 +224,7 @@ function ReviewDecisionContent({
                 borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
                 placeholder={t('cases:case_detail.review_decision.comment.placeholder')}
               />
-              <FormErrorOrDescription />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>

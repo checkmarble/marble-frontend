@@ -105,12 +105,12 @@ export function EditCase({ detail, inboxes }: { detail: CaseDetail; inboxes: Inb
   const language = useFormatLanguage();
   const { orgTags } = useOrganizationTags();
 
-  const form = useForm<EditInboxForm>({
+  const form = useForm({
     defaultValues: {
       ...pick(detail, ['id', 'name', 'inboxId']),
       tags: detail.tags.map(({ tagId }) => tagId),
       tagsHasChanged: false,
-    },
+    } as EditInboxForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -122,9 +122,9 @@ export function EditCase({ detail, inboxes }: { detail: CaseDetail; inboxes: Inb
       }
     },
     validators: {
-      onChangeAsync: editInboxSchema,
-      onBlurAsync: editInboxSchema,
-      onSubmitAsync: editInboxSchema,
+      onChange: editInboxSchema,
+      onBlur: editInboxSchema,
+      onSubmit: editInboxSchema,
     },
   });
 

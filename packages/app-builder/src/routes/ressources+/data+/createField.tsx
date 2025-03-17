@@ -5,6 +5,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { EnumDataTypes, isStatusConflictHttpError, UniqueDataTypes } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { captureUnexpectedRemixError } from '@app-builder/services/monitoring';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -132,7 +133,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const form = useForm<CreateFieldForm>({
+  const form = useForm({
     defaultValues: {
       required: REQUIRED_OPTIONS[0].value,
       name: '',
@@ -141,7 +142,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
       tableId: tableId,
       isEnum: false,
       isUnique: false,
-    },
+    } as CreateFieldForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -152,9 +153,9 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
       }
     },
     validators: {
-      onChangeAsync: createFieldFormSchema,
-      onBlurAsync: createFieldFormSchema,
-      onSubmitAsync: createFieldFormSchema,
+      onChange: createFieldFormSchema,
+      onBlur: createFieldFormSchema,
+      onSubmit: createFieldFormSchema,
     },
   });
 
@@ -192,7 +193,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('data:create_field.name_placeholder')}
                 />
-                <FormErrorOrDescription errors={field.state.meta.errors} />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>
@@ -209,7 +210,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('data:create_field.description_placeholder')}
                 />
-                <FormErrorOrDescription errors={field.state.meta.errors} />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>
@@ -233,7 +234,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                       );
                     })}
                   </Select.Default>
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -256,7 +257,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                       );
                     })}
                   </Select.Default>
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -276,7 +277,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                     <p>{t('data:create_field.is_enum.title')}</p>
                     <p className="text-xs">{t('data:create_field.is_enum.subtitle')}</p>
                   </FormLabel>
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -301,7 +302,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                       </p>
                     ) : null}
                   </FormLabel>
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>

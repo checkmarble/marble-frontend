@@ -3,6 +3,7 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -104,8 +105,8 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const form = useForm<z.infer<typeof updateTagFormSchema>>({
-    defaultValues: tag as Tag & { color: (typeof tagColors)[number] },
+  const form = useForm({
+    defaultValues: tag as z.infer<typeof updateTagFormSchema>,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -116,9 +117,9 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
       }
     },
     validators: {
-      onChangeAsync: updateTagFormSchema,
-      onBlurAsync: updateTagFormSchema,
-      onSubmitAsync: updateTagFormSchema,
+      onChange: updateTagFormSchema,
+      onBlur: updateTagFormSchema,
+      onSubmit: updateTagFormSchema,
     },
   });
 
@@ -145,7 +146,7 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
                   defaultValue={field.state.value}
                   valid={field.state.meta.errors.length === 0}
                 />
-                <FormErrorOrDescription errors={field.state.meta.errors} />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>
@@ -163,7 +164,7 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
                     </Select.DefaultItem>
                   ))}
                 </Select.Default>
-                <FormErrorOrDescription />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>

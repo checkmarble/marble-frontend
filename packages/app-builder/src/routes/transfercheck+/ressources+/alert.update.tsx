@@ -9,6 +9,7 @@ import {
   transferEndToEndIdSchema,
 } from '@app-builder/models/transfer-alert';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -132,9 +133,9 @@ function UpdateAlertContent({
       }
     },
     validators: {
-      onChangeAsync: updateAlertFormSchema,
-      onBlurAsync: updateAlertFormSchema,
-      onSubmitAsync: updateAlertFormSchema,
+      onChange: updateAlertFormSchema,
+      onBlur: updateAlertFormSchema,
+      onSubmit: updateAlertFormSchema,
     },
   });
 
@@ -160,7 +161,7 @@ function UpdateAlertContent({
                 onBlur={field.handleBlur}
                 placeholder={t('transfercheck:alert.create.message.placeholder')}
               />
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>
@@ -180,7 +181,7 @@ function UpdateAlertContent({
                 valid={field.state.meta.errors.length === 0}
                 placeholder={t('transfercheck:alert.create.transfer_end_to_end_id.placeholder')}
               />
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>
@@ -198,7 +199,7 @@ function UpdateAlertContent({
                 valid={field.state.meta.errors.length === 0}
                 placeholder={t('transfercheck:alert.create.sender_iban.placeholder')}
               />
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>
@@ -216,7 +217,7 @@ function UpdateAlertContent({
                 valid={field.state.meta.errors.length === 0}
                 placeholder={t('transfercheck:alert.create.beneficiary_iban.placeholder')}
               />
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>

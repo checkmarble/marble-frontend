@@ -15,6 +15,7 @@ import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenario
 import { DuplicateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
@@ -111,7 +112,7 @@ const editRuleFormSchema = z.object({
   formula: z.any(),
 });
 
-type EditRuleFormValues = z.infer<typeof editRuleFormSchema>;
+type EditRuleForm = z.infer<typeof editRuleFormSchema>;
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const {
@@ -192,18 +193,18 @@ export default function RuleDetail() {
     threshold: 1,
   });
 
-  const form = useForm<EditRuleFormValues>({
+  const form = useForm({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, { method: 'PATCH', encType: 'application/json' });
       }
     },
     validators: {
-      onChangeAsync: editRuleFormSchema,
-      onBlurAsync: editRuleFormSchema,
-      onSubmitAsync: editRuleFormSchema,
+      onChange: editRuleFormSchema,
+      onBlur: editRuleFormSchema,
+      onSubmit: editRuleFormSchema,
     },
-    defaultValues: rule,
+    defaultValues: rule as EditRuleForm,
   });
 
   const options = {
@@ -257,7 +258,7 @@ export default function RuleDetail() {
                       className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
                       placeholder={t('scenarios:edit_rule.name_placeholder')}
                     />
-                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
               </form.Field>
@@ -322,7 +323,7 @@ export default function RuleDetail() {
                         className="form-textarea text-grey-50 text-s w-full resize-none border-none bg-transparent font-medium outline-none"
                         placeholder={t('scenarios:edit_rule.description_placeholder')}
                       />
-                      <FormErrorOrDescription errors={field.state.meta.errors} />
+                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                     </div>
                   )}
                 </form.Field>
@@ -336,7 +337,7 @@ export default function RuleDetail() {
                         selectedRuleGroup={field.state.value}
                         ruleGroups={ruleGroups}
                       />
-                      <FormErrorOrDescription errors={field.state.meta.errors} />
+                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                     </div>
                   )}
                 </form.Field>
@@ -378,7 +379,9 @@ export default function RuleDetail() {
                             onChange={(e) => field.handleChange(+e.currentTarget.value)}
                             onBlur={field.handleBlur}
                           />
-                          <FormErrorOrDescription errors={field.state.meta.errors} />
+                          <FormErrorOrDescription
+                            errors={getFieldErrors(field.state.meta.errors)}
+                          />
                         </div>
                       )}
                     </form.Field>

@@ -6,6 +6,7 @@ import { Nudge } from '@app-builder/components/Nudge';
 import { tKeyForUserRole, type User } from '@app-builder/models';
 import { getUserRoles, isAccessible } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -136,8 +137,8 @@ function UpdateUserContent({
   const fetcher = useFetcher<typeof action>();
   const schema = useMemo(() => getUpdateUserFormSchema(userRoles), [userRoles]);
 
-  const form = useForm<z.infer<typeof schema>>({
-    defaultValues: user,
+  const form = useForm({
+    defaultValues: user as z.infer<typeof schema>,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -148,9 +149,9 @@ function UpdateUserContent({
       }
     },
     validators: {
-      onChangeAsync: schema,
-      onBlurAsync: schema,
-      onSubmitAsync: schema,
+      onChange: schema,
+      onBlur: schema,
+      onSubmit: schema,
     },
   });
 
@@ -178,7 +179,7 @@ function UpdateUserContent({
                     defaultValue={field.state.value}
                     valid={field.state.meta.errors.length === 0}
                   />
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -194,7 +195,7 @@ function UpdateUserContent({
                     defaultValue={field.state.value}
                     valid={field.state.meta.errors.length === 0}
                   />
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -211,7 +212,7 @@ function UpdateUserContent({
                   defaultValue={field.state.value}
                   valid={field.state.meta.errors.length === 0}
                 />
-                <FormErrorOrDescription errors={field.state.meta.errors} />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>
@@ -246,7 +247,7 @@ function UpdateUserContent({
                     </Select.DefaultItem>
                   ))}
                 </Select.Default>
-                <FormErrorOrDescription />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>

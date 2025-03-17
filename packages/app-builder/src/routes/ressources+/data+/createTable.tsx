@@ -4,6 +4,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -73,11 +74,11 @@ export function CreateTable({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const form = useForm<CreateTableForm>({
+  const form = useForm({
     defaultValues: {
       name: '',
       description: '',
-    },
+    } as CreateTableForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -88,9 +89,9 @@ export function CreateTable({ children }: { children: React.ReactNode }) {
       }
     },
     validators: {
-      onChangeAsync: createTableFormSchema,
-      onBlurAsync: createTableFormSchema,
-      onSubmitAsync: createTableFormSchema,
+      onChange: createTableFormSchema,
+      onBlur: createTableFormSchema,
+      onSubmit: createTableFormSchema,
     },
   });
 
@@ -130,7 +131,7 @@ export function CreateTable({ children }: { children: React.ReactNode }) {
                       valid={field.state.meta.errors.length === 0}
                       placeholder={t('data:create_table.name_placeholder')}
                     />
-                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
               </form.Field>
@@ -147,7 +148,7 @@ export function CreateTable({ children }: { children: React.ReactNode }) {
                       valid={field.state.meta.errors.length === 0}
                       placeholder={t('data:create_table.description_placeholder')}
                     />
-                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
               </form.Field>

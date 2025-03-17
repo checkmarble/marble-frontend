@@ -5,6 +5,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { type TableModel } from '@app-builder/models/data-model';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -125,14 +126,14 @@ function CreateLinkContent({
     );
   }, [selectedParentTable]);
 
-  const form = useForm<CreateLinkForm>({
+  const form = useForm({
     defaultValues: {
       name: '',
       parentTableId: otherTables[0].id,
       parentFieldId: selectedParentTableFields[0]?.id as string,
       childTableId: thisTable.id,
       childFieldId: thisTable.fields[0]?.id as string,
-    },
+    } as CreateLinkForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -143,9 +144,9 @@ function CreateLinkContent({
       }
     },
     validators: {
-      onChangeAsync: createLinkFormSchema,
-      onBlurAsync: createLinkFormSchema,
-      onSubmitAsync: createLinkFormSchema,
+      onChange: createLinkFormSchema,
+      onBlur: createLinkFormSchema,
+      onSubmit: createLinkFormSchema,
     },
   });
 
@@ -186,7 +187,7 @@ function CreateLinkContent({
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('data:create_link.name_placeholder')}
                 />
-                <FormErrorOrDescription errors={field.state.meta.errors} />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>
@@ -233,7 +234,7 @@ function CreateLinkContent({
                       );
                     })}
                   </Select.Default>
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -260,7 +261,7 @@ function CreateLinkContent({
                       );
                     })}
                   </Select.Default>
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -280,7 +281,7 @@ function CreateLinkContent({
                       );
                     })}
                   </Select.Default>
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>

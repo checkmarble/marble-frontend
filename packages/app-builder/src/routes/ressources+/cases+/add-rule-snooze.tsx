@@ -9,6 +9,7 @@ import { adaptDateTimeFieldCodes, type DurationUnit } from '@app-builder/models/
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
 import { ruleSnoozesDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -157,13 +158,13 @@ function AddRuleSnoozeContent({
     }
   }, [setOpen, fetcher?.data?.status]);
 
-  const form = useForm<AddRuleSnoozeForm>({
+  const form = useForm({
     defaultValues: {
       decisionId,
       ruleId,
       durationValue: 1,
       durationUnit: 'days',
-    },
+    } as AddRuleSnoozeForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -174,9 +175,9 @@ function AddRuleSnoozeContent({
       }
     },
     validators: {
-      onChangeAsync: addRuleSnoozeFormSchema,
-      onBlurAsync: addRuleSnoozeFormSchema,
-      onSubmitAsync: addRuleSnoozeFormSchema,
+      onChange: addRuleSnoozeFormSchema,
+      onBlur: addRuleSnoozeFormSchema,
+      onSubmit: addRuleSnoozeFormSchema,
     },
   });
 
@@ -225,7 +226,7 @@ function AddRuleSnoozeContent({
           <form.Field name="durationValue">
             {(field) => (
               <div className="row-span-full grid grid-rows-subgrid gap-2">
-                <FormLabel name={field.name}>
+                <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
                   {t('cases:case_detail.add_rule_snooze.duration_value')}
                 </FormLabel>
                 <FormInput
@@ -237,7 +238,7 @@ function AddRuleSnoozeContent({
                   valid={field.state.meta.errors.length === 0}
                   className="w-full"
                 />
-                <FormErrorOrDescription errors={field.state.meta.errors} />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>
@@ -263,7 +264,7 @@ function AddRuleSnoozeContent({
                     </Select.DefaultItem>
                   ))}
                 </Select.Default>
-                <FormErrorOrDescription />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>

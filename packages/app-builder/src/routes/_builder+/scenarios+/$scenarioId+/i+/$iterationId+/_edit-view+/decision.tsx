@@ -9,6 +9,7 @@ import { scenarioDecisionDocHref } from '@app-builder/services/documentation-hre
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { serverServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -219,14 +220,12 @@ function EditScoreThresholds() {
 
   const schema = React.useMemo(() => getFormSchema(t), [t]);
 
-  type EditScoreThresholdsForm = z.infer<typeof schema>;
-
-  const form = useForm<EditScoreThresholdsForm>({
+  const form = useForm({
     defaultValues: {
       scoreReviewThreshold: iteration.scoreReviewThreshold ?? 0,
       scoreBlockAndReviewThreshold: iteration.scoreBlockAndReviewThreshold ?? 0,
       scoreDeclineThreshold: iteration.scoreDeclineThreshold ?? 0,
-    },
+    } as z.infer<typeof schema>,
     validators: {
       onChange: schema,
       onBlur: schema,
@@ -287,7 +286,7 @@ function EditScoreThresholds() {
                 shouldUnescape
               />
               <FormErrorOrDescription
-                errors={field.state.meta.errors}
+                errors={getFieldErrors(field.state.meta.errors)}
                 errorClassName={style.errorMessage}
               />
             </div>
@@ -323,7 +322,7 @@ function EditScoreThresholds() {
                 shouldUnescape
               />
               <FormErrorOrDescription
-                errors={field.state.meta.errors}
+                errors={getFieldErrors(field.state.meta.errors)}
                 errorClassName={style.errorMessage}
               />
             </div>
@@ -359,7 +358,7 @@ function EditScoreThresholds() {
                 shouldUnescape
               />
               <FormErrorOrDescription
-                errors={field.state.meta.errors}
+                errors={getFieldErrors(field.state.meta.errors)}
                 errorClassName={style.errorMessage}
               />
             </div>

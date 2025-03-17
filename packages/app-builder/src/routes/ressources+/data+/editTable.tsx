@@ -3,6 +3,7 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { type TableModel } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -53,11 +54,11 @@ export function EditTable({ table, children }: { table: TableModel; children: Re
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const form = useForm<EditTableForm>({
+  const form = useForm({
     defaultValues: {
       description: table.description,
       tableId: table.id,
-    },
+    } as EditTableForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -103,7 +104,7 @@ export function EditTable({ table, children }: { table: TableModel; children: Re
                       valid={field.state.meta.errors.length === 0}
                       placeholder={t('data:create_table.description_placeholder')}
                     />
-                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
               </form.Field>

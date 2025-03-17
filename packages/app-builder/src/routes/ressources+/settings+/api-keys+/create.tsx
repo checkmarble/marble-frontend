@@ -5,6 +5,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { apiKeyRoleOptions } from '@app-builder/models/api-keys';
 import { tKeyForApiKeyRole } from '@app-builder/services/i18n/translation-keys/api-key';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
@@ -19,6 +20,8 @@ const createApiKeyFormSchema = z.object({
   description: z.string().min(1),
   role: z.enum(apiKeyRoleOptions),
 });
+
+type CreateApiKeyForm = z.infer<typeof createApiKeyFormSchema>;
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
@@ -110,11 +113,11 @@ const CreateApiKeyContent = () => {
         });
       }
     },
-    defaultValues: { description: '', role: 'API_CLIENT' },
+    defaultValues: { description: '', role: 'API_CLIENT' } as CreateApiKeyForm,
     validators: {
-      onChangeAsync: createApiKeyFormSchema,
-      onBlurAsync: createApiKeyFormSchema,
-      onSubmitAsync: createApiKeyFormSchema,
+      onChange: createApiKeyFormSchema,
+      onBlur: createApiKeyFormSchema,
+      onSubmit: createApiKeyFormSchema,
     },
   });
 
@@ -139,7 +142,7 @@ const CreateApiKeyContent = () => {
                 valid={field.state.meta.errors.length === 0}
                 type="text"
               />
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>
@@ -159,7 +162,7 @@ const CreateApiKeyContent = () => {
                   </Select.DefaultItem>
                 ))}
               </Select.Default>
-              <FormErrorOrDescription />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>

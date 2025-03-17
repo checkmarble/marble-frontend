@@ -5,6 +5,7 @@ import { Nudge } from '@app-builder/components/Nudge';
 import { type InboxUser, tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { getInboxUserRoles, isAccessible } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
@@ -141,7 +142,7 @@ export function UpdateInboxUserContent({
   );
 
   const form = useForm({
-    defaultValues: currentInboxUser,
+    defaultValues: currentInboxUser as z.infer<typeof schema>,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -152,9 +153,9 @@ export function UpdateInboxUserContent({
       }
     },
     validators: {
-      onChangeAsync: schema,
-      onBlurAsync: schema,
-      onSubmitAsync: schema,
+      onChange: schema,
+      onBlur: schema,
+      onSubmit: schema,
     },
   });
 
@@ -200,7 +201,7 @@ export function UpdateInboxUserContent({
                   </Select.DefaultItem>
                 ))}
               </Select.Default>
-              <FormErrorOrDescription />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>

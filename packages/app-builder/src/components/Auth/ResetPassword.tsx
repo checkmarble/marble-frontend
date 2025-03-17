@@ -4,6 +4,7 @@ import {
   useSendPasswordResetEmail,
 } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
+import { getFieldErrors } from '@app-builder/utils/form';
 import * as Sentry from '@sentry/remix';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
@@ -19,6 +20,8 @@ const resetPasswordFormSchema = z.object({
   email: z.string().email(),
 });
 
+type ResetPasswordForm = z.infer<typeof resetPasswordFormSchema>;
+
 export function ResetPassword() {
   const { t } = useTranslation(['auth', 'common']);
 
@@ -27,7 +30,7 @@ export function ResetPassword() {
   );
 
   const form = useForm({
-    defaultValues: { email: '' },
+    defaultValues: { email: '' } as ResetPasswordForm,
     validators: { onSubmit: resetPasswordFormSchema },
     onSubmit: async ({ value: { email } }) => {
       try {
@@ -69,7 +72,7 @@ export function ResetPassword() {
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               onBlur={field.handleBlur}
             />
-            <FormErrorOrDescription errors={field.state.meta.errors} />
+            <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
           </div>
         )}
       </form.Field>

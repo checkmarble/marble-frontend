@@ -4,6 +4,7 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -79,11 +80,11 @@ export function CreateCase() {
   const fetcher = useFetcher<typeof action>();
   const { data } = useCaseRightPanelContext();
 
-  const form = useForm<CreateCaseForm>({
+  const form = useForm({
     defaultValues: {
       name: '',
       inboxId: data?.inboxId ?? '',
-    },
+    } as CreateCaseForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -94,9 +95,9 @@ export function CreateCase() {
       }
     },
     validators: {
-      onChangeAsync: createCaseFormSchema,
-      onBlurAsync: createCaseFormSchema,
-      onSubmitAsync: createCaseFormSchema,
+      onChange: createCaseFormSchema,
+      onBlur: createCaseFormSchema,
+      onSubmit: createCaseFormSchema,
     },
   });
 
@@ -124,7 +125,7 @@ export function CreateCase() {
                 valid={field.state.meta.errors.length === 0}
                 placeholder={t('cases:case.new_case.placeholder')}
               />
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>

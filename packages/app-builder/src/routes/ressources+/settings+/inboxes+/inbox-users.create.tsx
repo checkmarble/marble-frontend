@@ -6,6 +6,7 @@ import { type User } from '@app-builder/models';
 import { tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { getInboxUserRoles, isAccessible } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
@@ -142,7 +143,7 @@ export function CreateInboxUserContent({
   const schema = useMemo(() => getCreateInboxUserFormSchema(inboxUserRoles), [inboxUserRoles]);
 
   const form = useForm({
-    defaultValues: { userId: '', inboxId: currentInboxId, role: 'admin' },
+    defaultValues: { userId: '', inboxId: currentInboxId, role: 'admin' } as z.infer<typeof schema>,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -185,7 +186,7 @@ export function CreateInboxUserContent({
                   </Select.DefaultItem>
                 ))}
               </Select.Default>
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>
@@ -217,7 +218,7 @@ export function CreateInboxUserContent({
                   </Select.DefaultItem>
                 ))}
               </Select.Default>
-              <FormErrorOrDescription />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>

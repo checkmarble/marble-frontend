@@ -4,6 +4,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type Inbox } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
@@ -29,6 +30,8 @@ const updateInboxFormSchema = z.object({
   name: z.string().min(1),
   redirectRoute: z.enum(redirectRouteOptions),
 });
+
+type UpdateInboxForm = z.infer<typeof updateInboxFormSchema>;
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
@@ -126,7 +129,7 @@ export function UpdateInboxContent({
   const fetcher = useFetcher<typeof action>();
 
   const form = useForm({
-    defaultValues: { ...inbox, redirectRoute: redirectRoutePath },
+    defaultValues: { ...inbox, redirectRoute: redirectRoutePath } as UpdateInboxForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -137,9 +140,9 @@ export function UpdateInboxContent({
       }
     },
     validators: {
-      onChangeAsync: updateInboxFormSchema,
-      onBlurAsync: updateInboxFormSchema,
-      onSubmitAsync: updateInboxFormSchema,
+      onChange: updateInboxFormSchema,
+      onBlur: updateInboxFormSchema,
+      onSubmit: updateInboxFormSchema,
     },
   });
 
@@ -165,7 +168,7 @@ export function UpdateInboxContent({
                 defaultValue={field.state.value}
                 valid={field.state.meta.errors.length === 0}
               />
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>

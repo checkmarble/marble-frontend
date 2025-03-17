@@ -9,6 +9,7 @@ import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
@@ -224,7 +225,7 @@ function CreateTestRunToContent({
                       );
                     })}
                   </Select.Default>
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -245,7 +246,7 @@ function CreateTestRunToContent({
                       </Select.DefaultItem>
                     ))}
                   </Select.Default>
-                  <FormErrorOrDescription />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -262,7 +263,7 @@ function CreateTestRunToContent({
                   onChange={(d) => field.handleChange(d.toISOString())}
                   defaultValue={new Date(field.state.value)}
                 />
-                <FormErrorOrDescription errors={field.state.meta.errors} />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
           </form.Field>

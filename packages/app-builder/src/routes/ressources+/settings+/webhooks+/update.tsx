@@ -9,6 +9,7 @@ import { SelectEvents } from '@app-builder/components/Webhooks/EventTypes';
 import { type EventType, eventTypes } from '@app-builder/models/webhook';
 import { webhooksEventsDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -177,7 +178,7 @@ function UpdateWebhookContent({
                 webhookStatus={webhookStatus}
               />
               <FormErrorOrDescription
-                errors={field.state.meta.errors}
+                errors={getFieldErrors(field.state.meta.errors)}
                 description={
                   <span className="whitespace-pre text-wrap">
                     <Trans
@@ -208,7 +209,7 @@ function UpdateWebhookContent({
                 className="w-full"
               />
               <FormErrorOrDescription
-                errors={field.state.meta.errors}
+                errors={getFieldErrors(field.state.meta.errors)}
                 description={t('settings:webhooks.http_timeout.description')}
               />
             </div>

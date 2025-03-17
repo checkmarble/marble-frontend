@@ -4,6 +4,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
@@ -69,11 +70,11 @@ export function CreateList() {
   const { submit } = useFetcher<typeof action>();
   const hydrated = useHydrated();
 
-  const form = useForm<CreateListForm>({
+  const form = useForm({
     defaultValues: {
       name: '',
       description: '',
-    },
+    } as CreateListForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         submit(value, {
@@ -122,7 +123,7 @@ export function CreateList() {
                       valid={field.state.meta.errors.length === 0}
                       placeholder={t('lists:create_list.name_placeholder')}
                     />
-                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
               </form.Field>
@@ -139,7 +140,7 @@ export function CreateList() {
                       valid={field.state.meta.errors.length === 0}
                       placeholder={t('lists:create_list.description_placeholder')}
                     />
-                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
               </form.Field>

@@ -2,6 +2,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -50,11 +51,11 @@ export function NewListValue({ listId }: { listId: string }) {
   const { submit, state, data } = useFetcher<typeof action>();
   const [isOpen, setIsOpen] = useState(false);
 
-  const form = useForm<AddValueForm>({
+  const form = useForm({
     defaultValues: {
       listId,
       value: '',
-    },
+    } as AddValueForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         submit(value, {
@@ -108,7 +109,7 @@ export function NewListValue({ listId }: { listId: string }) {
                     valid={field.state.meta.errors.length === 0}
                     placeholder={t('lists:create_value.value_placeholder')}
                   />
-                  <FormErrorOrDescription errors={field.state.meta.errors} />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>

@@ -84,8 +84,6 @@ const scenarioExecutionSchema = z.object({
   iterationId: z.string(),
 });
 
-type ScenarioExecutionForm = z.infer<typeof scenarioExecutionSchema>;
-
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
@@ -556,7 +554,7 @@ function ManualTriggerScenarioExecutionForm({
   const { t } = useTranslation(['scenarios']);
   const fetcher = useFetcher<typeof action>();
 
-  const form = useForm<ScenarioExecutionForm>({
+  const form = useForm({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, { method: 'POST', encType: 'application/json' });

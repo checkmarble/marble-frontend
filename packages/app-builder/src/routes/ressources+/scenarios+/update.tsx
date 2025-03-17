@@ -3,6 +3,7 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -145,7 +146,7 @@ function UpdateScenarioContent({ defaultValue }: { defaultValue: UpdateScenarioF
                 valid={field.state.meta.errors.length === 0}
                 placeholder={t('scenarios:create_scenario.name_placeholder')}
               />
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>
@@ -162,7 +163,7 @@ function UpdateScenarioContent({ defaultValue }: { defaultValue: UpdateScenarioF
                 valid={field.state.meta.errors.length === 0}
                 placeholder={t('scenarios:create_scenario.description_placeholder')}
               />
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>

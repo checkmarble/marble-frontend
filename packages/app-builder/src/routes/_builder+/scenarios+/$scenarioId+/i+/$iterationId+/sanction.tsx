@@ -24,6 +24,7 @@ import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scen
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
@@ -303,7 +304,7 @@ export default function SanctionDetail() {
                       className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
                       placeholder={t('scenarios:sanction_name_placeholder')}
                     />
-                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
               </form.Field>
@@ -353,7 +354,7 @@ export default function SanctionDetail() {
                         className="form-textarea text-grey-50 text-s w-full resize-none border-none bg-transparent font-medium outline-none"
                         placeholder={t('scenarios:sanction_description_placeholder')}
                       />
-                      <FormErrorOrDescription errors={field.state.meta.errors} />
+                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                     </div>
                   )}
                 </form.Field>
@@ -367,7 +368,7 @@ export default function SanctionDetail() {
                         selectedRuleGroup={field.state.value}
                         ruleGroups={ruleGroups}
                       />
-                      <FormErrorOrDescription errors={field.state.meta.errors} />
+                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                     </div>
                   )}
                 </form.Field>
@@ -421,7 +422,9 @@ export default function SanctionDetail() {
                             selectedOutcome={field.state.value}
                             outcomes={difference(knownOutcomes, ['approve']) as SanctionOutcome[]}
                           />
-                          <FormErrorOrDescription errors={field.state.meta.errors} />
+                          <FormErrorOrDescription
+                            errors={getFieldErrors(field.state.meta.errors)}
+                          />
                         </div>
                       )}
                     </form.Field>
@@ -449,7 +452,7 @@ export default function SanctionDetail() {
                           placeholder={t('scenarios:sanction_counterparty_id_placeholder')}
                         />
                       </AstBuilder.Provider>
-                      <FormErrorOrDescription errors={field.state.meta.errors} />
+                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                     </div>
                   )}
                 </form.Field>
@@ -489,7 +492,9 @@ export default function SanctionDetail() {
                                 placeholder={t('scenarios:sanction_counterparty_name_placeholder')}
                                 limit={5}
                               />
-                              <FormErrorOrDescription errors={field.state.meta.errors} />
+                              <FormErrorOrDescription
+                                errors={getFieldErrors(field.state.meta.errors)}
+                              />
                             </div>
                           );
                         }}
@@ -506,7 +511,9 @@ export default function SanctionDetail() {
                               onBlur={field.handleBlur}
                               placeholder={t('scenarios:sanction_transaction_label_placeholder')}
                             />
-                            <FormErrorOrDescription errors={field.state.meta.errors} />
+                            <FormErrorOrDescription
+                              errors={getFieldErrors(field.state.meta.errors)}
+                            />
                           </div>
                         )}
                       </form.Field>
@@ -532,7 +539,7 @@ export default function SanctionDetail() {
                           onBlur={field.handleBlur}
                           sections={sections}
                         />
-                        <FormErrorOrDescription errors={field.state.meta.errors} />
+                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                       </div>
                     )}
                   </form.Field>

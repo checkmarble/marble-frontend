@@ -1,4 +1,3 @@
-import { type ValidationError } from '@tanstack/react-form';
 import clsx from 'clsx';
 import * as React from 'react';
 
@@ -6,7 +5,7 @@ interface FormErrorOrDescriptionProps
   extends Omit<React.HTMLAttributes<HTMLParagraphElement>, 'id' | 'children' | 'className'> {
   errorClassName?: string;
   descriptionClassName?: string;
-  errors?: ValidationError[];
+  errors?: string[];
   description?: string | React.ReactNode;
 }
 

@@ -9,6 +9,7 @@ import { type DataModel, isStatusConflictHttpError, type TableModel } from '@app
 import { getPivotOptions, type PivotOption } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -123,10 +124,10 @@ function CreatePivotContent({
     [dataModel, tableModel],
   );
 
-  const form = useForm<CreatePivotForm>({
+  const form = useForm({
     defaultValues: {
       pivot: pivotOptions[0] as PivotOption,
-    },
+    } as CreatePivotForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -137,9 +138,9 @@ function CreatePivotContent({
       }
     },
     validators: {
-      onChangeAsync: createPivotFormSchema,
-      onBlurAsync: createPivotFormSchema,
-      onSubmitAsync: createPivotFormSchema,
+      onChange: createPivotFormSchema,
+      onBlur: createPivotFormSchema,
+      onSubmit: createPivotFormSchema,
     },
   });
 
@@ -228,7 +229,7 @@ function CreatePivotContent({
                   </SelectWithCombobox.ComboboxList>
                 </SelectWithCombobox.Popover>
               </SelectWithCombobox.Root>
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>

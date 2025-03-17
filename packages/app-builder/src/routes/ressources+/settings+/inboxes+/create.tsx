@@ -3,6 +3,7 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
@@ -135,12 +136,12 @@ export function CreateInboxContent({
     }
   }, [setOpen, fetcher?.data?.status]);
 
-  const form = useForm<CreateInboxForm>({
-    defaultValues: { name: '', redirectRoute: redirectRoutePath },
+  const form = useForm({
+    defaultValues: { name: '', redirectRoute: redirectRoutePath } as CreateInboxForm,
     validators: {
-      onChangeAsync: createInboxFormSchema,
-      onBlurAsync: createInboxFormSchema,
-      onSubmitAsync: createInboxFormSchema,
+      onChange: createInboxFormSchema,
+      onBlur: createInboxFormSchema,
+      onSubmit: createInboxFormSchema,
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
@@ -175,7 +176,7 @@ export function CreateInboxContent({
                 valid={field.state.meta.errors.length === 0}
                 type="text"
               />
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>

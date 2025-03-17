@@ -9,6 +9,7 @@ import { SelectEvents } from '@app-builder/components/Webhooks/EventTypes';
 import { type EventType, eventTypes } from '@app-builder/models/webhook';
 import { webhooksEventsDocHref } from '@app-builder/services/documentation-href';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -25,6 +26,8 @@ const createWebhookFormSchema = z.object({
   eventTypes: z.array(z.enum(eventTypes)),
   httpTimeout: z.number().int().positive().optional(),
 });
+
+type CreateWebhookForm = z.infer<typeof createWebhookFormSchema>;
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
@@ -106,7 +109,7 @@ function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessD
     defaultValues: {
       url: '',
       eventTypes: [],
-    },
+    } as CreateWebhookForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -117,9 +120,9 @@ function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessD
       }
     },
     validators: {
-      onChangeAsync: createWebhookFormSchema,
-      onBlurAsync: createWebhookFormSchema,
-      onSubmitAsync: createWebhookFormSchema,
+      onChange: createWebhookFormSchema,
+      onBlur: createWebhookFormSchema,
+      onSubmit: createWebhookFormSchema,
     },
   });
 
@@ -146,7 +149,7 @@ function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessD
                 valid={field.state.meta.errors.length === 0}
                 className="w-full"
               />
-              <FormErrorOrDescription errors={field.state.meta.errors} />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>
@@ -175,7 +178,7 @@ function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessD
                 webhookStatus={webhookStatus}
               />
               <FormErrorOrDescription
-                errors={field.state.meta.errors}
+                errors={getFieldErrors(field.state.meta.errors)}
                 description={
                   <span className="whitespace-pre text-wrap">
                     <Trans
@@ -206,7 +209,7 @@ function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessD
                 className="w-full"
               />
               <FormErrorOrDescription
-                errors={field.state.meta.errors}
+                errors={getFieldErrors(field.state.meta.errors)}
                 description={t('settings:webhooks.http_timeout.description')}
               />
             </div>

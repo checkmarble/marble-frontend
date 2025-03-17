@@ -6,6 +6,7 @@ import {
   WeakPasswordError,
 } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
+import { getFieldErrors } from '@app-builder/utils/form';
 import * as Sentry from '@sentry/remix';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
@@ -24,6 +25,8 @@ const emailAndPasswordFormSchema = z.object({
   }),
 });
 
+type EmailAndPasswordForm = z.infer<typeof emailAndPasswordFormSchema>;
+
 export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
   const { t } = useTranslation(['auth', 'common']);
 
@@ -32,7 +35,7 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
   );
 
   const form = useForm({
-    defaultValues: { credentials: { email: '', password: '' } },
+    defaultValues: { credentials: { email: '', password: '' } } as EmailAndPasswordForm,
     validators: { onSubmit: emailAndPasswordFormSchema },
     onSubmit: async ({ value: { credentials }, formApi }) => {
       try {
@@ -77,7 +80,7 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               onBlur={field.handleBlur}
             />
-            <FormErrorOrDescription errors={field.state.meta.errors} />
+            <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
           </div>
         )}
       </form.Field>
@@ -96,7 +99,7 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               onBlur={field.handleBlur}
             />
-            <FormErrorOrDescription errors={field.state.meta.errors} />
+            <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
           </div>
         )}
       </form.Field>
