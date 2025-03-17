@@ -14,7 +14,7 @@ type NudgeProps = {
 };
 
 export const Nudge = ({ content, link, className, kind = 'restricted' }: NudgeProps) => {
-  const { t } = useTranslation(['scenarios', 'common']);
+  const { t } = useTranslation(['common']);
 
   return (
     <HovercardProvider showTimeout={0} hideTimeout={0} placement="right">
@@ -27,6 +27,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted' }: NudgePr
           { 'bg-yellow-50': kind === 'missing_configuration' },
           className,
         )}
+        render={<div />}
       >
         <Icon
           icon={match<typeof kind, IconName>(kind)
