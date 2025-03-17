@@ -128,8 +128,7 @@
   "sanction.state.refine_needed": "Refine needed",
   "snooze.title": "Snooze",
   "snooze.callout": "Snoozed until {{date}}",
-  "snooze.modal.heading": "Should snooze ?",
-  "unsnooze.callout": "By continuing, you will unsnooze the case",
-  "unsnooze.title": "Unsnooze",
-  "snooze.confirm": "Continue"
+  "snooze.modal.heading": "Snooze until...",
+  "unsnooze.callout": "By continuing, you will unsnooze this case",
+  "unsnooze.title": "Unsnooze"
 }

@@ -6,9 +6,8 @@ import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Calendar, ModalV2, Switch } from 'ui-design-system';
+import { Button, Calendar, ModalV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -50,14 +49,13 @@ export function EditCaseSnooze({
 }: Pick<EditSnoozeForm, 'caseId'> & { snoozeUntil?: string }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
-  const [isSnoozing, shouldSnooze] = useState(true);
 
   const form = useForm<EditSnoozeForm>({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         const finalValue = {
           ...value,
-          snoozeUntil: isSnoozing ? value.snoozeUntil : null,
+          snoozeUntil: snoozeUntil ? null : value.snoozeUntil,
         };
 
         fetcher.submit(finalValue, {
@@ -73,19 +71,21 @@ export function EditCaseSnooze({
       onSubmitAsync: editSnoozeSchema,
     },
     defaultValues: {
-      snoozeUntil: snoozeUntil ?? new Date().toISOString(),
+      snoozeUntil: snoozeUntil ?? null,
       caseId: caseId,
     },
   });
 
   return (
     <ModalV2.Root>
-      <ModalV2.Trigger render={<Button variant="primary" />}>
+      <ModalV2.Trigger render={<Button variant={snoozeUntil ? 'secondary' : 'primary'} />}>
         <Icon icon="snooze" className="size-5" aria-hidden />
-        {t('cases:snooze.title')}
+        {snoozeUntil ? t('cases:unsnooze.title') : t('cases:snooze.title')}
       </ModalV2.Trigger>
       <ModalV2.Content>
-        <ModalV2.Title>{t('cases:snooze.modal.heading')}</ModalV2.Title>
+        <ModalV2.Title>
+          {snoozeUntil ? t('cases:unsnooze.title') : t('cases:snooze.modal.heading')}
+        </ModalV2.Title>
         <form
           className="flex flex-col gap-6 p-6"
           onSubmit={(e) => {
@@ -94,30 +94,24 @@ export function EditCaseSnooze({
             form.handleSubmit();
           }}
         >
-          <form.Field name="snoozeUntil">
-            {(field) => (
-              <div className="flex flex-col items-center gap-4">
-                <div className="flex flex-row items-center gap-2">
-                  <span className="text-s font-semibold">{t('cases:unsnooze.title')}</span>
-                  <Switch onCheckedChange={shouldSnooze} checked={isSnoozing} />
-                  <span className="text-s font-semibold">{t('cases:snooze.title')}</span>
-                </div>
-                {isSnoozing ? (
+          {snoozeUntil ? (
+            <CalloutV2>{t('cases:unsnooze.callout')}</CalloutV2>
+          ) : (
+            <form.Field name="snoozeUntil">
+              {(field) => (
+                <div className="flex flex-col items-center gap-4">
                   <Calendar
                     className="border-grey-90 w-fit rounded border p-2 shadow"
                     mode="single"
                     selected={new Date(field.state.value as string)}
-                    disabled={!isSnoozing}
                     hidden={{ before: new Date() }}
                     autoFocus
                     onSelect={(d) => d && field.handleChange(d.toISOString())}
                   />
-                ) : (
-                  <CalloutV2>{t('cases:unsnooze.callout')}</CalloutV2>
-                )}
-              </div>
-            )}
-          </form.Field>
+                </div>
+              )}
+            </form.Field>
+          )}
           <div className="flex w-full flex-row gap-2">
             <ModalV2.Close
               render={
@@ -134,7 +128,7 @@ export function EditCaseSnooze({
             <ModalV2.Close
               render={<Button type="submit" className="flex-1 first-letter:capitalize" />}
             >
-              {t('cases:snooze.confirm')}
+              {snoozeUntil ? t('cases:unsnooze.title') : t('cases:snooze.title')}
             </ModalV2.Close>
           </div>
         </form>
