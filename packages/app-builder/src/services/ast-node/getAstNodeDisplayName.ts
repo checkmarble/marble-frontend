@@ -1,4 +1,4 @@
-import { type AstNode, isUndefinedAstNode } from '@app-builder/models';
+import { type IdLessAstNode, isUndefinedAstNode } from '@app-builder/models';
 import { type AggregationAstNode, isAggregation } from '@app-builder/models/astNode/aggregation';
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
@@ -37,7 +37,7 @@ interface AstNodeStringifierContext {
 }
 
 export function getAstNodeDisplayName(
-  astNode: AstNode,
+  astNode: IdLessAstNode,
   context: AstNodeStringifierContext,
 ): string {
   if (isConstant(astNode)) {
@@ -116,7 +116,7 @@ export function getAstNodeDisplayName(
 }
 
 function getTimeAddDisplayName(
-  astNode: TimeAddAstNode,
+  astNode: IdLessAstNode<TimeAddAstNode>,
   context: AstNodeStringifierContext,
 ): string {
   const sign = astNode.namedChildren['sign']?.constant ?? '';
@@ -161,7 +161,7 @@ const pluralizeTemporalDurationUnit = (unit: number, type: string): string => {
 };
 
 function getAggregatorDisplayName(
-  astNode: AggregationAstNode,
+  astNode: IdLessAstNode<AggregationAstNode>,
   context: {
     t: TFunctionDisplayName;
   },
@@ -182,7 +182,7 @@ function getAggregatorDisplayName(
 }
 
 function getFuzzyMatchComparatorDisplayName(
-  astNode: FuzzyMatchComparatorAstNode,
+  astNode: IdLessAstNode<FuzzyMatchComparatorAstNode>,
   context: AstNodeStringifierContext,
 ) {
   const fuzzyMatch = astNode.children[0];
@@ -198,7 +198,7 @@ function getFuzzyMatchComparatorDisplayName(
 }
 
 function getTimestampExtractDisplayName(
-  astNode: TimestampExtractAstNode,
+  astNode: IdLessAstNode<TimestampExtractAstNode>,
   context: AstNodeStringifierContext,
 ) {
   const part = astNode.namedChildren['part']?.constant ?? '';
@@ -219,7 +219,7 @@ function getTimestampExtractDisplayName(
 }
 
 function getIsMultipleOfDisplayName(
-  astNode: IsMultipleOfAstNode,
+  astNode: IdLessAstNode<IsMultipleOfAstNode>,
   context: AstNodeStringifierContext,
 ) {
   const value = astNode.namedChildren.value;
@@ -242,7 +242,7 @@ function getIsMultipleOfDisplayName(
 }
 
 function getStringTemplateDisplayName(
-  astNode: StringTemplateAstNode,
+  astNode: IdLessAstNode<StringTemplateAstNode>,
   context: AstNodeStringifierContext,
 ) {
   const value = astNode.children[0]?.constant ?? '';

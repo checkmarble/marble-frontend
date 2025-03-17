@@ -1,5 +1,12 @@
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
-import { NewStringConcatAstNode } from '@app-builder/models/astNode/strings';
+import {
+  isKnownOperandAstNode,
+  type KnownOperandAstNode,
+} from '@app-builder/models/astNode/builder-ast-node';
+import {
+  NewStringConcatAstNode,
+  type StringConcatAstNode,
+} from '@app-builder/models/astNode/strings';
 import { DragDropContext, Draggable, Droppable, type OnDragEndResponder } from '@hello-pangea/dnd';
 import { nanoid } from 'nanoid';
 import { replace } from 'radash';
@@ -25,18 +32,15 @@ export function FieldNodeConcat({
   viewOnly,
   placeholder,
 }: {
-  value?: AstNode;
+  value?: StringConcatAstNode;
   limit?: number;
   placeholder?: string;
   onChange?: (node: AstNode | null) => void;
   onBlur?: () => void;
   viewOnly?: boolean;
 }) {
-  const [nodes, setNodes] = useState<(AstNode & { id: string })[]>(
-    (value?.children?.length ? value.children : [NewUndefinedAstNode()]).map((n) => ({
-      ...n,
-      id: nanoid(),
-    })),
+  const [nodes, setNodes] = useState<KnownOperandAstNode[]>(
+    value?.children?.length ? value.children : [NewUndefinedAstNode()],
   );
 
   useEffect(() => {
@@ -45,11 +49,7 @@ export function FieldNodeConcat({
     );
 
     const result =
-      finalNodes.length !== 0
-        ? NewStringConcatAstNode(finalNodes.map(omit(['id'])), {
-            withSeparator: true,
-          })
-        : null;
+      finalNodes.length !== 0 ? NewStringConcatAstNode(finalNodes, { withSeparator: true }) : null;
 
     onChange?.(result);
   }, [nodes, onChange]);
@@ -121,14 +121,15 @@ export function FieldNodeConcat({
                       ) : null}
                       <MatchOperand
                         node={node}
-                        viewOnly={viewOnly}
                         key={`node-${index}`}
                         placeholder={placeholder}
-                        onSave={(savedNode) =>
-                          setNodes((prev) =>
-                            replace(prev, { ...savedNode, id: node.id }, (_, i) => i === index),
-                          )
-                        }
+                        onSave={(savedNode) => {
+                          if (isKnownOperandAstNode(savedNode)) {
+                            setNodes((prev) =>
+                              replace(prev, { ...savedNode, id: node.id }, (_, i) => i === index),
+                            );
+                          }
+                        }}
                       />
                     </div>
                   )}

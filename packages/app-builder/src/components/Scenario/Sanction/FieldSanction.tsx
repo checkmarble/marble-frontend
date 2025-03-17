@@ -1,4 +1,4 @@
-import { useEditorMode } from '@app-builder/services/editor';
+import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import clsx from 'clsx';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { diff, toggle } from 'radash';

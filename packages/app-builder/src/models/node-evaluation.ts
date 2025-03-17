@@ -29,6 +29,7 @@ export type EvaluationErrorCode = EvaluationErrorCodeDto | 'FUNCTION_ERROR';
 export interface EvaluationError {
   error: EvaluationErrorCode;
   message: string;
+  path?: string;
   argumentIndex?: number;
   argumentName?: string;
 }

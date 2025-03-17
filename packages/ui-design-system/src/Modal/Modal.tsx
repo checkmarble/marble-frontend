@@ -31,7 +31,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
 ) {
   return (
     <Dialog.Portal>
-      <Dialog.Overlay className="animate-overlayShow bg-grey-00/20 fixed inset-0 flex items-center justify-center p-4" />
+      <Dialog.Overlay className="animate-overlayShow bg-grey-00/20 fixed inset-0 flex items-center justify-center p-4 backdrop-blur-sm" />
       <Dialog.Content
         ref={ref}
         {...props}
@@ -53,6 +53,10 @@ function ModalTitle(props: Dialog.DialogTitleProps) {
   );
 }
 
+export function ModalFooter({ children }: { children: ReactNode }) {
+  return <div className="shadow-sticky-bottom sticky bottom-0">{children}</div>;
+}
+
 export const Modal = {
   Root: Dialog.Root,
   Trigger: Dialog.Trigger,
@@ -60,6 +64,7 @@ export const Modal = {
   Description: Dialog.Description,
   Content: ModalContent,
   Title: ModalTitle,
+  Footer: ModalFooter,
 };
 
 export interface ModalContentV2Props
@@ -105,10 +110,6 @@ export function ModalTitleV2(props: Ariakit.DialogHeadingProps) {
   );
 }
 
-export function ModalFooterV2({ children }: { children: ReactNode }) {
-  return <div className="shadow-sticky-bottom sticky bottom-0">{children}</div>;
-}
-
 export const ModalV2 = {
   Root: Ariakit.DialogProvider,
   Trigger: Ariakit.DialogDisclosure,
@@ -116,5 +117,5 @@ export const ModalV2 = {
   Description: Ariakit.DialogDescription,
   Content: ModalContentV2,
   Title: ModalTitleV2,
-  Footer: ModalFooterV2,
+  Footer: ModalFooter,
 };

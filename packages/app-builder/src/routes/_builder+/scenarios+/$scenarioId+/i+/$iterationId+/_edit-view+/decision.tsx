@@ -6,7 +6,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { scenarioDecisionDocHref } from '@app-builder/services/documentation-href';
-import { useEditorMode } from '@app-builder/services/editor';
+import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { serverServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';

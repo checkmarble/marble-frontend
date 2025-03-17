@@ -13,7 +13,7 @@ import { NewEmptyRuleAstNode } from '@app-builder/models';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
 import { DuplicateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate';
-import { useEditorMode } from '@app-builder/services/editor';
+import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -350,11 +350,10 @@ export default function RuleDetail() {
                       <FieldAstFormula
                         type="rule"
                         scenarioId={scenario.id}
-                        iterationId={iterationId}
                         options={options}
                         onBlur={field.handleBlur}
                         onChange={field.handleChange}
-                        trigger={field.state.value}
+                        astNode={field.state.value}
                         defaultValue={NewEmptyRuleAstNode()}
                       />
                     )}

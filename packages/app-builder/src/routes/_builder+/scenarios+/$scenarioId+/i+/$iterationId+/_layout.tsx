@@ -5,7 +5,10 @@ import {
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
-import { type EditorMode, EditorModeContextProvider } from '@app-builder/services/editor';
+import {
+  type EditorMode,
+  EditorModeContextProvider,
+} from '@app-builder/services/editor/editor-mode';
 import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
 import { findRuleValidation } from '@app-builder/services/validation';

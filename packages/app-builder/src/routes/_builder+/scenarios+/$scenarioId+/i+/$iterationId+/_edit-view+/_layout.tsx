@@ -10,7 +10,7 @@ import { CommitScenarioDraft } from '@app-builder/routes/ressources+/scenarios+/
 import { CreateDraftIteration } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/create_draft';
 import { DeactivateScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/deactivate';
 import { PrepareScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/prepare';
-import { useEditorMode } from '@app-builder/services/editor';
+import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import {
   isCreateDraftAvailable,
   isDeploymentActionsAvailable,

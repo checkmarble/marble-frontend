@@ -151,6 +151,7 @@ export default function DecisionPage() {
                   existingPivotDefinition={existingPivotDefinition}
                 />
                 <RulesDetail
+                  scenarioId={decision.scenario.id}
                   ruleExecutions={decision.rules}
                   triggerObjectType={decision.triggerObjectType}
                   astRuleData={astRuleData}

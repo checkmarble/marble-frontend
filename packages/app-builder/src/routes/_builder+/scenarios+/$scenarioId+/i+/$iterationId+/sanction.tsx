@@ -1,4 +1,5 @@
 import { Callout, Page, scenarioI18n } from '@app-builder/components';
+import { AstBuilder } from '@app-builder/components/AstBuilder';
 import {
   BreadCrumbLink,
   type BreadCrumbProps,
@@ -8,7 +9,6 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { type AstBuilderProps } from '@app-builder/components/Scenario/AstBuilder';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
 import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
 import { FieldNodeConcat } from '@app-builder/components/Scenario/Sanction/FieldNodeConcat';
@@ -18,13 +18,14 @@ import { FieldSanction } from '@app-builder/components/Scenario/Sanction/FieldSa
 import { FieldToolTip } from '@app-builder/components/Scenario/Sanction/FieldToolTip';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
+import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { knownOutcomes, type SanctionOutcome } from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
-import { useEditorMode } from '@app-builder/services/editor';
-import { OptionsProvider } from '@app-builder/services/editor/options';
+import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
+import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID, toUUID, useParam } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
@@ -171,6 +172,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   try {
+    const nameQuery = result.data.query?.name;
+
     await scenarioIterationSanctionRepository.upsertSanctionCheckConfig({
       iterationId,
       changes: {
@@ -178,7 +181,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         counterPartyId: result.data.counterPartyId as AstNode | undefined,
         triggerRule: result.data.triggerRule as AstNode | undefined,
         query: {
-          name: result.data.query?.name as AstNode | undefined,
+          name: nameQuery && isStringConcatAstNode(nameQuery) ? nameQuery : undefined,
           label: result.data.query?.label as AstNode | undefined,
         },
       },
@@ -253,7 +256,7 @@ export default function SanctionDetail() {
     },
   });
 
-  const options: AstBuilderProps['options'] = {
+  const options: BuilderOptionsResource = {
     databaseAccessors,
     payloadAccessors,
     dataModel,
@@ -275,7 +278,6 @@ export default function SanctionDetail() {
       </Page.Header>
       <Page.Container ref={containerRef}>
         <Page.Content className="pt-0 lg:pt-0">
-          {toUUID('pQ323VAW6WpSSrfJL7QU5r')}
           <form
             className="relative flex max-w-3xl flex-col"
             onSubmit={(e) => {
@@ -398,11 +400,10 @@ export default function SanctionDetail() {
                       <FieldAstFormula
                         type="sanction"
                         scenarioId={scenario.id}
-                        iterationId={iterationId}
                         options={options}
                         onBlur={field.handleBlur}
                         onChange={field.handleChange}
-                        trigger={field.state.value}
+                        astNode={field.state.value}
                         defaultValue={NewUndefinedAstNode()}
                       />
                     )}
@@ -440,77 +441,83 @@ export default function SanctionDetail() {
                 <form.Field name="counterPartyId">
                   {(field) => (
                     <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded border p-6">
-                      <OptionsProvider {...options}>
+                      <AstBuilder.Provider
+                        scenarioId={scenario.id}
+                        initialData={options}
+                        mode={editor}
+                      >
                         <FieldNode
-                          viewOnly={editor === 'view'}
                           value={field.state.value}
                           onChange={field.handleChange}
                           onBlur={field.handleBlur}
                           placeholder={t('scenarios:sanction_counterparty_id_placeholder')}
                         />
-                      </OptionsProvider>
+                      </AstBuilder.Provider>
                       <FormErrorOrDescription errors={field.state.meta.errors} />
                     </div>
                   )}
                 </form.Field>
               </div>
 
-              <div className="flex flex-col gap-2">
-                <span className="text-s font-medium">
-                  {t('scenarios:sanction.match_settings.title')}
-                </span>
-                <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded border p-6">
-                  <Callout variant="outlined" className="mb-4 lg:mb-6">
-                    <p className="whitespace-pre text-wrap">
-                      {t('scenarios:sanction.match_settings.callout')}
-                    </p>
-                  </Callout>
-                  <div className="flex flex-col gap-6">
-                    <form.Field name="query.name">
-                      {(field) => (
-                        <div className="flex flex-col gap-4">
-                          <FormLabel className="inline-flex items-center gap-1" name={field.name}>
-                            {t('scenarios:sanction_counterparty_name')}
-                            <FieldToolTip>
-                              {t('scenarios:sanction_counterparty_name.tooltip')}
-                            </FieldToolTip>
-                          </FormLabel>
-                          <OptionsProvider {...options}>
-                            <FieldNodeConcat
-                              viewOnly={editor === 'view'}
-                              value={sanctionCheckConfig?.query?.name}
-                              onChange={field.handleChange}
-                              onBlur={field.handleBlur}
-                              placeholder={t('scenarios:sanction_counterparty_name_placeholder')}
-                              limit={5}
-                            />
-                          </OptionsProvider>
-                          <FormErrorOrDescription errors={field.state.meta.errors} />
-                        </div>
-                      )}
-                    </form.Field>
-                    <form.Field name="query.label">
-                      {(field) => (
-                        <div className="flex flex-col gap-4">
-                          <FormLabel name={field.name}>
-                            {t('scenarios:sanction_transaction_label')}
-                          </FormLabel>
-                          <OptionsProvider {...options}>
+              <AstBuilder.Provider scenarioId={scenario.id} initialData={options} mode={editor}>
+                <div className="flex flex-col gap-2">
+                  <span className="text-s font-medium">
+                    {t('scenarios:sanction.match_settings.title')}
+                  </span>
+                  <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded border p-6">
+                    <Callout variant="outlined" className="mb-4 lg:mb-6">
+                      <p className="whitespace-pre text-wrap">
+                        {t('scenarios:sanction.match_settings.callout')}
+                      </p>
+                    </Callout>
+                    <div className="flex flex-col gap-6">
+                      <form.Field name="query.name">
+                        {(field) => {
+                          const value = sanctionCheckConfig?.query?.name;
+                          return (
+                            <div className="flex flex-col gap-4">
+                              <FormLabel
+                                className="inline-flex items-center gap-1"
+                                name={field.name}
+                              >
+                                {t('scenarios:sanction_counterparty_name')}
+                                <FieldToolTip>
+                                  {t('scenarios:sanction_counterparty_name.tooltip')}
+                                </FieldToolTip>
+                              </FormLabel>
+                              <FieldNodeConcat
+                                viewOnly={editor === 'view'}
+                                value={value && isStringConcatAstNode(value) ? value : undefined}
+                                onChange={field.handleChange}
+                                onBlur={field.handleBlur}
+                                placeholder={t('scenarios:sanction_counterparty_name_placeholder')}
+                                limit={5}
+                              />
+                              <FormErrorOrDescription errors={field.state.meta.errors} />
+                            </div>
+                          );
+                        }}
+                      </form.Field>
+                      <form.Field name="query.label">
+                        {(field) => (
+                          <div className="flex flex-col gap-4">
+                            <FormLabel name={field.name}>
+                              {t('scenarios:sanction_transaction_label')}
+                            </FormLabel>
                             <FieldNode
-                              viewOnly={editor === 'view'}
                               value={field.state.value}
                               onChange={field.handleChange}
                               onBlur={field.handleBlur}
                               placeholder={t('scenarios:sanction_transaction_label_placeholder')}
                             />
-                          </OptionsProvider>
-                          <FormErrorOrDescription errors={field.state.meta.errors} />
-                        </div>
-                      )}
-                    </form.Field>
+                            <FormErrorOrDescription errors={field.state.meta.errors} />
+                          </div>
+                        )}
+                      </form.Field>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </AstBuilder.Provider>
 
               <div className="flex flex-col gap-2">
                 <span className="text-s font-medium">{t('scenarios:sanction.lists.title')}</span>

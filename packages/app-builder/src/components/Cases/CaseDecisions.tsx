@@ -391,6 +391,7 @@ function DecisionDetail({
                   <RuleExecutionDescription description={ruleExecution.description} />
 
                   <RuleExecutionDetail
+                    scenarioId={decision.scenario.id}
                     key={ruleExecution.ruleId}
                     ruleExecution={ruleExecution}
                     triggerObjectType={decisionDetail.triggerObjectType}

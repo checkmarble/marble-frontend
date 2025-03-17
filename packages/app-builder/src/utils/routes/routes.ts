@@ -200,6 +200,11 @@ export const routes = [
                     "file": "routes/_builder+/scenarios+/$scenarioId+/_index.tsx"
                   },
                   {
+                    "id": "routes/_builder+/scenarios+/$scenarioId+/builder",
+                    "path": "builder",
+                    "file": "routes/_builder+/scenarios+/$scenarioId+/builder.tsx"
+                  },
+                  {
                     "id": "routes/_builder+/scenarios+/$scenarioId+/home",
                     "path": "home",
                     "file": "routes/_builder+/scenarios+/$scenarioId+/home.tsx"
@@ -568,6 +573,11 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule",
         "path": "ressources/scenarios/:scenarioId/:iterationId/validate-with-given-trigger-or-rule",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/builder-options",
+        "path": "ressources/scenarios/:scenarioId/builder-options",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/builder-options.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/testrun+/$testRunId+/cancel",

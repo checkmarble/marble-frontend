@@ -1,6 +1,9 @@
-import { type AstNode, type ConstantType } from './ast-node';
+import { v7 as uuidv7 } from 'uuid';
+
+import { type AstNode, type CheckNodeId, type ConstantType, type IdLessAstNode } from './ast-node';
 
 export interface ConstantAstNode<T extends ConstantType = ConstantType> {
+  id: string;
   name: null;
   constant: T;
   children: [];
@@ -13,6 +16,7 @@ export function NewConstantAstNode<T extends ConstantType = ConstantType>({
   constant: T;
 }): ConstantAstNode<T> {
   return {
+    id: uuidv7(),
     name: null,
     constant: constant,
     children: [],
@@ -20,6 +24,8 @@ export function NewConstantAstNode<T extends ConstantType = ConstantType>({
   };
 }
 
-export function isConstant(node: AstNode): node is ConstantAstNode {
+export function isConstant(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<ConstantAstNode, typeof node> {
   return !node.name && node.constant !== undefined;
 }

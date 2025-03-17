@@ -1,10 +1,4 @@
-import {
-  type AstNode,
-  type DataModel,
-  type EnumValue,
-  isUndefinedAstNode,
-  type TableModel,
-} from '@app-builder/models';
+import { type EnumValue, type IdLessAstNode, isUndefinedAstNode } from '@app-builder/models';
 import { isAggregation } from '@app-builder/models/astNode/aggregation';
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
@@ -19,10 +13,8 @@ import { type OperandType } from '@app-builder/models/operand-type';
 import * as R from 'remeda';
 
 export function getAstNodeOperandType(
-  astNode: AstNode,
+  astNode: IdLessAstNode,
   context: {
-    triggerObjectTable: TableModel;
-    dataModel: DataModel;
     // To distinguish between Enum and Constant operands
     enumValues?: EnumValue[];
   },

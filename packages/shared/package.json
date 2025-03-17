@@ -1,0 +1,36 @@
+{
+  "name": "@marble/shared",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "sideEffect": false,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "type-check": "pnpm exec tsc --noEmit",
+    "test": "vitest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@marble/eslint-config": "workspace:*",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.2",
+    "@testing-library/react": "16.0.1",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/react": "18.3.11",
+    "@types/react-dom": "18.3.1",
+    "jsdom": "25.0.1",
+    "jsdom-testing-mocks": "^1.13.1",
+    "vite": "^5.4.12"
+  },
+  "dependencies": {
+    "@preact/signals-react": "^3.0.1",
+    "deepsignal": "^1.6.0",
+    "zustand": "^5.0.0"
+  },
+  "peerDependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}
