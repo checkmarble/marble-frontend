@@ -24,8 +24,6 @@ const emailAndPasswordFormSchema = z.object({
   }),
 });
 
-type EmailAndPasswordForm = z.infer<typeof emailAndPasswordFormSchema>;
-
 export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
   const { t } = useTranslation(['auth', 'common']);
 
@@ -33,7 +31,7 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
     clientServices.authenticationClientService,
   );
 
-  const form = useForm<EmailAndPasswordForm>({
+  const form = useForm({
     defaultValues: { credentials: { email: '', password: '' } },
     validators: { onSubmit: emailAndPasswordFormSchema },
     onSubmit: async ({ value: { credentials }, formApi }) => {

@@ -31,8 +31,6 @@ const emailAndPasswordFormSchema = z.object({
   }),
 });
 
-type EmailAndPasswordForm = z.infer<typeof emailAndPasswordFormSchema>;
-
 export function SignInWithEmailAndPassword({
   signIn,
   loading,
@@ -48,7 +46,7 @@ export function SignInWithEmailAndPassword({
     clientServices.authenticationClientService,
   );
 
-  const form = useForm<EmailAndPasswordForm>({
+  const form = useForm({
     defaultValues: { credentials: { email: '', password: '' } },
     validators: { onSubmit: emailAndPasswordFormSchema },
     onSubmit: async ({ value: { credentials }, formApi }) => {

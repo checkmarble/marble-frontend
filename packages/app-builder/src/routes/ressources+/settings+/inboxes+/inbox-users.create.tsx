@@ -141,7 +141,7 @@ export function CreateInboxUserContent({
   const fetcher = useFetcher<typeof action>();
   const schema = useMemo(() => getCreateInboxUserFormSchema(inboxUserRoles), [inboxUserRoles]);
 
-  const form = useForm<z.infer<typeof schema>>({
+  const form = useForm({
     defaultValues: { userId: '', inboxId: currentInboxId, role: 'admin' },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {

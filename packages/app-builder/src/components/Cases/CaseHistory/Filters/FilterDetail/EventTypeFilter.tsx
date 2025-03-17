@@ -27,6 +27,7 @@ export function EventTypeFilter() {
       }),
     [t],
   );
+
   const matches = React.useMemo(
     () => matchSorter(caseEventTypeOptions, deferredValue, { keys: ['label'] }),
     [caseEventTypeOptions, deferredValue],

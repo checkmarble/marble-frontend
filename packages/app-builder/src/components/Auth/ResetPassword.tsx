@@ -19,8 +19,6 @@ const resetPasswordFormSchema = z.object({
   email: z.string().email(),
 });
 
-type ResetPasswordForm = z.infer<typeof resetPasswordFormSchema>;
-
 export function ResetPassword() {
   const { t } = useTranslation(['auth', 'common']);
 
@@ -28,7 +26,7 @@ export function ResetPassword() {
     clientServices.authenticationClientService,
   );
 
-  const form = useForm<ResetPasswordForm>({
+  const form = useForm({
     defaultValues: { email: '' },
     validators: { onSubmit: resetPasswordFormSchema },
     onSubmit: async ({ value: { email } }) => {
