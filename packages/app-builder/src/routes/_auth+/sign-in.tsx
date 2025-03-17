@@ -1,6 +1,9 @@
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { AuthError } from '@app-builder/components/Auth/AuthError';
-import { SignInWithEmailAndPassword } from '@app-builder/components/Auth/SignInWithEmailAndPassword';
+import {
+  SignInWithEmailAndPassword,
+  StaticSignInWithEmailAndPassword,
+} from '@app-builder/components/Auth/SignInWithEmailAndPassword';
 import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle';
 import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicrosoft';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
@@ -10,6 +13,7 @@ import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-r
 import { Link, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
 import { tryit } from 'radash';
 import { Trans, useTranslation } from 'react-i18next';
+import { ClientOnly } from 'remix-utils/client-only';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 
 export const handle = {
@@ -84,11 +88,15 @@ export default function Login() {
         </>
       ) : null}
       <div className="flex w-full flex-col items-center gap-2">
-        <SignInWithEmailAndPassword
-          signIn={signIn}
-          // eslint-disable-next-line react/jsx-no-leaked-render
-          loading={loading && type === 'email'}
-        />
+        <ClientOnly fallback={<StaticSignInWithEmailAndPassword />}>
+          {() => (
+            <SignInWithEmailAndPassword
+              signIn={signIn}
+              // eslint-disable-next-line react/jsx-no-leaked-render
+              loading={loading && type === 'email'}
+            />
+          )}
+        </ClientOnly>
         <p className="w-fit text-xs">
           <Trans
             t={t}

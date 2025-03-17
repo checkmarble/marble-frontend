@@ -1,11 +1,4 @@
 import {
-  FormControl,
-  FormError,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@app-builder/components/Form';
-import {
   EmailUnverified,
   InvalidLoginCredentials,
   NetworkRequestFailed,
@@ -17,18 +10,18 @@ import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { clientServices } from '@app-builder/services/init.client';
 import { getRoute } from '@app-builder/utils/routes';
 import { sleep } from '@app-builder/utils/sleep';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
-import type * as React from 'react';
-import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { ClientOnly } from 'remix-utils/client-only';
 import { useHydrated } from 'remix-utils/use-hydrated';
-import { Button, Input } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import * as z from 'zod';
 
+import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '../Form/Tanstack/FormInput';
+import { FormLabel } from '../Form/Tanstack/FormLabel';
 import { Spinner } from '../Spinner';
 
 const emailAndPasswordFormSchema = z.object({
@@ -37,7 +30,8 @@ const emailAndPasswordFormSchema = z.object({
     password: z.string().min(1, 'Required'),
   }),
 });
-type EmailAndPasswordFormValues = z.infer<typeof emailAndPasswordFormSchema>;
+
+type EmailAndPasswordForm = z.infer<typeof emailAndPasswordFormSchema>;
 
 export function SignInWithEmailAndPassword({
   signIn,
@@ -46,137 +40,133 @@ export function SignInWithEmailAndPassword({
   signIn: (authPayload: AuthPayload) => void;
   loading?: boolean;
 }) {
-  const formMethods = useForm<z.infer<typeof emailAndPasswordFormSchema>>({
-    resolver: zodResolver(emailAndPasswordFormSchema),
-    defaultValues: {
-      credentials: { email: '', password: '' },
-    },
-  });
-
-  return (
-    <FormProvider {...formMethods}>
-      <ClientOnly fallback={<SignInWithEmailAndPasswordForm loading={loading} />}>
-        {() => <ClientSignInWithEmailAndPasswordForm loading={loading} signIn={signIn} />}
-      </ClientOnly>
-    </FormProvider>
-  );
-}
-
-function SignInWithEmailAndPasswordForm({
-  loading,
-  ...props
-}: Omit<React.ComponentPropsWithoutRef<'form'>, 'children'> & {
-  loading?: boolean;
-}) {
   const { t } = useTranslation(['auth', 'common']);
-  const { control } = useFormContext<EmailAndPasswordFormValues>();
+  const navigate = useNavigate();
   const hydrated = useHydrated();
-  return (
-    <form noValidate className="flex w-full flex-col gap-4" {...props}>
-      <FormField
-        control={control}
-        name="credentials.email"
-        render={({ field }) => (
-          <FormItem className="flex flex-col items-start gap-2">
-            <FormLabel>{t('auth:sign_in.email')}</FormLabel>
-            <FormControl>
-              <Input disabled={!hydrated} className="w-full" type="email" {...field} />
-            </FormControl>
-            <FormError />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name="credentials.password"
-        render={({ field }) => (
-          <FormItem className="flex flex-col items-start gap-2">
-            <FormLabel>{t('auth:sign_in.password')}</FormLabel>
-            <FormControl>
-              <Input
-                className="w-full"
-                type="password"
-                autoComplete="current-password"
-                disabled={!hydrated}
-                {...field}
-              />
-            </FormControl>
-            <FormError />
-          </FormItem>
-        )}
-      />
-      <FormField control={control} name="credentials" render={() => <FormError />} />
-      <Button type="submit" disabled={!hydrated}>
-        {loading ? <Spinner className="size-4" /> : t('auth:sign_in')}
-      </Button>
-    </form>
-  );
-}
-
-function ClientSignInWithEmailAndPasswordForm({
-  signIn,
-  loading,
-}: {
-  signIn: (authPayload: AuthPayload) => void;
-  loading?: boolean;
-}) {
-  const { t } = useTranslation(['auth', 'common']);
 
   const emailAndPasswordSignIn = useEmailAndPasswordSignIn(
     clientServices.authenticationClientService,
   );
 
-  const { handleSubmit, setError, formState } = useFormContext<EmailAndPasswordFormValues>();
-  const navigate = useNavigate();
+  const form = useForm<EmailAndPasswordForm>({
+    defaultValues: { credentials: { email: '', password: '' } },
+    validators: { onSubmit: emailAndPasswordFormSchema },
+    onSubmit: async ({ value: { credentials }, formApi }) => {
+      try {
+        const result = await emailAndPasswordSignIn(credentials.email, credentials.password);
 
-  const handleEmailSignIn = handleSubmit(async ({ credentials: { email, password } }) => {
-    try {
-      const result = await emailAndPasswordSignIn(email, password);
-
-      if (!result) return;
-      const { idToken, csrf } = result;
-      if (!idToken) return;
-      signIn({ type: 'email', idToken, csrf });
-      // Hack to wait for the form to be submitted, otherwise the loading spinner will be flickering
-      await sleep(1000);
-    } catch (error) {
-      if (error instanceof EmailUnverified) {
-        navigate(getRoute('/email-verification'));
-      } else if (error instanceof UserNotFoundError) {
-        setError(
-          'credentials.email',
-          {
-            message: t('auth:sign_in.errors.user_not_found'),
-          },
-          { shouldFocus: true },
-        );
-      } else if (error instanceof WrongPasswordError) {
-        setError(
-          'credentials.password',
-          {
-            message: t('auth:sign_in.errors.wrong_password_error'),
-          },
-          { shouldFocus: true },
-        );
-      } else if (error instanceof InvalidLoginCredentials) {
-        setError('credentials', {
-          message: t('auth:sign_in.errors.invalid_login_credentials'),
-        });
-      } else if (error instanceof NetworkRequestFailed) {
-        toast.error(t('common:errors.firebase_network_error'));
-      } else {
-        Sentry.captureException(error);
-        toast.error(t('common:errors.unknown'));
+        if (!result) return;
+        const { idToken, csrf } = result;
+        if (!idToken) return;
+        signIn({ type: 'email', idToken, csrf });
+        // Hack to wait for the form to be submitted, otherwise the loading spinner will be flickering
+        await sleep(1000);
+      } catch (error) {
+        if (error instanceof EmailUnverified) {
+          navigate(getRoute('/email-verification'));
+        } else if (error instanceof UserNotFoundError) {
+          formApi.setFieldMeta('credentials.email', (prev) => ({
+            ...prev,
+            errors: [t('auth:sign_in.errors.user_not_found')],
+          }));
+        } else if (error instanceof WrongPasswordError) {
+          formApi.setFieldMeta('credentials.password', (prev) => ({
+            ...prev,
+            errors: [t('auth:sign_in.errors.wrong_password_error')],
+          }));
+        } else if (error instanceof InvalidLoginCredentials) {
+          formApi.setFieldMeta('credentials', (prev) => ({
+            ...prev,
+            errors: [t('auth:sign_in.errors.invalid_login_credentials')],
+          }));
+        } else if (error instanceof NetworkRequestFailed) {
+          toast.error(t('common:errors.firebase_network_error'));
+        } else {
+          Sentry.captureException(error);
+          toast.error(t('common:errors.unknown'));
+        }
       }
-    }
+    },
   });
 
   return (
-    <SignInWithEmailAndPasswordForm
-      loading={loading || formState.isSubmitting}
+    <form
+      className="flex w-full flex-col gap-4"
       onSubmit={(e) => {
-        void handleEmailSignIn(e);
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
       }}
-    />
+    >
+      <form.Field name="credentials.email">
+        {(field) => (
+          <div className="flex flex-col items-start gap-2">
+            <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
+              {t('auth:sign_in.email')}
+            </FormLabel>
+            <FormInput
+              type="email"
+              disabled={!hydrated}
+              className="w-full"
+              valid={field.state.meta.errors.length === 0}
+              defaultValue={field.state.value}
+              onChange={(e) => field.handleChange(e.currentTarget.value)}
+              onBlur={field.handleBlur}
+            />
+            <FormErrorOrDescription errors={field.state.meta.errors} />
+          </div>
+        )}
+      </form.Field>
+      <form.Field name="credentials.password">
+        {(field) => (
+          <div className="flex flex-col items-start gap-2">
+            <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
+              {t('auth:sign_in.password')}
+            </FormLabel>
+            <FormInput
+              className="w-full"
+              type="password"
+              autoComplete="current-password"
+              disabled={!hydrated}
+              valid={field.state.meta.errors.length === 0}
+              defaultValue={field.state.value}
+              onChange={(e) => field.handleChange(e.currentTarget.value)}
+              onBlur={field.handleBlur}
+            />
+            <FormErrorOrDescription errors={field.state.meta.errors} />
+          </div>
+        )}
+      </form.Field>
+      <Button type="submit" disabled={!hydrated}>
+        {loading || form.state.isSubmitting ? <Spinner className="size-4" /> : t('auth:sign_in')}
+      </Button>
+    </form>
   );
 }
+
+export const StaticSignInWithEmailAndPassword = () => {
+  const hydrated = useHydrated();
+  const { t } = useTranslation(['auth', 'common']);
+
+  return (
+    <form className="flex w-full flex-col gap-4">
+      <div className="flex flex-col items-start gap-2">
+        <FormLabel name="credentials.email">{t('auth:sign_in.email')}</FormLabel>
+        <FormInput valid disabled={!hydrated} className="w-full" type="email" />
+      </div>
+      <div className="flex flex-col items-start gap-2">
+        <FormLabel name="credentials.password">{t('auth:sign_in.password')}</FormLabel>
+        <FormInput
+          className="w-full"
+          type="password"
+          autoComplete="current-password"
+          disabled={!hydrated}
+          valid
+        />
+      </div>
+      <Button type="submit" disabled={!hydrated}>
+        {t('auth:sign_in')}
+      </Button>
+    </form>
+  );
+};

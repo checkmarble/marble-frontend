@@ -1,8 +1,9 @@
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
-import { ResetPassword } from '@app-builder/components/Auth/ResetPassword';
+import { ResetPassword, StaticResetPassword } from '@app-builder/components/Auth/ResetPassword';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import { Trans, useTranslation } from 'react-i18next';
+import { ClientOnly } from 'remix-utils/client-only';
 
 export const handle = {
   i18n: authI18n,
@@ -13,7 +14,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="flex w-full flex-col items-center">
-      <ResetPassword />
+      <ClientOnly fallback={<StaticResetPassword />}>{() => <ResetPassword />}</ClientOnly>
       <p className="mt-2 text-xs">
         <Trans
           t={t}
