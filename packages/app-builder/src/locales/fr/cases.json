@@ -126,7 +126,7 @@
   "case_detail.history.event_detail.case_unsnoozed.title": "Réactivé",
   "snooze.callout": "Désactivé jusqu'à {{date}}",
   "snooze.confirm": "Continuer",
-  "snooze.modal.heading": "Gérer l'activation",
+  "snooze.modal.heading": "Désactiver jusqu'à...",
   "snooze.title": "Désactiver",
   "unsnooze.callout": "En continuant, vous réactiverez l'investigation",
   "unsnooze.title": "Réactiver",
