@@ -39,9 +39,6 @@
   },
   "dependencies": {
     "@ariakit/react": "^0.4.13",
-    "@conform-to/dom": "^1.2.2",
-    "@conform-to/react": "^1.2.2",
-    "@conform-to/zod": "^1.2.2",
     "@dagrejs/dagre": "^1.1.4",
     "@dinero.js/currencies": "2.0.0-alpha.14",
     "@hello-pangea/dnd": "^18.0.1",
@@ -72,7 +69,7 @@
     "@segment/snippet": "^5.2.1",
     "@sentry/remix": "^8.52.0",
     "@swan-io/boxed": "^3.2.0",
-    "@tanstack/react-form": "^0.41.3",
+    "@tanstack/react-form": "^1.1.0",
     "@tanstack/react-query": "^5.66.7",
     "@tanstack/react-table": "^8.20.5",
     "@tanstack/react-virtual": "3.10.8",
