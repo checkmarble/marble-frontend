@@ -1088,10 +1088,10 @@
     {
       "name": "@hookform/resolvers",
       "versions": [
-        "3.9.0"
+        "4.1.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@hookform+resolvers@3.9.0_react-hook-form@7.54.2_react@18.3.1_/node_modules/@hookform/resolvers"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@hookform+resolvers@4.1.3_react-hook-form@7.54.2_react@18.3.1_/node_modules/@hookform/resolvers"
       ],
       "license": "MIT",
       "author": "bluebill1049",
@@ -1343,17 +1343,6 @@
       "license": "MIT",
       "homepage": "https://github.com/nodelib/nodelib/tree/master#readme",
       "description": "A library for efficiently walking a directory recursively"
-    },
-    {
-      "name": "@nolyfill/is-core-module",
-      "versions": [
-        "1.0.39"
-      ],
-      "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@nolyfill+is-core-module@1.0.39/node_modules/@nolyfill/is-core-module"
-      ],
-      "license": "MIT",
-      "homepage": "https://github.com/SukkaW/nolyfill#readme"
     },
     {
       "name": "@oazapfts/runtime",
@@ -2472,6 +2461,19 @@
       "author": "Sentry",
       "homepage": "https://github.com/getsentry/sentry-javascript-bundler-plugins/tree/main/packages/vite-plugin",
       "description": "Official Sentry Vite plugin"
+    },
+    {
+      "name": "@standard-schema/utils",
+      "versions": [
+        "0.3.0"
+      ],
+      "paths": [
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@standard-schema+utils@0.3.0/node_modules/@standard-schema/utils"
+      ],
+      "license": "MIT",
+      "author": "Fabian Hiller",
+      "homepage": "https://github.com/standard-schema/standard-schema#readme",
+      "description": "The official runtime utils for Standard Schema"
     },
     {
       "name": "@storybook/addon-actions",
@@ -3861,10 +3863,10 @@
     {
       "name": "@types/swagger-ui-react",
       "versions": [
-        "4.18.3"
+        "5.18.0"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@types+swagger-ui-react@4.18.3/node_modules/@types/swagger-ui-react"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@types+swagger-ui-react@5.18.0/node_modules/@types/swagger-ui-react"
       ],
       "license": "MIT",
       "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/swagger-ui-react",
@@ -4059,6 +4061,30 @@
       "license": "MIT",
       "homepage": "https://typescript-eslint.io",
       "description": "Visitor keys used to help traverse the TypeScript-ESTree AST"
+    },
+    {
+      "name": "@unrs/rspack-resolver-binding-linux-x64-gnu",
+      "versions": [
+        "1.2.1"
+      ],
+      "paths": [
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@unrs+rspack-resolver-binding-linux-x64-gnu@1.2.1/node_modules/@unrs/rspack-resolver-binding-linux-x64-gnu"
+      ],
+      "license": "MIT",
+      "homepage": "https://github.com/unrs/rspack-resolver",
+      "description": "Oxc Resolver Node API with PNP support"
+    },
+    {
+      "name": "@unrs/rspack-resolver-binding-linux-x64-musl",
+      "versions": [
+        "1.2.1"
+      ],
+      "paths": [
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@unrs+rspack-resolver-binding-linux-x64-musl@1.2.1/node_modules/@unrs/rspack-resolver-binding-linux-x64-musl"
+      ],
+      "license": "MIT",
+      "homepage": "https://github.com/unrs/rspack-resolver",
+      "description": "Oxc Resolver Node API with PNP support"
     },
     {
       "name": "@vanilla-extract/babel-plugin-debug-ids",
@@ -6016,13 +6042,11 @@
       "versions": [
         "2.6.9",
         "3.2.7",
-        "4.3.7",
         "4.4.0"
       ],
       "paths": [
         "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/debug@2.6.9/node_modules/debug",
         "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/debug@3.2.7/node_modules/debug",
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/debug@4.3.7/node_modules/debug",
         "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/debug@4.4.0/node_modules/debug"
       ],
       "license": "MIT",
@@ -6529,19 +6553,6 @@
       "description": "Call a callback when a readable/writable/duplex stream has completed or failed."
     },
     {
-      "name": "enhanced-resolve",
-      "versions": [
-        "5.17.1"
-      ],
-      "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/enhanced-resolve@5.17.1/node_modules/enhanced-resolve"
-      ],
-      "license": "MIT",
-      "author": "Tobias Koppers @sokra",
-      "homepage": "http://github.com/webpack/enhanced-resolve",
-      "description": "Offers a async require.resolve function. It's highly configurable."
-    },
-    {
       "name": "err-code",
       "versions": [
         "2.0.3"
@@ -6806,10 +6817,10 @@
     {
       "name": "eslint-config-prettier",
       "versions": [
-        "9.1.0"
+        "10.1.1"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/eslint-config-prettier@9.1.0_eslint@9.22.0_jiti@1.21.6_/node_modules/eslint-config-prettier"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/eslint-config-prettier@10.1.1_eslint@9.22.0_jiti@1.21.6_/node_modules/eslint-config-prettier"
       ],
       "license": "MIT",
       "author": "Simon Lydell",
@@ -6835,7 +6846,7 @@
         "2.12.0"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/eslint-module-utils@2.12.0_@typescript-eslint+parser@8.26.1_eslint@9.22.0_jiti@1.21.6__typesc_whgc5re4txmbptkheihkg5cwwu/node_modules/eslint-module-utils"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/eslint-module-utils@2.12.0_@typescript-eslint+parser@8.26.1_eslint@9.22.0_jiti@1.21.6__typesc_azmpon7b7suwtjy4leatv26kfa/node_modules/eslint-module-utils"
       ],
       "license": "MIT",
       "author": "Ben Mosher",
@@ -6848,7 +6859,7 @@
         "2.31.0"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/eslint-plugin-import@2.31.0_@typescript-eslint+parser@8.26.1_eslint@9.22.0_jiti@1.21.6__types_z2slnnx6vtsfnzobr7ohkzcc6u/node_modules/eslint-plugin-import"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/eslint-plugin-import@2.31.0_@typescript-eslint+parser@8.26.1_eslint@9.22.0_jiti@1.21.6__types_6n2ngryph2zdd5whsjogyzw3mm/node_modules/eslint-plugin-import"
       ],
       "license": "MIT",
       "author": "Ben Mosher",
@@ -7745,11 +7756,9 @@
     {
       "name": "get-tsconfig",
       "versions": [
-        "4.8.1",
         "4.10.0"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/get-tsconfig@4.8.1/node_modules/get-tsconfig",
         "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/get-tsconfig@4.10.0/node_modules/get-tsconfig"
       ],
       "license": "MIT",
@@ -8058,10 +8067,10 @@
     {
       "name": "http-parser-js",
       "versions": [
-        "0.5.8"
+        "0.5.9"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/http-parser-js@0.5.8/node_modules/http-parser-js"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/http-parser-js@0.5.9/node_modules/http-parser-js"
       ],
       "license": "MIT",
       "author": "Tim Caswell",
@@ -12665,23 +12674,23 @@
     {
       "name": "remix-i18next",
       "versions": [
-        "6.4.1"
+        "7.1.0"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/remix-i18next@6.4.1_@remix-run+node@2.16.1_typescript@5.8.2__@remix-run+react@2.16.1_react-do_llk5kaz4esrpodv34lp6otboza/node_modules/remix-i18next"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/remix-i18next@7.1.0_i18next@23.16.2_react-i18next@15.4.1_i18next@23.16.2_react-dom@18.3.1_rea_yggwtmi6h43otm47f6zda5d4yq/node_modules/remix-i18next"
       ],
       "license": "MIT",
       "author": "Sergio Xalambrí",
       "homepage": "https://github.com/sergiodxa/remix-i18next#readme",
-      "description": "The easiest way to translate your Remix apps"
+      "description": "The easiest way to translate your FullStack React Router apps"
     },
     {
       "name": "remix-utils",
       "versions": [
-        "7.7.0"
+        "8.5.0"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/remix-utils@7.7.0_@remix-run+node@2.16.1_typescript@5.8.2__@remix-run+react@2.16.1_react-dom@_va72tg7u7mvsjfajd3nwchu3xi/node_modules/remix-utils"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/remix-utils@8.5.0_react-router@6.30.0_react@18.3.1__react@18.3.1_zod@3.24.2/node_modules/remix-utils"
       ],
       "license": "MIT",
       "author": "Sergio Xalambrí",
@@ -12940,6 +12949,18 @@
       "author": "Nikita Vasilyev",
       "homepage": "https://github.com/rrweb-io/CSSOM#readme",
       "description": "CSS Object Model implementation and CSS parser"
+    },
+    {
+      "name": "rspack-resolver",
+      "versions": [
+        "1.2.1"
+      ],
+      "paths": [
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/rspack-resolver@1.2.1/node_modules/rspack-resolver"
+      ],
+      "license": "MIT",
+      "homepage": "https://github.com/unrs/rspack-resolver",
+      "description": "Oxc Resolver Node API with PNP support"
     },
     {
       "name": "run-parallel",
@@ -13433,10 +13454,12 @@
     {
       "name": "stable-hash",
       "versions": [
-        "0.0.4"
+        "0.0.4",
+        "0.0.5"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/stable-hash@0.0.4/node_modules/stable-hash"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/stable-hash@0.0.4/node_modules/stable-hash",
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/stable-hash@0.0.5/node_modules/stable-hash"
       ],
       "license": "MIT",
       "author": "Shu Ding",
@@ -13916,10 +13939,10 @@
     {
       "name": "tailwindcss-radix",
       "versions": [
-        "3.0.5"
+        "4.0.2"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/tailwindcss-radix@3.0.5_tailwindcss@3.4.14/node_modules/tailwindcss-radix"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/tailwindcss-radix@4.0.2_tailwindcss@3.4.14/node_modules/tailwindcss-radix"
       ],
       "license": "MIT",
       "author": "Florentin Eckl",
@@ -14550,11 +14573,9 @@
     {
       "name": "undici",
       "versions": [
-        "6.19.7",
         "6.21.2"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/undici@6.19.7/node_modules/undici",
         "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/undici@6.21.2/node_modules/undici"
       ],
       "license": "MIT",
@@ -15527,10 +15548,10 @@
     {
       "name": "@firebase/analytics",
       "versions": [
-        "0.10.8"
+        "0.10.12"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+analytics@0.10.8_@firebase+app@0.10.13/node_modules/@firebase/analytics"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+analytics@0.10.12_@firebase+app@0.11.2/node_modules/@firebase/analytics"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15540,10 +15561,10 @@
     {
       "name": "@firebase/analytics-compat",
       "versions": [
-        "0.2.14"
+        "0.2.18"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+analytics-compat@0.2.14_@firebase+app-compat@0.2.43_@firebase+app@0.10.13/node_modules/@firebase/analytics-compat"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+analytics-compat@0.2.18_@firebase+app-compat@0.2.51_@firebase+app@0.11.2/node_modules/@firebase/analytics-compat"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15553,10 +15574,10 @@
     {
       "name": "@firebase/analytics-types",
       "versions": [
-        "0.8.2"
+        "0.8.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+analytics-types@0.8.2/node_modules/@firebase/analytics-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+analytics-types@0.8.3/node_modules/@firebase/analytics-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15566,10 +15587,10 @@
     {
       "name": "@firebase/app",
       "versions": [
-        "0.10.13"
+        "0.11.2"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app@0.10.13/node_modules/@firebase/app"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app@0.11.2/node_modules/@firebase/app"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15579,10 +15600,10 @@
     {
       "name": "@firebase/app-check",
       "versions": [
-        "0.8.8"
+        "0.8.12"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app-check@0.8.8_@firebase+app@0.10.13/node_modules/@firebase/app-check"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app-check@0.8.12_@firebase+app@0.11.2/node_modules/@firebase/app-check"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15592,10 +15613,10 @@
     {
       "name": "@firebase/app-check-compat",
       "versions": [
-        "0.3.15"
+        "0.3.19"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app-check-compat@0.3.15_@firebase+app-compat@0.2.43_@firebase+app@0.10.13/node_modules/@firebase/app-check-compat"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app-check-compat@0.3.19_@firebase+app-compat@0.2.51_@firebase+app@0.11.2/node_modules/@firebase/app-check-compat"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15605,10 +15626,10 @@
     {
       "name": "@firebase/app-check-interop-types",
       "versions": [
-        "0.3.2"
+        "0.3.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app-check-interop-types@0.3.2/node_modules/@firebase/app-check-interop-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app-check-interop-types@0.3.3/node_modules/@firebase/app-check-interop-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15618,10 +15639,10 @@
     {
       "name": "@firebase/app-check-types",
       "versions": [
-        "0.5.2"
+        "0.5.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app-check-types@0.5.2/node_modules/@firebase/app-check-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app-check-types@0.5.3/node_modules/@firebase/app-check-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15631,10 +15652,10 @@
     {
       "name": "@firebase/app-compat",
       "versions": [
-        "0.2.43"
+        "0.2.51"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app-compat@0.2.43/node_modules/@firebase/app-compat"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app-compat@0.2.51/node_modules/@firebase/app-compat"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15644,10 +15665,10 @@
     {
       "name": "@firebase/app-types",
       "versions": [
-        "0.9.2"
+        "0.9.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app-types@0.9.2/node_modules/@firebase/app-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+app-types@0.9.3/node_modules/@firebase/app-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15657,10 +15678,10 @@
     {
       "name": "@firebase/auth",
       "versions": [
-        "1.7.9"
+        "1.9.1"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+auth@1.7.9_@firebase+app@0.10.13/node_modules/@firebase/auth"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+auth@1.9.1_@firebase+app@0.11.2/node_modules/@firebase/auth"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15670,10 +15691,10 @@
     {
       "name": "@firebase/auth-compat",
       "versions": [
-        "0.5.14"
+        "0.5.19"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+auth-compat@0.5.14_@firebase+app-compat@0.2.43_@firebase+app-types@0.9.2_@firebase+app@0.10.13/node_modules/@firebase/auth-compat"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+auth-compat@0.5.19_@firebase+app-compat@0.2.51_@firebase+app-types@0.9.3_@firebase+app@0.11.2/node_modules/@firebase/auth-compat"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15683,10 +15704,10 @@
     {
       "name": "@firebase/auth-interop-types",
       "versions": [
-        "0.2.3"
+        "0.2.4"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+auth-interop-types@0.2.3/node_modules/@firebase/auth-interop-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+auth-interop-types@0.2.4/node_modules/@firebase/auth-interop-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15696,10 +15717,10 @@
     {
       "name": "@firebase/auth-types",
       "versions": [
-        "0.12.2"
+        "0.13.0"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+auth-types@0.12.2_@firebase+app-types@0.9.2_@firebase+util@1.10.0/node_modules/@firebase/auth-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+auth-types@0.13.0_@firebase+app-types@0.9.3_@firebase+util@1.11.0/node_modules/@firebase/auth-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15709,10 +15730,10 @@
     {
       "name": "@firebase/component",
       "versions": [
-        "0.6.9"
+        "0.6.13"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+component@0.6.9/node_modules/@firebase/component"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+component@0.6.13/node_modules/@firebase/component"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15722,10 +15743,10 @@
     {
       "name": "@firebase/data-connect",
       "versions": [
-        "0.1.0"
+        "0.3.1"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+data-connect@0.1.0_@firebase+app@0.10.13/node_modules/@firebase/data-connect"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+data-connect@0.3.1_@firebase+app@0.11.2/node_modules/@firebase/data-connect"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15735,10 +15756,10 @@
     {
       "name": "@firebase/database",
       "versions": [
-        "1.0.8"
+        "1.0.13"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+database@1.0.8/node_modules/@firebase/database"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+database@1.0.13/node_modules/@firebase/database"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15748,10 +15769,10 @@
     {
       "name": "@firebase/database-compat",
       "versions": [
-        "1.0.8"
+        "2.0.4"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+database-compat@1.0.8/node_modules/@firebase/database-compat"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+database-compat@2.0.4/node_modules/@firebase/database-compat"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15761,10 +15782,10 @@
     {
       "name": "@firebase/database-types",
       "versions": [
-        "1.0.5"
+        "1.0.9"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+database-types@1.0.5/node_modules/@firebase/database-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+database-types@1.0.9/node_modules/@firebase/database-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15774,10 +15795,10 @@
     {
       "name": "@firebase/firestore",
       "versions": [
-        "4.7.3"
+        "4.7.9"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+firestore@4.7.3_@firebase+app@0.10.13/node_modules/@firebase/firestore"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+firestore@4.7.9_@firebase+app@0.11.2/node_modules/@firebase/firestore"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15787,10 +15808,10 @@
     {
       "name": "@firebase/firestore-compat",
       "versions": [
-        "0.3.38"
+        "0.3.44"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+firestore-compat@0.3.38_@firebase+app-compat@0.2.43_@firebase+app-types@0.9.2_@firebase+app@0.10.13/node_modules/@firebase/firestore-compat"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+firestore-compat@0.3.44_@firebase+app-compat@0.2.51_@firebase+app-types@0.9.3_@firebase+app@0.11.2/node_modules/@firebase/firestore-compat"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15800,10 +15821,10 @@
     {
       "name": "@firebase/firestore-types",
       "versions": [
-        "3.0.2"
+        "3.0.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+firestore-types@3.0.2_@firebase+app-types@0.9.2_@firebase+util@1.10.0/node_modules/@firebase/firestore-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+firestore-types@3.0.3_@firebase+app-types@0.9.3_@firebase+util@1.11.0/node_modules/@firebase/firestore-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15813,10 +15834,10 @@
     {
       "name": "@firebase/functions",
       "versions": [
-        "0.11.8"
+        "0.12.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+functions@0.11.8_@firebase+app@0.10.13/node_modules/@firebase/functions"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+functions@0.12.3_@firebase+app@0.11.2/node_modules/@firebase/functions"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15826,10 +15847,10 @@
     {
       "name": "@firebase/functions-compat",
       "versions": [
-        "0.3.14"
+        "0.3.20"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+functions-compat@0.3.14_@firebase+app-compat@0.2.43_@firebase+app@0.10.13/node_modules/@firebase/functions-compat"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+functions-compat@0.3.20_@firebase+app-compat@0.2.51_@firebase+app@0.11.2/node_modules/@firebase/functions-compat"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15839,10 +15860,10 @@
     {
       "name": "@firebase/functions-types",
       "versions": [
-        "0.6.2"
+        "0.6.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+functions-types@0.6.2/node_modules/@firebase/functions-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+functions-types@0.6.3/node_modules/@firebase/functions-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15852,10 +15873,10 @@
     {
       "name": "@firebase/installations",
       "versions": [
-        "0.6.9"
+        "0.6.13"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+installations@0.6.9_@firebase+app@0.10.13/node_modules/@firebase/installations"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+installations@0.6.13_@firebase+app@0.11.2/node_modules/@firebase/installations"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15864,10 +15885,10 @@
     {
       "name": "@firebase/installations-compat",
       "versions": [
-        "0.2.9"
+        "0.2.13"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+installations-compat@0.2.9_@firebase+app-compat@0.2.43_@firebase+app-types@0.9.2_@firebase+app@0.10.13/node_modules/@firebase/installations-compat"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+installations-compat@0.2.13_@firebase+app-compat@0.2.51_@firebase+app-types@0.9.3_@firebase+app@0.11.2/node_modules/@firebase/installations-compat"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15876,10 +15897,10 @@
     {
       "name": "@firebase/installations-types",
       "versions": [
-        "0.5.2"
+        "0.5.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+installations-types@0.5.2_@firebase+app-types@0.9.2/node_modules/@firebase/installations-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+installations-types@0.5.3_@firebase+app-types@0.9.3/node_modules/@firebase/installations-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15889,10 +15910,10 @@
     {
       "name": "@firebase/logger",
       "versions": [
-        "0.4.2"
+        "0.4.4"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+logger@0.4.2/node_modules/@firebase/logger"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+logger@0.4.4/node_modules/@firebase/logger"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15902,10 +15923,10 @@
     {
       "name": "@firebase/messaging",
       "versions": [
-        "0.12.12"
+        "0.12.17"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+messaging@0.12.12_@firebase+app@0.10.13/node_modules/@firebase/messaging"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+messaging@0.12.17_@firebase+app@0.11.2/node_modules/@firebase/messaging"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15915,10 +15936,10 @@
     {
       "name": "@firebase/messaging-compat",
       "versions": [
-        "0.2.12"
+        "0.2.17"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+messaging-compat@0.2.12_@firebase+app-compat@0.2.43_@firebase+app@0.10.13/node_modules/@firebase/messaging-compat"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+messaging-compat@0.2.17_@firebase+app-compat@0.2.51_@firebase+app@0.11.2/node_modules/@firebase/messaging-compat"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15928,10 +15949,10 @@
     {
       "name": "@firebase/messaging-interop-types",
       "versions": [
-        "0.2.2"
+        "0.2.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+messaging-interop-types@0.2.2/node_modules/@firebase/messaging-interop-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+messaging-interop-types@0.2.3/node_modules/@firebase/messaging-interop-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15941,10 +15962,10 @@
     {
       "name": "@firebase/performance",
       "versions": [
-        "0.6.9"
+        "0.7.1"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+performance@0.6.9_@firebase+app@0.10.13/node_modules/@firebase/performance"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+performance@0.7.1_@firebase+app@0.11.2/node_modules/@firebase/performance"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15954,10 +15975,10 @@
     {
       "name": "@firebase/performance-compat",
       "versions": [
-        "0.2.9"
+        "0.2.14"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+performance-compat@0.2.9_@firebase+app-compat@0.2.43_@firebase+app@0.10.13/node_modules/@firebase/performance-compat"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+performance-compat@0.2.14_@firebase+app-compat@0.2.51_@firebase+app@0.11.2/node_modules/@firebase/performance-compat"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15967,10 +15988,10 @@
     {
       "name": "@firebase/performance-types",
       "versions": [
-        "0.2.2"
+        "0.2.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+performance-types@0.2.2/node_modules/@firebase/performance-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+performance-types@0.2.3/node_modules/@firebase/performance-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15980,10 +16001,10 @@
     {
       "name": "@firebase/remote-config",
       "versions": [
-        "0.4.9"
+        "0.6.0"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+remote-config@0.4.9_@firebase+app@0.10.13/node_modules/@firebase/remote-config"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+remote-config@0.6.0_@firebase+app@0.11.2/node_modules/@firebase/remote-config"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -15993,10 +16014,10 @@
     {
       "name": "@firebase/remote-config-compat",
       "versions": [
-        "0.2.9"
+        "0.2.13"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+remote-config-compat@0.2.9_@firebase+app-compat@0.2.43_@firebase+app@0.10.13/node_modules/@firebase/remote-config-compat"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+remote-config-compat@0.2.13_@firebase+app-compat@0.2.51_@firebase+app@0.11.2/node_modules/@firebase/remote-config-compat"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -16006,10 +16027,10 @@
     {
       "name": "@firebase/remote-config-types",
       "versions": [
-        "0.3.2"
+        "0.4.0"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+remote-config-types@0.3.2/node_modules/@firebase/remote-config-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+remote-config-types@0.4.0/node_modules/@firebase/remote-config-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -16019,10 +16040,10 @@
     {
       "name": "@firebase/storage",
       "versions": [
-        "0.13.2"
+        "0.13.7"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+storage@0.13.2_@firebase+app@0.10.13/node_modules/@firebase/storage"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+storage@0.13.7_@firebase+app@0.11.2/node_modules/@firebase/storage"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -16032,10 +16053,10 @@
     {
       "name": "@firebase/storage-compat",
       "versions": [
-        "0.3.12"
+        "0.3.17"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+storage-compat@0.3.12_@firebase+app-compat@0.2.43_@firebase+app-types@0.9.2_@firebase+app@0.10.13/node_modules/@firebase/storage-compat"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+storage-compat@0.3.17_@firebase+app-compat@0.2.51_@firebase+app-types@0.9.3_@firebase+app@0.11.2/node_modules/@firebase/storage-compat"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -16045,10 +16066,10 @@
     {
       "name": "@firebase/storage-types",
       "versions": [
-        "0.8.2"
+        "0.8.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+storage-types@0.8.2_@firebase+app-types@0.9.2_@firebase+util@1.10.0/node_modules/@firebase/storage-types"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+storage-types@0.8.3_@firebase+app-types@0.9.3_@firebase+util@1.11.0/node_modules/@firebase/storage-types"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -16058,10 +16079,10 @@
     {
       "name": "@firebase/util",
       "versions": [
-        "1.10.0"
+        "1.11.0"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+util@1.10.0/node_modules/@firebase/util"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+util@1.11.0/node_modules/@firebase/util"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -16069,25 +16090,25 @@
       "description": ""
     },
     {
-      "name": "@firebase/vertexai-preview",
+      "name": "@firebase/vertexai",
       "versions": [
-        "0.0.4"
+        "1.1.0"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+vertexai-preview@0.0.4_@firebase+app-types@0.9.2_@firebase+app@0.10.13/node_modules/@firebase/vertexai-preview"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+vertexai@1.1.0_@firebase+app-types@0.9.3_@firebase+app@0.11.2/node_modules/@firebase/vertexai"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
       "homepage": "https://github.com/firebase/firebase-js-sdk#readme",
-      "description": "A Firebase SDK for VertexAI (preview)"
+      "description": "A Firebase SDK for VertexAI"
     },
     {
       "name": "@firebase/webchannel-wrapper",
       "versions": [
-        "1.0.1"
+        "1.0.3"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+webchannel-wrapper@1.0.1/node_modules/@firebase/webchannel-wrapper"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/@firebase+webchannel-wrapper@1.0.3/node_modules/@firebase/webchannel-wrapper"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -17216,10 +17237,10 @@
     {
       "name": "firebase",
       "versions": [
-        "10.14.1"
+        "11.4.0"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/firebase@10.14.1/node_modules/firebase"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/firebase@11.4.0/node_modules/firebase"
       ],
       "license": "Apache-2.0",
       "author": "Firebase",
@@ -17255,10 +17276,10 @@
     {
       "name": "long",
       "versions": [
-        "5.2.3"
+        "5.3.1"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/long@5.2.3/node_modules/long"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/long@5.3.1/node_modules/long"
       ],
       "license": "Apache-2.0",
       "author": "Daniel Wirtz",
@@ -17427,6 +17448,19 @@
       "author": "Kyle E. Mitchell",
       "homepage": "https://github.com/kemitchell/validate-npm-package-license.js#readme",
       "description": "Give me a string and I'll tell you if it's a valid npm package license string"
+    },
+    {
+      "name": "web-vitals",
+      "versions": [
+        "4.2.4"
+      ],
+      "paths": [
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/web-vitals@4.2.4/node_modules/web-vitals"
+      ],
+      "license": "Apache-2.0",
+      "author": "Philip Walton",
+      "homepage": "https://github.com/GoogleChrome/web-vitals#readme",
+      "description": "Easily measure performance metrics in JavaScript"
     },
     {
       "name": "websocket-driver",
@@ -18331,10 +18365,10 @@
     {
       "name": "eslint-import-resolver-typescript",
       "versions": [
-        "3.6.3"
+        "4.2.1"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/eslint-import-resolver-typescript@3.6.3_@typescript-eslint+parser@8.26.1_eslint@9.22.0_jiti@1_7russipfjp25uju3bsmpkgrspy/node_modules/eslint-import-resolver-typescript"
+        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/eslint-import-resolver-typescript@4.2.1_eslint-plugin-import-x@4.5.0_eslint@9.22.0_jiti@1.21._wmvkoj6acwig3baofveyqgeji4/node_modules/eslint-import-resolver-typescript"
       ],
       "license": "ISC",
       "author": "Alex Gorbatchev",
@@ -19798,11 +19832,9 @@
     {
       "name": "tslib",
       "versions": [
-        "2.7.0",
         "2.8.1"
       ],
       "paths": [
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/tslib@2.7.0/node_modules/tslib",
         "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/tslib@2.8.1/node_modules/tslib"
       ],
       "license": "0BSD",
@@ -19817,13 +19849,11 @@
       "versions": [
         "0.20.2",
         "2.19.0",
-        "4.26.1",
         "4.37.0"
       ],
       "paths": [
         "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/type-fest@0.20.2/node_modules/type-fest",
         "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/type-fest@2.19.0/node_modules/type-fest",
-        "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/type-fest@4.26.1/node_modules/type-fest",
         "/home/carere/Projects/marble/marble-frontend/node_modules/.pnpm/type-fest@4.37.0/node_modules/type-fest"
       ],
       "license": "(MIT OR CC0-1.0)",
