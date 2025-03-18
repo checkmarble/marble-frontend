@@ -22,7 +22,7 @@ To enable shell autocompletion (works for bash, zsh and fish), run:
 pnpm install-completion
 ```
 
-#### Install dependancies
+#### Install dependencies
 
 ```bash
 pnpm install
