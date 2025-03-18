@@ -5,6 +5,7 @@ import {
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
@@ -25,7 +26,7 @@ import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, CtaClassName, Input, Tag } from 'ui-design-system';
+import { Button, cn, CtaClassName, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -368,16 +369,14 @@ export default function RuleDetail() {
                     <form.Field name="scoreModifier">
                       {(field) => (
                         <div className="flex flex-col gap-1">
-                          <Input
-                            borderColor={
-                              field.state.meta.errors?.length ? 'redfigma-47' : 'greyfigma-90'
-                            }
+                          <FormInput
                             type="number"
-                            disabled={editor === 'view'}
                             name={field.name}
                             value={field.state.value}
-                            onChange={(e) => field.handleChange(+e.currentTarget.value)}
                             onBlur={field.handleBlur}
+                            disabled={editor === 'view'}
+                            onChange={(e) => field.handleChange(+e.currentTarget.value)}
+                            valid={field.state.meta.errors?.length === 0}
                           />
                           <FormErrorOrDescription
                             errors={getFieldErrors(field.state.meta.errors)}
