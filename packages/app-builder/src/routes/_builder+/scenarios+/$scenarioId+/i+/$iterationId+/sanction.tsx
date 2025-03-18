@@ -24,11 +24,13 @@ import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scen
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
+import { Dict } from '@swan-io/boxed';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace, t as rawT } from 'i18next';
 import { useRef } from 'react';
@@ -148,68 +150,52 @@ type EditSanctionForm = z.infer<typeof editSanctionFormSchema>;
 export async function action({ request, params }: ActionFunctionArgs) {
   const {
     authService,
+    i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
 
-  const [session, data, { scenarioIterationSanctionRepository }] = await Promise.all([
+  const [session, t, raw, { scenarioIterationSanctionRepository }] = await Promise.all([
     getSession(request),
+    getFixedT(request, ['common']),
     request.json(),
     authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     }),
   ]);
 
-  const iterationId = fromParams(params, 'iterationId');
-  const result = editSanctionFormSchema.safeParse(data);
+  const { error, data, success } = editSanctionFormSchema.safeParse(raw);
 
-  if (!result.success) {
-    return json(
-      { status: 'error', errors: result.error.flatten() },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  }
+  if (!success) return json({ status: 'error', errors: error.flatten() });
 
   try {
-    const nameQuery = result.data.query?.name;
+    const nameQuery = data.query?.name;
 
     await scenarioIterationSanctionRepository.upsertSanctionCheckConfig({
-      iterationId,
+      iterationId: fromParams(params, 'iterationId'),
       changes: {
-        ...result.data,
-        counterPartyId: result.data.counterPartyId as AstNode | undefined,
-        triggerRule: result.data.triggerRule as AstNode | undefined,
+        ...data,
+        counterPartyId: data.counterPartyId as AstNode | undefined,
+        triggerRule: data.triggerRule as AstNode | undefined,
         query: {
           name: nameQuery && isStringConcatAstNode(nameQuery) ? nameQuery : undefined,
-          label: result.data.query?.label as AstNode | undefined,
+          label: data.query?.label as AstNode | undefined,
         },
       },
     });
 
     setToastMessage(session, {
       type: 'success',
-      messageKey: 'common:success.save',
+      message: t('common:success.save'),
     });
 
-    return json(
-      { status: 'success', errors: [] },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
+    return json({ status: 'success' }, { headers: { 'Set-Cookie': await commitSession(session) } });
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
-      messageKey: 'common:errors.unknown',
+      message: t('common:errors.unknown'),
     });
 
-    return json(
-      { status: 'error', errors: [] },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
+    return json({ status: 'error' }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }
 
@@ -218,7 +204,11 @@ export default function SanctionDetail() {
   const { databaseAccessors, payloadAccessors, dataModel, customLists, sections } =
     useLoaderData<typeof loader>();
   const editor = useEditorMode();
-  const fetcher = useFetcher<typeof action>();
+  const { submit, data } = useFetcher<typeof action>();
+  const lastData = data as {
+    status: 'error' | 'success';
+    errors?: z.typeToFlattenedError<EditSanctionForm>;
+  };
   const scenario = useCurrentScenario();
   const ruleGroups = useRuleGroups();
   const { id: iterationId, sanctionCheckConfig } = useCurrentScenarioIteration();
@@ -230,10 +220,10 @@ export default function SanctionDetail() {
     threshold: 1,
   });
 
-  const form = useForm<EditSanctionForm>({
+  const form = useForm({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        fetcher.submit(value, { method: 'PATCH', encType: 'application/json' });
+        submit(value, { method: 'PATCH', encType: 'application/json' });
       }
     },
     validators: {
@@ -253,7 +243,7 @@ export default function SanctionDetail() {
         label: sanctionCheckConfig?.query?.label,
       },
       counterPartyId: sanctionCheckConfig?.counterPartyId,
-    },
+    } as EditSanctionForm,
   });
 
   const options: BuilderOptionsResource = {
@@ -264,7 +254,14 @@ export default function SanctionDetail() {
     triggerObjectType: scenario.triggerObjectType,
   };
 
-  //TODO Add errors from the servers if they are present
+  if (!form.state.isTouched && lastData.status === 'error' && lastData.errors) {
+    Dict.entries(lastData.errors.fieldErrors).forEach(([field, errors]) =>
+      form.setFieldMeta(field, (prev) => ({
+        ...prev,
+        errors: errors ?? [],
+      })),
+    );
+  }
 
   return (
     <Page.Main>
@@ -307,7 +304,7 @@ export default function SanctionDetail() {
                       className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
                       placeholder={t('scenarios:sanction_name_placeholder')}
                     />
-                    <FormErrorOrDescription errors={field.state.meta.errors} />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}
               </form.Field>
@@ -357,7 +354,7 @@ export default function SanctionDetail() {
                         className="form-textarea text-grey-50 text-s w-full resize-none border-none bg-transparent font-medium outline-none"
                         placeholder={t('scenarios:sanction_description_placeholder')}
                       />
-                      <FormErrorOrDescription errors={field.state.meta.errors} />
+                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                     </div>
                   )}
                 </form.Field>
@@ -371,7 +368,7 @@ export default function SanctionDetail() {
                         selectedRuleGroup={field.state.value}
                         ruleGroups={ruleGroups}
                       />
-                      <FormErrorOrDescription errors={field.state.meta.errors} />
+                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                     </div>
                   )}
                 </form.Field>
@@ -425,7 +422,9 @@ export default function SanctionDetail() {
                             selectedOutcome={field.state.value}
                             outcomes={difference(knownOutcomes, ['approve']) as SanctionOutcome[]}
                           />
-                          <FormErrorOrDescription errors={field.state.meta.errors} />
+                          <FormErrorOrDescription
+                            errors={getFieldErrors(field.state.meta.errors)}
+                          />
                         </div>
                       )}
                     </form.Field>
@@ -453,7 +452,7 @@ export default function SanctionDetail() {
                           placeholder={t('scenarios:sanction_counterparty_id_placeholder')}
                         />
                       </AstBuilder.Provider>
-                      <FormErrorOrDescription errors={field.state.meta.errors} />
+                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                     </div>
                   )}
                 </form.Field>
@@ -493,7 +492,9 @@ export default function SanctionDetail() {
                                 placeholder={t('scenarios:sanction_counterparty_name_placeholder')}
                                 limit={5}
                               />
-                              <FormErrorOrDescription errors={field.state.meta.errors} />
+                              <FormErrorOrDescription
+                                errors={getFieldErrors(field.state.meta.errors)}
+                              />
                             </div>
                           );
                         }}
@@ -510,7 +511,9 @@ export default function SanctionDetail() {
                               onBlur={field.handleBlur}
                               placeholder={t('scenarios:sanction_transaction_label_placeholder')}
                             />
-                            <FormErrorOrDescription errors={field.state.meta.errors} />
+                            <FormErrorOrDescription
+                              errors={getFieldErrors(field.state.meta.errors)}
+                            />
                           </div>
                         )}
                       </form.Field>
@@ -536,7 +539,7 @@ export default function SanctionDetail() {
                           onBlur={field.handleBlur}
                           sections={sections}
                         />
-                        <FormErrorOrDescription errors={field.state.meta.errors} />
+                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                       </div>
                     )}
                   </form.Field>

@@ -2,6 +2,7 @@ import { Callout, decisionsI18n, OutcomeTag, scenarioI18n } from '@app-builder/c
 import { ScoreOutcomeThresholds } from '@app-builder/components/Decisions/ScoreOutcomeThresholds';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
@@ -9,6 +10,7 @@ import { scenarioDecisionDocHref } from '@app-builder/services/documentation-hre
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { serverServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -19,7 +21,7 @@ import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, Collapsible, Input } from 'ui-design-system';
+import { Button, Collapsible } from 'ui-design-system';
 import * as z from 'zod';
 
 import { useCurrentScenarioIteration, useCurrentScenarioValidation } from '../_layout';
@@ -219,14 +221,12 @@ function EditScoreThresholds() {
 
   const schema = React.useMemo(() => getFormSchema(t), [t]);
 
-  type EditScoreThresholdsForm = z.infer<typeof schema>;
-
-  const form = useForm<EditScoreThresholdsForm>({
+  const form = useForm({
     defaultValues: {
       scoreReviewThreshold: iteration.scoreReviewThreshold ?? 0,
       scoreBlockAndReviewThreshold: iteration.scoreBlockAndReviewThreshold ?? 0,
       scoreDeclineThreshold: iteration.scoreDeclineThreshold ?? 0,
-    },
+    } as z.infer<typeof schema>,
     validators: {
       onChange: schema,
       onBlur: schema,
@@ -274,20 +274,21 @@ function EditScoreThresholds() {
                 i18nKey="scenarios:decision.score_based.approve_condition"
                 components={{
                   ReviewThreshold: (
-                    <Input
+                    <FormInput
                       type="number"
                       name={field.name}
-                      defaultValue={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(+e.currentTarget.value)}
                       className="relative w-fit"
+                      defaultValue={field.state.value}
+                      onChange={(e) => field.handleChange(+e.currentTarget.value)}
+                      valid={field.state.meta.errors?.length === 0}
                     />
                   ),
                 }}
                 shouldUnescape
               />
               <FormErrorOrDescription
-                errors={field.state.meta.errors}
+                errors={getFieldErrors(field.state.meta.errors)}
                 errorClassName={style.errorMessage}
               />
             </div>
@@ -309,21 +310,22 @@ function EditScoreThresholds() {
                 }}
                 components={{
                   BlockAndReviewThreshold: (
-                    <Input
+                    <FormInput
                       type="number"
                       name={field.name}
-                      defaultValue={scoreBlockAndReviewThreshold}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(+e.currentTarget.value)}
-                      className="relative w-fit"
                       min={scoreReviewThreshold}
+                      className="relative w-fit"
+                      defaultValue={scoreBlockAndReviewThreshold}
+                      onChange={(e) => field.handleChange(+e.currentTarget.value)}
+                      valid={field.state.meta.errors?.length === 0}
                     />
                   ),
                 }}
                 shouldUnescape
               />
               <FormErrorOrDescription
-                errors={field.state.meta.errors}
+                errors={getFieldErrors(field.state.meta.errors)}
                 errorClassName={style.errorMessage}
               />
             </div>
@@ -345,21 +347,22 @@ function EditScoreThresholds() {
                 }}
                 components={{
                   DeclineThreshold: (
-                    <Input
+                    <FormInput
                       type="number"
                       name={field.name}
-                      defaultValue={scoreDeclineThreshold}
                       onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(+e.currentTarget.value)}
                       className="relative w-fit"
                       min={scoreBlockAndReviewThreshold}
+                      defaultValue={scoreDeclineThreshold}
+                      onChange={(e) => field.handleChange(+e.currentTarget.value)}
+                      valid={field.state.meta.errors?.length === 0}
                     />
                   ),
                 }}
                 shouldUnescape
               />
               <FormErrorOrDescription
-                errors={field.state.meta.errors}
+                errors={getFieldErrors(field.state.meta.errors)}
                 errorClassName={style.errorMessage}
               />
             </div>

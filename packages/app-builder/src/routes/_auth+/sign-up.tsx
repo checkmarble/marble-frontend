@@ -1,12 +1,16 @@
 import { Callout } from '@app-builder/components';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { AuthError } from '@app-builder/components/Auth/AuthError';
-import { SignUpWithEmailAndPassword } from '@app-builder/components/Auth/SignUpWithEmailAndPassword';
+import {
+  SignUpWithEmailAndPassword,
+  StaticSignUpWithEmailAndPassword,
+} from '@app-builder/components/Auth/SignUpWithEmailAndPassword';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useNavigate } from '@remix-run/react';
 import { Trans, useTranslation } from 'react-i18next';
+import { ClientOnly } from 'remix-utils/client-only';
 
 export const handle = {
   i18n: authI18n,
@@ -40,7 +44,9 @@ export default function SignUp() {
       <Callout variant="soft" className="mb-6 text-start">
         {t('auth:sign_up.description')}
       </Callout>
-      <SignUpWithEmailAndPassword signUp={signUp} />
+      <ClientOnly fallback={<StaticSignUpWithEmailAndPassword />}>
+        {() => <SignUpWithEmailAndPassword signUp={signUp} />}
+      </ClientOnly>
       <p className="mt-2 text-xs">
         <Trans
           t={t}

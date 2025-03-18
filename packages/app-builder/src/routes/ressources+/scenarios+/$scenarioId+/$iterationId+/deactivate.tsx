@@ -1,19 +1,15 @@
-import { FormCheckbox } from '@app-builder/components/Form/FormCheckbox';
-import { FormField } from '@app-builder/components/Form/FormField';
-import { FormLabel } from '@app-builder/components/Form/FormLabel';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
-import { FormProvider, getFormProps, useForm } from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
 import { redirectBack } from 'remix-utils/redirect-back';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Checkbox, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -25,22 +21,31 @@ const deactivateFormSchema = z.object({
 export async function action({ request, params }: ActionFunctionArgs) {
   const {
     authService,
-    csrfService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  await csrfService.validate(request);
+
+  const [t, session, rawData, { scenario }] = await Promise.all([
+    getFixedT(request, ['common', 'scenarios']),
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
+
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
 
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, { schema: deactivateFormSchema });
+  const { error, success } = deactivateFormSchema.safeParse(rawData);
 
-  if (submission.status !== 'success') {
-    return json(submission.reply());
+  if (!success) {
+    return json(
+      { status: 'error', errors: error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 
   try {
@@ -56,19 +61,17 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }),
     });
   } catch (error) {
-    const session = await getSession(request);
-    const t = await getFixedT(request, ['common']);
-
-    const formError = t('common:errors.unknown');
-
     setToastMessage(session, {
       type: 'error',
-      message: formError,
+      message: t('common:errors.unknown'),
     });
 
-    return json(submission.reply({ formErrors: [formError] }), {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { status: 'error', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 }
 
@@ -114,69 +117,90 @@ function DeactivateScenarioVersionContent({
   const { t } = useTranslation(['common', 'scenarios']);
   const fetcher = useFetcher<typeof action>();
 
-  const [form, fields] = useForm({
-    shouldRevalidate: 'onInput',
-    defaultValue: {
-      stopOperating: 'off',
+  const form = useForm({
+    defaultValues: {
+      stopOperating: false,
       changeIsImmediate: false,
     },
-    lastResult: fetcher.data,
-    constraint: getZodConstraint(deactivateFormSchema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, {
-        schema: deactivateFormSchema,
-      });
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'POST',
+          action: getRoute('/ressources/scenarios/:scenarioId/:iterationId/deactivate', {
+            scenarioId: fromUUID(scenarioId),
+            iterationId: fromUUID(iterationId),
+          }),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: deactivateFormSchema,
+      onBlurAsync: deactivateFormSchema,
+      onSubmitAsync: deactivateFormSchema,
     },
   });
 
   return (
-    <FormProvider context={form.context}>
-      <fetcher.Form
-        action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/deactivate', {
-          scenarioId: fromUUID(scenarioId),
-          iterationId: fromUUID(iterationId),
-        })}
-        method="POST"
-        {...getFormProps(form)}
-      >
-        <Modal.Title>{t('scenarios:deployment_modal.deactivate.title')}</Modal.Title>
-        <div className="flex flex-col gap-6 p-6">
-          <AuthenticityTokenInput />
-          <div className="text-s flex flex-col gap-4 font-medium">
-            <p className="font-semibold">{t('scenarios:deployment_modal.deactivate.confirm')}</p>
-            <FormField
-              name={fields.stopOperating.name}
-              className="group flex flex-row items-center gap-2"
-            >
-              <FormCheckbox />
-              <FormLabel>{t('scenarios:deployment_modal.deactivate.stop_operating')}</FormLabel>
-            </FormField>
-            <FormField
-              name={fields.changeIsImmediate.name}
-              className="group flex flex-row items-center gap-2"
-            >
-              <FormCheckbox />
-              <FormLabel>
-                {t('scenarios:deployment_modal.deactivate.change_is_immediate')}
-              </FormLabel>
-            </FormField>
-            <p className="text-grey-80 text-xs font-medium">
-              {t('scenarios:deployment_modal.deactivate.helper')}
-            </p>
-          </div>
-          <div className="flex flex-1 flex-row gap-2">
-            <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary" name="cancel">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button className="flex-1" variant="primary" type="submit" color="red">
-              <Icon icon="stop" className="size-6" />
-              {t('scenarios:deployment_modal.deactivate.button')}
-            </Button>
-          </div>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <Modal.Title>{t('scenarios:deployment_modal.deactivate.title')}</Modal.Title>
+      <div className="flex flex-col gap-6 p-6">
+        <div className="text-s flex flex-col gap-4 font-medium">
+          <p className="font-semibold">{t('scenarios:deployment_modal.deactivate.confirm')}</p>
+          <form.Field name="stopOperating">
+            {(field) => (
+              <div className="group flex flex-row items-center gap-2">
+                <Checkbox
+                  name={field.name}
+                  defaultChecked={field.state.value}
+                  onCheckedChange={(state) =>
+                    state !== 'indeterminate' && field.handleChange(state)
+                  }
+                />
+                <FormLabel name={field.name}>
+                  {t('scenarios:deployment_modal.deactivate.stop_operating')}
+                </FormLabel>
+              </div>
+            )}
+          </form.Field>
+          <form.Field name="changeIsImmediate">
+            {(field) => (
+              <div className="group flex flex-row items-center gap-2">
+                <Checkbox
+                  name={field.name}
+                  defaultChecked={field.state.value}
+                  onCheckedChange={(state) =>
+                    state !== 'indeterminate' && field.handleChange(state)
+                  }
+                />
+                <FormLabel name={field.name}>
+                  {t('scenarios:deployment_modal.deactivate.change_is_immediate')}
+                </FormLabel>
+              </div>
+            )}
+          </form.Field>
+          <p className="text-grey-80 text-xs font-medium">
+            {t('scenarios:deployment_modal.deactivate.helper')}
+          </p>
         </div>
-      </fetcher.Form>
-    </FormProvider>
+        <div className="flex flex-1 flex-row gap-2">
+          <Modal.Close asChild>
+            <Button className="flex-1" variant="secondary" name="cancel">
+              {t('common:cancel')}
+            </Button>
+          </Modal.Close>
+          <Button className="flex-1" variant="primary" type="submit" color="red">
+            <Icon icon="stop" className="size-6" />
+            {t('scenarios:deployment_modal.deactivate.button')}
+          </Button>
+        </div>
+      </div>
+    </form>
   );
 }

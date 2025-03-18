@@ -1,4 +1,3 @@
-import { type ValidationError } from '@tanstack/react-form';
 import clsx from 'clsx';
 import * as React from 'react';
 
@@ -6,8 +5,8 @@ interface FormErrorOrDescriptionProps
   extends Omit<React.HTMLAttributes<HTMLParagraphElement>, 'id' | 'children' | 'className'> {
   errorClassName?: string;
   descriptionClassName?: string;
-  errors?: ValidationError[];
-  description?: string;
+  errors?: string[];
+  description?: string | React.ReactNode;
 }
 
 export const FormErrorOrDescription = React.forwardRef<
@@ -30,7 +29,7 @@ export const FormErrorOrDescription = React.forwardRef<
   }
 
   if (props.description) {
-    return (
+    return typeof props.description === 'string' ? (
       <p
         ref={ref}
         className={clsx(
@@ -41,7 +40,10 @@ export const FormErrorOrDescription = React.forwardRef<
       >
         {props.description}
       </p>
+    ) : (
+      props.description
     );
   }
+
   return null;
 });

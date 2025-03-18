@@ -5,16 +5,16 @@ import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
 import { serverServices } from '@app-builder/services/init.server';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
-import { parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { decode } from 'decode-formdata';
 import { type UpdateSanctionCheckMatchDto } from 'marble-api';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2, Switch, TextArea } from 'ui-design-system';
 import { z } from 'zod';
 
-const schema = z.object({
+const reviewSanctionSchema = z.object({
   matchId: z.string(),
   status: z.union([z.literal('confirmed_hit'), z.literal('no_hit')]),
   comment: z.string().optional(),
@@ -28,35 +28,34 @@ export async function action({ request }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = serverServices;
 
-  const { sanctionCheck } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const [session, t, raw, { sanctionCheck }] = await Promise.all([
+    getSession(request),
+    getFixedT(request, ['common', 'cases']),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, { schema });
+  const { success, error, data } = reviewSanctionSchema.safeParse(decode(raw));
 
-  if (submission.status !== 'success') {
-    return submission.reply();
+  if (!success) {
+    return json({ success: 'false', errors: error.flatten() });
   }
 
   try {
-    await sanctionCheck.updateMatchStatus(submission.value);
-
-    return submission.reply();
+    await sanctionCheck.updateMatchStatus(data);
+    return json({ success: 'true', errors: [] });
   } catch (error) {
-    const session = await getSession(request);
-    const t = await getFixedT(request, ['common', 'cases']);
-
-    const message = t('common:errors.unknown');
-
     setToastMessage(session, {
       type: 'error',
-      message,
+      message: t('common:errors.unknown'),
     });
 
-    return json(submission.reply({ formErrors: [message] }), {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { success: 'false', errors: [] },
+      { headers: { 'Set-Cookie': await commitSession(session) } },
+    );
   }
 }
 
@@ -76,10 +75,10 @@ export const SanctionCheckReviewModal = ({
   const onClose = useCallbackRef(_onClose);
   const [isConfirming, setIsConfirming] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-
   const fetcher = useFetcher<typeof action>();
+
   useEffect(() => {
-    if (fetcher.data?.status === 'success') {
+    if (fetcher.data?.success === 'true') {
       onClose();
     }
   }, [fetcher, onClose]);

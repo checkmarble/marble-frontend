@@ -1,4 +1,4 @@
-import type { FormApi } from '@tanstack/react-form';
+import { select } from 'radash';
 import type { FormEvent } from 'react';
 
 export const submitOnBlur: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement> = (
@@ -19,11 +19,17 @@ export function adaptToStringArray(value: string | (string | undefined)[] | unde
   return value.filter((val) => val !== undefined);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function handleSubmit(form: FormApi<any>) {
+export function handleSubmit(form: { handleSubmit: () => void }) {
   return (e: FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
     form.handleSubmit();
   };
 }
+
+export const getFieldErrors = (errors: ({ message: string } | undefined)[]) =>
+  select(
+    errors,
+    (e) => (e as { message: string }).message,
+    (e) => e !== undefined,
+  );

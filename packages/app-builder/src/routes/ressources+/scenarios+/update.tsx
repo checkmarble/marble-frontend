@@ -1,15 +1,14 @@
-import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
-import { FormField } from '@app-builder/components/Form/FormField';
-import { FormInput } from '@app-builder/components/Form/FormInput';
-import { FormLabel } from '@app-builder/components/Form/FormLabel';
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { redirectBack } from 'remix-utils/redirect-back';
@@ -20,7 +19,7 @@ import { z } from 'zod';
 const updateScenarioFormSchema = z.object({
   scenarioId: z.string().uuid(),
   name: z.string().min(1),
-  description: z.string().nullable().default(null),
+  description: z.string(),
 });
 
 type UpdateScenarioForm = z.infer<typeof updateScenarioFormSchema>;
@@ -31,39 +30,47 @@ export async function action({ request }: ActionFunctionArgs) {
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, {
-    schema: updateScenarioFormSchema,
-  });
 
-  if (submission.status !== 'success') {
-    return json(submission.reply());
+  const [t, session, rawData, { scenario }] = await Promise.all([
+    getFixedT(request, ['common']),
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
+
+  const { data, success, error } = updateScenarioFormSchema.safeParse(rawData);
+
+  if (!success) {
+    return json(
+      { status: 'error', errors: error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 
   try {
-    await scenario.updateScenario(submission.value);
+    await scenario.updateScenario(data);
+
     return redirectBack(request, {
       fallback: getRoute('/scenarios/:scenarioId', {
-        scenarioId: fromUUID(submission.value.scenarioId),
+        scenarioId: fromUUID(data.scenarioId),
       }),
     });
   } catch (error) {
-    const session = await getSession(request);
-    const t = await getFixedT(request, ['common']);
-
-    const formError = t('common:errors.unknown');
-
     setToastMessage(session, {
       type: 'error',
-      message: formError,
+      message: t('common:errors.unknown'),
     });
 
-    return json(submission.reply({ formErrors: [formError] }), {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { status: 'error', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 }
 
@@ -98,54 +105,77 @@ function UpdateScenarioContent({ defaultValue }: { defaultValue: UpdateScenarioF
   const { t } = useTranslation(['scenarios', 'common']);
   const fetcher = useFetcher<typeof action>();
 
-  const [form, fields] = useForm({
-    shouldRevalidate: 'onInput',
-    defaultValue,
-    lastResult: fetcher.data,
-    constraint: getZodConstraint(updateScenarioFormSchema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, {
-        schema: updateScenarioFormSchema,
-      });
+  const form = useForm({
+    defaultValues: defaultValue,
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'PATCH',
+          action: getRoute('/ressources/scenarios/update'),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: updateScenarioFormSchema,
+      onBlurAsync: updateScenarioFormSchema,
+      onSubmitAsync: updateScenarioFormSchema,
     },
   });
 
   return (
-    <FormProvider context={form.context}>
-      <fetcher.Form
-        method="PATCH"
-        action={getRoute('/ressources/scenarios/update')}
-        {...getFormProps(form)}
-      >
-        <ModalV2.Title>{t('scenarios:update_scenario.title')}</ModalV2.Title>
-        <div className="flex flex-col gap-6 p-6">
-          <input
-            {...getInputProps(fields.scenarioId, { type: 'hidden' })}
-            key={fields.scenarioId.key}
-          />
-          <FormField name={fields.name.name} className="group flex w-full flex-col gap-2">
-            <FormLabel>{t('scenarios:create_scenario.name')}</FormLabel>
-            <FormInput type="text" placeholder={t('scenarios:create_scenario.name_placeholder')} />
-            <FormErrorOrDescription />
-          </FormField>
-          <FormField name={fields.description.name} className="group flex w-full flex-col gap-2">
-            <FormLabel>{t('scenarios:create_scenario.description')}</FormLabel>
-            <FormInput
-              type="text"
-              placeholder={t('scenarios:create_scenario.description_placeholder')}
-            />
-            <FormErrorOrDescription />
-          </FormField>
-          <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
-              {t('common:cancel')}
-            </ModalV2.Close>
-            <Button className="flex-1" variant="primary" type="submit">
-              {t('common:save')}
-            </Button>
-          </div>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <ModalV2.Title>{t('scenarios:update_scenario.title')}</ModalV2.Title>
+      <div className="flex flex-col gap-6 p-6">
+        <form.Field name="name">
+          {(field) => (
+            <div className="group flex w-full flex-col gap-2">
+              <FormLabel name={field.name}>{t('scenarios:create_scenario.name')}</FormLabel>
+              <FormInput
+                type="text"
+                name={field.name}
+                defaultValue={field.state.value}
+                onChange={(e) => field.handleChange(e.currentTarget.value)}
+                onBlur={field.handleBlur}
+                valid={field.state.meta.errors.length === 0}
+                placeholder={t('scenarios:create_scenario.name_placeholder')}
+              />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+            </div>
+          )}
+        </form.Field>
+        <form.Field name="description">
+          {(field) => (
+            <div className="group flex w-full flex-col gap-2">
+              <FormLabel name={field.name}>{t('scenarios:create_scenario.description')}</FormLabel>
+              <FormInput
+                type="text"
+                name={field.name}
+                defaultValue={field.state.value}
+                onChange={(e) => field.handleChange(e.currentTarget.value)}
+                onBlur={field.handleBlur}
+                valid={field.state.meta.errors.length === 0}
+                placeholder={t('scenarios:create_scenario.description_placeholder')}
+              />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+            </div>
+          )}
+        </form.Field>
+        <div className="flex flex-1 flex-row gap-2">
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
+            {t('common:cancel')}
+          </ModalV2.Close>
+          <Button className="flex-1" variant="primary" type="submit">
+            {t('common:save')}
+          </Button>
         </div>
-      </fetcher.Form>
-    </FormProvider>
+      </div>
+    </form>
   );
 }

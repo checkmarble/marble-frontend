@@ -1,10 +1,6 @@
-import {
-  FormControl,
-  FormError,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@app-builder/components/Form';
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import {
   type DataModelField,
@@ -14,15 +10,15 @@ import {
 } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
 import { captureUnexpectedRemixError } from '@app-builder/services/monitoring';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { useForm, useStore } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
-import { useEffect, useMemo, useState } from 'react';
-import { Form, FormProvider, useForm, useWatch } from 'react-hook-form';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, HiddenInputs, Input, Modal } from 'ui-design-system';
+import { Button, Checkbox, Modal } from 'ui-design-system';
 import { z } from 'zod';
 
 export const handle = {
@@ -36,24 +32,26 @@ const editFieldFormSchema = z.object({
   isUnique: z.boolean(),
 });
 
+type EditFieldForm = z.infer<typeof editFieldFormSchema>;
+
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
-  const { dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const {
+    authService,
+    toastSessionService: { getSession, commitSession },
+  } = serverServices;
 
-  const parsedData = editFieldFormSchema.safeParse(await request.json());
+  const [session, raw, { dataModelRepository }] = await Promise.all([
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-  if (!parsedData.success) {
-    parsedData.error.flatten((issue) => issue);
+  const { success, error, data } = editFieldFormSchema.safeParse(raw);
 
-    return json({
-      success: false as const,
-      values: null,
-      error: parsedData.error.format(),
-    });
-  }
-  const { description, fieldId, isEnum, isUnique } = parsedData.data;
+  if (!success) return json({ success: 'false', errors: error.flatten() });
+  const { description, fieldId, isEnum, isUnique } = data;
 
   try {
     await dataModelRepository.patchDataModelField(fieldId, {
@@ -61,25 +59,18 @@ export async function action({ request }: ActionFunctionArgs) {
       isEnum,
       isUnique,
     });
-    return json({
-      success: true as const,
-      values: parsedData.data,
-      error: null,
-    });
+
+    return json({ success: 'true', errors: [] });
   } catch (error) {
-    const { getSession, commitSession } = serverServices.toastSessionService;
-    const session = await getSession(request);
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',
     });
+
     captureUnexpectedRemixError(error, 'editField@action', request);
+
     return json(
-      {
-        success: false as const,
-        values: parsedData.data,
-        error,
-      },
+      { success: 'false', errors: [] },
       { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   }
@@ -138,26 +129,33 @@ export function EditField({
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const formMethods = useForm<z.infer<typeof editFieldFormSchema>>({
-    progressive: true,
-    resolver: zodResolver(editFieldFormSchema),
+  const form = useForm({
     defaultValues: {
       description: inputField.description,
       fieldId: inputField.id,
       isEnum: inputField.isEnum,
       isUnique: inputField.unicityConstraint !== 'no_unicity_constraint',
+    } as EditFieldForm,
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'POST',
+          action: getRoute('/ressources/data/editField'),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: editFieldFormSchema,
+      onBlurAsync: editFieldFormSchema,
+      onSubmitAsync: editFieldFormSchema,
     },
   });
-  const { control, register, setValue } = formMethods;
+
   const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    if (fetcher.state === 'idle' && fetcher.data?.success) {
-      setIsOpen(false);
-      setValue('description', fetcher.data?.values.description);
-    }
-  }, [fetcher.data?.success, fetcher.data?.values, fetcher.state, setValue]);
-  const selectedEnum = useWatch({ control, name: 'isEnum' });
-  const selectedUnique = useWatch({ control, name: 'isUnique' });
+
+  const selectedEnum = useStore(form.store, (state) => state.values.isEnum);
+  const selectedUnique = useStore(form.store, (state) => state.values.isUnique);
   const uniqueSettingDisabled = useMemo(
     () =>
       disableEditUnique({
@@ -172,124 +170,110 @@ export function EditField({
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>{children}</Modal.Trigger>
       <Modal.Content>
-        <Form
-          control={control}
-          onSubmit={({ formDataJson }) => {
-            fetcher.submit(formDataJson, {
-              method: 'POST',
-              action: getRoute('/ressources/data/editField'),
-              encType: 'application/json',
-            });
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
           }}
         >
-          <FormProvider {...formMethods}>
-            <HiddenInputs fieldId={'dummy value'} />
-            <Modal.Title>{t('data:edit_field.title')}</Modal.Title>
-            <div className="flex flex-col gap-6 p-6">
-              <div className="flex flex-1 flex-col gap-4">
-                <input hidden {...register('fieldId')} />
-                <FormField
-                  name="description"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2">
-                      <FormLabel>{t('data:description')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder={t('data:create_field.description_placeholder')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormError />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              {EnumDataTypes.includes(inputField.dataType) ? (
-                <FormField
-                  name="isEnum"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center gap-4">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          disabled={selectedUnique}
-                          onCheckedChange={(checked) => {
-                            field.onChange(checked);
-                          }}
-                        />
-                      </FormControl>
-                      <FormLabel>
-                        <p>{t('data:create_field.is_enum.title')}</p>
-                        <p className="text-xs">{t('data:create_field.is_enum.subtitle')}</p>
-                      </FormLabel>
-                      <FormError />
-                    </FormItem>
-                  )}
-                />
-              ) : null}
-              {UniqueDataTypes.includes(inputField.dataType) ? (
-                <FormField
-                  name="isUnique"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center gap-4">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          disabled={uniqueSettingDisabled.disabled}
-                          onCheckedChange={(checked) => {
-                            field.onChange(checked);
-                          }}
-                        />
-                      </FormControl>
-                      <FormLabel>
-                        <p>{t('data:edit_field.is_unique.title')}</p>
-                        {inputField.unicityConstraint === 'no_unicity_constraint' ? (
-                          <p className="text-xs">{t('data:edit_field.is_unique.toggle')}</p>
-                        ) : null}
-                        {uniqueSettingDisabled.reason === 'cannot_toggle_index_pending' ? (
-                          <p className="text-red-74 text-xs">
-                            {t('data:edit_field.is_unique.cannot_toggle_index_pending')}
-                          </p>
-                        ) : null}
-                        {uniqueSettingDisabled.reason === 'cannot_untoggle_field_linked' ? (
-                          <p className="text-red-74 text-xs">
-                            {t('data:edit_field.is_unique.cannot_untoggle_field_linked')}
-                          </p>
-                        ) : null}
-                        {field.value && inputField.unicityConstraint === 'no_unicity_constraint' ? (
-                          <p className="text-red-74 text-xs">
-                            {t('data:edit_field.is_unique.warning_creation_asynchronous')}
-                          </p>
-                        ) : null}
-                        {inputField.unicityConstraint === 'active_unique_constraint' &&
-                        !field.value ? (
-                          <p className="text-red-74 text-xs">
-                            {t('data:edit_field.is_unique.warning_untoggle')}
-                          </p>
-                        ) : null}
-                      </FormLabel>
-                      <FormError />
-                    </FormItem>
-                  )}
-                />
-              ) : null}
-              <div className="flex flex-1 flex-row gap-2">
-                <Modal.Close asChild>
-                  <Button className="flex-1" variant="secondary">
-                    {t('common:cancel')}
-                  </Button>
-                </Modal.Close>
-                <Button className="flex-1" variant="primary" type="submit" name="edit">
-                  {t('data:edit_field.button_accept')}
-                </Button>
-              </div>
+          <Modal.Title>{t('data:edit_field.title')}</Modal.Title>
+          <div className="flex flex-col gap-6 p-6">
+            <div className="flex flex-1 flex-col gap-4">
+              <form.Field name="description">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <FormLabel name={field.name}>{t('data:description')}</FormLabel>
+                    <FormInput
+                      type="text"
+                      name={field.name}
+                      defaultValue={field.state.value as string}
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
+                      onBlur={field.handleBlur}
+                      valid={field.state.meta.errors.length === 0}
+                      placeholder={t('data:create_field.description_placeholder')}
+                    />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                )}
+              </form.Field>
             </div>
-          </FormProvider>
-        </Form>
+            {EnumDataTypes.includes(inputField.dataType) ? (
+              <form.Field name="isEnum">
+                {(field) => (
+                  <div className="flex flex-row items-center gap-4">
+                    <Checkbox
+                      defaultChecked={field.state.value}
+                      disabled={selectedUnique}
+                      onCheckedChange={(checked) => {
+                        if (checked !== 'indeterminate') field.handleChange(checked);
+                      }}
+                    />
+                    <FormLabel name={field.name}>
+                      <p>{t('data:create_field.is_enum.title')}</p>
+                      <p className="text-xs">{t('data:create_field.is_enum.subtitle')}</p>
+                    </FormLabel>
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                )}
+              </form.Field>
+            ) : null}
+            {UniqueDataTypes.includes(inputField.dataType) ? (
+              <form.Field name="isUnique">
+                {(field) => (
+                  <div className="flex flex-row items-center gap-4">
+                    <Checkbox
+                      defaultChecked={field.state.value}
+                      disabled={uniqueSettingDisabled.disabled}
+                      onCheckedChange={(checked) => {
+                        if (checked !== 'indeterminate') field.handleChange(checked);
+                      }}
+                    />
+                    <FormLabel name={field.name}>
+                      <p>{t('data:edit_field.is_unique.title')}</p>
+                      {inputField.unicityConstraint === 'no_unicity_constraint' ? (
+                        <p className="text-xs">{t('data:edit_field.is_unique.toggle')}</p>
+                      ) : null}
+                      {uniqueSettingDisabled.reason === 'cannot_toggle_index_pending' ? (
+                        <p className="text-red-74 text-xs">
+                          {t('data:edit_field.is_unique.cannot_toggle_index_pending')}
+                        </p>
+                      ) : null}
+                      {uniqueSettingDisabled.reason === 'cannot_untoggle_field_linked' ? (
+                        <p className="text-red-74 text-xs">
+                          {t('data:edit_field.is_unique.cannot_untoggle_field_linked')}
+                        </p>
+                      ) : null}
+                      {field.state.value &&
+                      inputField.unicityConstraint === 'no_unicity_constraint' ? (
+                        <p className="text-red-74 text-xs">
+                          {t('data:edit_field.is_unique.warning_creation_asynchronous')}
+                        </p>
+                      ) : null}
+                      {inputField.unicityConstraint === 'active_unique_constraint' &&
+                      !field.state.value ? (
+                        <p className="text-red-74 text-xs">
+                          {t('data:edit_field.is_unique.warning_untoggle')}
+                        </p>
+                      ) : null}
+                    </FormLabel>
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                )}
+              </form.Field>
+            ) : null}
+            <div className="flex flex-1 flex-row gap-2">
+              <Modal.Close asChild>
+                <Button className="flex-1" variant="secondary">
+                  {t('common:cancel')}
+                </Button>
+              </Modal.Close>
+              <Button className="flex-1" variant="primary" type="submit" name="edit">
+                {t('data:edit_field.button_accept')}
+              </Button>
+            </div>
+          </div>
+        </form>
       </Modal.Content>
     </Modal.Root>
   );

@@ -1,18 +1,18 @@
-import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
-import { FormField } from '@app-builder/components/Form/FormField';
-import { FormInput } from '@app-builder/components/Form/FormInput';
-import { FormLabel } from '@app-builder/components/Form/FormLabel';
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type Inbox } from '@app-builder/models/inbox';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
-import * as React from 'react';
+import { pick } from 'radash';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 import { Button, Modal } from 'ui-design-system';
@@ -31,49 +31,58 @@ const updateInboxFormSchema = z.object({
   redirectRoute: z.enum(redirectRouteOptions),
 });
 
+type UpdateInboxForm = z.infer<typeof updateInboxFormSchema>;
+
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { inbox } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
 
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, { schema: updateInboxFormSchema });
+  const [t, session, rawData, { inbox }] = await Promise.all([
+    getFixedT(request, ['common']),
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-  if (submission.status !== 'success') {
-    return json(submission.reply());
+  const { data, success, error } = updateInboxFormSchema.safeParse(rawData);
+
+  if (!success) {
+    return json(
+      { status: 'error', errors: error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 
   try {
-    const updatedInbox = await inbox.updateInbox(submission.value.id, {
-      name: submission.value.name,
-    });
+    const updatedInbox = await inbox.updateInbox(data.id, pick(data, ['name']));
+
     return redirect(
       safeRedirect(
-        getRoute(submission.value.redirectRoute, {
+        getRoute(data.redirectRoute, {
           inboxId: fromUUID(updatedInbox.id),
         }),
         getRoute('/ressources/auth/logout'),
       ),
     );
   } catch (error) {
-    const session = await getSession(request);
-    const t = await getFixedT(request, ['common']);
-
-    const formError = t('common:errors.unknown');
-
     setToastMessage(session, {
       type: 'error',
-      message: formError,
+      message: t('common:errors.unknown'),
     });
 
-    return json(submission.reply({ formErrors: [formError] }), {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { status: 'error', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 }
 
@@ -85,10 +94,10 @@ export function UpdateInbox({
   redirectRoutePath: (typeof redirectRouteOptions)[number];
 }) {
   const { t } = useTranslation(handle.i18n);
-  const [open, setOpen] = React.useState(false);
-
   const navigation = useNavigation();
-  React.useEffect(() => {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
     if (navigation.state === 'loading') {
       setOpen(false);
     }
@@ -117,52 +126,63 @@ export function UpdateInboxContent({
   redirectRoutePath: (typeof redirectRouteOptions)[number];
 }) {
   const { t } = useTranslation(handle.i18n);
-
   const fetcher = useFetcher<typeof action>();
 
-  const [form, fields] = useForm({
-    shouldRevalidate: 'onInput',
-    defaultValue: { ...inbox, redirectRoute: redirectRoutePath },
-    lastResult: fetcher.data,
-    constraint: getZodConstraint(updateInboxFormSchema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, {
-        schema: updateInboxFormSchema,
-      });
+  const form = useForm({
+    defaultValues: { ...inbox, redirectRoute: redirectRoutePath } as UpdateInboxForm,
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'PATCH',
+          action: getRoute('/ressources/settings/inboxes/update'),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChange: updateInboxFormSchema,
+      onBlur: updateInboxFormSchema,
+      onSubmit: updateInboxFormSchema,
     },
   });
 
   return (
-    <FormProvider context={form.context}>
-      <fetcher.Form
-        action={getRoute('/ressources/settings/inboxes/update')}
-        method="PATCH"
-        {...getFormProps(form)}
-      >
-        <Modal.Title>{t('settings:inboxes.update_inbox')}</Modal.Title>
-        <div className="bg-grey-100 flex flex-col gap-6 p-6">
-          <input {...getInputProps(fields.id, { type: 'hidden' })} key={fields.id.key} />
-          <input
-            {...getInputProps(fields.redirectRoute, { type: 'hidden' })}
-            key={fields.redirectRoute.key}
-          />
-          <FormField name={fields.name.name} className="group flex flex-col gap-2">
-            <FormLabel>{t('settings:inboxes.name')}</FormLabel>
-            <FormInput type="text" />
-            <FormErrorOrDescription />
-          </FormField>
-          <div className="flex flex-1 flex-row gap-2">
-            <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button className="flex-1" variant="primary" type="submit" name="update">
-              {t('common:save')}
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <Modal.Title>{t('settings:inboxes.update_inbox')}</Modal.Title>
+      <div className="bg-grey-100 flex flex-col gap-6 p-6">
+        <form.Field name="name">
+          {(field) => (
+            <div className="group flex flex-col gap-2">
+              <FormLabel name={field.name}>{t('settings:inboxes.name')}</FormLabel>
+              <FormInput
+                type="text"
+                name={field.name}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.currentTarget.value)}
+                defaultValue={field.state.value}
+                valid={field.state.meta.errors.length === 0}
+              />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+            </div>
+          )}
+        </form.Field>
+        <div className="flex flex-1 flex-row gap-2">
+          <Modal.Close asChild>
+            <Button className="flex-1" variant="secondary" type="button">
+              {t('common:cancel')}
             </Button>
-          </div>
+          </Modal.Close>
+          <Button className="flex-1" variant="primary" type="submit" name="update">
+            {t('common:save')}
+          </Button>
         </div>
-      </fetcher.Form>
-    </FormProvider>
+      </div>
+    </form>
   );
 }

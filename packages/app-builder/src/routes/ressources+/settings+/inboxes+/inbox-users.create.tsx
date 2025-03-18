@@ -1,25 +1,24 @@
-import { FormErrorOrDescription } from '@app-builder/components/Form/FormErrorOrDescription';
-import { FormField } from '@app-builder/components/Form/FormField';
-import { FormLabel } from '@app-builder/components/Form/FormLabel';
-import { FormSelect } from '@app-builder/components/Form/FormSelect';
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
 import { type User } from '@app-builder/models';
 import { tKeyForInboxUserRole } from '@app-builder/models/inbox';
-import { getInboxUserRoles } from '@app-builder/services/feature-access';
+import { getInboxUserRoles, isAccessible } from '@app-builder/services/feature-access';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { FormProvider, getFormProps, getInputProps, useForm } from '@conform-to/react';
-import { getZodConstraint, parseWithZod } from '@conform-to/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { type FeatureAccessDto } from 'marble-api/generated/license-api';
-import * as React from 'react';
+import { omit } from 'radash';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -29,8 +28,8 @@ export const handle = {
 
 function getCreateInboxUserFormSchema(inboxUserRoles: readonly [string, ...string[]]) {
   return z.object({
-    userId: z.string().uuid(),
-    inboxId: z.string().uuid(),
+    userId: z.string().uuid().nonempty(),
+    inboxId: z.string().uuid().nonempty(),
     role: z.enum(inboxUserRoles),
   });
 }
@@ -41,40 +40,49 @@ export async function action({ request }: ActionFunctionArgs) {
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = serverServices;
-  const { inbox, entitlements } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
 
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, {
-    schema: getCreateInboxUserFormSchema(getInboxUserRoles(entitlements)),
-  });
+  const [t, session, rawData, { inbox, entitlements }] = await Promise.all([
+    getFixedT(request, ['common']),
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-  if (submission.status !== 'success') {
-    return json(submission.reply());
+  const { data, success, error } = getCreateInboxUserFormSchema(
+    getInboxUserRoles(entitlements),
+  ).safeParse(rawData);
+
+  if (!success) {
+    return json(
+      { status: 'error', errors: error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 
   try {
-    await inbox.createInboxUser(submission.value.inboxId, submission.value);
+    await inbox.createInboxUser(data.inboxId, omit(data, ['inboxId']));
+
     return redirect(
       getRoute('/settings/inboxes/:inboxId', {
-        inboxId: fromUUID(submission.value.inboxId),
+        inboxId: fromUUID(data.inboxId),
       }),
     );
   } catch (error) {
-    const session = await getSession(request);
-    const t = await getFixedT(request, ['common']);
-
-    const formError = t('common:errors.unknown');
-
     setToastMessage(session, {
       type: 'error',
-      message: formError,
+      message: t('common:errors.unknown'),
     });
 
-    return json(submission.reply({ formErrors: [formError] }), {
-      headers: { 'Set-Cookie': await commitSession(session) },
-    });
+    return json(
+      { status: 'error', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
   }
 }
 
@@ -90,10 +98,10 @@ export function CreateInboxUser({
   access: FeatureAccessDto;
 }) {
   const { t } = useTranslation(handle.i18n);
-  const [open, setOpen] = React.useState(false);
-
+  const [open, setOpen] = useState(false);
   const navigation = useNavigation();
-  React.useEffect(() => {
+
+  useEffect(() => {
     if (navigation.state === 'loading') {
       setOpen(false);
     }
@@ -131,82 +139,101 @@ export function CreateInboxUserContent({
   access: FeatureAccessDto;
 }) {
   const { t } = useTranslation(handle.i18n);
-  const schema = React.useMemo(
-    () => getCreateInboxUserFormSchema(inboxUserRoles),
-    [inboxUserRoles],
-  );
-
   const fetcher = useFetcher<typeof action>();
+  const schema = useMemo(() => getCreateInboxUserFormSchema(inboxUserRoles), [inboxUserRoles]);
 
-  const [form, fields] = useForm({
-    shouldRevalidate: 'onInput',
-    defaultValue: { userId: '', inboxId: currentInboxId, role: 'admin' },
-    lastResult: fetcher.data,
-    constraint: getZodConstraint(schema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, {
-        schema,
-      });
+  const form = useForm({
+    defaultValues: { userId: '', inboxId: currentInboxId, role: 'admin' } as z.infer<typeof schema>,
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        fetcher.submit(value, {
+          method: 'POST',
+          action: getRoute('/ressources/settings/inboxes/inbox-users/create'),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: schema,
+      onBlurAsync: schema,
+      onSubmitAsync: schema,
     },
   });
 
-  const userOptions = users.map((user) => ({
-    value: user.userId,
-    label: `${user.firstName} ${user.lastName}`,
-  }));
-
   return (
-    <FormProvider context={form.context}>
-      <fetcher.Form
-        method="post"
-        action={getRoute('/ressources/settings/inboxes/inbox-users/create')}
-        {...getFormProps(form)}
-      >
-        <Modal.Title>{t('settings:inboxes.inbox_details.add_member')}</Modal.Title>
-        <div className="bg-grey-100 flex flex-col gap-6 p-6">
-          <input {...getInputProps(fields.inboxId, { type: 'hidden' })} key={fields.inboxId.key} />
-          <FormField name={fields.userId.name} className="group flex flex-col gap-2">
-            <FormLabel>{t('settings:inboxes.inbox_details.user')}</FormLabel>
-            <FormSelect.Default options={userOptions}>
-              {userOptions.map(({ value, label }) => (
-                <FormSelect.DefaultItem key={value} value={value}>
-                  {label}
-                </FormSelect.DefaultItem>
-              ))}
-            </FormSelect.Default>
-            <FormErrorOrDescription />
-          </FormField>
-          <FormField name={fields.role.name} className="group flex flex-col gap-2">
-            <FormLabel className="flex gap-2">
-              <span className={clsx({ 'text-grey-80': access === 'restricted' })}>
-                {t('settings:inboxes.inbox_details.role')}
-              </span>
-              {access === 'allowed' ? null : (
-                <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
-              )}
-            </FormLabel>
-            <FormSelect.Default options={inboxUserRoles} disabled={access === 'restricted'}>
-              {inboxUserRoles.map((role) => (
-                <FormSelect.DefaultItem key={role} value={role}>
-                  {t(tKeyForInboxUserRole(role))}
-                </FormSelect.DefaultItem>
-              ))}
-            </FormSelect.Default>
-            <FormErrorOrDescription />
-          </FormField>
-          <div className="flex flex-1 flex-row gap-2">
-            <Modal.Close asChild>
-              <Button className="flex-1" variant="secondary">
-                {t('common:cancel')}
-              </Button>
-            </Modal.Close>
-            <Button className="flex-1" variant="primary" type="submit" name="create">
-              <Icon icon="new-inbox" className="size-6" />
-              {t('settings:inboxes.inbox_details.create_user')}
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <Modal.Title>{t('settings:inboxes.inbox_details.add_member')}</Modal.Title>
+      <div className="bg-grey-100 flex flex-col gap-6 p-6">
+        <form.Field name="userId">
+          {(field) => (
+            <div className="group flex flex-col gap-2">
+              <FormLabel name={field.name}>{t('settings:inboxes.inbox_details.user')}</FormLabel>
+              <Select.Default
+                name={field.name}
+                defaultValue={field.state.value}
+                onValueChange={field.handleChange}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+              >
+                {users.map(({ userId, firstName, lastName }) => (
+                  <Select.DefaultItem key={userId} value={userId}>
+                    {`${firstName} ${lastName}`}
+                  </Select.DefaultItem>
+                ))}
+              </Select.Default>
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+            </div>
+          )}
+        </form.Field>
+        <form.Field name="role">
+          {(field) => (
+            <div className="group flex flex-col gap-2">
+              <FormLabel name={field.name} className="flex gap-2">
+                <span className={clsx({ 'text-grey-80': access === 'restricted' })}>
+                  {t('settings:inboxes.inbox_details.role')}
+                </span>
+                {access === 'allowed' ? null : (
+                  <Nudge
+                    content={t('settings:users.role.nudge')}
+                    className="size-6"
+                    kind={access}
+                  />
+                )}
+              </FormLabel>
+              <Select.Default
+                name={field.name}
+                defaultValue={field.state.value}
+                onValueChange={field.handleChange}
+                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+                disabled={!isAccessible(access)}
+              >
+                {inboxUserRoles.map((role) => (
+                  <Select.DefaultItem key={role} value={role}>
+                    {t(tKeyForInboxUserRole(role))}
+                  </Select.DefaultItem>
+                ))}
+              </Select.Default>
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+            </div>
+          )}
+        </form.Field>
+        <div className="flex flex-1 flex-row gap-2">
+          <Modal.Close asChild>
+            <Button type="button" className="flex-1" variant="secondary">
+              {t('common:cancel')}
             </Button>
-          </div>
+          </Modal.Close>
+          <Button className="flex-1" variant="primary" type="submit" name="create">
+            <Icon icon="new-inbox" className="size-6" />
+            {t('settings:inboxes.inbox_details.create_user')}
+          </Button>
         </div>
-      </fetcher.Form>
-    </FormProvider>
+      </div>
+    </form>
   );
 }

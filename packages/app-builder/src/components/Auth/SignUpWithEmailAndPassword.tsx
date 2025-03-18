@@ -1,11 +1,4 @@
 import {
-  FormControl,
-  FormError,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@app-builder/components/Form';
-import {
   EmailExistsError,
   NetworkRequestFailed,
   TooManyRequest,
@@ -13,14 +6,17 @@ import {
   WeakPasswordError,
 } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { getFieldErrors } from '@app-builder/utils/form';
 import * as Sentry from '@sentry/remix';
-import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { ClientOnly } from 'remix-utils/client-only';
-import { Button, Input } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import * as z from 'zod';
+
+import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '../Form/Tanstack/FormInput';
+import { FormLabel } from '../Form/Tanstack/FormLabel';
 
 const emailAndPasswordFormSchema = z.object({
   credentials: z.object({
@@ -28,125 +24,104 @@ const emailAndPasswordFormSchema = z.object({
     password: z.string().min(1, 'Required'),
   }),
 });
-type EmailAndPasswordFormValues = z.infer<typeof emailAndPasswordFormSchema>;
+
+type EmailAndPasswordForm = z.infer<typeof emailAndPasswordFormSchema>;
 
 export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
-  const { t } = useTranslation(['auth', 'common']);
-
-  const formMethods = useForm<z.infer<typeof emailAndPasswordFormSchema>>({
-    resolver: zodResolver(emailAndPasswordFormSchema),
-    defaultValues: {
-      credentials: { email: '', password: '' },
-    },
-  });
-  const { control } = formMethods;
-
-  const children = (
-    <>
-      <FormField
-        control={control}
-        name="credentials.email"
-        render={({ field }) => (
-          <FormItem className="flex flex-col items-start gap-2">
-            <FormLabel>{t('auth:sign_in.email')}</FormLabel>
-            <FormControl>
-              <Input className="w-full" type="email" {...field} />
-            </FormControl>
-            <FormError />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name="credentials.password"
-        render={({ field }) => (
-          <FormItem className="flex flex-col items-start gap-2">
-            <FormLabel>{t('auth:sign_in.password')}</FormLabel>
-            <FormControl>
-              <Input className="w-full" type="password" autoComplete="new-password" {...field} />
-            </FormControl>
-            <FormError />
-          </FormItem>
-        )}
-      />
-      <FormField control={control} name="credentials" render={() => <FormError />} />
-      <Button type="submit">{t('auth:sign_up')}</Button>
-    </>
-  );
-
-  return (
-    <FormProvider {...formMethods}>
-      <ClientOnly
-        fallback={<SignUpWithEmailAndPasswordForm>{children}</SignUpWithEmailAndPasswordForm>}
-      >
-        {() => (
-          <ClientSignUpWithEmailAndPasswordForm signUp={signUp}>
-            {children}
-          </ClientSignUpWithEmailAndPasswordForm>
-        )}
-      </ClientOnly>
-    </FormProvider>
-  );
-}
-
-function SignUpWithEmailAndPasswordForm(props: React.ComponentPropsWithoutRef<'form'>) {
-  return <form noValidate className="flex w-full flex-col gap-4" {...props} />;
-}
-
-function ClientSignUpWithEmailAndPasswordForm({
-  children,
-  signUp,
-}: {
-  children: React.ReactNode;
-  signUp: () => void;
-}) {
   const { t } = useTranslation(['auth', 'common']);
 
   const emailAndPasswordSignUp = useEmailAndPasswordSignUp(
     clientServices.authenticationClientService,
   );
 
-  const { handleSubmit, setError } = useFormContext<EmailAndPasswordFormValues>();
-
-  const handleEmailSignIn = handleSubmit(async ({ credentials: { email, password } }) => {
-    try {
-      await emailAndPasswordSignUp(email, password);
-      signUp();
-    } catch (error) {
-      if (error instanceof EmailExistsError) {
-        setError(
-          'credentials.email',
-          {
-            message: t('auth:sign_up.errors.email_already_exists'),
-          },
-          { shouldFocus: true },
-        );
-      } else if (error instanceof WeakPasswordError) {
-        setError(
-          'credentials.password',
-          {
-            message: t('auth:sign_up.errors.weak_password_error'),
-          },
-          { shouldFocus: true },
-        );
-      } else if (error instanceof NetworkRequestFailed) {
-        toast.error(t('common:errors.firebase_network_error'));
-      } else if (error instanceof TooManyRequest) {
-        toast.error(t('common:errors.too_many_requests'));
-      } else {
-        Sentry.captureException(error);
-        toast.error(t('common:errors.unknown'));
+  const form = useForm({
+    defaultValues: { credentials: { email: '', password: '' } } as EmailAndPasswordForm,
+    validators: { onSubmit: emailAndPasswordFormSchema },
+    onSubmit: async ({ value: { credentials }, formApi }) => {
+      try {
+        await emailAndPasswordSignUp(credentials.email, credentials.password);
+        signUp();
+      } catch (error) {
+        if (error instanceof EmailExistsError) {
+          formApi.setFieldMeta('credentials.email', (prev) => ({
+            ...prev,
+            errors: [t('auth:sign_up.errors.email_already_exists')],
+          }));
+        } else if (error instanceof WeakPasswordError) {
+          formApi.setFieldMeta('credentials.email', (prev) => ({
+            ...prev,
+            errors: [t('auth:sign_up.errors.weak_password_error')],
+          }));
+        } else if (error instanceof NetworkRequestFailed) {
+          toast.error(t('common:errors.firebase_network_error'));
+        } else if (error instanceof TooManyRequest) {
+          toast.error(t('common:errors.too_many_requests'));
+        } else {
+          Sentry.captureException(error);
+          toast.error(t('common:errors.unknown'));
+        }
       }
-    }
+    },
   });
 
   return (
-    <SignUpWithEmailAndPasswordForm
-      onSubmit={(e) => {
-        void handleEmailSignIn(e);
-      }}
-    >
-      {children}
-    </SignUpWithEmailAndPasswordForm>
+    <form className="flex w-full flex-col gap-4">
+      <form.Field name="credentials.email">
+        {(field) => (
+          <div className="flex flex-col items-start gap-2">
+            <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
+              {t('auth:sign_in.email')}
+            </FormLabel>
+            <FormInput
+              type="email"
+              className="w-full"
+              valid={field.state.meta.errors.length === 0}
+              defaultValue={field.state.value}
+              onChange={(e) => field.handleChange(e.currentTarget.value)}
+              onBlur={field.handleBlur}
+            />
+            <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+          </div>
+        )}
+      </form.Field>
+      <form.Field name="credentials.password">
+        {(field) => (
+          <div className="flex flex-col items-start gap-2">
+            <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
+              {t('auth:sign_in.password')}
+            </FormLabel>
+            <FormInput
+              className="w-full"
+              type="password"
+              autoComplete="new-password"
+              valid={field.state.meta.errors.length === 0}
+              defaultValue={field.state.value}
+              onChange={(e) => field.handleChange(e.currentTarget.value)}
+              onBlur={field.handleBlur}
+            />
+            <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+          </div>
+        )}
+      </form.Field>
+      <Button type="submit">{t('auth:sign_up')}</Button>
+    </form>
   );
 }
+
+export const StaticSignUpWithEmailAndPassword = () => {
+  const { t } = useTranslation(['auth', 'common']);
+
+  return (
+    <form className="flex w-full flex-col gap-4">
+      <div className="flex flex-col items-start gap-2">
+        <FormLabel name="credentials.email">{t('auth:sign_in.email')}</FormLabel>
+        <FormInput valid className="w-full" type="email" />
+      </div>
+      <div className="flex flex-col items-start gap-2">
+        <FormLabel name="credentials.password">{t('auth:sign_in.password')}</FormLabel>
+        <FormInput className="w-full" type="password" autoComplete="current-password" valid />
+      </div>
+      <Button>{t('auth:sign_in')}</Button>
+    </form>
+  );
+};

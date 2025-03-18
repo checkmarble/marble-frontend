@@ -50,7 +50,7 @@ export function EditCaseSnooze({
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
-  const form = useForm<EditSnoozeForm>({
+  const form = useForm({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         const finalValue = {
@@ -73,7 +73,7 @@ export function EditCaseSnooze({
     defaultValues: {
       snoozeUntil: snoozeUntil ?? null,
       caseId: caseId,
-    },
+    } as EditSnoozeForm,
   });
 
   return (

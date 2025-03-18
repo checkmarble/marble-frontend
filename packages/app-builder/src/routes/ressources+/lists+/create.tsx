@@ -1,24 +1,19 @@
-import {
-  FormControl,
-  FormError,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@app-builder/components/Form';
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
-import { parseFormSafe } from '@app-builder/utils/input-validation';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
-import { Form, FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
-import { Button, Input, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -31,71 +26,70 @@ const createListFormSchema = z.object({
   description: z.string(),
 });
 
+type CreateListForm = z.infer<typeof createListFormSchema>;
+
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
-  const { customListsRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const {
+    authService,
+    toastSessionService: { getSession, commitSession },
+  } = serverServices;
 
-  const parsedForm = await parseFormSafe(request, createListFormSchema);
-  if (!parsedForm.success) {
-    parsedForm.error.flatten((issue) => issue);
+  const [raw, session, { customListsRepository }] = await Promise.all([
+    request.json(),
+    getSession(request),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
 
-    return json({
-      success: false as const,
-      values: parsedForm.formData,
-      error: parsedForm.error.format(),
-    });
-  }
-  const { name, description } = parsedForm.data;
+  const { success, error, data } = createListFormSchema.safeParse(raw);
+
+  if (!success) return json({ success: 'false', errors: error.flatten() });
 
   try {
-    const result = await customListsRepository.createCustomList({
-      name: name,
-      description: description,
-    });
+    const result = await customListsRepository.createCustomList(data);
 
     return redirect(getRoute('/lists/:listId', { listId: fromUUID(result.id) }));
   } catch (error) {
-    if (isStatusConflictHttpError(error)) {
-      const { getSession, commitSession } = serverServices.toastSessionService;
-      const session = await getSession(request);
-      setToastMessage(session, {
-        type: 'error',
-        messageKey: 'common:errors.list.duplicate_list_name',
-      });
-      return json(
-        {
-          success: false as const,
-          values: parsedForm.data,
-          error: error,
-        },
-        { headers: { 'Set-Cookie': await commitSession(session) } },
-      );
-    } else {
-      return json({
-        success: false as const,
-        values: parsedForm.data,
-        error: error,
-      });
-    }
+    setToastMessage(session, {
+      type: 'error',
+      messageKey: isStatusConflictHttpError(error)
+        ? 'common:errors.list.duplicate_list_name'
+        : 'common:errors.unknown',
+    });
+
+    return json(
+      { success: 'false', error: [] },
+      { headers: { 'Set-Cookie': await commitSession(session) } },
+    );
   }
 }
 
 export function CreateList() {
   const { t } = useTranslation(handle.i18n);
-  const fetcher = useFetcher<typeof action>();
+  const { submit } = useFetcher<typeof action>();
   const hydrated = useHydrated();
 
-  const formMethods = useForm<z.infer<typeof createListFormSchema>>({
-    progressive: true,
-    resolver: zodResolver(createListFormSchema),
+  const form = useForm({
     defaultValues: {
       name: '',
       description: '',
+    } as CreateListForm,
+    onSubmit: ({ value, formApi }) => {
+      if (formApi.state.isValid) {
+        submit(value, {
+          method: 'POST',
+          action: getRoute('/ressources/lists/create'),
+          encType: 'application/json',
+        });
+      }
+    },
+    validators: {
+      onChangeAsync: createListFormSchema,
+      onBlurAsync: createListFormSchema,
+      onSubmitAsync: createListFormSchema,
     },
   });
-  const { control } = formMethods;
 
   return (
     <Modal.Root>
@@ -106,67 +100,63 @@ export function CreateList() {
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <Form
-          control={control}
-          onSubmit={({ formData }) => {
-            fetcher.submit(formData, {
-              method: 'POST',
-              action: getRoute('/ressources/lists/create'),
-            });
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
           }}
         >
-          <FormProvider {...formMethods}>
-            <Modal.Title>{t('lists:create_list.title')}</Modal.Title>
-            <div className="flex flex-col gap-6 p-6">
-              <div className="flex flex-1 flex-col gap-4">
-                <FormField
-                  name="name"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2">
-                      <FormLabel>{t('lists:name')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder={t('lists:create_list.name_placeholder')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormError />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  name="description"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2">
-                      <FormLabel>{t('lists:description')}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder={t('lists:create_list.description_placeholder')}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormError />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="flex flex-1 flex-row gap-2">
-                <Modal.Close asChild>
-                  <Button className="flex-1" variant="secondary">
-                    {t('common:cancel')}
-                  </Button>
-                </Modal.Close>
-                <Button className="flex-1" variant="primary" type="submit" name="create">
-                  {t('lists:create_list.button_accept')}
-                </Button>
-              </div>
+          <Modal.Title>{t('lists:create_list.title')}</Modal.Title>
+          <div className="flex flex-col gap-6 p-6">
+            <div className="flex flex-1 flex-col gap-4">
+              <form.Field name="name">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <FormLabel name={field.name}>{t('lists:name')}</FormLabel>
+                    <FormInput
+                      type="text"
+                      name={field.name}
+                      defaultValue={field.state.value}
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
+                      onBlur={field.handleBlur}
+                      valid={field.state.meta.errors.length === 0}
+                      placeholder={t('lists:create_list.name_placeholder')}
+                    />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                )}
+              </form.Field>
+              <form.Field name="description">
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <FormLabel name={field.name}>{t('lists:description')}</FormLabel>
+                    <FormInput
+                      type="text"
+                      name={field.name}
+                      defaultValue={field.state.value}
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
+                      onBlur={field.handleBlur}
+                      valid={field.state.meta.errors.length === 0}
+                      placeholder={t('lists:create_list.description_placeholder')}
+                    />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                )}
+              </form.Field>
             </div>
-          </FormProvider>
-        </Form>
+            <div className="flex flex-1 flex-row gap-2">
+              <Modal.Close asChild>
+                <Button className="flex-1" type="button" variant="secondary">
+                  {t('common:cancel')}
+                </Button>
+              </Modal.Close>
+              <Button className="flex-1" variant="primary" type="submit" name="create">
+                {t('lists:create_list.button_accept')}
+              </Button>
+            </div>
+          </div>
+        </form>
       </Modal.Content>
     </Modal.Root>
   );

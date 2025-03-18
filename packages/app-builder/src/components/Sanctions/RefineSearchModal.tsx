@@ -21,6 +21,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Input, ModalV2, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { type z } from 'zod';
 
 import { MatchResult } from './MatchResult';
 import { sanctionsI18n } from './sanctions-i18n';
@@ -69,11 +70,10 @@ export function RefineSearchModal({
   const onClose = useCallbackRef(_onClose);
 
   const form = useForm({
-    // @ts-expect-error we don't want default value for entityType...
     defaultValues: {
       decisionId: decisionId,
       fields: {},
-    },
+    } as z.infer<typeof refineSearchSchema>,
     validators: {
       onChange: refineSearchSchema,
     },

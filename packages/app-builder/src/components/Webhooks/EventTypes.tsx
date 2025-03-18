@@ -5,21 +5,26 @@ import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Tooltip } from 'ui-design-system';
+import { Input, SelectWithCombobox, Tooltip } from 'ui-design-system';
 
-import { FormSelectWithCombobox } from '../Form/FormSelectWithCombobox';
-
-export function FormSelectEvents({
+export function SelectEvents({
   selectedEventTypes,
   className,
   webhookStatus,
+  name,
+  onChange,
+  onBlur,
+  disabled,
 }: {
   selectedEventTypes: string[];
   className?: string;
   webhookStatus: FeatureAccessDto;
+  disabled?: boolean;
+  name?: string;
+  onChange?: (value: string[]) => void;
+  onBlur?: () => void;
 }) {
   const { t } = useTranslation(['settings']);
-
   const [searchValue, setSearchValue] = React.useState('');
   const deferredSearchValue = React.useDeferredValue(searchValue);
 
@@ -29,12 +34,18 @@ export function FormSelectEvents({
   );
 
   return (
-    <FormSelectWithCombobox.Root
+    <SelectWithCombobox.Root
       selectedValue={selectedEventTypes}
       searchValue={searchValue}
       onSearchValueChange={setSearchValue}
+      onSelectedValueChange={onChange}
     >
-      <FormSelectWithCombobox.Select className={className}>
+      <SelectWithCombobox.Select
+        name={name}
+        disabled={disabled}
+        onBlur={onBlur}
+        className={className}
+      >
         {selectedEventTypes.length > 0 ? (
           <EventTypes eventTypes={selectedEventTypes} />
         ) : (
@@ -42,17 +53,13 @@ export function FormSelectEvents({
             {t('settings:webhooks.event_types.placeholder')}
           </span>
         )}
-        <FormSelectWithCombobox.Arrow />
-      </FormSelectWithCombobox.Select>
-      <FormSelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
-        <FormSelectWithCombobox.Combobox
-          render={<Input className="shrink-0" />}
-          autoSelect
-          autoFocus
-        />
-        <FormSelectWithCombobox.ComboboxList>
+        <SelectWithCombobox.Arrow />
+      </SelectWithCombobox.Select>
+      <SelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
+        <SelectWithCombobox.Combobox render={<Input className="shrink-0" />} autoSelect autoFocus />
+        <SelectWithCombobox.ComboboxList>
           {matches.map((event) => (
-            <FormSelectWithCombobox.ComboboxItem
+            <SelectWithCombobox.ComboboxItem
               key={event}
               value={event}
               disabled={
@@ -63,16 +70,16 @@ export function FormSelectEvents({
               <EventType>
                 <Highlight text={event} query={deferredSearchValue} />
               </EventType>
-            </FormSelectWithCombobox.ComboboxItem>
+            </SelectWithCombobox.ComboboxItem>
           ))}
           {matches.length === 0 ? (
             <p className="text-grey-50 flex items-center justify-center p-2">
               {t('settings:webhooks.event_types.empty_matches')}
             </p>
           ) : null}
-        </FormSelectWithCombobox.ComboboxList>
-      </FormSelectWithCombobox.Popover>
-    </FormSelectWithCombobox.Root>
+        </SelectWithCombobox.ComboboxList>
+      </SelectWithCombobox.Popover>
+    </SelectWithCombobox.Root>
   );
 }
 

@@ -6,6 +6,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { FormSelectTimezone } from '@app-builder/components/Settings/FormSelectTimezone';
 import { isAdmin } from '@app-builder/models';
 import { serverServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { UTC, validTimezones } from '@app-builder/utils/validTimezones';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -97,7 +98,7 @@ export default function Users() {
   const { organization, user, entitlements } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
 
-  const form = useForm<EditOrganizationForm>({
+  const form = useForm({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) fetcher.submit(value, { method: 'PATCH' });
     },
@@ -111,7 +112,7 @@ export default function Users() {
       defaultScenarioTimezone: organization.defaultScenarioTimezone ?? UTC,
       sanctionLimit: organization.sanctionLimit ?? 0,
       sanctionThreshold: organization.sanctionThreshold ?? 0,
-    },
+    } as EditOrganizationForm,
   });
 
   return (
@@ -182,7 +183,7 @@ export default function Users() {
                           placeholder={t('settings:scenario_sanction_limit_placeholder')}
                           valid={field.state.meta.errors.length === 0}
                         />
-                        <FormErrorOrDescription errors={field.state.meta.errors} />
+                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                       </div>
                     )}
                   </form.Field>
@@ -205,7 +206,7 @@ export default function Users() {
                           placeholder={t('settings:scenario_sanction_threshold_placeholder')}
                           valid={field.state.meta.errors.length === 0}
                         />
-                        <FormErrorOrDescription errors={field.state.meta.errors} />
+                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                       </div>
                     )}
                   </form.Field>
