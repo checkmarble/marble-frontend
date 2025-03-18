@@ -1,5 +1,5 @@
 import { type RuleSnoozeDetail } from '@app-builder/models/rule-snooze';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -7,7 +7,7 @@ import { useFetcher } from '@remix-run/react';
 import * as React from 'react';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { ruleSnoozeRepository, scenario, scenarioIterationRuleRepository } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),

@@ -8,7 +8,7 @@ import {
   senderIbanSchema,
   transferEndToEndIdSchema,
 } from '@app-builder/models/transfer-alert';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -35,7 +35,7 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [session, t, rawData, { transferAlertRepository }] = await Promise.all([
     getSession(request),

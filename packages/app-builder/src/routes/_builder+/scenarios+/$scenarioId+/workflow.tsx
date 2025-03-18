@@ -22,7 +22,7 @@ import {
   scenarioUpdateWorkflowInputSchema,
 } from '@app-builder/models/scenario';
 import { isCreateInboxAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type LinksFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -57,7 +57,7 @@ export const handle = {
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: workflowFlowStyles }];
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const scenarioId = fromParams(params, 'scenarioId');
 
   const { user, scenario, inbox, dataModelRepository, entitlements } =
@@ -100,7 +100,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
   const scenarioId = fromParams(params, 'scenarioId');
   const { scenario, entitlements } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),

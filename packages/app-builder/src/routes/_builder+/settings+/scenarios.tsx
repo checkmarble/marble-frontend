@@ -5,7 +5,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { FormSelectTimezone } from '@app-builder/components/Settings/FormSelectTimezone';
 import { isAdmin } from '@app-builder/models';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { UTC, validTimezones } from '@app-builder/utils/validTimezones';
@@ -18,7 +18,7 @@ import { Button } from 'ui-design-system';
 import { z } from 'zod';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const {
     organization: repository,
     user,
@@ -47,7 +47,7 @@ export async function action({ request }: LoaderFunctionArgs) {
   const {
     authService,
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [session, formData, { organization: repository }] = await Promise.all([
     getSession(request),

@@ -8,7 +8,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type DataModel, isStatusConflictHttpError, type TableModel } from '@app-builder/models';
 import { getPivotOptions, type PivotOption } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -46,7 +46,7 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [session, t, raw, { dataModelRepository }] = await Promise.all([
     getSession(request),

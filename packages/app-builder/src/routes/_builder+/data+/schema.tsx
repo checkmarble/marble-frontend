@@ -2,7 +2,7 @@ import { TabLink } from '@app-builder/components';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { DataModelFlow, dataModelFlowStyles } from '@app-builder/components/Data/DataModelFlow';
 import { useDataModel } from '@app-builder/services/data/data-model';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LinksFunction, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -16,7 +16,7 @@ export const handle = {
 export const links: LinksFunction = () => [{ rel: 'stylesheet', href: dataModelFlowStyles }];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { dataModelRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

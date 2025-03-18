@@ -17,7 +17,7 @@ import {
   executeAScenarioDocHref,
 } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
@@ -36,7 +36,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { customListsRepository, editor, dataModelRepository, scenario } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
@@ -63,7 +63,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const {
     authService,
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
   const session = await getSession(request);
   const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),

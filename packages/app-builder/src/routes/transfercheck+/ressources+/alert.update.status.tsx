@@ -7,7 +7,7 @@ import {
   useAlertStatuses,
 } from '@app-builder/components/TransferAlerts/AlertStatus';
 import { transferAlerStatuses } from '@app-builder/models/transfer-alert';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -28,7 +28,7 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [session, t, rawData, { transferAlertRepository }] = await Promise.all([
     getSession(request),

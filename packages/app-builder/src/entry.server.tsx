@@ -10,7 +10,7 @@ import { renderToPipeableStream } from 'react-dom/server';
 import { I18nextProvider } from 'react-i18next';
 import { PassThrough } from 'stream';
 
-import { serverServices } from './services/init.server';
+import { initServerServices } from './services/init.server';
 import { captureUnexpectedRemixError } from './services/monitoring';
 import { getServerEnv } from './utils/environment';
 
@@ -22,7 +22,7 @@ export default async function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext,
 ) {
-  const { i18nextService } = serverServices;
+  const { i18nextService } = initServerServices(request);
   const i18n = await i18nextService.getI18nextServerInstance(request, remixContext);
 
   const App = (

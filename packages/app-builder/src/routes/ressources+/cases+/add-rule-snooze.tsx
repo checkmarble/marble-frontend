@@ -8,7 +8,7 @@ import { LoadingIcon } from '@app-builder/components/Spinner';
 import { adaptDateTimeFieldCodes, type DurationUnit } from '@app-builder/models/duration';
 import { isStatusConflictHttpError } from '@app-builder/models/http-errors';
 import { ruleSnoozesDocHref } from '@app-builder/services/documentation-href';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -38,7 +38,7 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [t, session, rawData, { decision }] = await Promise.all([
     getFixedT(request, ['common', 'cases']),

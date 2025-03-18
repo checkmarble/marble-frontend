@@ -9,7 +9,7 @@ import { LeftSidebar, ToggleSidebar } from '@app-builder/components/Layout/LeftS
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleAdmin, isTransferCheckUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { segment, useSegmentIdentification } from '@app-builder/services/segment';
 import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
 import { CONFLICT } from '@app-builder/utils/http/http-status-codes';
@@ -23,7 +23,7 @@ import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, versionRepository } = serverServices;
+  const { authService, versionRepository } = initServerServices(request);
   const { user, partnerRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

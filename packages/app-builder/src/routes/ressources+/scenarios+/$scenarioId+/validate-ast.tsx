@@ -9,7 +9,7 @@ import {
   type ReturnValue,
   type ReturnValueType,
 } from '@app-builder/models/node-evaluation';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs } from '@remix-run/node';
@@ -132,7 +132,7 @@ export type AstValidationFunction = (
 ) => Promise<NodeEvaluation>;
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

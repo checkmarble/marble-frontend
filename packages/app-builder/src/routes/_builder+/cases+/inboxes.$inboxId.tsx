@@ -15,7 +15,7 @@ import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { type Case } from '@app-builder/models/cases';
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -59,7 +59,7 @@ export const buildQueryParams = (
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { cases } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

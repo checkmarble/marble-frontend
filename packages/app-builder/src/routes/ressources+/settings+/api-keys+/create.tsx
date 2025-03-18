@@ -4,7 +4,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { apiKeyRoleOptions } from '@app-builder/models/api-keys';
 import { tKeyForApiKeyRole } from '@app-builder/services/i18n/translation-keys/api-key';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
@@ -29,7 +29,7 @@ export async function action({ request }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
     authSessionService: { getSession: getAuthSession, commitSession: commitAuthSession },
     i18nextService: { getFixedT },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [data, { apiKey }, session, authSession, t] = await Promise.all([
     request.json(),

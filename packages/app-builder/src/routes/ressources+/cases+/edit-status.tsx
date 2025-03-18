@@ -6,7 +6,7 @@ import {
   useCaseStatuses,
 } from '@app-builder/components/Cases';
 import { type CaseStatus as CasesStatusType, caseStatuses } from '@app-builder/models/cases';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -30,7 +30,7 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>;
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
 
   const [raw, { cases }] = await Promise.all([
     request.json(),

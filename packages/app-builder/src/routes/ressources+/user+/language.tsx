@@ -1,5 +1,5 @@
 import { supportedLngs } from '@app-builder/services/i18n/i18n-config';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -16,7 +16,7 @@ const formSchema = z.object({
 });
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { i18nextService, toastSessionService } = serverServices;
+  const { i18nextService, toastSessionService } = initServerServices(request);
 
   try {
     const { preferredLanguage } = await parseForm(request, formSchema);

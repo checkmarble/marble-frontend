@@ -23,7 +23,7 @@ import { knownOutcomes, type SanctionOutcome } from '@app-builder/models/outcome
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -92,7 +92,7 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { customListsRepository, editor, dataModelRepository, sanctionCheck } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
@@ -152,7 +152,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [session, t, raw, { scenarioIterationSanctionRepository }] = await Promise.all([
     getSession(request),

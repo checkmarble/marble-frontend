@@ -10,7 +10,7 @@ import {
   EditorModeContextProvider,
 } from '@app-builder/services/editor/editor-mode';
 import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { findRuleValidation } from '@app-builder/services/validation';
 import { formatDateRelative, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
@@ -74,7 +74,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { user, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

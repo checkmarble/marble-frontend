@@ -28,7 +28,7 @@ import {
   isCreateSnoozeAvailable,
   isReadSnoozeAvailable,
 } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
@@ -98,7 +98,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const {
     user,
     entitlements,

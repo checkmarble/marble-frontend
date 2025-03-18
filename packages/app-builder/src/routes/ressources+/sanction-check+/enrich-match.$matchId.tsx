@@ -1,7 +1,7 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { sanctionsI18n } from '@app-builder/components/Sanctions/sanctions-i18n';
 import { isStatusConflictHttpError } from '@app-builder/models';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -16,7 +16,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
   const { sanctionCheck } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

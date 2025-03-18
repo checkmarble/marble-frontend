@@ -8,7 +8,7 @@ import {
   isReadApiKeyAvailable,
 } from '@app-builder/services/feature-access';
 import { tKeyForApiKeyRole } from '@app-builder/services/i18n/translation-keys/api-key';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, authSessionService } = serverServices;
+  const { authService, authSessionService } = initServerServices(request);
   const { apiKey, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
