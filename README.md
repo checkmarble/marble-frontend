@@ -6,9 +6,19 @@ This is the frontend marble monorepo. We use `pnpm` to handle dependancies.
 
 This README is a global README for the monorepo. Each package may have its own README. You can find them in the `packages/*/README.md` files.
 
+> **Disclaimer**
+>
+> This repository’s README file is intended for internal use by our development team. The documentation provided here is specifically designed for setting up and running the project on macOS.
+>
+> While external contributions and interest are appreciated, please note that we do not officially support setups on other operating systems. If you encounter issues outside of the macOS environment, support may be limited.
+>
+> For general documentation and user-facing guides, please refer to our main repository: [Marble Documentation](https://github.com/checkmarble/marble/blob/main/README.md).
+
 ### Installations
 
 #### Install pnpm
+
+[Install mise-en-place](https://mise.jdx.dev/getting-started.html) or alternatively install pnpm independently
 
 ```bash
 brew install pnpm
@@ -16,11 +26,29 @@ brew install pnpm
 
 > NB: more installation options [here](https://pnpm.io/installation)
 
-To enable shell autocompletion (works for bash, zsh and fish), run:
+To enable shell autocompletion, run:
+(Bash)
 
 ```bash
-pnpm install-completion
+pnpm completion bash > ~/completion-for-pnpm.bash
+echo 'source ~/completion-for-pnpm.bash' >> ~/.bashrc
+
 ```
+
+(zsh)
+
+```bash
+pnpm completion zsh > ~/completion-for-pnpm.zsh
+echo 'source ~/completion-for-pnpm.zsh' >> ~/.zshrc
+```
+
+(Fish)
+
+```bash
+pnpm completion fish > ~/.config/fish/completions/pnpm.fish
+```
+
+More info at https://pnpm.io/completion
 
 #### Install dependencies
 
@@ -37,6 +65,10 @@ All required configuration settings are already included inside the `.vscode/set
 ### Launch
 
 Each packages are located in the `packages` folder. To work in a package, you can use the `--filter` option of `pnpm` to trigger the dedicated scripts present in each `packages/*/package.json`. Exemple to start the app builder in dev mode:
+
+> **Before first launch.**
+>
+> Follow the [app-builder package README](packages/app-builder/README.md) to setup its env file.
 
 ```bash
 # This will run the dev script in the ./packages/app-builder/package.json
