@@ -3,7 +3,7 @@ import { HelpCenter, useMarbleCoreResources } from '@app-builder/components/Help
 import { LeftSidebar, ToggleSidebar } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
 import { UserInfo } from '@app-builder/components/UserInfo';
-import { isMarbleCoreUser } from '@app-builder/models';
+import { isHttpError, isMarbleCoreUser } from '@app-builder/models';
 import { type ScenarioIteration } from '@app-builder/models/scenario-iteration';
 import { type SanctionCheckRepository } from '@app-builder/repositories/SanctionCheckRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
@@ -19,6 +19,7 @@ import { forbidden } from '@app-builder/utils/http/http-responses';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
+import { captureRemixServerException } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -69,15 +70,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   const firstSettings = getSettings(user)[0];
-  const [organizationDetail, orgUsers, orgTags, versions, datasetFreshnessInfo] = await Promise.all(
-    [
-      organization.getCurrentOrganization(),
-      organization.listUsers(),
-      organization.listTags(),
-      versionRepository.getBackendVersion(),
-      getDatasetFreshnessInfo(sanctionCheck, scenario),
-    ],
-  );
+  const [organizationDetail, orgUsers, orgTags, versions] = await Promise.all([
+    organization.getCurrentOrganization(),
+    organization.listUsers(),
+    organization.listTags(),
+    versionRepository.getBackendVersion(),
+  ]);
+
+  let datasetFreshnessInfo: { lastExport: string } | null = null;
+  try {
+    datasetFreshnessInfo = await getDatasetFreshnessInfo(sanctionCheck, scenario);
+  } catch (err) {
+    if (!isHttpError(err)) {
+      captureRemixServerException(err, 'remix.server', request, true);
+    }
+  }
 
   return {
     user,
