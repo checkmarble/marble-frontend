@@ -23,7 +23,7 @@ export const FieldNode = ({
       placeholder={placeholder}
       onSave={(node) => {
         if (isKnownOperandAstNode(node)) {
-          onChange?.(isUndefinedAstNode(node) ? node : null);
+          onChange?.(!isUndefinedAstNode(node) ? node : null);
         }
       }}
     />
