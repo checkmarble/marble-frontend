@@ -6,7 +6,7 @@
   "type": "module",
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",
-    "@types/node": "22.7.7"
+    "@types/node": "22.13.10"
   },
   "scripts": {
     "lint": "eslint .",
