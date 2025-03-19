@@ -5,7 +5,7 @@ import {
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
 import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { notFound } from '@app-builder/utils/http/http-responses';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -32,7 +32,7 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { user, analytics, entitlements } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

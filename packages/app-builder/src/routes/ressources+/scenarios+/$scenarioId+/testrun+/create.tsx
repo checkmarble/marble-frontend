@@ -8,7 +8,7 @@ import { isStatusConflictHttpError } from '@app-builder/models';
 import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -38,7 +38,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
   const scenarioId = fromParams(params, 'scenarioId');
 
   const [t, session, rawData, { testRun }] = await Promise.all([

@@ -3,7 +3,7 @@ import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { CreateList } from '@app-builder/routes/ressources+/lists+/create';
 import { isCreateListAvailable } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { user, customListsRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

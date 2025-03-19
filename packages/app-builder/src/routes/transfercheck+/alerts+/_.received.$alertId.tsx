@@ -2,7 +2,7 @@ import { ErrorComponent, Page } from '@app-builder/components';
 import { AlertData } from '@app-builder/components/TransferAlerts/AlertData';
 import { alertsI18n } from '@app-builder/components/TransferAlerts/alerts-i18n';
 import { isNotFoundHttpError } from '@app-builder/models';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { notFound } from '@app-builder/utils/http/http-responses';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
@@ -23,7 +23,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { transferAlertRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

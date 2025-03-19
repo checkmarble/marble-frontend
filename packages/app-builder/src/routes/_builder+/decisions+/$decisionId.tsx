@@ -19,7 +19,7 @@ import { SanctionCheckDetail } from '@app-builder/components/Decisions/SanctionC
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { isNotFoundHttpError } from '@app-builder/models';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { notFound } from '@app-builder/utils/http/http-responses';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
@@ -65,7 +65,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { decision, editor, customListsRepository, scenario, dataModelRepository, sanctionCheck } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),

@@ -4,7 +4,7 @@ import {
   type PayloadAstNode,
 } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs } from '@remix-run/node';
@@ -18,7 +18,7 @@ export type BuilderOptionsResource = {
 };
 
 export async function loader({ request, params }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { editor, scenario, dataModelRepository, customListsRepository } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),

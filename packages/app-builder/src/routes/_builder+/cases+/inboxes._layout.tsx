@@ -7,7 +7,7 @@ import {
 import { casesI18n } from '@app-builder/components/Cases';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -34,7 +34,7 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { user, inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

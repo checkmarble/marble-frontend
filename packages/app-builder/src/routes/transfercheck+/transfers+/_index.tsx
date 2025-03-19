@@ -3,7 +3,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { transfersI18n } from '@app-builder/components/Transfers/transfers-i18n';
 import { TransfersList } from '@app-builder/components/Transfers/TransfersList';
 import { type Transfer } from '@app-builder/models/transfer';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Form, useLoaderData, useNavigation, useSubmit } from '@remix-run/react';
@@ -19,7 +19,7 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { transferRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

@@ -1,7 +1,7 @@
 import { ErrorComponent } from '@app-builder/components';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { isMarbleCoreUser, isTransferCheckUser } from '@app-builder/models';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { segment } from '@app-builder/services/segment';
 import { forbidden } from '@app-builder/utils/http/http-responses';
 import { FORBIDDEN } from '@app-builder/utils/http/http-status-codes';
@@ -26,7 +26,7 @@ export const handle = {
  */
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

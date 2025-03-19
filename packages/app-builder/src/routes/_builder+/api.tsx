@@ -4,7 +4,7 @@ import {
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LinksFunction, type LoaderFunctionArgs } from '@remix-run/node';
@@ -40,7 +40,7 @@ export const links: LinksFunction = () =>
   swaggercss ? [{ rel: 'stylesheet', href: swaggercss }] : [];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { dataModelRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

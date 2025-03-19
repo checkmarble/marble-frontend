@@ -2,7 +2,7 @@ import { ErrorComponent } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
@@ -34,7 +34,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

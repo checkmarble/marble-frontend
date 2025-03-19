@@ -10,7 +10,7 @@ import {
   isEditUserAvailable,
   isReadUserAvailable,
 } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -22,7 +22,7 @@ import * as R from 'remeda';
 import { Table, useTable } from 'ui-design-system';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { user, inbox, entitlements } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

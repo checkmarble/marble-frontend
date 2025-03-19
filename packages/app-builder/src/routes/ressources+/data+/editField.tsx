@@ -8,7 +8,7 @@ import {
   type LinkToSingle,
   UniqueDataTypes,
 } from '@app-builder/models';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { captureUnexpectedRemixError } from '@app-builder/services/monitoring';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
@@ -38,7 +38,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [session, raw, { dataModelRepository }] = await Promise.all([
     getSession(request),

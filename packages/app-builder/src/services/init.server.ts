@@ -41,18 +41,21 @@ function makeServerServices(repositories: ServerRepositories) {
   };
 }
 
-function initServerServices() {
+export function initServerServices(request: Request) {
   checkEnv();
 
   const { getMarbleCoreAPIClientWithAuth, marbleCoreApiClient } = initializeMarbleCoreAPIClient({
+    request,
     baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
   });
 
   const { getTransfercheckAPIClientWithAuth } = initializeTransfercheckAPIClient({
+    request,
     baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
   });
 
   const { getLicenseAPIClientWithAuth, licenseApi } = initializeLicenseAPIClient({
+    request,
     baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
   });
 
@@ -76,5 +79,3 @@ function initServerServices() {
 
   return makeServerServices(serverRepositories);
 }
-
-export const serverServices = initServerServices();

@@ -14,7 +14,7 @@ import {
   isEditInboxAvailable,
   isEditInboxUserAvailable,
 } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -57,7 +57,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const {
     user,
     inbox: inboxApi,

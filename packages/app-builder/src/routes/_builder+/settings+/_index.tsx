@@ -1,4 +1,4 @@
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { type Namespace } from 'i18next';
@@ -10,7 +10,7 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

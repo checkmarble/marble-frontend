@@ -1,4 +1,4 @@
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 
@@ -12,13 +12,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
     redirectTo = `${redirectTo}?redirectTo=${redirectToParam}`;
   }
 
-  await serverServices.authService.logout(request, {
+  await initServerServices(request).authService.logout(request, {
     redirectTo,
   });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  await serverServices.authService.logout(request, {
+  await initServerServices(request).authService.logout(request, {
     redirectTo: getRoute('/sign-in'),
   });
 }

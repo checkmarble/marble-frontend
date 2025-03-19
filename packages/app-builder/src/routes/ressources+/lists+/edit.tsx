@@ -1,7 +1,7 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -28,7 +28,7 @@ const editListFormSchema = z.object({
 type EditListForm = z.infer<typeof editListFormSchema>;
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
 
   const [raw, { customListsRepository }] = await Promise.all([
     request.json(),

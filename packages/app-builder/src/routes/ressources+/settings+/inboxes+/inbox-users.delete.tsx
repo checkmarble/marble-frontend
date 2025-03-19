@@ -1,5 +1,5 @@
 import { type InboxUser } from '@app-builder/models/inbox';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -22,7 +22,7 @@ const deleteInboxUserFormSchema = z.object({
 });
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

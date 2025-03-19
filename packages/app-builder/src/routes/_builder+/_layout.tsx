@@ -9,7 +9,7 @@ import { type SanctionCheckRepository } from '@app-builder/repositories/Sanction
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
 import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { OrganizationDetailsContextProvider } from '@app-builder/services/organization/organization-detail';
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
 import { OrganizationUsersContextProvider } from '@app-builder/services/organization/organization-users';
@@ -59,7 +59,7 @@ async function getDatasetFreshnessInfo(
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, versionRepository } = serverServices;
+  const { authService, versionRepository } = initServerServices(request);
   const { user, organization, entitlements, sanctionCheck, scenario } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),

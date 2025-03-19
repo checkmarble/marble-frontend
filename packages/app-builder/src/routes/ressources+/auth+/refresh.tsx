@@ -1,5 +1,5 @@
 import { clientServices } from '@app-builder/services/init.client';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { useInterval, useVisibilityChange } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, redirect } from '@remix-run/node';
@@ -11,7 +11,7 @@ export function loader() {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   return await authService.refresh(request, {
     failureRedirect: getRoute('/ressources/auth/logout'),
   });

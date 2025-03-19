@@ -1,5 +1,5 @@
 import { FilesList } from '@app-builder/components/Files/FilesList';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import {
   getSanctionCheckFileDownloadEndpoint,
   getSanctionCheckFileUploadEndpoint,
@@ -11,7 +11,7 @@ import { type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { sanctionCheck: sanctionCheckRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

@@ -1,6 +1,6 @@
 import { Nudge } from '@app-builder/components/Nudge';
 import { isAccessible } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
@@ -18,7 +18,7 @@ export const handle = {
 };
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { scenarioIterationSanctionRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

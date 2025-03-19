@@ -12,7 +12,7 @@ import { TestRunSelector } from '@app-builder/components/Scenario/TestRun/TestRu
 import { isForbiddenHttpError, isNotFoundHttpError, type User } from '@app-builder/models';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
@@ -28,7 +28,7 @@ import { Icon } from 'ui-icons';
 import { useCurrentScenario, useScenarioIterations } from '../_layout';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const scenarioId = fromParams(params, 'scenarioId');
   const { testRun } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),

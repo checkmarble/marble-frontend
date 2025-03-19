@@ -3,7 +3,7 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusBadRequestHttpError } from '@app-builder/models';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -35,7 +35,7 @@ const addToCaseFormSchema = z.discriminatedUnion('newCase', [
 ]);
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { inbox, cases } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -55,7 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [raw, session, { cases }] = await Promise.all([
     request.json(),

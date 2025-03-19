@@ -3,7 +3,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -22,7 +22,7 @@ const createCaseFormSchema = z.object({
 });
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -36,7 +36,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [raw, session, { cases }] = await Promise.all([
     request.json(),

@@ -5,7 +5,7 @@ import {
   SignUpWithEmailAndPassword,
   StaticSignUpWithEmailAndPassword,
 } from '@app-builder/components/Auth/SignUpWithEmailAndPassword';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useNavigate } from '@remix-run/react';
@@ -20,7 +20,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const {
     authService,
     authSessionService: { getSession },
-  } = serverServices;
+  } = initServerServices(request);
   await authService.isAuthenticated(request, {
     successRedirect: getRoute('/app-router'),
   });

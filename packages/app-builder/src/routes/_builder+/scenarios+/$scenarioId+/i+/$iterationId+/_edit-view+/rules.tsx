@@ -15,7 +15,7 @@ import { type ScenarioIterationRule } from '@app-builder/models/scenario-iterati
 import { CreateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create';
 import { CreateSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import {
   findRuleValidation,
   hasRuleErrors,
@@ -49,7 +49,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { scenarioIterationRuleRepository, entitlements, scenario } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),

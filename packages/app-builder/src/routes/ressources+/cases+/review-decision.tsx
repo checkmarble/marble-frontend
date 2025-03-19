@@ -8,7 +8,7 @@ import { LoadingIcon } from '@app-builder/components/Spinner';
 import { nonPendingReviewStatuses } from '@app-builder/models/decision';
 import { type SanctionCheck } from '@app-builder/models/sanction-check';
 import { blockingReviewDocHref } from '@app-builder/services/documentation-href';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import type * as Ariakit from '@ariakit/react';
@@ -33,7 +33,7 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [t, session, rawData, { cases }] = await Promise.all([
     getFixedT(request, ['common']),

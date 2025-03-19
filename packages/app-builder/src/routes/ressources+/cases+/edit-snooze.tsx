@@ -1,6 +1,6 @@
 import { CalloutV2 } from '@app-builder/components';
 import { casesI18n } from '@app-builder/components/Cases';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -23,7 +23,7 @@ const editSnoozeSchema = z.object({
 type EditSnoozeForm = z.infer<typeof editSnoozeSchema>;
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
 
   const [raw, { cases }] = await Promise.all([
     request.json(),

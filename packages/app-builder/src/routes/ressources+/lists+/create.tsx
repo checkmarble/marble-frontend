@@ -3,7 +3,7 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -32,7 +32,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [raw, session, { customListsRepository }] = await Promise.all([
     request.json(),

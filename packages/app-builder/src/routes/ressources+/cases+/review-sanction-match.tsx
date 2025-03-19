@@ -2,7 +2,7 @@ import { Callout } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { StatusRadioGroup } from '@app-builder/components/Sanctions/StatusRadioGroup';
 import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -26,7 +26,7 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [session, t, raw, { sanctionCheck }] = await Promise.all([
     getSession(request),

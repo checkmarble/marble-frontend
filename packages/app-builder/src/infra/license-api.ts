@@ -1,4 +1,9 @@
-import { fetchWithAuthMiddleware, licenseApi, type TokenService } from 'marble-api';
+import {
+  createBasicFetch,
+  createFetchWithAuthMiddleware,
+  licenseApi,
+  type TokenService,
+} from 'marble-api';
 import * as R from 'remeda';
 import { type FunctionKeys } from 'typescript-utils';
 
@@ -11,21 +16,24 @@ export type LicenseApi = {
 export type GetLicenseAPIClientWithAuth = (tokenService: TokenService<string>) => LicenseApi;
 
 function getLicenseAPIClient({
+  request,
   tokenService,
   baseUrl,
 }: {
+  request: Request;
   baseUrl: string;
   tokenService?: TokenService<string>;
 }): LicenseApi {
   const fetch = tokenService
-    ? fetchWithAuthMiddleware({
+    ? createFetchWithAuthMiddleware({
+        request,
         tokenService,
         getAuthorizationHeader: (token) => ({
           name: 'Authorization',
           value: `Bearer ${token}`,
         }),
       })
-    : undefined;
+    : createBasicFetch({ request });
 
   const { defaults, servers, ...api } = licenseApi;
 
@@ -36,13 +44,17 @@ function getLicenseAPIClient({
   });
 }
 
-export function initializeLicenseAPIClient({ baseUrl }: { baseUrl: string }): {
+type LicenseAPIClientParams = {
+  request: Request;
+  baseUrl: string;
+};
+export function initializeLicenseAPIClient({ request, baseUrl }: LicenseAPIClientParams): {
   licenseApi: LicenseApi;
   getLicenseAPIClientWithAuth: GetLicenseAPIClientWithAuth;
 } {
   return {
-    licenseApi: getLicenseAPIClient({ baseUrl }),
+    licenseApi: getLicenseAPIClient({ request, baseUrl }),
     getLicenseAPIClientWithAuth: (tokenService: TokenService<string>) =>
-      getLicenseAPIClient({ tokenService, baseUrl }),
+      getLicenseAPIClient({ request, tokenService, baseUrl }),
   };
 }

@@ -12,7 +12,7 @@ import { FilterTransactionByDecisionSkeleton } from '@app-builder/components/Sce
 import { TestRunDetails } from '@app-builder/components/Scenario/TestRun/TestRunDetails';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { CancelTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/$testRunId+/cancel';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -55,7 +55,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const testRunId = fromParams(params, 'testRunId');
   const { testRun } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),

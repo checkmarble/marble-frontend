@@ -8,7 +8,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { scenarioDecisionDocHref } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
@@ -118,7 +118,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [session, data, t, { scenario }] = await Promise.all([
     getSession(request),

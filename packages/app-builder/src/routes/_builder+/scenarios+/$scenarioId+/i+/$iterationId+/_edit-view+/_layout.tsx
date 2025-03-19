@@ -15,7 +15,7 @@ import {
   isCreateDraftAvailable,
   isDeploymentActionsAvailable,
 } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import {
   hasDecisionErrors,
   hasRulesErrors,
@@ -39,7 +39,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { scenario, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

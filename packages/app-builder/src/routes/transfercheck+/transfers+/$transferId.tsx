@@ -7,7 +7,7 @@ import {
 } from '@app-builder/components/Transfers/TransferStatus';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { transferStatuses } from '@app-builder/models/transfer';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { notFound } from '@app-builder/utils/http/http-responses';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
@@ -27,7 +27,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { transferRepository, transferAlertRepository } = await authService.isAuthenticated(
     request,
     {
@@ -67,7 +67,7 @@ const transferUpdateBodySchema = z.object({
 });
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const parsedParam = await parseParamsSafe(params, z.object({ transferId: shortUUIDSchema }));
   const { transferRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),

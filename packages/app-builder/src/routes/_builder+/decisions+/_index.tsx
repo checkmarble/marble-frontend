@@ -20,7 +20,7 @@ import { FiltersButton } from '@app-builder/components/Filters';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { type Decision } from '@app-builder/models/decision';
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -65,7 +65,7 @@ export const buildQueryParams = (filters: DecisionFilters, offsetId: string | nu
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { decision, scenario, dataModelRepository, inbox } = await authService.isAuthenticated(
     request,
     {

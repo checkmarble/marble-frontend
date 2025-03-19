@@ -1,7 +1,7 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { IngestedObjectDetail } from '@app-builder/components/Data/IngestedObjectDetail';
 import { useDataModel } from '@app-builder/services/data/data-model';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { HttpError } from '@oazapfts/runtime';
 import { type LoaderFunctionArgs } from '@remix-run/node';
@@ -30,7 +30,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { dataModelRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

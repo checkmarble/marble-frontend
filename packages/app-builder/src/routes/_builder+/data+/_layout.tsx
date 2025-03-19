@@ -14,7 +14,7 @@ import {
   isEditDataModelInfoAvailable,
   isIngestDataAvailable,
 } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
@@ -39,7 +39,7 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { user, dataModelRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

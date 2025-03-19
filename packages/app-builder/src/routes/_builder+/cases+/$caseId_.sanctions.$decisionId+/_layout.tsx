@@ -16,7 +16,7 @@ import {
 import { SanctionStatusTag } from '@app-builder/components/Sanctions/SanctionStatusTag';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getSanctionCheckFileUploadEndpoint } from '@app-builder/utils/files';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
@@ -105,7 +105,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const {
     user,
     entitlements,

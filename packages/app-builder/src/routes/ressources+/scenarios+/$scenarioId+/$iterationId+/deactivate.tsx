@@ -1,6 +1,6 @@
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -23,7 +23,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [t, session, rawData, { scenario }] = await Promise.all([
     getFixedT(request, ['common', 'scenarios']),

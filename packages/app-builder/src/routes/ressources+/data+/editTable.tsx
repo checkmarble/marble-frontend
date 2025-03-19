@@ -2,7 +2,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { type TableModel } from '@app-builder/models';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -26,7 +26,7 @@ const editTableFormSchema = z.object({
 type EditTableForm = z.infer<typeof editTableFormSchema>;
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
 
   const [raw, { apiClient }] = await Promise.all([
     request.json(),

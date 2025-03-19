@@ -15,7 +15,7 @@ import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$sc
 import { DeleteRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/delete';
 import { DuplicateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -83,7 +83,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { customListsRepository, editor, dataModelRepository } = await authService.isAuthenticated(
     request,
     {
@@ -119,7 +119,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const {
     authService,
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [session, data, { scenarioIterationRuleRepository }] = await Promise.all([
     getSession(request),

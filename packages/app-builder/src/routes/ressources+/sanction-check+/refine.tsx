@@ -1,4 +1,4 @@
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import type { ActionFunctionArgs } from '@remix-run/node';
 import { decode as decodeFormdata } from 'decode-formdata';
@@ -6,7 +6,7 @@ import { decode as decodeFormdata } from 'decode-formdata';
 import { refineSearchSchema } from './search';
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
 
   const { sanctionCheck } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),

@@ -30,7 +30,7 @@ import { iconsSVGSpriteHref, Logo, logosSVGSpriteHref } from 'ui-icons';
 
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
-import { serverServices } from './services/init.server';
+import { initServerServices } from './services/init.server';
 import { useSegmentPageTracking } from './services/segment';
 import { getSegmentScript } from './services/segment/segment.server';
 import { SegmentScript } from './services/segment/SegmentScript';
@@ -65,7 +65,7 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { i18nextService, toastSessionService, csrfService } = serverServices;
+  const { i18nextService, toastSessionService, csrfService } = initServerServices(request);
   const locale = await i18nextService.getLocale(request);
 
   const [toastSession, [csrfToken, csrfCookieHeader]] = await Promise.all([

@@ -8,7 +8,7 @@ import {
   ValidationError,
 } from '@app-builder/repositories/ScenarioRepository';
 import { useCurrentScenarioIteration } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -29,7 +29,7 @@ const activateFormSchema = z.object({
 });
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -52,7 +52,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     authService,
     toastSessionService: { getSession, commitSession },
     i18nextService: { getFixedT },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [t, session, rawData, { scenario }] = await Promise.all([
     getFixedT(request, ['common', 'scenarios']),

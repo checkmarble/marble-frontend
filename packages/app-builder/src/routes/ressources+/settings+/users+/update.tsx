@@ -5,7 +5,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
 import { tKeyForUserRole, type User } from '@app-builder/models';
 import { getUserRoles, isAccessible } from '@app-builder/services/feature-access';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
@@ -40,7 +40,7 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [t, session, rawData, { apiClient, entitlements }] = await Promise.all([
     getFixedT(request, ['common']),

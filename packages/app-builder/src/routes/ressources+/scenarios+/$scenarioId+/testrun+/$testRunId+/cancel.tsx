@@ -1,7 +1,7 @@
 import { Callout } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
@@ -12,7 +12,7 @@ import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, ModalV2 } from 'ui-design-system';
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const scenarioId = fromParams(params, 'scenarioId');
   const testRunId = fromParams(params, 'testRunId');
   const { testRun } = await authService.isAuthenticated(request, {
@@ -27,7 +27,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }),
     );
   } catch (error) {
-    const { getSession, commitSession } = serverServices.toastSessionService;
+    const { getSession, commitSession } = initServerServices(request).toastSessionService;
 
     const session = await getSession(request);
 

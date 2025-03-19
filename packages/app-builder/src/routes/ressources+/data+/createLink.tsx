@@ -4,7 +4,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { type TableModel } from '@app-builder/models/data-model';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
@@ -40,7 +40,7 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-  } = serverServices;
+  } = initServerServices(request);
 
   const [session, t, raw, { apiClient }] = await Promise.all([
     getSession(request),

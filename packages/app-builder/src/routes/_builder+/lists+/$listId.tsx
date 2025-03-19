@@ -17,7 +17,7 @@ import {
   isEditListAvailable,
 } from '@app-builder/services/feature-access';
 import { clientServices } from '@app-builder/services/init.client';
-import { serverServices } from '@app-builder/services/init.server';
+import { initServerServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';
 import useAsync from '@app-builder/utils/hooks/use-async';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
@@ -44,7 +44,7 @@ import { Icon } from 'ui-icons';
 import * as z from 'zod';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = serverServices;
+  const { authService } = initServerServices(request);
   const { user, customListsRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
