@@ -253,7 +253,7 @@ export default function RuleDetail() {
                       type="text"
                       name={field.name}
                       disabled={editor === 'view'}
-                      value={field.state.value}
+                      defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
                       className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
@@ -318,7 +318,7 @@ export default function RuleDetail() {
                       <textarea
                         name={field.name}
                         disabled={editor === 'view'}
-                        value={field.state.value}
+                        defaultValue={field.state.value}
                         onChange={(e) => field.handleChange(e.currentTarget.value)}
                         onBlur={field.handleBlur}
                         className="form-textarea text-grey-50 text-s w-full resize-none border-none bg-transparent font-medium outline-none"
@@ -372,7 +372,7 @@ export default function RuleDetail() {
                           <FormInput
                             type="number"
                             name={field.name}
-                            value={field.state.value}
+                            defaultValue={field.state.value}
                             onBlur={field.handleBlur}
                             disabled={editor === 'view'}
                             onChange={(e) => field.handleChange(+e.currentTarget.value)}

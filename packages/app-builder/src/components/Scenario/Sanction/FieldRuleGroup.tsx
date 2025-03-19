@@ -61,17 +61,19 @@ export const FieldRuleGroup = ({
     >
       <div className="flex items-center gap-2">
         {selectedRuleGroup ? <RuleGroup ruleGroup={selectedRuleGroup} /> : null}
-        <Trigger asChild>
-          <Button
-            disabled={disabled}
-            variant="secondary"
-            size={selectedRuleGroup ? 'icon' : undefined}
-            className={clsx({ 'w-fit': !selectedRuleGroup })}
-          >
-            <Icon icon={selectedRuleGroup ? 'edit-square' : 'plus'} className="size-4" />
-            {!selectedRuleGroup ? <span>{t('scenarios:rules.add_group')}</span> : null}
-          </Button>
-        </Trigger>
+        {disabled ? null : (
+          <Trigger asChild>
+            <Button
+              disabled={disabled}
+              variant="secondary"
+              size={selectedRuleGroup ? 'icon' : undefined}
+              className={clsx({ 'w-fit': !selectedRuleGroup })}
+            >
+              <Icon icon={selectedRuleGroup ? 'edit-square' : 'plus'} className="size-4" />
+              {!selectedRuleGroup ? <span>{t('scenarios:rules.add_group')}</span> : null}
+            </Button>
+          </Trigger>
+        )}
       </div>
       <Content className="mt-1 min-w-[280px] shadow-md" align="start">
         <Command className="flex flex-col gap-2 p-2">
