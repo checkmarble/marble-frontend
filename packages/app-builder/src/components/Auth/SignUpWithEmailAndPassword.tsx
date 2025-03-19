@@ -74,6 +74,7 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
             </FormLabel>
             <FormInput
               type="email"
+              name={field.name}
               className="w-full"
               valid={field.state.meta.errors.length === 0}
               defaultValue={field.state.value}
@@ -93,6 +94,7 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
             <FormInput
               className="w-full"
               type="password"
+              name={field.name}
               autoComplete="new-password"
               valid={field.state.meta.errors.length === 0}
               defaultValue={field.state.value}
@@ -115,11 +117,17 @@ export const StaticSignUpWithEmailAndPassword = () => {
     <form className="flex w-full flex-col gap-4">
       <div className="flex flex-col items-start gap-2">
         <FormLabel name="credentials.email">{t('auth:sign_in.email')}</FormLabel>
-        <FormInput valid className="w-full" type="email" />
+        <FormInput name="credentials.email" valid className="w-full" type="email" />
       </div>
       <div className="flex flex-col items-start gap-2">
         <FormLabel name="credentials.password">{t('auth:sign_in.password')}</FormLabel>
-        <FormInput className="w-full" type="password" autoComplete="current-password" valid />
+        <FormInput
+          name="credentials.password"
+          className="w-full"
+          type="password"
+          autoComplete="current-password"
+          valid
+        />
       </div>
       <Button>{t('auth:sign_in')}</Button>
     </form>

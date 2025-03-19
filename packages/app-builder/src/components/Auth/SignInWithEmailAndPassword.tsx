@@ -107,6 +107,7 @@ export function SignInWithEmailAndPassword({
             </FormLabel>
             <FormInput
               type="email"
+              name={field.name}
               disabled={!hydrated}
               className="w-full"
               valid={field.state.meta.errors.length === 0}
@@ -126,6 +127,7 @@ export function SignInWithEmailAndPassword({
             </FormLabel>
             <FormInput
               className="w-full"
+              name={field.name}
               type="password"
               autoComplete="current-password"
               disabled={!hydrated}
@@ -153,15 +155,22 @@ export const StaticSignInWithEmailAndPassword = () => {
     <form className="flex w-full flex-col gap-4">
       <div className="flex flex-col items-start gap-2">
         <FormLabel name="credentials.email">{t('auth:sign_in.email')}</FormLabel>
-        <FormInput valid disabled={!hydrated} className="w-full" type="email" />
+        <FormInput
+          type="email"
+          name="credentials.email"
+          disabled={!hydrated}
+          className="w-full"
+          valid
+        />
       </div>
       <div className="flex flex-col items-start gap-2">
         <FormLabel name="credentials.password">{t('auth:sign_in.password')}</FormLabel>
         <FormInput
-          className="w-full"
           type="password"
+          name="credentials.password"
           autoComplete="current-password"
           disabled={!hydrated}
+          className="w-full"
           valid
         />
       </div>
