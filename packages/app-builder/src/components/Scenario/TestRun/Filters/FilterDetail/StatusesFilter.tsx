@@ -1,5 +1,6 @@
 import { testRunStatuses as statuses } from '@app-builder/models/testrun';
 import { matchSorter } from '@app-builder/utils/search';
+import { toggle } from 'radash';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
@@ -11,7 +12,10 @@ export function StatusesFilter() {
   const { selectedStatuses, setSelectedStatuses } = useStatusesFilter();
   const deferredValue = useDeferredValue(value);
 
-  const matches = useMemo(() => matchSorter(statuses, deferredValue), [deferredValue]);
+  const matches = useMemo(
+    () => matchSorter(toggle(statuses, 'unknown'), deferredValue),
+    [deferredValue],
+  );
 
   return (
     <div className="flex flex-col gap-2 p-2">
