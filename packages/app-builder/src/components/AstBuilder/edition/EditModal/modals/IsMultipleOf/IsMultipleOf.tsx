@@ -62,7 +62,12 @@ export function EditIsMultipleOf(props: Omit<OperandEditModalProps, 'node'>) {
             </div>
             <MenuCommand.Menu>
               <MenuCommand.Trigger>
-                <MenuCommand.SelectButton>{divider}</MenuCommand.SelectButton>
+                <MenuCommand.SelectButton>
+                  {formatNumber(divider, {
+                    language,
+                    style: undefined,
+                  })}
+                </MenuCommand.SelectButton>
               </MenuCommand.Trigger>
               <MenuCommand.Content align="start" sideOffset={4}>
                 <MenuCommand.List>
