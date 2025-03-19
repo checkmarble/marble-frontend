@@ -27,7 +27,6 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
-import * as Ariakit from '@ariakit/react';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
@@ -36,7 +35,7 @@ import { type Namespace, t as rawT } from 'i18next';
 import { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
-import { Button, cn, CtaClassName, Tag } from 'ui-design-system';
+import { Button, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -312,28 +311,12 @@ export default function SanctionDetail() {
               </form.Field>
               {editor === 'edit' ? (
                 <div className="flex items-center gap-2">
-                  <Ariakit.MenuProvider>
-                    <Ariakit.MenuButton
-                      className={CtaClassName({
-                        variant: 'secondary',
-                        size: 'icon',
-                        className: 'size-[40px]',
-                      })}
-                    >
-                      <Icon icon="dots-three" className="size-4" />
-                    </Ariakit.MenuButton>
-                    <Ariakit.Menu
-                      shift={-80}
-                      className="bg-grey-100 border-grey-90 mt-2 flex flex-col gap-2 rounded border p-2"
-                    >
-                      <DeleteSanction iterationId={iterationId} scenarioId={scenario.id}>
-                        <Button color="red" className="w-fit">
-                          <Icon icon="delete" className="size-5" aria-hidden />
-                          {t('common:delete')}
-                        </Button>
-                      </DeleteSanction>
-                    </Ariakit.Menu>
-                  </Ariakit.MenuProvider>
+                  <DeleteSanction iterationId={iterationId} scenarioId={scenario.id}>
+                    <Button color="red" className="w-fit">
+                      <Icon icon="delete" className="size-5" aria-hidden />
+                      {t('common:delete')}
+                    </Button>
+                  </DeleteSanction>
 
                   <Button type="submit" className="flex-1">
                     <Icon icon="save" className="size-5" aria-hidden />
