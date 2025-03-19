@@ -31,7 +31,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const [session, t, raw, { sanctionCheck }] = await Promise.all([
     getSession(request),
     getFixedT(request, ['common', 'cases']),
-    request.json(),
+    request.formData(),
     authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     }),
