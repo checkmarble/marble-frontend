@@ -437,5 +437,10 @@
   "sanction_description_placeholder": "أضف وصفًا ...",
   "sanction_forced_outcome_heading": "ثم ، فرض حالة النتيجة بواسطة",
   "sanction_name_placeholder": "عنوان فحص العقوبة ...",
-  "sanction_transaction_label_placeholder": "حدد علامة المعاملة"
+  "sanction_transaction_label_placeholder": "حدد علامة المعاملة",
+  "validation.decision.formula_incorrect_return_type": "الصيغة لها نوع إرجاع غير صحيح",
+  "validation.decision.formula_incorrect_return_type.bool": "يجب أن تعيد الصيغة المنطقية",
+  "validation.decision.formula_incorrect_return_type.float": "يجب أن تعيد الصيغة تعويم",
+  "validation.decision.formula_incorrect_return_type.int": "يجب أن تعيد الصيغة int",
+  "validation.decision.formula_incorrect_return_type.string": "يجب أن تُرجع الصيغة سلسلة"
 }

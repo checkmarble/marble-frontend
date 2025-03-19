@@ -14,7 +14,10 @@ import {
 } from '@app-builder/models/astNode/data-accessor';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
-import { type FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import {
+  type FlatAstValidation,
+  type FlatNodeEvaluation,
+} from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getAstNodeOperandType } from '@app-builder/services/ast-node/getAstNodeOperandType';
@@ -232,19 +235,19 @@ export function applyEvaluation(currentEvaluation: NodeEvaluation, newEvaluation
   }
 }
 
-export function getEvaluationForNode(evaluation: FlatNodeEvaluation[], nodeId: string) {
+export function getEvaluationForNode(evaluation: FlatNodeEvaluation, nodeId: string) {
   return evaluation.filter((e) => e.relatedIds.includes(nodeId));
 }
 
 export function getErrorsForNode(
-  evaluation: FlatNodeEvaluation[],
+  validation: FlatAstValidation,
   nodeIds?: string | string[],
   direct = false,
 ) {
   if (!nodeIds) return [];
 
   const nodeIdsArr = typeof nodeIds === 'string' ? [nodeIds] : nodeIds;
-  return evaluation
+  return validation.evaluation
     .filter((e) =>
       direct
         ? nodeIdsArr.includes(e.nodeId)
@@ -254,10 +257,10 @@ export function getErrorsForNode(
 }
 
 export function getValidationStatus(
-  evaluation: FlatNodeEvaluation[],
+  validation: FlatAstValidation,
   nodeIds?: string | string[],
   direct = false,
 ): 'valid' | 'error' {
-  const errors = getErrorsForNode(evaluation, nodeIds, direct);
+  const errors = getErrorsForNode(validation, nodeIds, direct);
   return errors.length > 0 ? 'error' : 'valid';
 }

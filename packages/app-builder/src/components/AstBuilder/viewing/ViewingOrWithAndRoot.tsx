@@ -3,7 +3,7 @@ import {
   type AndAstNode,
   type OrWithAndAstNode,
 } from '@app-builder/models/astNode/builder-ast-node';
-import { type FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { LogicalOperatorLabel } from '@ast-builder/styles/LogicalOperatorLabel';
 import { type AstBuilderRootProps } from '@ast-builder/types';
@@ -21,7 +21,10 @@ type ViewingAstBuilderOrWithAndRootProps = Omit<
   'onStoreInit'
 >;
 export function ViewingAstBuilderOrWithAndRoot(props: ViewingAstBuilderOrWithAndRootProps) {
-  const evaluation = useMemo(() => props.evaluation ?? [], [props.evaluation]);
+  const validation = useMemo(
+    () => props.validation ?? { errors: [], evaluation: [] },
+    [props.validation],
+  );
 
   return (
     <div className="grid grid-cols-[40px_1fr_max-content] gap-2">
@@ -32,14 +35,14 @@ export function ViewingAstBuilderOrWithAndRoot(props: ViewingAstBuilderOrWithAnd
             isFirst={i === 0}
             path={`root.children.${i}`}
             node={child}
-            evaluation={evaluation}
+            validation={validation}
           />
         );
       })}
       <ViewingEvaluationErrors
         direct
         id={props.node.id}
-        evaluation={evaluation}
+        evaluation={validation.evaluation}
         className="col-span-3"
       />
     </div>
@@ -50,9 +53,9 @@ type ViewingRootOrGroupProps = {
   isFirst: boolean;
   path: string;
   node: AndAstNode;
-  evaluation: FlatNodeEvaluation[];
+  validation: FlatAstValidation;
 };
-function ViewingRootOrGroup({ isFirst, path, node, evaluation }: ViewingRootOrGroupProps) {
+function ViewingRootOrGroup({ isFirst, path, node, validation }: ViewingRootOrGroupProps) {
   return (
     <>
       {!isFirst ? (
@@ -70,14 +73,14 @@ function ViewingRootOrGroup({ isFirst, path, node, evaluation }: ViewingRootOrGr
             isFirst={i === 0}
             path={`${path}.children.${i}`}
             node={child}
-            evaluation={evaluation}
+            validation={validation}
           />
         );
       })}
       <ViewingEvaluationErrors
         direct
         id={node.id}
-        evaluation={evaluation}
+        evaluation={validation.evaluation}
         className="col-span-2 col-start-2"
       />
     </>
@@ -88,12 +91,12 @@ type ViewingRootAndLineProps = {
   isFirst: boolean;
   path: string;
   node: AstNode;
-  evaluation: FlatNodeEvaluation[];
+  validation: FlatAstValidation;
 };
-function ViewingRootOrWithAndLine({ isFirst, path, node, evaluation }: ViewingRootAndLineProps) {
+function ViewingRootOrWithAndLine({ isFirst, path, node, validation }: ViewingRootAndLineProps) {
   const { t } = useTranslation(['common']);
   const showValues = AstBuilderDataSharpFactory.select((s) => s.showValues);
-  const directEvaluation = evaluation.find((e) => e.nodeId === node.id);
+  const directEvaluation = validation.evaluation.find((e) => e.nodeId === node.id);
 
   let rightComponent = null;
   if (showValues && directEvaluation) {
@@ -129,8 +132,8 @@ function ViewingRootOrWithAndLine({ isFirst, path, node, evaluation }: ViewingRo
       <LogicalOperatorLabel operator={isFirst ? 'if' : 'and'} type="text" />
 
       <div className={clsx('flex flex-col gap-2', rightComponent === null && 'col-span-2')}>
-        <ViewingAstBuilderNode root path={path} node={node} evaluation={evaluation} />
-        <ViewingEvaluationErrors id={node.id} evaluation={evaluation} />
+        <ViewingAstBuilderNode root path={path} node={node} validation={validation} />
+        <ViewingEvaluationErrors id={node.id} evaluation={validation.evaluation} />
       </div>
       {rightComponent}
     </>

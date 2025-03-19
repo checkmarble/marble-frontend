@@ -30,7 +30,7 @@ export function EditIsMultipleOf(props: Omit<OperandEditModalProps, 'node'>) {
   const language = useFormatLanguage();
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const node = nodeSharp.select((s) => s.node as IsMultipleOfAstNode);
-  const evaluation = nodeSharp.select((s) => s.evaluation);
+  const evaluation = nodeSharp.select((s) => s.validation);
 
   const divider = node.namedChildren.divider.constant ?? 1;
 

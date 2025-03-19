@@ -33,11 +33,14 @@ export type OperandEditModalProps = {
 };
 
 export function OperandEditModal({ node, ...props }: OperandEditModalProps) {
-  const evaluation = AstBuilderNodeSharpFactory.useOptionalSharp()?.select((s) => s.evaluation);
+  const validation = AstBuilderNodeSharpFactory.useOptionalSharp()?.select((s) => s.validation);
   const nodeSharp = useRoot(
     {
       node,
-      evaluation: getEvaluationForNode(evaluation ?? [], node.id),
+      validation: {
+        errors: [],
+        evaluation: getEvaluationForNode(validation?.evaluation ?? [], node.id),
+      },
     },
     false,
   );

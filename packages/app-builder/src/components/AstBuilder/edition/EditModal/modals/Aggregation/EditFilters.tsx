@@ -36,7 +36,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
   const filters = nodeSharp.select(
     (s) => (s.node as AggregationAstNode).namedChildren.filters.children,
   );
-  const evaluation = nodeSharp.select((s) => s.evaluation);
+  const evaluation = nodeSharp.select((s) => s.validation);
 
   const tableName = aggregatedField?.tableName;
   const options = useMemo(() => {

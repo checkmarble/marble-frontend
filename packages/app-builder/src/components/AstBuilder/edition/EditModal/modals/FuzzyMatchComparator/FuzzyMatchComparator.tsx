@@ -33,7 +33,7 @@ export function EditFuzzyMatchComparator(props: Omit<OperandEditModalProps, 'nod
   const triggerObjectTable = dataSharp.computed.triggerObjectTable;
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const node = nodeSharp.select((s) => s.node as FuzzyMatchComparatorAstNode);
-  const evaluation = nodeSharp.select((s) => s.evaluation);
+  const evaluation = nodeSharp.select((s) => s.validation);
   const fuzzyMatchNode = node.children[0];
   const algorithmNode = fuzzyMatchNode.namedChildren.algorithm;
   const thresholdNode = node.children[1];

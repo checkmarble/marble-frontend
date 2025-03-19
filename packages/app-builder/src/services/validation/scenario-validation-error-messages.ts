@@ -1,6 +1,6 @@
+import { type ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
 import { type EvaluationError } from '@app-builder/models/node-evaluation';
 import { type TFunction } from 'i18next';
-import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -242,7 +242,7 @@ export function useGetScenarioErrorMessage() {
   const { t } = useTranslation(['scenarios']);
 
   return useCallback(
-    (evaluationErrorCode: ScenarioValidationErrorCodeDto) => {
+    (evaluationErrorCode: ScenarioValidationErrorCode) => {
       switch (evaluationErrorCode) {
         case 'TRIGGER_CONDITION_REQUIRED':
           return t('scenarios:validation.decision.trigger_condition_required');
@@ -255,6 +255,15 @@ export function useGetScenarioErrorMessage() {
         case 'FORMULA_MUST_RETURN_BOOLEAN':
           return t('scenarios:validation.decision.formula_must_return_boolean');
         default:
+          if (evaluationErrorCode.startsWith(`FORMULA_INCORRECT_RETURN_TYPE`)) {
+            const errorCode = evaluationErrorCode as Extract<
+              typeof evaluationErrorCode,
+              `FORMULA_INCORRECT_RETURN_TYPE${string}`
+            >;
+            return t(
+              `scenarios:validation.decision.${errorCode.toLowerCase() as Lowercase<typeof errorCode>}`,
+            );
+          }
           return evaluationErrorCode;
       }
     },

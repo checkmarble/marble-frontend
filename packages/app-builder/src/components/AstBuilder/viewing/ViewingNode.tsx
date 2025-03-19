@@ -4,7 +4,7 @@ import {
   isMainAstBinaryNode,
   isMainAstUnaryNode,
 } from '@app-builder/models/astNode/builder-ast-node';
-import { type FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { NodeTypeError } from '@ast-builder/styles/NodeTypeError';
 import { memo, type PropsWithChildren } from 'react';
@@ -19,7 +19,7 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
   root?: boolean;
   path: string;
   node: AstNode;
-  evaluation: FlatNodeEvaluation[];
+  validation: FlatAstValidation;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const language = useFormatLanguage();
@@ -31,13 +31,13 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
           <ViewingAstBuilderNode
             path={`${props.path}.children.0`}
             node={node.children[0]}
-            evaluation={props.evaluation}
+            validation={props.validation}
           />
           <ViewingOperator operator={node.name} />
           <ViewingAstBuilderNode
             path={`${props.path}.children.1`}
             node={node.children[1]}
-            evaluation={props.evaluation}
+            validation={props.validation}
           />
         </>
       );
@@ -54,14 +54,14 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
           <ViewingAstBuilderNode
             path={`${props.path}.children.0`}
             node={node.children[0]}
-            evaluation={props.evaluation}
+            validation={props.validation}
           />
           <ViewingOperator operator={node.name} />
         </>
       );
     })
     .when(isKnownOperandAstNode, (node) => {
-      const directEvaluation = props.evaluation.find((e) => e.nodeId === node.id);
+      const directEvaluation = props.validation.evaluation.find((e) => e.nodeId === node.id);
       const hasDirectError = !!directEvaluation?.errors.length;
       const returnValue = formatReturnValue(directEvaluation?.returnValue, {
         t,
