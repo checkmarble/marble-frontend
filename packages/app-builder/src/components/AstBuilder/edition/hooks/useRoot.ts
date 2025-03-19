@@ -1,24 +1,25 @@
 import { useValidateAstMutation } from '@app-builder/queries/validate-ast';
-import { AstBuilderDataSharpFactory, type AstBuilderValidationFn } from '@ast-builder/Provider';
+import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { type AstBuilderRootProps } from '@ast-builder/types';
 import { useCallbackRef } from '@marble/shared';
 import { useEffect, useRef } from 'react';
 
-import { AstBuilderNodeSharpFactory } from '../node-store';
+import { AstBuilderNodeSharpFactory, type AstBuilderValidationFn } from '../node-store';
 
 export function useRoot(props: AstBuilderRootProps, autoValidate = true) {
   const scenarioId = AstBuilderDataSharpFactory.select((s) => s.scenarioId);
   const onStoreChange = useCallbackRef(props.onStoreChange);
+  const onValidationUpdate = useCallbackRef(props.onValidationUpdate);
 
   const mutation = useValidateAstMutation({ scenarioId });
   const mutationAbortController = useRef<AbortController | null>(null);
-  const validationFn = useCallbackRef<AstBuilderValidationFn>((node) => {
+  const validationFn = useCallbackRef<AstBuilderValidationFn>(async (node) => {
     if (mutationAbortController.current) {
       mutationAbortController.current.abort('VALIDATION_ABORTED');
     }
 
     mutationAbortController.current = new AbortController();
-    return mutation
+    const result = await mutation
       .mutateAsync({
         node,
         expectedReturnType: props.returnType,
@@ -27,11 +28,15 @@ export function useRoot(props: AstBuilderRootProps, autoValidate = true) {
       .finally(() => {
         mutationAbortController.current = null;
       });
+
+    onValidationUpdate(result);
+
+    return result;
   });
 
   const nodeStore = AstBuilderNodeSharpFactory.createSharp({
     initialNode: props.node,
-    initialEvaluation: props.evaluation ?? [],
+    initialValidation: props.validation ?? { errors: [], evaluation: [] },
     validationFn,
   });
 
@@ -40,7 +45,7 @@ export function useRoot(props: AstBuilderRootProps, autoValidate = true) {
     if (autoValidate) {
       nodeStore.actions.validate();
     }
-  }, [autoValidate, nodeStore]);
+  }, [autoValidate, nodeStore, onValidationUpdate]);
 
   useEffect(() => {
     onStoreChange(nodeStore);

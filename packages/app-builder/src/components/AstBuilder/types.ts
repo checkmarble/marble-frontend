@@ -1,7 +1,7 @@
 import { type AstNode } from '@app-builder/models';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { type ReturnValueType } from '@app-builder/models/node-evaluation';
-import { type FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { type TFunction } from 'i18next';
 import { type InferSharpApi } from 'sharpstate';
 
@@ -20,7 +20,8 @@ export type AstBuilderBaseProps<T extends AstNode = AstNode> = {
 
 export type AstBuilderRootProps<NodeType extends AstNode = AstNode> = {
   node: NodeType;
-  evaluation?: FlatNodeEvaluation[];
+  validation?: FlatAstValidation;
   onStoreChange?: (nodeStore: InferSharpApi<typeof AstBuilderNodeSharpFactory> | null) => void;
+  onValidationUpdate?: (validation: FlatAstValidation) => void;
   returnType?: ReturnValueType;
 };

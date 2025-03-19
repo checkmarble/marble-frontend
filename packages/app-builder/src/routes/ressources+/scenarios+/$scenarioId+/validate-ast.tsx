@@ -1,5 +1,9 @@
 import { type AstNode } from '@app-builder/models';
 import {
+  type AstValidation,
+  type ScenarioValidationErrorCode,
+} from '@app-builder/models/ast-validation';
+import {
   isKnownOperandAstNode,
   isLeafOperandAstNode,
 } from '@app-builder/models/astNode/builder-ast-node';
@@ -11,10 +15,8 @@ import {
 } from '@app-builder/models/node-evaluation';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
-import { useCallback } from 'react';
 import * as R from 'remeda';
 
 export type AstValidationPayload = {
@@ -62,18 +64,30 @@ function getErrorsForChild(errors: UnifiedEvalutionError[], indexOrKey: string) 
   );
 }
 
-export type FlatNodeEvaluation = {
+export type FlatNodeEvaluationRow = {
   returnValue: ReturnValue;
   errors: EvaluationError[];
   skipped?: boolean;
   nodeId: string;
   relatedIds: string[];
 };
+export type FlatNodeEvaluation = FlatNodeEvaluationRow[];
+
+export type FlatAstValidation = {
+  errors: ScenarioValidationErrorCode[];
+  evaluation: FlatNodeEvaluation;
+};
+
+export type AstValidationReturnType = {
+  original: AstValidation;
+  flat: FlatAstValidation;
+};
+
 export function generateFlatEvaluation(
   node: AstNode,
   evaluation: NodeEvaluation,
   relatedIds: string[] = [],
-): FlatNodeEvaluation[] {
+): FlatNodeEvaluation {
   const isOperandNode = isKnownOperandAstNode(node);
   const errors = R.map(evaluation.errors, adaptUnifiedEvaluationError);
 
@@ -115,7 +129,7 @@ export function generateFlatEvaluation(
       ? [{ error: 'FUNCTION_ERROR' as const, message: 'function has error' }]
       : []),
   ];
-  const currentNodeEvaluation: FlatNodeEvaluation = {
+  const currentNodeEvaluation: FlatNodeEvaluationRow = {
     returnValue: evaluation.returnValue,
     errors: currentErrors,
     skipped: evaluation.skipped,
@@ -147,38 +161,16 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     // Reformating evaluation based on ast node ids
-    const flatEval = generateFlatEvaluation(body.node, res);
+    const flatEval = generateFlatEvaluation(body.node, res.evaluation);
+    const result: AstValidationReturnType = {
+      original: res,
+      flat: { errors: res.errors, evaluation: flatEval },
+    };
 
-    return Response.json({ original: res, flat: flatEval });
+    return Response.json(result);
   } catch (error) {
     // TODO: manage error
     console.log('an error happened', error);
     throw error;
   }
-}
-
-export function useAstValidationFetcher(scenarioId: string) {
-  const { submit, data } = useFetcher<{ original: NodeEvaluation; flat: FlatNodeEvaluation[] }>();
-
-  const validate = useCallback(
-    (ast: AstNode, expectedReturnType?: ReturnValueType) => {
-      const args: AstValidationPayload = {
-        node: ast,
-        expectedReturnType,
-      };
-      submit(args, {
-        method: 'POST',
-        encType: 'application/json',
-        action: getRoute('/ressources/scenarios/:scenarioId/validate-ast', {
-          scenarioId: fromUUID(scenarioId),
-        }),
-      });
-    },
-    [submit, scenarioId],
-  );
-
-  return {
-    validate,
-    validation: data ?? undefined,
-  };
 }

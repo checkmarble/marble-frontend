@@ -1,6 +1,6 @@
 import {
   type AstValidationPayload,
-  type FlatNodeEvaluation,
+  type AstValidationReturnType,
 } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
@@ -24,7 +24,7 @@ export function useValidateAstMutation(params: UseValidateAstMutationParams) {
         body: JSON.stringify(payload),
         signal: payload.ac.signal,
       });
-      return ((await response.json()) as { flat: FlatNodeEvaluation[] }).flat;
+      return ((await response.json()) as AstValidationReturnType).flat;
     },
   });
 }

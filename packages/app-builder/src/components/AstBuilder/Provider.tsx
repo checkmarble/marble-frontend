@@ -1,12 +1,10 @@
-import { type AstNode, findDataModelTableByName } from '@app-builder/models';
+import { findDataModelTableByName } from '@app-builder/models';
 import { useBuilderOptionsQuery } from '@app-builder/queries/builder-options';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
-import { type FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { type ReactNode, type RefObject, useEffect } from 'react';
 import { createSharpFactory, type InferSharpApi } from 'sharpstate';
 
 export type AstBuilderMode = 'edit' | 'view';
-export type AstBuilderValidationFn = (node: AstNode) => Promise<FlatNodeEvaluation[]>;
 
 export const AstBuilderDataSharpFactory = createSharpFactory({
   name: 'AstBuilderData',

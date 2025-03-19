@@ -130,6 +130,8 @@ ScenarioUpdateInputDto:
   $ref: scenarios.yml#/components/schemas/ScenarioUpdateInputDto
 ScenarioAstValidateInputDto:
   $ref: scenarios.yml#/components/schemas/ScenarioAstValidateInputDto
+AstValidationDto:
+  $ref: scenarios.yml#/components/schemas/AstValidationDto
 ScenarioValidationErrorDto:
   $ref: scenarios.yml#/components/schemas/ScenarioValidationErrorDto
 ScenarioValidationErrorCodeDto:

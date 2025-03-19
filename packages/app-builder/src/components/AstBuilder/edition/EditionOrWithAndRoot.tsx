@@ -121,7 +121,11 @@ function EditionRootOrGroup({ isFirst, path, removeNode }: EditionRootOrGroupPro
       })}
       <div className="col-span-2 col-start-2 flex flex-row flex-wrap gap-2">
         <AddLogicalOperatorButton onClick={appendChild} operator="and" />
-        <EditionEvaluationErrors direct id={node.value.id} />
+        <EditionEvaluationErrors
+          direct
+          id={node.value.id}
+          filterOut={['ARGUMENT_MUST_BE_BOOLEAN']}
+        />
       </div>
     </>
   );
