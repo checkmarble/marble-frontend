@@ -300,7 +300,7 @@ export default function SanctionDetail() {
                       type="text"
                       name={field.name}
                       disabled={editor === 'view'}
-                      value={field.state.value}
+                      defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
                       className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
@@ -349,7 +349,7 @@ export default function SanctionDetail() {
                     <div ref={descriptionRef} className="flex w-full flex-col gap-1">
                       <textarea
                         name={field.name}
-                        value={field.state.value}
+                        defaultValue={field.state.value}
                         disabled={editor === 'view'}
                         onChange={(e) => field.handleChange(e.currentTarget.value)}
                         onBlur={field.handleBlur}

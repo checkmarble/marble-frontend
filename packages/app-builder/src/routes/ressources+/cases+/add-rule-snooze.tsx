@@ -21,7 +21,7 @@ import { Temporal } from 'temporal-polyfill';
 import { Button, ModalV2, Select, TextArea } from 'ui-design-system';
 import { z } from 'zod';
 
-const durationUnitOptions = ['days', 'weeks', 'hours'] as const;
+const durationUnitOptions = ['hours', 'days', 'weeks'] as const;
 
 const addRuleSnoozeFormSchema = z.object({
   decisionId: z.string(),
@@ -232,7 +232,7 @@ function AddRuleSnoozeContent({
                 <FormInput
                   type="number"
                   name={field.name}
-                  value={field.state.value}
+                  defaultValue={field.state.value}
                   onChange={(e) => field.handleChange(+e.currentTarget.value)}
                   onBlur={field.handleBlur}
                   valid={field.state.meta.errors.length === 0}
