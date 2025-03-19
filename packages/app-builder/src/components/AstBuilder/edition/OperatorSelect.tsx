@@ -65,7 +65,7 @@ export function OperatorSelect<Op extends string>({
               key={op.value}
               onSelect={() => onOperatorChange(op.value)}
             >
-              {getOperatorName(t, op.value, isFilter)}
+              <span className="font-semibold">{getOperatorName(t, op.value, isFilter)}</span>
             </MenuCommand.Item>
           ))}
         </MenuCommand.List>
