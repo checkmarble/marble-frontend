@@ -33,6 +33,7 @@ export const Checkbox = forwardRef<
   return (
     <Root
       ref={ref}
+      id={props.name}
       className={checkbox({ color, circle, className: `group ${className}` })}
       checked={checked}
       {...props}
