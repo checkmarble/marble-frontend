@@ -15,19 +15,19 @@
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",
     "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.2",
-    "@testing-library/react": "16.0.1",
-    "@testing-library/user-event": "^14.5.2",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "16.2.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "18.3.11",
     "@types/react-dom": "18.3.1",
-    "jsdom": "25.0.1",
+    "jsdom": "26.0.0",
     "jsdom-testing-mocks": "^1.13.1",
-    "vite": "^5.4.12"
+    "vite": "^6.2.2"
   },
   "dependencies": {
     "@preact/signals-react": "^3.0.1",
     "deepsignal": "^1.6.0",
-    "zustand": "^5.0.0"
+    "zustand": "^5.0.3"
   },
   "peerDependencies": {
     "react": "18.3.1",

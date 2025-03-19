@@ -12,7 +12,7 @@
     "@marble/eslint-config": "workspace:*",
     "tailwindcss": "3.4.14",
     "tailwindcss-animate": "^1.0.7",
-    "tailwindcss-radix": "^3.0.5"
+    "tailwindcss-radix": "^4.0.2"
   },
   "license": "ISC"
 }
