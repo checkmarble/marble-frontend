@@ -31,7 +31,7 @@ import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-r
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { useForm } from '@tanstack/react-form';
-import { type Namespace, t as rawT } from 'i18next';
+import { type Namespace } from 'i18next';
 import { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
@@ -124,22 +124,10 @@ const editSanctionFormSchema = z.object({
     z.literal('block_and_review'),
   ]),
   triggerRule: z.any(),
-  query: z
-    .object({
-      name: z.any().nullish(),
-      label: z.any().nullish(),
-    })
-    .superRefine((arg, ctx) => {
-      if (!arg.name && !arg.label) {
-        ctx.addIssue({
-          code: 'invalid_arguments',
-          path: ['label'],
-          message: rawT('scenarios:sanction.match_settings.no_empty'),
-          argumentsError: rawT('scenarios:sanction.match_settings.no_empty'),
-        });
-      }
-      return true;
-    }),
+  query: z.object({
+    name: z.any().nullish(),
+    label: z.any().nullish(),
+  }),
   counterPartyId: z.any().nullish(),
   datasets: z.array(z.string()),
 });
@@ -228,9 +216,9 @@ export default function SanctionDetail() {
       }
     },
     validators: {
-      onChangeAsync: editSanctionFormSchema,
-      onBlurAsync: editSanctionFormSchema,
-      onSubmitAsync: editSanctionFormSchema,
+      onChange: editSanctionFormSchema,
+      onBlur: editSanctionFormSchema,
+      onSubmit: editSanctionFormSchema,
     },
     defaultValues: {
       name: sanctionCheckConfig?.name ?? 'Sanction Check',
