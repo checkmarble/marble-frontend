@@ -2,6 +2,7 @@ import { type AstNode } from '@app-builder/models';
 import {
   isKnownOperandAstNode,
   isMainAstBinaryNode,
+  isMainAstNode,
   isMainAstUnaryNode,
 } from '@app-builder/models/astNode/builder-ast-node';
 import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
@@ -26,6 +27,12 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
 
   const children = match(props.node)
     .when(isMainAstBinaryNode, (node) => {
+      const hasNestedLeftChild =
+        isMainAstNode(node.children[0]) && node.children[0].children.length > 0;
+      const hasNestedRightChild =
+        isMainAstNode(node.children[1]) && node.children[1].children.length > 0;
+      const hasAllNestedChildren = hasNestedLeftChild && hasNestedRightChild;
+
       const children = (
         <>
           <ViewingAstBuilderNode
@@ -42,14 +49,14 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
         </>
       );
 
-      return !props.root ? (
+      return !props.root || hasAllNestedChildren ? (
         <Brackets>{children}</Brackets>
       ) : (
         <div className="inline-flex flex-row flex-wrap items-center gap-2">{children}</div>
       );
     })
     .when(isMainAstUnaryNode, (node) => {
-      return (
+      const children = (
         <>
           <ViewingAstBuilderNode
             path={`${props.path}.children.0`}
@@ -58,6 +65,12 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
           />
           <ViewingOperator operator={node.name} />
         </>
+      );
+
+      return !props.root ? (
+        <Brackets>{children}</Brackets>
+      ) : (
+        <div className="inline-flex flex-row flex-wrap items-center gap-2">{children}</div>
       );
     })
     .when(isKnownOperandAstNode, (node) => {
