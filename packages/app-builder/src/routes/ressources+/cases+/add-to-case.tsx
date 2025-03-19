@@ -1,9 +1,11 @@
 import { useDecisionRightPanelContext } from '@app-builder/components';
+import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusBadRequestHttpError } from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
+import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -67,6 +69,10 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = addToCaseFormSchema.safeParse(raw);
 
+  console.log('Is Success', success);
+  console.log('Is Error', error);
+  console.log('Is Data', data);
+
   if (!success) return json({ success: 'false', errors: error.flatten() });
 
   try {
@@ -119,14 +125,12 @@ export function AddToCase() {
       decisionIds: data?.decisionIds ? data?.decisionIds : [],
       caseId: '',
     } as AddToCaseForm,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        fetcher.submit(value, {
-          method: 'POST',
-          action: getRoute('/ressources/cases/add-to-case'),
-          encType: 'application/json',
-        });
-      }
+    onSubmit: ({ value }) => {
+      fetcher.submit(value, {
+        method: 'POST',
+        action: getRoute('/ressources/cases/add-to-case'),
+        encType: 'application/json',
+      });
     },
     validators: {
       onChange: addToCaseFormSchema,
@@ -168,6 +172,7 @@ export function AddToCase() {
                 onBlur={field.handleBlur}
                 onCheckedChange={(checked) => field.handleChange(checked)}
               />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>
@@ -190,6 +195,7 @@ export function AddToCase() {
                     onBlur={field.handleBlur}
                     valid={field.state.meta.errors.length === 0}
                   />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -204,6 +210,7 @@ export function AddToCase() {
                     defaultValue={field.state.value as string}
                     onValueChange={(type) => {
                       field.handleChange(type);
+                      field.handleBlur();
                     }}
                   >
                     {inboxes.map(({ name, id }) => {
@@ -214,6 +221,7 @@ export function AddToCase() {
                       );
                     })}
                   </Select.Default>
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
@@ -242,6 +250,7 @@ export function AddToCase() {
                     onBlur={field.handleBlur}
                     valid={field.state.meta.errors.length === 0}
                   />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
               )}
             </form.Field>
