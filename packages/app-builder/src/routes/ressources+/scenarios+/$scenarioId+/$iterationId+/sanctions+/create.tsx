@@ -42,7 +42,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
       }),
     );
   } catch (error) {
-    console.log('Error', error);
     return json({
       success: false as const,
       error: error,
