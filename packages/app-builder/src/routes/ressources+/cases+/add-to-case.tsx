@@ -69,10 +69,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = addToCaseFormSchema.safeParse(raw);
 
-  console.log('Is Success', success);
-  console.log('Is Error', error);
-  console.log('Is Data', data);
-
   if (!success) return json({ success: 'false', errors: error.flatten() });
 
   try {

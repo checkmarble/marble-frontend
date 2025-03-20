@@ -227,7 +227,6 @@ function CreateScenarioContent() {
                   placeholder={t('scenarios:create_scenario.trigger_object_placeholder')}
                   defaultValue={field.state.value}
                   onValueChange={(value) => {
-                    console.log('Value', value);
                     field.handleChange(value);
                     field.handleBlur();
                   }}
