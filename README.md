@@ -64,7 +64,7 @@ All required configuration settings are already included inside the `.vscode/set
 
 ### Launch
 
- All packages are located in the `packages` folder. To work in a package, you can use the `--filter` option of `pnpm` to trigger the dedicated scripts present in each `packages/*/package.json`. Example to start the app builder in dev mode:
+All packages are located in the `packages` folder. To work in a package, you can use the `--filter` option of `pnpm` to trigger the dedicated scripts present in each `packages/*/package.json`. Example to start the app builder in dev mode:
 
 > **Before first launch.**
 >
