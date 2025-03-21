@@ -40,7 +40,7 @@ export function adaptLicenseEntitlements(dto: LicenseEntitlementsDto): LicenseEn
     analytics: dto.analytics,
     userRoles: dto.roles,
     webhooks: dto.webhooks,
-    ruleSnoozes: dto.webhooks,
+    ruleSnoozes: dto.rule_snoozes,
     testRun: dto.test_run,
     sanctions: dto.sanctions,
   };
