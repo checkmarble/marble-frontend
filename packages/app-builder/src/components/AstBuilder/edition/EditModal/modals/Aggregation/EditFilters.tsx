@@ -5,8 +5,11 @@ import { type DataModel, NewUndefinedAstNode } from '@app-builder/models';
 import {
   type AggregationAstNode,
   aggregationFilterOperators,
+  type BinaryAggregationFilterAstNode,
   isBinaryAggregationFilter,
+  isUnaryAggregationFilterOperator,
   NewAggregatorFilterAstNode,
+  type UnaryAggregationFilterAstNode,
 } from '@app-builder/models/astNode/aggregation';
 import {
   isKnownOperandAstNode,
@@ -36,7 +39,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
   const filters = nodeSharp.select(
     (s) => (s.node as AggregationAstNode).namedChildren.filters.children,
   );
-  const evaluation = nodeSharp.select((s) => s.evaluation);
+  const evaluation = nodeSharp.select((s) => s.validation);
 
   const tableName = aggregatedField?.tableName;
   const options = useMemo(() => {
@@ -111,7 +114,27 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                         options={aggregationFilterOperators}
                         operator={filter.namedChildren.operator.constant}
                         onOperatorChange={(operator) => {
-                          filter.namedChildren.operator.constant = operator;
+                          nodeSharp.update(() => {
+                            if (isUnaryAggregationFilterOperator(operator)) {
+                              (filter as UnaryAggregationFilterAstNode).namedChildren = {
+                                tableName: filter.namedChildren.tableName,
+                                fieldName: filter.namedChildren.fieldName,
+                                operator: NewConstantAstNode({ constant: operator }),
+                              };
+                              return;
+                            }
+
+                            const valueNode =
+                              'value' in filter.namedChildren
+                                ? filter.namedChildren.value
+                                : NewUndefinedAstNode();
+                            (filter as BinaryAggregationFilterAstNode).namedChildren = {
+                              tableName: filter.namedChildren.tableName,
+                              fieldName: filter.namedChildren.fieldName,
+                              operator: NewConstantAstNode({ constant: operator }),
+                              value: valueNode,
+                            };
+                          });
                           nodeSharp.actions.validate();
                         }}
                         validationStatus={operatorErrors.length > 0 ? 'error' : 'valid'}

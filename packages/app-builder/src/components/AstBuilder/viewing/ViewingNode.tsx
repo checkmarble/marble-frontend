@@ -2,9 +2,10 @@ import { type AstNode } from '@app-builder/models';
 import {
   isKnownOperandAstNode,
   isMainAstBinaryNode,
+  isMainAstNode,
   isMainAstUnaryNode,
 } from '@app-builder/models/astNode/builder-ast-node';
-import { type FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { NodeTypeError } from '@ast-builder/styles/NodeTypeError';
 import { memo, type PropsWithChildren } from 'react';
@@ -19,26 +20,50 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
   root?: boolean;
   path: string;
   node: AstNode;
-  evaluation: FlatNodeEvaluation[];
+  validation: FlatAstValidation;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const language = useFormatLanguage();
 
   const children = match(props.node)
     .when(isMainAstBinaryNode, (node) => {
+      const hasNestedLeftChild =
+        isMainAstNode(node.children[0]) && node.children[0].children.length > 0;
+      const hasNestedRightChild =
+        isMainAstNode(node.children[1]) && node.children[1].children.length > 0;
+      const hasAllNestedChildren = hasNestedLeftChild && hasNestedRightChild;
+
       const children = (
         <>
           <ViewingAstBuilderNode
             path={`${props.path}.children.0`}
             node={node.children[0]}
-            evaluation={props.evaluation}
+            validation={props.validation}
           />
           <ViewingOperator operator={node.name} />
           <ViewingAstBuilderNode
             path={`${props.path}.children.1`}
             node={node.children[1]}
-            evaluation={props.evaluation}
+            validation={props.validation}
           />
+        </>
+      );
+
+      return !props.root || hasAllNestedChildren ? (
+        <Brackets>{children}</Brackets>
+      ) : (
+        <div className="inline-flex flex-row flex-wrap items-center gap-2">{children}</div>
+      );
+    })
+    .when(isMainAstUnaryNode, (node) => {
+      const children = (
+        <>
+          <ViewingAstBuilderNode
+            path={`${props.path}.children.0`}
+            node={node.children[0]}
+            validation={props.validation}
+          />
+          <ViewingOperator operator={node.name} />
         </>
       );
 
@@ -48,20 +73,8 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
         <div className="inline-flex flex-row flex-wrap items-center gap-2">{children}</div>
       );
     })
-    .when(isMainAstUnaryNode, (node) => {
-      return (
-        <>
-          <ViewingAstBuilderNode
-            path={`${props.path}.children.0`}
-            node={node.children[0]}
-            evaluation={props.evaluation}
-          />
-          <ViewingOperator operator={node.name} />
-        </>
-      );
-    })
     .when(isKnownOperandAstNode, (node) => {
-      const directEvaluation = props.evaluation.find((e) => e.nodeId === node.id);
+      const directEvaluation = props.validation.evaluation.find((e) => e.nodeId === node.id);
       const hasDirectError = !!directEvaluation?.errors.length;
       const returnValue = formatReturnValue(directEvaluation?.returnValue, {
         t,

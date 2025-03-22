@@ -143,7 +143,7 @@
                 - ast_validation
               properties:
                 ast_validation:
-                  $ref: 'ast.yml#/components/schemas/NodeEvaluationDto'
+                  $ref: '#/components/schemas/AstValidationDto'
       '401':
         $ref: 'components.yml#/responses/401'
       '403':
@@ -221,6 +221,18 @@ components:
         expected_return_type:
           type: string
           enum: ['string', 'int', 'float', 'bool']
+    AstValidationDto:
+      type: object
+      required:
+        - errors
+        - evaluation
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScenarioValidationErrorDto'
+        evaluation:
+          $ref: 'ast.yml#/components/schemas/NodeEvaluationDto'
     ScenarioUpdateInputDto:
       type: object
       properties:
@@ -260,5 +272,6 @@ components:
         - TRIGGER_CONDITION_REQUIRED
         - RULE_FORMULA_REQUIRED
         - FORMULA_MUST_RETURN_BOOLEAN
+        - FORMULA_INCORRECT_RETURN_TYPE
         - SCORE_THRESHOLD_MISSING
         - SCORE_THRESHOLDS_MISMATCH

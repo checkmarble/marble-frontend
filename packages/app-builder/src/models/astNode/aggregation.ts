@@ -125,7 +125,7 @@ export function isAggregationFilterOperator(value: string): value is Aggregation
 
 export function isUnaryAggregationFilterOperator(
   value: string | null,
-): value is AggregationFilterOperator {
+): value is UnaryAggregationFilterOperator {
   return (unaryAggregationFilterOperators as ReadonlyArray<string | null>).includes(value);
 }
 

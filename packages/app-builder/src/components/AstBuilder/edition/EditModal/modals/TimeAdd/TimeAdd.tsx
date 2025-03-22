@@ -28,7 +28,7 @@ export function EditTimeAdd(props: Omit<OperandEditModalProps, 'node'>) {
   const { t } = useTranslation(['scenarios']);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const node = nodeSharp.select((s) => s.node as TimeAddAstNode);
-  const evaluation = nodeSharp.select((s) => s.evaluation);
+  const evaluation = nodeSharp.select((s) => s.validation);
   const durationData = computed(() => {
     const durationNode = node.namedChildren.duration;
     const iso8601Duration =

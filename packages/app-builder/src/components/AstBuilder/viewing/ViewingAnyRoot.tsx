@@ -5,12 +5,15 @@ import { ViewingEvaluationErrors } from './ViewingEvaluationErrors';
 import { ViewingAstBuilderNode } from './ViewingNode';
 
 export function EditionAstBuilderAnyRoot(props: AstBuilderRootProps) {
-  const evaluation = useMemo(() => props.evaluation ?? [], [props.evaluation]);
+  const validation = useMemo(
+    () => props.validation ?? { errors: [], evaluation: [] },
+    [props.validation],
+  );
 
   return (
     <div className="flex flex-col gap-4">
-      <ViewingAstBuilderNode path="root" node={props.node} evaluation={evaluation} />
-      <ViewingEvaluationErrors id={props.node.id} evaluation={evaluation} />
+      <ViewingAstBuilderNode path="root" node={props.node} validation={validation} />
+      <ViewingEvaluationErrors id={props.node.id} evaluation={validation.evaluation} />
     </div>
   );
 }

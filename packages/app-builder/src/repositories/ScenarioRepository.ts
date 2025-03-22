@@ -8,11 +8,8 @@ import {
   isStatusConflictHttpError,
   type ScenarioValidation,
 } from '@app-builder/models';
-import {
-  adaptNodeEvaluation,
-  type NodeEvaluation,
-  type ReturnValueType,
-} from '@app-builder/models/node-evaluation';
+import { adaptAstValidation, type AstValidation } from '@app-builder/models/ast-validation';
+import { type ReturnValueType } from '@app-builder/models/node-evaluation';
 import { adaptSnoozesOfIteration, type SnoozesOfIteration } from '@app-builder/models/rule-snooze';
 import {
   adaptScenario,
@@ -66,7 +63,7 @@ export interface ScenarioRepository {
   validateAst(
     scenarioId: string,
     payload: { node: AstNode; expectedReturnType?: ReturnValueType },
-  ): Promise<NodeEvaluation>;
+  ): Promise<AstValidation>;
   commitScenarioIteration(args: { iterationId: string }): Promise<ScenarioIteration>;
   getPublicationPreparationStatus(args: {
     iterationId: string;
@@ -161,7 +158,7 @@ export function makeGetScenarioRepository() {
         expected_return_type: expectedReturnType,
       });
 
-      return adaptNodeEvaluation(ast_validation);
+      return adaptAstValidation(ast_validation, expectedReturnType);
     },
     commitScenarioIteration: async ({ iterationId }) => {
       const { iteration } = await marbleCoreApiClient.commitScenarioIteration(iterationId);

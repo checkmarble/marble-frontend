@@ -11,6 +11,7 @@ import {
   NewEmptyTriggerAstNode,
   NewUndefinedAstNode,
 } from '@app-builder/models';
+import { type ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import {
   createDecisionDocHref,
@@ -117,6 +118,9 @@ export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
   const scenarioIteration = useCurrentScenarioIteration();
   const scenarioValidation = useCurrentScenarioValidation();
+  const [validationErrors, setValidationErrors] = useState<ScenarioValidationErrorCode[]>(
+    scenarioValidation.trigger.errors,
+  );
 
   const builderOptions = useLoaderData<typeof loader>();
 
@@ -262,6 +266,9 @@ export default function Trigger() {
                   onStoreChange={(nodeStore) => {
                     nodeStoreRef.current = nodeStore;
                   }}
+                  onValidationUpdate={(validation) => {
+                    setValidationErrors(validation.errors);
+                  }}
                   returnType="bool"
                 />
               </AstBuilder.Provider>
@@ -284,7 +291,7 @@ export default function Trigger() {
                   </Button>
                 </div>
                 <EvaluationErrors
-                  errors={scenarioValidation.trigger.errors
+                  errors={validationErrors
                     .filter((error) => error != 'TRIGGER_CONDITION_REQUIRED')
                     .map(getScenarioErrorMessage)}
                 />

@@ -1,14 +1,15 @@
 import { type AstNode, type IdLessAstNode } from '@app-builder/models';
-import { type FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { getAtPath, getParentPath, parsePath } from '@app-builder/utils/tree';
-import { type AstBuilderValidationFn } from '@ast-builder/Provider';
 import { clone } from 'remeda';
 import { createSharpFactory, type InferSharpApi } from 'sharpstate';
 import { match, P } from 'ts-pattern';
 
+export type AstBuilderValidationFn = (node: AstNode) => Promise<FlatAstValidation>;
+
 export type AstBuilderNodeStoreValue = {
   node: AstNode;
-  evaluation: FlatNodeEvaluation[];
+  validation: FlatAstValidation;
   copiedNode: IdLessAstNode | null;
   validationFn: AstBuilderValidationFn;
 };
@@ -17,14 +18,14 @@ export const AstBuilderNodeSharpFactory = createSharpFactory({
   name: 'AstBuilderNode',
   initializer({
     initialNode,
-    initialEvaluation,
+    initialValidation,
     validationFn,
   }: {
     initialNode: AstNode;
-    initialEvaluation: FlatNodeEvaluation[];
+    initialValidation: FlatAstValidation;
     validationFn: AstBuilderValidationFn;
   }): AstBuilderNodeStoreValue {
-    return { node: initialNode, evaluation: initialEvaluation, copiedNode: null, validationFn };
+    return { node: initialNode, validation: initialValidation, copiedNode: null, validationFn };
   },
 }).withActions({
   setNodeAtPath(api, path: string, newNode: AstNode) {
@@ -53,7 +54,7 @@ export const AstBuilderNodeSharpFactory = createSharpFactory({
       api.batch(() => {
         // TODO: Manage diff to optimize render
         // applyEvaluation(api.value.evaluation, evaluation);
-        api.value.evaluation = evaluation;
+        api.value.validation = evaluation;
       });
     } catch (err) {
       if (err === 'VALIDATION_ABORTED') {
