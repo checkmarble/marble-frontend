@@ -267,6 +267,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
               {(field) => (
                 <div className="flex flex-row items-center gap-4">
                   <Checkbox
+                    name={field.name}
                     defaultChecked={field.state.value}
                     disabled={selectedUnique}
                     onCheckedChange={(checked) => {
@@ -287,6 +288,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
               {(field) => (
                 <div className="flex flex-row items-center gap-4">
                   <Checkbox
+                    name={field.name}
                     defaultChecked={field.state.value}
                     disabled={selectedEnum}
                     onCheckedChange={(checked) => {
