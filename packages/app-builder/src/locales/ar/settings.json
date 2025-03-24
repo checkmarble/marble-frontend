@@ -84,7 +84,7 @@
   "webhooks.event_types": "الأحداث",
   "webhooks.event_types.empty_matches": "لا توجد أحداث تطابق بحثك",
   "webhooks.event_types.placeholder": "جميع الأحداث افتراضيا",
-  "webhooks.events_documentation": "لمزيد من المعلومات حول الأحداث، يرجى الرجوع إلى <DocLink>الوثائق</DocLink>.",
+  "webhooks.events_documentation": "لمزيد من المعلومات حول الأحداث ، يرجى الرجوع إلى <DocLink> الوثائق </DocLink>. \nيقتصر تصفية التسليم حسب نوع الحدث على مستخدمي القافلة المدفوعين.",
   "webhooks.http_timeout": "نفذ الوقت",
   "webhooks.http_timeout.description": "تحديد مهلة http لنقطة النهاية بالثواني",
   "webhooks.new_webhook": "خطاف ويب جديد",

@@ -84,7 +84,7 @@
   "webhooks.event_types": "Événements",
   "webhooks.event_types.empty_matches": "aucun événement ne correspond à votre recherche",
   "webhooks.event_types.placeholder": "Tous les événements par défaut",
-  "webhooks.events_documentation": "Pour plus d'informations sur les événements, veuillez vous référer à <DocLink>la documentation</DocLink>.",
+  "webhooks.events_documentation": "Pour plus d'informations sur les événements, veuillez vous référer à <DocLink>la documentation</DocLink>. L'envoi filtré par type d'évènement est limité aux clients payants de Convoy.",
   "webhooks.http_timeout": "Timeout",
   "webhooks.http_timeout.description": "Définir le délai maximum de réponse de l'hôte en secondes",
   "webhooks.new_webhook": "Nouveau webhook",
