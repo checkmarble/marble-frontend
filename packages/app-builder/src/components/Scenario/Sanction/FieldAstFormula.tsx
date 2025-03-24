@@ -1,8 +1,8 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { type AstBuilderNodeStore } from '@app-builder/components/AstBuilder/edition/node-store';
 import { type AstNode, isUndefinedAstNode, NewEmptyTriggerAstNode } from '@app-builder/models';
-import { useCurrentRuleValidationRule } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
+import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { useEffect, useRef, useState } from 'react';
@@ -11,13 +11,12 @@ import { Button } from 'ui-design-system';
 
 import { EvaluationErrors } from '../ScenarioValidationError';
 
-const EvaluationErrorsWrapper = () => {
-  const ruleValidation = useCurrentRuleValidationRule();
+const EvaluationErrorsWrapper = ({ errors }: { errors: FlatAstValidation['errors'] }) => {
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
   return (
     <EvaluationErrors
-      errors={ruleValidation.errors
+      errors={errors
         .filter((error) => error != 'RULE_FORMULA_REQUIRED')
         .map(getScenarioErrorMessage)}
     />
@@ -47,6 +46,7 @@ export const FieldAstFormula = ({
   const [formula, setFormula] = useState(astNode ?? defaultValue);
   const isAstNull = isUndefinedAstNode(formula);
   const nodeStoreRef = useRef<AstBuilderNodeStore | null>(null);
+  const [validationErrors, setValidationErrors] = useState<FlatAstValidation['errors']>([]);
 
   useEffect(() => {
     onChange?.(nodeStoreRef.current ? nodeStoreRef.current.value.node : formula);
@@ -79,12 +79,15 @@ export const FieldAstFormula = ({
             onStoreChange={(nodeStore) => {
               nodeStoreRef.current = nodeStore;
             }}
+            onValidationUpdate={(validation) => {
+              setValidationErrors(validation.errors);
+            }}
             returnType="bool"
           />
         </AstBuilder.Provider>
       )}
       {type === 'rule' ? (
-        <EvaluationErrorsWrapper />
+        <EvaluationErrorsWrapper errors={validationErrors} />
       ) : editor === 'edit' ? (
         <div className="flex justify-end">
           {isAstNull ? (

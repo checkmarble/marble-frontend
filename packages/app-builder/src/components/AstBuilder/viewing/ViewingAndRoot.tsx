@@ -1,6 +1,6 @@
 import { type AstNode } from '@app-builder/models';
 import { type AndAstNode } from '@app-builder/models/astNode/builder-ast-node';
-import { type FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { LogicalOperatorLabel } from '@ast-builder/styles/LogicalOperatorLabel';
 import { type AstBuilderRootProps } from '@ast-builder/types';
@@ -14,7 +14,10 @@ type ViewingAstBuilderAndRootProps = Omit<AstBuilderRootProps<AndAstNode>, 'onSt
 
 export function ViewingAstBuilderAndRoot(props: ViewingAstBuilderAndRootProps) {
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
-  const evaluation = useMemo(() => props.evaluation ?? [], [props.evaluation]);
+  const validation = useMemo(
+    () => props.validation ?? { errors: [], evaluation: [] },
+    [props.validation],
+  );
 
   return (
     <div className="flex flex-col gap-2 lg:gap-4">
@@ -30,13 +33,13 @@ export function ViewingAstBuilderAndRoot(props: ViewingAstBuilderAndRootProps) {
               isLast={i === children.length - 1}
               path={`root.children.${i}`}
               node={child}
-              evaluation={evaluation}
+              validation={validation}
             />
           );
         })}
       </div>
       <div className="flex flex-row flex-wrap gap-2">
-        <ViewingEvaluationErrors direct id={props.node.id} evaluation={evaluation} />
+        <ViewingEvaluationErrors direct id={props.node.id} evaluation={validation.evaluation} />
       </div>
     </div>
   );
@@ -47,9 +50,9 @@ type ViewingRootAndLineProps = {
   isLast: boolean;
   path: string;
   node: AstNode;
-  evaluation: FlatNodeEvaluation[];
+  validation: FlatAstValidation;
 };
-function ViewingRootAndLine({ isFirst, isLast, path, evaluation, node }: ViewingRootAndLineProps) {
+function ViewingRootAndLine({ isFirst, isLast, path, validation, node }: ViewingRootAndLineProps) {
   return (
     <>
       {/* Row 1 */}
@@ -66,8 +69,8 @@ function ViewingRootAndLine({ isFirst, isLast, path, evaluation, node }: Viewing
       />
 
       <div className={clsx('col-span-2 col-start-4 flex flex-col gap-2 px-2')}>
-        <ViewingAstBuilderNode path={path} node={node} evaluation={evaluation} root />
-        <ViewingEvaluationErrors id={node.id} evaluation={evaluation} />
+        <ViewingAstBuilderNode path={path} node={node} validation={validation} root />
+        <ViewingEvaluationErrors id={node.id} evaluation={validation.evaluation} />
       </div>
     </>
   );

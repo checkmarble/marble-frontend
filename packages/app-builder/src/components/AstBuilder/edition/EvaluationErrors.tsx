@@ -20,7 +20,7 @@ type EditionEvaluationErrorsProps = {
 export const EditionEvaluationErrors = memo(function (props: EditionEvaluationErrorsProps) {
   const { t } = useTranslation(['scenarios']);
   const nodeSharp = AstBuilderNodeSharpFactory.useOptionalSharp();
-  const evaluation = nodeSharp?.select((s) => s.evaluation);
+  const evaluation = nodeSharp?.select((s) => s.validation.evaluation);
 
   const errors = computed(() => {
     if (!evaluation) return [];

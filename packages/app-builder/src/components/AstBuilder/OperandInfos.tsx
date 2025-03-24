@@ -186,7 +186,7 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
               <p className="bg-grey-98 whitespace-nowrap p-2 text-end">
                 {fieldName.constant ?? '...'}
               </p>
-              <ViewingOperator operator={operator.constant} />
+              <ViewingOperator operator={operator.constant} isFilter />
               {isBinaryAggregationFilter(filter) ? (
                 <ViewingAstBuilderOperand node={filter.namedChildren.value} />
               ) : null}

@@ -190,8 +190,11 @@ function RuleFormula({
   triggerObjectType: string;
   showValues: boolean;
 }) {
-  const flatEvaluation = React.useMemo(
-    () => generateFlatEvaluation(formula, evaluation ?? NewNodeEvaluation()),
+  const validation = React.useMemo(
+    () => ({
+      errors: [],
+      evaluation: generateFlatEvaluation(formula, evaluation ?? NewNodeEvaluation()),
+    }),
     [formula, evaluation],
   );
   return (
@@ -208,7 +211,7 @@ function RuleFormula({
         mode="view"
         showValues={showValues}
       >
-        <AstBuilder.Root node={formula} evaluation={flatEvaluation} />
+        <AstBuilder.Root node={formula} validation={validation} />
       </AstBuilder.Provider>
     </Paper.Container>
   );

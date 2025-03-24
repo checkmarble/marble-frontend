@@ -24,6 +24,7 @@ import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { EditionAstBuilderOperand } from './EditionOperand';
+import { getErrorsForNode } from './helpers';
 import { AstBuilderNodeSharpFactory } from './node-store';
 import { OperatorSelect, type OperatorSelectOptions } from './OperatorSelect';
 
@@ -130,8 +131,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
       const hasNestedRightChild =
         isMainAstNode(node.children[1]) && node.children[1].children.length > 0;
       const hasAllNestedChildren = hasNestedLeftChild && hasNestedRightChild;
-      const hasDirectError = !!nodeSharp.value.evaluation.find((e) => e.nodeId === node.id)?.errors
-        .length;
+      const hasDirectError = getErrorsForNode(nodeSharp.value.validation, node.id, true).length > 0;
 
       const children = (
         <>
@@ -173,8 +173,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
       );
     })
     .when(isMainAstUnaryNode, (node) => {
-      const hasDirectError = !!nodeSharp.value.evaluation.find((e) => e.nodeId === node.id)?.errors
-        .length;
+      const hasDirectError = getErrorsForNode(nodeSharp.value.validation, node.id, true).length > 0;
 
       const children = (
         <>
@@ -207,8 +206,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
       );
     })
     .when(isKnownOperandAstNode, (node) => {
-      const hasDirectError = !!nodeSharp.value.evaluation.find((e) => e.nodeId === node.id)?.errors
-        .length;
+      const hasDirectError = getErrorsForNode(nodeSharp.value.validation, node.id, true).length > 0;
 
       return (
         <EditionAstBuilderOperand

@@ -25,7 +25,7 @@ export function EditTimestampExtract(props: Omit<OperandEditModalProps, 'node'>)
   const { org, currentUser } = useOrganizationDetails();
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const node = nodeSharp.select((s) => s.node as TimestampExtractAstNode);
-  const evaluation = nodeSharp.select((s) => s.evaluation);
+  const evaluation = nodeSharp.select((s) => s.validation);
 
   return (
     <OperandEditModalContainer

@@ -16,7 +16,7 @@ export const ViewingEvaluationErrors = memo(function ViewingEvaluationErrors({
   direct?: boolean;
   id: string;
   className?: string;
-  evaluation: FlatNodeEvaluation[];
+  evaluation: FlatNodeEvaluation;
 }) {
   const { t } = useTranslation(['scenarios']);
   const errors = useMemo(() => {

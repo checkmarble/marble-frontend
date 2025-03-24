@@ -391,6 +391,15 @@ export type ScenarioAstValidateInputDto = {
     node?: NodeDto;
     expected_return_type?: "string" | "int" | "float" | "bool";
 };
+export type ScenarioValidationErrorCodeDto = "DATA_MODEL_NOT_FOUND" | "TRIGGER_OBJECT_NOT_FOUND" | "TRIGGER_CONDITION_REQUIRED" | "RULE_FORMULA_REQUIRED" | "FORMULA_MUST_RETURN_BOOLEAN" | "FORMULA_INCORRECT_RETURN_TYPE" | "SCORE_THRESHOLD_MISSING" | "SCORE_THRESHOLDS_MISMATCH";
+export type ScenarioValidationErrorDto = {
+    error: ScenarioValidationErrorCodeDto;
+    message: string;
+};
+export type AstValidationDto = {
+    errors: ScenarioValidationErrorDto[];
+    evaluation: NodeEvaluationDto;
+};
 export type ScenarioIterationDto = {
     id: string;
     scenario_id: string;
@@ -460,11 +469,6 @@ export type UpdateScenarioIterationBody = {
         score_decline_threshold?: number;
         schedule?: string;
     };
-};
-export type ScenarioValidationErrorCodeDto = "DATA_MODEL_NOT_FOUND" | "TRIGGER_OBJECT_NOT_FOUND" | "TRIGGER_CONDITION_REQUIRED" | "RULE_FORMULA_REQUIRED" | "FORMULA_MUST_RETURN_BOOLEAN" | "SCORE_THRESHOLD_MISSING" | "SCORE_THRESHOLDS_MISMATCH";
-export type ScenarioValidationErrorDto = {
-    error: ScenarioValidationErrorCodeDto;
-    message: string;
 };
 export type ScenarioValidationDto = {
     trigger: {
@@ -1735,7 +1739,7 @@ export function validateAstNode(scenarioId: string, scenarioAstValidateInputDto?
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            ast_validation: NodeEvaluationDto;
+            ast_validation: AstValidationDto;
         };
     } | {
         status: 401;

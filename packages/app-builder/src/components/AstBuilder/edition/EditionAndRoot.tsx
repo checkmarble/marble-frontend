@@ -55,7 +55,11 @@ export function EditionAstBuilderAndRoot(props: AstBuilderRootProps<AndAstNode>)
         </div>
         <div className="flex flex-row flex-wrap gap-2">
           <AddLogicalOperatorButton onClick={appendChild} operator="and" />
-          <EditionEvaluationErrors direct id={nodeStore.value.node.id} />
+          <EditionEvaluationErrors
+            direct
+            id={nodeStore.value.node.id}
+            filterOut={['ARGUMENT_MUST_BE_BOOLEAN']}
+          />
         </div>
       </div>
     </AstBuilderNodeSharpFactory.Provider>
