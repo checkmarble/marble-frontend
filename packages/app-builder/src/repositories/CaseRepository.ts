@@ -19,6 +19,7 @@ import { add } from 'date-fns/add';
 import { Temporal } from 'temporal-polyfill';
 
 export type CaseFilters = {
+  snoozed?: boolean;
   statuses?: CaseStatus[];
   name?: string;
   dateRange?:
@@ -77,6 +78,7 @@ export function makeGetCaseRepository() {
         endDate,
         inboxId: inboxIds,
         status: statuses,
+        includeSnoozed: rest.snoozed,
         ...rest,
       });
 

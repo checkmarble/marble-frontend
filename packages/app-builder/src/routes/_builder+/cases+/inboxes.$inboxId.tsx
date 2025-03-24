@@ -10,6 +10,7 @@ import {
 } from '@app-builder/components/Cases/Filters';
 import { casesFilterNames } from '@app-builder/components/Cases/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { type Case } from '@app-builder/models/cases';
@@ -26,7 +27,7 @@ import qs from 'qs';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { omit } from 'remeda';
-import { Button, Input } from 'ui-design-system';
+import { Button, Checkbox, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -41,6 +42,7 @@ export const buildQueryParams = (
   return {
     statuses: filters.statuses ?? [],
     name: filters.name,
+    snoozed: filters.snoozed,
     dateRange: filters.dateRange
       ? filters.dateRange.type === 'static'
         ? {
@@ -69,7 +71,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const parsedQuery = await parseQuerySafe(request, casesFiltersSchema);
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
   if (!parsedQuery.success || !parsedPaginationQuery.success) {
-    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId }));
+    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxId) }));
   }
 
   const filtersForBackend: CaseFilters = {
@@ -128,6 +130,33 @@ const SearchByName = ({
   );
 };
 
+const ToggleSnoozed = ({
+  onCheckedChange,
+  snoozed,
+}: {
+  snoozed: boolean;
+  onCheckedChange: (state: boolean) => void;
+}) => {
+  const { t } = useTranslation(['cases']);
+
+  return (
+    <div className="flex gap-2 p-2">
+      <Checkbox
+        id="snoozed"
+        defaultChecked={snoozed}
+        onCheckedChange={(state) => {
+          if (state !== 'indeterminate') {
+            onCheckedChange(state);
+          }
+        }}
+      />
+      <FormLabel name="snoozed" className="font-medium">
+        {t('cases:include_snoozed')}
+      </FormLabel>
+    </div>
+  );
+};
+
 export default function Cases() {
   const { t } = useTranslation(casesI18n);
   const {
@@ -156,18 +185,14 @@ export default function Cases() {
     (casesFilters: CasesFilters, pagination?: PaginationParams) => {
       if (!pagination) {
         reset();
-        navigate(
-          {
-            pathname: getRoute('/cases/inboxes/:inboxId', {
-              inboxId: fromUUID(inboxId),
-            }),
-            search: qs.stringify(buildQueryParams(casesFilters, null, null), {
-              addQueryPrefix: true,
-              skipNulls: true,
-            }),
-          },
-          { replace: true },
-        );
+
+        const pathname = getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxId) });
+        const search = qs.stringify(buildQueryParams(casesFilters, null, null), {
+          addQueryPrefix: true,
+          skipNulls: true,
+        });
+
+        navigate({ pathname, search }, { replace: true });
         return;
       }
 
@@ -208,15 +233,23 @@ export default function Cases() {
           <div className="flex flex-col gap-4">
             <CasesFiltersProvider submitCasesFilters={navigateCasesList} filterValues={filters}>
               <div className="flex justify-between">
-                <SearchByName
-                  initialValue={filters.name}
-                  onClear={() => {
-                    navigateCasesList({ ...filters, name: undefined });
-                  }}
-                  onChange={(value) => {
-                    navigateCasesList({ ...filters, name: value });
-                  }}
-                />
+                <div className="flex gap-4">
+                  <SearchByName
+                    initialValue={filters.name}
+                    onClear={() => {
+                      navigateCasesList({ ...filters, name: undefined });
+                    }}
+                    onChange={(value) => {
+                      navigateCasesList({ ...filters, name: value });
+                    }}
+                  />
+                  <ToggleSnoozed
+                    snoozed={filters.snoozed ?? false}
+                    onCheckedChange={(snoozed) => {
+                      navigateCasesList({ ...filters, snoozed });
+                    }}
+                  />
+                </div>
                 <div className="flex gap-4">
                   <CasesFiltersMenu filterNames={casesFilterNames}>
                     <FiltersButton />
