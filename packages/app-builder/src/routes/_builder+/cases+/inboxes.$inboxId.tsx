@@ -42,7 +42,7 @@ export const buildQueryParams = (
   return {
     statuses: filters.statuses ?? [],
     name: filters.name,
-    snoozed: filters.snoozed ? 'true' : 'false',
+    snoozed: filters.snoozed,
     dateRange: filters.dateRange
       ? filters.dateRange.type === 'static'
         ? {
@@ -66,23 +66,27 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  console.log('Params', params);
-
   const inboxId = fromParams(params, 'inboxId');
 
   const parsedQuery = await parseQuerySafe(request, casesFiltersSchema);
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
   if (!parsedQuery.success || !parsedPaginationQuery.success) {
-    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId }));
+    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxId) }));
   }
 
   const filtersForBackend: CaseFilters = {
-    ...parsedQuery.data,
+    ...{
+      ...parsedQuery.data,
+      snoozed:
+        parsedQuery.data.snoozed === undefined
+          ? undefined
+          : parsedQuery.data.snoozed === 'true'
+            ? true
+            : false,
+    },
     ...parsedPaginationQuery.data,
     inboxIds: [inboxId],
   };
-
-  console.log('Filters For Backend', filtersForBackend);
 
   try {
     const caseList = await cases.listCases(filtersForBackend);
@@ -141,6 +145,8 @@ const ToggleSnoozed = ({
   snoozed: boolean;
   onCheckedChange: (state: boolean) => void;
 }) => {
+  const { t } = useTranslation(['cases']);
+
   return (
     <div className="flex gap-2 p-2">
       <Checkbox
@@ -152,7 +158,9 @@ const ToggleSnoozed = ({
           }
         }}
       />
-      <FormLabel name="snoozed">{snoozed ? 'Hide Snoozed' : 'Show Snoozed'}</FormLabel>
+      <FormLabel name="snoozed" className="font-medium">
+        {t('cases:case_detail.add_rule_snooze.snoozed')}
+      </FormLabel>
     </div>
   );
 };
@@ -185,18 +193,14 @@ export default function Cases() {
     (casesFilters: CasesFilters, pagination?: PaginationParams) => {
       if (!pagination) {
         reset();
-        navigate(
-          {
-            pathname: getRoute('/cases/inboxes/:inboxId', {
-              inboxId: fromUUID(inboxId),
-            }),
-            search: qs.stringify(buildQueryParams(casesFilters, null, null), {
-              addQueryPrefix: true,
-              skipNulls: true,
-            }),
-          },
-          { replace: true },
-        );
+
+        const pathname = getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxId) });
+        const search = qs.stringify(buildQueryParams(casesFilters, null, null), {
+          addQueryPrefix: true,
+          skipNulls: true,
+        });
+
+        navigate({ pathname, search }, { replace: true });
         return;
       }
 
@@ -248,9 +252,9 @@ export default function Cases() {
                     }}
                   />
                   <ToggleSnoozed
-                    snoozed={filters.snoozed ?? false}
+                    snoozed={filters.snoozed === 'true' ? true : false}
                     onCheckedChange={(snoozed) => {
-                      navigateCasesList({ ...filters, snoozed });
+                      navigateCasesList({ ...filters, snoozed: snoozed ? 'true' : 'false' });
                     }}
                   />
                 </div>

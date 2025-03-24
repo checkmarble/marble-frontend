@@ -73,8 +73,6 @@ export function makeGetCaseRepository() {
         startDate = add(new Date(), fromNowDuration).toISOString();
       }
 
-      console.log('Rest Snoozed', rest.snoozed);
-
       const { items, ...pagination } = await marbleCoreApiClient.listCases({
         startDate,
         endDate,
