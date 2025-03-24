@@ -13,6 +13,7 @@ export const casesFiltersSchema = z.object({
   statuses: z.array(z.enum(caseStatuses)).optional(),
   dateRange: dateRangeSchema.optional(),
   name: z.string().optional(),
+  snoozed: z.boolean().optional(),
 });
 
 export type CasesFilters = z.infer<typeof casesFiltersSchema>;
@@ -29,11 +30,13 @@ export type CasesFiltersForm = {
   statuses: CaseStatus[];
   dateRange: DateRangeFilterForm;
   name?: string;
+  snoozed: boolean;
 };
 
 const emptyCasesFilters: CasesFiltersForm = {
   statuses: [],
   dateRange: null,
+  snoozed: false,
 };
 
 function adaptFilterValues({ dateRange, ...otherFilters }: CasesFilters): CasesFiltersForm {
@@ -126,6 +129,15 @@ export function useNameFilter() {
   const name = field.value;
   const setName = field.onChange;
   return { name, setName };
+}
+
+export function useSnoozedFilter() {
+  const { field } = useController<CasesFiltersForm, 'snoozed'>({
+    name: 'snoozed',
+  });
+  const snoozed = field.value;
+  const setSnoozed = field.onChange;
+  return { snoozed, setSnoozed };
 }
 
 /**
