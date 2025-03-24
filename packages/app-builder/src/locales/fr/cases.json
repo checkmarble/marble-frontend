@@ -125,11 +125,11 @@
   "case_detail.history.event_detail.case_snoozed.title": "Désactivé",
   "case_detail.history.event_detail.case_unsnoozed.title": "Réactivé",
   "snooze.callout": "Désactivé jusqu'à {{date}}",
-  "snooze.confirm": "Continuer",
   "snooze.modal.heading": "Désactiver jusqu'à...",
   "snooze.title": "Désactiver",
   "unsnooze.callout": "En continuant, vous réactiverez l'investigation",
   "unsnooze.title": "Réactiver",
-  "case_detail.history.event_type.case_snoozed": "Cas snoté",
-  "case_detail.history.event_type.case_unsnoozed": "Cas non rien"
+  "case_detail.history.event_type.case_snoozed": "Désactivé",
+  "case_detail.history.event_type.case_unsnoozed": "Réactivé",
+  "include_snoozed": "Inclure les désactivés"
 }

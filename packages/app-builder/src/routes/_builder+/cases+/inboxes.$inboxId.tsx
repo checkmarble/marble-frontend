@@ -151,7 +151,7 @@ const ToggleSnoozed = ({
         }}
       />
       <FormLabel name="snoozed" className="font-medium">
-        {t('cases:case_detail.add_rule_snooze.snoozed')}
+        {t('cases:include_snoozed')}
       </FormLabel>
     </div>
   );
