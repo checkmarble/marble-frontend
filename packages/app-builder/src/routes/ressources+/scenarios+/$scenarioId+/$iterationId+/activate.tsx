@@ -221,6 +221,7 @@ function ActivateScenarioVersionContent({
             {(field) => (
               <div className="group flex flex-row items-center gap-2">
                 <Checkbox
+                  name={field.name}
                   defaultChecked={field.state.value}
                   onCheckedChange={(state) =>
                     state !== 'indeterminate' && field.handleChange(state)
@@ -247,6 +248,7 @@ function ActivateScenarioVersionContent({
             {(field) => (
               <div className="group flex flex-row items-center gap-2">
                 <Checkbox
+                  name={field.name}
                   defaultChecked={field.state.value}
                   onCheckedChange={(state) =>
                     state !== 'indeterminate' && field.handleChange(state)

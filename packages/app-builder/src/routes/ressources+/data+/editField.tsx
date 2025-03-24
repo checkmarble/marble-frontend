@@ -203,6 +203,7 @@ export function EditField({
                 {(field) => (
                   <div className="flex flex-row items-center gap-4">
                     <Checkbox
+                      name={field.name}
                       defaultChecked={field.state.value}
                       disabled={selectedUnique}
                       onCheckedChange={(checked) => {
@@ -223,6 +224,7 @@ export function EditField({
                 {(field) => (
                   <div className="flex flex-row items-center gap-4">
                     <Checkbox
+                      name={field.name}
                       defaultChecked={field.state.value}
                       disabled={uniqueSettingDisabled.disabled}
                       onCheckedChange={(checked) => {
