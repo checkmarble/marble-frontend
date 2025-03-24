@@ -75,15 +75,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 
   const filtersForBackend: CaseFilters = {
-    ...{
-      ...parsedQuery.data,
-      snoozed:
-        parsedQuery.data.snoozed === undefined
-          ? undefined
-          : parsedQuery.data.snoozed === 'true'
-            ? true
-            : false,
-    },
+    ...parsedQuery.data,
     ...parsedPaginationQuery.data,
     inboxIds: [inboxId],
   };
@@ -252,9 +244,9 @@ export default function Cases() {
                     }}
                   />
                   <ToggleSnoozed
-                    snoozed={filters.snoozed === 'true' ? true : false}
+                    snoozed={filters.snoozed ?? false}
                     onCheckedChange={(snoozed) => {
-                      navigateCasesList({ ...filters, snoozed: snoozed ? 'true' : 'false' });
+                      navigateCasesList({ ...filters, snoozed });
                     }}
                   />
                 </div>

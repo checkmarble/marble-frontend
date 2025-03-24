@@ -13,7 +13,10 @@ export const casesFiltersSchema = z.object({
   statuses: z.array(z.enum(caseStatuses)).optional(),
   dateRange: dateRangeSchema.optional(),
   name: z.string().optional(),
-  snoozed: z.union([z.literal('true'), z.literal('false')]).optional(),
+  snoozed: z
+    .enum(['true', 'false'])
+    .transform((val) => val === 'true')
+    .optional(),
 });
 
 export type CasesFilters = z.infer<typeof casesFiltersSchema>;
@@ -30,7 +33,7 @@ export type CasesFiltersForm = {
   statuses: CaseStatus[];
   dateRange: DateRangeFilterForm;
   name?: string;
-  snoozed?: 'true' | 'false';
+  snoozed?: boolean;
 };
 
 const emptyCasesFilters: CasesFiltersForm = {
