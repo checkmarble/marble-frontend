@@ -34,12 +34,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const { data, success, error } = schema.safeParse(rawData);
 
   if (!success) {
-    return json(
-      { status: 'error', errors: error.flatten() },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
+    return { status: 'error', errors: error.flatten() };
   }
 
   try {
@@ -90,9 +85,9 @@ export function AddComment(defaultValue: Pick<z.infer<typeof schema>, 'caseId'>)
       }
     },
     validators: {
-      onChangeAsync: schema,
-      onBlurAsync: schema,
-      onSubmitAsync: schema,
+      onChange: schema,
+      onBlur: schema,
+      onSubmit: schema,
     },
   });
 
@@ -102,7 +97,7 @@ export function AddComment(defaultValue: Pick<z.infer<typeof schema>, 'caseId'>)
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        form.handleSubmit();
+        form.handleSubmit().then(() => form.reset());
       }}
     >
       <form.Field name="comment">
@@ -113,7 +108,7 @@ export function AddComment(defaultValue: Pick<z.infer<typeof schema>, 'caseId'>)
             </FormLabel>
             <TextArea
               className="w-full"
-              defaultValue={field.state.value}
+              value={field.state.value}
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               onBlur={field.handleBlur}
               name={field.name}
