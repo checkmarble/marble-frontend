@@ -289,6 +289,47 @@ components:
         - child_table_id
         - child_field_name
         - child_field_id
+    ExplorationOptionDto:
+      type: object
+      properties:
+        parent_field_name:
+          type: string
+          description: name of the table we use as a starting point to explore "many" entries from another table, by correlating fields.
+        parent_field_id:
+          type: string
+          format: uuid
+        child_table_name:
+          type: string
+          description: name of the table for which we explore "many" entries from a reference object. May be the same as the parent table.
+        child_table_id:
+          type: string
+          format: uuid
+        child_field_name:
+          type: string
+          description: name of the field on which to filter the child table (on the "many" side of the relation)
+        child_field_id:
+          type: string
+          format: uuid
+        ordering_field_name:
+          type: string
+          description: name of the field on which to order the child table (on the "many" side of the link)
+        ordering_field_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, valid, invalid]
+          description: status of the index that is created in the database to allow data exploration on the child table.
+      required:
+        - parent_field_name
+        - parent_field_id
+        - child_table_name
+        - child_table_id
+        - child_field_name
+        - child_field_id
+        - ordering_field_name
+        - ordering_field_id
+        - status
     FieldDto:
       type: object
       properties:
@@ -345,6 +386,10 @@ components:
           additionalProperties:
             type: object
             $ref: '#/components/schemas/LinkToSingleDto'
+        navigation_options:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExplorationOptionDto'
       required:
         - id
         - name
