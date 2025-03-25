@@ -378,7 +378,7 @@ function TestRunSection({ scenarioId, access }: { scenarioId: string; access: Fe
               variant: 'secondary',
               color: 'grey',
             })}
-            to={getRoute('/scenarios/:scenarioId/test-run/:testRunId/', {
+            to={getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
               scenarioId: fromUUID(scenarioId),
               testRunId: fromUUID(currentTestRun[0]!.id),
             })}

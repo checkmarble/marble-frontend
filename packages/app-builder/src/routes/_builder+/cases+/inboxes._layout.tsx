@@ -24,7 +24,7 @@ export const handle = {
       const { t } = useTranslation(['navigation']);
 
       return (
-        <BreadCrumbLink to={getRoute('/cases/')} isLast={isLast}>
+        <BreadCrumbLink to={getRoute('/cases')} isLast={isLast}>
           <Icon icon="case-manager" className="me-2 size-6" />
           {t('navigation:case_manager')}
         </BreadCrumbLink>

@@ -52,7 +52,7 @@ export default function TransfersPage() {
   const navigation = useNavigation();
   const isLoading =
     navigation.state === 'loading' &&
-    navigation.location.pathname === getRoute('/transfercheck/transfers/');
+    navigation.location.pathname === getRoute('/transfercheck/transfers');
 
   const [query, setQuery] = React.useState(transferId || '');
 

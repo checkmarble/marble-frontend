@@ -91,7 +91,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   } catch (error) {
     // if inbox is deleted or user no longer have access, the user is redirected
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
-      return redirect(getRoute('/cases/'));
+      return redirect(getRoute('/cases'));
     } else {
       throw error;
     }

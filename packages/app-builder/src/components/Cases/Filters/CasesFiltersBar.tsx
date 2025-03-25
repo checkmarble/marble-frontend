@@ -74,7 +74,7 @@ export function CasesFiltersBar() {
             </CasesFiltersMenu>
           ) : null}
         </div>
-        <ClearAllFiltersLink to={getRoute('/cases/')} replace />
+        <ClearAllFiltersLink to={getRoute('/cases')} replace />
       </div>
     </>
   );

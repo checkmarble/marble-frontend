@@ -256,7 +256,7 @@ export function useMarbleCoreResources() {
     if (location.pathname.includes('/workflow')) return 'Workflows';
     if (location.pathname.startsWith(getRoute('/data'))) return t('navigation:data');
     if (location.pathname.startsWith(getRoute('/settings'))) return t('navigation:settings');
-    if (location.pathname.startsWith(getRoute('/cases/'))) return t('navigation:case_manager');
+    if (location.pathname.startsWith(getRoute('/cases'))) return t('navigation:case_manager');
 
     return t('navigation:scenarios');
   }, [location.pathname, t]);
@@ -422,7 +422,7 @@ export function useTransfercheckResources() {
 
   const location = useLocation();
   const defaultTab = React.useMemo(() => {
-    if (location.pathname.startsWith(getRoute('/transfercheck/transfers/')))
+    if (location.pathname.startsWith(getRoute('/transfercheck/transfers')))
       return t('navigation:transfercheck.transfers');
 
     return t('navigation:scenarios');

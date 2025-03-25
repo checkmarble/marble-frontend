@@ -82,7 +82,7 @@ export default function Builder() {
               <li>
                 <SidebarLink
                   labelTKey="navigation:transfercheck.transfers"
-                  to={getRoute('/transfercheck/transfers/')}
+                  to={getRoute('/transfercheck/transfers')}
                   Icon={(props) => <Icon icon="transfercheck" {...props} />}
                 />
               </li>

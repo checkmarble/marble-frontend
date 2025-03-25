@@ -28,7 +28,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await parseForm(request, deleteInboxFormSchema);
 
   await inbox.deleteInbox(formData.inboxId);
-  return redirect(getRoute('/settings/inboxes/'));
+  return redirect(getRoute('/settings/inboxes'));
 }
 
 export function DeleteInbox({ inbox, disabled }: { inbox: Inbox; disabled?: boolean }) {
