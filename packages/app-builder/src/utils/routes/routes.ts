@@ -101,7 +101,7 @@ export const routes = [
           {
             "id": "routes/_builder+/cases+/_index",
             "index": true,
-            "path": "cases/",
+            "path": "cases",
             "file": "routes/_builder+/cases+/_index.tsx"
           },
           {
@@ -115,6 +115,12 @@ export const routes = [
                 "file": "routes/_builder+/cases+/inboxes.$inboxId.tsx"
               }
             ]
+          },
+          {
+            "id": "routes/_builder+/cases_new+/$caseId._index",
+            "index": true,
+            "path": "cases_new/:caseId",
+            "file": "routes/_builder+/cases_new+/$caseId._index.tsx"
           },
           {
             "id": "routes/_builder+/data+/_layout",
@@ -200,11 +206,6 @@ export const routes = [
                     "file": "routes/_builder+/scenarios+/$scenarioId+/_index.tsx"
                   },
                   {
-                    "id": "routes/_builder+/scenarios+/$scenarioId+/builder",
-                    "path": "builder",
-                    "file": "routes/_builder+/scenarios+/$scenarioId+/builder.tsx"
-                  },
-                  {
                     "id": "routes/_builder+/scenarios+/$scenarioId+/home",
                     "path": "home",
                     "file": "routes/_builder+/scenarios+/$scenarioId+/home.tsx"
@@ -265,7 +266,7 @@ export const routes = [
                       {
                         "id": "routes/_builder+/scenarios+/$scenarioId+/test-run+/$testRunId+/index",
                         "index": true,
-                        "path": ":testRunId/",
+                        "path": ":testRunId",
                         "file": "routes/_builder+/scenarios+/$scenarioId+/test-run+/$testRunId+/index.tsx"
                       },
                       {
@@ -312,7 +313,7 @@ export const routes = [
               {
                 "id": "routes/_builder+/settings+/inboxes._index",
                 "index": true,
-                "path": "inboxes/",
+                "path": "inboxes",
                 "file": "routes/_builder+/settings+/inboxes._index.tsx"
               },
               {
@@ -393,16 +394,6 @@ export const routes = [
         "id": "routes/ressources+/cases+/create-case",
         "path": "ressources/cases/create-case",
         "file": "routes/ressources+/cases+/create-case.tsx"
-      },
-      {
-        "id": "routes/ressources+/cases+/edit-inbox",
-        "path": "ressources/cases/edit-inbox",
-        "file": "routes/ressources+/cases+/edit-inbox.tsx"
-      },
-      {
-        "id": "routes/ressources+/cases+/edit-name",
-        "path": "ressources/cases/edit-name",
-        "file": "routes/ressources+/cases+/edit-name.tsx"
       },
       {
         "id": "routes/ressources+/cases+/edit-snooze",
@@ -766,7 +757,7 @@ export const routes = [
           {
             "id": "routes/transfercheck+/transfers+/_index",
             "index": true,
-            "path": "transfers/",
+            "path": "transfers",
             "file": "routes/transfercheck+/transfers+/_index.tsx"
           }
         ]

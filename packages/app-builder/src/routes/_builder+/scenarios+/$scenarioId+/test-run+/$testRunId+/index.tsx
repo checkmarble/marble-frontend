@@ -36,7 +36,7 @@ export const handle = {
         <div className="flex items-center gap-4">
           <BreadCrumbLink
             isLast={isLast}
-            to={getRoute('/scenarios/:scenarioId/test-run/:testRunId/', {
+            to={getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
               scenarioId: fromUUID(run.scenarioId),
               testRunId: fromUUID(run.id),
             })}

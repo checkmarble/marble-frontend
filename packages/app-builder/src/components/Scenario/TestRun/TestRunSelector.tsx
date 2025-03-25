@@ -30,7 +30,7 @@ export const TestRunSelector = ({
 
   return (
     <Link
-      to={getRoute('/scenarios/:scenarioId/test-run/:testRunId/', {
+      to={getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
         scenarioId: fromUUID(currentScenario.id),
         testRunId: fromUUID(id),
       })}

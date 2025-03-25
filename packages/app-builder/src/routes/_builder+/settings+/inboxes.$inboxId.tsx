@@ -32,7 +32,7 @@ export const handle = {
     ({ isLast }: BreadCrumbProps) => {
       const { t } = useTranslation(['settings']);
       return (
-        <BreadCrumbLink to={getRoute('/settings/inboxes/')} isLast={isLast}>
+        <BreadCrumbLink to={getRoute('/settings/inboxes')} isLast={isLast}>
           {t('settings:inboxes')}
         </BreadCrumbLink>
       );
@@ -70,7 +70,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const inboxesList = await inboxApi.listInboxesWithCaseCount();
   const inbox = inboxesList.find((inbox) => inbox.id === inboxId);
 
-  if (!inbox) return redirect(getRoute('/settings/inboxes/'));
+  if (!inbox) return redirect(getRoute('/settings/inboxes'));
 
   return json({
     inbox,

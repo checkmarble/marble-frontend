@@ -1,6 +1,10 @@
 import { navigationI18n, SidebarButton, SidebarLink } from '@app-builder/components';
 import { HelpCenter, useMarbleCoreResources } from '@app-builder/components/HelpCenter';
-import { LeftSidebar, ToggleSidebar } from '@app-builder/components/Layout/LeftSidebar';
+import {
+  LeftSidebar,
+  LeftSidebarSharpFactory,
+  ToggleSidebar,
+} from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isHttpError, isMarbleCoreUser } from '@app-builder/models';
@@ -114,6 +118,7 @@ export default function Builder() {
   useSegmentIdentification(user);
   const { t } = useTranslation(handle.i18n);
   const language = useFormatLanguage();
+  const leftSidebarSharp = LeftSidebarSharpFactory.createSharp();
 
   // Refresh is done in the JSX because it needs to be done in the browser
   // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)
@@ -144,144 +149,146 @@ export default function Builder() {
               </div>
             ) : null}
             <div className="flex flex-1 flex-row overflow-hidden">
-              <LeftSidebar>
-                <div className="h-24 px-2 pt-3">
-                  <UserInfo
-                    email={user.actorIdentity.email}
-                    firstName={user.actorIdentity.firstName}
-                    lastName={user.actorIdentity.lastName}
-                    role={user.role}
-                    orgOrPartnerName={organization.name}
-                  />
-                </div>
-                <nav className="flex flex-1 flex-col overflow-y-auto p-2">
-                  <ul className="flex flex-col gap-2">
-                    <li>
-                      <SidebarLink
-                        labelTKey="navigation:scenarios"
-                        to={getRoute('/scenarios')}
-                        Icon={(props) => <Icon icon="scenarios" {...props} />}
-                      />
-                    </li>
-                    <li>
-                      <SidebarLink
-                        labelTKey="navigation:lists"
-                        to={getRoute('/lists')}
-                        Icon={(props) => <Icon icon="lists" {...props} />}
-                      />
-                    </li>
-                    <li>
-                      <SidebarLink
-                        labelTKey="navigation:decisions"
-                        to={getRoute('/decisions')}
-                        Icon={(props) => <Icon icon="decision" {...props} />}
-                      />
-                    </li>
-                    <li>
-                      <SidebarLink
-                        labelTKey="navigation:case_manager"
-                        to={getRoute('/cases/')}
-                        Icon={(props) => <Icon icon="case-manager" {...props} />}
-                      />
-                    </li>
-                    <li>
-                      {match(featuresAccess.analytics)
-                        .with('allowed', () =>
-                          featuresAccess.isAnalyticsAvailable ? (
-                            <SidebarLink
-                              labelTKey="navigation:analytics"
-                              to={getRoute('/analytics')}
-                              Icon={(props) => <Icon icon="analytics" {...props} />}
-                            />
-                          ) : null,
-                        )
-                        .with('restricted', () => (
-                          <div className="text-grey-80 relative flex gap-2 p-2">
-                            <Icon icon="analytics" className="size-6 shrink-0" />
-                            <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
-                              {t('navigation:analytics')}
-                            </span>
-                            <Nudge className="size-6" content={t('navigation:analytics.nudge')} />
-                          </div>
-                        ))
-                        .with('missing_configuration', () => (
-                          <div className="text-grey-80 relative flex gap-2 p-2">
-                            <Icon icon="analytics" className="size-6 shrink-0" />
-                            <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
-                              {t('navigation:analytics')}
-                            </span>
-                            <Nudge
-                              kind="missing_configuration"
-                              className="size-6"
-                              content={t('navigation:analytics.nudge')}
-                            />
-                          </div>
-                        ))
-                        .with('test', () =>
-                          featuresAccess.isAnalyticsAvailable ? (
-                            <SidebarLink
-                              labelTKey="navigation:analytics"
-                              to={getRoute('/analytics')}
-                              Icon={(props) => <Icon icon="analytics" {...props} />}
-                            >
-                              <Nudge
-                                className="size-6"
-                                content={t('navigation:analytics.nudge')}
-                                kind="test"
-                              />
-                            </SidebarLink>
-                          ) : null,
-                        )
-                        .exhaustive()}
-                    </li>
-                  </ul>
-                </nav>
-                <nav className="p-2 pb-4">
-                  <ul className="flex flex-col gap-2">
-                    <li>
-                      <SidebarLink
-                        labelTKey="navigation:data"
-                        to={getRoute('/data')}
-                        Icon={(props) => <Icon icon="harddrive" {...props} />}
-                      />
-                    </li>
-                    <li>
-                      <SidebarLink
-                        labelTKey="navigation:api"
-                        to={getRoute('/api')}
-                        Icon={(props) => <Icon icon="world" {...props} />}
-                      />
-                    </li>
-                    {featuresAccess.settings.isAvailable ? (
-                      <li key="navigation:settings">
+              <LeftSidebarSharpFactory.Provider value={leftSidebarSharp}>
+                <LeftSidebar>
+                  <div className="h-24 px-2 pt-3">
+                    <UserInfo
+                      email={user.actorIdentity.email}
+                      firstName={user.actorIdentity.firstName}
+                      lastName={user.actorIdentity.lastName}
+                      role={user.role}
+                      orgOrPartnerName={organization.name}
+                    />
+                  </div>
+                  <nav className="flex flex-1 flex-col overflow-y-auto p-2">
+                    <ul className="flex flex-col gap-2">
+                      <li>
                         <SidebarLink
-                          labelTKey="navigation:settings"
-                          to={featuresAccess.settings.to as string}
-                          Icon={(props) => <Icon icon="settings" {...props} />}
+                          labelTKey="navigation:scenarios"
+                          to={getRoute('/scenarios')}
+                          Icon={(props) => <Icon icon="scenarios" {...props} />}
                         />
                       </li>
-                    ) : null}
-                    <li>
-                      <HelpCenter
-                        defaultTab={marbleCoreResources.defaultTab}
-                        resources={marbleCoreResources.resources}
-                        MenuButton={
-                          <SidebarButton
-                            labelTKey="navigation:helpCenter"
-                            Icon={(props) => <Icon icon="helpcenter" {...props} />}
+                      <li>
+                        <SidebarLink
+                          labelTKey="navigation:lists"
+                          to={getRoute('/lists')}
+                          Icon={(props) => <Icon icon="lists" {...props} />}
+                        />
+                      </li>
+                      <li>
+                        <SidebarLink
+                          labelTKey="navigation:decisions"
+                          to={getRoute('/decisions')}
+                          Icon={(props) => <Icon icon="decision" {...props} />}
+                        />
+                      </li>
+                      <li>
+                        <SidebarLink
+                          labelTKey="navigation:case_manager"
+                          to={getRoute('/cases')}
+                          Icon={(props) => <Icon icon="case-manager" {...props} />}
+                        />
+                      </li>
+                      <li>
+                        {match(featuresAccess.analytics)
+                          .with('allowed', () =>
+                            featuresAccess.isAnalyticsAvailable ? (
+                              <SidebarLink
+                                labelTKey="navigation:analytics"
+                                to={getRoute('/analytics')}
+                                Icon={(props) => <Icon icon="analytics" {...props} />}
+                              />
+                            ) : null,
+                          )
+                          .with('restricted', () => (
+                            <div className="text-grey-80 relative flex gap-2 p-2">
+                              <Icon icon="analytics" className="size-6 shrink-0" />
+                              <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+                                {t('navigation:analytics')}
+                              </span>
+                              <Nudge className="size-6" content={t('navigation:analytics.nudge')} />
+                            </div>
+                          ))
+                          .with('missing_configuration', () => (
+                            <div className="text-grey-80 relative flex gap-2 p-2">
+                              <Icon icon="analytics" className="size-6 shrink-0" />
+                              <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+                                {t('navigation:analytics')}
+                              </span>
+                              <Nudge
+                                kind="missing_configuration"
+                                className="size-6"
+                                content={t('navigation:analytics.nudge')}
+                              />
+                            </div>
+                          ))
+                          .with('test', () =>
+                            featuresAccess.isAnalyticsAvailable ? (
+                              <SidebarLink
+                                labelTKey="navigation:analytics"
+                                to={getRoute('/analytics')}
+                                Icon={(props) => <Icon icon="analytics" {...props} />}
+                              >
+                                <Nudge
+                                  className="size-6"
+                                  content={t('navigation:analytics.nudge')}
+                                  kind="test"
+                                />
+                              </SidebarLink>
+                            ) : null,
+                          )
+                          .exhaustive()}
+                      </li>
+                    </ul>
+                  </nav>
+                  <nav className="p-2 pb-4">
+                    <ul className="flex flex-col gap-2">
+                      <li>
+                        <SidebarLink
+                          labelTKey="navigation:data"
+                          to={getRoute('/data')}
+                          Icon={(props) => <Icon icon="harddrive" {...props} />}
+                        />
+                      </li>
+                      <li>
+                        <SidebarLink
+                          labelTKey="navigation:api"
+                          to={getRoute('/api')}
+                          Icon={(props) => <Icon icon="world" {...props} />}
+                        />
+                      </li>
+                      {featuresAccess.settings.isAvailable ? (
+                        <li key="navigation:settings">
+                          <SidebarLink
+                            labelTKey="navigation:settings"
+                            to={featuresAccess.settings.to as string}
+                            Icon={(props) => <Icon icon="settings" {...props} />}
                           />
-                        }
-                        versions={versions}
-                      />
-                    </li>
-                    <li>
-                      <ToggleSidebar />
-                    </li>
-                  </ul>
-                </nav>
-              </LeftSidebar>
+                        </li>
+                      ) : null}
+                      <li>
+                        <HelpCenter
+                          defaultTab={marbleCoreResources.defaultTab}
+                          resources={marbleCoreResources.resources}
+                          MenuButton={
+                            <SidebarButton
+                              labelTKey="navigation:helpCenter"
+                              Icon={(props) => <Icon icon="helpcenter" {...props} />}
+                            />
+                          }
+                          versions={versions}
+                        />
+                      </li>
+                      <li>
+                        <ToggleSidebar />
+                      </li>
+                    </ul>
+                  </nav>
+                </LeftSidebar>
 
-              <Outlet />
+                <Outlet />
+              </LeftSidebarSharpFactory.Provider>
             </div>
           </div>
         </OrganizationTagsContextProvider>

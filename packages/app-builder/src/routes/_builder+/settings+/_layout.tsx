@@ -57,7 +57,7 @@ export function getSettings(user: CurrentUser) {
     settings.push({
       section: 'case_manager' as const,
       title: 'inboxes' as const,
-      to: getRoute('/settings/inboxes/'),
+      to: getRoute('/settings/inboxes'),
     });
   }
   if (isReadTagAvailable(user)) {
