@@ -6,7 +6,7 @@ import {
   WeakPasswordError,
 } from '@app-builder/services/auth/auth.client';
 import { clientServices } from '@app-builder/services/init.client';
-import { getFieldErrors } from '@app-builder/utils/form';
+import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import * as Sentry from '@sentry/remix';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
@@ -65,7 +65,7 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
   });
 
   return (
-    <form className="flex w-full flex-col gap-4">
+    <form className="flex w-full flex-col gap-4" onSubmit={handleSubmit(form)}>
       <form.Field name="credentials.email">
         {(field) => (
           <div className="flex flex-col items-start gap-2">
