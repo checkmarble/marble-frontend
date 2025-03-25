@@ -33,18 +33,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  if (!isIngestDataAvailable(user)) redirect(getRoute('/data'));
+  if (!isIngestDataAvailable(user)) return redirect(getRoute('/data'));
 
   const objectType = params['objectType'];
-  if (!objectType) {
-    return redirect(getRoute('/data'));
-  }
+
+  if (!objectType) return redirect(getRoute('/data'));
 
   const dataModel = await dataModelRepository.getDataModel();
   const table = dataModel.find((table) => table.name == objectType);
-  if (!table) {
-    return redirect(getRoute('/data'));
-  }
+
+  if (!table) return redirect(getRoute('/data'));
 
   const uploadLogs = await apiClient.getIngestionUploadLogs(objectType);
 

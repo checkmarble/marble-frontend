@@ -69,10 +69,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const inboxId = fromParams(params, 'inboxId');
   const inboxesList = await inboxApi.listInboxesWithCaseCount();
   const inbox = inboxesList.find((inbox) => inbox.id === inboxId);
-  if (!inbox) {
-    redirect(getRoute('/settings/inboxes/'));
-    return;
-  }
+
+  if (!inbox) return redirect(getRoute('/settings/inboxes/'));
 
   return json({
     inbox,
