@@ -9,6 +9,7 @@ export const iconNames = [
   'arrow-range',
   'arrow-right',
   'arrow-top-left',
+  'arrow-up',
   'attachment',
   'backtest',
   'boolean',

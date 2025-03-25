@@ -1,40 +1,47 @@
-import { createSimpleContext } from '@app-builder/utils/create-context';
 import clsx from 'clsx';
-import * as React from 'react';
+import type * as React from 'react';
+import { createSharpFactory } from 'sharpstate';
 import { Icon } from 'ui-icons';
 
 import { SidebarButton } from '../Navigation';
 
-const ToggleSidebarContext = createSimpleContext<[boolean, () => void]>('ToggleSidebarContext');
+export const LeftSidebarSharpFactory = createSharpFactory({
+  name: 'LeftSidebar',
+  initializer: () => ({ expanded: true }),
+}).withActions({
+  toggleExpanded(api) {
+    api.value.expanded = !api.value.expanded;
+  },
+  setExpanded(api, value: boolean) {
+    api.value.expanded = value;
+  },
+});
 
 export function LeftSidebar({ children }: { children: React.ReactNode }) {
-  const [expanded, setExpanded] = React.useState(true);
-
-  const toggleExpanded = () => setExpanded((prev) => !prev);
+  const isExpanded = LeftSidebarSharpFactory.select((s) => s.expanded);
 
   return (
     <div
-      aria-expanded={expanded}
+      aria-expanded={isExpanded}
       className="bg-grey-100 group/nav border-e-grey-90 flex max-h-screen w-14 shrink-0 flex-col border-e transition-all aria-expanded:w-[235px]"
     >
-      <ToggleSidebarContext.Provider value={[expanded, toggleExpanded]}>
-        {children}
-      </ToggleSidebarContext.Provider>
+      {children}
     </div>
   );
 }
 
 export function ToggleSidebar() {
-  const [expanded, toggleExpanded] = ToggleSidebarContext.useValue();
+  const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
+  const isExpanded = leftSidebarSharp.select((s) => s.expanded);
 
   return (
     <SidebarButton
-      onClick={toggleExpanded}
-      labelTKey={expanded ? 'navigation:collapse' : 'navigation:expand'}
+      onClick={leftSidebarSharp.actions.toggleExpanded}
+      labelTKey={isExpanded ? 'navigation:collapse' : 'navigation:expand'}
       Icon={({ className, ...props }) => (
         <Icon
           className={clsx('rtl:rotate-180', className)}
-          icon={expanded ? 'left-panel-close' : 'left-panel-open'}
+          icon={isExpanded ? 'left-panel-close' : 'left-panel-open'}
           {...props}
         />
       )}

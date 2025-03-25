@@ -5,7 +5,11 @@ import {
   SidebarLink,
 } from '@app-builder/components';
 import { HelpCenter, useTransfercheckResources } from '@app-builder/components/HelpCenter';
-import { LeftSidebar, ToggleSidebar } from '@app-builder/components/Layout/LeftSidebar';
+import {
+  LeftSidebar,
+  LeftSidebarSharpFactory,
+  ToggleSidebar,
+} from '@app-builder/components/Layout/LeftSidebar';
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleAdmin, isTransferCheckUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
@@ -52,6 +56,7 @@ export const handle = {
 export default function Builder() {
   const { user, partner, versions } = useLoaderData<typeof loader>();
   useSegmentIdentification(user);
+  const leftSidebarSharp = LeftSidebarSharpFactory.createSharp();
 
   // Refresh is done in the JSX because it needs to be done in the browser
   // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)
@@ -61,57 +66,59 @@ export default function Builder() {
 
   return (
     <div className="flex h-full flex-1 flex-row overflow-hidden">
-      <LeftSidebar>
-        <div className="h-24 px-2 pt-3">
-          <UserInfo
-            email={user.actorIdentity.email}
-            firstName={user.actorIdentity.firstName}
-            lastName={user.actorIdentity.lastName}
-            role={user.role}
-            orgOrPartnerName={partner.name}
-          />
-        </div>
-        <nav className="flex flex-1 flex-col overflow-y-auto p-2">
-          <ul className="flex flex-col gap-2">
-            <li>
-              <SidebarLink
-                labelTKey="navigation:transfercheck.transfers"
-                to={getRoute('/transfercheck/transfers/')}
-                Icon={(props) => <Icon icon="transfercheck" {...props} />}
-              />
-            </li>
-            <li>
-              <SidebarLink
-                labelTKey="navigation:transfercheck.alerts"
-                to={getRoute('/transfercheck/alerts')}
-                Icon={(props) => <Icon icon="notifications" {...props} />}
-              />
-            </li>
-          </ul>
-        </nav>
-        <nav className="p-2 pb-4">
-          <ul className="flex flex-col gap-2">
-            <li>
-              <HelpCenter
-                defaultTab={transfercheckResources.defaultTab}
-                resources={transfercheckResources.resources}
-                MenuButton={
-                  <SidebarButton
-                    labelTKey="navigation:helpCenter"
-                    Icon={(props) => <Icon icon="helpcenter" {...props} />}
-                  />
-                }
-                versions={versions}
-              />
-            </li>
-            <li>
-              <ToggleSidebar />
-            </li>
-          </ul>
-        </nav>
-      </LeftSidebar>
+      <LeftSidebarSharpFactory.Provider value={leftSidebarSharp}>
+        <LeftSidebar>
+          <div className="h-24 px-2 pt-3">
+            <UserInfo
+              email={user.actorIdentity.email}
+              firstName={user.actorIdentity.firstName}
+              lastName={user.actorIdentity.lastName}
+              role={user.role}
+              orgOrPartnerName={partner.name}
+            />
+          </div>
+          <nav className="flex flex-1 flex-col overflow-y-auto p-2">
+            <ul className="flex flex-col gap-2">
+              <li>
+                <SidebarLink
+                  labelTKey="navigation:transfercheck.transfers"
+                  to={getRoute('/transfercheck/transfers/')}
+                  Icon={(props) => <Icon icon="transfercheck" {...props} />}
+                />
+              </li>
+              <li>
+                <SidebarLink
+                  labelTKey="navigation:transfercheck.alerts"
+                  to={getRoute('/transfercheck/alerts')}
+                  Icon={(props) => <Icon icon="notifications" {...props} />}
+                />
+              </li>
+            </ul>
+          </nav>
+          <nav className="p-2 pb-4">
+            <ul className="flex flex-col gap-2">
+              <li>
+                <HelpCenter
+                  defaultTab={transfercheckResources.defaultTab}
+                  resources={transfercheckResources.resources}
+                  MenuButton={
+                    <SidebarButton
+                      labelTKey="navigation:helpCenter"
+                      Icon={(props) => <Icon icon="helpcenter" {...props} />}
+                    />
+                  }
+                  versions={versions}
+                />
+              </li>
+              <li>
+                <ToggleSidebar />
+              </li>
+            </ul>
+          </nav>
+        </LeftSidebar>
 
-      <Outlet />
+        <Outlet />
+      </LeftSidebarSharpFactory.Provider>
     </div>
   );
 }
