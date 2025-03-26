@@ -12,8 +12,9 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
-import { useEffect } from 'react';
-import { Button, Select } from 'ui-design-system';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type CaseManagerPageLoaderData = {
@@ -56,33 +57,45 @@ export const loader = async ({
 
 export const handle = {
   BreadCrumbs: [
-    // Inbox part
-    ({ data }: BreadCrumbProps<CaseManagerPageLoaderData>) => {
-      const navigate = useNavigate();
+    ({ isLast }: BreadCrumbProps) => {
+      const { t } = useTranslation(['navigation']);
 
       return (
-        <Select.Root
-          value={data.currentInbox.id}
-          onValueChange={(id) =>
-            navigate(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(id) }))
-          }
-        >
-          <Select.Trigger>
-            <span className="text-s text-grey-00 inline-flex w-full items-center gap-2 text-center font-medium">
+        <BreadCrumbLink to={getRoute('/cases')} isLast={isLast}>
+          <Icon icon="case-manager" className="me-2 size-6" />
+          {t('navigation:case_manager')}
+        </BreadCrumbLink>
+      );
+    },
+    ({ data }: BreadCrumbProps<CaseManagerPageLoaderData>) => {
+      const navigate = useNavigate();
+      const [open, setOpen] = useState(false);
+
+      return (
+        <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+          <MenuCommand.Trigger>
+            <Button variant="secondary">
               <span>{data.currentInbox.name}</span>
-              <Icon icon="arrow-left" className="size-5 -rotate-90" />
-            </span>
-          </Select.Trigger>
-          <Select.Content className="max-h-60">
-            <Select.Viewport>
+              <MenuCommand.Arrow />
+            </Button>
+          </MenuCommand.Trigger>
+          <MenuCommand.Content sameWidth className="mt-2">
+            <MenuCommand.List>
               {data.inboxes.map(({ id, name }) => (
-                <Select.Item className="flex min-w-[110px] flex-col gap-1" key={id} value={id}>
+                <MenuCommand.Item
+                  key={id}
+                  value={id}
+                  className="cursor-pointer"
+                  onSelect={(id) =>
+                    navigate(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(id) }))
+                  }
+                >
                   {name}
-                </Select.Item>
+                </MenuCommand.Item>
               ))}
-            </Select.Viewport>
-          </Select.Content>
-        </Select.Root>
+            </MenuCommand.List>
+          </MenuCommand.Content>
+        </MenuCommand.Menu>
       );
     },
     ({ isLast, data }: BreadCrumbProps<CaseManagerPageLoaderData>) => {
