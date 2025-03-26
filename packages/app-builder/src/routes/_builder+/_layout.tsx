@@ -160,7 +160,7 @@ export default function Builder() {
                       orgOrPartnerName={organization.name}
                     />
                   </div>
-                  <nav className="flex flex-1 flex-col overflow-y-auto p-2">
+                  <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
                     <ul className="flex flex-col gap-2">
                       <li>
                         <SidebarLink
