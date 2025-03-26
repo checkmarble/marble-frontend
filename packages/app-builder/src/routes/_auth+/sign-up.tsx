@@ -7,8 +7,9 @@ import {
 } from '@app-builder/components/Auth/SignUpWithEmailAndPassword';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useNavigate } from '@remix-run/react';
+import { marblecoreApi } from 'marble-api';
 import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 
@@ -27,23 +28,45 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request);
   const error = session.get('authError');
 
-  return json({
+  const { getSignupStatus } = marblecoreApi;
+
+  const { has_an_organization, has_a_user } = await getSignupStatus();
+
+  return Response.json({
+    isSignupReady: has_an_organization && has_a_user,
     authError: error?.message,
   });
 }
 
 export default function SignUp() {
   const { t } = useTranslation(handle.i18n);
-  const { authError } = useLoaderData<typeof loader>();
+  const { authError, isSignupReady } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
   const signUp = () => navigate(getRoute('/email-verification'));
 
   return (
     <div className="flex w-full flex-col items-center">
-      <Callout variant="soft" className="mb-6 text-start">
-        {t('auth:sign_up.description')}
-      </Callout>
+      {isSignupReady ? (
+        <Callout variant="soft" className="mb-6 text-start">
+          {t('auth:sign_up.description')}
+        </Callout>
+      ) : (
+        <Callout variant="soft" color="red" className="mb-6 text-start">
+          <div>
+            {t('auth:sign_up.warning.db_not_ready')}
+            <p>
+              {t('auth:sign_up.read_more')}
+              <a
+                href="https://github.com/checkmarble/marble/blob/main/installation/first_connection.md"
+                className="text-purple-65 px-[1ch] underline"
+              >
+                {t('auth:sign_up.first_connection_guide')}
+              </a>
+            </p>
+          </div>
+        </Callout>
+      )}
       <ClientOnly fallback={<StaticSignUpWithEmailAndPassword />}>
         {() => <SignUpWithEmailAndPassword signUp={signUp} />}
       </ClientOnly>
