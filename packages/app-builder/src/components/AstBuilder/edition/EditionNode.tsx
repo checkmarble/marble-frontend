@@ -132,6 +132,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
         isMainAstNode(node.children[1]) && node.children[1].children.length > 0;
       const hasAllNestedChildren = hasNestedLeftChild && hasNestedRightChild;
       const hasDirectError = getErrorsForNode(nodeSharp.value.validation, node.id, true).length > 0;
+      const showBrackets = !props.root || hasAllNestedChildren;
 
       const children = (
         <>
@@ -147,7 +148,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
         </>
       );
 
-      return !props.root || hasAllNestedChildren ? (
+      const wrappedChildren = showBrackets ? (
         <Brackets
           removeNesting={() => {
             setNode(node.children[0]);
@@ -169,11 +170,18 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
           {children}
         </Brackets>
       ) : (
-        <div className="inline-flex flex-row flex-wrap items-center gap-2">{children}</div>
+        children
+      );
+
+      return props.root ? (
+        <div className="inline-flex flex-row flex-wrap items-center gap-2">{wrappedChildren}</div>
+      ) : (
+        wrappedChildren
       );
     })
     .when(isMainAstUnaryNode, (node) => {
       const hasDirectError = getErrorsForNode(nodeSharp.value.validation, node.id, true).length > 0;
+      const showBrackets = !props.root;
 
       const children = (
         <>
@@ -188,7 +196,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
         </>
       );
 
-      return !props.root ? (
+      const wrappedChildren = showBrackets ? (
         <Brackets
           unary
           removeNesting={() => {
@@ -202,7 +210,13 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
           {children}
         </Brackets>
       ) : (
-        <div className="inline-flex flex-row flex-wrap items-center gap-2">{children}</div>
+        children
+      );
+
+      return props.root ? (
+        <div className="inline-flex flex-row flex-wrap items-center gap-2">{wrappedChildren}</div>
+      ) : (
+        wrappedChildren
       );
     })
     .when(isKnownOperandAstNode, (node) => {

@@ -1,4 +1,5 @@
 import { type EditableAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import { useCallbackRef } from '@marble/shared';
 import { type ReactElement, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Modal } from 'ui-design-system';
@@ -15,15 +16,22 @@ export type OperandEditModalContainerProps = Omit<OperandEditModalProps, 'node'>
 export function OperandEditModalContainer({ className, ...props }: OperandEditModalContainerProps) {
   const { t } = useTranslation(['common']);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
-  const handleOpenChange = (open: boolean) => {
+  const handleOpenChange = useCallbackRef((open: boolean) => {
     if (!open) {
       props.onCancel();
     }
-  };
+  });
+  const handleImplicitClose = useCallbackRef((event: Event) => {
+    event.preventDefault();
+  });
 
   return (
     <Modal.Root open onOpenChange={handleOpenChange}>
-      <Modal.Content size={props.size}>
+      <Modal.Content
+        size={props.size}
+        onInteractOutside={handleImplicitClose}
+        onEscapeKeyDown={handleImplicitClose}
+      >
         <Modal.Title>{props.title}</Modal.Title>
         <div className={cn('flex flex-col gap-4 p-4', className)}>{props.children}</div>
         <Modal.Footer>
