@@ -11,9 +11,9 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { useLoaderData, useNavigate } from '@remix-run/react';
 import { useEffect } from 'react';
-import { Button } from 'ui-design-system';
+import { Button, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type CaseManagerPageLoaderData = {
@@ -57,14 +57,32 @@ export const loader = async ({
 export const handle = {
   BreadCrumbs: [
     // Inbox part
-    ({ isLast, data }: BreadCrumbProps<CaseManagerPageLoaderData>) => {
+    ({ data }: BreadCrumbProps<CaseManagerPageLoaderData>) => {
+      const navigate = useNavigate();
+
       return (
-        <BreadCrumbLink
-          isLast={isLast}
-          to={getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(data.currentInbox.id) })}
+        <Select.Root
+          value={data.currentInbox.id}
+          onValueChange={(id) =>
+            navigate(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(id) }))
+          }
         >
-          {data.currentInbox.name}
-        </BreadCrumbLink>
+          <Select.Trigger>
+            <span className="text-s text-grey-00 inline-flex w-full items-center gap-2 text-center font-medium">
+              <span>{data.currentInbox.name}</span>
+              <Icon icon="arrow-left" className="size-5 -rotate-90" />
+            </span>
+          </Select.Trigger>
+          <Select.Content className="max-h-60">
+            <Select.Viewport>
+              {data.inboxes.map(({ id, name }) => (
+                <Select.Item className="flex min-w-[110px] flex-col gap-1" key={id} value={id}>
+                  {name}
+                </Select.Item>
+              ))}
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Root>
       );
     },
     ({ isLast, data }: BreadCrumbProps<CaseManagerPageLoaderData>) => {
