@@ -1,4 +1,6 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
+import { ColorPreview } from '@app-builder/components/Tags/ColorPreview';
+import { type TagColor } from '@app-builder/models/tags';
 import { CreateTag } from '@app-builder/routes/ressources+/settings+/tags+/create';
 import { DeleteTag } from '@app-builder/routes/ressources+/settings+/tags+/delete';
 import { UpdateTag } from '@app-builder/routes/ressources+/settings+/tags+/update';
@@ -61,9 +63,7 @@ export default function Tags() {
         id: 'color',
         header: t('settings:tags.color'),
         size: 100,
-        cell: ({ getValue }) => (
-          <div className="size-4 rounded-full" style={{ backgroundColor: getValue() }}></div>
-        ),
+        cell: ({ getValue }) => <ColorPreview color={getValue() as TagColor} />,
       }),
       columnHelper.accessor((row) => row.cases_count, {
         id: 'cases',

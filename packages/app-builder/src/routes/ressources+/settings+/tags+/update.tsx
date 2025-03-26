@@ -2,6 +2,8 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { ColorSelect } from '@app-builder/components/Tags/ColorSelect';
+import { tagColors } from '@app-builder/models/tags';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
@@ -12,11 +14,9 @@ import { type Namespace } from 'i18next';
 import { type Tag } from 'marble-api';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
-import { tagColors } from './create';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
@@ -154,16 +154,7 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
             {(field) => (
               <div className="group flex flex-col gap-2">
                 <FormLabel name={field.name}>{t('settings:tags.color')}</FormLabel>
-                <Select.Default
-                  defaultValue={field.state.value}
-                  onValueChange={(e) => field.handleChange(e as (typeof tagColors)[number])}
-                >
-                  {tagColors.map((color) => (
-                    <Select.DefaultItem key={color} value={color}>
-                      <div className="size-4 rounded-full" style={{ backgroundColor: color }}></div>
-                    </Select.DefaultItem>
-                  ))}
-                </Select.Default>
+                <ColorSelect onChange={field.handleChange} value={field.state.value} />
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
