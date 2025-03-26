@@ -54,7 +54,7 @@ export default function SignUp() {
       ) : (
         <Callout variant="soft" color="red" className="mb-6 text-start">
           <div>
-            {t('auth:sign_up.warning.db_not_ready')}
+            {t('auth:sign_up.warning.instance_not_initialized')}
             <p>
               {t('auth:sign_up.read_more')}
               <a
