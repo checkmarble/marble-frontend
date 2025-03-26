@@ -84,6 +84,7 @@ export const iconNames = [
   'snooze',
   'stop',
   'string',
+  'subdirectory-arrow-right',
   'swap',
   'tick',
   'tip',

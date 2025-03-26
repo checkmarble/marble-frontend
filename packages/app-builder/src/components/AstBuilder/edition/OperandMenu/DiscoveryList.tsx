@@ -60,14 +60,19 @@ export function DiscoveryList({ onSelect }: SmartMenuListProps) {
               />
             }
           >
-            {fieldOptions.map(([path, options]) => (
-              <SubMenu
-                key={path}
-                onSelect={onSelect}
-                trigger={<SubMenuFieldTrigger {...{ path, options }} />}
-                options={options}
-              />
-            ))}
+            {fieldOptions.map(([_path, options]) => {
+              const path = _path.split('.');
+              const label = path.pop() ?? '';
+
+              return (
+                <SubMenu
+                  key={_path}
+                  onSelect={onSelect}
+                  trigger={<SubMenuFieldTrigger {...{ label, depth: path.length, options }} />}
+                  options={options}
+                />
+              );
+            })}
           </MenuCommand.Group>
         ) : null}
 
@@ -88,23 +93,40 @@ export function DiscoveryList({ onSelect }: SmartMenuListProps) {
 
 type SubMenuFieldTriggerProps = {
   options: EnrichedMenuOption[];
-  path: string;
+  label: string;
+  depth: number;
 };
 function SubMenuFieldTrigger(props: SubMenuFieldTriggerProps) {
   const { t } = useTranslation('scenarios');
+  const padding = 24 + Math.max(props.depth - 1, 0) * 20 + (props.depth > 0 ? 8 : 0); // p-6 + (p-5 * depth) + p-2
 
   return (
     <>
-      <span className="text-grey-00 text-s flex select-none flex-row items-baseline gap-1 break-all pl-9">
-        <Trans
-          t={t}
-          i18nKey="edit_operand.operator_discovery.from"
-          components={{
-            Path: <span className="font-semibold" />,
-          }}
-          values={{ path: props.path }}
-        />
-        <span className="text-grey-80 text-xs font-medium">{props.options.length}</span>
+      <span
+        className="text-grey-00 text-s flex select-none flex-row items-baseline gap-1 break-all"
+        style={{ paddingLeft: `${padding}px` }}
+      >
+        {props.depth === 0 ? (
+          <span className="line-clamp-1">
+            <Trans
+              t={t}
+              i18nKey="edit_operand.operator_discovery.from"
+              components={{
+                Path: <span className="font-semibold" />,
+              }}
+              values={{ path: props.label }}
+            />
+          </span>
+        ) : (
+          <span className="flex items-baseline gap-1">
+            <Icon
+              icon="subdirectory-arrow-right"
+              className="text-grey-80 group-aria-selected/menu-item:text-grey-00 size-4 shrink-0 self-center"
+            />
+            <span className="line-clamp-1 shrink font-semibold">{props.label}</span>
+          </span>
+        )}
+        <span className="text-grey-80 shrink-0 text-xs font-medium">{props.options.length}</span>
       </span>
     </>
   );

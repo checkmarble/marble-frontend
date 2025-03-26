@@ -100,7 +100,10 @@ function SubMenu({ children, trigger, forceMount, className, ...props }: SubMenu
     <Command.Group forceMount={forceMount}>
       <Root {...props} hover open={open} onOpenChange={setOpen}>
         <Trigger>
-          <Item className="group/menu-item" onSelect={() => setOpen(true)}>
+          <Item
+            className="group/menu-item grid grid-cols-[1fr_20px]"
+            onSelect={() => setOpen(true)}
+          >
             <span>{trigger}</span>
             <Icon
               aria-hidden="true"
