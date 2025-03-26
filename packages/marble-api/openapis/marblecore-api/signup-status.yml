@@ -19,6 +19,9 @@
                   type: boolean
                   description: Indicates if there are at least one user in the database.
                   example: true
+              required:
+                - has_an_organization
+                - has_a_user
       '500':
         description: Internal server error
         content:
