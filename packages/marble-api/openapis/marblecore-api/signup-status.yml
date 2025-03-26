@@ -22,14 +22,3 @@
               required:
                 - has_an_organization
                 - has_a_user
-      '500':
-        description: Internal server error
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
-                  description: Error message
-                  example: 'Internal server error'
