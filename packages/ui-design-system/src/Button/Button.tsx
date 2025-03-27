@@ -1,6 +1,8 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';
 
+import { cn } from '../utils';
+
 export const CtaClassName = cva(
   'text-s flex flex-row items-center justify-center rounded font-semibold outline-none border border-solid transition-colors',
   {
@@ -24,6 +26,7 @@ export const CtaClassName = cva(
       },
       size: {
         default: 'px-4 py-2 gap-1',
+        small: 'px-1.5 h-7 gap-0.5 text-xs w-fit',
         icon: 'size-6 gap-1',
         dropdown: 'p-2 gap-4',
       },
@@ -51,7 +54,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <button
       ref={ref}
       type="button"
-      className={CtaClassName({ variant, color, className, size })}
+      className={cn(CtaClassName({ variant, color, size }), className)}
       {...props}
     />
   );
