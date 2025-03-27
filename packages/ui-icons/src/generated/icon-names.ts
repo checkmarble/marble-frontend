@@ -31,6 +31,7 @@ export const iconNames = [
   'download',
   'draft',
   'drag',
+  'drawer-small',
   'edit-square',
   'edit',
   'enum',
