@@ -22,7 +22,6 @@ export function MenuOption({
   highlightSearch = true,
 }: MenuOptionProps) {
   const searchValue = MenuCommand.State.useSharp().value.search;
-
   const leftIcon = option.icon ?? getDataTypeIcon(option.dataType);
 
   return (

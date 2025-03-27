@@ -75,7 +75,10 @@ export function getOperandMenuOptions(params: {
 
   return [
     ...AST_BUILDER_STATIC_OPTIONS,
-    ...params.data.databaseAccessors.map((a) => ({ astNode: a })),
+    ...params.data.databaseAccessors.map((a) => ({
+      astNode: a,
+      displayName: a.namedChildren.fieldName.constant,
+    })),
     ...params.data.payloadAccessors.map((a) => ({ astNode: a })),
     ...params.data.customLists.map((l) => ({
       astNode: NewCustomListAstNode(l.id),
