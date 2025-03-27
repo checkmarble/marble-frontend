@@ -289,7 +289,7 @@ components:
         - child_table_id
         - child_field_name
         - child_field_id
-    ExplorationOptionDto:
+    NavigationOptionDto:
       type: object
       properties:
         parent_field_name:
@@ -389,7 +389,7 @@ components:
         navigation_options:
           type: array
           items:
-            $ref: '#/components/schemas/ExplorationOptionDto'
+            $ref: '#/components/schemas/NavigationOptionDto'
       required:
         - id
         - name
