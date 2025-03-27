@@ -9,7 +9,7 @@ import { type CaseStatus as CasesStatusType, caseStatuses } from '@app-builder/m
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
+import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
@@ -39,16 +39,13 @@ export async function action({ request }: ActionFunctionArgs) {
     }),
   ]);
 
-  const { success, data } = schema.safeParse(raw);
+  const { success, data, error } = schema.safeParse(raw);
 
-  if (!success) return json({ success: 'false' });
+  if (!success) return { success: false, errors: error.flatten() };
 
-  await cases.updateCase({
-    caseId: data.caseId,
-    body: { status: data.status },
-  });
+  await cases.updateCase({ caseId: data.caseId, body: { status: data.status } });
 
-  return json({ success: 'true' });
+  return { success: true };
 }
 
 export function EditCaseStatus({
