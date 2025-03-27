@@ -4,10 +4,17 @@ import {
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
+import { CaseManagerDrawer } from '@app-builder/components/CaseManager/Drawer/Drawer';
+import { PivotsPanel } from '@app-builder/components/CaseManager/PivotsPanel/PivotsPanel';
 import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
+import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
-import { type CurrentUser } from '@app-builder/models';
-import { type CaseDetail, type SuspiciousActivityReport } from '@app-builder/models/cases';
+import { type CurrentUser, type DataModel } from '@app-builder/models';
+import {
+  type CaseDetail,
+  type PivotObject,
+  type SuspiciousActivityReport,
+} from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -15,13 +22,17 @@ import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { useEffect, useRef } from 'react';
+import { type Namespace } from 'i18next';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type CaseManagerPageLoaderData = {
   case: CaseDetail;
+  pivotObjects: PivotObject[] | null;
+  dataModel: DataModel;
   currentInbox: Inbox;
   currentUser: CurrentUser;
   inboxes: Inbox[];
@@ -33,17 +44,19 @@ export const loader = async ({
   params,
 }: LoaderFunctionArgs): Promise<CaseManagerPageLoaderData | Response> => {
   const { authService } = initServerServices(request);
-  const { cases, inbox, user } = await authService.isAuthenticated(request, {
+  const { cases, inbox, user, dataModelRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const caseId = fromParams(params, 'caseId');
 
   // Get case by ID
-  const [currentCase, reports, inboxes] = await Promise.all([
+  const [currentCase, reports, inboxes, pivotObjects, dataModel] = await Promise.all([
     cases.getCase({ caseId }),
     cases.listSuspiciousActivityReports({ caseId }),
     inbox.listInboxes(),
+    cases.listPivotObjects({ caseId }),
+    dataModelRepository.getDataModel(),
   ]);
 
   if (!currentCase) {
@@ -58,6 +71,8 @@ export const loader = async ({
 
   return {
     case: currentCase,
+    pivotObjects,
+    dataModel,
     currentInbox,
     reports,
     currentUser: user,
@@ -66,6 +81,7 @@ export const loader = async ({
 };
 
 export const handle = {
+  i18n: ['common', 'cases'] satisfies Namespace,
   BreadCrumbs: [
     ({ isLast }: BreadCrumbProps) => {
       const { t } = useTranslation(['navigation']);
@@ -105,11 +121,14 @@ export const handle = {
 export default function CaseManagerIndexPage() {
   const {
     case: details,
+    dataModel,
+    pivotObjects,
     inboxes,
     currentUser,
     reports,
   } = useLoaderData<CaseManagerPageLoaderData>();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
+  const [drawerContentMode, _setDrawerContentMode] = useState<'pivot'>('pivot');
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -134,7 +153,21 @@ export default function CaseManagerIndexPage() {
             currentUser={currentUser}
             reports={reports}
           />
-          <aside className="border-grey-90 bg-grey-100 sticky top-0 border-l p-8"></aside>
+          <DataModelExplorerProvider>
+            <CaseManagerDrawer>
+              {match(drawerContentMode)
+                .with('pivot', () => {
+                  if (!pivotObjects || pivotObjects.length === 0) {
+                    return null;
+                  }
+
+                  return (
+                    <PivotsPanel case={details} dataModel={dataModel} pivotObjects={pivotObjects} />
+                  );
+                })
+                .exhaustive()}
+            </CaseManagerDrawer>
+          </DataModelExplorerProvider>
         </Page.Content>
       </Page.Container>
     </Page.Main>
