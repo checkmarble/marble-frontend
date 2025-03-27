@@ -2,20 +2,19 @@ import {
   casesI18n,
   CaseStatus,
   caseStatusMapping,
-  caseStatusVariants,
   useCaseStatuses,
 } from '@app-builder/components/Cases';
-import { type CaseStatus as CasesStatusType, caseStatuses } from '@app-builder/models/cases';
+import { caseStatuses } from '@app-builder/models/cases';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import { useForm } from '@tanstack/react-form';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import * as React from 'react';
+import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Button, MenuCommand, Modal } from 'ui-design-system';
 import { z } from 'zod';
 
 export const handle = {
@@ -53,155 +52,122 @@ export function EditCaseStatus({
   caseId,
 }: Pick<Schema, 'caseId' | 'status'>) {
   const { t } = useTranslation(handle.i18n);
-  const [dropdownOpen, setDropdownOpen] = React.useState(false);
-  const dropdownTriggerRef = React.useRef<HTMLButtonElement>(null);
-  const focusRef = React.useRef<HTMLButtonElement | null>(null);
-  const [hasOpenDialog, setHasOpenDialog] = React.useState(false);
-  const fetcher = useFetcher<typeof action>();
+  const { submit } = useFetcher<typeof action>();
+  const [open, setOpen] = useState(false);
+  const [validate, shouldValidate] = useState({ status: initialStatus, require: false });
   const statuses = useCaseStatuses();
 
-  const handleStatusChange = (status: CasesStatusType) =>
-    fetcher.submit(
-      { status: status, caseId },
-      {
+  const form = useForm({
+    onSubmit: ({ value }) =>
+      submit(value, {
         method: 'PATCH',
         action: getRoute('/ressources/cases/edit-status'),
         encType: 'application/json',
-      },
-    );
-
-  const handleDialogItemSelect = () => {
-    focusRef.current = dropdownTriggerRef.current;
-  };
-
-  const handleDialogItemOpenChange = (open: boolean) => {
-    setHasOpenDialog(open);
-    if (open === false) {
-      setDropdownOpen(false);
-    }
-  };
+      }),
+    defaultValues: {
+      caseId,
+      status: initialStatus,
+    },
+    validators: {
+      onChange: schema,
+      onBlur: schema,
+      onSubmit: schema,
+    },
+  });
 
   return (
-    <DropdownMenu.Root open={dropdownOpen} onOpenChange={setDropdownOpen}>
-      <div className="flex flex-row items-center gap-4">
-        <span className="text-s text-grey-00 font-medium capitalize">{t('cases:case.status')}</span>
-        <DropdownMenu.Trigger
-          ref={dropdownTriggerRef}
-          className={caseStatusVariants({
-            color: caseStatusMapping[initialStatus].color,
-            type: 'full',
-            size: 'big',
-            className: 'group',
-          })}
-        >
-          <span className="text-s ml-2 font-semibold capitalize">
-            {t(caseStatusMapping[initialStatus].tKey)}
-          </span>
-          <Icon icon="arrow-2-down" className="group-radix-state-open:rotate-180 size-6" />
-        </DropdownMenu.Trigger>
-      </div>
-      <DropdownMenu.Content
-        className="bg-grey-100 border-grey-90 z-50 rounded border p-2 shadow-md will-change-[transform,opacity]"
-        side="bottom"
-        align="end"
-        sideOffset={8}
-        hidden={hasOpenDialog}
-        onCloseAutoFocus={(event) => {
-          if (focusRef.current) {
-            focusRef.current.focus();
-            focusRef.current = null;
-            event.preventDefault();
-          }
-        }}
-      >
-        <div className="flex flex-col gap-2">
-          {statuses.map((status) =>
-            (['open', 'investigating'] as (typeof caseStatuses)[number][]).includes(
-              status.value,
-            ) ? (
-              <DropdownMenu.Item
-                key={status.value}
-                className="radix-highlighted:bg-purple-98 flex cursor-pointer flex-row items-center gap-2 rounded p-2 align-baseline outline-none transition-colors"
-                onClick={() => handleStatusChange(status.value)}
-              >
-                <CaseStatus type="full" size="big" status={status.value} />
-              </DropdownMenu.Item>
-            ) : (
-              <Modal.Root key={status.value} onOpenChange={handleDialogItemOpenChange}>
-                <Modal.Trigger asChild>
-                  <DropdownMenu.Item
-                    className="radix-highlighted:bg-purple-98 flex flex-row items-center gap-2 rounded p-2 align-baseline outline-none transition-colors"
-                    onSelect={(event) => {
-                      handleDialogItemSelect();
-                      event.preventDefault();
+    <form.Field name="status">
+      {(field) => (
+        <>
+          <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+            <MenuCommand.Trigger>
+              <Button className="w-fit" variant="ghost">
+                <div
+                  className={clsx('size-5 rounded-full', {
+                    'bg-red-47': caseStatusMapping[field.state.value].color === 'red',
+                    'bg-blue-58': caseStatusMapping[field.state.value].color === 'blue',
+                    'bg-grey-50': caseStatusMapping[field.state.value].color === 'grey',
+                    'bg-green-38': caseStatusMapping[field.state.value].color === 'green',
+                  })}
+                />
+                <span className="text-xs font-medium capitalize">
+                  {t(caseStatusMapping[field.state.value].tKey)}
+                </span>
+                <MenuCommand.Arrow />
+              </Button>
+            </MenuCommand.Trigger>
+            <MenuCommand.Content sameWidth className="mt-2" side="bottom">
+              <MenuCommand.List>
+                {statuses.map(({ value }) => (
+                  <MenuCommand.Item
+                    key={value}
+                    value={value}
+                    onSelect={() => {
+                      if (['open', 'investigating'].includes(value)) {
+                        field.handleChange(value);
+                        form.handleSubmit();
+                      }
+
+                      shouldValidate({ status: value, require: true });
                     }}
                   >
-                    <CaseStatus type="full" size="big" status={status.value} />
-                  </DropdownMenu.Item>
-                </Modal.Trigger>
-                <ModalContent
-                  status={initialStatus}
-                  nextStatus={status.value}
-                  handleSubmit={() => handleStatusChange(status.value)}
-                />
-              </Modal.Root>
-            ),
-          )}
-        </div>
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
-  );
-}
+                    <CaseStatus type="full" size="big" status={value} />
+                  </MenuCommand.Item>
+                ))}
+              </MenuCommand.List>
+            </MenuCommand.Content>
+          </MenuCommand.Menu>
 
-function ModalContent({
-  status,
-  nextStatus,
-  handleSubmit,
-}: {
-  handleSubmit: () => void;
-  status: (typeof caseStatuses)[number];
-  nextStatus: (typeof caseStatuses)[number];
-}) {
-  const { t } = useTranslation(handle.i18n);
+          <Modal.Root open={validate.require}>
+            <Modal.Content>
+              <Modal.Title>{t('cases:change_status_modal.title')}</Modal.Title>
+              <div className="flex flex-col gap-6 p-6">
+                <div className="text-grey-00 text-s flex flex-row items-center justify-center gap-6 font-medium capitalize">
+                  <div className="flex w-full flex-1 flex-row items-center justify-end gap-2">
+                    <Trans
+                      t={t}
+                      i18nKey="cases:change_status_modal.description.from"
+                      components={{
+                        Status: <CaseStatus type="full" size="big" status={initialStatus} />,
+                      }}
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-row items-center justify-start gap-2">
+                    <Trans
+                      t={t}
+                      i18nKey="cases:change_status_modal.description.to"
+                      components={{
+                        Status: <CaseStatus type="full" size="big" status={validate.status} />,
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="flex w-full flex-row gap-2">
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    className="flex-1 first-letter:capitalize"
+                    onClick={() => shouldValidate({ status: initialStatus, require: false })}
+                  >
+                    {t('common:close')}
+                  </Button>
 
-  return (
-    <Modal.Content>
-      <Modal.Title>{t('cases:change_status_modal.title')}</Modal.Title>
-      <div className="flex flex-col gap-6 p-6">
-        <div className="text-grey-00 text-s flex flex-row items-center justify-center gap-6 font-medium capitalize">
-          <div className="flex w-full flex-1 flex-row items-center justify-end gap-2">
-            <Trans
-              t={t}
-              i18nKey="cases:change_status_modal.description.from"
-              components={{
-                Status: <CaseStatus type="full" size="big" status={status} />,
-              }}
-            />
-          </div>
-          <div className="flex flex-1 flex-row items-center justify-start gap-2">
-            <Trans
-              t={t}
-              i18nKey="cases:change_status_modal.description.to"
-              components={{
-                Status: <CaseStatus type="full" size="big" status={nextStatus} />,
-              }}
-            />
-          </div>
-        </div>
-        <div className="flex w-full flex-row gap-2">
-          <Modal.Close asChild>
-            <Button variant="secondary" className="flex-1 first-letter:capitalize">
-              {t('common:close')}
-            </Button>
-          </Modal.Close>
-
-          <Modal.Close asChild>
-            <Button className="flex-1 first-letter:capitalize" onClick={handleSubmit}>
-              {t('cases:change_status_modal.change_status')}
-            </Button>
-          </Modal.Close>
-        </div>
-      </div>
-    </Modal.Content>
+                  <Button
+                    className="flex-1 first-letter:capitalize"
+                    onClick={() => {
+                      field.handleChange(validate.status);
+                      form.handleSubmit();
+                      shouldValidate((prev) => ({ ...prev, require: false }));
+                    }}
+                  >
+                    {t('cases:change_status_modal.change_status')}
+                  </Button>
+                </div>
+              </div>
+            </Modal.Content>
+          </Modal.Root>
+        </>
+      )}
+    </form.Field>
   );
 }
