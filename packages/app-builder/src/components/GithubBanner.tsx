@@ -10,11 +10,11 @@ export const GithubBanner = () => {
   const { t } = useTranslation(['common']);
 
   return isShown === 'true' ? (
-    <div className="text-s text-grey-100 bg-purple-65 absolute left-0 top-0 z-50 flex w-full flex-row justify-between gap-2 p-4 font-normal">
-      <div className="flex w-full flex-row items-center gap-4">
-        <Icon icon="notifications" className="size-6" />
-        <span className="inline-flex gap-1 font-semibold">
-          <span>{t('common:github_banner')}</span>
+    <div className="text-s border-purple-96 bg-purple-98 text-purple-65 sticky bottom-0 mt-auto flex w-full flex-row justify-between gap-2 border-y px-8 py-2">
+      <div className="flex w-full flex-row items-center gap-2">
+        <Icon icon="notifications" className="size-5" />
+        <span>
+          <span>{t('common:github_banner')} </span>
           <a
             href="https://github.com/checkmarble/marble"
             className="underline"

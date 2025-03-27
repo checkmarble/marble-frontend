@@ -41,16 +41,22 @@ function PageHeader({ className, children, ...props }: React.ComponentProps<'div
       )}
       {...props}
     >
-      <ClientOnly fallback={null}>{() => <GithubBanner />}</ClientOnly>
       {children}
     </div>
   );
 }
 
 const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(
-  function PageContainer({ className, ...props }, ref) {
+  function PageContainer({ className, children, ...props }, ref) {
     return (
-      <div ref={ref} className="scrollbar-gutter-stable size-full overflow-y-scroll" {...props} />
+      <div
+        ref={ref}
+        className="scrollbar-gutter-stable flex size-full flex-col overflow-y-scroll"
+        {...props}
+      >
+        {children}
+        <ClientOnly fallback={null}>{() => <GithubBanner />}</ClientOnly>
+      </div>
     );
   },
 );
