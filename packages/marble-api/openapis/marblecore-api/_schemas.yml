@@ -90,6 +90,8 @@ CaseContributorDto:
   $ref: cases.yml#/components/schemas/CaseContributorDto
 UpdateCaseBodyDto:
   $ref: cases.yml#/components/schemas/UpdateCaseBodyDto
+AssignCaseBodyDto:
+  $ref: cases.yml#/components/schemas/AssignCaseBodyDto
 CreateCaseBodyDto:
   $ref: cases.yml#/components/schemas/CreateCaseBodyDto
 

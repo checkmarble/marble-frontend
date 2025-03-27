@@ -265,6 +265,9 @@ export type UpdateCaseBodyDto = {
     inbox_id?: string;
     status?: CaseStatusDto;
 };
+export type AssignCaseBodyDto = {
+    user_id: string;
+};
 export type Tag = {
     id: string;
     name: string;
@@ -1076,6 +1079,53 @@ export function updateCase(caseId: string, updateCaseBodyDto: UpdateCaseBodyDto,
         method: "PATCH",
         body: updateCaseBodyDto
     })));
+}
+/**
+ * Assign a case to a user
+ */
+export function postCasesByCaseIdAssignee(caseId: string, assignCaseBodyDto: AssignCaseBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/assignee`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: assignCaseBodyDto
+    })));
+}
+/**
+ * Unassign a case
+ */
+export function deleteCasesByCaseIdAssignee(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/assignee`, {
+        ...opts,
+        method: "DELETE"
+    }));
 }
 /**
  * Add decisions to a case
