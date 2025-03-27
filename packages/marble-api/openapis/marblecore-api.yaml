@@ -64,6 +64,8 @@ paths:
     $ref: ./marblecore-api/cases.yml#/~1cases
   /cases/{caseId}:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}
+  /cases/{caseId}/assignee:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1assignee
   /cases/{caseId}/decisions:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1decisions
   /cases/{caseId}/comments:

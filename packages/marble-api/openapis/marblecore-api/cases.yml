@@ -169,6 +169,64 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/cases/{caseId}/assignee:
+  post:
+    tags:
+      - Cases
+    summary: Assign a case to a user
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case that needs to be assigned to
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Assignment specification
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AssignCaseBodyDto'
+      required: true
+    responses:
+      '204':
+        description: Case was successfully assigned to
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  delete:
+    tags:
+      - Cases
+    summary: Unassign a case
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case that needs to be unassigned
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: Case was successfully unassigned
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /cases/{caseId}/decisions:
   post:
     tags:
@@ -649,6 +707,13 @@ components:
           format: uuid
         status:
           $ref: '#/components/schemas/CaseStatusDto'
+    AssignCaseBodyDto:
+      type: object
+      required: ['user_id']
+      properties:
+        user_id:
+          type: string
+          format: uuid
     CreateCaseBodyDto:
       type: object
       required:
