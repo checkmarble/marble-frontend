@@ -329,7 +329,7 @@ const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
       ref={ref}
       className={cn(
         [
-          'aria-selected:bg-purple-98 data-[state=open]:bg-purple-98 outline-none',
+          'aria-selected:bg-purple-98 data-[state=open]:bg-purple-98 aria-[disabled=true]:text-grey-80 outline-none',
           'flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2',
         ],
         { '': selected },

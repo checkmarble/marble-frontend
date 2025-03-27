@@ -10,11 +10,18 @@ import { renderToPipeableStream } from 'react-dom/server';
 import { I18nextProvider } from 'react-i18next';
 import { PassThrough } from 'stream';
 
+import { server } from './mocks/node';
 import { initServerServices } from './services/init.server';
 import { captureUnexpectedRemixError } from './services/monitoring';
 import { getServerEnv } from './utils/environment';
 
 const ABORT_DELAY = 70000;
+
+if (getServerEnv('NODE_ENV') === 'development' && process.env['ENABLE_MOCKING'] === 'true') {
+  server.listen({
+    onUnhandledRequest: 'bypass',
+  });
+}
 
 export default async function handleRequest(
   request: Request,
