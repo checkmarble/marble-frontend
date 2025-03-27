@@ -438,6 +438,43 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/cases/{caseId}/pivot_objects:
+  get:
+    tags:
+      - Cases
+    summary: ->
+      Return the pivot objects present in a case, computed from the pivot values on decisions
+      in the case. Pivot objects are deduplicated and come with their actual content (if previously
+      ingested) if the pivot value is from an actual unique pivot "object" (not just a value on an entity).
+    operationId: getPivotObjectsForCase
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case to read from
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Detailed values (depending on ingestion status) on
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pivot_objects:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PivotObjectDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /cases/files/${caseFileId}/download_link:
   get:
     tags:
@@ -950,3 +987,56 @@ components:
             previous_value:
               type: string
               format: date-time
+    PivotObjectDto:
+      type: object
+      properties:
+        pivot_object_id:
+          type: string
+          description:
+            The "object_id" field of the pivot object. Can be null if the pivot type is "field" or if the pivot
+            does point to another unique field than "object_id", and the object has not been ingested yet.
+        pivot_value:
+          type: string
+          description: The actual pivot value, as on the decision. This value is used for grouping decisions.
+        pivot_id:
+          type: string
+          format: uuid
+        pivot_type:
+          type: string
+          enum: ['field', 'object']
+        pivot_object_name:
+          type: string
+          description: Name of the entity on which the pivot value is found.
+        pivot_field_name:
+          type: string
+          description: Name of the field used as a pivot value
+        is_ingested:
+          type: boolean
+          description: Whether the pivot object has been ingested or not (only for pivot type "object")
+        pivot_object_metadata:
+          type: object
+          description: Metadata of the pivot object, if it has been ingested (only for pivot type "object")
+          properties:
+            valid_from:
+              type: string
+              format: date-time
+          additionalProperties: true
+        pivot_object_data:
+          type: object
+          description: ->
+            Data of the pivot object, if it is a pivot object and it has been ingested (only for pivot type "object"),
+            otherwise {key:value} with the pivot field used. If it is an ingested object, may include nested objects
+            {link_name:{object}} where link_name is the name of a link pointing from the pivot object, and object is the
+            full data present on the object found following that link.
+          additionalProperties: true
+        number_of_decisions:
+          type: integer
+          description: Number of decisions that have this pivot value
+      required:
+        - pivot_value
+        - pivot_type
+        - is_ingested
+        - pivot_object_name
+        - pivot_field_name
+        - pivot_object_data
+        - number_of_decisions
