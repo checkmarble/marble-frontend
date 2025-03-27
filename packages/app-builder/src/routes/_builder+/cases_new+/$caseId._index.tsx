@@ -4,6 +4,7 @@ import {
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
+import { CaseDetails } from '@app-builder/components/Cases/New/CaseDetails';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
 import { type CaseDetail } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
@@ -118,7 +119,7 @@ export const handle = {
 };
 
 export default function CaseManagerIndexPage() {
-  const { case: currentCase } = useLoaderData<CaseManagerPageLoaderData>();
+  const { case: details } = useLoaderData<CaseManagerPageLoaderData>();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
 
   useEffect(() => {
@@ -132,9 +133,7 @@ export default function CaseManagerIndexPage() {
       </Page.Header>
       <Page.Container>
         <Page.Content className="grid h-full grid-cols-[1fr_520px] p-0 lg:p-0">
-          <main className="px-12 py-8">
-            <h1 className="text-l">{currentCase.name}</h1>
-          </main>
+          <CaseDetails detail={details} />
           <aside className="border-grey-90 bg-grey-100 sticky top-0 border-l p-8"></aside>
         </Page.Content>
       </Page.Container>

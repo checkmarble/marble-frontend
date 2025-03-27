@@ -396,6 +396,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/create-case.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/edit-name",
+        "path": "ressources/cases/edit-name",
+        "file": "routes/ressources+/cases+/edit-name.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/edit-snooze",
         "path": "ressources/cases/edit-snooze",
         "file": "routes/ressources+/cases+/edit-snooze.tsx"
