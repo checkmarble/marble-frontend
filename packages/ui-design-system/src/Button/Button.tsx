@@ -25,6 +25,7 @@ export const CtaClassName = cva(
       },
       size: {
         default: 'px-4 py-2 gap-1',
+        small: 'h-6 px-1 gap-1',
         icon: 'size-6 gap-1',
         dropdown: 'p-2 gap-4',
       },

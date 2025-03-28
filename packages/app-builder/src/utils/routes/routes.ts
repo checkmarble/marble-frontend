@@ -396,6 +396,16 @@ export const routes = [
         "file": "routes/ressources+/cases+/create-case.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/edit-assignee",
+        "path": "ressources/cases/edit-assignee",
+        "file": "routes/ressources+/cases+/edit-assignee.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/edit-inbox",
+        "path": "ressources/cases/edit-inbox",
+        "file": "routes/ressources+/cases+/edit-inbox.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/edit-name",
         "path": "ressources/cases/edit-name",
         "file": "routes/ressources+/cases+/edit-name.tsx"

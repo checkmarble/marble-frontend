@@ -4,11 +4,12 @@ import { useOrganizationTags } from '@app-builder/services/organization/organiza
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { useForm } from '@tanstack/react-form';
+import { useForm, useStore } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { type Tag } from 'marble-api';
 import { pick, toggle } from 'radash';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
@@ -43,18 +44,16 @@ export async function action({ request }: ActionFunctionArgs) {
   return { success: true };
 }
 
-const TagPreview = ({ name, onClear }: { name: string; onClear?: () => void }) => (
-  <div className="bg-purple-96 flex size-fit flex-row items-center gap-2 rounded-full px-2 py-1">
+const TagPreview = ({ name }: { name: string }) => (
+  <div className="bg-purple-96 flex size-fit flex-row items-center gap-2 rounded-full px-2 py-[3px]">
     <span className="text-purple-65 text-xs font-normal">{name}</span>
-    {onClear ? (
-      <Icon onClick={onClear} icon="cross" className="text-purple-65 size-4 cursor-pointer" />
-    ) : null}
   </div>
 );
 
 export const EditCaseTags = ({ caseId, tagIds }: { caseId: string; tagIds: string[] }) => {
   const { submit } = useFetcher<typeof action>();
   const { orgTags } = useOrganizationTags();
+  const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = useState(false);
 
   const formattedTags = useMemo(
@@ -84,37 +83,45 @@ export const EditCaseTags = ({ caseId, tagIds }: { caseId: string; tagIds: strin
     },
   });
 
+  const ids = useStore(form.store, (state) => state.values.tagIds);
+
   return (
     <form.Field name="tagIds">
       {(field) => (
         <div className="flex items-center gap-2">
           {field.state.value.map((id) => (
-            <TagPreview
-              key={id}
-              name={formattedTags[id]!.name}
-              onClear={() => {
-                field.handleChange(toggle(field.state.value, id));
-                form.handleSubmit();
-              }}
-            />
+            <TagPreview key={id} name={formattedTags[id]!.name} />
           ))}
           <MenuCommand.Menu open={open} onOpenChange={setOpen}>
             <MenuCommand.Trigger>
-              <Button className="w-fit px-1" variant="secondary" size="icon">
-                <Icon icon="edit-square" className="size-4" />
+              <Button
+                className="w-fit p-0.5"
+                variant="secondary"
+                size={ids.length ? 'icon' : 'small'}
+              >
+                <Icon icon={ids.length ? 'edit-square' : 'plus'} className="text-grey-50 size-4" />
+                {!ids.length ? (
+                  <span className="text-grey-50 text-xs">{t('common:add')}</span>
+                ) : null}
               </Button>
             </MenuCommand.Trigger>
-            <MenuCommand.Content sameWidth className="mt-2" side="bottom">
+            <MenuCommand.Content className="mt-2 min-w-[200px]" side="bottom">
               <MenuCommand.List>
                 {orgTags.map(({ id }) => (
                   <MenuCommand.Item
                     key={id}
+                    className="cursor-pointer"
                     onSelect={() => {
                       field.handleChange(toggle(field.state.value, id));
                       form.handleSubmit();
                     }}
                   >
-                    <TagPreview key={id} name={formattedTags[id]!.name} />
+                    <div className="inline-flex w-full justify-between">
+                      <TagPreview key={id} name={formattedTags[id]!.name} />
+                      {ids.includes(id) ? (
+                        <Icon icon="tick" className="text-purple-65 size-6" />
+                      ) : null}
+                    </div>
                   </MenuCommand.Item>
                 ))}
               </MenuCommand.List>

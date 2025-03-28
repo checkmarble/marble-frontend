@@ -1,13 +1,16 @@
 import { casesI18n } from '@app-builder/components/Cases/cases-i18n';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { initServerServices } from '@app-builder/services/init.server';
-import { getFieldErrors } from '@app-builder/utils/form';
+import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -43,14 +46,17 @@ export async function action({ request }: ActionFunctionArgs) {
 export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
   const { t } = useTranslation(handle.i18n);
   const { submit } = useFetcher<typeof action>();
+  const [isEditing, setIsEditing] = useState(false);
 
   const form = useForm({
-    onSubmit: ({ value }) =>
+    onSubmit: ({ value }) => {
       submit(value, {
         method: 'PATCH',
         action: getRoute('/ressources/cases/edit-name'),
         encType: 'application/json',
-      }),
+      });
+      setIsEditing(false);
+    },
     defaultValues: { name: name, caseId: id } as EditNameForm,
     validators: {
       onChange: schema,
@@ -60,24 +66,60 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
   });
 
   return (
-    <form.Field name="name">
-      {(field) => (
-        <div className="flex w-full flex-col gap-1">
-          <input
-            type="text"
-            name={field.name}
-            defaultValue={field.state.value}
-            onChange={(e) => {
-              field.handleChange(e.currentTarget.value);
-              form.handleSubmit();
-            }}
-            onBlur={field.handleBlur}
-            className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
-            placeholder={t('cases:case.name')}
-          />
-          <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-        </div>
-      )}
-    </form.Field>
+    <form onSubmit={handleSubmit(form)}>
+      <form.Field name="name">
+        {(field) => (
+          <div className="flex w-full flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                name={field.name}
+                disabled={!isEditing}
+                defaultValue={field.state.value}
+                onChange={(e) => field.handleChange(e.currentTarget.value)}
+                onBlur={field.handleBlur}
+                className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
+                placeholder={t('cases:case.name')}
+              />
+              {!isEditing ? (
+                <Button
+                  type="button"
+                  onClick={() => setIsEditing(true)}
+                  className="w-fit p-0.5"
+                  variant="secondary"
+                  size="icon"
+                >
+                  <Icon icon="edit-square" className="text-grey-50 size-4" />
+                </Button>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="submit"
+                    size="small"
+                    disabled={form.state.isSubmitting}
+                    variant="primary"
+                  >
+                    <Icon icon="save" className="size-4" />
+                    <span className="text-xs">{t('common:save')}</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setIsEditing(false);
+                      form.reset({ name, caseId: id });
+                    }}
+                    variant="secondary"
+                    size="icon"
+                  >
+                    <Icon icon="cross" className="text-grey-50 size-5" />
+                  </Button>
+                </div>
+              )}
+            </div>
+            <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+          </div>
+        )}
+      </form.Field>
+    </form>
   );
 };
