@@ -42,6 +42,8 @@ export interface CaseRepository {
   createCase(data: { name: string; inboxId: string; decisionIds?: string[] }): Promise<CaseDetail>;
   getCase(args: { caseId: string }): Promise<CaseDetail>;
   updateCase(args: { caseId: string; body: CaseUpdateBody }): Promise<CaseDetail>;
+  assignUser(args: { caseId: string; userId: string }): Promise<unknown>;
+  unassignUser(args: { caseId: string }): Promise<unknown>;
   snoozeCase(args: { caseId: string; snoozeUntil: string }): Promise<unknown>;
   unsnoozeCase(args: { caseId: string }): Promise<unknown>;
   addComment(args: {
@@ -87,6 +89,8 @@ export function makeGetCaseRepository() {
         ...adaptPagination(pagination),
       };
     },
+    assignUser: ({ caseId, userId }) => marbleCoreApiClient.assignUser(caseId, { user_id: userId }),
+    unassignUser: ({ caseId }) => marbleCoreApiClient.unassignUser(caseId),
     unsnoozeCase: ({ caseId }) => marbleCoreApiClient.unsnoozeCase(caseId),
     snoozeCase: ({ caseId, snoozeUntil }) =>
       marbleCoreApiClient.snoozeCase(caseId, { until: snoozeUntil }),
