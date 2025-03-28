@@ -41,6 +41,7 @@ export const iconNames = [
   'harddrive',
   'helpcenter',
   'history',
+  'in-progress',
   'inbox',
   'left-panel-close',
   'left-panel-open',
