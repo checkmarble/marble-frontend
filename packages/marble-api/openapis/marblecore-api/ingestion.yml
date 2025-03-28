@@ -202,12 +202,13 @@ components:
             - source_table_name
             - filter_field_name
             - ordering_field_name
-        secondary_filters:
-          type: object
-          additionalProperties: true
-          description:
-            Additional filters to apply to the exploration. key/value must match the name and
-            type of fields on the table that is being explored.
+        # secondary_filters:
+        #   type: object
+        #   additionalProperties: true
+        #   description:
+        #     Additional filters to apply to the exploration. key/value must match the name and
+        #     type of fields on the table that is being explored.
+        # TODO: NOT FINISHED, NEEDS TO BE COMPLETED
         cursor_id:
           description: The id of the object after which to paginate, using ordering by the specified field in 'exploration_options'
           oneOf:
@@ -238,13 +239,13 @@ components:
           type: object
           required:
             - next_cursor_id
-            - has_next
+            - has_next_page
           properties:
             next_cursor_id:
               description: The id of the object after which to paginate, using ordering by the specified field in 'exploration_options'
               oneOf:
                 - type: string
                 - type: number
-            has_next:
+            has_next_page:
               type: boolean
               description: Whether there are more objects to paginate
