@@ -64,6 +64,7 @@ export type CaseDto = {
     contributors: CaseContributorDto[];
     tags: CaseTagDto[];
     snoozed_until?: string;
+    assigned_to?: string;
 };
 export type Error = {
     code: number;

@@ -564,6 +564,9 @@ components:
         snoozed_until:
           type: string
           format: date-time
+        assigned_to:
+          type: string
+          format: uuid
     CaseDetailDto:
       allOf:
         - $ref: '#/components/schemas/CaseDto'
