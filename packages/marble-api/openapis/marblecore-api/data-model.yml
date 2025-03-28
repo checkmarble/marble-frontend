@@ -310,10 +310,10 @@ components:
         target_table_id:
           type: string
           format: uuid
-        target_field_name:
+        filter_field_name:
           type: string
           description: name of the field on which to filter the target table (on the "many" side of the relation)
-        target_field_id:
+        filter_field_id:
           type: string
           format: uuid
         ordering_field_name:
@@ -333,8 +333,8 @@ components:
         - source_field_id
         - target_table_name
         - target_table_id
-        - target_field_name
-        - target_field_id
+        - filter_field_name
+        - filter_field_id
         - ordering_field_name
         - ordering_field_id
         - status
