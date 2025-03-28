@@ -289,6 +289,55 @@ components:
         - child_table_id
         - child_field_name
         - child_field_id
+    NavigationOptionDto:
+      type: object
+      properties:
+        source_table_name:
+          type: string
+          description: name of the table we use as a starting point to explore "many" entries from another table, by correlating fields.
+        source_table_id:
+          type: string
+          format: uuid
+        source_field_name:
+          type: string
+          description: name of the field whose value we use as a filter on this object.
+        source_field_id:
+          type: string
+          format: uuid
+        target_table_name:
+          type: string
+          description: name of the table for which we explore "many" entries from a reference object. May be the same as the parent table.
+        target_table_id:
+          type: string
+          format: uuid
+        filter_field_name:
+          type: string
+          description: name of the field on which to filter the target table (on the "many" side of the relation)
+        filter_field_id:
+          type: string
+          format: uuid
+        ordering_field_name:
+          type: string
+          description: name of the field on which to order the target table (on the "many" side of the relation)
+        ordering_field_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, valid, invalid]
+          description: status of the index that is created in the database to allow data exploration on the child table.
+      required:
+        - source_table_name
+        - source_table_id
+        - source_field_name
+        - source_field_id
+        - target_table_name
+        - target_table_id
+        - filter_field_name
+        - filter_field_id
+        - ordering_field_name
+        - ordering_field_id
+        - status
     FieldDto:
       type: object
       properties:
@@ -345,6 +394,10 @@ components:
           additionalProperties:
             type: object
             $ref: '#/components/schemas/LinkToSingleDto'
+        navigation_options:
+          type: array
+          items:
+            $ref: '#/components/schemas/NavigationOptionDto'
       required:
         - id
         - name
