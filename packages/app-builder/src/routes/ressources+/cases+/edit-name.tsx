@@ -1,3 +1,4 @@
+import { casesI18n } from '@app-builder/components/Cases/cases-i18n';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
@@ -5,8 +6,13 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
+import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
+
+export const handle = {
+  i18n: [...casesI18n, 'common'] satisfies Namespace,
+};
 
 const schema = z.object({ name: z.string(), caseId: z.string() });
 
@@ -35,7 +41,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
-  const { t } = useTranslation(['cases']);
+  const { t } = useTranslation(handle.i18n);
   const { submit } = useFetcher<typeof action>();
 
   const form = useForm({
@@ -54,27 +60,24 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
   });
 
   return (
-    <form>
-      <form.Field name="name">
-        {(field) => (
-          <div className="flex w-full flex-col gap-1">
-            <input
-              type="text"
-              name={field.name}
-              defaultValue={field.state.value}
-              onChange={(e) => {
-                console.log('Value changed');
-                field.handleChange(e.currentTarget.value);
-                form.handleSubmit();
-              }}
-              onBlur={field.handleBlur}
-              className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
-              placeholder={t('cases:case.name')}
-            />
-            <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-          </div>
-        )}
-      </form.Field>
-    </form>
+    <form.Field name="name">
+      {(field) => (
+        <div className="flex w-full flex-col gap-1">
+          <input
+            type="text"
+            name={field.name}
+            defaultValue={field.state.value}
+            onChange={(e) => {
+              field.handleChange(e.currentTarget.value);
+              form.handleSubmit();
+            }}
+            onBlur={field.handleBlur}
+            className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
+            placeholder={t('cases:case.name')}
+          />
+          <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+        </div>
+      )}
+    </form.Field>
   );
 };
