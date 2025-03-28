@@ -1,0 +1,24 @@
+/signup-status:
+  get:
+    summary: Check Signup Status
+    description: Checks if there are no organizations in the database to determine the signup status.
+    operationId: getSignupStatus
+    responses:
+      '200':
+        description: The status of the signup process
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                has_an_organization:
+                  type: boolean
+                  description: Indicates if there are at least one organizations in the database.
+                  example: true
+                has_a_user:
+                  type: boolean
+                  description: Indicates if there are at least one user in the database.
+                  example: true
+              required:
+                - has_an_organization
+                - has_a_user

@@ -263,6 +263,9 @@ paths:
   /version:
     $ref: ./marblecore-api/version.yml#/~1version
 
+  # SIGNUP STATUS
+  /signup-status:
+    $ref: ./marblecore-api/signup-status.yml#/~1signup-status
 components:
   securitySchemes:
     $ref: marblecore-api/_common.yml#/securitySchemes
