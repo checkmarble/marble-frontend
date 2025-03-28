@@ -113,7 +113,6 @@
   "case_detail.review_decision.review_status.placeholder": "Select a review status",
   "case_detail.review_decision.disabled_approve": "This status cannot be chosen because there is a sanction check to review for this decision.",
   "case_detail.review_decision": "Review",
-  "tags.add": "Add a tag",
   "search.placeholder": "Search by name",
   "filters.date_range.title": "creation date is:",
   "change_status_modal.title": "Change Case’s status",
