@@ -10,11 +10,11 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
-import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, MenuCommand, Modal } from 'ui-design-system';
+import { Button, cn, MenuCommand, Modal } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 export const handle = {
@@ -82,12 +82,13 @@ export function EditCaseStatus({
           <MenuCommand.Menu open={open} onOpenChange={setOpen}>
             <MenuCommand.Trigger>
               <Button className="w-fit" size="icon" variant="ghost">
-                <div
-                  className={clsx('size-5 rounded-full', {
-                    'bg-red-47': caseStatusMapping[field.state.value].color === 'red',
-                    'bg-blue-58': caseStatusMapping[field.state.value].color === 'blue',
-                    'bg-grey-50': caseStatusMapping[field.state.value].color === 'grey',
-                    'bg-green-38': caseStatusMapping[field.state.value].color === 'green',
+                <Icon
+                  icon="in-progress"
+                  className={cn('size-5', {
+                    'text-red-47': caseStatusMapping[field.state.value].color === 'red',
+                    'text-blue-58': caseStatusMapping[field.state.value].color === 'blue',
+                    'text-grey-50': caseStatusMapping[field.state.value].color === 'grey',
+                    'text-green-38': caseStatusMapping[field.state.value].color === 'green',
                   })}
                 />
                 <span className="text-xs font-medium capitalize">
