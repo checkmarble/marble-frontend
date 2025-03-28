@@ -12,10 +12,9 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { useLoaderData, useNavigate } from '@remix-run/react';
-import { useEffect, useState } from 'react';
+import { useLoaderData } from '@remix-run/react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type CaseManagerPageLoaderData = {
@@ -68,59 +67,35 @@ export const handle = {
         </BreadCrumbLink>
       );
     },
-    ({ data }: BreadCrumbProps<CaseManagerPageLoaderData>) => {
-      const navigate = useNavigate();
-      const [open, setOpen] = useState(false);
-
+    ({ isLast, data }: BreadCrumbProps<CaseManagerPageLoaderData>) => {
       return (
-        <MenuCommand.Menu open={open} onOpenChange={setOpen}>
-          <MenuCommand.Trigger>
-            <Button variant="secondary">
-              <span>{data.currentInbox.name}</span>
-              <MenuCommand.Arrow />
-            </Button>
-          </MenuCommand.Trigger>
-          <MenuCommand.Content sameWidth className="mt-2">
-            <MenuCommand.List>
-              {data.inboxes.map(({ id, name }) => (
-                <MenuCommand.Item
-                  key={id}
-                  value={id}
-                  className="cursor-pointer"
-                  onSelect={(id) =>
-                    navigate(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(id) }))
-                  }
-                >
-                  {name}
-                </MenuCommand.Item>
-              ))}
-            </MenuCommand.List>
-          </MenuCommand.Content>
-        </MenuCommand.Menu>
+        <BreadCrumbLink
+          to={getRoute('/cases/inboxes/:inboxId', {
+            inboxId: fromUUID(data.currentInbox.id),
+          })}
+          isLast={isLast}
+        >
+          {data.currentInbox.name}
+        </BreadCrumbLink>
       );
     },
     ({ isLast, data }: BreadCrumbProps<CaseManagerPageLoaderData>) => {
       return (
-        <>
-          <BreadCrumbLink
-            isLast={isLast}
-            to={getRoute('/cases_new/:caseId', { caseId: fromUUID(data.case.id) })}
-          >
-            {data.case.name}
-          </BreadCrumbLink>
-          <Button type="button" variant="secondary">
-            <Icon icon="arrow-up" className="size-5" />
-            <span>Move to</span>
-          </Button>
-        </>
+        <BreadCrumbLink
+          isLast={isLast}
+          to={getRoute('/cases_new/:caseId', { caseId: fromUUID(data.case.id) })}
+        >
+          {data.case.name}
+        </BreadCrumbLink>
       );
     },
   ],
 };
 
 export default function CaseManagerIndexPage() {
-  const { case: details } = useLoaderData<CaseManagerPageLoaderData>();
+  const { case: details, inboxes } = useLoaderData<CaseManagerPageLoaderData>();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     leftSidebarSharp.actions.setExpanded(false);
@@ -131,9 +106,9 @@ export default function CaseManagerIndexPage() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
       </Page.Header>
-      <Page.Container>
+      <Page.Container ref={containerRef}>
         <Page.Content className="grid h-full grid-cols-[1fr_520px] p-0 lg:p-0">
-          <CaseDetails detail={details} />
+          <CaseDetails detail={details} containerRef={containerRef} inboxes={inboxes} />
           <aside className="border-grey-90 bg-grey-100 sticky top-0 border-l p-8"></aside>
         </Page.Content>
       </Page.Container>

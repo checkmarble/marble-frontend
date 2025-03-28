@@ -277,16 +277,16 @@ function Combobox({ className, onValueChange, ...props }: ComboboxProps) {
   }, [internalSharp]);
 
   return (
-    <div className={cn('relative m-2 h-10', className)}>
+    <div className={cn('relative m-2 mb-0 h-10', className)}>
       <Command.Input
         ref={inputRef}
-        className={cn(inputClassname(), 'ps-10')}
+        className={cn(inputClassname(), 'ps-8')}
         value={menuState.value.search}
         onValueChange={setSearch}
         {...props}
       />
       <div className="text-grey-50 peer-focus:text-grey-00 pointer-events-none absolute inset-y-0 start-0 flex items-center ps-2">
-        <Icon icon="search" className="size-6" />
+        <Icon icon="search" className="size-5" />
       </div>
     </div>
   );

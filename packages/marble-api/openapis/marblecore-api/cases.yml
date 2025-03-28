@@ -173,7 +173,8 @@
   post:
     tags:
       - Cases
-    summary: Assign a case to a user
+    summary: Assign a user to a case
+    operationId: assignUser
     security:
       - bearerAuth: []
     parameters:
@@ -205,7 +206,8 @@
   delete:
     tags:
       - Cases
-    summary: Unassign a case
+    summary: Unassign a user from a case
+    operationId: unassignUser
     security:
       - bearerAuth: []
     parameters:
