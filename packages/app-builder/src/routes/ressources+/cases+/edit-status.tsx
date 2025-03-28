@@ -81,7 +81,7 @@ export function EditCaseStatus({
         <>
           <MenuCommand.Menu open={open} onOpenChange={setOpen}>
             <MenuCommand.Trigger>
-              <Button className="w-fit" variant="ghost">
+              <Button className="w-fit" size="icon" variant="ghost">
                 <div
                   className={clsx('size-5 rounded-full', {
                     'bg-red-47': caseStatusMapping[field.state.value].color === 'red',
@@ -102,10 +102,12 @@ export function EditCaseStatus({
                   <MenuCommand.Item
                     key={value}
                     value={value}
+                    disabled={initialStatus === value}
                     onSelect={() => {
                       if (['open', 'investigating'].includes(value)) {
                         field.handleChange(value);
                         form.handleSubmit();
+                        return;
                       }
 
                       shouldValidate({ status: value, require: true });
