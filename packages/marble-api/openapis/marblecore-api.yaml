@@ -72,6 +72,8 @@ paths:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1snooze
   /cases/{caseId}/case_tags:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1case_tags
+  /cases/{caseId}/pivot_objects:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1pivot_objects
   /cases/files/${caseFileId}/download_link:
     $ref: ./marblecore-api/cases.yml#/~1cases~1files~1${caseFileId}~1download_link
   /cases/review_decision:
