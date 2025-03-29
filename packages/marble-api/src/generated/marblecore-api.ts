@@ -1082,9 +1082,9 @@ export function updateCase(caseId: string, updateCaseBodyDto: UpdateCaseBodyDto,
     })));
 }
 /**
- * Assign a case to a user
+ * Assign a user to a case
  */
-export function postCasesByCaseIdAssignee(caseId: string, assignCaseBodyDto: AssignCaseBodyDto, opts?: Oazapfts.RequestOpts) {
+export function assignUser(caseId: string, assignCaseBodyDto: AssignCaseBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -1106,9 +1106,9 @@ export function postCasesByCaseIdAssignee(caseId: string, assignCaseBodyDto: Ass
     })));
 }
 /**
- * Unassign a case
+ * Unassign a user from a case
  */
-export function deleteCasesByCaseIdAssignee(caseId: string, opts?: Oazapfts.RequestOpts) {
+export function unassignUser(caseId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
