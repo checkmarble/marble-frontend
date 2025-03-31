@@ -1,3 +1,4 @@
+import { Callout } from '@app-builder/components';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { AuthError } from '@app-builder/components/Auth/AuthError';
 import {
@@ -11,6 +12,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
+import { marblecoreApi } from 'marble-api';
 import { tryit } from 'radash';
 import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
@@ -28,7 +30,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const session = await authSessionService.getSession(request);
   const [backendError, isSsoEnabled] = await tryit(licenseService.isSsoEnabled)();
 
+  const { getSignupStatus } = marblecoreApi;
+
+  const { migrations_run, has_an_organization, has_a_user } = await getSignupStatus();
+
   return json({
+    isSignupReady: migrations_run && has_an_organization && has_a_user,
+    haveMigrationsRun: migrations_run,
     authError: backendError ? 'BackendUnavailable' : session.get('authError')?.message,
     isSsoEnabled,
   });
@@ -49,7 +57,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Login() {
   const { t } = useTranslation(handle.i18n);
-  const { authError, isSsoEnabled } = useLoaderData<typeof loader>();
+  const { authError, isSsoEnabled, isSignupReady, haveMigrationsRun } =
+    useLoaderData<typeof loader>();
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
@@ -65,6 +74,28 @@ export default function Login() {
 
   return (
     <div className="flex w-full flex-col items-center">
+      {isSignupReady ? (
+        <Callout variant="soft" className="mb-6 text-start">
+          {t('auth:sign_up.description')}
+        </Callout>
+      ) : (
+        <Callout variant="soft" color="red" className="mb-6 text-start">
+          <div>
+            {haveMigrationsRun
+              ? t('auth:sign_up.warning.instance_not_initialized')
+              : t('auth:sign_up.warning.database_not_migrated')}
+            <p>
+              {t('auth:sign_up.read_more')}
+              <a
+                href="https://github.com/checkmarble/marble/blob/main/installation/first_connection.md"
+                className="text-purple-65 px-[1ch] underline"
+              >
+                {t('auth:sign_up.first_connection_guide')}
+              </a>
+            </p>
+          </div>
+        </Callout>
+      )}
       {isSsoEnabled ? (
         <>
           <div className="flex w-full flex-col gap-2">

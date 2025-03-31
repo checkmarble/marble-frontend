@@ -30,17 +30,18 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const { getSignupStatus } = marblecoreApi;
 
-  const { has_an_organization, has_a_user } = await getSignupStatus();
+  const { migrations_run, has_an_organization, has_a_user } = await getSignupStatus();
 
   return Response.json({
-    isSignupReady: has_an_organization && has_a_user,
+    isSignupReady: migrations_run && has_an_organization && has_a_user,
+    haveMigrationsRun: migrations_run,
     authError: error?.message,
   });
 }
 
 export default function SignUp() {
   const { t } = useTranslation(handle.i18n);
-  const { authError, isSignupReady } = useLoaderData<typeof loader>();
+  const { authError, isSignupReady, haveMigrationsRun } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
   const signUp = () => navigate(getRoute('/email-verification'));
@@ -54,7 +55,9 @@ export default function SignUp() {
       ) : (
         <Callout variant="soft" color="red" className="mb-6 text-start">
           <div>
-            {t('auth:sign_up.warning.instance_not_initialized')}
+            {haveMigrationsRun
+              ? t('auth:sign_up.warning.instance_not_initialized')
+              : t('auth:sign_up.warning.database_not_migrated')}
             <p>
               {t('auth:sign_up.read_more')}
               <a
