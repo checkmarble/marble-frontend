@@ -10,8 +10,6 @@
   "create_value.title": "Nouvelle valeur",
   "create_value.value_placeholder": "Ajouter une nouvelle valeur à votre liste",
   "create_list.button_accept": "Creer une nouvelle liste",
-  "value_other": "Valeurs",
-  "value_one": "Valeur",
   "edit_list.title": "Editer",
   "edit_list.button": "Editer",
   "delete_list.button": "Supprimer cette liste",
@@ -37,5 +35,6 @@
   "upload_csv.success.deleted_other": "{{count}} anciennes valeurs supprimées",
   "upload_csv.success.existing_one": "{{count}} valeur existante",
   "upload_csv.success.existing_other": "{{count}} valeurs existantes",
-  "values_count": "Nb. valeurs"
+  "values_count": "Nb. valeurs",
+  "detail.values-list.header": "Valeurs"
 }

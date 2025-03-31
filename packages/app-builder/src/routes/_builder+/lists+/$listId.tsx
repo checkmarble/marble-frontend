@@ -94,7 +94,7 @@ export default function Lists() {
     () => [
       columnHelper.accessor((row) => row.value, {
         id: 'value',
-        header: t('lists:value', { count: listValues.length }),
+        header: t('lists:detail.values-list.header'),
         size: 500,
         sortingFn: 'text',
         enableSorting: true,

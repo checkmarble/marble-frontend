@@ -1,8 +1,6 @@
 {
   "name": "الاسم",
   "description": "الوصف",
-  "value_one": "القيمة",
-  "value_other": "القيم",
   "used_in_scenarios": "مستخدم في السيناريوهات التالية:",
   "other_scenarios_one": "+{{count}} اخرى",
   "other_scenarios_other": "+{{count}} اخرى",
@@ -37,5 +35,6 @@
   "upload_csv.success.deleted_other": "تم حذف {{count}} من القيم القديمة",
   "upload_csv.success.existing_one": "{{count}} القيمة الحالية",
   "upload_csv.success.existing_other": "{{count}} القيم الموجودة",
-  "values_count": "عدد القيم"
+  "values_count": "عدد القيم",
+  "detail.values-list.header": "قيم"
 }

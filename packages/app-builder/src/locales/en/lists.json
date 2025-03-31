@@ -1,8 +1,6 @@
 {
   "name": "Name",
   "description": "Description",
-  "value_one": "Value",
-  "value_other": "Values",
   "used_in_scenarios": "Used in the following scenarios:",
   "other_scenarios_one": "+{{count}} other",
   "other_scenarios_other": "+{{count}} others",
@@ -37,5 +35,6 @@
   "upload_csv.success.existing_other": "{{count}} existing values",
   "errors.request_timeout": "The request timed out. Please try again.",
   "errors.failure_message": "Upload failed with the following error: {{errorMessage}}",
-  "values_count": "Values count"
+  "values_count": "Values count",
+  "detail.values-list.header": "Values"
 }
