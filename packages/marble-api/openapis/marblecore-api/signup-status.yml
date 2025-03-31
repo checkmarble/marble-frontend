@@ -11,6 +11,10 @@
             schema:
               type: object
               properties:
+                migrations_run:
+                  type: boolean
+                  description: Indicates whether initial migrations have been run.
+                  example: true
                 has_an_organization:
                   type: boolean
                   description: Indicates if there are at least one organizations in the database.
@@ -20,5 +24,6 @@
                   description: Indicates if there are at least one user in the database.
                   example: true
               required:
+                - migrations_run
                 - has_an_organization
                 - has_a_user

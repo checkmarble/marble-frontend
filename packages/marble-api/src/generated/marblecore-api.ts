@@ -3409,6 +3409,8 @@ export function getSignupStatus(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
+            /** Indicates whether initial migrations have been run. */
+            migrations_run: boolean;
             /** Indicates if there are at least one organizations in the database. */
             has_an_organization: boolean;
             /** Indicates if there are at least one user in the database. */
