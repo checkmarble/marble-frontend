@@ -50,7 +50,7 @@ const TagPreview = ({ name }: { name: string }) => (
   </div>
 );
 
-export const EditCaseTags = ({ caseId, tagIds }: { caseId: string; tagIds: string[] }) => {
+export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) => {
   const { submit } = useFetcher<typeof action>();
   const { orgTags } = useOrganizationTags();
   const { t } = useTranslation(handle.i18n);
@@ -75,7 +75,7 @@ export const EditCaseTags = ({ caseId, tagIds }: { caseId: string; tagIds: strin
         action: getRoute('/ressources/cases/edit-tags'),
         encType: 'application/json',
       }),
-    defaultValues: { caseId, tagIds },
+    defaultValues: { caseId: id, tagIds },
     validators: {
       onChange: schema,
       onBlur: schema,
@@ -107,18 +107,18 @@ export const EditCaseTags = ({ caseId, tagIds }: { caseId: string; tagIds: strin
             </MenuCommand.Trigger>
             <MenuCommand.Content className="mt-2 min-w-[200px]" side="bottom">
               <MenuCommand.List>
-                {orgTags.map(({ id }) => (
+                {orgTags.map(({ id: caseId }) => (
                   <MenuCommand.Item
-                    key={id}
+                    key={caseId}
                     className="cursor-pointer"
                     onSelect={() => {
-                      field.handleChange(toggle(field.state.value, id));
+                      field.handleChange(toggle(field.state.value, caseId));
                       form.handleSubmit();
                     }}
                   >
                     <div className="inline-flex w-full justify-between">
-                      <TagPreview key={id} name={formattedTags[id]!.name} />
-                      {ids.includes(id) ? (
+                      <TagPreview key={caseId} name={formattedTags[caseId]!.name} />
+                      {ids.includes(caseId) ? (
                         <Icon icon="tick" className="text-purple-65 size-6" />
                       ) : null}
                     </div>

@@ -1,5 +1,6 @@
 import { casesI18n } from '@app-builder/components/Cases/cases-i18n';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { type CurrentUser } from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFieldErrors } from '@app-builder/utils/form';
@@ -50,7 +51,15 @@ export async function action({ request }: ActionFunctionArgs) {
   return { success: true, errors: [] };
 }
 
-export const EditCaseAssignee = ({ assigneeId, id }: { assigneeId?: string; id: string }) => {
+export const EditCaseAssignee = ({
+  assigneeId,
+  currentUser,
+  id,
+}: {
+  assigneeId?: string;
+  currentUser: CurrentUser;
+  id: string;
+}) => {
   const { submit } = useFetcher<typeof action>();
   const [open, setOpen] = useState(false);
   const { getOrgUserById, orgUsers } = useOrganizationUsers();
@@ -83,12 +92,15 @@ export const EditCaseAssignee = ({ assigneeId, id }: { assigneeId?: string; id: 
         <div className="flex w-full gap-1">
           <div className="flex items-center gap-2">
             {assignee ? (
-              <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1">
                 <Avatar size="xs" firstName={assignee?.firstName} lastName={assignee?.lastName} />
-                <span className="text-xs font-medium">
+                <span className="inline-flex gap-0.5 text-xs font-medium">
                   {`${capitalize(assignee?.firstName)} ${capitalize(assignee?.lastName)}`}
+                  {currentUser.actorIdentity.userId === assignee?.userId ? (
+                    <span className="text-xs font-medium">(you)</span>
+                  ) : null}
                 </span>
-              </div>
+              </span>
             ) : null}
             <MenuCommand.Menu open={open} onOpenChange={setOpen}>
               <MenuCommand.Trigger>
