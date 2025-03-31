@@ -52,6 +52,20 @@ export default function ListsPage() {
         header: t('lists:description'),
         size: 500,
       }),
+      columnHelper.accessor('ValuesCount', {
+        id: 'valuesCount',
+        header: t('lists:values_count'),
+        size: 80,
+        cell: ({ getValue }) => {
+          const { count, hasMore } = getValue();
+          return (
+            <span>
+              {count}
+              {hasMore ? '+' : null} {t('lists:value', { count })}
+            </span>
+          );
+        },
+      }),
     ],
     [t],
   );

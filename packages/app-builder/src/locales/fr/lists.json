@@ -36,5 +36,6 @@
   "upload_csv.success.deleted_one": "{{count}} ancienne valeur supprimée",
   "upload_csv.success.deleted_other": "{{count}} anciennes valeurs supprimées",
   "upload_csv.success.existing_one": "{{count}} valeur existante",
-  "upload_csv.success.existing_other": "{{count}} valeurs existantes"
+  "upload_csv.success.existing_other": "{{count}} valeurs existantes",
+  "values_count": "Nb. valeurs"
 }

@@ -36,5 +36,6 @@
   "upload_csv.success.deleted_one": "تم حذف {{count}} القيمة القديمة",
   "upload_csv.success.deleted_other": "تم حذف {{count}} من القيم القديمة",
   "upload_csv.success.existing_one": "{{count}} القيمة الحالية",
-  "upload_csv.success.existing_other": "{{count}} القيم الموجودة"
+  "upload_csv.success.existing_other": "{{count}} القيم الموجودة",
+  "values_count": "عدد القيم"
 }
