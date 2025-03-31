@@ -36,5 +36,9 @@
   "upload_csv.success.existing_one": "{{count}} valeur existante",
   "upload_csv.success.existing_other": "{{count}} valeurs existantes",
   "values_count": "Nb. valeurs",
-  "detail.values-list.header": "Valeurs"
+  "detail.values-list.header": "Valeurs",
+  "list.row.values_count_zero": "valeur",
+  "list.row.values_count_one": "valeur",
+  "list.row.values_count_other": "valeurs",
+  "detail.value.create.form.label": "Valeur"
 }

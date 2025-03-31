@@ -36,5 +36,9 @@
   "upload_csv.success.existing_one": "{{count}} القيمة الحالية",
   "upload_csv.success.existing_other": "{{count}} القيم الموجودة",
   "values_count": "عدد القيم",
-  "detail.values-list.header": "قيم"
+  "detail.values-list.header": "قيم",
+  "list.row.values_count_zero": "values",
+  "list.row.values_count_one": "value",
+  "list.row.values_count_other": "values",
+  "detail.value.create.form.label": "قيمة"
 }

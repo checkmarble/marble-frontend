@@ -61,7 +61,7 @@ export default function ListsPage() {
           return (
             <span>
               {count}
-              {hasMore ? '+' : null} {t('lists:value', { count })}
+              {hasMore ? '+' : null} {t('lists:list.row.values_count', { count })}
             </span>
           );
         },
