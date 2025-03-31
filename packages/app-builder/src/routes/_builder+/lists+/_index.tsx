@@ -6,7 +6,7 @@ import { isCreateListAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUID } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
@@ -22,7 +22,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
   const customLists = await customListsRepository.listCustomLists();
 
-  return json({
+  return Response.json({
     customLists,
     isCreateListAvailable: isCreateListAvailable(user),
   });
@@ -51,6 +51,20 @@ export default function ListsPage() {
         id: 'description',
         header: t('lists:description'),
         size: 500,
+      }),
+      columnHelper.accessor('ValuesCount', {
+        id: 'valuesCount',
+        header: t('lists:values_count'),
+        size: 80,
+        cell: ({ getValue }) => {
+          const { count, hasMore } = getValue();
+          return (
+            <span>
+              {count}
+              {hasMore ? '+' : null} {t('lists:list.row.values_count', { count })}
+            </span>
+          );
+        },
       }),
     ],
     [t],

@@ -337,6 +337,11 @@ export type CustomListDto = {
     description: string;
     created_at: string;
     updated_at: string;
+    /** Count of values in a custom list */
+    values_count: {
+        count: number;
+        has_more: boolean;
+    };
 };
 export type CreateCustomListBodyDto = {
     name: string;

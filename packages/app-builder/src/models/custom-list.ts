@@ -6,12 +6,17 @@ import {
   type UpdateCustomListBodyDto,
 } from 'marble-api';
 
+export type CustomListValuesCount = {
+  count: number;
+  hasMore: boolean;
+};
 export interface CustomList {
   id: string;
   name: string;
   description: string;
   createdAt: string;
   updatedAt: string;
+  ValuesCount: CustomListValuesCount;
 }
 
 export type CreateCustomListBody = {
@@ -40,6 +45,10 @@ export function adaptCustomList(dto: CustomListDto): CustomList {
     description: dto.description,
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
+    ValuesCount: {
+      count: dto.values_count.count,
+      hasMore: dto.values_count.has_more,
+    },
   };
 }
 

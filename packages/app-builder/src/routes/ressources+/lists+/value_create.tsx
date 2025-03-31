@@ -99,7 +99,9 @@ export function NewListValue({ listId }: { listId: string }) {
             <form.Field name="value">
               {(field) => (
                 <div className="flex flex-col gap-2">
-                  <FormLabel name={field.name}>{t('lists:value', { count: 1 })}</FormLabel>
+                  <FormLabel name={field.name}>
+                    {t('lists:detail.value.create.form.label')}
+                  </FormLabel>
                   <FormInput
                     type="text"
                     name={field.name}
