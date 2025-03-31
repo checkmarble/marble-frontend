@@ -340,6 +340,14 @@ const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
   );
 });
 
+const Separator = React.forwardRef<
+  React.ElementRef<typeof Command.Separator>,
+  React.ComponentPropsWithoutRef<typeof Command.Separator>
+>(({ className, ...props }, ref) => (
+  <Command.Separator ref={ref} className={cn('bg-border -mx-1 h-px', className)} {...props} />
+));
+Separator.displayName = Command.Separator.displayName;
+
 type ListProps = Omit<React.ComponentProps<typeof Command.List>, 'asChild'> & {};
 function List({ className, ...props }: ListProps) {
   return (
@@ -362,5 +370,6 @@ export const MenuCommand = {
   SubMenu,
   Trigger,
   SelectButton,
+  Separator,
   State: MenuCommandSharpFactory,
 };

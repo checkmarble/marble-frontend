@@ -1,17 +1,20 @@
 import useIntersection from '@app-builder/hooks/useIntersection';
+import { type CurrentUser } from '@app-builder/models';
 import { type CaseDetail } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
 import { handle } from '@app-builder/routes/_builder+/cases+/$caseId._layout';
+import { CloseCase } from '@app-builder/routes/ressources+/cases+/close-case';
 import { EditCaseAssignee } from '@app-builder/routes/ressources+/cases+/edit-assignee';
 import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
 import { EditCaseName } from '@app-builder/routes/ressources+/cases+/edit-name';
 import { EditCaseSuspicion } from '@app-builder/routes/ressources+/cases+/edit-suspicion';
 import { EditCaseTags } from '@app-builder/routes/ressources+/cases+/edit-tags';
+import { EscalateCase } from '@app-builder/routes/ressources+/cases+/escalate-case';
+import { SnoozeCase } from '@app-builder/routes/ressources+/cases+/snooze-case';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import * as Ariakit from '@ariakit/react';
 import { type RefObject, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, CtaClassName } from 'ui-design-system';
+import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { caseStatusMapping } from '../CaseStatus';
@@ -20,10 +23,12 @@ export const CaseDetails = ({
   detail,
   containerRef,
   inboxes,
+  currentUser,
 }: {
   detail: CaseDetail;
   containerRef: RefObject<HTMLDivElement>;
   inboxes: Inbox[];
+  currentUser: CurrentUser;
 }) => {
   const { t } = useTranslation(handle.i18n);
   const language = useFormatLanguage();
@@ -46,35 +51,9 @@ export const CaseDetails = ({
       >
         <EditCaseName name={detail.name} id={detail.id} />
         <div className="flex shrink-0 items-center gap-2">
-          <Ariakit.MenuProvider>
-            <Ariakit.MenuButton
-              className={CtaClassName({
-                variant: 'secondary',
-                size: 'icon',
-                className: 'size-[40px]',
-              })}
-            >
-              <Icon icon="dots-three" className="size-4" />
-            </Ariakit.MenuButton>
-            <Ariakit.Menu
-              shift={-80}
-              className="bg-grey-100 border-grey-90 mt-2 flex flex-col gap-2 rounded border p-2"
-            >
-              <Button variant="ghost" type="button" className="justify-start">
-                <Icon icon="arrow-up" className="size-5" aria-hidden />
-                Escalate
-              </Button>
-
-              <Button variant="ghost" type="button" className="justify-start">
-                <Icon icon="snooze" className="size-5" aria-hidden />
-                Snooze
-              </Button>
-            </Ariakit.Menu>
-          </Ariakit.MenuProvider>
-
-          <Button type="submit" className="flex-1">
-            Close case
-          </Button>
+          <EscalateCase id={detail.id} />
+          <SnoozeCase caseId={detail.id} snoozeUntil={detail.snoozedUntil} />
+          <CloseCase id={detail.id} />
         </div>
       </div>
 
@@ -111,11 +90,15 @@ export const CaseDetails = ({
         </div>
         <div className="grid grid-cols-[120px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">Tags</span>
-          <EditCaseTags caseId={detail.id} tagIds={detail.tags.map(({ tagId }) => tagId)} />
+          <EditCaseTags id={detail.id} tagIds={detail.tags.map(({ tagId }) => tagId)} />
         </div>
         <div className="grid grid-cols-[120px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">Assigned to</span>
-          <EditCaseAssignee assigneeId={detail.assignedTo} id={detail.id} />
+          <EditCaseAssignee
+            assigneeId={detail.assignedTo}
+            currentUser={currentUser}
+            id={detail.id}
+          />
         </div>
         <div className="grid grid-cols-[120px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">Report of suspicion</span>
