@@ -20,7 +20,7 @@ async function globalSetup() {
     .start();
 
   const dsn = 'postgres://postgres:marble@db/marble?sslmode=disable';
-  const externalDsn = `postgres://postgres:marble@${db.getIpAddress(net.getName())}/marble?sslmode=disable`;
+  const externalDsn = `postgres://postgres:marble@127.0.0.1:${db.getFirstMappedPort()}/marble?sslmode=disable`;
 
   const firebase = await new GenericContainer(
     'europe-west1-docker.pkg.dev/marble-infra/marble/firebase-emulator:latest',
@@ -43,7 +43,6 @@ async function globalSetup() {
     .withDefaultLogDriver()
     .start();
 
-
   const api = await new GenericContainer(
     'europe-west1-docker.pkg.dev/marble-infra/marble/marble-backend',
   )
@@ -54,6 +53,7 @@ async function globalSetup() {
       PG_CONNECTION_STRING: dsn,
       MARBLE_APP_URL: 'http://localhost:3000',
       FIREBASE_AUTH_EMULATOR_HOST: `firebase:9099`,
+      FIREBASE_API_KEY: 'dummy',
       GOOGLE_CLOUD_PROJECT: 'test-project',
       CREATE_GLOBAL_ADMIN_EMAIL: 'admin@checkmarble.com',
       CREATE_ORG_NAME: 'Zorg',
@@ -65,7 +65,6 @@ async function globalSetup() {
     .withDefaultLogDriver()
     .start();
 
-    
   process.env['API_PORT'] = api.getFirstMappedPort().toString();
   process.env['FIREBASE_PORT'] = firebase.getFirstMappedPort().toString();
 
