@@ -93,23 +93,39 @@ type SubMenuProps = Omit<RootProps, 'open' | 'onOpenChange'> & {
   className?: string;
   trigger: React.ReactNode;
   forceMount?: boolean;
+  arrow?: boolean;
+  disabled?: boolean;
 };
-function SubMenu({ children, trigger, forceMount, className, ...props }: SubMenuProps) {
+function SubMenu({
+  children,
+  trigger,
+  forceMount,
+  className,
+  arrow,
+  hover = true,
+  disabled = false,
+  ...props
+}: SubMenuProps) {
   const [open, setOpen] = React.useState(false);
   return (
     <Command.Group forceMount={forceMount}>
-      <Root {...props} hover open={open} onOpenChange={setOpen}>
+      <Root {...props} hover={hover} open={open} onOpenChange={setOpen}>
         <Trigger>
           <Item
-            className="group/menu-item grid grid-cols-[1fr_20px]"
-            onSelect={() => setOpen(true)}
+            disabled={disabled}
+            className={cn('group/menu-item flex w-full items-center justify-between')}
+            onSelect={() => {
+              setOpen(true);
+            }}
           >
-            <span>{trigger}</span>
-            <Icon
-              aria-hidden="true"
-              icon="arrow-right"
-              className="group-data-[state=open]/menu-item:text-purple-65 ml-auto size-5 shrink-0 rtl:rotate-180"
-            />
+            {trigger}
+            {arrow !== undefined && arrow === false ? null : (
+              <Icon
+                aria-hidden="true"
+                icon="arrow-right"
+                className="group-data-[state=open]/menu-item:text-purple-65 ml-auto size-5 shrink-0 rtl:rotate-180"
+              />
+            )}
           </Item>
         </Trigger>
         <Content
@@ -329,10 +345,10 @@ const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
       ref={ref}
       className={cn(
         [
-          'aria-selected:bg-purple-98 data-[state=open]:bg-purple-98 outline-none',
+          'aria-selected:bg-purple-98 data-[state=open]:bg-purple-98 aria-disabled:text-grey-80 outline-none',
           'flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2',
         ],
-        { '': selected },
+        { '': selected, 'cursor-pointer': props.onSelect && !props.disabled },
         className,
       )}
       {...props}

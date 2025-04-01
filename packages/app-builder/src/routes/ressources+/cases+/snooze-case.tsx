@@ -6,10 +6,10 @@ import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
 import { addDays, addMonths, format, isMonday, isSameDay, isThisMonth, nextMonday } from 'date-fns';
 import { type Namespace } from 'i18next';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, MenuCommand } from 'ui-design-system';
+import { Button, Calendar, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -26,19 +26,19 @@ type EditSnoozeForm = z.infer<typeof editSnoozeSchema>;
 
 type Durations = 'tomorrow' | 'oneWeek' | 'oneMonth' | 'nextMonday';
 
+// Set all dates to 9:00 AM
+const setTo9AM = (date: Date) => {
+  const d = new Date(date);
+  d.setHours(9, 0, 0, 0);
+  return d;
+};
+
 const getDurations = () => {
   const now = new Date();
   const tomorrow = addDays(now, 1);
   const oneWeek = addDays(now, 7);
   const oneMonth = addMonths(now, 1);
   const nextMon = nextMonday(now);
-
-  // Set all dates to 9:00 AM
-  const setTo9AM = (date: Date) => {
-    const d = new Date(date);
-    d.setHours(9, 0, 0, 0);
-    return d;
-  };
 
   const options: { duration: Durations; date: Date }[] = [
     { duration: 'tomorrow', date: setTo9AM(tomorrow) },
@@ -81,9 +81,10 @@ export function SnoozeCase({
 }: Pick<EditSnoozeForm, 'caseId'> & { snoozeUntil?: string }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
+  const [isOpen, setIsOpen] = useState(false);
 
   const formatDate = (date: Date) =>
-    isThisMonth(date) ? format(date, 'EEE h:mm a') : format(date, 'EEE, MMM d, h:mm a');
+    isThisMonth(date) ? format(date, 'EEE d, h:mm a') : format(date, 'EEE, MMM d, h:mm a');
 
   const form = useForm({
     onSubmit: ({ value }) => {
@@ -120,23 +121,34 @@ export function SnoozeCase({
   return (
     <form.Field name="snoozeUntil">
       {(field) => (
-        <MenuCommand.Menu>
+        <MenuCommand.Menu open={isOpen} onOpenChange={setIsOpen}>
           <MenuCommand.Trigger>
-            <Button variant="secondary" size="medium">
-              <Icon icon="snooze" className="size-5" aria-hidden />
+            <Button
+              variant="secondary"
+              size="medium"
+              className={cn({
+                'bg-purple-96': field.state.value,
+              })}
+            >
+              <Icon
+                icon={field.state.value ? 'snooze-on' : 'snooze'}
+                className="size-5"
+                aria-hidden
+              />
               {t('cases:snooze.title')}
             </Button>
           </MenuCommand.Trigger>
-          <MenuCommand.Content className="mt-2 min-w-[250px]">
+          <MenuCommand.Content className="mt-2 min-w-[264px]">
             <MenuCommand.List>
               {getDurations().map(({ duration, date }) => (
                 <MenuCommand.Item
                   onSelect={() => {
-                    field.handleChange(date.toISOString());
+                    field.handleChange(
+                      field.state.value === date.toISOString() ? null : date.toISOString(),
+                    );
                     form.handleSubmit();
                   }}
                   key={duration}
-                  className="cursor-pointer items-end"
                 >
                   <span className="text-r inline-flex items-center gap-1">
                     <span>
@@ -154,16 +166,56 @@ export function SnoozeCase({
                   ) : null}
                 </MenuCommand.Item>
               ))}
-              <MenuCommand.Item key="custom" className="cursor-pointer">
-                <span className="text-r inline-flex items-center gap-1">
-                  <span>Custom</span>
-                  {field.state.value && isCustomDate ? (
+              {field.state.value && isCustomDate ? (
+                <MenuCommand.Item
+                  onSelect={() => {
+                    field.handleChange(null);
+                    form.handleSubmit();
+                  }}
+                >
+                  <span className="text-r inline-flex h-full items-center gap-1">
+                    <span>Custom</span>
                     <span className="text-2xs text-grey-50">
                       {formatDate(new Date(field.state.value))}
                     </span>
-                  ) : null}
-                </span>
-              </MenuCommand.Item>
+                  </span>
+                  <Icon icon="tick" className="text-purple-65 size-6" />
+                </MenuCommand.Item>
+              ) : (
+                <MenuCommand.SubMenu
+                  arrow={false}
+                  hover={false}
+                  trigger={
+                    <>
+                      <span className="text-r inline-flex h-full items-center gap-1">
+                        <span>Custom</span>
+                        {field.state.value && isCustomDate ? (
+                          <span className="text-2xs text-grey-50">
+                            {formatDate(new Date(field.state.value))}
+                          </span>
+                        ) : null}
+                      </span>
+                      {field.state.value && isCustomDate ? (
+                        <Icon icon="tick" className="text-purple-65 size-6" />
+                      ) : null}
+                    </>
+                  }
+                >
+                  <MenuCommand.List>
+                    <Calendar
+                      mode="single"
+                      selected={field.state.value ? new Date(field.state.value) : undefined}
+                      onSelect={(date) => {
+                        if (date) {
+                          field.handleChange(setTo9AM(date).toISOString());
+                          setIsOpen(false);
+                          form.handleSubmit();
+                        }
+                      }}
+                    />
+                  </MenuCommand.List>
+                </MenuCommand.SubMenu>
+              )}
             </MenuCommand.List>
           </MenuCommand.Content>
         </MenuCommand.Menu>
