@@ -269,6 +269,31 @@ export type UpdateCaseBodyDto = {
 export type AssignCaseBodyDto = {
     user_id: string;
 };
+export type PivotObjectDto = {
+    /** The "object_id" field of the pivot object. Can be null if the pivot type is "field" or if the pivot does point to another unique field than "object_id", and the object has not been ingested yet. */
+    pivot_object_id?: string;
+    /** The actual pivot value, as on the decision. This value is used for grouping decisions. */
+    pivot_value: string;
+    pivot_id?: string;
+    pivot_type: "field" | "object";
+    /** Name of the entity on which the pivot value is found. */
+    pivot_object_name: string;
+    /** Name of the field used as a pivot value */
+    pivot_field_name: string;
+    /** Whether the pivot object has been ingested or not (only for pivot type "object") */
+    is_ingested: boolean;
+    /** Metadata of the pivot object, if it has been ingested (only for pivot type "object") */
+    pivot_object_metadata?: {
+        valid_from?: string;
+        [key: string]: any;
+    };
+    /** -> Data of the pivot object, if it is a pivot object and it has been ingested (only for pivot type "object"), otherwise {key:value} with the pivot field used. If it is an ingested object, may include nested objects {link_name:{object}} where link_name is the name of a link pointing from the pivot object, and object is the full data present on the object found following that link. */
+    pivot_object_data: {
+        [key: string]: any;
+    };
+    /** Number of decisions that have this pivot value */
+    number_of_decisions: number;
+};
 export type Tag = {
     id: string;
     name: string;
@@ -329,6 +354,33 @@ export type DataModelObjectDto = {
     };
     metadata: {
         valid_from: string;
+    };
+};
+export type ClientDataListRequestBody = {
+    exploration_options: {
+        /** The table from which we want to start the exploration. */
+        source_table_name: string;
+        /** The main field on which we want to filter the objects */
+        filter_field_name: string;
+        /** The value of the main field on which we want to filter the objects, based on the 'source' object used as a reference. */
+        filter_field_value?: string | number;
+        /** The field on which we want to order the objects (in descending order) */
+        ordering_field_name: string;
+    };
+    /** The id of the object after which to paginate, using ordering by the specified field in 'exploration_options' */
+    cursor_id?: string | number;
+    /** The maximum number of objects to return */
+    limit?: number;
+};
+export type ClientDataListResponseDto = {
+    data: {
+        [key: string]: any;
+    }[];
+    pagination: {
+        /** The id of the object after which to paginate, using ordering by the specified field in 'exploration_options' */
+        next_cursor_id: string | number;
+        /** Whether there are more objects to paginate */
+        has_next_page: boolean;
     };
 };
 export type CustomListDto = {
@@ -654,6 +706,25 @@ export type LinkToSingleDto = {
     child_field_name: string;
     child_field_id: string;
 };
+export type NavigationOptionDto = {
+    /** name of the table we use as a starting point to explore "many" entries from another table, by correlating fields. */
+    source_table_name: string;
+    source_table_id: string;
+    /** name of the field whose value we use as a filter on this object. */
+    source_field_name: string;
+    source_field_id: string;
+    /** name of the table for which we explore "many" entries from a reference object. May be the same as the parent table. */
+    target_table_name: string;
+    target_table_id: string;
+    /** name of the field on which to filter the target table (on the "many" side of the relation) */
+    filter_field_name: string;
+    filter_field_id: string;
+    /** name of the field on which to order the target table (on the "many" side of the relation) */
+    ordering_field_name: string;
+    ordering_field_id: string;
+    /** status of the index that is created in the database to allow data exploration on the child table. */
+    status: "pending" | "valid" | "invalid";
+};
 export type TableDto = {
     id: string;
     name: string;
@@ -664,6 +735,7 @@ export type TableDto = {
     links_to_single?: {
         [key: string]: LinkToSingleDto;
     };
+    navigation_options?: NavigationOptionDto[];
 };
 export type DataModelDto = {
     tables: {
@@ -1311,6 +1383,28 @@ export function reviewDecision(body: {
     })));
 }
 /**
+ * -> Return the pivot objects present in a case, computed from the pivot values on decisions in the case. Pivot objects are deduplicated and come with their actual content (if previously ingested) if the pivot value is from an actual unique pivot "object" (not just a value on an entity).
+ */
+export function getPivotObjectsForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            pivot_objects?: PivotObjectDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/pivot_objects`, {
+        ...opts
+    }));
+}
+/**
  * List tags
  */
 export function listTags({ withCaseCount }: {
@@ -1548,6 +1642,34 @@ export function getIngestedObject(tableName: string, objectId: string, opts?: Oa
     }>(`/ingestion/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}`, {
         ...opts
     }));
+}
+/**
+ * Get a list of objects from a table, given a starting object, a set of filters & ordering field matching the exploration options available on the starting object, and optional cursor pagination.
+ */
+export function listClientObjects(tableName: string, clientDataListRequestBody: ClientDataListRequestBody, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ClientDataListResponseDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/client_data/${encodeURIComponent(tableName)}/list`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: clientDataListRequestBody
+    })));
 }
 /**
  * List custom list
