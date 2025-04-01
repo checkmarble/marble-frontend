@@ -86,6 +86,7 @@ export const iconNames = [
   'send',
   'settings',
   'smallarrow-up',
+  'snooze-on',
   'snooze',
   'status',
   'stop',
