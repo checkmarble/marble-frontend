@@ -94,7 +94,8 @@
         $ref: 'components.yml#/responses/403'
 /client_data/{tableName}/list:
   post:
-    tags: Ingestion
+    tags:
+      - Ingestion
     summary: Get a list of objects from a table, given a starting object, a set of filters & ordering field matching the exploration options available on the starting object, and optional cursor pagination.
     operationId: listClientObjects
     security:
