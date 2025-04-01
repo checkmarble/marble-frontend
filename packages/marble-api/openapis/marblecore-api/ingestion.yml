@@ -111,7 +111,7 @@
       content:
         application/json:
           schema:
-            $ref: 'components/schemas/ClientDataListRequestBody'
+            $ref: '#/components/schemas/ClientDataListRequestBody'
       required: true
     responses:
       '200':
@@ -130,8 +130,6 @@
         $ref: 'components.yml#/responses/404'
       '422':
         $ref: 'components.yml#/responses/422'
-      '500':
-        $ref: 'components.yml#/responses/500'
 
 components:
   schemas:

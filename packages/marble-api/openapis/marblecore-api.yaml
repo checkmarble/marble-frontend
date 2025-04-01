@@ -78,6 +78,8 @@ paths:
     $ref: ./marblecore-api/cases.yml#/~1cases~1files~1${caseFileId}~1download_link
   /cases/review_decision:
     $ref: ./marblecore-api/cases.yml#/~1cases~1review_decision
+  /cases/{caseId}/pivot_objects:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1pivot_objects
 
   # TAGS
 
@@ -105,6 +107,8 @@ paths:
     $ref: ./marblecore-api/ingestion.yml#/~1ingestion~1{objectType}~1upload-logs
   /ingestion/{tableName}/{objectId}:
     $ref: ./marblecore-api/ingestion.yml#/~1ingestion~1{tableName}~1{objectId}
+  /client_data/{tableName}/list:
+    $ref: ./marblecore-api/ingestion.yml#/~1client_data~1{tableName}~1list
 
   # CUSTOM LISTS
 
