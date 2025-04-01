@@ -28,6 +28,7 @@ import {
   getToastStorageRepository,
   type SessionStorageRepositoryOptions,
 } from './SessionStorageRepositories';
+import { makeGetSignupStatusRepository } from './SignupStatusRepository';
 import { makeGetTestRunRepository } from './TestRunRepository';
 import { makeGetTransferAlertRepository } from './TransferAlertRepository';
 import { makeGetTransferRepository } from './TransferRepository';
@@ -81,6 +82,7 @@ export function makeServerRepositories({
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     getTestRunRepository: makeGetTestRunRepository(),
     getLicenseRepository: makeGetLicenseRepository(),
+    getSignupStatusRepository: makeGetSignupStatusRepository(),
     getVersionRepository: makeGetVersionRepository(),
   };
 }

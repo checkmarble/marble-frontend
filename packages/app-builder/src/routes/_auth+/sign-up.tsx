@@ -9,7 +9,6 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useNavigate } from '@remix-run/react';
-import { marblecoreApi } from 'marble-api';
 import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 
@@ -21,6 +20,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const {
     authService,
     authSessionService: { getSession },
+    signupRepository: { getSignupStatus },
   } = initServerServices(request);
   await authService.isAuthenticated(request, {
     successRedirect: getRoute('/app-router'),
@@ -28,13 +28,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request);
   const error = session.get('authError');
 
-  const { getSignupStatus } = marblecoreApi;
-
-  const { migrations_run, has_an_organization, has_a_user } = await getSignupStatus();
+  const { migrationsRun, hasAnOrganization, hasAUser } = await getSignupStatus();
 
   return Response.json({
-    isSignupReady: migrations_run && has_an_organization && has_a_user,
-    haveMigrationsRun: migrations_run,
+    isSignupReady: migrationsRun && hasAnOrganization && hasAUser,
+    haveMigrationsRun: migrationsRun,
     authError: error?.message,
   });
 }
