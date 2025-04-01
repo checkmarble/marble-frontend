@@ -2689,6 +2689,32 @@ export function createDataModelPivot(createPivotInputDto: CreatePivotInputDto, o
     })));
 }
 /**
+ * Create a new navigation option (one to many link) from a table from the data model. Under the hood, this creates (concurrently) a new index on the target table, which may take some time if there is already data in the table.
+ */
+export function postDataModelTableNavigationOption(tableId: string, body: {
+    source_field_id?: string;
+    target_table_id?: string;
+    filtering_field_id?: string;
+    ordering_field_id?: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/data-model/tables/${encodeURIComponent(tableId)}/navigation_options`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * List analytics associated with the current organization (present in the JWT)
  */
 export function listAnalytics(opts?: Oazapfts.RequestOpts) {
