@@ -16,7 +16,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     launchOptions: {
       slowMo: 250,
-    }
+    },
   },
   projects: [
     {
