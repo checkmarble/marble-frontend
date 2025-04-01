@@ -94,6 +94,8 @@ AssignCaseBodyDto:
   $ref: cases.yml#/components/schemas/AssignCaseBodyDto
 CreateCaseBodyDto:
   $ref: cases.yml#/components/schemas/CreateCaseBodyDto
+PivotObjectDto:
+  $ref: cases.yml#/components/schemas/PivotObjectDto
 
 # TAGS
 
@@ -106,6 +108,10 @@ UploadLog:
   $ref: ingestion.yml#/components/schemas/UploadLog
 DataModelObjectDto:
   $ref: ingestion.yml#/components/schemas/DataModelObjectDto
+ClientDataListRequestBody:
+  $ref: ingestion.yml#/components/schemas/ClientDataListRequestBody
+ClientDataListResponseDto:
+  $ref: ingestion.yml#/components/schemas/ClientDataListResponseDto
 
 # CUSTOM LISTS
 
@@ -252,6 +258,8 @@ PivotValueDto:
   $ref: data-model.yml#/components/schemas/PivotValueDto
 CreatePivotInputDto:
   $ref: data-model.yml#/components/schemas/CreatePivotInputDto
+NavigationOptionDto:
+  $ref: data-model.yml#/components/schemas/NavigationOptionDto
 
 # MISC
 
