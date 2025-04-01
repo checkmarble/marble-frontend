@@ -112,6 +112,38 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/data-model/tables/{tableId}/navigation_options:
+  post:
+    tags:
+      - Data Model
+    summary: Create a new navigation option (one to many link) from a table from the data model. Under the hood, this creates (concurrently) a new index on the target table, which may take some time if there is already data in the table.
+    operationId: postDataModelTableNavigationOption
+    parameters:
+      - name: tableId
+        description: ID of the source table for the navigation option
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: 'Describe the target table & field of the navigation option'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateNavigationOptionDto'
+      required: true
+    security:
+      - bearerAuth: []
+    responses:
+      '204':
+        description: Empty response body
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /data-model/fields/{fieldId}:
   patch:
     tags:
@@ -573,3 +605,18 @@ components:
             format: uuid
       required:
         - base_table_id
+    CreateNavigationOptionDto:
+      type: object
+      properties:
+        source_field_id:
+          type: string
+          format: uuid
+        target_table_id:
+          type: string
+          format: uuid
+        filtering_field_id:
+          type: string
+          format: uuid
+        ordering_field_id:
+          type: string
+          format: uuid
