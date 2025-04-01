@@ -36,12 +36,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const { migrationsRun, hasAnOrganization, hasAUser } = await getSignupStatus();
 
-  return Response.json({
+  return {
     isSignupReady: migrationsRun && hasAnOrganization && hasAUser,
     haveMigrationsRun: migrationsRun,
     authError: backendError ? 'BackendUnavailable' : session.get('authError')?.message,
     isSsoEnabled,
-  });
+  };
 }
 
 export async function action({ request }: ActionFunctionArgs) {
