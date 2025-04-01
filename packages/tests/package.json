@@ -5,6 +5,7 @@
   "sideEffect": false,
   "type": "module",
   "scripts": {
+    "test:install": "playwright install",
     "test": "NODE_OPTIONS=--disable-warning=ExperimentalWarning playwright test",
     "test:ui": "NODE_OPTIONS=--disable-warning=ExperimentalWarning playwright test --ui",
     "lint": "eslint ."

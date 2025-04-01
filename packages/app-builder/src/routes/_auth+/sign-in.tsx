@@ -28,7 +28,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const [err, appConfig] = await tryit(() => appConfigRepository.getAppConfig())();
 
   if (err) {
-    console.error('Error fetching app config API');
+    console.error('Error fetching app config API', err);
   }
 
   const url = new URL(request.url);

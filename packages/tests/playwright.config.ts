@@ -16,7 +16,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     launchOptions: {
       slowMo: 250,
-    }
+    },
   },
   projects: [
     {
@@ -48,8 +48,6 @@ export default defineConfig({
       MARBLE_API_URL_SERVER: `http://localhost:${process.env['API_PORT']}`,
       MARBLE_API_URL_CLIENT: `http://localhost:${process.env['API_PORT']}`,
       FIREBASE_AUTH_EMULATOR_HOST: `localhost:${process.env['FIREBASE_PORT']}`,
-      FIREBASE_API_KEY: 'dummy',
-      FIREBASE_PROJECT_ID: 'test-project',
     },
   },
 });

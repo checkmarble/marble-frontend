@@ -4,10 +4,10 @@ import { fileURLToPath } from 'url';
 
 test('Initial login page', async ({ page }) => {
   await page.goto('/');
-  await page.waitForURL('/sign-in');
+  await page.waitForURL('/sign-in-email?email=');
 
   await expect(page).toHaveTitle('Marble');
-  await expect(page.getByText('Great rules are built with the Right Tools')).toBeVisible();
+  await expect(page.getByText('Iterate. Improve. Automate.')).toBeVisible();
 });
 
 test('Invalid username', async ({ page }) => {
@@ -23,7 +23,7 @@ test('Invalid username', async ({ page }) => {
     .fill('very-secret');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
 
-  await expect(page.getByText('No user account found for this address.')).toBeVisible();
+  await expect(page.getByText('Invalid login credentials.')).toBeVisible();
 });
 
 test('Invalid password', async ({ page }) => {
@@ -39,7 +39,7 @@ test('Invalid password', async ({ page }) => {
     .fill('invalid');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
 
-  await expect(page.getByText('Wrong password.')).toBeVisible();
+  await expect(page.getByText('Invalid login credentials.')).toBeVisible();
 });
 
 const authState = path.join(path.dirname(fileURLToPath(import.meta.url)), '../auth.json');
