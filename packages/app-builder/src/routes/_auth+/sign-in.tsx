@@ -10,7 +10,7 @@ import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicr
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
+import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
 import { marblecoreApi } from 'marble-api';
 import { tryit } from 'radash';
@@ -34,7 +34,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const { migrations_run, has_an_organization, has_a_user } = await getSignupStatus();
 
-  return json({
+  return Response.json({
     isSignupReady: migrations_run && has_an_organization && has_a_user,
     haveMigrationsRun: migrations_run,
     authError: backendError ? 'BackendUnavailable' : session.get('authError')?.message,
