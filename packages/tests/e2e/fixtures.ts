@@ -1,22 +1,24 @@
-import knex from 'knex';
 import crypto from 'crypto';
+import knex from 'knex';
 
-interface Org { id: string; }
+interface Org {
+  id: string;
+}
 
 interface Table {
   table: string;
-  fields: { [key: string]: string};
+  fields: { [key: string]: string };
 }
 
 const TABLES: Table[] = [
   {
     table: 'transactions',
     fields: {
-      'beneficiary': 'String',
-      'amount': 'Float',
-    }
-  }
-]
+      beneficiary: 'String',
+      amount: 'Float',
+    },
+  },
+];
 
 export const setupFixtures = async (dsn: string, apiUrl: string) => {
   const sql = knex({ client: 'pg', connection: dsn });
@@ -26,10 +28,10 @@ export const setupFixtures = async (dsn: string, apiUrl: string) => {
   const hash = crypto.createHash('sha256').update(apiKey).digest();
 
   await sql('api_keys').insert({
-    'org_id': org!.id,
-    'role': 4,
-    'prefix': apiKey.substring(0, 3),
-    'key_hash': hash,
+    org_id: org!.id,
+    role: 4,
+    prefix: apiKey.substring(0, 3),
+    key_hash: hash,
   });
 
   apiUrl = `http://localhost:${apiUrl}`;
@@ -45,12 +47,12 @@ const createTable = async (apiUrl: string, apiKey: string, table: Table) => {
     headers: {
       'x-api-key': apiKey,
     },
-    body: JSON.stringify({ 'name': table.table, 'description': 'Lorem ipsum.' })
+    body: JSON.stringify({ name: table.table, description: 'Lorem ipsum.' }),
   });
 
   if (tableResponse.status != 200) throw new Error('failed to create data model table');
 
-  const tableId = (await tableResponse.json() as { id: string; }).id;
+  const tableId = ((await tableResponse.json()) as { id: string }).id;
 
   for (const [fieldName, fieldType] of Object.entries(table.fields)) {
     const fieldResponse = await fetch(`${apiUrl}/data-model/tables/${tableId}/fields`, {
@@ -59,11 +61,11 @@ const createTable = async (apiUrl: string, apiKey: string, table: Table) => {
         'x-api-key': apiKey,
       },
       body: JSON.stringify({
-        'name': fieldName,
-        'type': fieldType,
+        name: fieldName,
+        type: fieldType,
       }),
     });
 
     if (fieldResponse.status != 200) throw new Error('failed to create data model table field');
   }
-}
+};

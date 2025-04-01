@@ -29,7 +29,11 @@ const PublicEnvVarsSchema = z.object({
 
   METABASE_URL: z.string().optional(),
 
-  // FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
+  FIREBASE_USE_EMULATOR: z
+    .string()
+    .optional()
+    .transform((val) => val === 'true'),
+  FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
   FIREBASE_API_KEY: z.string().optional(),
   FIREBASE_AUTH_DOMAIN: z.string().optional(),
   FIREBASE_PROJECT_ID: z.string().optional(),
@@ -87,7 +91,7 @@ interface ServerEnvVars {
   MARBLE_API_URL_CLIENT: string;
   MARBLE_API_URL_SERVER: string;
   MARBLE_APP_URL: string;
-  FIREBASE_CONFIG: FirebaseOptions;
+  FIREBASE_CONFIG: FirebaseConfig;
   METABASE_URL?: string;
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT?: string;
@@ -149,11 +153,21 @@ export function getClientEnv<K extends keyof ClientEnvVars>(clientEnvVarName: K)
   return clientEnv[clientEnvVarName];
 }
 
-function parseFirebaseConfigFromEnv(): FirebaseOptions {
-  const options: FirebaseOptions = {
-    apiKey: getEnv('FIREBASE_API_KEY'),
-    authDomain: getEnv('FIREBASE_AUTH_DOMAIN'),
-    projectId: getEnv('FIREBASE_PROJECT_ID'),
+export type FirebaseConfig = {
+  isEmulator: boolean;
+  emulatorHost?: string;
+  options: FirebaseOptions;
+};
+
+function parseFirebaseConfigFromEnv(): FirebaseConfig {
+  const options: FirebaseConfig = {
+    isEmulator: getEnv('FIREBASE_USE_EMULATOR'),
+    emulatorHost: getEnv('FIREBASE_AUTH_EMULATOR_HOST'),
+    options: {
+      apiKey: getEnv('FIREBASE_API_KEY'),
+      authDomain: getEnv('FIREBASE_AUTH_DOMAIN'),
+      projectId: getEnv('FIREBASE_PROJECT_ID'),
+    },
   };
 
   return options;
