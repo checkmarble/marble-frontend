@@ -10,9 +10,8 @@ import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicr
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
+import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
-import { marblecoreApi } from 'marble-api';
 import { tryit } from 'radash';
 import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
@@ -23,23 +22,26 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, authSessionService, licenseService } = initServerServices(request);
+  const {
+    authService,
+    authSessionService,
+    licenseService,
+    signupRepository: { getSignupStatus },
+  } = initServerServices(request);
   await authService.isAuthenticated(request, {
     successRedirect: getRoute('/app-router'),
   });
   const session = await authSessionService.getSession(request);
   const [backendError, isSsoEnabled] = await tryit(licenseService.isSsoEnabled)();
 
-  const { getSignupStatus } = marblecoreApi;
+  const { migrationsRun, hasAnOrganization, hasAUser } = await getSignupStatus();
 
-  const { migrations_run, has_an_organization, has_a_user } = await getSignupStatus();
-
-  return json({
-    isSignupReady: migrations_run && has_an_organization && has_a_user,
-    haveMigrationsRun: migrations_run,
+  return {
+    isSignupReady: migrationsRun && hasAnOrganization && hasAUser,
+    haveMigrationsRun: migrationsRun,
     authError: backendError ? 'BackendUnavailable' : session.get('authError')?.message,
     isSsoEnabled,
-  });
+  };
 }
 
 export async function action({ request }: ActionFunctionArgs) {
