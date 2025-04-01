@@ -200,6 +200,8 @@ paths:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1openapi
   /data-model/pivots:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1pivots
+  /data-model/tables/{tableId}/navigation_options:
+    $ref: ./marblecore-api/data-model.yml#/~1data-model~1tables~1{tableId}~1navigation_options
 
   # MISC
 
