@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint .",
     "type-check": "pnpm exec tsc --noEmit",
-    "generate-api": "tsx scripts/generate.ts"
+    "generate-api": "swagger-cli validate openapis/marblecore-api.yaml && tsx scripts/generate.ts"
   },
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",
