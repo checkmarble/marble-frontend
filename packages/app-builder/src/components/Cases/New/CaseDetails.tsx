@@ -18,6 +18,7 @@ import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { caseStatusMapping } from '../CaseStatus';
+import { CaseHistory } from './CaseHistory';
 
 export const CaseDetails = ({
   detail,
@@ -40,7 +41,7 @@ export const CaseDetails = ({
   });
 
   return (
-    <main className="px-12 py-8">
+    <main className="flex flex-col gap-6 px-12 py-8">
       <div
         className={cn(
           'bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between gap-4',
@@ -105,6 +106,7 @@ export const CaseDetails = ({
           <EditCaseSuspicion id={detail.id} />
         </div>
       </div>
+      <CaseHistory id={detail.id} events={detail.events} />
     </main>
   );
 };
