@@ -1013,22 +1013,8 @@ components:
         is_ingested:
           type: boolean
           description: Whether the pivot object has been ingested or not (only for pivot type "object")
-        pivot_object_metadata:
-          type: object
-          description: Metadata of the pivot object, if it has been ingested (only for pivot type "object")
-          properties:
-            valid_from:
-              type: string
-              format: date-time
-          additionalProperties: true
         pivot_object_data:
-          type: object
-          description: ->
-            Data of the pivot object, if it is a pivot object and it has been ingested (only for pivot type "object"),
-            otherwise {key:value} with the pivot field used. If it is an ingested object, may include nested objects
-            {link_name:{object}} where link_name is the name of a link pointing from the pivot object, and object is the
-            full data present on the object found following that link.
-          additionalProperties: true
+          $ref: '#/components/schemas/ClientObjectDetailDto'
         number_of_decisions:
           type: integer
           description: Number of decisions that have this pivot value
@@ -1040,3 +1026,42 @@ components:
         - pivot_field_name
         - pivot_object_data
         - number_of_decisions
+    ClientObjectDetailDto:
+      description: ->
+        Nested object containing the details of an ingested client object. "data" holds the data of the object as described in the client data model.
+        "related_objects" holds a list of other ingested "parent" objects, reached by a many to one link from the base object. An arbitrary limit on the depth
+        of nesting and early stop in case of loops may be applied by the backend.
+      type: object
+      required:
+        - data
+        - related_objects
+      properties:
+        metadata:
+          description: Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested.
+          type: object
+          required:
+            - valid_from
+          properties:
+            valid_from:
+              type: string
+              format: date-timeme
+        data:
+          type: object
+          description: The actual data of the object, as described in the client data model.
+          properties:
+            object_id:
+              type: string
+            updated_at:
+              type: string
+              format: date-time
+          additionalProperties: true
+        related_objects:
+          type: array
+          items:
+            type: object
+            properties:
+              link_name:
+                type: string
+                description: The name of the link pointing to the object
+              related_object_detail:
+                $ref: '#/components/schemas/ClientObjectDetailDto'
