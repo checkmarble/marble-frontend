@@ -148,6 +148,7 @@
   "operator.filter_gt": "greater than",
   "operator.filter_gte": "greater than or equal to",
   "operator.filter_lte": "less than or equal to",
+  "operator.filter_fuzzy-match": "fuzzy matches",
   "rules.function.title": "function",
   "deployment_modal.commit.button": "Commit",
   "deployment_modal.commit.title": "Commit version",

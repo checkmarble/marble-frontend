@@ -442,5 +442,6 @@
   "sanction_description_placeholder": "Ajouter une description ...",
   "sanction_forced_outcome_heading": "Ensuite, forcer le statut de résultat par",
   "sanction_name_placeholder": "Titre de la vérification de sanction ...",
-  "sanction_transaction_label_placeholder": "Sélectionnez l'étiquette de transaction"
+  "sanction_transaction_label_placeholder": "Sélectionnez l'étiquette de transaction",
+  "operator.filter_fuzzy-match": "est proche de"
 }
