@@ -96,6 +96,8 @@ CreateCaseBodyDto:
   $ref: cases.yml#/components/schemas/CreateCaseBodyDto
 PivotObjectDto:
   $ref: cases.yml#/components/schemas/PivotObjectDto
+ClientObjectDetailDto:
+  $ref: cases.yml#/components/schemas/ClientObjectDetailDto
 
 # TAGS
 
