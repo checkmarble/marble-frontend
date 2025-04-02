@@ -76,11 +76,7 @@ export default function Login() {
 
   return (
     <div className="flex w-full flex-col items-center">
-      {isSignupReady ? (
-        <Callout variant="soft" className="mb-6 text-start">
-          {t('auth:sign_up.description')}
-        </Callout>
-      ) : (
+      {!isSignupReady ? (
         <Callout variant="soft" color="red" className="mb-6 text-start">
           <div>
             {haveMigrationsRun
@@ -97,7 +93,7 @@ export default function Login() {
             </p>
           </div>
         </Callout>
-      )}
+      ) : null}
       {isSsoEnabled ? (
         <>
           <div className="flex w-full flex-col gap-2">
