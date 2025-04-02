@@ -1,11 +1,13 @@
+import { Callout } from '@app-builder/components';
 import { casesI18n } from '@app-builder/components/Cases/cases-i18n';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
+import { useDropzone } from 'react-dropzone-esm';
 import { match } from 'ts-pattern';
-import { Button, cn, MenuCommand } from 'ui-design-system';
+import { Button, cn, MenuCommand, Modal } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 import { z } from 'zod';
 
@@ -46,6 +48,7 @@ const getSuspicionIconAndText = (suspicion: EditSuspicionForm['suspicion']) => (
 
 export const EditCaseSuspicion = ({ id }: { id: string }) => {
   const [open, setOpen] = useState(false);
+  const [openReportModal, setOpenReportModal] = useState(false);
 
   const form = useForm({
     defaultValues: { caseId: id, suspicion: 'none' } as EditSuspicionForm,
@@ -54,6 +57,21 @@ export const EditCaseSuspicion = ({ id }: { id: string }) => {
       onBlur: schema,
       onSubmit: schema,
     },
+  });
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: (files) => console.log('Should upload those files', files),
+    accept: {
+      'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
+      'application/pdf': ['.pdf'],
+      'application/zip': ['.zip'],
+      'application/msword': ['.doc', '.docx'],
+      'application/vnd.openxmlformats-officedocument.*': ['.docx', '.xlsx'],
+      'application/vnd.ms-excel': ['.xls'],
+      'text/*': ['.csv', '.txt'],
+    },
+    multiple: false,
+    maxSize: 1024 * 1024 * 5, // 5MB
   });
 
   return (
@@ -75,8 +93,12 @@ export const EditCaseSuspicion = ({ id }: { id: string }) => {
                       key={suspicion}
                       className="cursor-pointer"
                       onSelect={() => {
-                        field.handleChange(suspicion);
-                        form.handleSubmit();
+                        if (suspicion === 'none' || suspicion === 'requested') {
+                          field.handleChange(suspicion);
+                          form.handleSubmit();
+                        } else {
+                          setOpenReportModal(true);
+                        }
                       }}
                     >
                       <span className="inline-flex w-full justify-between">
@@ -92,6 +114,35 @@ export const EditCaseSuspicion = ({ id }: { id: string }) => {
             </MenuCommand.Menu>
           </div>
           <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+          <Modal.Root open={openReportModal} onOpenChange={setOpenReportModal}>
+            <Modal.Content>
+              <Modal.Title>Suspicious activity report submitted</Modal.Title>
+              <div className="flex flex-col gap-8 p-8">
+                <Callout>Please add the suspicious transaction report document below.</Callout>
+                <div
+                  {...getRootProps()}
+                  className={cn(
+                    'flex flex-col items-center justify-center gap-2 rounded border-2 border-dashed p-6',
+                    isDragActive ? 'bg-purple-96 border-purple-82 opacity-90' : 'border-grey-50',
+                  )}
+                >
+                  <input {...getInputProps()} />
+                  <p className="text-r flex flex-col gap-6 text-center">
+                    <span className="text-grey-00">Drop your suspicious activity report here.</span>
+                    <span className="text-grey-50 inline-flex flex-col">
+                      <span>The following extensions are supported:</span>
+                      <span>jpg, png, pdf, zip, doc, docx, xls, xIsx</span>
+                    </span>
+                  </p>
+                  <span className="text-grey-50 text-r">or</span>
+                  <Button>
+                    <Icon icon="plus" className="size-6" />
+                    Pick a file
+                  </Button>
+                </div>
+              </div>
+            </Modal.Content>
+          </Modal.Root>
         </div>
       )}
     </form.Field>
