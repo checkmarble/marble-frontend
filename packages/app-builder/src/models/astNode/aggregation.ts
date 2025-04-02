@@ -19,6 +19,7 @@ export const binaryAggregationFilterOperators = [
   'IsNotInList',
   'StringStartsWith',
   'StringEndsWith',
+  'FuzzyMatch',
 ] as const;
 export type BinaryAggregationFilterOperator = (typeof binaryAggregationFilterOperators)[number];
 
