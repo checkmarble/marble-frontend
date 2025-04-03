@@ -442,5 +442,6 @@
   "validation.decision.formula_incorrect_return_type.bool": "يجب أن تعيد الصيغة المنطقية",
   "validation.decision.formula_incorrect_return_type.float": "يجب أن تعيد الصيغة تعويم",
   "validation.decision.formula_incorrect_return_type.int": "يجب أن تعيد الصيغة int",
-  "validation.decision.formula_incorrect_return_type.string": "يجب أن تُرجع الصيغة سلسلة"
+  "validation.decision.formula_incorrect_return_type.string": "يجب أن تُرجع الصيغة سلسلة",
+  "operator.filter_fuzzy-match": "قريب من"
 }
