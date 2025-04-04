@@ -438,6 +438,43 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/cases/{caseId}/pivot_objects:
+  get:
+    tags:
+      - Cases
+    summary: ->
+      Return the pivot objects present in a case, computed from the pivot values on decisions
+      in the case. Pivot objects are deduplicated and come with their actual content (if previously
+      ingested) if the pivot value is from an actual unique pivot "object" (not just a value on an entity).
+    operationId: getPivotObjectsForCase
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case to read from
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Detailed values (depending on ingestion status) on
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pivot_objects:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PivotObjectDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /cases/files/${caseFileId}/download_link:
   get:
     tags:
@@ -950,3 +987,85 @@ components:
             previous_value:
               type: string
               format: date-time
+    PivotObjectDto:
+      type: object
+      properties:
+        pivot_object_id:
+          type: string
+          description:
+            The "object_id" field of the pivot object. Can be null if the pivot type is "field" or if the pivot
+            does point to another unique field than "object_id", and the object has not been ingested yet.
+        pivot_value:
+          type: string
+          description: The actual pivot value, as on the decision. This value is used for grouping decisions.
+        pivot_id:
+          type: string
+          format: uuid
+        pivot_type:
+          type: string
+          enum: ['field', 'object']
+        pivot_object_name:
+          type: string
+          description: Name of the entity on which the pivot value is found.
+        pivot_field_name:
+          type: string
+          description: Name of the field used as a pivot value
+        is_ingested:
+          type: boolean
+          description: Whether the pivot object has been ingested or not (only for pivot type "object")
+        pivot_object_data:
+          $ref: '#/components/schemas/ClientObjectDetailDto'
+        number_of_decisions:
+          type: integer
+          description: Number of decisions that have this pivot value
+      required:
+        - pivot_value
+        - pivot_type
+        - is_ingested
+        - pivot_object_name
+        - pivot_field_name
+        - pivot_object_data
+        - number_of_decisions
+    ClientObjectDetailDto:
+      description: ->
+        Nested object containing the details of an ingested client object. "data" holds the data of the object as described in the client data model.
+        "related_objects" holds a list of other ingested "parent" objects, reached by a many to one link from the base object. An arbitrary limit on the depth
+        of nesting and early stop in case of loops may be applied by the backend.
+      type: object
+      required:
+        - data
+        - related_objects
+      properties:
+        metadata:
+          description: Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested.
+          type: object
+          required:
+            - valid_from
+            - object_type
+          properties:
+            valid_from:
+              type: string
+              format: date-timeme
+            object_type:
+              type: string
+              description: object type in the data model that the data corresponds to
+        data:
+          type: object
+          description: The actual data of the object, as described in the client data model.
+          properties:
+            object_id:
+              type: string
+            updated_at:
+              type: string
+              format: date-time
+          additionalProperties: true
+        related_objects:
+          type: array
+          items:
+            type: object
+            properties:
+              link_name:
+                type: string
+                description: The name of the link pointing to the object
+              related_object_detail:
+                $ref: '#/components/schemas/ClientObjectDetailDto'
