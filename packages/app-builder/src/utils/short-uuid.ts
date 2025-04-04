@@ -17,7 +17,10 @@ export const fromUUID = (val: string) => translator.fromUUID(val);
 export const fromParams = (params: LoaderFunctionArgs['params'], name: string) => {
   const value = params[name];
   invariant(value, `${name} is required`);
-  return toUUID(value);
+  if (!translator.validate(value)) {
+    return value;
+  }
+  return fromUUID(value);
 };
 
 export const useParam = (name: string) => {
