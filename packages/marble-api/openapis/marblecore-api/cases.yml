@@ -1041,10 +1041,14 @@ components:
           type: object
           required:
             - valid_from
+            - object_type
           properties:
             valid_from:
               type: string
               format: date-timeme
+            object_type:
+              type: string
+              description: object type in the data model that the data corresponds to
         data:
           type: object
           description: The actual data of the object, as described in the client data model.

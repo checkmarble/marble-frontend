@@ -273,6 +273,8 @@ export type ClientObjectDetailDto = {
     /** Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested. */
     metadata?: {
         valid_from: string;
+        /** object type in the data model that the data corresponds to */
+        object_type: string;
     };
     /** The actual data of the object, as described in the client data model. */
     data: {
