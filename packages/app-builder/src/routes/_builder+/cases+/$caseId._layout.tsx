@@ -21,8 +21,8 @@ import {
 } from '@app-builder/components/Cases/CaseHistory/RightSidebar';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
-import { EditCaseSnooze } from '@app-builder/routes/ressources+/cases+/edit-snooze';
 import { EditCaseStatus } from '@app-builder/routes/ressources+/cases+/edit-status';
+import { SnoozeCase } from '@app-builder/routes/ressources+/cases+/snooze-case';
 import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
 import {
   isCreateSnoozeAvailable,
@@ -199,7 +199,7 @@ export default function CasePage() {
         <BreadCrumbs />
         <div className="flex items-center gap-4">
           <EditCaseStatus caseId={caseDetail.id} status={caseDetail.status} />
-          <EditCaseSnooze caseId={caseDetail.id} snoozeUntil={caseDetail.snoozedUntil} />
+          <SnoozeCase caseId={caseDetail.id} snoozeUntil={caseDetail.snoozedUntil} />
         </div>
       </Page.Header>
       <div className="flex size-full flex-col overflow-hidden">

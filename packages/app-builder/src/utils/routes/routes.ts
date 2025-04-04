@@ -391,14 +391,29 @@ export const routes = [
         "file": "routes/ressources+/cases+/add-to-case.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/close-case",
+        "path": "ressources/cases/close-case",
+        "file": "routes/ressources+/cases+/close-case.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/create-case",
         "path": "ressources/cases/create-case",
         "file": "routes/ressources+/cases+/create-case.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/edit-snooze",
-        "path": "ressources/cases/edit-snooze",
-        "file": "routes/ressources+/cases+/edit-snooze.tsx"
+        "id": "routes/ressources+/cases+/edit-assignee",
+        "path": "ressources/cases/edit-assignee",
+        "file": "routes/ressources+/cases+/edit-assignee.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/edit-inbox",
+        "path": "ressources/cases/edit-inbox",
+        "file": "routes/ressources+/cases+/edit-inbox.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/edit-name",
+        "path": "ressources/cases/edit-name",
+        "file": "routes/ressources+/cases+/edit-name.tsx"
       },
       {
         "id": "routes/ressources+/cases+/edit-status",
@@ -406,9 +421,24 @@ export const routes = [
         "file": "routes/ressources+/cases+/edit-status.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/edit-suspicion",
+        "path": "ressources/cases/edit-suspicion",
+        "file": "routes/ressources+/cases+/edit-suspicion.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/edit-tags",
+        "path": "ressources/cases/edit-tags",
+        "file": "routes/ressources+/cases+/edit-tags.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/edit",
         "path": "ressources/cases/edit",
         "file": "routes/ressources+/cases+/edit.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/escalate-case",
+        "path": "ressources/cases/escalate-case",
+        "file": "routes/ressources+/cases+/escalate-case.tsx"
       },
       {
         "id": "routes/ressources+/cases+/review-decision",
@@ -419,6 +449,11 @@ export const routes = [
         "id": "routes/ressources+/cases+/review-sanction-match",
         "path": "ressources/cases/review-sanction-match",
         "file": "routes/ressources+/cases+/review-sanction-match.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/snooze-case",
+        "path": "ressources/cases/snooze-case",
+        "file": "routes/ressources+/cases+/snooze-case.tsx"
       },
       {
         "id": "routes/ressources+/data+/create-pivot",
