@@ -41,7 +41,7 @@ export type Pagination = {
     start_index: number;
     end_index: number;
 };
-export type CaseStatusDto = "open" | "investigating" | "discarded" | "resolved";
+export type CaseStatusDto = "pending" | "investigating" | "closed";
 export type CaseContributorDto = {
     id: string;
     case_id: string;
@@ -60,6 +60,7 @@ export type CaseDto = {
     decisions_count: number;
     name: string;
     status: CaseStatusDto;
+    outcome?: "false_positive" | "valuable_alert" | "confirmed_risk";
     inbox_id: string;
     contributors: CaseContributorDto[];
     tags: CaseTagDto[];
@@ -152,10 +153,18 @@ export type CaseCreatedEventDto = {
 } & CaseEventDtoBase & {
     user_id?: string;
 };
+export type CaseStatusForCaseEventDto = "pending" | "investigating" | "closed" | "open" | "discarded" | "resolved";
 export type CaseStatusUpdatedEventDto = {
     event_type: "status_updated";
 } & CaseEventDtoBase & {
-    new_value: CaseStatusDto;
+    new_value: CaseStatusForCaseEventDto;
+    user_id: string;
+};
+export type Outcome = "false_positive" | "valuable_alert" | "confirmed_risk";
+export type CaseOutcomeUpdatedEventDto = {
+    event_type: "outcome_updated";
+} & CaseEventDtoBase & {
+    new_value: Outcome;
     user_id: string;
 };
 export type DecisionAddedEventDto = {
@@ -230,7 +239,7 @@ export type CaseUnsnoozedDto = {
     new_value: string;
     previous_value?: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto;
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;
@@ -265,6 +274,7 @@ export type UpdateCaseBodyDto = {
     name?: string;
     inbox_id?: string;
     status?: CaseStatusDto;
+    outcome?: Outcome;
 };
 export type AssignCaseBodyDto = {
     user_id: string;
