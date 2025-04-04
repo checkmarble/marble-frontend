@@ -387,7 +387,7 @@ export type ClientDataListResponseDto = {
     data: ClientObjectDetailDto[];
     pagination: {
         /** The id of the object after which to paginate, using ordering by the specified field in 'exploration_options' */
-        next_cursor_id: string | number;
+        next_cursor_id?: string | number;
         /** Whether there are more objects to paginate */
         has_next_page: boolean;
     };

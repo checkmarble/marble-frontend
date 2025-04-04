@@ -232,7 +232,6 @@ components:
         pagination:
           type: object
           required:
-            - next_cursor_id
             - has_next_page
           properties:
             next_cursor_id:
