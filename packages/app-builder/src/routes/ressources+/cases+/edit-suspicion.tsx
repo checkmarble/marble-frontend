@@ -1,7 +1,7 @@
 import { Callout } from '@app-builder/components';
 import { casesI18n } from '@app-builder/components/Cases/cases-i18n';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { getFieldErrors } from '@app-builder/utils/form';
+import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
@@ -140,6 +140,23 @@ export const EditCaseSuspicion = ({ id }: { id: string }) => {
                     Pick a file
                   </Button>
                 </div>
+                <form className="flex w-full flex-row gap-2" onSubmit={handleSubmit(form)}>
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    className="flex-1 first-letter:capitalize"
+                    onClick={() => {
+                      field.handleChange('reported');
+                      setOpenReportModal(false);
+                    }}
+                  >
+                    I&apos;ll add it later
+                  </Button>
+
+                  <Button type="submit" className="flex-1 first-letter:capitalize">
+                    Add a file
+                  </Button>
+                </form>
               </div>
             </Modal.Content>
           </Modal.Root>

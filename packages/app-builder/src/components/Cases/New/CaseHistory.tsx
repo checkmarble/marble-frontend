@@ -2,9 +2,11 @@ import { type CaseEvent } from '@app-builder/models/cases';
 import { Button, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export const CaseHistory = (_: { id: string; events: CaseEvent[] }) => {
+import { CaseEvents } from '../CaseHistory/CaseEvents';
+
+export const CaseHistory = ({ events }: { events: CaseEvent[] }) => {
   return (
-    <div className="bg-grey-100 flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5">
       <div className="text-r text-grey-00 flex items-center justify-between font-medium">
         <span>Investigation</span>
         <div className="flex items-center gap-2">
@@ -12,8 +14,10 @@ export const CaseHistory = (_: { id: string; events: CaseEvent[] }) => {
           <Switch />
         </div>
       </div>
-      <div className="border-grey-90 rounded-lg border">
-        <div>Case History</div>
+      <div className="border-grey-90 bg-grey-100 rounded-lg border">
+        <div className="p-4">
+          <CaseEvents events={events} />
+        </div>
         <div className="border-grey-90 flex items-end gap-4 border-t p-4">
           <div className="flex grow flex-col items-start gap-2.5">
             <textarea
