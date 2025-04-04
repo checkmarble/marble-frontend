@@ -6,6 +6,7 @@ import {
   type DataModelObjectDto,
   type FieldDto,
   type LinkToSingleDto,
+  type NavigationOptionDto,
   type PivotDto,
   type TableDto,
   type UpdateTableFieldDto,
@@ -77,12 +78,43 @@ function adaptLinkToSingle(linkName: string, linksToSingleDto: LinkToSingleDto):
   };
 }
 
+export type NavigationOption = {
+  sourceTableName: string;
+  sourceTableId: string;
+  sourceFieldName: string;
+  sourceFieldId: string;
+  targetTableName: string;
+  targetTableId: string;
+  filterFieldName: string;
+  filterFieldId: string;
+  orderingFieldName: string;
+  orderingFieldId: string;
+  status: 'pending' | 'valid' | 'invalid';
+};
+
+function adaptNavigationOptions(dto: NavigationOptionDto): NavigationOption {
+  return {
+    sourceTableName: dto.source_table_name,
+    sourceTableId: dto.source_table_id,
+    sourceFieldName: dto.source_field_name,
+    sourceFieldId: dto.source_field_id,
+    targetTableName: dto.target_table_name,
+    targetTableId: dto.target_table_id,
+    filterFieldName: dto.filter_field_name,
+    filterFieldId: dto.filter_field_id,
+    orderingFieldName: dto.ordering_field_name,
+    orderingFieldId: dto.ordering_field_id,
+    status: dto.status,
+  };
+}
+
 export interface TableModel {
   id: string;
   name: string;
   description: string;
   fields: DataModelField[];
   linksToSingle: LinkToSingle[];
+  navigationOptions?: NavigationOption[];
 }
 
 function adaptTableModel(tableDto: TableDto): TableModel {
@@ -96,6 +128,7 @@ function adaptTableModel(tableDto: TableDto): TableModel {
       R.entries(),
       R.map(([linkName, linkDto]) => adaptLinkToSingle(linkName, linkDto)),
     ),
+    navigationOptions: tableDto.navigation_options?.map(adaptNavigationOptions),
   };
 }
 

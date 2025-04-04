@@ -5,8 +5,10 @@ import {
   type CaseEventDto,
   type CaseFileDto,
   type CaseTagDto,
+  type ClientObjectDetailDto,
   type CreateCaseBodyDto,
   type Error,
+  type PivotObjectDto,
   type UpdateCaseBodyDto,
 } from 'marble-api';
 import * as R from 'remeda';
@@ -368,5 +370,73 @@ export function adaptUpdateCaseBodyDto(body: CaseUpdateBody): UpdateCaseBodyDto 
     name: body.name,
     inbox_id: body.inboxId,
     status: body.status,
+  };
+}
+
+export type ClientObjectDetail = {
+  /** Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested. */
+  metadata?: {
+    validFrom: string;
+  };
+  /** The actual data of the object, as described in the client data model. */
+  data: {
+    object_id?: string;
+    updated_at?: string;
+    [key: string]: unknown;
+  };
+  relatedObjects: {
+    /** The name of the link pointing to the object */
+    linkName?: string;
+    relatedObjectDetail?: ClientObjectDetail;
+  }[];
+};
+
+function adaptClientObjectDetail(dto: ClientObjectDetailDto): ClientObjectDetail {
+  return {
+    metadata: dto.metadata ? { validFrom: dto.metadata.valid_from } : undefined,
+    data: dto.data,
+    relatedObjects: dto.related_objects.map((rel) => ({
+      linkName: rel.link_name,
+      relatedObjectDetail: rel?.related_object_detail
+        ? adaptClientObjectDetail(rel.related_object_detail)
+        : undefined,
+    })),
+  };
+}
+
+export type PivotObject = {
+  /** The "object_id" field of the pivot object. Can be null if the pivot type is "field" or if the pivot does point to another unique field than "object_id", and the object has not been ingested yet. */
+  pivotObjectId?: string;
+  /** The actual pivot value, as on the decision. This value is used for grouping decisions. */
+  pivotValue: string;
+  pivotId?: string;
+  pivotType: 'field' | 'object';
+  /** Name of the entity on which the pivot value is found. */
+  pivotObjectName: string;
+  /** Name of the field used as a pivot value */
+  pivotFieldName: string;
+  /** Whether the pivot object has been ingested or not (only for pivot type "object") */
+  isIngested: boolean;
+  /** Metadata of the pivot object, if it has been ingested (only for pivot type "object") */
+  pivotObjectMetadata?: {
+    validFrom?: string;
+    [key: string]: unknown;
+  };
+  /** -> Data of the pivot object, if it is a pivot object and it has been ingested (only for pivot type "object"), otherwise {key:value} with the pivot field used. If it is an ingested object, may include nested objects {link_name:{object}} where link_name is the name of a link pointing from the pivot object, and object is the full data present on the object found following that link. */
+  pivotObjectData: ClientObjectDetail;
+  numberOfDecisions: number;
+};
+
+export function adaptPivotObject(dto: PivotObjectDto): PivotObject {
+  return {
+    pivotObjectId: dto.pivot_object_id,
+    pivotValue: dto.pivot_value,
+    pivotId: dto.pivot_id,
+    pivotType: dto.pivot_type,
+    pivotObjectName: dto.pivot_object_name,
+    pivotFieldName: dto.pivot_field_name,
+    isIngested: dto.is_ingested,
+    pivotObjectData: adaptClientObjectDetail(dto.pivot_object_data),
+    numberOfDecisions: dto.number_of_decisions,
   };
 }
