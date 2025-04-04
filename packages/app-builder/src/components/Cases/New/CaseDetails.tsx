@@ -44,7 +44,7 @@ export const CaseDetails = ({
     <main className="flex flex-col gap-6 px-12 py-8">
       <div
         className={cn(
-          'bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between gap-4',
+          'bg-purple-99 sticky top-0 z-10 flex h-[88px] items-center justify-between gap-4',
           {
             'border-b-grey-90 border-b': !intersection?.isIntersecting,
           },
@@ -106,7 +106,7 @@ export const CaseDetails = ({
           <EditCaseSuspicion id={detail.id} />
         </div>
       </div>
-      <CaseHistory id={detail.id} events={detail.events} />
+      <CaseHistory events={detail.events} />
     </main>
   );
 };

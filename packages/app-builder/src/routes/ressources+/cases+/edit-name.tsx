@@ -1,5 +1,4 @@
 import { casesI18n } from '@app-builder/components/Cases/cases-i18n';
-import AutoWidthInput from '@app-builder/components/Form/AutoWidthInput';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
@@ -67,24 +66,11 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
   });
 
   return (
-    <form onSubmit={handleSubmit(form)}>
+    <form onSubmit={handleSubmit(form)} className="w-full">
       <form.Field name="name">
         {(field) => (
           <div className="flex w-full flex-col gap-1">
             <div className="flex items-center gap-2">
-              <AutoWidthInput
-                type="text"
-                name={field.name}
-                disabled={!isEditing}
-                defaultValue={field.state.value}
-                onChange={(e) => field.handleChange(e.currentTarget.value)}
-                onBlur={field.handleBlur}
-                className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
-                extraWidth={10}
-                maxWidth={750}
-                placeholderIsMinWidth
-                placeholder={t('cases:case.name')}
-              />
               {!isEditing ? (
                 <Button
                   type="button"
@@ -119,6 +105,16 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                   </Button>
                 </div>
               )}
+              <input
+                type="text"
+                name={field.name}
+                disabled={!isEditing}
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.currentTarget.value)}
+                onBlur={field.handleBlur}
+                className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
+                placeholder={t('cases:case.name')}
+              />
             </div>
             <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
           </div>
