@@ -228,12 +228,7 @@ components:
         data:
           type: array
           items:
-            type: object
-            additionalProperties: true
-            description:
-              JSON object corresponding to the entity that is being queried. Contains the keys/values of the
-              ingested objects at the root level, and may contain nested objects corresponding to ingested entities
-              that are related to the root entity by a link, where the link name is the key of the nested object.
+            $ref: 'cases.yml#/components/schemas/ClientObjectDetailDto'
         pagination:
           type: object
           required:
