@@ -5,7 +5,7 @@ import { CreateList } from '@app-builder/routes/ressources+/lists+/create';
 import { isCreateListAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -79,7 +79,7 @@ export default function ListsPage() {
     rowLink: ({ id }) => (
       <Link
         to={getRoute('/lists/:listId', {
-          listId: fromUUID(id),
+          listId: fromUUIDtoSUUID(id),
         })}
       />
     ),

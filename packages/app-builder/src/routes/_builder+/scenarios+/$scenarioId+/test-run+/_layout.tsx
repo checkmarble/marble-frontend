@@ -1,6 +1,6 @@
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Outlet } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +16,7 @@ export const handle = {
         <BreadCrumbLink
           isLast={isLast}
           to={getRoute('/scenarios/:scenarioId/test-run', {
-            scenarioId: fromUUID(currentScenario.id),
+            scenarioId: fromUUIDtoSUUID(currentScenario.id),
           })}
         >
           {t('scenarios:testrun.home')}

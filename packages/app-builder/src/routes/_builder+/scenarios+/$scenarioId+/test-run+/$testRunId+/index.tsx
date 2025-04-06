@@ -15,7 +15,7 @@ import { CancelTestRun } from '@app-builder/routes/ressources+/scenarios+/$scena
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense, useMemo } from 'react';
@@ -37,8 +37,8 @@ export const handle = {
           <BreadCrumbLink
             isLast={isLast}
             to={getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
-              scenarioId: fromUUID(run.scenarioId),
-              testRunId: fromUUID(run.id),
+              scenarioId: fromUUIDtoSUUID(run.scenarioId),
+              testRunId: fromUUIDtoSUUID(run.id),
             })}
           >
             {t('scenarios:home.testrun')}

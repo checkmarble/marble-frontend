@@ -12,7 +12,7 @@ import {
   type TestRunStatus,
   testRunStatuses,
 } from '@app-builder/models/testrun';
-import { toUUID } from '@app-builder/utils/short-uuid';
+import { fromSUUIDtoUUID } from '@app-builder/utils/short-uuid';
 import { addDays } from 'date-fns';
 import { sleep } from 'radash';
 import { randomInteger } from 'remeda';
@@ -182,7 +182,7 @@ export const makeGetTestRunRepository2 = () => {
     },
     launchTestRun: (args: TestRunCreateInput) => {
       const testRun: TestRun = {
-        id: toUUID(short.generate()),
+        id: fromSUUIDtoUUID(short.generate()),
         refIterationId: '6f6fe0d8-9a1a-4d5a-bdd7-fa7fcda1b4e3',
         scenarioId: args.scenarioId,
         testIterationId: args.testIterationId,

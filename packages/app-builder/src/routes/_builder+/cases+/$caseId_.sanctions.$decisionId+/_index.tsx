@@ -1,6 +1,6 @@
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -17,7 +17,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!decisionId) {
     return {
       redirect: getRoute('/cases/:caseId/decisions', {
-        caseId: fromUUID(caseId),
+        caseId: fromUUIDtoSUUID(caseId),
       }),
     };
   }
@@ -25,8 +25,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
     successRedirect: getRoute('/cases/:caseId/sanctions/:decisionId/hits', {
-      caseId: fromUUID(caseId),
-      decisionId: fromUUID(decisionId),
+      caseId: fromUUIDtoSUUID(caseId),
+      decisionId: fromUUIDtoSUUID(decisionId),
     }),
   });
 }

@@ -18,7 +18,7 @@ import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
@@ -44,8 +44,8 @@ export const handle = {
         <BreadCrumbLink
           isLast={isLast}
           to={getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
-            scenarioId: fromUUID(scenarioId),
-            iterationId: fromUUID(iterationId),
+            scenarioId: fromUUIDtoSUUID(scenarioId),
+            iterationId: fromUUIDtoSUUID(iterationId),
           })}
         >
           {t('navigation:scenario.rules')}
@@ -64,12 +64,12 @@ export const handle = {
           <BreadCrumbLink
             isLast={isLast}
             to={getRoute('/scenarios/:scenarioId/i/:iterationId/rules/:ruleId', {
-              scenarioId: fromUUID(scenarioId),
-              iterationId: fromUUID(iterationId),
-              ruleId: fromUUID(rule.id),
+              scenarioId: fromUUIDtoSUUID(scenarioId),
+              iterationId: fromUUIDtoSUUID(iterationId),
+              ruleId: fromUUIDtoSUUID(rule.id),
             })}
           >
-            {rule.name ?? fromUUID(rule.id)}
+            {rule.name ?? fromUUIDtoSUUID(rule.id)}
           </BreadCrumbLink>
           {editorMode === 'edit' ? (
             <Tag size="big" border="square">
@@ -223,8 +223,8 @@ export default function RuleDetail() {
       <Page.Header>
         <BreadCrumbs
           back={getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
-            iterationId: fromUUID(iterationId),
-            scenarioId: fromUUID(scenario.id),
+            iterationId: fromUUIDtoSUUID(iterationId),
+            scenarioId: fromUUIDtoSUUID(scenario.id),
           })}
         />
       </Page.Header>

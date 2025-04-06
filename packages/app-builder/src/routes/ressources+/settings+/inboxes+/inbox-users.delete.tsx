@@ -2,7 +2,7 @@ import { type InboxUser } from '@app-builder/models/inbox';
 import { initServerServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { Form, useNavigation } from '@remix-run/react';
 import { type Namespace } from 'i18next';
@@ -32,7 +32,7 @@ export async function action({ request }: ActionFunctionArgs) {
   await inbox.deleteInboxUser(formData.inboxUserId);
   return redirect(
     getRoute('/settings/inboxes/:inboxId', {
-      inboxId: fromUUID(formData.inboxId),
+      inboxId: fromUUIDtoSUUID(formData.inboxId),
     }),
   );
 }

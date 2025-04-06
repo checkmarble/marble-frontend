@@ -9,7 +9,7 @@ import { type CaseDetail } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { useEffect } from 'react';
@@ -61,7 +61,9 @@ export const handle = {
       return (
         <BreadCrumbLink
           isLast={isLast}
-          to={getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(data.currentInbox.id) })}
+          to={getRoute('/cases/inboxes/:inboxId', {
+            inboxId: fromUUIDtoSUUID(data.currentInbox.id),
+          })}
         >
           {data.currentInbox.name}
         </BreadCrumbLink>
@@ -72,7 +74,7 @@ export const handle = {
         <>
           <BreadCrumbLink
             isLast={isLast}
-            to={getRoute('/cases_new/:caseId', { caseId: fromUUID(data.case.id) })}
+            to={getRoute('/cases_new/:caseId', { caseId: fromUUIDtoSUUID(data.case.id) })}
           >
             {data.case.name}
           </BreadCrumbLink>

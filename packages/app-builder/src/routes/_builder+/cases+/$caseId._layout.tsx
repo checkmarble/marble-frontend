@@ -32,7 +32,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
 import {
   isRouteErrorResponse,
@@ -67,7 +67,7 @@ export const handle = {
       return (
         <BreadCrumbLink
           to={getRoute('/cases/inboxes/:inboxId', {
-            inboxId: fromUUID(inbox.id),
+            inboxId: fromUUIDtoSUUID(inbox.id),
           })}
           isLast={isLast}
         >
@@ -81,7 +81,7 @@ export const handle = {
       return (
         <div className="flex items-center gap-4">
           <BreadCrumbLink
-            to={getRoute('/cases/:caseId', { caseId: fromUUID(caseDetail.id) })}
+            to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })}
             isLast={isLast}
           >
             <span className="line-clamp-2 text-start">{caseDetail.name}</span>

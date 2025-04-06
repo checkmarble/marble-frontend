@@ -23,7 +23,7 @@ import { type PaginatedResponse, type PaginationParams } from '@app-builder/mode
 import { initServerServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Form, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -238,7 +238,7 @@ function AddToCase({
 
 const decisionIdToParams = (decisionId: string | null) => {
   try {
-    return fromUUID(decisionId ?? '');
+    return fromUUIDtoSUUID(decisionId ?? '');
   } catch {
     return decisionId;
   }

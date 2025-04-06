@@ -26,7 +26,7 @@ import {
 import { initServerServices } from '@app-builder/services/init.server';
 import { formatDateRelative, formatSchedule, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
@@ -259,8 +259,8 @@ function VersionSection({
         version: si.version,
         updatedAt: si.updatedAt,
         linkTo: getRoute('/scenarios/:scenarioId/i/:iterationId', {
-          scenarioId: fromUUID(si.scenarioId),
-          iterationId: fromUUID(si.id),
+          scenarioId: fromUUIDtoSUUID(si.scenarioId),
+          iterationId: fromUUIDtoSUUID(si.id),
         }),
         formattedVersion: getFormattedVersion(si, t),
         formattedLive: getFormattedLive(si, t),
@@ -308,8 +308,8 @@ function QuickVersionAccess({
   return (
     <Link
       to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
-        scenarioId: fromUUID(scenarioIteration.scenarioId),
-        iterationId: fromUUID(scenarioIteration.id),
+        scenarioId: fromUUIDtoSUUID(scenarioIteration.scenarioId),
+        iterationId: fromUUIDtoSUUID(scenarioIteration.id),
       })}
       className="bg-grey-100 border-grey-90 text-grey-00 text-s hover:bg-grey-95 active:bg-grey-90 flex min-w-24 flex-row items-center justify-center gap-1 rounded-full border py-2 transition-colors"
     >
@@ -379,8 +379,8 @@ function TestRunSection({ scenarioId, access }: { scenarioId: string; access: Fe
               color: 'grey',
             })}
             to={getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
-              scenarioId: fromUUID(scenarioId),
-              testRunId: fromUUID(currentTestRun[0]!.id),
+              scenarioId: fromUUIDtoSUUID(scenarioId),
+              testRunId: fromUUIDtoSUUID(currentTestRun[0]!.id),
             })}
           >
             {t('scenarios:testrun.current_run')}
@@ -391,7 +391,7 @@ function TestRunSection({ scenarioId, access }: { scenarioId: string; access: Fe
           <Link
             className={CtaClassName({ variant: 'secondary', color: 'grey' })}
             to={getRoute('/scenarios/:scenarioId/test-run', {
-              scenarioId: fromUUID(scenarioId),
+              scenarioId: fromUUIDtoSUUID(scenarioId),
             })}
           >
             {t('scenarios:testrun.archived')}
@@ -532,7 +532,7 @@ function BatchSection({
         <Link
           className={CtaClassName({ variant: 'secondary', color: 'grey' })}
           to={getRoute('/scenarios/:scenarioId/scheduled-executions', {
-            scenarioId: fromUUID(scenarioId),
+            scenarioId: fromUUIDtoSUUID(scenarioId),
           })}
         >
           {t('scenarios:home.execution.batch.scheduled_execution', {
@@ -645,7 +645,7 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
             color: isEdit ? 'grey' : 'purple',
           })}
           to={getRoute('/scenarios/:scenarioId/workflow', {
-            scenarioId: fromUUID(scenario.id),
+            scenarioId: fromUUIDtoSUUID(scenario.id),
           })}
         >
           <Icon icon={isEdit ? 'edit-square' : 'plus'} className="size-6" />

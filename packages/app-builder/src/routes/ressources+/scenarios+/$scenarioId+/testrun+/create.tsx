@@ -11,7 +11,7 @@ import { scenarioObjectDocHref } from '@app-builder/services/documentation-href'
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
@@ -66,7 +66,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     return redirect(
       getRoute('/scenarios/:scenarioId/test-run', {
-        scenarioId: fromUUID(scenarioId),
+        scenarioId: fromUUIDtoSUUID(scenarioId),
       }),
     );
   } catch (error) {
@@ -171,7 +171,7 @@ function CreateTestRunToContent({
         fetcher.submit(value, {
           method: 'POST',
           action: getRoute('/ressources/scenarios/:scenarioId/testrun/create', {
-            scenarioId: fromUUID(currentScenario.id),
+            scenarioId: fromUUIDtoSUUID(currentScenario.id),
           }),
           encType: 'application/json',
         });

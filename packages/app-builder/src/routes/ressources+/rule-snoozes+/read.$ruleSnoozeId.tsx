@@ -1,7 +1,7 @@
 import { type RuleSnoozeDetail } from '@app-builder/models/rule-snooze';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import * as React from 'react';
@@ -51,7 +51,7 @@ export function useGetRuleSnoozeFetcher({ ruleSnoozeId }: { ruleSnoozeId: string
     if (loadFetcher.state === 'idle' && !loadFetcher.data) {
       loadFetcher.load(
         getRoute('/ressources/rule-snoozes/read/:ruleSnoozeId', {
-          ruleSnoozeId: fromUUID(ruleSnoozeId),
+          ruleSnoozeId: fromUUIDtoSUUID(ruleSnoozeId),
         }),
       );
     }

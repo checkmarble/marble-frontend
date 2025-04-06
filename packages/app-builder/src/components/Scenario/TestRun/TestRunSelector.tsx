@@ -3,7 +3,7 @@ import { type ScenarioIterationWithType } from '@app-builder/models/scenario-ite
 import { type TestRun } from '@app-builder/models/testrun';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import clsx from 'clsx';
 import { Avatar } from 'ui-design-system';
@@ -31,8 +31,8 @@ export const TestRunSelector = ({
   return (
     <Link
       to={getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
-        scenarioId: fromUUID(currentScenario.id),
-        testRunId: fromUUID(id),
+        scenarioId: fromUUIDtoSUUID(currentScenario.id),
+        testRunId: fromUUIDtoSUUID(id),
       })}
       className={clsx(
         'grid cursor-pointer grid-cols-[30%_30%_8%_auto] items-center rounded-lg border py-4 transition-colors',

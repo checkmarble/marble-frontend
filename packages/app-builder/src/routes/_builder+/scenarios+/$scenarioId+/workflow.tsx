@@ -24,7 +24,7 @@ import {
 import { isCreateInboxAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LinksFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -44,7 +44,7 @@ export const handle = {
         <BreadCrumbLink
           isLast={isLast}
           to={getRoute('/scenarios/:scenarioId/workflow', {
-            scenarioId: fromUUID(currentScenario.id),
+            scenarioId: fromUUIDtoSUUID(currentScenario.id),
           })}
         >
           {t('scenarios:home.workflow')}
@@ -68,7 +68,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!isWorkflowsAvailable(entitlements)) {
     return redirect(
       getRoute('/scenarios/:scenarioId/home', {
-        scenarioId: fromUUID(scenarioId),
+        scenarioId: fromUUIDtoSUUID(scenarioId),
       }),
     );
   }
@@ -109,7 +109,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
   if (!isWorkflowsAvailable(entitlements)) {
     return redirect(
       getRoute('/scenarios/:scenarioId/home', {
-        scenarioId: fromUUID(scenarioId),
+        scenarioId: fromUUIDtoSUUID(scenarioId),
       }),
     );
   }
@@ -127,7 +127,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
     });
     return redirect(
       getRoute('/scenarios/:scenarioId/workflow', {
-        scenarioId: fromUUID(scenarioId),
+        scenarioId: fromUUIDtoSUUID(scenarioId),
       }),
       {
         headers: { 'Set-Cookie': await commitSession(session) },
@@ -146,7 +146,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
 
   return redirect(
     getRoute('/scenarios/:scenarioId/home', {
-      scenarioId: fromUUID(scenarioId),
+      scenarioId: fromUUIDtoSUUID(scenarioId),
     }),
     {
       headers: { 'Set-Cookie': await commitSession(session) },

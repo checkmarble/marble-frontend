@@ -19,7 +19,7 @@ import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getSanctionCheckFileUploadEndpoint } from '@app-builder/utils/files';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
 import {
   isRouteErrorResponse,
@@ -54,7 +54,7 @@ export const handle = {
       return (
         <BreadCrumbLink
           to={getRoute('/cases/inboxes/:inboxId', {
-            inboxId: fromUUID(inbox.id),
+            inboxId: fromUUIDtoSUUID(inbox.id),
           })}
           isLast={isLast}
         >
@@ -70,7 +70,7 @@ export const handle = {
       return (
         <div className="flex items-center gap-2">
           <BreadCrumbLink
-            to={getRoute('/cases/:caseId', { caseId: fromUUID(caseDetail.id) })}
+            to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })}
             isLast={isLast}
           >
             <span className="line-clamp-2 text-start">{t('cases:case.page_title')}</span>
@@ -90,8 +90,8 @@ export const handle = {
         <div className="flex items-center gap-2">
           <BreadCrumbLink
             to={getRoute('/cases/:caseId/sanctions/:decisionId', {
-              caseId: fromUUID(caseDetail.id),
-              decisionId: fromUUID(decision.id),
+              caseId: fromUUIDtoSUUID(caseDetail.id),
+              decisionId: fromUUIDtoSUUID(decision.id),
             })}
             isLast={isLast}
           >
@@ -164,7 +164,9 @@ export default function CaseSanctionReviewPage() {
     <Page.Main>
       <Page.Header className="justify-between gap-8">
         <div className="flex gap-4">
-          <Page.BackLink to={getRoute('/cases/:caseId', { caseId: fromUUID(caseDetail.id) })} />
+          <Page.BackLink
+            to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })}
+          />
           <BreadCrumbs />
         </div>
       </Page.Header>
