@@ -1,6 +1,9 @@
 import { type Params } from '@remix-run/react';
 import qs, { type IParseOptions } from 'qs';
-import { type ZodType, type ZodTypeDef } from 'zod';
+import { type UUID } from 'short-uuid';
+import { z, type ZodType, type ZodTypeDef } from 'zod';
+
+import { shortUUIDSchema } from './schema/shortUUIDSchema';
 
 const defaultQsConfig: IParseOptions = {
   allowDots: true,
@@ -54,6 +57,33 @@ export async function parseParamsSafe<Output, Def extends ZodTypeDef = ZodTypeDe
     };
   }
   return result;
+}
+
+export async function parseIdParamSafe<KeyName extends string>(
+  params: Params,
+  keyName: KeyName,
+): Promise<
+  | { success: true; data: { [K in KeyName]: UUID } }
+  | { success: false; error: z.ZodError; params: Params }
+> {
+  const schema = z.object({
+    [keyName]: z.union([shortUUIDSchema, z.string().uuid()]),
+  });
+
+  const result = await schema.safeParseAsync(params);
+
+  if (!result.success) {
+    return {
+      success: false,
+      error: result.error,
+      params,
+    };
+  }
+
+  return {
+    success: true,
+    data: { [keyName]: result.data[keyName] as UUID } as { [K in KeyName]: UUID },
+  };
 }
 
 /**
