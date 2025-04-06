@@ -25,6 +25,7 @@ import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useRevalidator, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -80,7 +81,10 @@ export const handle = {
       const { customList } = useLoaderData<typeof loader>();
 
       return (
-        <BreadCrumbLink to={getRoute('/lists/:listId', { listId: customList.id })} isLast={isLast}>
+        <BreadCrumbLink
+          to={getRoute('/lists/:listId', { listId: fromUUIDtoSUUID(customList.id) })}
+          isLast={isLast}
+        >
           {customList.name}
         </BreadCrumbLink>
       );
