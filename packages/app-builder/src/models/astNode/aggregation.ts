@@ -19,13 +19,17 @@ export const binaryAggregationFilterOperators = [
   'IsNotInList',
   'StringStartsWith',
   'StringEndsWith',
-  'FuzzyMatch',
 ] as const;
 export type BinaryAggregationFilterOperator = (typeof binaryAggregationFilterOperators)[number];
+
+export const complexAggregationFilterOperators = ['FuzzyMatch'] as const;
+
+export type ComplexAggregationFilterOperator = (typeof complexAggregationFilterOperators)[number];
 
 export const aggregationFilterOperators = [
   ...binaryAggregationFilterOperators,
   ...unaryAggregationFilterOperators,
+  ...complexAggregationFilterOperators,
 ] as const;
 export type AggregationFilterOperator = (typeof aggregationFilterOperators)[number];
 
@@ -55,14 +59,40 @@ export type BinaryAggregationFilterAstNode = {
   };
 };
 
+export type ComplexAggregationFilterAstNode = {
+  id: string;
+  name: typeof aggregationFilterAstNodeName;
+  constant?: undefined;
+  children: never[];
+  namedChildren: {
+    tableName: ConstantAstNode<string | null>;
+    fieldName: ConstantAstNode<string | null>;
+    operator: ConstantAstNode<'FuzzyMatch'>;
+    value: KnownOperandAstNode;
+    options: {
+      id: string;
+      name: 'FuzzyMatchOptions';
+      constant?: undefined;
+      children: [];
+      namedChildren: {
+        treshold: ConstantAstNode<number>;
+        algorithm: ConstantAstNode<string>;
+      };
+    };
+  };
+};
+
 export type AggregationFilterAstNode =
   | UnaryAggregationFilterAstNode
-  | BinaryAggregationFilterAstNode;
+  | BinaryAggregationFilterAstNode
+  | ComplexAggregationFilterAstNode;
 
 export type GetAggregationFilterOperator<T extends AggregationFilterAstNode> =
   T extends UnaryAggregationFilterAstNode
     ? UnaryAggregationFilterOperator
-    : BinaryAggregationFilterOperator;
+    : T extends BinaryAggregationFilterAstNode
+      ? BinaryAggregationFilterOperator
+      : ComplexAggregationFilterOperator;
 
 export const aggregationAstNodeName = 'Aggregator';
 export interface AggregationAstNode {
