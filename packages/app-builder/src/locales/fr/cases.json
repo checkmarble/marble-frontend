@@ -42,13 +42,10 @@
   "case_detail.events_count_other": "{{count}} événements",
   "case_detail.history": "Historique",
   "case_detail.history.event_detail.added_by": "Ajouté par : <Avatar/> <User>{{user}}</User>",
-  "case_detail.history.event_detail.added_by_workflow": "Ajouté automatiquement",
   "case_detail.history.event_detail.case_tags.new": "Nouveaux labels: <CaseTags/>",
   "case_detail.history.event_detail.case_tags.none": "Toutes les labels ont été supprimés",
   "case_detail.history.event_detail.decision_reviewed.final_status": "Statut final",
   "case_detail.history.event_detail.decision_reviewed.review_comment": "Commentaire de révision",
-  "case_detail.history.event_detail.edited_by": "Edité par : <Avatar/> <User>{{user}}</User>",
-  "case_detail.history.event_detail.edited_by_workflow": "Modifié automatiquement",
   "case_detail.history.event_detail.reviewed_by": "Révisé par : <Avatar/> <User>{{user}}</User>",
   "case_detail.history.event_detail.rule_snooze_created.created_from_decision": "décision",
   "case_detail.history.event_detail.rule_snooze_created.created_from_rule": "règle",
@@ -138,5 +135,7 @@
   "case.status.open": "ouvrir",
   "case.status.resolved": "résolu",
   "case_detail.history.event_title.outcome_updated": "Résultat mis à jour",
-  "case_detail.history.event_type.outcome_updated": "Résultat mis à jour"
+  "case_detail.history.event_type.outcome_updated": "Résultat mis à jour",
+  "case_detail.history.event_detail.decision_added": "Décision ajoutée par <Cactor> {{Actor}} </ctor>",
+  "case_detail.history.event_detail.tags_updated": "Tags (<gags> {{tags}} </gags>) mis à jour par <Cactor> {{acteur}} </ctor>"
 }
