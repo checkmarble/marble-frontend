@@ -82,6 +82,7 @@ export function getEventIcon(eventType: CaseEventType) {
     case 'tags_updated':
     case 'name_updated':
     case 'inbox_changed':
+    case 'outcome_updated':
     case 'comment_added':
       return <EventIcon className="bg-grey-90 text-grey-50" icon="edit" />;
     case 'file_added':
@@ -148,6 +149,13 @@ export function getEventTitle(event: CaseEvent, t: TFunction<typeof casesI18n>) 
               name: event.newName,
             }}
           />
+        </span>
+      );
+    }
+    case 'outcome_updated': {
+      return (
+        <span className="text-s text-grey-00 font-semibold">
+          {t('cases:case_detail.history.event_title.outcome_updated')}
         </span>
       );
     }
@@ -306,6 +314,7 @@ export function getEventDetail(event: CaseEvent) {
     case 'case_snoozed': {
       return <CaseSnoozedDetail event={event} />;
     }
+    case 'outcome_updated':
     case 'case_unsnoozed':
     case 'name_updated':
     case 'status_updated':

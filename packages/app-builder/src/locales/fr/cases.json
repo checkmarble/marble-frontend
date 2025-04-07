@@ -133,5 +133,10 @@
   "case.outcome.false_positive": "Faux positif",
   "case.outcome.valuable_alert": "Alerte précieuse",
   "case.status.closed": "résolu",
-  "case.status.pending": "en attente"
+  "case.status.pending": "en attente",
+  "case.status.discarded": "écarté",
+  "case.status.open": "ouvrir",
+  "case.status.resolved": "résolu",
+  "case_detail.history.event_title.outcome_updated": "Résultat mis à jour",
+  "case_detail.history.event_type.outcome_updated": "Résultat mis à jour"
 }

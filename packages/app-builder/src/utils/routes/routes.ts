@@ -50,30 +50,30 @@ export const routes = [
             "file": "routes/_builder+/api.tsx"
           },
           {
-            "id": "routes/_builder+/cases+/$caseId._index",
+            "id": "routes/_builder+/cases+/$caseId+/_index",
             "index": true,
             "path": "cases/:caseId",
-            "file": "routes/_builder+/cases+/$caseId._index.tsx"
+            "file": "routes/_builder+/cases+/$caseId+/_index.tsx"
           },
           {
-            "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_layout",
+            "id": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_layout",
             "path": "cases/:caseId/sanctions/:decisionId",
-            "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_layout.tsx",
+            "file": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_layout.tsx",
             "children": [
               {
-                "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_index",
+                "id": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_index",
                 "index": true,
-                "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_index.tsx"
+                "file": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_index.tsx"
               },
               {
-                "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/files",
+                "id": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/files",
                 "path": "files",
-                "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/files.tsx"
+                "file": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/files.tsx"
               },
               {
-                "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/hits",
+                "id": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/hits",
                 "path": "hits",
-                "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/hits.tsx"
+                "file": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/hits.tsx"
               }
             ]
           },
@@ -389,11 +389,6 @@ export const routes = [
         "file": "routes/ressources+/cases+/edit-name.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/edit-status",
-        "path": "ressources/cases/edit-status",
-        "file": "routes/ressources+/cases+/edit-status.tsx"
-      },
-      {
         "id": "routes/ressources+/cases+/edit-suspicion",
         "path": "ressources/cases/edit-suspicion",
         "file": "routes/ressources+/cases+/edit-suspicion.tsx"
@@ -402,11 +397,6 @@ export const routes = [
         "id": "routes/ressources+/cases+/edit-tags",
         "path": "ressources/cases/edit-tags",
         "file": "routes/ressources+/cases+/edit-tags.tsx"
-      },
-      {
-        "id": "routes/ressources+/cases+/edit",
-        "path": "ressources/cases/edit",
-        "file": "routes/ressources+/cases+/edit.tsx"
       },
       {
         "id": "routes/ressources+/cases+/escalate-case",

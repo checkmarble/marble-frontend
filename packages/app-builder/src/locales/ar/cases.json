@@ -133,5 +133,10 @@
   "case.outcome.false_positive": "كاذبة إيجابية",
   "case.outcome.valuable_alert": "تنبيه قيمة",
   "case.status.closed": "حل",
-  "case.status.pending": "قيد الانتظار"
+  "case.status.pending": "قيد الانتظار",
+  "case.status.discarded": "تجاهل",
+  "case.status.open": "يفتح",
+  "case.status.resolved": "حل",
+  "case_detail.history.event_title.outcome_updated": "تحديث النتيجة",
+  "case_detail.history.event_type.outcome_updated": "تحديث النتيجة"
 }

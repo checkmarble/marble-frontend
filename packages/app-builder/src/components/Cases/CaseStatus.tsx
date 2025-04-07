@@ -1,6 +1,7 @@
-import { type CaseStatus, caseStatuses } from '@app-builder/models/cases';
+import { caseStatuses } from '@app-builder/models/cases';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { type ParseKeys } from 'i18next';
+import { type CaseStatusForCaseEventDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'ui-design-system';
@@ -13,6 +14,7 @@ export const caseStatusVariants = cva('inline-flex items-center justify-center r
       red: 'text-red-47 bg-red-95',
       blue: 'text-blue-58 bg-blue-96',
       green: 'text-green-38 bg-green-94',
+      grey: 'text-grey-50 bg-grey-95',
     },
     size: {
       small: undefined,
@@ -48,7 +50,7 @@ export const caseStatusVariants = cva('inline-flex items-center justify-center r
 });
 
 type CaseStatusMapping = Record<
-  CaseStatus,
+  CaseStatusForCaseEventDto,
   {
     color: VariantProps<typeof caseStatusVariants>['color'];
     tKey: ParseKeys<['cases']>;
@@ -68,6 +70,18 @@ export const caseStatusMapping: CaseStatusMapping = {
     color: 'green',
     tKey: 'cases:case.status.closed',
   },
+  resolved: {
+    color: 'green',
+    tKey: 'cases:case.status.resolved',
+  },
+  discarded: {
+    color: 'grey',
+    tKey: 'cases:case.status.discarded',
+  },
+  open: {
+    color: 'red',
+    tKey: 'cases:case.status.open',
+  },
 };
 
 export function CaseStatusPreview({
@@ -75,7 +89,7 @@ export function CaseStatusPreview({
   size,
   type,
 }: {
-  status: CaseStatus;
+  status: CaseStatusForCaseEventDto;
   size?: VariantProps<typeof caseStatusVariants>['size'];
   type?: VariantProps<typeof caseStatusVariants>['type'];
 }) {

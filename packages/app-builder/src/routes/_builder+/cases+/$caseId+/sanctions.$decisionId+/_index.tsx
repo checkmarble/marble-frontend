@@ -16,7 +16,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   if (!decisionId) {
     return {
-      redirect: getRoute('/cases/:caseId/decisions', {
+      redirect: getRoute('/cases/:caseId', {
         caseId: fromUUID(caseId),
       }),
     };

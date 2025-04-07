@@ -10,10 +10,17 @@ import * as z from 'zod';
 import { type CaseHistoryFilterFilterName, caseHistoryFilterNames } from './filters';
 
 export const caseHistoryFiltersSchema = z.object({
-  caseEventTypes: z.array(z.enum(caseEventTypes)),
+  caseEventTypes: z.array(
+    z.union(
+      caseEventTypes.map((t) => z.literal(t)) as [
+        z.ZodLiteral<CaseEventType>,
+        z.ZodLiteral<CaseEventType>,
+        ...z.ZodLiteral<CaseEventType>[],
+      ],
+    ),
+  ),
   dateRange: dateRangeSchema.optional(),
 });
-
 export type CaseHistoryFilters = z.infer<typeof caseHistoryFiltersSchema>;
 
 interface CaseHistoryFiltersContextValue {

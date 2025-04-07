@@ -79,7 +79,7 @@ export const handle = {
             <span className="font-medium">ID</span>
             <span className="text-rtl max-w-20 truncate">{caseDetail.id}</span>
           </span>
-          <Tag color={caseStatus.color}>{t(caseStatus.tKey)}</Tag>
+          <Tag color={caseStatus.color!}>{t(caseStatus.tKey)}</Tag>
         </div>
       );
     },
@@ -152,7 +152,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export function useCurrentCase() {
   return useRouteLoaderData(
-    'routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_layout' satisfies RouteID,
+    'routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_layout' satisfies RouteID,
   ) as SerializeFrom<typeof loader>;
 }
 

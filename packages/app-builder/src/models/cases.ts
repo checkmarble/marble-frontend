@@ -57,6 +57,7 @@ export const caseReviewStatuses: CaseOutcome[] = [
   'confirmed_risk',
   'false_positive',
   'valuable_alert',
+  'unset',
 ];
 
 export interface Case {
