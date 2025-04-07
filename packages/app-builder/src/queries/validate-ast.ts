@@ -3,7 +3,7 @@ import {
   type AstValidationReturnType,
 } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useMutation } from '@tanstack/react-query';
 
 const endpoint = (scenarioId: string) =>
@@ -15,7 +15,7 @@ type UseValidateAstMutationParams = {
   scenarioId: string;
 };
 export function useValidateAstMutation(params: UseValidateAstMutationParams) {
-  const scenarioNanoId = fromUUID(params.scenarioId);
+  const scenarioNanoId = fromUUIDtoSUUID(params.scenarioId);
 
   return useMutation({
     mutationFn: async (payload: AstValidationPayload & { ac: AbortController }) => {

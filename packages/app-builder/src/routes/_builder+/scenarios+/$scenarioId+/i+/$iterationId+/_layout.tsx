@@ -14,7 +14,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { findRuleValidation } from '@app-builder/services/validation';
 import { formatDateRelative, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
-import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
 import { Outlet, useLoaderData, useLocation, useRouteLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
@@ -49,8 +49,8 @@ export const handle = {
           <BreadCrumbLink
             isLast={isLast}
             to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
-              scenarioId: fromUUID(currentIteration.scenarioId),
-              iterationId: fromUUID(currentIteration.id),
+              scenarioId: fromUUIDtoSUUID(currentIteration.scenarioId),
+              iterationId: fromUUIDtoSUUID(currentIteration.id),
             })}
           >
             <p className="text-s flex flex-row gap-1 font-semibold">
@@ -178,7 +178,10 @@ export function VersionSelect({
         type: si.type,
         version: si.version,
         updatedAt: si.updatedAt,
-        linkTo: location.pathname.replace(fromUUID(currentIteration.id), fromUUID(si.id)),
+        linkTo: location.pathname.replace(
+          fromUUIDtoSUUID(currentIteration.id),
+          fromUUIDtoSUUID(si.id),
+        ),
         formattedVersion: getFormattedVersion(si, t),
         formattedLive: getFormattedLive(si, t),
         formattedUpdatedAt: formatDateRelative(si.updatedAt, {

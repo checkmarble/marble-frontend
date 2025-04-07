@@ -16,7 +16,7 @@ import { useOrganizationUsers } from '@app-builder/services/organization/organiz
 import { getFullName } from '@app-builder/services/user';
 import { formatDateRelative, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { Link } from '@remix-run/react';
 import { cx } from 'class-variance-authority';
@@ -351,7 +351,7 @@ function DecisionReviewedEventDetail({ event }: { event: DecisionReviewedEvent }
       <Link
         className="text-s hover:text-purple-60 focus:text-purple-60 text-purple-65 relative font-normal hover:underline focus:underline"
         to={getRoute('/decisions/:decisionId', {
-          decisionId: fromUUID(event.decisionId),
+          decisionId: fromUUIDtoSUUID(event.decisionId),
         })}
       >
         {t('cases:case_detail.history.event_detail.rule_snooze_created.decision_detail')}
@@ -469,7 +469,7 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
           <Link
             className="hover:text-purple-60 focus:text-purple-60 text-purple-65 relative font-normal hover:underline focus:underline"
             to={getRoute('/decisions/:decisionId', {
-              decisionId: fromUUID(data.ruleSnoozeDetail.createdFromDecisionId),
+              decisionId: fromUUIDtoSUUID(data.ruleSnoozeDetail.createdFromDecisionId),
             })}
           >
             {t('cases:case_detail.history.event_detail.rule_snooze_created.decision_detail')}
@@ -488,9 +488,11 @@ function RuleSnoozeDetail({ ruleSnoozeId }: { ruleSnoozeId: string }) {
           <Link
             className="hover:text-purple-60 focus:text-purple-60 text-purple-65 relative font-normal hover:underline focus:underline"
             to={getRoute('/scenarios/:scenarioId/i/:iterationId/rules/:ruleId', {
-              scenarioId: fromUUID(data.ruleSnoozeDetail.createdFromRule.scenarioId),
-              iterationId: fromUUID(data.ruleSnoozeDetail.createdFromRule.scenarioIterationId),
-              ruleId: fromUUID(data.ruleSnoozeDetail.createdFromRule.ruleId),
+              scenarioId: fromUUIDtoSUUID(data.ruleSnoozeDetail.createdFromRule.scenarioId),
+              iterationId: fromUUIDtoSUUID(
+                data.ruleSnoozeDetail.createdFromRule.scenarioIterationId,
+              ),
+              ruleId: fromUUIDtoSUUID(data.ruleSnoozeDetail.createdFromRule.ruleId),
             })}
           >
             {data.ruleSnoozeDetail.createdFromRule.ruleName ??

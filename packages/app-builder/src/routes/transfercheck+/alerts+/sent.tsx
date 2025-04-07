@@ -1,7 +1,7 @@
 import { AlertsList } from '@app-builder/components/TransferAlerts/AlertsList';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { json, Link, useLoaderData } from '@remix-run/react';
 
@@ -26,7 +26,7 @@ export default function SentAlertsPage() {
       rowLink={(alertId) => (
         <Link
           to={getRoute('/transfercheck/alerts/sent/:alertId', {
-            alertId: fromUUID(alertId),
+            alertId: fromUUIDtoSUUID(alertId),
           })}
         />
       )}

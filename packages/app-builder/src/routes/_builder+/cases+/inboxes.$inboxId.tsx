@@ -19,7 +19,7 @@ import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
 import { initServerServices } from '@app-builder/services/init.server';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
@@ -71,7 +71,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const parsedQuery = await parseQuerySafe(request, casesFiltersSchema);
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
   if (!parsedQuery.success || !parsedPaginationQuery.success) {
-    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxId) }));
+    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUIDtoSUUID(inboxId) }));
   }
 
   const filtersForBackend: CaseFilters = {
@@ -187,7 +187,7 @@ export default function Cases() {
       if (!pagination) {
         reset();
 
-        const pathname = getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUID(inboxId) });
+        const pathname = getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUIDtoSUUID(inboxId) });
         const search = qs.stringify(buildQueryParams(casesFilters, null, null), {
           addQueryPrefix: true,
           skipNulls: true,
@@ -213,7 +213,7 @@ export default function Cases() {
         navigate(
           {
             pathname: getRoute('/cases/inboxes/:inboxId', {
-              inboxId: fromUUID(inboxId),
+              inboxId: fromUUIDtoSUUID(inboxId),
             }),
             search: qs.stringify(buildQueryParams(casesFilters, null, pagination.order), {
               addQueryPrefix: true,

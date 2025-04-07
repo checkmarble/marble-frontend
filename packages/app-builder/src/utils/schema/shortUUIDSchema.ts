@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { toUUID } from '../short-uuid';
+import { fromSUUIDtoUUID } from '../short-uuid';
 
 export interface RawUUIDIssue extends z.ZodCustomIssue {
   params: {
@@ -19,7 +19,7 @@ export function isRawUUIDIssue(issue: z.ZodIssueOptionalMessage): issue is RawUU
 
 export const shortUUIDSchema = z.string().transform((value, ctx) => {
   try {
-    return toUUID(value);
+    return fromSUUIDtoUUID(value);
   } catch (e) {
     const parsedValue = z.string().uuid().safeParse(value);
     if (parsedValue.success) {

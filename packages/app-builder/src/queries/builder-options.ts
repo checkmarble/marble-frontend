@@ -1,6 +1,6 @@
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useQuery } from '@tanstack/react-query';
 
 const endpoint = (scenarioId: string) =>
@@ -13,7 +13,7 @@ type UseBuilderOptionsQueryParams = {
   initialData?: BuilderOptionsResource;
 };
 export function useBuilderOptionsQuery(params: UseBuilderOptionsQueryParams) {
-  const queryKey = ['resources', 'builder-options', fromUUID(params.scenarioId)] as const;
+  const queryKey = ['resources', 'builder-options', fromUUIDtoSUUID(params.scenarioId)] as const;
 
   return useQuery({
     queryKey,

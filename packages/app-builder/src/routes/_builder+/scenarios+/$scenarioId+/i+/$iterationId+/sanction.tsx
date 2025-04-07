@@ -26,7 +26,7 @@ import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
@@ -54,8 +54,8 @@ export const handle = {
         <BreadCrumbLink
           isLast={isLast}
           to={getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
-            scenarioId: fromUUID(scenarioId),
-            iterationId: fromUUID(iterationId),
+            scenarioId: fromUUIDtoSUUID(scenarioId),
+            iterationId: fromUUIDtoSUUID(iterationId),
           })}
         >
           {t('navigation:scenario.rules')}
@@ -72,8 +72,8 @@ export const handle = {
           <BreadCrumbLink
             isLast={isLast}
             to={getRoute('/scenarios/:scenarioId/i/:iterationId/sanction', {
-              scenarioId: fromUUID(iteration.scenarioId),
-              iterationId: fromUUID(iteration.id),
+              scenarioId: fromUUIDtoSUUID(iteration.scenarioId),
+              iterationId: fromUUIDtoSUUID(iteration.id),
             })}
           >
             {iteration.sanctionCheckConfig?.name ?? t('common:no_name')}
@@ -257,8 +257,8 @@ export default function SanctionDetail() {
       <Page.Header className="justify-between">
         <BreadCrumbs
           back={getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
-            iterationId: fromUUID(iterationId),
-            scenarioId: fromUUID(scenario.id),
+            iterationId: fromUUIDtoSUUID(iterationId),
+            scenarioId: fromUUIDtoSUUID(scenario.id),
           })}
         />
       </Page.Header>

@@ -5,7 +5,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
@@ -63,7 +63,7 @@ export async function action({ request }: ActionFunctionArgs) {
     if (data.redirectRoute)
       return redirect(
         getRoute(data.redirectRoute, {
-          inboxId: fromUUID(createdInbox.id),
+          inboxId: fromUUIDtoSUUID(createdInbox.id),
         }),
       );
 

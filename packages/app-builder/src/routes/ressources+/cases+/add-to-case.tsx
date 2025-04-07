@@ -7,7 +7,7 @@ import { isStatusBadRequestHttpError } from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
@@ -74,7 +74,7 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     if (data.newCase) {
       const createdCase = await cases.createCase(data);
-      return redirect(getRoute('/cases/:caseId', { caseId: fromUUID(createdCase.id) }));
+      return redirect(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(createdCase.id) }));
     } else {
       await cases.addDecisionsToCase(data);
 

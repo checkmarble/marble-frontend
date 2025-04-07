@@ -10,7 +10,7 @@ import {
 import { useCurrentScenarioIteration } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
@@ -85,8 +85,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     return redirectBack(request, {
       fallback: getRoute('/scenarios/:scenarioId/i/:iterationId', {
-        scenarioId: fromUUID(scenarioId),
-        iterationId: fromUUID(iterationId),
+        scenarioId: fromUUIDtoSUUID(scenarioId),
+        iterationId: fromUUIDtoSUUID(iterationId),
       }),
     });
   } catch (error) {
@@ -191,8 +191,8 @@ function ActivateScenarioVersionContent({
         fetcher.submit(value, {
           method: 'POST',
           action: getRoute('/ressources/scenarios/:scenarioId/:iterationId/activate', {
-            scenarioId: fromUUID(scenario.id),
-            iterationId: fromUUID(iterationId),
+            scenarioId: fromUUIDtoSUUID(scenario.id),
+            iterationId: fromUUIDtoSUUID(iterationId),
           }),
           encType: 'application/json',
         });
@@ -288,8 +288,8 @@ function RuleSnoozeDetail() {
     if (state === 'idle' && !data) {
       load(
         getRoute('/ressources/scenarios/:scenarioId/:iterationId/activate', {
-          scenarioId: fromUUID(iteration.scenarioId),
-          iterationId: fromUUID(iteration.id),
+          scenarioId: fromUUIDtoSUUID(iteration.scenarioId),
+          iterationId: fromUUIDtoSUUID(iteration.id),
         }),
       );
     }

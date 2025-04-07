@@ -6,7 +6,7 @@ import { type Inbox } from '@app-builder/models/inbox';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
@@ -66,7 +66,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return redirect(
       safeRedirect(
         getRoute(data.redirectRoute, {
-          inboxId: fromUUID(updatedInbox.id),
+          inboxId: fromUUIDtoSUUID(updatedInbox.id),
         }),
         getRoute('/ressources/auth/logout'),
       ),

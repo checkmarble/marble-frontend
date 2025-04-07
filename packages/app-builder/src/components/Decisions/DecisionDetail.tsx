@@ -2,7 +2,7 @@ import { CaseStatusPreview, decisionsI18n } from '@app-builder/components';
 import { type DecisionDetail } from '@app-builder/models/decision';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
@@ -24,7 +24,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
           <DetailLabel>{t('decisions:scenario.name')}</DetailLabel>
           <Link
             to={getRoute('/scenarios/:scenarioId', {
-              scenarioId: fromUUID(scenario.id),
+              scenarioId: fromUUIDtoSUUID(scenario.id),
             })}
             className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
           >
@@ -34,8 +34,8 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
           <DetailLabel>{t('decisions:scenario.version')}</DetailLabel>
           <Link
             to={getRoute('/scenarios/:scenarioId/i/:iterationId', {
-              scenarioId: fromUUID(scenario.id),
-              iterationId: fromUUID(scenario.scenarioIterationId),
+              scenarioId: fromUUIDtoSUUID(scenario.id),
+              iterationId: fromUUIDtoSUUID(scenario.scenarioIterationId),
             })}
             className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
           >
@@ -51,7 +51,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
               <CaseStatusPreview size="small" type="first-letter" status={caseDetail.status} />
               <Link
                 to={getRoute('/cases/:caseId', {
-                  caseId: fromUUID(caseDetail.id),
+                  caseId: fromUUIDtoSUUID(caseDetail.id),
                 })}
                 className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
               >

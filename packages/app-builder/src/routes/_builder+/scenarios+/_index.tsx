@@ -3,7 +3,7 @@ import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CreateScenario } from '@app-builder/routes/ressources+/scenarios+/create';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { type Namespace } from 'i18next';
@@ -55,7 +55,7 @@ export default function ScenariosPage() {
                     <Link
                       key={scenario.id}
                       to={getRoute('/scenarios/:scenarioId', {
-                        scenarioId: fromUUID(scenario.id),
+                        scenarioId: fromUUIDtoSUUID(scenario.id),
                       })}
                     >
                       <div className="bg-grey-100 border-grey-90 flex flex-col gap-1 rounded-lg border border-solid p-4 hover:shadow-md">

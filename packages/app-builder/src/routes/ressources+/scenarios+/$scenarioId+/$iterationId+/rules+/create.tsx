@@ -1,6 +1,6 @@
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
@@ -34,9 +34,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     return redirect(
       getRoute('/scenarios/:scenarioId/i/:iterationId/rules/:ruleId', {
-        scenarioId: fromUUID(scenarioId),
-        iterationId: fromUUID(iterationId),
-        ruleId: fromUUID(rule.id),
+        scenarioId: fromUUIDtoSUUID(scenarioId),
+        iterationId: fromUUIDtoSUUID(iterationId),
+        ruleId: fromUUIDtoSUUID(rule.id),
       }),
     );
   } catch (error) {
@@ -61,8 +61,8 @@ export function CreateRule({
     <fetcher.Form
       method="POST"
       action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/rules/create', {
-        scenarioId: fromUUID(scenarioId),
-        iterationId: fromUUID(iterationId),
+        scenarioId: fromUUIDtoSUUID(scenarioId),
+        iterationId: fromUUIDtoSUUID(iterationId),
       })}
     >
       <Button

@@ -9,7 +9,7 @@ import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/
 import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
@@ -77,7 +77,7 @@ export default function Cases() {
                         )
                       }
                       to={getRoute('/cases/inboxes/:inboxId', {
-                        inboxId: fromUUID(inbox.id),
+                        inboxId: fromUUIDtoSUUID(inbox.id),
                       })}
                     >
                       {inbox.name}

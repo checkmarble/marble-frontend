@@ -7,7 +7,7 @@ import {
 } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
@@ -82,7 +82,7 @@ export default function Inboxes() {
     rowLink: ({ id }) => (
       <Link
         to={getRoute('/settings/inboxes/:inboxId', {
-          inboxId: fromUUID(id),
+          inboxId: fromUUIDtoSUUID(id),
         })}
       />
     ),
