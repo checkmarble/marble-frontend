@@ -73,21 +73,19 @@ export interface Case {
   assignedTo?: string;
 }
 
-export function adaptCase(dto: CaseDto): Case {
-  return {
-    id: dto.id,
-    createdAt: dto.created_at,
-    decisionsCount: dto.decisions_count,
-    name: dto.name,
-    status: dto.status,
-    outcome: dto.outcome,
-    inboxId: dto.inbox_id,
-    contributors: dto.contributors.map(adaptCaseContributor),
-    tags: dto.tags.map(adaptCaseTag),
-    snoozedUntil: dto.snoozed_until,
-    assignedTo: dto.assigned_to,
-  };
-}
+export const adaptCase = (dto: CaseDto): Case => ({
+  id: dto.id,
+  createdAt: dto.created_at,
+  decisionsCount: dto.decisions_count,
+  name: dto.name,
+  status: dto.status,
+  outcome: dto.outcome,
+  inboxId: dto.inbox_id,
+  contributors: dto.contributors.map(adaptCaseContributor),
+  tags: dto.tags.map(adaptCaseTag),
+  snoozedUntil: dto.snoozed_until,
+  assignedTo: dto.assigned_to,
+});
 
 //
 // Case Events

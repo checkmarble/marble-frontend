@@ -60,7 +60,7 @@ export type CaseDto = {
     decisions_count: number;
     name: string;
     status: CaseStatusDto;
-    outcome?: "false_positive" | "valuable_alert" | "confirmed_risk";
+    outcome?: "false_positive" | "valuable_alert" | "confirmed_risk" | "unset";
     inbox_id: string;
     contributors: CaseContributorDto[];
     tags: CaseTagDto[];
@@ -160,7 +160,7 @@ export type CaseStatusUpdatedEventDto = {
     new_value: CaseStatusForCaseEventDto;
     user_id: string;
 };
-export type Outcome = "false_positive" | "valuable_alert" | "confirmed_risk";
+export type Outcome = "false_positive" | "valuable_alert" | "confirmed_risk" | "unset";
 export type CaseOutcomeUpdatedEventDto = {
     event_type: "outcome_updated";
 } & CaseEventDtoBase & {

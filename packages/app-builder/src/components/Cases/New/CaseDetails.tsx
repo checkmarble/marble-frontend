@@ -2,7 +2,6 @@ import useIntersection from '@app-builder/hooks/useIntersection';
 import { type CurrentUser } from '@app-builder/models';
 import { type CaseDetail } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
-import { handle } from '@app-builder/routes/_builder+/cases+/$caseId._layout';
 import { CloseCase } from '@app-builder/routes/ressources+/cases+/close-case';
 import { EditCaseAssignee } from '@app-builder/routes/ressources+/cases+/edit-assignee';
 import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
@@ -14,9 +13,11 @@ import { SnoozeCase } from '@app-builder/routes/ressources+/cases+/snooze-case';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { type RefObject, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+import { casesI18n } from '../cases-i18n';
 import { caseStatusMapping } from '../CaseStatus';
 import { CaseHistory } from './CaseHistory';
 
@@ -31,7 +32,7 @@ export const CaseDetails = ({
   inboxes: Inbox[];
   currentUser: CurrentUser;
 }) => {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
   const infoRef = useRef<HTMLDivElement>(null);
   const intersection = useIntersection(infoRef, {
@@ -62,18 +63,25 @@ export const CaseDetails = ({
         <div className="grid grid-cols-[120px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:case.status')}</span>
           <span className="inline-flex items-center gap-1">
-            <Icon
-              icon="status"
-              className={cn('size-5', {
-                'text-red-47': caseStatusMapping[detail.status].color === 'red',
-                'text-blue-58': caseStatusMapping[detail.status].color === 'blue',
-                'text-grey-50': caseStatusMapping[detail.status].color === 'grey',
-                'text-green-38': caseStatusMapping[detail.status].color === 'green',
-              })}
-            />
+            {match(detail.status)
+              .with('investigating', () => <Icon icon="status" className="text-blue-58 size-5" />)
+              .with('pending', () => <div className="border-red-47 size-4 rounded-full border-2" />)
+              .with('closed', () => <div className="bg-green-38 size-4 rounded-full" />)
+              .exhaustive()}
             <span className="text-xs font-medium capitalize">
               {t(caseStatusMapping[detail.status].tKey)}
             </span>
+            {detail.outcome && detail.outcome !== 'unset' ? (
+              <span
+                className={cn('rounded-full px-2 py-[3px] text-xs font-medium', {
+                  'text-grey-50 bg-grey-95': detail.outcome === 'false_positive',
+                  'bg-yellow-90 text-yellow-50': detail.outcome === 'valuable_alert',
+                  'text-red-47 bg-red-95': detail.outcome === 'confirmed_risk',
+                })}
+              >
+                {t(`cases:case.outcome.${detail.outcome}`)}
+              </span>
+            ) : null}
           </span>
         </div>
         <div className="grid grid-cols-[120px,1fr] items-center">

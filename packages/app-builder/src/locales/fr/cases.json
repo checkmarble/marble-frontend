@@ -21,10 +21,7 @@
   "case.new_case.placeholder": "Entrez un nom",
   "case.new_case.select_inbox": "Sélectionnez une boîte de réception",
   "case.status": "Statut",
-  "case.status.discarded": "abandonné",
   "case.status.investigating": "en cours d'enquête",
-  "case.status.open": "ouvert",
-  "case.status.resolved": "résolu",
   "case.tags": "Labels",
   "case_detail.add_a_comment.label": "Commentaire",
   "case_detail.add_a_comment.placeholder": "Écrivez une note",
@@ -131,5 +128,10 @@
   "unsnooze.title": "Réactiver",
   "case_detail.history.event_type.case_snoozed": "Désactivé",
   "case_detail.history.event_type.case_unsnoozed": "Réactivé",
-  "include_snoozed": "Inclure les désactivés"
+  "include_snoozed": "Inclure les désactivés",
+  "case.outcome.confirmed_risk": "Risque confirmé",
+  "case.outcome.false_positive": "Faux positif",
+  "case.outcome.valuable_alert": "Alerte précieuse",
+  "case.status.closed": "résolu",
+  "case.status.pending": "en attente"
 }

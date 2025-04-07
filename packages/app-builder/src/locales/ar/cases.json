@@ -15,10 +15,7 @@
   "case.file.errors.downloading_link.unknown": "حدث خطأ غير معروف أثناء إنشاء رابط التنزيل. يرجى المحاولة مرة أخرى لاحقًا.",
   "case.inbox": "الصندوق الوارد",
   "case.inboxes": "صناديق  واردة",
-  "case.status.open": "فتح",
   "case.status.investigating": "قيد المراجعة",
-  "case.status.discarded": "تم إلغاؤه",
-  "case.status.resolved": "تم معالجتها",
   "case.new_case": "حالة جديدة",
   "case.new_case.create": "إنشاء حالة جديدة",
   "case.new_case.placeholder": "أدخل الاسم",
@@ -131,5 +128,10 @@
   "unsnooze.title": "unnooze",
   "case_detail.history.event_type.case_snoozed": "قضية غفوة",
   "case_detail.history.event_type.case_unsnoozed": "قضية Unooozed",
-  "include_snoozed": "تشمل الغفوة"
+  "include_snoozed": "تشمل الغفوة",
+  "case.outcome.confirmed_risk": "المخاطر المؤكدة",
+  "case.outcome.false_positive": "كاذبة إيجابية",
+  "case.outcome.valuable_alert": "تنبيه قيمة",
+  "case.status.closed": "حل",
+  "case.status.pending": "قيد الانتظار"
 }

@@ -1,4 +1,4 @@
-import { CaseStatus, decisionsI18n } from '@app-builder/components';
+import { CaseStatusPreview, decisionsI18n } from '@app-builder/components';
 import { type DecisionDetail } from '@app-builder/models/decision';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -48,7 +48,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
           <DetailLabel>{t('decisions:case')}</DetailLabel>
           {caseDetail ? (
             <div className="flex w-fit flex-row items-center justify-center gap-1 align-baseline">
-              <CaseStatus size="small" type="first-letter" status={caseDetail.status} />
+              <CaseStatusPreview size="small" type="first-letter" status={caseDetail.status} />
               <Link
                 to={getRoute('/cases/:caseId', {
                   caseId: fromUUID(caseDetail.id),

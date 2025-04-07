@@ -50,31 +50,10 @@ export const routes = [
             "file": "routes/_builder+/api.tsx"
           },
           {
-            "id": "routes/_builder+/cases+/$caseId._layout",
+            "id": "routes/_builder+/cases+/$caseId._index",
+            "index": true,
             "path": "cases/:caseId",
-            "file": "routes/_builder+/cases+/$caseId._layout.tsx",
-            "children": [
-              {
-                "id": "routes/_builder+/cases+/$caseId._index",
-                "index": true,
-                "file": "routes/_builder+/cases+/$caseId._index.tsx"
-              },
-              {
-                "id": "routes/_builder+/cases+/$caseId.decisions",
-                "path": "decisions",
-                "file": "routes/_builder+/cases+/$caseId.decisions.tsx"
-              },
-              {
-                "id": "routes/_builder+/cases+/$caseId.files",
-                "path": "files",
-                "file": "routes/_builder+/cases+/$caseId.files.tsx"
-              },
-              {
-                "id": "routes/_builder+/cases+/$caseId.information",
-                "path": "information",
-                "file": "routes/_builder+/cases+/$caseId.information.tsx"
-              }
-            ]
+            "file": "routes/_builder+/cases+/$caseId._index.tsx"
           },
           {
             "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_layout",
@@ -115,12 +94,6 @@ export const routes = [
                 "file": "routes/_builder+/cases+/inboxes.$inboxId.tsx"
               }
             ]
-          },
-          {
-            "id": "routes/_builder+/cases_new+/$caseId._index",
-            "index": true,
-            "path": "cases_new/:caseId",
-            "file": "routes/_builder+/cases_new+/$caseId._index.tsx"
           },
           {
             "id": "routes/_builder+/data+/_layout",

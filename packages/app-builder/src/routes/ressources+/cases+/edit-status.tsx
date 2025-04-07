@@ -1,7 +1,7 @@
 import {
   casesI18n,
-  CaseStatus,
   caseStatusMapping,
+  CaseStatusPreview,
   useCaseStatuses,
 } from '@app-builder/components/Cases';
 import { caseStatuses } from '@app-builder/models/cases';
@@ -114,7 +114,7 @@ export function EditCaseStatus({
                       shouldValidate({ status: value, require: true });
                     }}
                   >
-                    <CaseStatus type="full" size="big" status={value} />
+                    <CaseStatusPreview type="full" size="big" status={value} />
                   </MenuCommand.Item>
                 ))}
               </MenuCommand.List>
@@ -131,7 +131,7 @@ export function EditCaseStatus({
                       t={t}
                       i18nKey="cases:change_status_modal.description.from"
                       components={{
-                        Status: <CaseStatus type="full" size="big" status={initialStatus} />,
+                        Status: <CaseStatusPreview type="full" size="big" status={initialStatus} />,
                       }}
                     />
                   </div>
@@ -140,7 +140,9 @@ export function EditCaseStatus({
                       t={t}
                       i18nKey="cases:change_status_modal.description.to"
                       components={{
-                        Status: <CaseStatus type="full" size="big" status={validate.status} />,
+                        Status: (
+                          <CaseStatusPreview type="full" size="big" status={validate.status} />
+                        ),
                       }}
                     />
                   </div>

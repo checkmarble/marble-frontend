@@ -27,7 +27,7 @@ import { Avatar } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 import { casesI18n } from '../cases-i18n';
-import { CaseStatus } from '../CaseStatus';
+import { CaseStatusPreview } from '../CaseStatus';
 import { CaseTags } from '../CaseTags';
 
 export function CaseEvents({ events }: { events: CaseEvent[] }) {
@@ -172,7 +172,7 @@ export function getEventTitle(event: CaseEvent, t: TFunction<typeof casesI18n>) 
             t={t}
             i18nKey="cases:case_detail.history.event_title.status_updated"
             components={{
-              Status: <CaseStatus status={event.newStatus} size="small" type="full" />,
+              Status: <CaseStatusPreview status={event.newStatus} size="small" type="full" />,
             }}
           />
         </span>

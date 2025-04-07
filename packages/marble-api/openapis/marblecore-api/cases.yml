@@ -533,7 +533,7 @@ components:
       enum: ['pending', 'investigating', 'closed', 'open', 'discarded', 'resolved']
     CaseOutcomeDto:
       type: string
-      enum: ['false_positive', 'valuable_alert', 'confirmed_risk']
+      enum: ['false_positive', 'valuable_alert', 'confirmed_risk', 'unset']
     CaseDto:
       type: object
       required:

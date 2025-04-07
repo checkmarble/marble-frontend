@@ -13,7 +13,7 @@ import { FiltersButton } from '@app-builder/components/Filters';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
-import { type Case } from '@app-builder/models/cases';
+import { type Case, type CaseStatus } from '@app-builder/models/cases';
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -78,6 +78,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     ...parsedQuery.data,
     ...parsedPaginationQuery.data,
     inboxIds: [inboxId],
+    statuses: parsedQuery.data.statuses as CaseStatus[] | undefined,
   };
 
   try {
