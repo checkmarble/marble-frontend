@@ -228,7 +228,7 @@ export type DecisionReviewedEventDto = {
 export type CaseSnoozedDto = {
     event_type: "case_snoozed";
 } & CaseEventDtoBase & {
-    user_id?: string;
+    user_id: string;
     new_value: string;
     previous_value?: string;
 };
