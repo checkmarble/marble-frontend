@@ -17,7 +17,7 @@ import {
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
 import { useLoaderData, useRouteLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
@@ -46,7 +46,7 @@ export const handle = {
         <BreadCrumbLink
           isLast={isLast}
           to={getRoute('/settings/inboxes/:inboxId', {
-            inboxId: fromUUID(inbox.id),
+            inboxId: fromUUIDtoSUUID(inbox.id),
           })}
         >
           {inbox.name}

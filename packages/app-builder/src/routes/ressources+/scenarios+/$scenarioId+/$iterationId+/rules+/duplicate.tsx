@@ -1,6 +1,6 @@
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
@@ -36,8 +36,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   return redirect(
     getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
-      scenarioId: fromUUID(scenarioId),
-      iterationId: fromUUID(iterationId),
+      scenarioId: fromUUIDtoSUUID(scenarioId),
+      iterationId: fromUUIDtoSUUID(iterationId),
     }),
   );
 }
@@ -85,8 +85,8 @@ export function DuplicateRule({
                   action: getRoute(
                     `/ressources/scenarios/:scenarioId/:iterationId/rules/duplicate`,
                     {
-                      scenarioId: fromUUID(scenarioId),
-                      iterationId: fromUUID(iterationId),
+                      scenarioId: fromUUIDtoSUUID(scenarioId),
+                      iterationId: fromUUIDtoSUUID(iterationId),
                     },
                   ),
                 });

@@ -4,7 +4,7 @@ import { isStatusConflictHttpError } from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
@@ -72,7 +72,7 @@ export function EnrichMatchButton({ matchId }: { matchId: string }) {
       {
         method: 'POST',
         action: getRoute('/ressources/sanction-check/enrich-match/:matchId', {
-          matchId: fromUUID(matchId),
+          matchId: fromUUIDtoSUUID(matchId),
         }),
       },
     );

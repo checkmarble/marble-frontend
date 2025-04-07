@@ -2,7 +2,7 @@ import { type Case } from '@app-builder/models/cases';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel, type SortingState } from '@tanstack/react-table';
 import clsx from 'clsx';
@@ -56,7 +56,7 @@ export function CasesList({
             <Tooltip.Default content={caseName}>
               <Link
                 className="text-purple-65 text-s line-clamp-2 w-fit font-normal underline"
-                to={getRoute('/cases/:caseId', { caseId: fromUUID(row.id) })}
+                to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(row.id) })}
               >
                 {caseName}
               </Link>
@@ -116,7 +116,7 @@ export function CasesList({
     state: { sorting },
     manualSorting: true,
     onSortingChange: setSorting,
-    rowLink: ({ id }) => <Link to={getRoute('/cases/:caseId', { caseId: fromUUID(id) })} />,
+    rowLink: ({ id }) => <Link to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(id) })} />,
   });
 
   return (

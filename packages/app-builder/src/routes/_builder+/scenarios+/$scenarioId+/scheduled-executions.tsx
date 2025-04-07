@@ -7,7 +7,7 @@ import {
 import { ScheduledExecutionsList } from '@app-builder/components/Scenario/ScheduledExecutionsList';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -26,7 +26,7 @@ export const handle = {
       return (
         <BreadCrumbLink
           to={getRoute('/scenarios/:scenarioId/scheduled-executions', {
-            scenarioId: fromUUID(currentScenario.id),
+            scenarioId: fromUUIDtoSUUID(currentScenario.id),
           })}
           isLast={isLast}
         >

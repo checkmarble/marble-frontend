@@ -31,12 +31,14 @@ import {
 import { initServerServices } from '@app-builder/services/init.server';
 import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { parseIdParamSafe } from '@app-builder/utils/input-validation';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
 import {
   isRouteErrorResponse,
   Outlet,
+  redirect,
   useLoaderData,
   useNavigate,
   useRouteError,
@@ -62,12 +64,12 @@ export const handle = {
       );
     },
     ({ isLast }: BreadCrumbProps) => {
-      const { inbox } = useLoaderData<typeof loader>();
+      const { inbox } = useLoaderData<typeof loader>(); // Ensure inbox is part of the loader's return type
 
       return (
         <BreadCrumbLink
           to={getRoute('/cases/inboxes/:inboxId', {
-            inboxId: fromUUID(inbox.id),
+            inboxId: fromUUIDtoSUUID(inbox.id),
           })}
           isLast={isLast}
         >
@@ -76,12 +78,13 @@ export const handle = {
       );
     },
     ({ isLast }: BreadCrumbProps) => {
-      const { caseDetail } = useLoaderData<typeof loader>();
+      const data = useLoaderData<typeof loader>();
+      const caseDetail = data.caseDetail; // Safely access caseDetail from the loader data
 
       return (
         <div className="flex items-center gap-4">
           <BreadCrumbLink
-            to={getRoute('/cases/:caseId', { caseId: fromUUID(caseDetail.id) })}
+            to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })}
             isLast={isLast}
           >
             <span className="line-clamp-2 text-start">{caseDetail.name}</span>
@@ -114,9 +117,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const caseId = fromParams(params, 'caseId');
+  const parsedParams = await parseIdParamSafe(params, 'caseId');
+
+  if (!parsedParams.success) return redirect(getRoute('/cases/inboxes'));
+
   try {
-    const caseDetail = await cases.getCase({ caseId });
+    const caseDetail = await cases.getCase({ caseId: parsedParams.data.caseId });
     const currentInbox = await inbox.getInbox(caseDetail.inboxId);
 
     const dataModelPromise = dataModelRepository.getDataModel();
@@ -159,9 +165,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         };
       }),
     );
-
     return defer({
-      caseDetail,
+      caseDetail, // Ensure caseDetail is explicitly included in the returned data
       inbox: currentInbox,
       user,
       entitlements,
@@ -182,10 +187,14 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 }
 
-export function useCurrentCase() {
-  return useRouteLoaderData(
+export function useCurrentCase(): SerializeFrom<typeof loader> {
+  const data = useRouteLoaderData<typeof loader>(
     'routes/_builder+/cases+/$caseId._layout' satisfies RouteID,
-  ) as SerializeFrom<typeof loader>;
+  );
+  if (!data || typeof data !== 'object') {
+    throw new Error('Loader data is undefined or invalid');
+  }
+  return data as SerializeFrom<typeof loader>;
 }
 
 export default function CasePage() {

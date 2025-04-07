@@ -8,7 +8,7 @@ import { scenarioObjectDocHref } from '@app-builder/services/documentation-href'
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -75,8 +75,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
     return redirect(
       getRoute('/scenarios/:scenarioId/i/:iterationId', {
-        scenarioId: fromUUID(createdScenario.id),
-        iterationId: fromUUID(scenarioIteration.id),
+        scenarioId: fromUUIDtoSUUID(createdScenario.id),
+        iterationId: fromUUIDtoSUUID(scenarioIteration.id),
       }),
     );
   } catch (error) {

@@ -1,7 +1,7 @@
 import { type Transfer } from '@app-builder/models/transfer';
 import { formatCurrency, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
@@ -59,7 +59,7 @@ export function TransfersList({ className, transfers }: TransfersListProps) {
     rowLink: (transfer) => (
       <Link
         to={getRoute('/transfercheck/transfers/:transferId', {
-          transferId: fromUUID(transfer.id),
+          transferId: fromUUIDtoSUUID(transfer.id),
         })}
       />
     ),

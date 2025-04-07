@@ -25,7 +25,7 @@ import { notFound } from '@app-builder/utils/http/http-responses';
 import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -48,7 +48,7 @@ export const handle = {
           <BreadCrumbLink
             isLast={isLast}
             to={getRoute('/decisions/:decisionId', {
-              decisionId: fromUUID(decision.id),
+              decisionId: fromUUIDtoSUUID(decision.id),
             })}
           >
             <span className="line-clamp-1 text-start">{t('decisions:decision')}</span>

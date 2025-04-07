@@ -4,7 +4,7 @@ import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
@@ -248,7 +248,7 @@ export function DecisionsList({
     rowLink: (decision) => (
       <Link
         to={getRoute('/decisions/:decisionId', {
-          decisionId: fromUUID(decision.id),
+          decisionId: fromUUIDtoSUUID(decision.id),
         })}
       />
     ),

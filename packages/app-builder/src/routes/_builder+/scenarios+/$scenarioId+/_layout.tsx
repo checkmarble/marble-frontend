@@ -4,7 +4,7 @@ import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObject
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
 import { Outlet, useRouteError, useRouteLoaderData } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -21,7 +21,7 @@ export const handle = {
           <BreadCrumbLink
             isLast={isLast}
             to={getRoute('/scenarios/:scenarioId', {
-              scenarioId: fromUUID(currentScenario.id),
+              scenarioId: fromUUIDtoSUUID(currentScenario.id),
             })}
           >
             {currentScenario.name}

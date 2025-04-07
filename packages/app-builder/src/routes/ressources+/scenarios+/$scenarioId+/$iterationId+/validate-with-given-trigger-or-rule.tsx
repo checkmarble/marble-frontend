@@ -1,7 +1,7 @@
 import { type AstNode } from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useCallback } from 'react';
@@ -45,8 +45,8 @@ export function useTriggerValidationFetcher(scenarioId: string, iterationId: str
         action: getRoute(
           '/ressources/scenarios/:scenarioId/:iterationId/validate-with-given-trigger-or-rule',
           {
-            scenarioId: fromUUID(scenarioId),
-            iterationId: fromUUID(iterationId),
+            scenarioId: fromUUIDtoSUUID(scenarioId),
+            iterationId: fromUUIDtoSUUID(iterationId),
           },
         ),
       });
@@ -80,8 +80,8 @@ export function useRuleValidationFetcher(scenarioId: string, iterationId: string
         action: getRoute(
           '/ressources/scenarios/:scenarioId/:iterationId/validate-with-given-trigger-or-rule',
           {
-            scenarioId: fromUUID(scenarioId),
-            iterationId: fromUUID(iterationId),
+            scenarioId: fromUUIDtoSUUID(scenarioId),
+            iterationId: fromUUIDtoSUUID(iterationId),
           },
         ),
       });

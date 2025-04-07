@@ -12,7 +12,7 @@ import { type ScenarioIterationRule } from '@app-builder/models/scenario-iterati
 import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { Await, Link } from '@remix-run/react';
 import * as React from 'react';
@@ -116,7 +116,7 @@ export function CaseDecisions({
                   <Tooltip.Default content={row.scenario.name}>
                     <Link
                       to={getRoute('/scenarios/:scenarioId', {
-                        scenarioId: fromUUID(row.scenario.id),
+                        scenarioId: fromUUIDtoSUUID(row.scenario.id),
                       })}
                       className="hover:text-purple-60 focus:text-purple-60 text-purple-65 relative line-clamp-2 font-semibold hover:underline focus:underline"
                     >
@@ -243,7 +243,7 @@ function DecisionActions({
             render={
               <Link
                 to={getRoute('/decisions/:decisionId', {
-                  decisionId: fromUUID(decision.id),
+                  decisionId: fromUUIDtoSUUID(decision.id),
                 })}
               />
             }
@@ -357,8 +357,8 @@ function DecisionDetail({
                 <SanctionState sanctionCheck={sanctionCheck} />
                 <Link
                   to={getRoute('/cases/:caseId/sanctions/:decisionId', {
-                    caseId: fromUUID(caseId),
-                    decisionId: fromUUID(decision.id),
+                    caseId: fromUUIDtoSUUID(caseId),
+                    decisionId: fromUUIDtoSUUID(decision.id),
                   })}
                 >
                   <Button>

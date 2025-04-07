@@ -20,10 +20,11 @@ import { clientServices } from '@app-builder/services/init.client';
 import { initServerServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';
 import useAsync from '@app-builder/utils/hooks/use-async';
+import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
+import { parseIdParamSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useRevalidator, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import {
@@ -49,10 +50,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const listId = fromParams(params, 'listId');
-  const customList = await customListsRepository.getCustomList(listId);
+  const parsedParams = await parseIdParamSafe(params, 'listId');
+  if (!parsedParams.success) {
+    return handleParseParamError(request, parsedParams.error!);
+  }
+  const customList = await customListsRepository.getCustomList(parsedParams.data.listId);
 
-  return json({
+  return {
     customList: customList,
     listFeatureAccess: {
       isCreateListValueAvailable: isCreateListValueAvailable(user),
@@ -60,7 +64,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       isEditListAvailable: isEditListAvailable(user),
       isDeleteListAvailable: isDeleteListAvailable(user),
     },
-  });
+  };
 }
 
 export const handle = {
@@ -89,7 +93,6 @@ export default function Lists() {
   const { customList, listFeatureAccess } = useLoaderData<typeof loader>();
   const listValues = customList.values ?? [];
   const { t } = useTranslation(handle.i18n);
-
   const columns = React.useMemo(
     () => [
       columnHelper.accessor((row) => row.value, {
@@ -120,7 +123,7 @@ export default function Lists() {
         },
       }),
     ],
-    [t, listValues.length, listFeatureAccess.isDeleteListValueAvailable, customList.id],
+    [t, listFeatureAccess.isDeleteListValueAvailable, customList.id],
   );
 
   const virtualTable = useVirtualTable({

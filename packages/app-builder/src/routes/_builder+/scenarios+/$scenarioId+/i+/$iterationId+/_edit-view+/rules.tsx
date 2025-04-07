@@ -23,7 +23,7 @@ import {
 } from '@app-builder/services/validation';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID, useParam } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
@@ -256,12 +256,12 @@ export default function Rules() {
     getSortedRowModel: getSortedRowModel(),
     rowLink: (row) =>
       row.type === 'rule' ? (
-        <Link to={`./${fromUUID(row.id)}`} />
+        <Link to={`./${fromUUIDtoSUUID(row.id)}`} />
       ) : (
         <Link
           to={getRoute('/scenarios/:scenarioId/i/:iterationId/sanction', {
-            scenarioId: fromUUID(scenarioId),
-            iterationId: fromUUID(iterationId),
+            scenarioId: fromUUIDtoSUUID(scenarioId),
+            iterationId: fromUUIDtoSUUID(iterationId),
           })}
         />
       ),

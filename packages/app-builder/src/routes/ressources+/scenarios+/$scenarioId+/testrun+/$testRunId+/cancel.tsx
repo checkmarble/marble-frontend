@@ -3,7 +3,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { useEffect, useState } from 'react';
@@ -23,7 +23,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     await testRun.cancelTestRun({ testRunId });
     return redirect(
       getRoute('/scenarios/:scenarioId/test-run', {
-        scenarioId: fromUUID(scenarioId),
+        scenarioId: fromUUIDtoSUUID(scenarioId),
       }),
     );
   } catch (error) {
@@ -72,8 +72,8 @@ export function CancelTestRun({
           className="flex flex-col gap-6 p-6"
           method="POST"
           action={getRoute('/ressources/scenarios/:scenarioId/testrun/:testRunId/cancel', {
-            scenarioId: fromUUID(currentScenario.id),
-            testRunId: fromUUID(testRunId),
+            scenarioId: fromUUIDtoSUUID(currentScenario.id),
+            testRunId: fromUUIDtoSUUID(testRunId),
           })}
         >
           <ModalV2.Description render={<Callout variant="outlined" />}>

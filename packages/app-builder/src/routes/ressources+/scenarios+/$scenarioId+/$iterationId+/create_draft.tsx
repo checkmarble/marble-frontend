@@ -1,7 +1,7 @@
 import { initServerServices } from '@app-builder/services/init.server';
 import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
@@ -41,8 +41,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     return redirect(
       getRoute('/scenarios/:scenarioId/i/:iterationId', {
-        scenarioId: fromUUID(scenarioId),
-        iterationId: fromUUID(draftIteration.id),
+        scenarioId: fromUUIDtoSUUID(scenarioId),
+        iterationId: fromUUIDtoSUUID(draftIteration.id),
       }),
     );
   } catch (error) {
@@ -89,8 +89,8 @@ const NewDraftButton = ({
     <fetcher.Form
       method="POST"
       action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/create_draft', {
-        scenarioId: fromUUID(scenarioId),
-        iterationId: fromUUID(iterationId),
+        scenarioId: fromUUIDtoSUUID(scenarioId),
+        iterationId: fromUUIDtoSUUID(iterationId),
       })}
     >
       <HiddenInputs iterationId={iterationId} />
@@ -131,8 +131,8 @@ const ExistingDraftModal = ({
         <fetcher.Form
           method="POST"
           action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/create_draft', {
-            scenarioId: fromUUID(scenarioId),
-            iterationId: fromUUID(iterationId),
+            scenarioId: fromUUIDtoSUUID(scenarioId),
+            iterationId: fromUUIDtoSUUID(iterationId),
           })}
         >
           <HiddenInputs iterationId={iterationId} />
@@ -150,7 +150,12 @@ const ExistingDraftModal = ({
                   className="flex-1"
                   variant="secondary"
                   onClick={() =>
-                    navigate(location.pathname.replace(fromUUID(iterationId), fromUUID(draftId)))
+                    navigate(
+                      location.pathname.replace(
+                        fromUUIDtoSUUID(iterationId),
+                        fromUUIDtoSUUID(draftId),
+                      ),
+                    )
                   }
                 >
                   {t('scenarios:create_draft.keep_existing_draft')}
