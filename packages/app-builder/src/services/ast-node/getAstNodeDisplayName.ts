@@ -1,5 +1,9 @@
 import { type IdLessAstNode, isUndefinedAstNode } from '@app-builder/models';
-import { type AggregationAstNode, isAggregation } from '@app-builder/models/astNode/aggregation';
+import {
+  type AggregationAstNode,
+  isAggregation,
+  isFuzzyMatchFilterOptionsAstNode,
+} from '@app-builder/models/astNode/aggregation';
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
@@ -84,6 +88,10 @@ export function getAstNodeDisplayName(
 
   if (isStringTemplateAstNode(astNode)) {
     return getStringTemplateDisplayName(astNode, context);
+  }
+
+  if (isFuzzyMatchFilterOptionsAstNode(astNode)) {
+    return getAstNodeDisplayName(astNode.namedChildren.value, context);
   }
 
   if (isUndefinedAstNode(astNode)) {

@@ -1,31 +1,24 @@
-import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
-import { type FuzzyMatchComparatorAstNode } from '@app-builder/models/astNode/strings';
+import { type FuzzyMatchFilterOptionsAstNode } from '@app-builder/models/astNode/aggregation';
+import { isKnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import {
   adaptFuzzyMatchComparatorLevel,
   adaptFuzzyMatchComparatorThreshold,
   defaultFuzzyMatchComparatorThreshold,
 } from '@app-builder/models/fuzzy-match';
-import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import { computed } from '@preact/signals-react';
 import { useTranslation } from 'react-i18next';
 
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { OperandEditModalContainer } from '../../Container';
 import { type OperandEditModalProps } from '../../EditModal';
-import { funcNameTKeys } from './helpers';
 import { InnerEditFuzzyMatchModal } from './InnerFuzzyMatchModal';
 
-export function EditFuzzyMatchComparator(props: Omit<OperandEditModalProps, 'node'>) {
+export function EditFuzzyMatchAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   const { t } = useTranslation(['scenarios']);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
-
-  const dataSharp = AstBuilderDataSharpFactory.useSharp();
-  const dataModel = dataSharp.select((s) => s.data.dataModel);
-  const triggerObjectTable = dataSharp.computed.triggerObjectTable;
-  const node = nodeSharp.select((s) => s.node as FuzzyMatchComparatorAstNode);
-  const fuzzyMatchNode = node.children[0];
+  const fuzzyMatchNode = nodeSharp.select((s) => s.node as FuzzyMatchFilterOptionsAstNode);
   const algorithmNode = fuzzyMatchNode.namedChildren.algorithm;
-  const thresholdNode = node.children[1];
+  const thresholdNode = fuzzyMatchNode.namedChildren.threshold;
   const thresholdField = computed(() => {
     const thresholdValue = thresholdNode.constant ?? defaultFuzzyMatchComparatorThreshold;
     const level = adaptFuzzyMatchComparatorLevel(thresholdValue);
@@ -41,25 +34,14 @@ export function EditFuzzyMatchComparator(props: Omit<OperandEditModalProps, 'nod
       size="medium"
     >
       <InnerEditFuzzyMatchModal
-        operatorDisplay={t(funcNameTKeys[fuzzyMatchNode.name])}
-        left={fuzzyMatchNode.children[0]}
-        right={fuzzyMatchNode.children[1]}
+        right={fuzzyMatchNode.namedChildren.value}
         algorithm={algorithmNode.constant}
         threshold={thresholdField.value}
-        onLeftChange={(newNode) => {
-          fuzzyMatchNode.children[0] = newNode;
-          nodeSharp.actions.validate();
-        }}
         onRightChange={(newNode) => {
           nodeSharp.update(() => {
-            fuzzyMatchNode.name =
-              getAstNodeDataType(newNode, {
-                dataModel,
-                triggerObjectTable: triggerObjectTable.value,
-              }) === 'String'
-                ? 'FuzzyMatch'
-                : 'FuzzyMatchAnyOf';
-            fuzzyMatchNode.children[1] = newNode;
+            if (isKnownOperandAstNode(newNode)) {
+              fuzzyMatchNode.namedChildren.value = newNode;
+            }
           });
           nodeSharp.actions.validate();
         }}

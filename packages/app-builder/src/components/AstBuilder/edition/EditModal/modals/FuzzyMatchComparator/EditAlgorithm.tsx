@@ -1,4 +1,3 @@
-import { type ConstantAstNode } from '@app-builder/models/astNode/constant';
 import {
   editableFuzzyMatchAlgorithms,
   type FuzzyMatchAlgorithm,
@@ -10,17 +9,15 @@ import { useTranslation } from 'react-i18next';
 import { Select, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { EditionEvaluationErrors } from '../../../EvaluationErrors';
 import { operatorContainerClassnames } from '../../../OperatorSelect';
 
 interface EditAlgorithmProps {
-  node: ConstantAstNode<FuzzyMatchAlgorithm>;
+  algorithm: FuzzyMatchAlgorithm;
   onChange: (value: FuzzyMatchAlgorithm) => void;
 }
 
-export function EditAlgorithm({ node, onChange }: EditAlgorithmProps) {
+export function EditAlgorithm({ algorithm, onChange }: EditAlgorithmProps) {
   const { t } = useTranslation(['common', 'scenarios']);
-  const algorithm = node.constant;
   const onValueChange = useCallbackRef(onChange);
 
   if (isEditableFuzzyMatchAlgorithm(algorithm)) {
@@ -64,7 +61,6 @@ export function EditAlgorithm({ node, onChange }: EditAlgorithmProps) {
             </Select.Viewport>
           </Select.Content>
         </Select.Root>
-        <EditionEvaluationErrors id={node.id} />
       </div>
     );
   }
@@ -77,7 +73,6 @@ export function EditAlgorithm({ node, onChange }: EditAlgorithmProps) {
       <div className="bg-grey-98 border-grey-90 flex h-10 items-center justify-center rounded border p-2 text-center">
         <FuzzyMatchAlgorithmLabel fuzzyMatchAlgorithm={algorithm} />
       </div>
-      <EditionEvaluationErrors id={node.id} />
     </div>
   );
 }
