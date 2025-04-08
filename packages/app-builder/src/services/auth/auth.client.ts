@@ -120,7 +120,6 @@ export function useEmailAndPasswordSignIn({
           case AuthErrorCodes.USER_DELETED:
             throw new UserNotFoundError();
           case AuthErrorCodes.INVALID_PASSWORD:
-            throw new WrongPasswordError();
           case AuthErrorCodes.INVALID_LOGIN_CREDENTIALS:
             throw new InvalidLoginCredentials();
           case AuthErrorCodes.NETWORK_REQUEST_FAILED:
