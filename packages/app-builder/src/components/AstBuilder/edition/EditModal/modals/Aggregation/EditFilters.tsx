@@ -1,14 +1,19 @@
 import { Callout } from '@app-builder/components';
+import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { RemoveButton } from '@app-builder/components/AstBuilder/styles/RemoveButton';
 import { scenarioI18n } from '@app-builder/components/Scenario';
-import { type DataModel, NewUndefinedAstNode } from '@app-builder/models';
+import { type DataModel, isUndefinedAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   type AggregationAstNode,
   aggregationFilterOperators,
   type BinaryAggregationFilterAstNode,
+  type ComplexAggregationFilterAstNode,
   isBinaryAggregationFilter,
+  isBinaryAggregationFilterOperator,
+  isComplexAggregationFilter,
   isUnaryAggregationFilterOperator,
   NewAggregatorFilterAstNode,
+  NewFuzzyMatchFilterOptionsAstNode,
   type UnaryAggregationFilterAstNode,
 } from '@app-builder/models/astNode/aggregation';
 import {
@@ -16,9 +21,12 @@ import {
   type KnownOperandAstNode,
 } from '@app-builder/models/astNode/builder-ast-node';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
+import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
+import { useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
 import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -27,6 +35,7 @@ import { EditionEvaluationErrors } from '../../../EvaluationErrors';
 import { getErrorsForNode } from '../../../helpers';
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { OperatorSelect } from '../../../OperatorSelect';
+import { OperandEditModal } from '../../EditModal';
 import { type DataModelFieldOption, EditDataModelFieldTableMenu } from './EditDataModelField';
 
 type EditFiltersProps = {
@@ -35,11 +44,15 @@ type EditFiltersProps = {
 };
 export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
   const { t } = useTranslation(scenarioI18n);
+  const { t: stringifyContextT } = useTranslation(['common', 'scenarios']);
+  const language = useFormatLanguage();
+  const customLists = AstBuilderDataSharpFactory.select((s) => s.data.customLists);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const filters = nodeSharp.select(
     (s) => (s.node as AggregationAstNode).namedChildren.filters.children,
   );
   const evaluation = nodeSharp.select((s) => s.validation);
+  const [isEditingFilter, setIsEditingFilter] = useState(false);
 
   const tableName = aggregatedField?.tableName;
   const options = useMemo(() => {
@@ -67,6 +80,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
         <div className="flex flex-col gap-2">
           {filters.map((filter, filterIndex) => {
             const binaryFilter = isBinaryAggregationFilter(filter);
+            const complexFilter = isComplexAggregationFilter(filter);
             const isLastFilter = filterIndex === filters.length - 1;
             const filteredFieldErrors = getErrorsForNode(evaluation, [
               filter.namedChildren.fieldName.id,
@@ -76,6 +90,15 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
             const valueErrors = binaryFilter
               ? getErrorsForNode(evaluation, filter.namedChildren.value.id, true)
               : [];
+
+            const displayName =
+              complexFilter && !isUndefinedAstNode(filter.namedChildren.options.namedChildren.value)
+                ? getAstNodeDisplayName(filter.namedChildren.options, {
+                    t: stringifyContextT,
+                    language,
+                    customLists,
+                  })
+                : '...';
 
             return (
               <Fragment key={filterIndex}>
@@ -124,16 +147,50 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                               return;
                             }
 
-                            const valueNode =
-                              'value' in filter.namedChildren
-                                ? filter.namedChildren.value
-                                : NewUndefinedAstNode();
-                            (filter as BinaryAggregationFilterAstNode).namedChildren = {
+                            if (isBinaryAggregationFilterOperator(operator)) {
+                              const valueNode = match(filter)
+                                .when(
+                                  isBinaryAggregationFilter,
+                                  (binFilter: BinaryAggregationFilterAstNode) =>
+                                    binFilter.namedChildren.value,
+                                )
+                                .when(
+                                  isComplexAggregationFilter,
+                                  (compFilter: ComplexAggregationFilterAstNode) =>
+                                    compFilter.namedChildren.options.namedChildren.value,
+                                )
+                                .otherwise(() => NewUndefinedAstNode());
+
+                              (filter as BinaryAggregationFilterAstNode).namedChildren = {
+                                tableName: filter.namedChildren.tableName,
+                                fieldName: filter.namedChildren.fieldName,
+                                operator: NewConstantAstNode({ constant: operator }),
+                                value: valueNode,
+                              };
+                              return;
+                            }
+
+                            const valueNode = match(filter)
+                              .when(
+                                isBinaryAggregationFilter,
+                                (binFilter: BinaryAggregationFilterAstNode) =>
+                                  binFilter.namedChildren.value,
+                              )
+                              .when(
+                                isComplexAggregationFilter,
+                                (compFilter: ComplexAggregationFilterAstNode) =>
+                                  compFilter.namedChildren.options.namedChildren.value,
+                              )
+                              .otherwise(() => NewUndefinedAstNode());
+
+                            (filter as ComplexAggregationFilterAstNode).namedChildren = {
                               tableName: filter.namedChildren.tableName,
                               fieldName: filter.namedChildren.fieldName,
                               operator: NewConstantAstNode({ constant: operator }),
-                              value: valueNode,
+                              options: NewFuzzyMatchFilterOptionsAstNode({ value: valueNode }),
                             };
+
+                            // TODO: Manage complex operator change
                           });
                           nodeSharp.actions.validate();
                         }}
@@ -153,6 +210,24 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                             optionsDataType={(opt) => opt.operandType !== 'Modeling'}
                             validationStatus={valueErrors.length > 0 ? 'error' : 'valid'}
                           />
+                        </>
+                      ) : null}
+                      {complexFilter && filter.namedChildren.operator.constant ? (
+                        <>
+                          <Button variant="secondary" onClick={() => setIsEditingFilter(true)}>
+                            {displayName}
+                          </Button>
+                          {filter.namedChildren.options && isEditingFilter ? (
+                            <OperandEditModal
+                              node={filter.namedChildren.options}
+                              onSave={() => {
+                                setIsEditingFilter(false);
+                              }}
+                              onCancel={() => {
+                                setIsEditingFilter(false);
+                              }}
+                            />
+                          ) : null}
                         </>
                       ) : null}
                     </div>

@@ -1,7 +1,17 @@
 import { v7 as uuidv7 } from 'uuid';
 
+import {
+  defaultEditableFuzzyMatchAlgorithm,
+  defaultFuzzyMatchComparatorThreshold,
+  type FuzzyMatchAlgorithm,
+} from '../fuzzy-match';
 import { type AggregatorOperator } from '../modale-operators';
-import { type AstNode, type CheckNodeId, type IdLessAstNode } from './ast-node';
+import {
+  type AstNode,
+  type CheckNodeId,
+  type IdLessAstNode,
+  NewUndefinedAstNode,
+} from './ast-node';
 import { type KnownOperandAstNode } from './builder-ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
@@ -59,6 +69,39 @@ export type BinaryAggregationFilterAstNode = {
   };
 };
 
+export type FuzzyMatchFilterOptionsAstNode = {
+  id: string;
+  name: 'FuzzyMatchOptions';
+  constant?: undefined;
+  children: [];
+  namedChildren: {
+    value: KnownOperandAstNode;
+    threshold: ConstantAstNode<number>;
+    algorithm: ConstantAstNode<FuzzyMatchAlgorithm>;
+  };
+};
+
+export function isFuzzyMatchFilterOptionsAstNode(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<FuzzyMatchFilterOptionsAstNode, typeof node> {
+  return node.name === 'FuzzyMatchOptions';
+}
+
+export function NewFuzzyMatchFilterOptionsAstNode({
+  value,
+}: { value?: KnownOperandAstNode } = {}): FuzzyMatchFilterOptionsAstNode {
+  return {
+    id: uuidv7(),
+    name: 'FuzzyMatchOptions',
+    children: [],
+    namedChildren: {
+      value: value ?? NewUndefinedAstNode(),
+      threshold: NewConstantAstNode({ constant: defaultFuzzyMatchComparatorThreshold }),
+      algorithm: NewConstantAstNode({ constant: defaultEditableFuzzyMatchAlgorithm }),
+    },
+  };
+}
+
 export type ComplexAggregationFilterAstNode = {
   id: string;
   name: typeof aggregationFilterAstNodeName;
@@ -68,17 +111,7 @@ export type ComplexAggregationFilterAstNode = {
     tableName: ConstantAstNode<string | null>;
     fieldName: ConstantAstNode<string | null>;
     operator: ConstantAstNode<'FuzzyMatch'>;
-    value: KnownOperandAstNode;
-    options: {
-      id: string;
-      name: 'FuzzyMatchOptions';
-      constant?: undefined;
-      children: [];
-      namedChildren: {
-        treshold: ConstantAstNode<number>;
-        algorithm: ConstantAstNode<string>;
-      };
-    };
+    options: FuzzyMatchFilterOptionsAstNode;
   };
 };
 
@@ -159,6 +192,11 @@ export function isUnaryAggregationFilterOperator(
 ): value is UnaryAggregationFilterOperator {
   return (unaryAggregationFilterOperators as ReadonlyArray<string | null>).includes(value);
 }
+export function isBinaryAggregationFilterOperator(
+  value: string | null,
+): value is BinaryAggregationFilterOperator {
+  return (binaryAggregationFilterOperators as ReadonlyArray<string | null>).includes(value);
+}
 
 export function isUnaryAggregationFilter(
   node: IdLessAstNode<AggregationFilterAstNode> | AggregationFilterAstNode,
@@ -177,6 +215,14 @@ export function isBinaryAggregationFilter(
     (binaryAggregationFilterOperators as ReadonlyArray<AggregationFilterOperator>).includes(
       operator,
     )
+  );
+}
+
+export function isComplexAggregationFilter(
+  node: IdLessAstNode<AggregationFilterAstNode> | AggregationFilterAstNode,
+): node is CheckNodeId<ComplexAggregationFilterAstNode, typeof node> {
+  return (complexAggregationFilterOperators as ReadonlyArray<string>).includes(
+    node.namedChildren.operator.constant as string,
   );
 }
 

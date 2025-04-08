@@ -1,4 +1,7 @@
-import { isAggregation } from '@app-builder/models/astNode/aggregation';
+import {
+  isAggregation,
+  isFuzzyMatchFilterOptionsAstNode,
+} from '@app-builder/models/astNode/aggregation';
 import { type EditableAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import {
@@ -14,6 +17,7 @@ import { getEvaluationForNode } from '../helpers';
 import { useRoot } from '../hooks/useRoot';
 import { AstBuilderNodeSharpFactory } from '../node-store';
 import { EditAggregation } from './modals/Aggregation/Aggregation';
+import { EditFuzzyMatchAggregation } from './modals/FuzzyMatchComparator/FuzzyMatchAggregation';
 import { EditFuzzyMatchComparator } from './modals/FuzzyMatchComparator/FuzzyMatchComparator';
 import { EditIsMultipleOf } from './modals/IsMultipleOf/IsMultipleOf';
 import { EditStringTemplate } from './modals/StringTemplate/StringTemplate';
@@ -54,6 +58,7 @@ export function OperandEditModal({ node, ...props }: OperandEditModalProps) {
         .when(isFuzzyMatchComparator, () => <EditFuzzyMatchComparator {...props} />)
         .when(isAggregation, () => <EditAggregation {...props} />)
         .when(isStringTemplateAstNode, () => <EditStringTemplate {...props} />)
+        .when(isFuzzyMatchFilterOptionsAstNode, () => <EditFuzzyMatchAggregation {...props} />)
         .exhaustive()}
     </AstBuilderNodeSharpFactory.Provider>
   );
