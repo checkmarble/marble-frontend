@@ -1,6 +1,5 @@
 import {
   EmailUnverified,
-  InvalidLoginCredentials,
   NetworkRequestFailed,
   useEmailAndPasswordSignIn,
   UserNotFoundError,
@@ -65,20 +64,10 @@ export function SignInWithEmailAndPassword({
       } catch (error) {
         if (error instanceof EmailUnverified) {
           navigate(getRoute('/email-verification'));
-        } else if (error instanceof UserNotFoundError) {
-          formApi.setFieldMeta('credentials.email', (prev) => ({
-            ...prev,
-            errors: [t('auth:sign_in.errors.user_not_found')],
-          }));
-        } else if (error instanceof WrongPasswordError) {
+        } else if (error instanceof UserNotFoundError || error instanceof WrongPasswordError) {
           formApi.setFieldMeta('credentials.password', (prev) => ({
             ...prev,
             errors: [t('auth:sign_in.errors.wrong_password_error')],
-          }));
-        } else if (error instanceof InvalidLoginCredentials) {
-          formApi.setFieldMeta('credentials', (prev) => ({
-            ...prev,
-            errors: [t('auth:sign_in.errors.invalid_login_credentials')],
           }));
         } else if (error instanceof NetworkRequestFailed) {
           toast.error(t('common:errors.firebase_network_error'));
