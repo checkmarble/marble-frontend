@@ -2,9 +2,13 @@ import { type AvatarProps as RootAvatarProps, Fallback, Image, Root } from '@rad
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const avatar = cva(
-  'inline-flex select-none items-center justify-center overflow-hidden rounded-full bg-purple-96 shrink-0',
+  'inline-flex select-none items-center justify-center overflow-hidden rounded-full shrink-0',
   {
     variants: {
+      color: {
+        default: 'bg-purple-96',
+        grey: 'bg-[#D9D9D9]',
+      },
       size: {
         xs: 'size-6 text-xs',
         s: 'size-8 text-s',
@@ -15,6 +19,7 @@ const avatar = cva(
     },
     defaultVariants: {
       size: 'm',
+      color: 'default',
     },
   },
 );

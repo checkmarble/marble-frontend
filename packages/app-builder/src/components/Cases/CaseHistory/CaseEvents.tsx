@@ -1,7 +1,6 @@
 import {
   type CaseCreatedEvent,
   type CaseEvent,
-  type CaseEventType,
   type CaseOutcomeUpdatedEvent,
   type CaseSnoozedEvent,
   type CaseStatusUpdatedEvent,
@@ -15,15 +14,18 @@ import {
   type NameUpdatedEvent,
   type RuleSnoozeCreatedEvent,
 } from '@app-builder/models/cases';
+import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
-import { formatDateRelative, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateRelative, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Icon, type IconName } from 'ui-icons';
+import { Avatar } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 import { casesI18n } from '../cases-i18n';
+import { CaseTags } from '../CaseTags';
 
 const CaseCreatedDetail = ({ event }: { event: CaseCreatedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
@@ -39,15 +41,15 @@ const CaseCreatedDetail = ({ event }: { event: CaseCreatedEvent }) => {
       <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
         <Icon icon="case-manager" className="text-grey-00 size-3" />
       </div>
-      <span className="text-grey-00 inline-flex h-full grow items-center whitespace-pre text-xs">
+      <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
         <Trans
           t={t}
-          i18nKey="cases:case_detail.history.event_detail.added_by"
+          i18nKey="cases:case_detail.history.event_detail.created_by"
           components={{ Actor: <span className="font-bold capitalize" /> }}
           values={{ actor: user ? getFullName(user) : 'Workflow' }}
         />
       </span>
-      <span className="text-s text-grey-80 shrink-0 grow-0 font-normal">
+      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
         {formatDateRelative(event.createdAt, { language })}
       </span>
     </div>
@@ -55,17 +57,23 @@ const CaseCreatedDetail = ({ event }: { event: CaseCreatedEvent }) => {
 };
 
 const StatusUpdatedDetail = ({ event }: { event: CaseStatusUpdatedEvent }) => {
+  const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
 
   return (
-    <div key={event.id} className="flex w-full items-start gap-2">
+    <div key={event.id} className="flex w-full items-center gap-2">
       <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
         <Icon icon="manage-search" className="text-grey-00 size-3" />
       </div>
-      <span className="text-grey-00 inline-flex h-full grow items-center gap-1 whitespace-pre text-xs">
-        Status updated
+      <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
+        <Trans
+          t={t}
+          i18nKey="cases:case_detail.history.event_detail.status_updated"
+          components={{ Style: <span className="font-bold capitalize" /> }}
+          values={{ status: t(`cases:case.status.${event.newStatus}`) }}
+        />
       </span>
-      <span className="text-s text-grey-80 shrink-0 grow-0 font-normal">
+      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
         {formatDateRelative(event.createdAt, {
           language,
         })}
@@ -74,8 +82,30 @@ const StatusUpdatedDetail = ({ event }: { event: CaseStatusUpdatedEvent }) => {
   );
 };
 
-const OutcomeUpdatedDetail = (_: { event: CaseOutcomeUpdatedEvent }) => {
-  return <span>Outcome updated</span>;
+const OutcomeUpdatedDetail = ({ event }: { event: CaseOutcomeUpdatedEvent }) => {
+  const { t } = useTranslation(casesI18n);
+  const language = useFormatLanguage();
+
+  return (
+    <div key={event.id} className="flex w-full items-start gap-2">
+      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+        <Icon icon="edit" className="text-grey-00 size-3" />
+      </div>
+      <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
+        <Trans
+          t={t}
+          i18nKey="cases:case_detail.history.event_detail.outcome_updated"
+          components={{ Style: <span className="font-bold capitalize" /> }}
+          values={{ outcome: t(`cases:case.outcome.${event.newOutcome}`) }}
+        />
+      </span>
+      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
+        {formatDateRelative(event.createdAt, {
+          language,
+        })}
+      </span>
+    </div>
+  );
 };
 
 const DecisionAddedDetail = ({ event }: { event: DecisionAddedEvent }) => {
@@ -92,7 +122,7 @@ const DecisionAddedDetail = ({ event }: { event: DecisionAddedEvent }) => {
       <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
         <Icon icon="decision" className="text-grey-00 size-3" />
       </div>
-      <span className="text-grey-00 inline-flex h-full grow items-center whitespace-pre text-xs">
+      <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
         <Trans
           t={t}
           i18nKey="cases:case_detail.history.event_detail.decision_added"
@@ -100,7 +130,7 @@ const DecisionAddedDetail = ({ event }: { event: DecisionAddedEvent }) => {
           values={{ actor: user ? getFullName(user) : 'Workflow' }}
         />
       </span>
-      <span className="text-s text-grey-80 shrink-0 grow-0 font-normal">
+      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
         {formatDateRelative(event.createdAt, { language })}
       </span>
     </div>
@@ -108,14 +138,99 @@ const DecisionAddedDetail = ({ event }: { event: DecisionAddedEvent }) => {
 };
 
 const CommentAddedDetail = ({ event }: { event: CommentAddedEvent }) => {
-  return <span className="text-grey-00 grow text-xs">{event.comment}</span>;
+  const { getOrgUserById } = useOrganizationUsers();
+  const language = useFormatLanguage();
+  const user = useMemo(
+    () => (event.userId ? getOrgUserById(event.userId) : undefined),
+    [event.userId, getOrgUserById],
+  );
+
+  return (
+    <div key={event.id} className="flex w-full items-start gap-2">
+      <Avatar firstName={user?.firstName} lastName={user?.lastName} size="xs" color="grey" />
+      <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
+        {event.comment}
+      </span>
+      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
+        {formatDateRelative(event.createdAt, { language })}
+      </span>
+    </div>
+  );
 };
 
-const NameUpdatedDetail = (_: { event: NameUpdatedEvent }) => {
-  return <span>Name updated</span>;
+const NameUpdatedDetail = ({ event }: { event: NameUpdatedEvent }) => {
+  const { getOrgUserById } = useOrganizationUsers();
+  const { t } = useTranslation(casesI18n);
+  const language = useFormatLanguage();
+  const user = useMemo(
+    () => (event.userId ? getOrgUserById(event.userId) : undefined),
+    [event.userId, getOrgUserById],
+  );
+
+  return (
+    <div key={event.id} className="flex w-full items-center gap-2">
+      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+        <Icon icon="edit" className="text-grey-00 size-3" />
+      </div>
+      <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
+        <Trans
+          t={t}
+          i18nKey="cases:case_detail.history.event_detail.name_updated"
+          components={{ Style: <span className="font-bold capitalize" /> }}
+          values={{ actor: user ? getFullName(user) : 'Workflow', name: event.newName }}
+        />
+      </span>
+      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
+        {formatDateRelative(event.createdAt, { language })}
+      </span>
+    </div>
+  );
 };
 
 const TagsUpdatedDetail = ({ event }: { event: CaseTagsUpdatedEvent }) => {
+  const { getOrgUserById } = useOrganizationUsers();
+  const { t } = useTranslation(casesI18n);
+  const language = useFormatLanguage();
+  const { orgTags } = useOrganizationTags();
+
+  const user = useMemo(
+    () => (event.userId ? getOrgUserById(event.userId) : undefined),
+    [event.userId, getOrgUserById],
+  );
+
+  //TODO: Remove when proper event is implemented
+  const finalTags = useMemo(() => event.tagIds.filter((id) => id !== ''), [event.tagIds]);
+
+  return (
+    <div key={event.id} className="flex w-full items-center gap-2">
+      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+        <Icon icon="decision" className="text-grey-00 size-3" />
+      </div>
+      <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
+        <Trans
+          t={t}
+          i18nKey={
+            finalTags.length === 0
+              ? 'cases:case_detail.history.event_detail.tags_removed'
+              : 'cases:case_detail.history.event_detail.tags_updated'
+          }
+          components={{
+            Actor: <span className="font-bold capitalize" />,
+            Tags: <CaseTags caseTagIds={finalTags} orgTags={orgTags} />,
+          }}
+          values={{
+            actor: user ? getFullName(user) : 'Workflow',
+          }}
+        />
+      </span>
+      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
+        {formatDateRelative(event.createdAt, { language })}
+      </span>
+    </div>
+  );
+};
+
+const FileAddedDetail = ({ event }: { event: FileAddedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
@@ -129,67 +244,129 @@ const TagsUpdatedDetail = ({ event }: { event: CaseTagsUpdatedEvent }) => {
       <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
         <Icon icon="decision" className="text-grey-00 size-3" />
       </div>
-      <span className="text-grey-00 inline-flex h-full grow items-center whitespace-pre text-xs">
+      <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
         <Trans
           t={t}
-          i18nKey="cases:case_detail.history.event_detail.tags_updated"
+          i18nKey="cases:case_detail.history.event_detail.file_added"
           components={{
             Actor: <span className="font-bold capitalize" />,
-            Tags: <span className="font-bold capitalize" />,
+            File: <span className="border-grey-90 border px-1.5 py-[3px] font-bold capitalize" />,
           }}
           values={{
-            actor: user ? getFullName(user) : 'Workflow',
-            tags: event.tagIds.join(', '),
+            actor: user ? getFullName(user) : 'Marble',
+            file: event.fileName,
           }}
         />
       </span>
-      <span className="text-s text-grey-80 shrink-0 grow-0 font-normal">
+      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
         {formatDateRelative(event.createdAt, { language })}
       </span>
     </div>
   );
 };
 
-const FileAddedDetail = (_: { event: FileAddedEvent }) => {
-  return <span>File added</span>;
-};
+const InboxChangedDetail = ({ event }: { event: InboxChangedEvent }) => {
+  const { getOrgUserById } = useOrganizationUsers();
+  const { t } = useTranslation(casesI18n);
+  const language = useFormatLanguage();
+  const user = useMemo(
+    () => (event.userId ? getOrgUserById(event.userId) : undefined),
+    [event.userId, getOrgUserById],
+  );
 
-const InboxChangedDetail = (_: { event: InboxChangedEvent }) => {
-  return <span>Inbox changed</span>;
+  return (
+    <div key={event.id} className="flex w-full items-center gap-2">
+      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+        <Icon icon="decision" className="text-grey-00 size-3" />
+      </div>
+      <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
+        <Trans
+          t={t}
+          i18nKey="cases:case_detail.history.event_detail.inbox_changed"
+          components={{
+            Style: <span className="font-bold capitalize" />,
+          }}
+          values={{
+            actor: user ? getFullName(user) : 'Marble',
+            inbox: event.newInboxId,
+          }}
+        />
+      </span>
+      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
+        {formatDateRelative(event.createdAt, { language })}
+      </span>
+    </div>
+  );
 };
 
 const DecisionReviewedDetail = (_: { event: DecisionReviewedEvent }) => {
   return <span>Decision reviewed</span>;
 };
 
-function CaseSnoozedDetail(_: { event: CaseSnoozedEvent }) {
-  return <span>Case snoozed</span>;
-}
+const CaseSnoozedDetail = ({ event }: { event: CaseSnoozedEvent }) => {
+  const { getOrgUserById } = useOrganizationUsers();
+  const { t } = useTranslation(casesI18n);
+  const language = useFormatLanguage();
+  const user = useMemo(
+    () => (event.userId ? getOrgUserById(event.userId) : undefined),
+    [event.userId, getOrgUserById],
+  );
 
-function CaseUnsnoozedDetail(_: { event: CaseUnsnoozedEvent }) {
-  return <span>Case unsnoozed</span>;
-}
+  return (
+    <div key={event.id} className="flex w-full items-center gap-2">
+      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+        <Icon icon="snooze" className="text-grey-00 size-3" />
+      </div>
+      <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
+        <Trans
+          t={t}
+          i18nKey="cases:case_detail.history.event_detail.case_snoozed"
+          components={{ Style: <span className="font-bold capitalize" /> }}
+          values={{
+            actor: user ? getFullName(user) : 'Marble',
+            date: formatDateTime(event.snoozeUntil, { language }),
+          }}
+        />
+      </span>
+      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
+        {formatDateRelative(event.createdAt, { language })}
+      </span>
+    </div>
+  );
+};
+
+const CaseUnsnoozedDetail = ({ event }: { event: CaseUnsnoozedEvent }) => {
+  const { getOrgUserById } = useOrganizationUsers();
+  const { t } = useTranslation(casesI18n);
+  const language = useFormatLanguage();
+  const user = useMemo(
+    () => (event.userId ? getOrgUserById(event.userId) : undefined),
+    [event.userId, getOrgUserById],
+  );
+
+  return (
+    <div key={event.id} className="flex w-full items-center gap-2">
+      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+        <Icon icon="snooze-on" className="text-grey-00 size-3" />
+      </div>
+      <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
+        <Trans
+          t={t}
+          i18nKey="cases:case_detail.history.event_detail.case_unsnoozed"
+          components={{ Style: <span className="font-bold capitalize" /> }}
+          values={{ actor: user ? getFullName(user) : 'Marble' }}
+        />
+      </span>
+      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
+        {formatDateRelative(event.createdAt, { language })}
+      </span>
+    </div>
+  );
+};
 
 const RuleSnoozeCreatedDetail = (_: { event: RuleSnoozeCreatedEvent }) => {
   return <span>Rule snooze created</span>;
 };
-
-export const getEventIcon = (eventType: CaseEventType) =>
-  match<CaseEventType, IconName>(eventType)
-    .with('case_created', () => 'case-manager')
-    .with('status_updated', () => 'manage-search')
-    .with('outcome_updated', () => 'edit')
-    .with('decision_added', () => 'decision')
-    .with('comment_added', () => 'edit')
-    .with('name_updated', () => 'edit')
-    .with('tags_updated', () => 'edit')
-    .with('file_added', () => 'edit')
-    .with('inbox_changed', () => 'edit')
-    .with('rule_snooze_created', () => 'snooze')
-    .with('decision_reviewed', () => 'case-manager')
-    .with('case_snoozed', () => 'snooze')
-    .with('case_unsnoozed', () => 'snooze')
-    .exhaustive();
 
 export function CaseEvents({
   events,
@@ -207,7 +384,7 @@ export function CaseEvents({
   );
 
   return (
-    <div className="relative z-0 flex flex-col gap-4 lg:gap-6">
+    <div className="relative z-0 flex flex-col gap-3">
       <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center">
         <div className="-z-10 h-full w-px bg-[#D9D9D9]" />
       </div>
