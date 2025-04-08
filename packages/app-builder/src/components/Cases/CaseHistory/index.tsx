@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { CaseEvents } from '../CaseHistory/CaseEvents';
+import { CaseEvents } from './CaseEvents';
 
 export const CaseHistory = ({ events }: { events: CaseEvent[] }) => {
   const [showLogs, setShowLogs] = useState(false);

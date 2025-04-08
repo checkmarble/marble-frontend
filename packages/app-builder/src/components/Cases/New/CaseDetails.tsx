@@ -17,9 +17,9 @@ import { match } from 'ts-pattern';
 import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+import { CaseHistory } from '../CaseHistory';
 import { casesI18n } from '../cases-i18n';
 import { caseStatusMapping } from '../CaseStatus';
-import { CaseHistory } from './CaseHistory';
 
 export const CaseDetails = ({
   detail,
