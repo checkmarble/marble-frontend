@@ -374,7 +374,7 @@ export type ClientDataListRequestBody = {
         /** The main field on which we want to filter the objects */
         filter_field_name: string;
         /** The value of the main field on which we want to filter the objects, based on the 'source' object used as a reference. */
-        filter_field_value?: string | number;
+        filter_field_value: string | number;
         /** The field on which we want to order the objects (in descending order) */
         ordering_field_name: string;
     };

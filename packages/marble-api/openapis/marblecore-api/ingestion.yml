@@ -200,6 +200,7 @@ components:
           required:
             - source_table_name
             - filter_field_name
+            - filter_field_value
             - ordering_field_name
         # secondary_filters:
         #   type: object
