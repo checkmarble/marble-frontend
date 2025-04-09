@@ -5,6 +5,8 @@ export function getCaseFileUploadEndpoint(caseDetail: CaseDetail) {
   return `/cases/${caseDetail.id}/files`;
 }
 
+export const getCaseFileUploadEndpointById = (caseId: string) => `/cases/${caseId}/files`;
+
 export function getCaseFileDownloadEndpoint() {
   return (id: string) => `/cases/files/${encodeURIComponent(id)}/download_link`;
 }

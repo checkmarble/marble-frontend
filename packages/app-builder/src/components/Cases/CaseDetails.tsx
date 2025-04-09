@@ -40,7 +40,7 @@ export const CaseDetails = ({
   const [showLogs, setShowLogs] = useState(false);
   const intersection = useIntersection(infoRef, {
     root: containerRef.current,
-    rootMargin: '-30px',
+    rootMargin: '-48px',
     threshold: 1,
   });
 
@@ -49,9 +49,7 @@ export const CaseDetails = ({
       <div
         className={cn(
           'bg-purple-99 sticky top-0 z-10 flex h-[88px] items-center justify-between gap-4',
-          {
-            'border-b-grey-90 border-b': !intersection?.isIntersecting,
-          },
+          { 'border-b-grey-90 border-b': !intersection?.isIntersecting },
         )}
       >
         <EditCaseName name={detail.name} id={detail.id} />
