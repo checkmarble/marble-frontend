@@ -65,5 +65,7 @@
   "unique.col_header": "فريد",
   "viewer.no_object_found": "لم يتم العثور على كائن للمعرف {{objectId}} في {{tableName}}",
   "viewer.object_id": "معرف الكائن",
-  "viewer.object_type": "نوع الكائن"
+  "viewer.object_type.placeholder": "اختر",
+  "viewer.object_type": "نوع الكائن",
+  "viewer.detail.last_ingestion_at": "آخر تحديث في"
 }

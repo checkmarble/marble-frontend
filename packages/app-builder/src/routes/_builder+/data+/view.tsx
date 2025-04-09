@@ -15,7 +15,7 @@ export const handle = {
   i18n: dataI18n satisfies Namespace,
   BreadCrumbs: [
     ({ isLast }: BreadCrumbProps) => {
-      const { t } = useTranslation(['navigation']);
+      const { t } = useTranslation(['navigation', 'data']);
 
       return (
         <BreadCrumbLink to={getRoute('/data/view')} isLast={isLast}>
@@ -77,7 +77,7 @@ export default function DataSearchPage() {
               <Select.Default
                 value={tableName}
                 onValueChange={handleTableNameChange}
-                placeholder="select a table"
+                placeholder={t('data:viewer.object_type.placeholder')}
                 className="h-10 min-w-40"
               >
                 {dataModel.map((table) => (
