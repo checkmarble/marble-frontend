@@ -1,19 +1,13 @@
 import { Callout } from '@app-builder/components';
-import { casesI18n } from '@app-builder/components/Cases/cases-i18n';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
-import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import { match } from 'ts-pattern';
 import { Button, cn, MenuCommand, Modal } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 import { z } from 'zod';
-
-export const handle = {
-  i18n: [...casesI18n, 'common'] satisfies Namespace,
-};
 
 const schema = z.object({
   suspicion: z.enum(['none', 'requested', 'reported']),

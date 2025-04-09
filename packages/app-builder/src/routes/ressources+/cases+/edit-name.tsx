@@ -6,16 +6,11 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
-import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
-export const handle = {
-  i18n: [...casesI18n, 'common'] satisfies Namespace,
-};
 
 const schema = z.object({ name: z.string(), caseId: z.string() });
 
@@ -44,7 +39,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(casesI18n);
   const { submit } = useFetcher<typeof action>();
   const [isEditing, setIsEditing] = useState(false);
 

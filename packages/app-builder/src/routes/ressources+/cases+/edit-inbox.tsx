@@ -1,4 +1,3 @@
-import { casesI18n } from '@app-builder/components/Cases/cases-i18n';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { type Inbox } from '@app-builder/models/inbox';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -7,15 +6,10 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
-import { type Namespace } from 'i18next';
 import { useMemo, useState } from 'react';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
-export const handle = {
-  i18n: [...casesI18n, 'common'] satisfies Namespace,
-};
 
 const schema = z.object({ inboxId: z.string(), caseId: z.string() });
 

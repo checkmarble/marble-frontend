@@ -1,20 +1,15 @@
 import { Callout, casesI18n } from '@app-builder/components';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
-import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
-export const handle = {
-  i18n: [...casesI18n, 'common'] satisfies Namespace,
-};
-
 const schema = z.object({ caseId: z.string() });
 
 export const EscalateCase = ({ id }: { id: string }) => {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(casesI18n);
 
   const form = useForm({
     defaultValues: { caseId: id },

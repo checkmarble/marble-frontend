@@ -2,6 +2,7 @@ import useIntersection from '@app-builder/hooks/useIntersection';
 import { type CurrentUser } from '@app-builder/models';
 import { type CaseDetail } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
+import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
 import { CloseCase } from '@app-builder/routes/ressources+/cases+/close-case';
 import { EditCaseAssignee } from '@app-builder/routes/ressources+/cases+/edit-assignee';
 import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
@@ -12,13 +13,13 @@ import { EscalateCase } from '@app-builder/routes/ressources+/cases+/escalate-ca
 import { OpenCase } from '@app-builder/routes/ressources+/cases+/open-case';
 import { SnoozeCase } from '@app-builder/routes/ressources+/cases+/snooze-case';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { type RefObject, useRef } from 'react';
+import { type RefObject, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { cn } from 'ui-design-system';
+import { cn, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { CaseHistory } from './CaseHistory';
+import { CaseEvents } from './CaseEvents';
 import { casesI18n } from './cases-i18n';
 import { caseStatusMapping } from './CaseStatus';
 
@@ -36,6 +37,7 @@ export const CaseDetails = ({
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
   const infoRef = useRef<HTMLDivElement>(null);
+  const [showLogs, setShowLogs] = useState(false);
   const intersection = useIntersection(infoRef, {
     root: containerRef.current,
     rootMargin: '-30px',
@@ -115,7 +117,21 @@ export const CaseDetails = ({
           <EditCaseSuspicion id={detail.id} />
         </div>
       </div>
-      <CaseHistory events={detail.events} inboxes={inboxes} />
+      <div className="flex flex-col gap-1.5">
+        <div className="text-r text-grey-00 flex items-center justify-between font-medium">
+          <span>Investigation</span>
+          <div className="flex items-center gap-2">
+            <span>Display logs</span>
+            <Switch checked={showLogs} onCheckedChange={setShowLogs} />
+          </div>
+        </div>
+        <div className="border-grey-90 bg-grey-100 flex flex-col rounded-lg border">
+          <div className="p-4">
+            <CaseEvents events={detail.events} showLogs={showLogs} inboxes={inboxes} />
+          </div>
+          <AddComment caseId={detail.id} />
+        </div>
+      </div>
     </main>
   );
 };

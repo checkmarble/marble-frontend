@@ -1,19 +1,23 @@
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
+import { casesI18n } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { initServerServices } from '@app-builder/services/init.server';
+import { handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
-import { Button, TextArea } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const schema = z.object({
-  caseId: z.string(),
-  comment: z.string({ required_error: 'required' }),
+  caseId: z.string().nonempty(),
+  comment: z.string().nonempty(),
+  files: z.array(z.instanceof(File)),
 });
+
+type CaseCommentForm = z.infer<typeof schema>;
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
@@ -69,20 +73,18 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function AddComment(defaultValue: Pick<z.infer<typeof schema>, 'caseId'>) {
-  const { t } = useTranslation(['cases', 'common']);
+export function AddComment({ caseId }: { caseId: string }) {
+  const { t } = useTranslation(casesI18n);
   const fetcher = useFetcher<typeof action>();
 
   const form = useForm({
-    defaultValues: { ...defaultValue, comment: '' },
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        fetcher.submit(value, {
-          method: 'POST',
-          action: getRoute('/ressources/cases/add-comment'),
-          encType: 'application/json',
-        });
-      }
+    defaultValues: { caseId, comment: '', files: [] } as CaseCommentForm,
+    onSubmit: ({ value }) => {
+      fetcher.submit(value, {
+        method: 'POST',
+        action: getRoute('/ressources/cases/add-comment'),
+        encType: 'multipart/form-data',
+      });
     },
     validators: {
       onChange: schema,
@@ -93,33 +95,33 @@ export function AddComment(defaultValue: Pick<z.infer<typeof schema>, 'caseId'>)
 
   return (
     <form
-      className="flex w-full flex-row items-center gap-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit().then(() => form.reset());
-      }}
+      onSubmit={handleSubmit(form)}
+      className="border-grey-90 flex grow items-end gap-4 border-t p-4"
     >
       <form.Field name="comment">
         {(field) => (
-          <div className="w-full">
-            <FormLabel name={field.name} className="sr-only">
-              {t('cases:case_detail.add_a_comment.label')}
-            </FormLabel>
-            <TextArea
-              className="w-full"
+          <div className="flex grow flex-col items-start gap-2.5">
+            <textarea
               value={field.state.value}
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               onBlur={field.handleBlur}
               name={field.name}
-              borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
+              className="form-textarea text-s w-full resize-none border-none bg-transparent outline-none"
               placeholder={t('cases:case_detail.add_a_comment.placeholder')}
             />
+            <Button type="button" variant="secondary" size="icon">
+              <Icon icon="attachment" className="text-grey-50 size-5" />
+            </Button>
           </div>
         )}
       </form.Field>
-      <Button type="submit" className="h-14" aria-label={t('cases:case_detail.add_a_comment.post')}>
-        <Icon icon="send" className="size-4 shrink-0" />
+      <Button
+        type="submit"
+        variant="primary"
+        size="medium"
+        aria-label={t('cases:case_detail.add_a_comment.post')}
+      >
+        <Icon icon="send" className="size-5" />
       </Button>
     </form>
   );

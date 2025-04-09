@@ -5,7 +5,6 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
-import { type Namespace } from 'i18next';
 import { type Tag } from 'marble-api';
 import { pick, toggle } from 'radash';
 import { useMemo, useState } from 'react';
@@ -13,10 +12,6 @@ import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
-export const handle = {
-  i18n: [...casesI18n, 'common'] satisfies Namespace,
-};
 
 const schema = z.object({
   caseId: z.string(),
@@ -53,7 +48,7 @@ const TagPreview = ({ name }: { name: string }) => (
 export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) => {
   const { submit } = useFetcher<typeof action>();
   const { orgTags } = useOrganizationTags();
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(casesI18n);
   const [open, setOpen] = useState(false);
 
   const formattedTags = useMemo(
