@@ -65,5 +65,7 @@
   "your_data_callout": "Voici la liste de tous les objets que vous pouvez envoyer à Marble, ainsi que leurs propriétés. \nContactez l'équipe Marble si vous souhaitez apporter des modifications à votre modèle de données.",
   "viewer.no_object_found": "Aucun objet trouvé pour l'id {{objectId}} dans {{tableName}}",
   "viewer.object_id": "ID d'objet",
-  "viewer.object_type": "Type d'objet"
+  "viewer.object_type.placeholder": "Sélectionner une table",
+  "viewer.object_type": "Type d'objet",
+  "viewer.detail.last_ingestion_at": "Dernière mise à jour le"
 }

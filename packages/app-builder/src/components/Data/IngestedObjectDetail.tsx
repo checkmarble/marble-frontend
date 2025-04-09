@@ -5,6 +5,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import clsx from 'clsx';
 import { Fragment, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Icon } from 'ui-icons';
 
@@ -43,6 +44,7 @@ export const IngestedObjectDetail = ({
 }: IngestedObjectDetailProps) => {
   const parsedTriggerObject = useParsedTriggerObject(object.data) ?? [];
   const language = useFormatLanguage();
+  const { t } = useTranslation(['data']);
 
   const dataModelTable = dataModel.find((table) => table.name === tableName);
   const links = R.pipe(
@@ -64,7 +66,7 @@ export const IngestedObjectDetail = ({
           ID: {objectId}
         </span>
         <span className="bg-grey-100 border-grey-50 text-grey-50 rounded border px-2 py-1">
-          last ingestion at:{' '}
+          {t('data:viewer.detail.last_ingestion_at')}:{' '}
           {formatDateTime(object.metadata.validFrom, {
             language,
           })}
