@@ -1648,7 +1648,7 @@ export function getIngestedObject(tableName: string, objectId: string, opts?: Oa
     } | {
         status: 404;
         data: string;
-    }>(`/ingestion/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}`, {
+    }>(`/client_data/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}`, {
         ...opts
     }));
 }
