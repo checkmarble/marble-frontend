@@ -65,5 +65,7 @@
   "unique.col_header": "Unique",
   "viewer.no_object_found": "No object found for id {{objectId}} in {{tableName}}",
   "viewer.object_type": "Object type",
-  "viewer.object_id": "Object ID"
+  "viewer.object_type.placeholder": "Select a table",
+  "viewer.object_id": "Object ID",
+  "viewer.detail.last_ingestion_at": "Last ingestion at"
 }

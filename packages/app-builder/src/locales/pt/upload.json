@@ -1,0 +1,23 @@
+{
+  "upload_cta": "Enviar {{objectType}}",
+  "upload_callout_1": "Você pode adicionar manualmente {{objectType}} na sua instância Marble enviando um arquivo .csv por esta página. (<DocLink>saiba mais</DocLink>)",
+  "upload_callout_2": "O arquivo .csv deve seguir o mesmo esquema definido no seu modelo de dados. Disponibilizamos um modelo para facilitar a importação.",
+  "download_template_cta": "Baixar modelo .csv",
+  "drop_file_cta": "Arraste seu arquivo .csv preenchido aqui",
+  "pick_file_cta": "Selecionar arquivo",
+  "success_message": "{{linesProcessed}} {{objectType}} serão adicionados à sua base",
+  "failure_message": "Encontramos um erro:",
+  "failure_additional_message": "Nenhum {{objectType}} foi adicionado à sua base",
+  "errors.request_timeout": "O tempo da solicitação expirou. Tente novamente ou divida seu arquivo em partes menores.",
+  "results": "Resultados",
+  "past_uploads": "Importações anteriores",
+  "upload_status": "Status",
+  "lines_processed": "Registros recebidos",
+  "num_rows_ingested": "Número de registros processados",
+  "started_at": "Iniciado em",
+  "finished_at": "Finalizado em",
+  "status_success": "Concluído",
+  "status_pending": "Pendente",
+  "status_processing": "Em processamento",
+  "status_failure": "Falha"
+}
