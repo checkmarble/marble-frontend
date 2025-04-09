@@ -7,9 +7,10 @@ const avatar = cva(
     variants: {
       color: {
         default: 'bg-purple-96',
-        grey: 'bg-[#D9D9D9]',
+        grey: 'bg-grey-90',
       },
       size: {
+        xxs: 'size-6 text-2xs',
         xs: 'size-6 text-xs',
         s: 'size-8 text-s',
         m: 'size-10 text-m',
@@ -31,11 +32,20 @@ export type AvatarProps = Omit<RootAvatarProps, 'asChild'> &
     src?: string;
   };
 
-export function Avatar({ firstName, lastName, src, size, className, ...props }: AvatarProps) {
+export function Avatar({
+  firstName,
+  lastName,
+  src,
+  size,
+  color,
+  className,
+  ...props
+}: AvatarProps) {
   return (
     <Root
       className={avatar({
         size,
+        color,
         className,
       })}
       {...props}

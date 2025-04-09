@@ -1,32 +1,22 @@
-import { casesI18n } from '@app-builder/components';
+import { Callout, casesI18n } from '@app-builder/components';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { type FinalOutcome, finalOutcomes } from '@app-builder/models/cases';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import { RadioGroup, RadioGroupItem } from '@radix-ui/react-radio-group';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { match } from 'ts-pattern';
-import { Button, cn, Modal } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const schema = z.object({
   caseId: z.string(),
-  outcome: z.union(
-    finalOutcomes.map((o) => z.literal(o)) as [
-      z.ZodLiteral<FinalOutcome>,
-      z.ZodLiteral<FinalOutcome>,
-      ...z.ZodLiteral<FinalOutcome>[],
-    ],
-  ),
   comment: z.string(),
 });
 
@@ -65,7 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
     promises.push(
       cases.updateCase({
         caseId: data.caseId,
-        body: { status: 'closed', outcome: data.outcome },
+        body: { status: 'investigating', outcome: 'unset' },
       }),
     );
 
@@ -85,7 +75,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export const CloseCase = ({ id }: { id: string }) => {
+export const OpenCase = ({ id }: { id: string }) => {
   const { t } = useTranslation(casesI18n);
   const fetcher = useFetcher<typeof action>();
   const [open, setOpen] = useState(false);
@@ -95,11 +85,11 @@ export const CloseCase = ({ id }: { id: string }) => {
       setOpen(false);
       fetcher.submit(value, {
         method: 'POST',
-        action: getRoute('/ressources/cases/close-case'),
+        action: getRoute('/ressources/cases/open-case'),
         encType: 'application/json',
       });
     },
-    defaultValues: { caseId: id, outcome: 'false-positive', comment: '' },
+    defaultValues: { caseId: id, comment: '' },
     validators: {
       onChange: schema,
       onBlur: schema,
@@ -112,50 +102,13 @@ export const CloseCase = ({ id }: { id: string }) => {
       <Modal.Trigger asChild>
         <Button variant="primary" size="medium" className="flex-1 first-letter:capitalize">
           <Icon icon="save" className="size-5" />
-          Close case
+          Re-Open case
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <Modal.Title>Close case</Modal.Title>
+        <Modal.Title>Re-Open case</Modal.Title>
         <form onSubmit={handleSubmit(form)} className="flex flex-col gap-8 p-8">
-          <form.Field name="outcome">
-            {(field) => (
-              <div className="flex flex-col gap-2">
-                <FormLabel name={field.name}>Choose a status</FormLabel>
-                <RadioGroup
-                  name={field.name}
-                  onValueChange={(v) => field.handleChange(v as FinalOutcome)}
-                  onBlur={field.handleBlur}
-                  className="flex items-center gap-1"
-                >
-                  {finalOutcomes.map((s) => {
-                    return (
-                      <RadioGroupItem
-                        key={s}
-                        value={s}
-                        className="border-grey-90 data-[state=checked]:border-purple-60 flex items-center justify-center rounded-[20px] border bg-transparent p-1.5"
-                      >
-                        <span
-                          className={cn('rounded-[20px] px-2 py-[3px] text-xs', {
-                            'bg-red-95 text-red-47': s === 'confirmed_risk',
-                            'bg-grey-95 text-grey-50': s === 'false_positive',
-                            'bg-yellow-90 text-yellow-50': s === 'valuable_alert',
-                          })}
-                        >
-                          {match(s)
-                            .with('confirmed_risk', () => 'Confirmed risk')
-                            .with('valuable_alert', () => 'Valuable alert')
-                            .with('false_positive', () => 'False positive')
-                            .exhaustive()}
-                        </span>
-                      </RadioGroupItem>
-                    );
-                  })}
-                </RadioGroup>
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-              </div>
-            )}
-          </form.Field>
+          <Callout>Are you sure you want to re-open the case ?</Callout>
           <form.Field name="comment">
             {(field) => (
               <div className="flex flex-col gap-2">
@@ -179,7 +132,7 @@ export const CloseCase = ({ id }: { id: string }) => {
             </Modal.Close>
 
             <Button type="submit" className="flex-1 first-letter:capitalize">
-              Close
+              Re-Open
             </Button>
           </div>
         </form>

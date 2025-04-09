@@ -404,6 +404,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/escalate-case.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/open-case",
+        "path": "ressources/cases/open-case",
+        "file": "routes/ressources+/cases+/open-case.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/review-decision",
         "path": "ressources/cases/review-decision",
         "file": "routes/ressources+/cases+/review-decision.tsx"

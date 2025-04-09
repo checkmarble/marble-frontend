@@ -14,6 +14,7 @@ import {
   type NameUpdatedEvent,
   type RuleSnoozeCreatedEvent,
 } from '@app-builder/models/cases';
+import { type Inbox } from '@app-builder/models/inbox';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
@@ -38,7 +39,7 @@ const CaseCreatedDetail = ({ event }: { event: CaseCreatedEvent }) => {
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
-      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+      <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="case-manager" className="text-grey-00 size-3" />
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
@@ -62,7 +63,7 @@ const StatusUpdatedDetail = ({ event }: { event: CaseStatusUpdatedEvent }) => {
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
-      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+      <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="manage-search" className="text-grey-00 size-3" />
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
@@ -88,7 +89,7 @@ const OutcomeUpdatedDetail = ({ event }: { event: CaseOutcomeUpdatedEvent }) => 
 
   return (
     <div key={event.id} className="flex w-full items-start gap-2">
-      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+      <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="edit" className="text-grey-00 size-3" />
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
@@ -119,7 +120,7 @@ const DecisionAddedDetail = ({ event }: { event: DecisionAddedEvent }) => {
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
-      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+      <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="decision" className="text-grey-00 size-3" />
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
@@ -146,8 +147,8 @@ const CommentAddedDetail = ({ event }: { event: CommentAddedEvent }) => {
   );
 
   return (
-    <div key={event.id} className="flex w-full items-start gap-2">
-      <Avatar firstName={user?.firstName} lastName={user?.lastName} size="xs" color="grey" />
+    <div key={event.id} className="flex w-full items-center gap-2">
+      <Avatar firstName={user?.firstName} lastName={user?.lastName} size="xxs" color="grey" />
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
         {event.comment}
       </span>
@@ -169,7 +170,7 @@ const NameUpdatedDetail = ({ event }: { event: NameUpdatedEvent }) => {
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
-      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+      <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="edit" className="text-grey-00 size-3" />
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
@@ -203,7 +204,7 @@ const TagsUpdatedDetail = ({ event }: { event: CaseTagsUpdatedEvent }) => {
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
-      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+      <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="decision" className="text-grey-00 size-3" />
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
@@ -241,7 +242,7 @@ const FileAddedDetail = ({ event }: { event: FileAddedEvent }) => {
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
-      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+      <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="decision" className="text-grey-00 size-3" />
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
@@ -265,7 +266,7 @@ const FileAddedDetail = ({ event }: { event: FileAddedEvent }) => {
   );
 };
 
-const InboxChangedDetail = ({ event }: { event: InboxChangedEvent }) => {
+const InboxChangedDetail = ({ event, inboxes }: { event: InboxChangedEvent; inboxes: Inbox[] }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
@@ -273,10 +274,14 @@ const InboxChangedDetail = ({ event }: { event: InboxChangedEvent }) => {
     () => (event.userId ? getOrgUserById(event.userId) : undefined),
     [event.userId, getOrgUserById],
   );
+  const inboxName = useMemo(
+    () => inboxes.find((i) => i.id === event.newInboxId)?.name ?? 'Unknown',
+    [event.newInboxId, inboxes],
+  );
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
-      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+      <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="decision" className="text-grey-00 size-3" />
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
@@ -288,7 +293,7 @@ const InboxChangedDetail = ({ event }: { event: InboxChangedEvent }) => {
           }}
           values={{
             actor: user ? getFullName(user) : 'Marble',
-            inbox: event.newInboxId,
+            inbox: inboxName,
           }}
         />
       </span>
@@ -314,7 +319,7 @@ const CaseSnoozedDetail = ({ event }: { event: CaseSnoozedEvent }) => {
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
-      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+      <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="snooze" className="text-grey-00 size-3" />
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
@@ -346,7 +351,7 @@ const CaseUnsnoozedDetail = ({ event }: { event: CaseUnsnoozedEvent }) => {
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
-      <div className="bg-grey-100 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border border-[#D9D9D9]">
+      <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="snooze-on" className="text-grey-00 size-3" />
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
@@ -371,9 +376,11 @@ const RuleSnoozeCreatedDetail = (_: { event: RuleSnoozeCreatedEvent }) => {
 export function CaseEvents({
   events,
   showLogs = false,
+  inboxes,
 }: {
   events: CaseEvent[];
   showLogs?: boolean;
+  inboxes: Inbox[];
 }) {
   const filteredEvents = useMemo(
     () =>
@@ -386,7 +393,7 @@ export function CaseEvents({
   return (
     <div className="relative z-0 flex flex-col gap-3">
       <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center">
-        <div className="-z-10 h-full w-px bg-[#D9D9D9]" />
+        <div className="bg-grey-90 -z-10 h-full w-px" />
       </div>
       {filteredEvents.map((event) =>
         match(event)
@@ -398,7 +405,9 @@ export function CaseEvents({
           .with({ eventType: 'name_updated' }, (e) => <NameUpdatedDetail event={e} />)
           .with({ eventType: 'tags_updated' }, (e) => <TagsUpdatedDetail event={e} />)
           .with({ eventType: 'file_added' }, (e) => <FileAddedDetail event={e} />)
-          .with({ eventType: 'inbox_changed' }, (e) => <InboxChangedDetail event={e} />)
+          .with({ eventType: 'inbox_changed' }, (e) => (
+            <InboxChangedDetail event={e} inboxes={inboxes} />
+          ))
           .with({ eventType: 'rule_snooze_created' }, (e) => <RuleSnoozeCreatedDetail event={e} />)
           .with({ eventType: 'decision_reviewed' }, (e) => <DecisionReviewedDetail event={e} />)
           .with({ eventType: 'case_snoozed' }, (e) => <CaseSnoozedDetail event={e} />)

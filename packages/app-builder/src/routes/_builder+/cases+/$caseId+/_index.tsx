@@ -4,7 +4,7 @@ import {
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
-import { CaseDetails } from '@app-builder/components/Cases/New/CaseDetails';
+import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
 import { type CurrentUser } from '@app-builder/models';
 import { type CaseDetail } from '@app-builder/models/cases';

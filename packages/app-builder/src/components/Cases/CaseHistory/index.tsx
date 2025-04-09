@@ -1,11 +1,12 @@
 import { type CaseEvent } from '@app-builder/models/cases';
+import { type Inbox } from '@app-builder/models/inbox';
 import { useState } from 'react';
 import { Button, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { CaseEvents } from './CaseEvents';
 
-export const CaseHistory = ({ events }: { events: CaseEvent[] }) => {
+export const CaseHistory = ({ events, inboxes }: { events: CaseEvent[]; inboxes: Inbox[] }) => {
   const [showLogs, setShowLogs] = useState(false);
 
   return (
@@ -19,7 +20,7 @@ export const CaseHistory = ({ events }: { events: CaseEvent[] }) => {
       </div>
       <div className="border-grey-90 bg-grey-100 rounded-lg border">
         <div className="p-4">
-          <CaseEvents events={events} showLogs={showLogs} />
+          <CaseEvents events={events} showLogs={showLogs} inboxes={inboxes} />
         </div>
         <div className="border-grey-90 flex items-end gap-4 border-t p-4">
           <div className="flex grow flex-col items-start gap-2.5">

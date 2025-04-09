@@ -53,12 +53,15 @@ export type CaseStatus = CaseStatusDto;
 export const caseStatuses: CaseStatus[] = ['investigating', 'closed', 'pending'];
 
 export type CaseOutcome = NonNullable<CaseDto['outcome']>;
-export const caseReviewStatuses: CaseOutcome[] = [
+export const caseOutcomes: CaseOutcome[] = [
   'confirmed_risk',
   'false_positive',
   'valuable_alert',
   'unset',
 ];
+
+export type FinalOutcome = Exclude<CaseOutcome, 'unset'>;
+export const finalOutcomes: FinalOutcome[] = ['confirmed_risk', 'false_positive', 'valuable_alert'];
 
 export interface Case {
   id: string;
@@ -373,6 +376,7 @@ export interface CaseUpdateBody {
   name?: string;
   inboxId?: string;
   status?: CaseStatus;
+  outcome?: CaseOutcome;
 }
 
 export function adaptUpdateCaseBodyDto(body: CaseUpdateBody): UpdateCaseBodyDto {
@@ -380,5 +384,6 @@ export function adaptUpdateCaseBodyDto(body: CaseUpdateBody): UpdateCaseBodyDto 
     name: body.name,
     inbox_id: body.inboxId,
     status: body.status,
+    outcome: body.outcome,
   };
 }

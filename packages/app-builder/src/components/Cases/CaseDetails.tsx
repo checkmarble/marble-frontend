@@ -9,6 +9,7 @@ import { EditCaseName } from '@app-builder/routes/ressources+/cases+/edit-name';
 import { EditCaseSuspicion } from '@app-builder/routes/ressources+/cases+/edit-suspicion';
 import { EditCaseTags } from '@app-builder/routes/ressources+/cases+/edit-tags';
 import { EscalateCase } from '@app-builder/routes/ressources+/cases+/escalate-case';
+import { OpenCase } from '@app-builder/routes/ressources+/cases+/open-case';
 import { SnoozeCase } from '@app-builder/routes/ressources+/cases+/snooze-case';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { type RefObject, useRef } from 'react';
@@ -17,9 +18,9 @@ import { match } from 'ts-pattern';
 import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { CaseHistory } from '../CaseHistory';
-import { casesI18n } from '../cases-i18n';
-import { caseStatusMapping } from '../CaseStatus';
+import { CaseHistory } from './CaseHistory';
+import { casesI18n } from './cases-i18n';
+import { caseStatusMapping } from './CaseStatus';
 
 export const CaseDetails = ({
   detail,
@@ -53,9 +54,9 @@ export const CaseDetails = ({
       >
         <EditCaseName name={detail.name} id={detail.id} />
         <div className="flex shrink-0 items-center gap-2">
-          <EscalateCase id={detail.id} />
+          {detail.status !== 'closed' ? <EscalateCase id={detail.id} /> : null}
           <SnoozeCase caseId={detail.id} snoozeUntil={detail.snoozedUntil} />
-          <CloseCase id={detail.id} />
+          {detail.status !== 'closed' ? <CloseCase id={detail.id} /> : <OpenCase id={detail.id} />}
         </div>
       </div>
 
@@ -114,7 +115,7 @@ export const CaseDetails = ({
           <EditCaseSuspicion id={detail.id} />
         </div>
       </div>
-      <CaseHistory events={detail.events} />
+      <CaseHistory events={detail.events} inboxes={inboxes} />
     </main>
   );
 };

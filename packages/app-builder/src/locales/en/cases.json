@@ -87,7 +87,7 @@
   "case_detail.history.event_detail.tags_updated": "Tags <Tags /> updated by <Actor>{{actor}}</Actor>",
   "case_detail.history.event_detail.tags_removed": "<Actor>{{actor}}</Actor> removed all tags",
   "case_detail.history.event_detail.file_added": "<Actor>{{actor}}</Actor> added a file <File>{{file}}</File>",
-  "case_detail.history.event_detail.inbox_changed": "Inbox changed by <Style>{{actor}}</Style>",
+  "case_detail.history.event_detail.inbox_changed": "Inbox changed to <Style>{{inbox}}</Style> by <Style>{{actor}}</Style>",
   "case_detail.history.event_detail.case_unsnoozed": "Case <Style>unsnoozed</Style> by <Style>{{actor}}</Style>",
   "case_detail.history.event_detail.case_snoozed": "Case <Style>snoozed</Style> until <Style>{{date}}</Style> by <Style>{{actor}}</Style>",
   "case_detail.history.event_detail.reviewed_by": "Reviewed by: <Avatar/> <User>{{user}}</User>",
