@@ -59,7 +59,7 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
-/ingestion/{tableName}/{objectId}:
+/client_data/{tableName}/{objectId}:
   get:
     tags:
       - Data Model
