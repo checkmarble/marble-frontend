@@ -116,7 +116,7 @@ export const CaseDetails = ({
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
-        <div className="text-r text-grey-00 flex items-center justify-between font-medium">
+        <div className="text-r text-grey-00 flex items-center justify-between px-0.5 font-medium">
           <span>Investigation</span>
           <div className="flex items-center gap-2">
             <span>Display logs</span>

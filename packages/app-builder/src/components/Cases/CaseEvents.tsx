@@ -20,10 +20,10 @@ import { useOrganizationUsers } from '@app-builder/services/organization/organiz
 import { getFullName } from '@app-builder/services/user';
 import { formatDateRelative, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { differenceInDays } from 'date-fns';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Avatar, Tooltip } from 'ui-design-system';
+import { Avatar, Button, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { casesI18n } from './cases-i18n';
@@ -379,30 +379,95 @@ export function CaseEvents({
     [events, showLogs],
   );
 
+  const [hiddenItemsCount, setHiddenItemsCount] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const container = containerRef.current;
+    const items = container.children;
+    let visibleCount = 0;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        console.log('nb of entries', entries.length);
+
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            visibleCount++;
+          } else {
+            visibleCount--;
+          }
+        });
+        setHiddenItemsCount(filteredEvents.length - visibleCount);
+      },
+      {
+        root: container,
+        rootMargin: '5px 0px 5px 0px',
+        threshold: 1, // Adjust this value to control when an item is considered visible
+      },
+    );
+
+    // First, check which items are initially visible
+    const containerRect = container.getBoundingClientRect();
+    Array.from(items).forEach((item) => {
+      const itemRect = item.getBoundingClientRect();
+      if (itemRect.top >= containerRect.top && itemRect.bottom <= containerRect.bottom) {
+        visibleCount++;
+      }
+      observer.observe(item);
+    });
+
+    // Set initial hidden count
+    setHiddenItemsCount(filteredEvents.length - visibleCount);
+
+    return () => observer.disconnect();
+  }, [filteredEvents]);
+
   return (
     <div className="relative z-0 flex w-full flex-col gap-3">
       <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center">
         <div className="bg-grey-90 -z-10 h-full w-px" />
       </div>
-      {filteredEvents.map((event) =>
-        match(event)
-          .with({ eventType: 'case_created' }, (e) => <CaseCreatedDetail event={e} />)
-          .with({ eventType: 'status_updated' }, (e) => <StatusUpdatedDetail event={e} />)
-          .with({ eventType: 'outcome_updated' }, (e) => <OutcomeUpdatedDetail event={e} />)
-          .with({ eventType: 'decision_added' }, (e) => <DecisionAddedDetail event={e} />)
-          .with({ eventType: 'comment_added' }, (e) => <CommentAddedDetail event={e} />)
-          .with({ eventType: 'name_updated' }, (e) => <NameUpdatedDetail event={e} />)
-          .with({ eventType: 'tags_updated' }, (e) => <TagsUpdatedDetail event={e} />)
-          .with({ eventType: 'file_added' }, (e) => <FileAddedDetail event={e} />)
-          .with({ eventType: 'inbox_changed' }, (e) => (
-            <InboxChangedDetail event={e} inboxes={inboxes} />
-          ))
-          .with({ eventType: 'rule_snooze_created' }, (e) => <RuleSnoozeCreatedDetail event={e} />)
-          .with({ eventType: 'decision_reviewed' }, (e) => <DecisionReviewedDetail event={e} />)
-          .with({ eventType: 'case_snoozed' }, (e) => <CaseSnoozedDetail event={e} />)
-          .with({ eventType: 'case_unsnoozed' }, (e) => <CaseUnsnoozedDetail event={e} />)
-          .exhaustive(),
-      )}
+      <div className="bg-grey-100 sticky left-0 top-0 z-[-15] flex w-full items-center justify-between pl-6">
+        {hiddenItemsCount > 0 ? (
+          <span className="text-grey-50 text-xs">{hiddenItemsCount} other</span>
+        ) : null}
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" size="small">
+            <Icon icon="plus" className="size-4" />
+            <span className="text-xs">Reset display</span>
+          </Button>
+          <Button variant="secondary" size="small">
+            <Icon icon="plus" className="size-4" />
+            <span className="text-xs">View all</span>
+          </Button>
+        </div>
+      </div>
+      <div ref={containerRef} className="flex max-h-[400px] flex-col gap-3 overflow-y-scroll">
+        {filteredEvents.map((event) =>
+          match(event)
+            .with({ eventType: 'case_created' }, (e) => <CaseCreatedDetail event={e} />)
+            .with({ eventType: 'status_updated' }, (e) => <StatusUpdatedDetail event={e} />)
+            .with({ eventType: 'outcome_updated' }, (e) => <OutcomeUpdatedDetail event={e} />)
+            .with({ eventType: 'decision_added' }, (e) => <DecisionAddedDetail event={e} />)
+            .with({ eventType: 'comment_added' }, (e) => <CommentAddedDetail event={e} />)
+            .with({ eventType: 'name_updated' }, (e) => <NameUpdatedDetail event={e} />)
+            .with({ eventType: 'tags_updated' }, (e) => <TagsUpdatedDetail event={e} />)
+            .with({ eventType: 'file_added' }, (e) => <FileAddedDetail event={e} />)
+            .with({ eventType: 'inbox_changed' }, (e) => (
+              <InboxChangedDetail event={e} inboxes={inboxes} />
+            ))
+            .with({ eventType: 'rule_snooze_created' }, (e) => (
+              <RuleSnoozeCreatedDetail event={e} />
+            ))
+            .with({ eventType: 'decision_reviewed' }, (e) => <DecisionReviewedDetail event={e} />)
+            .with({ eventType: 'case_snoozed' }, (e) => <CaseSnoozedDetail event={e} />)
+            .with({ eventType: 'case_unsnoozed' }, (e) => <CaseUnsnoozedDetail event={e} />)
+            .exhaustive(),
+        )}
+      </div>
     </div>
   );
 }
