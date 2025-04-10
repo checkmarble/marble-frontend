@@ -19,19 +19,45 @@ import { useOrganizationTags } from '@app-builder/services/organization/organiza
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { formatDateRelative, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { differenceInDays } from 'date-fns';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Avatar } from 'ui-design-system';
+import { Avatar, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { casesI18n } from './cases-i18n';
 import { CaseTags } from './CaseTags';
 
+const EventTime = ({ time }: { time: string }) => {
+  const date = new Date(time);
+  const language = useFormatLanguage();
+  const is6daysOld = Math.abs(differenceInDays(new Date(), date)) > 6;
+
+  return (
+    <Tooltip.Default
+      arrow={false}
+      className="border-grey-90 flex items-center border px-1.5 py-1"
+      content={
+        <span className="text-2xs font-normal">
+          {formatDateTime(date, {
+            language,
+            timeStyle: is6daysOld ? 'short' : undefined,
+            dateStyle: is6daysOld ? undefined : 'full',
+          })}
+        </span>
+      }
+    >
+      <span className="text-grey-50 shrink-0 grow-0 text-xs font-normal">
+        {formatDateRelative(date, { language })}
+      </span>
+    </Tooltip.Default>
+  );
+};
+
 const CaseCreatedDetail = ({ event }: { event: CaseCreatedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
-  const language = useFormatLanguage();
   const user = useMemo(
     () => (event.userId ? getOrgUserById(event.userId) : undefined),
     [event.userId, getOrgUserById],
@@ -50,16 +76,13 @@ const CaseCreatedDetail = ({ event }: { event: CaseCreatedEvent }) => {
           values={{ actor: user ? getFullName(user) : 'Workflow' }}
         />
       </span>
-      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
-        {formatDateRelative(event.createdAt, { language })}
-      </span>
+      <EventTime time={event.createdAt} />
     </div>
   );
 };
 
 const StatusUpdatedDetail = ({ event }: { event: CaseStatusUpdatedEvent }) => {
   const { t } = useTranslation(casesI18n);
-  const language = useFormatLanguage();
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
@@ -74,18 +97,13 @@ const StatusUpdatedDetail = ({ event }: { event: CaseStatusUpdatedEvent }) => {
           values={{ status: t(`cases:case.status.${event.newStatus}`) }}
         />
       </span>
-      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
-        {formatDateRelative(event.createdAt, {
-          language,
-        })}
-      </span>
+      <EventTime time={event.createdAt} />
     </div>
   );
 };
 
 const OutcomeUpdatedDetail = ({ event }: { event: CaseOutcomeUpdatedEvent }) => {
   const { t } = useTranslation(casesI18n);
-  const language = useFormatLanguage();
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
@@ -100,11 +118,7 @@ const OutcomeUpdatedDetail = ({ event }: { event: CaseOutcomeUpdatedEvent }) => 
           values={{ outcome: t(`cases:case.outcome.${event.newOutcome}`) }}
         />
       </span>
-      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
-        {formatDateRelative(event.createdAt, {
-          language,
-        })}
-      </span>
+      <EventTime time={event.createdAt} />
     </div>
   );
 };
@@ -112,7 +126,6 @@ const OutcomeUpdatedDetail = ({ event }: { event: CaseOutcomeUpdatedEvent }) => 
 const DecisionAddedDetail = ({ event }: { event: DecisionAddedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
-  const language = useFormatLanguage();
   const user = useMemo(
     () => (event.userId ? getOrgUserById(event.userId) : undefined),
     [event.userId, getOrgUserById],
@@ -131,30 +144,23 @@ const DecisionAddedDetail = ({ event }: { event: DecisionAddedEvent }) => {
           values={{ actor: user ? getFullName(user) : 'Workflow' }}
         />
       </span>
-      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
-        {formatDateRelative(event.createdAt, { language })}
-      </span>
+      <EventTime time={event.createdAt} />
     </div>
   );
 };
 
 const CommentAddedDetail = ({ event }: { event: CommentAddedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
-  const language = useFormatLanguage();
   const user = useMemo(
     () => (event.userId ? getOrgUserById(event.userId) : undefined),
     [event.userId, getOrgUserById],
   );
 
   return (
-    <div key={event.id} className="flex w-full items-center gap-2">
+    <div key={event.id} className="flex items-start gap-2">
       <Avatar firstName={user?.firstName} lastName={user?.lastName} size="xxs" color="grey" />
-      <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
-        {event.comment}
-      </span>
-      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
-        {formatDateRelative(event.createdAt, { language })}
-      </span>
+      <span className="text-grey-00 whitespace-pre text-wrap text-xs">{event.comment}</span>
+      <EventTime time={event.createdAt} />
     </div>
   );
 };
@@ -162,7 +168,6 @@ const CommentAddedDetail = ({ event }: { event: CommentAddedEvent }) => {
 const NameUpdatedDetail = ({ event }: { event: NameUpdatedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
-  const language = useFormatLanguage();
   const user = useMemo(
     () => (event.userId ? getOrgUserById(event.userId) : undefined),
     [event.userId, getOrgUserById],
@@ -181,9 +186,7 @@ const NameUpdatedDetail = ({ event }: { event: NameUpdatedEvent }) => {
           values={{ actor: user ? getFullName(user) : 'Workflow', name: event.newName }}
         />
       </span>
-      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
-        {formatDateRelative(event.createdAt, { language })}
-      </span>
+      <EventTime time={event.createdAt} />
     </div>
   );
 };
@@ -191,7 +194,6 @@ const NameUpdatedDetail = ({ event }: { event: NameUpdatedEvent }) => {
 const TagsUpdatedDetail = ({ event }: { event: CaseTagsUpdatedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
-  const language = useFormatLanguage();
   const { orgTags } = useOrganizationTags();
 
   const user = useMemo(
@@ -224,9 +226,7 @@ const TagsUpdatedDetail = ({ event }: { event: CaseTagsUpdatedEvent }) => {
           }}
         />
       </span>
-      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
-        {formatDateRelative(event.createdAt, { language })}
-      </span>
+      <EventTime time={event.createdAt} />
     </div>
   );
 };
@@ -234,7 +234,6 @@ const TagsUpdatedDetail = ({ event }: { event: CaseTagsUpdatedEvent }) => {
 const FileAddedDetail = ({ event }: { event: FileAddedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
-  const language = useFormatLanguage();
   const user = useMemo(
     () => (event.userId ? getOrgUserById(event.userId) : undefined),
     [event.userId, getOrgUserById],
@@ -259,9 +258,7 @@ const FileAddedDetail = ({ event }: { event: FileAddedEvent }) => {
           }}
         />
       </span>
-      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
-        {formatDateRelative(event.createdAt, { language })}
-      </span>
+      <EventTime time={event.createdAt} />
     </div>
   );
 };
@@ -269,7 +266,6 @@ const FileAddedDetail = ({ event }: { event: FileAddedEvent }) => {
 const InboxChangedDetail = ({ event, inboxes }: { event: InboxChangedEvent; inboxes: Inbox[] }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
-  const language = useFormatLanguage();
   const user = useMemo(
     () => (event.userId ? getOrgUserById(event.userId) : undefined),
     [event.userId, getOrgUserById],
@@ -297,9 +293,7 @@ const InboxChangedDetail = ({ event, inboxes }: { event: InboxChangedEvent; inbo
           }}
         />
       </span>
-      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
-        {formatDateRelative(event.createdAt, { language })}
-      </span>
+      <EventTime time={event.createdAt} />
     </div>
   );
 };
@@ -333,9 +327,7 @@ const CaseSnoozedDetail = ({ event }: { event: CaseSnoozedEvent }) => {
           }}
         />
       </span>
-      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
-        {formatDateRelative(event.createdAt, { language })}
-      </span>
+      <EventTime time={event.createdAt} />
     </div>
   );
 };
@@ -343,7 +335,6 @@ const CaseSnoozedDetail = ({ event }: { event: CaseSnoozedEvent }) => {
 const CaseUnsnoozedDetail = ({ event }: { event: CaseUnsnoozedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
-  const language = useFormatLanguage();
   const user = useMemo(
     () => (event.userId ? getOrgUserById(event.userId) : undefined),
     [event.userId, getOrgUserById],
@@ -362,9 +353,7 @@ const CaseUnsnoozedDetail = ({ event }: { event: CaseUnsnoozedEvent }) => {
           values={{ actor: user ? getFullName(user) : 'Marble' }}
         />
       </span>
-      <span className="text-2xs text-grey-50 shrink-0 grow-0 font-normal">
-        {formatDateRelative(event.createdAt, { language })}
-      </span>
+      <EventTime time={event.createdAt} />
     </div>
   );
 };
@@ -391,7 +380,7 @@ export function CaseEvents({
   );
 
   return (
-    <div className="relative z-0 flex flex-col gap-3">
+    <div className="relative z-0 flex w-full flex-col gap-3">
       <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center">
         <div className="bg-grey-90 -z-10 h-full w-px" />
       </div>

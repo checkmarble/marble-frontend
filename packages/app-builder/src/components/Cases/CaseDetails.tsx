@@ -45,7 +45,7 @@ export const CaseDetails = ({
   });
 
   return (
-    <main className="flex flex-col gap-6 px-12 py-8">
+    <main className="flex w-full min-w-0 flex-col gap-6 px-12 py-8">
       <div
         className={cn(
           'bg-purple-99 sticky top-0 z-10 flex h-[88px] items-center justify-between gap-4',
