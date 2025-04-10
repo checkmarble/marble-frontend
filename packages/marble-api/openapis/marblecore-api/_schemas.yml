@@ -99,6 +99,17 @@ AssignCaseBodyDto:
 CreateCaseBodyDto:
   $ref: cases.yml#/components/schemas/CreateCaseBodyDto
 
+# SUSPICIOUS ACTIVITY REPORTS
+
+SuspiciousActivityReportDto:
+  $ref: sar.yml#/components/schemas/SuspiciousActivityReportDto
+CreateSuspiciousActivityReportBodyDto:
+  $ref: sar.yml#/components/schemas/CreateSuspiciousActivityReportBodyDto
+UpdateSuspiciousActivityReportBodyDto:
+  $ref: sar.yml#/components/schemas/UpdateSuspiciousActivityReportBodyDto
+UploadSuspiciousActivityReportBodyDto:
+  $ref: sar.yml#/components/schemas/UploadSuspiciousActivityReportBodyDto
+
 # TAGS
 
 Tag:
