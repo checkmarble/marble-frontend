@@ -1,8 +1,8 @@
 import {
   EmailUnverified,
+  InvalidLoginCredentials,
   NetworkRequestFailed,
   useEmailAndPasswordSignIn,
-  UserNotFoundError,
   WrongPasswordError,
 } from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
@@ -53,21 +53,30 @@ export function SignInWithEmailAndPassword({
     validators: { onSubmit: emailAndPasswordFormSchema },
     onSubmit: async ({ value: { credentials }, formApi }) => {
       try {
+        console.log('credentials', credentials);
         const result = await emailAndPasswordSignIn(credentials.email, credentials.password);
-
+        console.log('result', result);
         if (!result) return;
         const { idToken, csrf } = result;
         if (!idToken) return;
         signIn({ type: 'email', idToken, csrf });
+        console.log('signIn', { type: 'email', idToken, csrf });
         // Hack to wait for the form to be submitted, otherwise the loading spinner will be flickering
         await sleep(1000);
       } catch (error) {
+        console.log(error);
         if (error instanceof EmailUnverified) {
           navigate(getRoute('/email-verification'));
-        } else if (error instanceof UserNotFoundError || error instanceof WrongPasswordError) {
+        } else if (error instanceof WrongPasswordError) {
+          console.log('WrongPasswordError');
           formApi.setFieldMeta('credentials.password', (prev) => ({
             ...prev,
             errors: [t('auth:sign_in.errors.wrong_password_error')],
+          }));
+        } else if (error instanceof InvalidLoginCredentials) {
+          formApi.setFieldMeta('credentials', (prev) => ({
+            ...prev,
+            errors: [t('auth:sign_in.errors.invalid_login_credentials')],
           }));
         } else if (error instanceof NetworkRequestFailed) {
           toast.error(t('common:errors.firebase_network_error'));
