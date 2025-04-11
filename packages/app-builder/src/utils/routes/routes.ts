@@ -421,6 +421,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/review-sanction-match.tsx"
       },
       {
+        "id": "routes/ressources+/data+/$tableName.list-objects",
+        "path": "ressources/data/:tableName/list-objects",
+        "file": "routes/ressources+/data+/$tableName.list-objects.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/create-pivot",
         "path": "ressources/data/create-pivot",
         "file": "routes/ressources+/data+/create-pivot.tsx"

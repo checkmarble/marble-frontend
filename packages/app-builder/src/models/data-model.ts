@@ -1,17 +1,23 @@
 import { type ParseKeys } from 'i18next';
 import {
+  type ClientDataListRequestBody as ClientDataListRequestBodyDto,
+  type ClientDataListResponseDto,
+  type ClientObjectDetailDto,
   type CreatePivotInputDto,
   type CreateTableFieldDto,
   type DataModelDto,
   type DataModelObjectDto,
   type FieldDto,
   type LinkToSingleDto,
+  type NavigationOptionDto,
   type PivotDto,
   type TableDto,
   type UpdateTableFieldDto,
 } from 'marble-api';
 import * as R from 'remeda';
 import { type IconName } from 'ui-icons';
+
+import { type FiltersWithPagination } from './pagination';
 
 type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'unknown';
@@ -77,12 +83,43 @@ function adaptLinkToSingle(linkName: string, linksToSingleDto: LinkToSingleDto):
   };
 }
 
+export type NavigationOption = {
+  sourceTableName: string;
+  sourceTableId: string;
+  sourceFieldName: string;
+  sourceFieldId: string;
+  targetTableName: string;
+  targetTableId: string;
+  filterFieldName: string;
+  filterFieldId: string;
+  orderingFieldName: string;
+  orderingFieldId: string;
+  status: 'pending' | 'valid' | 'invalid';
+};
+
+function adaptNavigationOptions(dto: NavigationOptionDto): NavigationOption {
+  return {
+    sourceTableName: dto.source_table_name,
+    sourceTableId: dto.source_table_id,
+    sourceFieldName: dto.source_field_name,
+    sourceFieldId: dto.source_field_id,
+    targetTableName: dto.target_table_name,
+    targetTableId: dto.target_table_id,
+    filterFieldName: dto.filter_field_name,
+    filterFieldId: dto.filter_field_id,
+    orderingFieldName: dto.ordering_field_name,
+    orderingFieldId: dto.ordering_field_id,
+    status: dto.status,
+  };
+}
+
 export interface TableModel {
   id: string;
   name: string;
   description: string;
   fields: DataModelField[];
   linksToSingle: LinkToSingle[];
+  navigationOptions?: NavigationOption[];
 }
 
 function adaptTableModel(tableDto: TableDto): TableModel {
@@ -96,6 +133,7 @@ function adaptTableModel(tableDto: TableDto): TableModel {
       R.entries(),
       R.map(([linkName, linkDto]) => adaptLinkToSingle(linkName, linkDto)),
     ),
+    navigationOptions: tableDto.navigation_options?.map(adaptNavigationOptions),
   };
 }
 
@@ -345,6 +383,81 @@ export function adaptDataModelObject(dto: DataModelObjectDto): DataModelObject {
     data: dto.data,
     metadata: {
       validFrom: dto.metadata.valid_from,
+    },
+  };
+}
+
+export type ClientObjectDetail = {
+  /** Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested. */
+  metadata?: {
+    validFrom: string;
+  };
+  /** The actual data of the object, as described in the client data model. */
+  data: {
+    object_id?: string;
+    updated_at?: string;
+    [key: string]: unknown;
+  };
+  relatedObjects: {
+    /** The name of the link pointing to the object */
+    linkName?: string;
+    relatedObjectDetail?: ClientObjectDetail;
+  }[];
+};
+
+export function adaptClientObjectDetail(dto: ClientObjectDetailDto): ClientObjectDetail {
+  return {
+    metadata: dto.metadata ? { validFrom: dto.metadata.valid_from } : undefined,
+    data: dto.data,
+    relatedObjects: dto.related_objects.map((rel) => ({
+      linkName: rel.link_name,
+      relatedObjectDetail: rel?.related_object_detail
+        ? adaptClientObjectDetail(rel.related_object_detail)
+        : undefined,
+    })),
+  };
+}
+
+export type ClientDataListRequestBody = FiltersWithPagination<{
+  explorationOptions: {
+    sourceTableName: string;
+    filterFieldName: string;
+    filterFieldValue?: string | number;
+    orderingFieldName: string;
+  };
+}>;
+
+export function adaptClientDataListRequestBodyDto(
+  model: ClientDataListRequestBody,
+): ClientDataListRequestBodyDto {
+  return {
+    exploration_options: {
+      source_table_name: model.explorationOptions.sourceTableName,
+      filter_field_name: model.explorationOptions.filterFieldName,
+      filter_field_value: model.explorationOptions.filterFieldValue,
+      ordering_field_name: model.explorationOptions.orderingFieldName,
+    },
+    cursor_id: model.offsetId,
+    limit: model.limit,
+  };
+}
+
+export type ClientDataListResponse = {
+  data: ClientObjectDetail[];
+  pagination: {
+    nextCursorId?: string | number;
+    hasNextPage: boolean;
+  };
+};
+
+export function adaptClientDataListResponse(
+  dto: ClientDataListResponseDto,
+): ClientDataListResponse {
+  return {
+    data: dto.data.map(adaptClientObjectDetail),
+    pagination: {
+      hasNextPage: dto.pagination.has_next_page,
+      nextCursorId: dto.pagination.next_cursor_id,
     },
   };
 }

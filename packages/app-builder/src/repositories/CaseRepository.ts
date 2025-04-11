@@ -3,11 +3,13 @@ import {
   adaptCase,
   adaptCaseCreateBody,
   adaptCaseDetail,
+  adaptPivotObject,
   adaptUpdateCaseBodyDto,
   type Case,
   type CaseDetail,
   type CaseStatus,
   type CaseUpdateBody,
+  type PivotObject,
 } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import {
@@ -44,6 +46,7 @@ export interface CaseRepository {
   updateCase(args: { caseId: string; body: CaseUpdateBody }): Promise<CaseDetail>;
   snoozeCase(args: { caseId: string; snoozeUntil: string }): Promise<unknown>;
   unsnoozeCase(args: { caseId: string }): Promise<unknown>;
+  listPivotObjects(args: { caseId: string }): Promise<PivotObject[] | null>;
   addComment(args: {
     caseId: string;
     body: {
@@ -86,6 +89,10 @@ export function makeGetCaseRepository() {
         items: items.map(adaptCase),
         ...adaptPagination(pagination),
       };
+    },
+    listPivotObjects: async ({ caseId }) => {
+      const res = await marbleCoreApiClient.getPivotObjectsForCase(caseId);
+      return res.pivot_objects?.map(adaptPivotObject) ?? null;
     },
     unsnoozeCase: ({ caseId }) => marbleCoreApiClient.unsnoozeCase(caseId),
     snoozeCase: ({ caseId, snoozeUntil }) =>

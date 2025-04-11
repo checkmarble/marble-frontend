@@ -16,6 +16,7 @@
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
+    "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "paths": {
       "marble-api": ["packages/marble-api/src/index.ts"],
