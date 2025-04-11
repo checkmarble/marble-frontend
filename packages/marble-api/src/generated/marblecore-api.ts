@@ -279,22 +279,6 @@ export type UpdateCaseBodyDto = {
 export type AssignCaseBodyDto = {
     user_id: string;
 };
-export type SuspiciousActivityReportDto = {
-    id: string;
-    status: "pending" | "completed";
-    has_file: boolean;
-    created_by: string;
-    created_at: string;
-};
-export type CreateSuspiciousActivityReportBodyDto = {
-    status?: "pending" | "completed";
-};
-export type UpdateSuspiciousActivityReportBodyDto = {
-    status: "pending" | "completed";
-};
-export type UploadSuspiciousActivityReportBodyDto = {
-    file: Blob;
-};
 export type ClientObjectDetailDto = {
     /** Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested. */
     metadata?: {
@@ -330,6 +314,22 @@ export type PivotObjectDto = {
     pivot_object_data: ClientObjectDetailDto;
     /** Number of decisions that have this pivot value */
     number_of_decisions: number;
+};
+export type SuspiciousActivityReportDto = {
+    id: string;
+    status: "pending" | "completed";
+    has_file: boolean;
+    created_by: string;
+    created_at: string;
+};
+export type CreateSuspiciousActivityReportBodyDto = {
+    status?: "pending" | "completed";
+};
+export type UpdateSuspiciousActivityReportBodyDto = {
+    status: "pending" | "completed";
+};
+export type UploadSuspiciousActivityReportBodyDto = {
+    file: Blob;
 };
 export type Tag = {
     id: string;
@@ -1418,6 +1418,28 @@ export function reviewDecision(body: {
     })));
 }
 /**
+ * -> Return the pivot objects present in a case, computed from the pivot values on decisions in the case. Pivot objects are deduplicated and come with their actual content (if previously ingested) if the pivot value is from an actual unique pivot "object" (not just a value on an entity).
+ */
+export function getPivotObjectsForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            pivot_objects?: PivotObjectDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/pivot_objects`, {
+        ...opts
+    }));
+}
+/**
  * List suspicious activity reports for a case
  */
 export function sarList(caseId: string, opts?: Oazapfts.RequestOpts) {
@@ -1539,28 +1561,6 @@ export function sarDownload(caseId: string, reportId: string, opts?: Oazapfts.Re
         status: 404;
         data: string;
     }>(`/cases/${encodeURIComponent(caseId)}/sar/${encodeURIComponent(reportId)}/download`, {
-        ...opts
-    }));
-}
-/**
- * -> Return the pivot objects present in a case, computed from the pivot values on decisions in the case. Pivot objects are deduplicated and come with their actual content (if previously ingested) if the pivot value is from an actual unique pivot "object" (not just a value on an entity).
- */
-export function getPivotObjectsForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            pivot_objects?: PivotObjectDto[];
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/cases/${encodeURIComponent(caseId)}/pivot_objects`, {
         ...opts
     }));
 }
