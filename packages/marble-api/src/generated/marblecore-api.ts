@@ -41,7 +41,7 @@ export type Pagination = {
     start_index: number;
     end_index: number;
 };
-export type CaseStatusDto = "open" | "investigating" | "discarded" | "resolved";
+export type CaseStatusDto = "pending" | "investigating" | "closed";
 export type CaseContributorDto = {
     id: string;
     case_id: string;
@@ -60,6 +60,7 @@ export type CaseDto = {
     decisions_count: number;
     name: string;
     status: CaseStatusDto;
+    outcome?: "false_positive" | "valuable_alert" | "confirmed_risk" | "unset";
     inbox_id: string;
     contributors: CaseContributorDto[];
     tags: CaseTagDto[];
@@ -152,10 +153,18 @@ export type CaseCreatedEventDto = {
 } & CaseEventDtoBase & {
     user_id?: string;
 };
+export type CaseStatusForCaseEventDto = "pending" | "investigating" | "closed" | "open" | "discarded" | "resolved";
 export type CaseStatusUpdatedEventDto = {
     event_type: "status_updated";
 } & CaseEventDtoBase & {
-    new_value: CaseStatusDto;
+    new_value: CaseStatusForCaseEventDto;
+    user_id: string;
+};
+export type Outcome = "false_positive" | "valuable_alert" | "confirmed_risk" | "unset";
+export type CaseOutcomeUpdatedEventDto = {
+    event_type: "outcome_updated";
+} & CaseEventDtoBase & {
+    new_value: Outcome;
     user_id: string;
 };
 export type DecisionAddedEventDto = {
@@ -219,7 +228,7 @@ export type DecisionReviewedEventDto = {
 export type CaseSnoozedDto = {
     event_type: "case_snoozed";
 } & CaseEventDtoBase & {
-    user_id?: string;
+    user_id: string;
     new_value: string;
     previous_value?: string;
 };
@@ -230,7 +239,7 @@ export type CaseUnsnoozedDto = {
     new_value: string;
     previous_value?: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto;
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;
@@ -265,9 +274,26 @@ export type UpdateCaseBodyDto = {
     name?: string;
     inbox_id?: string;
     status?: CaseStatusDto;
+    outcome?: Outcome;
 };
 export type AssignCaseBodyDto = {
     user_id: string;
+};
+export type SuspiciousActivityReportDto = {
+    id: string;
+    status: "pending" | "completed";
+    has_file: boolean;
+    created_by: string;
+    created_at: string;
+};
+export type CreateSuspiciousActivityReportBodyDto = {
+    status?: "pending" | "completed";
+};
+export type UpdateSuspiciousActivityReportBodyDto = {
+    status: "pending" | "completed";
+};
+export type UploadSuspiciousActivityReportBodyDto = {
+    file: Blob;
 };
 export type ClientObjectDetailDto = {
     /** Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested. */
@@ -1168,9 +1194,9 @@ export function updateCase(caseId: string, updateCaseBodyDto: UpdateCaseBodyDto,
     })));
 }
 /**
- * Assign a case to a user
+ * Assign a user to a case
  */
-export function postCasesByCaseIdAssignee(caseId: string, assignCaseBodyDto: AssignCaseBodyDto, opts?: Oazapfts.RequestOpts) {
+export function assignUser(caseId: string, assignCaseBodyDto: AssignCaseBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -1192,9 +1218,9 @@ export function postCasesByCaseIdAssignee(caseId: string, assignCaseBodyDto: Ass
     })));
 }
 /**
- * Unassign a case
+ * Unassign a user from a case
  */
-export function deleteCasesByCaseIdAssignee(caseId: string, opts?: Oazapfts.RequestOpts) {
+export function unassignUser(caseId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -1390,6 +1416,131 @@ export function reviewDecision(body: {
         method: "POST",
         body
     })));
+}
+/**
+ * List suspicious activity reports for a case
+ */
+export function sarList(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SuspiciousActivityReportDto[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/sar`, {
+        ...opts
+    }));
+}
+/**
+ * Create a suspicious activity report
+ */
+export function sarCreate(caseId: string, createSuspiciousActivityReportBodyDto: CreateSuspiciousActivityReportBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: SuspiciousActivityReportDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/sar`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createSuspiciousActivityReportBodyDto
+    })));
+}
+/**
+ * Update a suspicious activity report
+ */
+export function sarUpdate(caseId: string, reportId: string, updateSuspiciousActivityReportBodyDto: UpdateSuspiciousActivityReportBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SuspiciousActivityReportDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/sar/${encodeURIComponent(reportId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateSuspiciousActivityReportBodyDto
+    })));
+}
+/**
+ * Delete a suspicious activity report
+ */
+export function sarDelete(caseId: string, reportId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/sar/${encodeURIComponent(reportId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * Upload a file to a suspicious activity report
+ */
+export function sarUpload(caseId: string, reportId: string, uploadSuspiciousActivityReportBodyDto?: UploadSuspiciousActivityReportBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SuspiciousActivityReportDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/sar/${encodeURIComponent(reportId)}/file`, oazapfts.multipart({
+        ...opts,
+        method: "POST",
+        body: uploadSuspiciousActivityReportBodyDto
+    })));
+}
+/**
+ * Download a suspicious activity report file
+ */
+export function sarDownload(caseId: string, reportId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            url: string;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/sar/${encodeURIComponent(reportId)}/download`, {
+        ...opts
+    }));
 }
 /**
  * -> Return the pivot objects present in a case, computed from the pivot values on decisions in the case. Pivot objects are deduplicated and come with their actual content (if previously ingested) if the pivot value is from an actual unique pivot "object" (not just a value on an entity).

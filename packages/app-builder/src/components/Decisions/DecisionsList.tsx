@@ -1,4 +1,4 @@
-import { CaseStatus, decisionsI18n } from '@app-builder/components';
+import { CaseStatusPreview, decisionsI18n } from '@app-builder/components';
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
@@ -174,7 +174,7 @@ export function DecisionsList({
         cell: ({ getValue, row }) =>
           row.original.case ? (
             <div className="flex w-fit flex-row items-center justify-center gap-2 align-baseline">
-              <CaseStatus size="big" type="first-letter" status={row.original.case.status} />
+              <CaseStatusPreview size="big" type="first-letter" status={row.original.case.status} />
               <Tooltip.Default content={getValue()}>
                 <div className="bg-grey-98 flex h-8 items-center justify-center rounded px-2">
                   <span className="text-grey-00 text-s line-clamp-1 font-normal">{getValue()}</span>
