@@ -4,19 +4,22 @@ import {
   type CaseDto,
   type CaseEventDto,
   type CaseFileDto,
+  type CaseStatusDto,
+  type CaseStatusForCaseEventDto,
   type CaseTagDto,
   type CreateCaseBodyDto,
+  type CreateSuspiciousActivityReportBodyDto,
   type Error,
+  type SuspiciousActivityReportDto,
   type UpdateCaseBodyDto,
+  type UpdateSuspiciousActivityReportBodyDto,
+  type UploadSuspiciousActivityReportBodyDto,
 } from 'marble-api';
-import * as R from 'remeda';
-import { assertNever } from 'typescript-utils';
+import { isNonNullish } from 'remeda';
+import { match } from 'ts-pattern';
 
 import { type ReviewStatus } from './decision';
 import { type Outcome } from './outcome';
-
-export const caseStatuses = ['open', 'investigating', 'discarded', 'resolved'] as const;
-export type CaseStatus = (typeof caseStatuses)[number];
 
 export interface CaseContributor {
   id: string;
@@ -50,6 +53,20 @@ export function adaptCaseTag(dto: CaseTagDto): CaseTag {
   };
 }
 
+export type CaseStatus = CaseStatusDto;
+export const caseStatuses: CaseStatus[] = ['investigating', 'closed', 'pending'];
+
+export type CaseOutcome = NonNullable<CaseDto['outcome']>;
+export const caseOutcomes: CaseOutcome[] = [
+  'confirmed_risk',
+  'false_positive',
+  'valuable_alert',
+  'unset',
+];
+
+export type FinalOutcome = Exclude<CaseOutcome, 'unset'>;
+export const finalOutcomes: FinalOutcome[] = ['confirmed_risk', 'false_positive', 'valuable_alert'];
+
 export interface Case {
   id: string;
   createdAt: string;
@@ -58,29 +75,35 @@ export interface Case {
   status: CaseStatus;
   inboxId: string;
   contributors: CaseContributor[];
+  outcome?: CaseOutcome;
   tags: CaseTag[];
   snoozedUntil?: string;
+  assignedTo?: string;
 }
 
-export function adaptCase(dto: CaseDto): Case {
-  return {
-    id: dto.id,
-    createdAt: dto.created_at,
-    decisionsCount: dto.decisions_count,
-    name: dto.name,
-    status: dto.status,
-    inboxId: dto.inbox_id,
-    contributors: dto.contributors.map(adaptCaseContributor),
-    tags: dto.tags.map(adaptCaseTag),
-    snoozedUntil: dto.snoozed_until,
-  };
-}
+export const adaptCase = (dto: CaseDto): Case => ({
+  id: dto.id,
+  createdAt: dto.created_at,
+  decisionsCount: dto.decisions_count,
+  name: dto.name,
+  status: dto.status,
+  outcome: dto.outcome,
+  inboxId: dto.inbox_id,
+  contributors: dto.contributors.map(adaptCaseContributor),
+  tags: dto.tags.map(adaptCaseTag),
+  snoozedUntil: dto.snoozed_until,
+  assignedTo: dto.assigned_to,
+});
 
-export const caseEventTypes = [
-  'case_snoozed',
-  'case_unsnoozed',
+//
+// Case Events
+//
+
+export type CaseEventType = CaseEventDto['event_type'];
+export const caseEventTypes: CaseEventType[] = [
   'case_created',
   'status_updated',
+  'outcome_updated',
   'decision_added',
   'comment_added',
   'name_updated',
@@ -89,8 +112,9 @@ export const caseEventTypes = [
   'inbox_changed',
   'rule_snooze_created',
   'decision_reviewed',
-] as const;
-export type CaseEventType = (typeof caseEventTypes)[number];
+  'case_snoozed',
+  'case_unsnoozed',
+];
 
 interface CaseEventBase<T extends CaseEventType> {
   id: string;
@@ -99,29 +123,29 @@ interface CaseEventBase<T extends CaseEventType> {
   eventType: T;
 }
 
-export interface CaseSnoozedEvent extends CaseEventBase<'case_snoozed'> {
-  snoozeUntil: string;
-  userId: string;
-}
-
-export interface CaseUnsnoozedEvent extends CaseEventBase<'case_unsnoozed'> {
-  userId: string;
-}
-
 export interface CaseCreatedEvent extends CaseEventBase<'case_created'> {
   userId?: string;
 }
+
 export interface CaseStatusUpdatedEvent extends CaseEventBase<'status_updated'> {
   userId: string;
-  newStatus: CaseStatus;
+  newStatus: CaseStatusForCaseEventDto;
 }
+
+export interface CaseOutcomeUpdatedEvent extends CaseEventBase<'outcome_updated'> {
+  userId: string;
+  newOutcome: CaseOutcome;
+}
+
 export interface DecisionAddedEvent extends CaseEventBase<'decision_added'> {
   userId?: string;
 }
+
 export interface CommentAddedEvent extends CaseEventBase<'comment_added'> {
   comment: string;
   userId: string;
 }
+
 export interface NameUpdatedEvent extends CaseEventBase<'name_updated'> {
   newName: string;
   userId: string;
@@ -150,11 +174,19 @@ export interface DecisionReviewedEvent extends CaseEventBase<'decision_reviewed'
   decisionId: string;
 }
 
+export interface CaseSnoozedEvent extends CaseEventBase<'case_snoozed'> {
+  snoozeUntil: string;
+  userId: string;
+}
+
+export interface CaseUnsnoozedEvent extends CaseEventBase<'case_unsnoozed'> {
+  userId: string;
+}
+
 export type CaseEvent =
-  | CaseSnoozedEvent
-  | CaseUnsnoozedEvent
   | CaseCreatedEvent
   | CaseStatusUpdatedEvent
+  | CaseOutcomeUpdatedEvent
   | DecisionAddedEvent
   | CommentAddedEvent
   | NameUpdatedEvent
@@ -162,116 +194,103 @@ export type CaseEvent =
   | FileAddedEvent
   | InboxChangedEvent
   | RuleSnoozeCreatedEvent
-  | DecisionReviewedEvent;
+  | DecisionReviewedEvent
+  | CaseSnoozedEvent
+  | CaseUnsnoozedEvent;
 
 export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
-  const caseEvent = {
+  const baseEvent = {
+    eventType: caseEventDto.event_type,
     id: caseEventDto.id,
     caseId: caseEventDto.case_id,
     createdAt: caseEventDto.created_at,
   };
-  const { event_type } = caseEventDto;
-  switch (event_type) {
-    case 'case_created': {
-      return {
-        ...caseEvent,
-        eventType: 'case_created',
-        userId: caseEventDto.user_id,
-      };
-    }
-    case 'status_updated': {
-      return {
-        ...caseEvent,
-        eventType: 'status_updated',
-        newStatus: caseEventDto.new_value,
-        userId: caseEventDto.user_id,
-      };
-    }
-    case 'decision_added': {
-      return {
-        ...caseEvent,
-        eventType: 'decision_added',
-        userId: caseEventDto.user_id,
-      };
-    }
-    case 'comment_added': {
-      return {
-        ...caseEvent,
-        eventType: 'comment_added',
-        comment: caseEventDto.additional_note,
-        userId: caseEventDto.user_id,
-      };
-    }
-    case 'name_updated': {
-      return {
-        ...caseEvent,
-        eventType: 'name_updated',
-        newName: caseEventDto.new_value,
-        userId: caseEventDto.user_id,
-      };
-    }
-    case 'tags_updated': {
-      return {
-        ...caseEvent,
-        eventType: 'tags_updated',
-        tagIds: caseEventDto.new_value === '' ? [] : caseEventDto.new_value.split(','),
-        userId: caseEventDto.user_id,
-      };
-    }
-    case 'file_added': {
-      return {
-        ...caseEvent,
-        eventType: 'file_added',
-        fileName: caseEventDto.additional_note,
-        userId: caseEventDto.user_id,
-      };
-    }
-    case 'inbox_changed': {
-      return {
-        ...caseEvent,
-        eventType: 'inbox_changed',
-        newInboxId: caseEventDto.new_value,
-        userId: caseEventDto.user_id,
-      };
-    }
-    case 'rule_snooze_created': {
-      return {
-        ...caseEvent,
-        eventType: 'rule_snooze_created',
-        userId: caseEventDto.user_id,
-        ruleSnoozeId: caseEventDto.resource_id,
-        comment: caseEventDto.additional_note,
-      };
-    }
-    case 'decision_reviewed': {
-      return {
-        ...caseEvent,
-        decisionId: caseEventDto.resource_id,
-        eventType: 'decision_reviewed',
-        reviewComment: caseEventDto.additional_note,
-        finalStatus: caseEventDto.new_value,
-        userId: caseEventDto.user_id,
-      };
-    }
-    case 'case_snoozed': {
-      return {
-        ...caseEvent,
-        eventType: 'case_snoozed',
-        snoozeUntil: caseEventDto.new_value,
-        userId: caseEventDto.user_id as string,
-      };
-    }
-    case 'case_unsnoozed': {
-      return {
-        ...caseEvent,
-        eventType: 'case_unsnoozed',
-        userId: caseEventDto.user_id,
-      };
-    }
-    default:
-      assertNever('[CaseEventDto] unknown event:', event_type);
-  }
+
+  return match<CaseEventDto, CaseEvent>(caseEventDto)
+    .with({ event_type: 'case_created' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+    }))
+    .with({ event_type: 'status_updated' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      newStatus: dto.new_value,
+    }))
+    .with({ event_type: 'outcome_updated' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      newOutcome: dto.new_value,
+    }))
+    .with({ event_type: 'decision_added' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+    }))
+    .with({ event_type: 'comment_added' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      comment: dto.additional_note,
+    }))
+    .with({ event_type: 'name_updated' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      newName: dto.new_value,
+    }))
+    .with({ event_type: 'tags_updated' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      tagIds: dto.new_value.split(','),
+    }))
+    .with({ event_type: 'file_added' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      fileName: dto.additional_note,
+    }))
+    .with({ event_type: 'inbox_changed' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      newInboxId: dto.new_value,
+    }))
+    .with({ event_type: 'rule_snooze_created' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      comment: dto.additional_note,
+      ruleSnoozeId: dto.resource_id,
+    }))
+    .with({ event_type: 'decision_reviewed' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      reviewComment: dto.additional_note,
+      finalStatus: dto.new_value,
+      decisionId: dto.resource_id,
+    }))
+    .with({ event_type: 'case_snoozed' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      snoozeUntil: dto.new_value,
+    }))
+    .with({ event_type: 'case_unsnoozed' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+    }))
+    .exhaustive();
 }
+
+//
+// Case Files
+//
 
 export interface CaseFile {
   id: string;
@@ -338,7 +357,7 @@ export function adaptCaseDetail(dto: CaseDetailDto): CaseDetail {
       },
       score: decisionDto.score,
     })),
-    events: dto.events.map(adaptCaseEventDto).filter(R.isNonNullish),
+    events: dto.events.map(adaptCaseEventDto).filter(isNonNullish),
     files: dto.files.map(adaptCaseFile),
   };
 }
@@ -361,6 +380,7 @@ export interface CaseUpdateBody {
   name?: string;
   inboxId?: string;
   status?: CaseStatus;
+  outcome?: CaseOutcome;
 }
 
 export function adaptUpdateCaseBodyDto(body: CaseUpdateBody): UpdateCaseBodyDto {
@@ -368,5 +388,72 @@ export function adaptUpdateCaseBodyDto(body: CaseUpdateBody): UpdateCaseBodyDto 
     name: body.name,
     inbox_id: body.inboxId,
     status: body.status,
+    outcome: body.outcome,
+  };
+}
+
+//
+// Suspicious Activity Report
+//
+
+export type SuspiciousActivityReportStatus = 'pending' | 'completed';
+export const suspiciousActivityReportStatuses: SuspiciousActivityReportStatus[] = [
+  'pending',
+  'completed',
+];
+
+export interface SuspiciousActivityReport {
+  id: string;
+  createdAt: string;
+  status: SuspiciousActivityReportStatus;
+  hasFile: boolean;
+  createdBy: string;
+}
+
+export function adaptSuspiciousActivityReport(
+  dto: SuspiciousActivityReportDto,
+): SuspiciousActivityReport {
+  return {
+    id: dto.id,
+    createdAt: dto.created_at,
+    status: dto.status,
+    hasFile: dto.has_file,
+    createdBy: dto.created_by,
+  };
+}
+
+export interface CreateSuspiciousActivityReportBody {
+  status: SuspiciousActivityReportStatus;
+}
+
+export function adaptCreateSuspiciousActivityReportBody(
+  body: CreateSuspiciousActivityReportBody,
+): CreateSuspiciousActivityReportBodyDto {
+  return {
+    status: body.status,
+  };
+}
+
+export interface UpdateSuspiciousActivityReportBody {
+  status: SuspiciousActivityReportStatus;
+}
+
+export function adaptUpdateSuspiciousActivityReportBody(
+  body: UpdateSuspiciousActivityReportBody,
+): UpdateSuspiciousActivityReportBodyDto {
+  return {
+    status: body.status,
+  };
+}
+
+export interface UploadSuspiciousActivityReportBody {
+  file: File;
+}
+
+export function adaptUploadSuspiciousActivityReportBody(
+  body: UploadSuspiciousActivityReportBody,
+): UploadSuspiciousActivityReportBodyDto {
+  return {
+    file: body.file,
   };
 }
