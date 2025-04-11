@@ -7,7 +7,6 @@ import { handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { redirect, useFetcher } from '@remix-run/react';
-import { Dict } from '@swan-io/boxed';
 import { useForm } from '@tanstack/react-form';
 import { decode } from 'decode-formdata';
 import { serialize } from 'object-to-formdata';
@@ -140,15 +139,6 @@ export function AddComment({ caseId }: { caseId: string }) {
     multiple: true,
     maxSize: MAX_FILE_SIZE,
   });
-
-  if (!form.state.isTouched && lastData?.success === false && lastData?.errors) {
-    Dict.entries(lastData.errors.fieldErrors).forEach(([field, errors]) =>
-      form.setFieldMeta(field, (prev) => ({
-        ...prev,
-        errors: errors ?? [],
-      })),
-    );
-  }
 
   return (
     <form

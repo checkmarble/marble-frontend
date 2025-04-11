@@ -8,8 +8,12 @@ import {
   type CaseStatusForCaseEventDto,
   type CaseTagDto,
   type CreateCaseBodyDto,
+  type CreateSuspiciousActivityReportBodyDto,
   type Error,
+  type SuspiciousActivityReportDto,
   type UpdateCaseBodyDto,
+  type UpdateSuspiciousActivityReportBodyDto,
+  type UploadSuspiciousActivityReportBodyDto,
 } from 'marble-api';
 import { isNonNullish } from 'remeda';
 import { match } from 'ts-pattern';
@@ -385,5 +389,71 @@ export function adaptUpdateCaseBodyDto(body: CaseUpdateBody): UpdateCaseBodyDto 
     inbox_id: body.inboxId,
     status: body.status,
     outcome: body.outcome,
+  };
+}
+
+//
+// Suspicious Activity Report
+//
+
+export type SuspiciousActivityReportStatus = 'pending' | 'completed';
+export const suspiciousActivityReportStatuses: SuspiciousActivityReportStatus[] = [
+  'pending',
+  'completed',
+];
+
+export interface SuspiciousActivityReport {
+  id: string;
+  createdAt: string;
+  status: SuspiciousActivityReportStatus;
+  hasFile: boolean;
+  createdBy: string;
+}
+
+export function adaptSuspiciousActivityReport(
+  dto: SuspiciousActivityReportDto,
+): SuspiciousActivityReport {
+  return {
+    id: dto.id,
+    createdAt: dto.created_at,
+    status: dto.status,
+    hasFile: dto.has_file,
+    createdBy: dto.created_by,
+  };
+}
+
+export interface CreateSuspiciousActivityReportBody {
+  status: SuspiciousActivityReportStatus;
+}
+
+export function adaptCreateSuspiciousActivityReportBody(
+  body: CreateSuspiciousActivityReportBody,
+): CreateSuspiciousActivityReportBodyDto {
+  return {
+    status: body.status,
+  };
+}
+
+export interface UpdateSuspiciousActivityReportBody {
+  status: SuspiciousActivityReportStatus;
+}
+
+export function adaptUpdateSuspiciousActivityReportBody(
+  body: UpdateSuspiciousActivityReportBody,
+): UpdateSuspiciousActivityReportBodyDto {
+  return {
+    status: body.status,
+  };
+}
+
+export interface UploadSuspiciousActivityReportBody {
+  file: File;
+}
+
+export function adaptUploadSuspiciousActivityReportBody(
+  body: UploadSuspiciousActivityReportBody,
+): UploadSuspiciousActivityReportBodyDto {
+  return {
+    file: body.file,
   };
 }

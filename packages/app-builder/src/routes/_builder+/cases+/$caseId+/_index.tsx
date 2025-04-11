@@ -7,7 +7,7 @@ import {
 import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
 import { type CurrentUser } from '@app-builder/models';
-import { type CaseDetail } from '@app-builder/models/cases';
+import { type CaseDetail, type SuspiciousActivityReport } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -25,6 +25,7 @@ type CaseManagerPageLoaderData = {
   currentInbox: Inbox;
   currentUser: CurrentUser;
   inboxes: Inbox[];
+  reports: SuspiciousActivityReport[];
 };
 
 export const loader = async ({
@@ -39,8 +40,9 @@ export const loader = async ({
   const caseId = fromParams(params, 'caseId');
 
   // Get case by ID
-  const [currentCase, inboxes] = await Promise.all([
+  const [currentCase, reports, inboxes] = await Promise.all([
     cases.getCase({ caseId }),
+    cases.listSuspiciousActivityReports({ caseId }),
     inbox.listInboxes(),
   ]);
 
@@ -57,6 +59,7 @@ export const loader = async ({
   return {
     case: currentCase,
     currentInbox,
+    reports,
     currentUser: user,
     inboxes,
   };
@@ -100,7 +103,12 @@ export const handle = {
 };
 
 export default function CaseManagerIndexPage() {
-  const { case: details, inboxes, currentUser } = useLoaderData<CaseManagerPageLoaderData>();
+  const {
+    case: details,
+    inboxes,
+    currentUser,
+    reports,
+  } = useLoaderData<CaseManagerPageLoaderData>();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -124,6 +132,7 @@ export default function CaseManagerIndexPage() {
             containerRef={containerRef}
             inboxes={inboxes}
             currentUser={currentUser}
+            reports={reports}
           />
           <aside className="border-grey-90 bg-grey-100 sticky top-0 border-l p-8"></aside>
         </Page.Content>

@@ -1,6 +1,6 @@
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type CurrentUser } from '@app-builder/models';
-import { type CaseDetail } from '@app-builder/models/cases';
+import { type CaseDetail, type SuspiciousActivityReport } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
 import { CloseCase } from '@app-builder/routes/ressources+/cases+/close-case';
@@ -28,11 +28,13 @@ export const CaseDetails = ({
   containerRef,
   inboxes,
   currentUser,
+  reports,
 }: {
   detail: CaseDetail;
   containerRef: RefObject<HTMLDivElement>;
   inboxes: Inbox[];
   currentUser: CurrentUser;
+  reports: SuspiciousActivityReport[];
 }) => {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
@@ -112,7 +114,7 @@ export const CaseDetails = ({
         </div>
         <div className="grid grid-cols-[120px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">Report of suspicion</span>
-          <EditCaseSuspicion id={detail.id} />
+          <EditCaseSuspicion id={detail.id} reports={reports} />
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
