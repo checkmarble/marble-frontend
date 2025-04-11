@@ -67,6 +67,7 @@ export function DiscoveryList({ onSelect }: SmartMenuListProps) {
               return (
                 <SubMenu
                   key={_path}
+                  value={_path}
                   onSelect={onSelect}
                   trigger={<SubMenuFieldTrigger {...{ label, depth: path.length, options }} />}
                   options={options}
@@ -158,17 +159,18 @@ function MenuTitle({ operandType, count, className }: MenuTitleProps) {
 }
 
 type SubMenuProps = {
+  value?: string;
   trigger: ReactNode;
   options: EnrichedMenuOption[];
   onSelect: (astNode: AstNode) => void;
 };
-function SubMenu({ trigger, options, onSelect }: SubMenuProps) {
+function SubMenu({ value, trigger, options, onSelect }: SubMenuProps) {
   const { t } = useTranslation(['common', 'scenarios']);
   const language = useFormatLanguage();
   const customLists = AstBuilderDataSharpFactory.useSharp().value.data.customLists;
 
   return (
-    <MenuCommand.SubMenu forceMount trigger={trigger} className="w-96">
+    <MenuCommand.SubMenu value={value} forceMount trigger={trigger} className="w-96">
       <MenuCommand.List>
         <MenuCommand.Group>
           {options.map((option) => {

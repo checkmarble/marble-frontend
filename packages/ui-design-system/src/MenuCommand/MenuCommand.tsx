@@ -90,17 +90,19 @@ function Root({ hover = false, ...props }: RootProps) {
 }
 
 type SubMenuProps = Omit<RootProps, 'open' | 'onOpenChange'> & {
+  value?: string;
   className?: string;
   trigger: React.ReactNode;
   forceMount?: boolean;
 };
-function SubMenu({ children, trigger, forceMount, className, ...props }: SubMenuProps) {
+function SubMenu({ value, children, trigger, forceMount, className, ...props }: SubMenuProps) {
   const [open, setOpen] = React.useState(false);
   return (
     <Command.Group forceMount={forceMount}>
       <Root {...props} hover open={open} onOpenChange={setOpen}>
         <Trigger>
           <Item
+            value={value}
             className="group/menu-item grid grid-cols-[1fr_20px]"
             onSelect={() => setOpen(true)}
           >
