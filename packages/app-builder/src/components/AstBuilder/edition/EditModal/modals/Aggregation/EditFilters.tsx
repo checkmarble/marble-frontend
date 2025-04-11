@@ -92,8 +92,8 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
               : [];
 
             const displayName =
-              complexFilter && !isUndefinedAstNode(filter.namedChildren.options.namedChildren.value)
-                ? getAstNodeDisplayName(filter.namedChildren.options, {
+              complexFilter && !isUndefinedAstNode(filter.namedChildren.value.namedChildren.value)
+                ? getAstNodeDisplayName(filter.namedChildren.value, {
                     t: stringifyContextT,
                     language,
                     customLists,
@@ -157,7 +157,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                                 .when(
                                   isComplexAggregationFilter,
                                   (compFilter: ComplexAggregationFilterAstNode) =>
-                                    compFilter.namedChildren.options.namedChildren.value,
+                                    compFilter.namedChildren.value.namedChildren.value,
                                 )
                                 .otherwise(() => NewUndefinedAstNode());
 
@@ -179,7 +179,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                               .when(
                                 isComplexAggregationFilter,
                                 (compFilter: ComplexAggregationFilterAstNode) =>
-                                  compFilter.namedChildren.options.namedChildren.value,
+                                  compFilter.namedChildren.value.namedChildren.value,
                               )
                               .otherwise(() => NewUndefinedAstNode());
 
@@ -187,7 +187,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                               tableName: filter.namedChildren.tableName,
                               fieldName: filter.namedChildren.fieldName,
                               operator: NewConstantAstNode({ constant: operator }),
-                              options: NewFuzzyMatchFilterOptionsAstNode({ value: valueNode }),
+                              value: NewFuzzyMatchFilterOptionsAstNode({ value: valueNode }),
                             };
 
                             // TODO: Manage complex operator change
@@ -217,9 +217,9 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                           <Button variant="secondary" onClick={() => setIsEditingFilter(true)}>
                             {displayName}
                           </Button>
-                          {filter.namedChildren.options && isEditingFilter ? (
+                          {filter.namedChildren.value && isEditingFilter ? (
                             <OperandEditModal
-                              node={filter.namedChildren.options}
+                              node={filter.namedChildren.value}
                               onSave={() => {
                                 setIsEditingFilter(false);
                               }}

@@ -111,7 +111,7 @@ export type ComplexAggregationFilterAstNode = {
     tableName: ConstantAstNode<string | null>;
     fieldName: ConstantAstNode<string | null>;
     operator: ConstantAstNode<'FuzzyMatch'>;
-    options: FuzzyMatchFilterOptionsAstNode;
+    value: FuzzyMatchFilterOptionsAstNode;
   };
 };
 
