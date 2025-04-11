@@ -374,6 +374,9 @@ export function CaseEvents({
   inboxes: Inbox[];
 }) {
   const [showAll, setShowAll] = useState(false);
+  const [hiddenItemsCountAfter, setHiddenItemsCountAfter] = useState(0);
+  const [hiddenItemsCountBefore, setHiddenItemsCountBefore] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
   const filteredEvents = useMemo(
     () =>
       (showLogs ? events : events.filter((e) => e.eventType === 'comment_added')).sort(
@@ -382,48 +385,63 @@ export function CaseEvents({
     [events, showLogs],
   );
 
-  const [hiddenItemsCount, setHiddenItemsCount] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!containerRef.current) return;
 
     const container = containerRef.current;
     const items = container.children;
-    let visibleCount = 0;
+    let itemsBeforeVisible = 0;
+    let itemsAfterVisible = 0;
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        console.log('nb of entries', entries.length);
+      (_) => {
+        // Reset counts
+        itemsBeforeVisible = 0;
+        itemsAfterVisible = 0;
 
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            visibleCount++;
-          } else {
-            visibleCount--;
+        // Get container bounds
+        const containerRect = container.getBoundingClientRect();
+        const containerTop = containerRect.top;
+        const containerBottom = containerRect.bottom;
+
+        // Check each item's position relative to container
+        Array.from(items).forEach((item) => {
+          const itemRect = item.getBoundingClientRect();
+          if (itemRect.bottom < containerTop) {
+            itemsBeforeVisible++;
+          } else if (itemRect.top > containerBottom) {
+            itemsAfterVisible++;
           }
         });
-        setHiddenItemsCount(filteredEvents.length - visibleCount);
+
+        setHiddenItemsCountBefore(itemsBeforeVisible);
+        setHiddenItemsCountAfter(itemsAfterVisible);
       },
       {
         root: container,
-        rootMargin: '5px 0px 5px 0px',
-        threshold: 1, // Adjust this value to control when an item is considered visible
+        rootMargin: '0px',
+        threshold: 0,
       },
     );
 
-    // First, check which items are initially visible
-    const containerRect = container.getBoundingClientRect();
+    // Observe all items
     Array.from(items).forEach((item) => {
-      const itemRect = item.getBoundingClientRect();
-      if (itemRect.top >= containerRect.top && itemRect.bottom <= containerRect.bottom) {
-        visibleCount++;
-      }
       observer.observe(item);
     });
 
-    // Set initial hidden count
-    setHiddenItemsCount(filteredEvents.length - visibleCount);
+    // Initial check
+    const containerRect = container.getBoundingClientRect();
+    Array.from(items).forEach((item) => {
+      const itemRect = item.getBoundingClientRect();
+      if (itemRect.bottom < containerRect.top) {
+        itemsBeforeVisible++;
+      } else if (itemRect.top > containerRect.bottom) {
+        itemsAfterVisible++;
+      }
+    });
+
+    setHiddenItemsCountBefore(itemsBeforeVisible);
+    setHiddenItemsCountAfter(itemsAfterVisible);
 
     return () => observer.disconnect();
   }, [filteredEvents]);
@@ -436,10 +454,10 @@ export function CaseEvents({
       <div className="bg-grey-100 sticky left-0 top-0 z-[-15] flex w-full items-center justify-between pl-6">
         <span
           className={cn('text-grey-50 text-xs', {
-            'text-grey-100': showAll,
+            'text-grey-100': showAll || hiddenItemsCountBefore === 0,
           })}
         >
-          {hiddenItemsCount} newer
+          {hiddenItemsCountBefore} newer
         </span>
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="small">
@@ -486,7 +504,7 @@ export function CaseEvents({
             'text-grey-100': showAll,
           })}
         >
-          {hiddenItemsCount} older
+          {hiddenItemsCountAfter === 0 ? `No older events` : `${hiddenItemsCountAfter} older`}
         </span>
       )}
     </div>
