@@ -173,7 +173,8 @@
   post:
     tags:
       - Cases
-    summary: Assign a case to a user
+    summary: Assign a user to a case
+    operationId: assignUser
     security:
       - bearerAuth: []
     parameters:
@@ -205,7 +206,8 @@
   delete:
     tags:
       - Cases
-    summary: Unassign a case
+    summary: Unassign a user from a case
+    operationId: unassignUser
     security:
       - bearerAuth: []
     parameters:
@@ -562,7 +564,13 @@ components:
       enum: ['pending', 'approve', 'decline']
     CaseStatusDto:
       type: string
-      enum: ['open', 'investigating', 'discarded', 'resolved']
+      enum: ['pending', 'investigating', 'closed']
+    CaseStatusForCaseEventDto:
+      # Old statuses (open, discarded and resolved) are kept for backward compatibility with existing case events.
+      enum: ['pending', 'investigating', 'closed', 'open', 'discarded', 'resolved']
+    CaseOutcomeDto:
+      type: string
+      enum: ['false_positive', 'valuable_alert', 'confirmed_risk', 'unset']
     CaseDto:
       type: object
       required:
@@ -587,6 +595,8 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/CaseStatusDto'
+        outcome:
+          $ref: '#/components/schemas/CaseOutcomeDto'
         inbox_id:
           type: string
           format: uuid
@@ -747,6 +757,8 @@ components:
           format: uuid
         status:
           $ref: '#/components/schemas/CaseStatusDto'
+        outcome:
+          $ref: '#/components/schemas/CaseOutcomeDto'
     AssignCaseBodyDto:
       type: object
       required: ['user_id']
@@ -777,6 +789,7 @@ components:
         mapping:
           case_created: '#/components/schemas/CaseCreatedEventDto'
           status_updated: '#/components/schemas/CaseStatusUpdatedEventDto'
+          outcome_updated: '#/components/schemas/CaseOutcomeUpdatedEventDto'
           decision_added: '#/components/schemas/DecisionAddedEventDto'
           comment_added: '#/components/schemas/CommentAddedEventDto'
           name_updated: '#/components/schemas/NameUpdatedEventDto'
@@ -821,7 +834,20 @@ components:
             - user_id
           properties:
             new_value:
-              $ref: '#/components/schemas/CaseStatusDto'
+              $ref: '#/components/schemas/CaseStatusForCaseEventDto'
+            user_id:
+              type: string
+              format: uuid
+    CaseOutcomeUpdatedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - new_value
+            - user_id
+          properties:
+            new_value:
+              $ref: '#/components/schemas/CaseOutcomeDto'
             user_id:
               type: string
               format: uuid
@@ -960,6 +986,7 @@ components:
         - type: object
           required:
             - new_value
+            - user_id
           properties:
             user_id:
               type: string

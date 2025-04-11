@@ -1,6 +1,6 @@
 import * as LabelPrimitive from '@radix-ui/react-label';
-import clsx from 'clsx';
 import * as React from 'react';
+import { cn } from 'ui-design-system';
 
 interface FormLabelProps
   extends Omit<React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>, 'htmlFor'> {
@@ -16,7 +16,7 @@ export const FormLabel = React.forwardRef<
     <LabelPrimitive.Root
       ref={ref}
       htmlFor={name}
-      className={clsx(className, {
+      className={cn(className, {
         'text-red-47': valid !== undefined && !valid,
       })}
       {...props}

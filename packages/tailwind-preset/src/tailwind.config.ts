@@ -61,7 +61,9 @@ export default {
       l: ['20px', '30px'],
       m: ['16px', '24px'],
       s: ['14px', '21px'],
+      r: ['13px', '20px'],
       xs: ['12px', '18px'],
+      '2xs': ['10px', '12px'],
     },
     extend: {
       fontFamily: {
