@@ -2,7 +2,7 @@ import { matchSorter } from '@app-builder/utils/search';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
-import { CaseStatus, useCaseStatuses } from '../../CaseStatus';
+import { CaseStatusPreview, useCaseStatuses } from '../../CaseStatus';
 import { useStatusesFilter } from '../CasesFiltersContext';
 
 export function StatusesFilter() {
@@ -33,7 +33,7 @@ export function StatusesFilter() {
                 value={status.value}
                 className="align-baseline"
               >
-                <CaseStatus type="full" size="big" status={status.value} />
+                <CaseStatusPreview type="full" size="big" status={status.value} />
               </SelectWithCombobox.ComboboxItem>
             );
           })}

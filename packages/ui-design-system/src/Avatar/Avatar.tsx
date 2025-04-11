@@ -2,10 +2,15 @@ import { type AvatarProps as RootAvatarProps, Fallback, Image, Root } from '@rad
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const avatar = cva(
-  'inline-flex select-none items-center justify-center overflow-hidden rounded-full bg-purple-96 shrink-0',
+  'inline-flex select-none items-center justify-center overflow-hidden rounded-full shrink-0',
   {
     variants: {
+      color: {
+        default: 'bg-purple-96',
+        grey: 'bg-grey-90',
+      },
       size: {
+        xxs: 'size-6 text-2xs',
         xs: 'size-6 text-xs',
         s: 'size-8 text-s',
         m: 'size-10 text-m',
@@ -15,6 +20,7 @@ const avatar = cva(
     },
     defaultVariants: {
       size: 'm',
+      color: 'default',
     },
   },
 );
@@ -26,11 +32,20 @@ export type AvatarProps = Omit<RootAvatarProps, 'asChild'> &
     src?: string;
   };
 
-export function Avatar({ firstName, lastName, src, size, className, ...props }: AvatarProps) {
+export function Avatar({
+  firstName,
+  lastName,
+  src,
+  size,
+  color,
+  className,
+  ...props
+}: AvatarProps) {
   return (
     <Root
       className={avatar({
         size,
+        color,
         className,
       })}
       {...props}
