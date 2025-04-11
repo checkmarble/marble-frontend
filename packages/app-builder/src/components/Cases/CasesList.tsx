@@ -52,11 +52,12 @@ export function CasesList({
         enableSorting: false,
         cell: ({ getValue, row }) => {
           const caseName = getValue();
+
           return (
             <Tooltip.Default content={caseName}>
               <Link
                 className="text-purple-65 text-s line-clamp-2 w-fit font-normal underline"
-                to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(row.id) })}
+                to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(row.original.id) })}
               >
                 {caseName}
               </Link>
