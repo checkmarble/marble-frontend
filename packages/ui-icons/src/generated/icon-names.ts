@@ -36,6 +36,8 @@ export const iconNames = [
   'empty-flag',
   'enum',
   'error',
+  'eye-slash',
+  'eye',
   'field',
   'filters',
   'full-flag',

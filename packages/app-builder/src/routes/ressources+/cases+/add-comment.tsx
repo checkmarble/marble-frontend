@@ -116,7 +116,6 @@ export function AddComment({ caseId }: { caseId: string }) {
       });
     },
     validators: {
-      onChange: schema,
       onBlur: schema,
       onSubmit: schema,
     },

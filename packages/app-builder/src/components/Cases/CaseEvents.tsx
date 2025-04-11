@@ -23,7 +23,7 @@ import { differenceInDays } from 'date-fns';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Avatar, Button, Tooltip } from 'ui-design-system';
+import { Avatar, Button, cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { casesI18n } from './cases-i18n';
@@ -43,7 +43,7 @@ const EventTime = ({ time }: { time: string }) => {
           {formatDateTime(date, {
             language,
             timeStyle: is6daysOld ? 'short' : undefined,
-            dateStyle: is6daysOld ? undefined : 'full',
+            dateStyle: is6daysOld ? undefined : 'short',
           })}
         </span>
       }
@@ -250,7 +250,9 @@ const FileAddedDetail = ({ event }: { event: FileAddedEvent }) => {
           i18nKey="cases:case_detail.history.event_detail.file_added"
           components={{
             Actor: <span className="font-bold capitalize" />,
-            File: <span className="border-grey-90 border px-1.5 py-[3px] font-bold capitalize" />,
+            File: (
+              <span className="border-grey-90 flex items-center gap-1 rounded border px-1.5 py-0.5 text-xs font-medium" />
+            ),
           }}
           values={{
             actor: user ? getFullName(user) : 'Marble',
@@ -371,6 +373,7 @@ export function CaseEvents({
   showLogs?: boolean;
   inboxes: Inbox[];
 }) {
+  const [showAll, setShowAll] = useState(false);
   const filteredEvents = useMemo(
     () =>
       (showLogs ? events : events.filter((e) => e.eventType === 'comment_added')).sort(
@@ -431,21 +434,30 @@ export function CaseEvents({
         <div className="bg-grey-90 -z-10 h-full w-px" />
       </div>
       <div className="bg-grey-100 sticky left-0 top-0 z-[-15] flex w-full items-center justify-between pl-6">
-        {hiddenItemsCount > 0 ? (
-          <span className="text-grey-50 text-xs">{hiddenItemsCount} other</span>
-        ) : null}
+        <span
+          className={cn('text-grey-50 text-xs', {
+            'text-grey-100': showAll,
+          })}
+        >
+          {hiddenItemsCount} newer
+        </span>
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="small">
-            <Icon icon="plus" className="size-4" />
-            <span className="text-xs">Reset display</span>
+            <Icon icon="filters" className="size-3.5" />
+            <span className="text-xs">Filters</span>
           </Button>
-          <Button variant="secondary" size="small">
-            <Icon icon="plus" className="size-4" />
-            <span className="text-xs">View all</span>
+          <Button variant="secondary" onClick={() => setShowAll(!showAll)} size="small">
+            <Icon icon={showAll ? 'eye-slash' : 'eye'} className="size-3.5" />
+            <span className="text-xs">{showAll ? 'View less' : 'View all'}</span>
           </Button>
         </div>
       </div>
-      <div ref={containerRef} className="flex max-h-[400px] flex-col gap-3 overflow-y-scroll">
+      <div
+        ref={containerRef}
+        className={cn('flex flex-col gap-3', {
+          'max-h-[400px] overflow-y-scroll': !showAll,
+        })}
+      >
         {filteredEvents.map((event) =>
           match(event)
             .with({ eventType: 'case_created' }, (e) => <CaseCreatedDetail event={e} />)
@@ -468,6 +480,15 @@ export function CaseEvents({
             .exhaustive(),
         )}
       </div>
+      {showAll ? null : (
+        <span
+          className={cn('bg-grey-100 text-grey-50 sticky left-0 top-0 z-[-15] pl-6 text-xs', {
+            'text-grey-100': showAll,
+          })}
+        >
+          {hiddenItemsCount} older
+        </span>
+      )}
     </div>
   );
 }
