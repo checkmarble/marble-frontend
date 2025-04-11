@@ -18,7 +18,10 @@ const reviewSanctionSchema = z.object({
   matchId: z.string(),
   status: z.union([z.literal('confirmed_hit'), z.literal('no_hit')]),
   comment: z.string().optional(),
-  whitelist: z.boolean().optional(),
+  whitelist: z
+    .preprocess((onoff) => onoff === 'on', z.boolean())
+    .default(false)
+    .optional(),
 });
 
 export async function action({ request }: ActionFunctionArgs) {
