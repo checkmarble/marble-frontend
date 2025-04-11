@@ -1,5 +1,5 @@
 import { select } from 'radash';
-import type { FormEvent } from 'react';
+import type { FormEvent, LegacyRef, MutableRefObject, RefCallback } from 'react';
 
 export const submitOnBlur: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement> = (
   event,
@@ -33,3 +33,17 @@ export const getFieldErrors = (errors: ({ message: string } | undefined)[]) =>
     (e) => (e as { message: string }).message,
     (e) => e !== undefined,
   );
+
+export const mergeRefs = <T>(
+  refs: Array<MutableRefObject<T> | LegacyRef<T> | undefined | null>,
+): RefCallback<T> => {
+  return (value) => {
+    refs.forEach((ref) => {
+      if (typeof ref === 'function') {
+        ref(value);
+      } else if (ref != null) {
+        (ref as MutableRefObject<T | null>).current = value;
+      }
+    });
+  };
+};
