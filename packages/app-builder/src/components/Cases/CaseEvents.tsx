@@ -385,65 +385,40 @@ export function CaseEvents({
     [events, showLogs],
   );
 
+  console.log('Filtered Events', filteredEvents);
+
   useEffect(() => {
     if (!containerRef.current) return;
 
     const container = containerRef.current;
-    const items = container.children;
-    let itemsBeforeVisible = 0;
-    let itemsAfterVisible = 0;
-
-    const observer = new IntersectionObserver(
-      (_) => {
-        // Reset counts
-        itemsBeforeVisible = 0;
-        itemsAfterVisible = 0;
-
-        // Get container bounds
-        const containerRect = container.getBoundingClientRect();
-        const containerTop = containerRect.top;
-        const containerBottom = containerRect.bottom;
-
-        // Check each item's position relative to container
-        Array.from(items).forEach((item) => {
-          const itemRect = item.getBoundingClientRect();
-          if (itemRect.bottom < containerTop) {
-            itemsBeforeVisible++;
-          } else if (itemRect.top > containerBottom) {
-            itemsAfterVisible++;
-          }
-        });
-
-        setHiddenItemsCountBefore(itemsBeforeVisible);
-        setHiddenItemsCountAfter(itemsAfterVisible);
-      },
-      {
-        root: container,
-        rootMargin: '0px',
-        threshold: 0,
-      },
-    );
-
-    // Observe all items
-    Array.from(items).forEach((item) => {
-      observer.observe(item);
-    });
-
-    // Initial check
     const containerRect = container.getBoundingClientRect();
-    Array.from(items).forEach((item) => {
-      const itemRect = item.getBoundingClientRect();
-      if (itemRect.bottom < containerRect.top) {
-        itemsBeforeVisible++;
-      } else if (itemRect.top > containerRect.bottom) {
-        itemsAfterVisible++;
+    const items = Array.from(container.children);
+
+    const callback = () => {
+      // Reset counts
+      let itemsBeforeVisible = 0;
+      let itemsAfterVisible = 0;
+
+      // Check each item's position relative to container
+      // TODO: Add margin in order to count all items
+      for (const item of items) {
+        const itemRect = item.getBoundingClientRect();
+        if (itemRect.bottom < containerRect.top) {
+          itemsBeforeVisible++;
+        } else if (itemRect.top > containerRect.bottom) {
+          itemsAfterVisible++;
+        }
       }
-    });
 
-    setHiddenItemsCountBefore(itemsBeforeVisible);
-    setHiddenItemsCountAfter(itemsAfterVisible);
+      setHiddenItemsCountBefore(itemsBeforeVisible);
+      setHiddenItemsCountAfter(itemsAfterVisible);
+    };
 
-    return () => observer.disconnect();
+    callback();
+
+    container.addEventListener('scroll', callback);
+
+    return () => container.removeEventListener('scroll', callback);
   }, [filteredEvents]);
 
   return (
@@ -472,7 +447,7 @@ export function CaseEvents({
       </div>
       <div
         ref={containerRef}
-        className={cn('flex flex-col gap-3', {
+        className={cn('flex flex-col gap-3 overflow-x-hidden', {
           'max-h-[400px] overflow-y-scroll': !showAll,
         })}
       >
