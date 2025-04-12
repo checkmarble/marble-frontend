@@ -18,7 +18,7 @@ import { decode } from 'decode-formdata';
 import { serialize } from 'object-to-formdata';
 import { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
-import { match, P } from 'ts-pattern';
+import { match } from 'ts-pattern';
 import { Button, cn, MenuCommand, Modal } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 import { z } from 'zod';
@@ -70,29 +70,33 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     const promises = [];
 
-    promises.push(
-      match(data)
-        .with({ status: P.not('none'), reportId: P.nullish }, (d) =>
-          cases.createSuspiciousActivityReport({
-            caseId: d.caseId,
-            body: { status: d.status },
-          }),
-        )
-        .with({ status: 'none', reportId: P.nonNullable }, (d) =>
-          cases.deleteSuspiciousActivityReport({
-            caseId: d.caseId,
-            reportId: d.reportId,
-          }),
-        )
-        .with({ status: P.not('none'), reportId: P.nonNullable }, (d) =>
+    if (data.status !== 'none') {
+      if (data.reportId) {
+        promises.push(
           cases.updateSuspiciousActivityReport({
             caseId: data.caseId,
-            reportId: d.reportId,
-            body: { status: d.status },
+            reportId: data.reportId,
+            body: { status: data.status },
           }),
-        )
-        .otherwise(() => null),
-    );
+        );
+      } else {
+        promises.push(
+          cases.createSuspiciousActivityReport({
+            caseId: data.caseId,
+            body: { status: data.status },
+          }),
+        );
+      }
+    } else if (data.reportId) {
+      promises.push(
+        cases.deleteSuspiciousActivityReport({
+          caseId: data.caseId,
+          reportId: data.reportId,
+        }),
+      );
+    }
+
+    console.log('Promises', promises);
 
     if (data.file && data.reportId) {
       const path = getCaseSuspiciousActivityReportFileUploadEndpointById(
@@ -103,7 +107,7 @@ export async function action({ request }: ActionFunctionArgs) {
       body.append('file', data.file);
 
       promises.push(
-        fetch(`${getServerEnv('MARBLE_API_URL_SERVER')}${path}`, {
+        fetch(new URL(path, getServerEnv('MARBLE_API_URL_SERVER')), {
           method: 'POST',
           body,
           headers: { Authorization: `Bearer ${token}` },
@@ -170,7 +174,7 @@ export const EditCaseSuspicion = ({
 
   const form = useForm({
     onSubmit: ({ value }) => {
-      submit(serialize(value, { indices: true }), {
+      submit(serialize(value), {
         method: 'POST',
         action: getRoute('/ressources/cases/edit-suspicion'),
         encType: 'multipart/form-data',
@@ -190,10 +194,8 @@ export const EditCaseSuspicion = ({
 
   useEffect(() => {
     if (lastData?.success) {
-      form.reset();
       setOpenReportModal(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastData]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
