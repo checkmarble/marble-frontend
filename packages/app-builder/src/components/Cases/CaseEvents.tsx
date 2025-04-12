@@ -385,8 +385,6 @@ export function CaseEvents({
     [events, showLogs],
   );
 
-  console.log('Filtered Events', filteredEvents);
-
   useEffect(() => {
     if (!containerRef.current) return;
 
