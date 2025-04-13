@@ -24,7 +24,7 @@ const createLinkFormSchema = z.object({
   name: z
     .string()
     .min(1)
-    .regex(/^[a-z]+[a-z0-9_]+$/, {
+    .regex(/^[a-z]+[a-z0-9_]*$/, {
       message: 'Only lower case alphanumeric and _, must start with a letter',
     }),
   parentTableId: z.string().min(1).uuid(),
@@ -95,7 +95,12 @@ export function CreateLink({
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <Modal.Trigger asChild>{children}</Modal.Trigger>
-      <Modal.Content>
+      <Modal.Content
+        /* Prevent auto-focus when the modal opens */
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+        }}
+      >
         <CreateLinkContent
           thisTable={thisTable}
           otherTables={otherTables}
@@ -119,18 +124,46 @@ function CreateLinkContent({
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
-  const [selectedParentTable, setSelectedParentTable] = useState(otherTables[0]);
+
+  // Add state for tracking selected parent table
+  const [selectedParentTableId, setSelectedParentTableId] = useState(otherTables[0].id);
+
+  const extendedSchema = createLinkFormSchema.superRefine(({ name }, ctx) => {
+    // Compare with existing link names on thisTable
+    if (thisTable.linksToSingle?.some((link) => link.name.toLowerCase() === name.toLowerCase())) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['name'],
+        message: 'This link name already exists in this table.',
+      });
+    }
+  });
+
+  // Get current selected table
+  const selectedParentTable = useMemo(() => {
+    return otherTables.find(({ id }) => id === selectedParentTableId) ?? otherTables[0];
+  }, [otherTables, selectedParentTableId]);
+
+  // Get unique fields from the selected table
   const selectedParentTableFields = useMemo(() => {
     return selectedParentTable.fields.filter(
       (field) => field.unicityConstraint === 'active_unique_constraint',
     );
   }, [selectedParentTable]);
 
+  // Default parent field ID based on selected table
+  const defaultParentFieldId = useMemo(() => {
+    const uniqueField = selectedParentTable.fields.find(
+      (field) => field.unicityConstraint === 'active_unique_constraint',
+    );
+    return uniqueField?.id || '';
+  }, [selectedParentTable]);
+
   const form = useForm({
     defaultValues: {
-      name: '',
-      parentTableId: otherTables[0].id,
-      parentFieldId: selectedParentTableFields[0]?.id as string,
+      name: selectedParentTable.name,
+      parentTableId: selectedParentTable.id,
+      parentFieldId: defaultParentFieldId,
       childTableId: thisTable.id,
       childFieldId: thisTable.fields[0]?.id as string,
     } as CreateLinkForm,
@@ -144,9 +177,9 @@ function CreateLinkContent({
       }
     },
     validators: {
-      onChange: createLinkFormSchema,
-      onBlur: createLinkFormSchema,
-      onSubmit: createLinkFormSchema,
+      onChange: extendedSchema,
+      onBlur: extendedSchema,
+      onSubmit: extendedSchema,
     },
   });
 
@@ -156,12 +189,24 @@ function CreateLinkContent({
     }
   }, [closeModal, fetcher.data?.success, fetcher.state]);
 
+  // Effect to update form values when selectedParentTableId changes
   useEffect(() => {
-    const parentFieldId = selectedParentTableFields[0]?.id;
-    if (!parentFieldId) return;
-    form.setFieldValue('parentFieldId', parentFieldId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedParentTableFields]);
+    // Since we can't directly clear errors with the public API, completely reset the form with updated default values
+    form.reset({
+      name: selectedParentTable.name,
+      parentTableId: selectedParentTableId,
+      parentFieldId: defaultParentFieldId,
+      childTableId: thisTable.id,
+      childFieldId: form.getFieldValue('childFieldId') || (thisTable.fields[0]?.id as string),
+    });
+  }, [
+    form,
+    selectedParentTableId,
+    defaultParentFieldId,
+    selectedParentTable.name,
+    thisTable.id,
+    thisTable.fields,
+  ]);
 
   return (
     <form
@@ -181,7 +226,7 @@ function CreateLinkContent({
                 <FormInput
                   type="text"
                   name={field.name}
-                  defaultValue={field.state.value as string}
+                  value={field.state.value as string}
                   onChange={(e) => field.handleChange(e.currentTarget.value)}
                   onBlur={field.handleBlur}
                   valid={field.state.meta.errors.length === 0}
@@ -212,7 +257,6 @@ function CreateLinkContent({
                       );
                     })}
                   </Select.Default>
-                  v
                 </div>
               )}
             </form.Field>
@@ -240,46 +284,39 @@ function CreateLinkContent({
             </form.Field>
           </div>
           <div className="flex flex-row justify-around gap-2">
-            <form.Field name="parentTableId">
-              {(field) => (
-                <div className="flex flex-1 flex-col gap-2">
-                  <FormLabel name={field.name}>{t('data:create_link.parent_table')}</FormLabel>
-                  <Select.Default
-                    defaultValue={field.state.value}
-                    onValueChange={(id) => {
-                      field.handleChange(id);
-                      const newTable =
-                        otherTables.find(({ id: tableId }) => tableId === id) ?? otherTables[0];
-                      setSelectedParentTable(newTable);
-                    }}
-                  >
-                    {otherTables.map(({ id, name }) => {
-                      return (
-                        <Select.DefaultItem key={id} value={id}>
-                          {name}
-                        </Select.DefaultItem>
-                      );
-                    })}
-                  </Select.Default>
-                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                </div>
-              )}
-            </form.Field>
+            <div className="flex flex-1 flex-col gap-2">
+              <FormLabel name="parentTableId">{t('data:create_link.parent_table')}</FormLabel>
+              <Select.Default
+                value={selectedParentTableId}
+                onValueChange={(id) => {
+                  setSelectedParentTableId(id);
+                }}
+              >
+                {otherTables.map(({ id, name }) => {
+                  return (
+                    <Select.DefaultItem key={id} value={id}>
+                      {name}
+                    </Select.DefaultItem>
+                  );
+                })}
+              </Select.Default>
+            </div>
             <form.Field name="parentFieldId">
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name}>{t('data:create_link.parent_field')}</FormLabel>
-                  <Select.Default
-                    defaultValue={selectedParentTableFields[0]?.id}
-                    onValueChange={field.handleChange}
-                  >
-                    {selectedParentTableFields.map(({ id, name }) => {
-                      return (
+                  <Select.Default value={field.state.value} onValueChange={field.handleChange}>
+                    {selectedParentTableFields.length > 0 ? (
+                      selectedParentTableFields.map(({ id, name }) => (
                         <Select.DefaultItem key={id} value={id}>
                           {name}
                         </Select.DefaultItem>
-                      );
-                    })}
+                      ))
+                    ) : (
+                      <Select.DefaultItem value="">
+                        {t('data:create_link.must_point_to_unique_field')}
+                      </Select.DefaultItem>
+                    )}
                   </Select.Default>
                   <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
