@@ -109,12 +109,9 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
           <EditionAstBuilderOperand
             node={props.right as KnownOperandAstNode}
             coerceDataType={['String', 'String[]']}
-            optionsDataType={(option) => {
-              return (
-                option.operandType === 'CustomList' ||
-                ['String', 'String[]'].includes(option.dataType)
-              );
-            }}
+            optionsDataType={(option) =>
+              option.dataType === 'String' && option.operandType === 'Field'
+            }
             onChange={(newNode) => {
               props.onRightChange(newNode);
             }}
