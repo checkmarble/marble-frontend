@@ -30,7 +30,6 @@
   "create_link.child_field": "الحقل",
   "create_link.parent_table": "يشير إلى الجدول",
   "create_link.parent_field": "في الحقل",
-  "create_link.must_point_to_unique_field": "يجب أن يشير الرابط إلى حقل فريد في الجدول المستهدف. إذا كنت ترغب في الإشارة إلى حقل آخر في الجدول، يرجى تحديده كحقل فريد أولًا.",
   "view_pivot.button": "عرض تفاصيل المحور",
   "view_pivot.title": "تفاصيل المحور",
   "view_pivot.type": "النوع",
@@ -65,5 +64,7 @@
   "unique.col_header": "فريد",
   "viewer.no_object_found": "لم يتم العثور على كائن للمعرف {{objectId}} في {{tableName}}",
   "viewer.object_id": "معرف الكائن",
-  "viewer.object_type": "نوع الكائن"
+  "viewer.object_type": "نوع الكائن",
+  "create_link.must_point_to_unique_field": "يشير الارتباط عادة إلى حقل \"Object_id\" لجدول الهدف.",
+  "create_link.no_matching_type_parent_side": "لا يوجد حقل مطابق على هذا الجدول"
 }

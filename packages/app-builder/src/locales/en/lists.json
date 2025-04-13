@@ -39,5 +39,6 @@
   "detail.values-list.header": "Values",
   "list.row.values_count_one": "value",
   "list.row.values_count_other": "values",
-  "detail.value.create.form.label": "Value"
+  "detail.value.create.form.label": "Value",
+  "list.row.values_count_zero": "value"
 }

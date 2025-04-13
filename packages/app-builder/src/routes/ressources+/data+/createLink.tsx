@@ -20,6 +20,8 @@ export const handle = {
   i18n: ['data', 'navigation', 'common'] satisfies Namespace,
 };
 
+const allowedLinkFieldTypes = ['Int', 'Float', 'String'];
+
 const createLinkFormSchema = z.object({
   name: z
     .string()
@@ -125,39 +127,94 @@ function CreateLinkContent({
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
+  // Filter fields with allowed types
+  const allowedChildFields = useMemo(() => {
+    return thisTable.fields.filter((field) => allowedLinkFieldTypes.includes(field.dataType));
+  }, [thisTable.fields]);
+
   // Add state for tracking selected parent table
   const [selectedParentTableId, setSelectedParentTableId] = useState(otherTables[0].id);
+  // Add state for tracking selected child field
+  const [selectedChildFieldId, setSelectedChildFieldId] = useState(allowedChildFields[0]?.id || '');
 
-  const extendedSchema = createLinkFormSchema.superRefine(({ name }, ctx) => {
-    // Compare with existing link names on thisTable
-    if (thisTable.linksToSingle?.some((link) => link.name.toLowerCase() === name.toLowerCase())) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['name'],
-        message: 'This link name already exists in this table.',
-      });
-    }
-  });
+  // Helper function to render field display with type
+  const renderFieldDisplay = (name: string, dataType: string) => {
+    return (
+      <>
+        {name}
+        {dataType === 'Float' || dataType === 'Int'
+          ? ' (' + t('data:create_field.type_float') + ')'
+          : null}
+      </>
+    );
+  };
+
+  const extendedSchema = createLinkFormSchema.superRefine(
+    ({ name, childFieldId, parentFieldId }, ctx) => {
+      // Compare with existing link names on thisTable
+      if (thisTable.linksToSingle?.some((link) => link.name.toLowerCase() === name.toLowerCase())) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['name'],
+          message: 'This link name already exists in this table.',
+        });
+      }
+
+      // Validate that parent and child fields have the same data type
+      const childField = thisTable.fields.find((field) => field.id === childFieldId);
+      const parentTable = otherTables.find((table) => table.id === selectedParentTableId);
+      const parentField = parentTable?.fields.find((field) => field.id === parentFieldId);
+
+      if (childField && parentField && childField.dataType !== parentField.dataType) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['parentFieldId'],
+          message: `Parent field type (${parentField.dataType}) must match child field type (${childField.dataType})`,
+        });
+      }
+    },
+  );
 
   // Get current selected table
   const selectedParentTable = useMemo(() => {
     return otherTables.find(({ id }) => id === selectedParentTableId) ?? otherTables[0];
   }, [otherTables, selectedParentTableId]);
 
-  // Get unique fields from the selected table
+  // Get current selected child field
+  const selectedChildField = useMemo(() => {
+    return thisTable.fields.find(({ id }) => id === selectedChildFieldId);
+  }, [thisTable.fields, selectedChildFieldId]);
+
+  // Get parent fields with allowed types and unique constraint
   const selectedParentTableFields = useMemo(() => {
+    if (!selectedChildField) return [];
+
     return selectedParentTable.fields.filter(
-      (field) => field.unicityConstraint === 'active_unique_constraint',
+      (field) =>
+        field.unicityConstraint === 'active_unique_constraint' &&
+        field.dataType === selectedChildField.dataType,
     );
-  }, [selectedParentTable]);
+  }, [selectedParentTable, selectedChildField]);
 
   // Default parent field ID based on selected table
   const defaultParentFieldId = useMemo(() => {
-    const uniqueField = selectedParentTable.fields.find(
-      (field) => field.unicityConstraint === 'active_unique_constraint',
+    if (!selectedChildField) return '';
+
+    // Find a field with matching type AND unique constraint
+    const matchingField = selectedParentTable.fields.find(
+      (field) =>
+        field.unicityConstraint === 'active_unique_constraint' &&
+        field.dataType === selectedChildField.dataType &&
+        allowedLinkFieldTypes.includes(field.dataType),
     );
-    return uniqueField?.id || '';
-  }, [selectedParentTable]);
+
+    return matchingField?.id || '';
+  }, [selectedParentTable, selectedChildField]);
+
+  // Check if we have any valid parent fields
+  const hasValidParentFields = useMemo(() => {
+    return selectedParentTableFields.length > 0;
+  }, [selectedParentTableFields]);
 
   const form = useForm({
     defaultValues: {
@@ -165,7 +222,7 @@ function CreateLinkContent({
       parentTableId: selectedParentTable.id,
       parentFieldId: defaultParentFieldId,
       childTableId: thisTable.id,
-      childFieldId: thisTable.fields[0]?.id as string,
+      childFieldId: allowedChildFields[0]?.id || '',
     } as CreateLinkForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
@@ -197,7 +254,7 @@ function CreateLinkContent({
       parentTableId: selectedParentTableId,
       parentFieldId: defaultParentFieldId,
       childTableId: thisTable.id,
-      childFieldId: form.getFieldValue('childFieldId') || (thisTable.fields[0]?.id as string),
+      childFieldId: form.getFieldValue('childFieldId') || allowedChildFields[0]?.id || '',
     });
   }, [
     form,
@@ -205,8 +262,28 @@ function CreateLinkContent({
     defaultParentFieldId,
     selectedParentTable.name,
     thisTable.id,
-    thisTable.fields,
+    allowedChildFields,
   ]);
+
+  // Update effect for child field ID changes
+  useEffect(() => {
+    if (!selectedChildField) return;
+
+    // Find a matching parent field with the same data type
+    const matchingParentField = selectedParentTable.fields.find(
+      (field) =>
+        field.unicityConstraint === 'active_unique_constraint' &&
+        field.dataType === selectedChildField.dataType &&
+        allowedLinkFieldTypes.includes(field.dataType),
+    );
+
+    // Reset the form with the new child field and matching parent field if available
+    form.reset({
+      ...form.state.values,
+      childFieldId: selectedChildFieldId,
+      parentFieldId: matchingParentField?.id || '',
+    });
+  }, [form, selectedChildFieldId, selectedParentTable.fields, selectedChildField]);
 
   return (
     <form
@@ -265,18 +342,19 @@ function CreateLinkContent({
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name}>{t('data:create_link.child_field')}</FormLabel>
                   <Select.Default
-                    defaultValue={field.state.value}
-                    onValueChange={(type) => {
-                      field.handleChange(type);
+                    value={field.state.value}
+                    onValueChange={(id) => {
+                      // Set the state variable first
+                      setSelectedChildFieldId(id);
+                      // Then update the form
+                      field.handleChange(id);
                     }}
                   >
-                    {thisTable.fields.map(({ id, name }) => {
-                      return (
-                        <Select.DefaultItem key={id} value={id}>
-                          {name}
-                        </Select.DefaultItem>
-                      );
-                    })}
+                    {allowedChildFields.map(({ id, name, dataType }) => (
+                      <Select.DefaultItem key={id} value={id}>
+                        {renderFieldDisplay(name, dataType)}
+                      </Select.DefaultItem>
+                    ))}
                   </Select.Default>
                   <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                 </div>
@@ -305,16 +383,20 @@ function CreateLinkContent({
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name}>{t('data:create_link.parent_field')}</FormLabel>
-                  <Select.Default value={field.state.value} onValueChange={field.handleChange}>
-                    {selectedParentTableFields.length > 0 ? (
-                      selectedParentTableFields.map(({ id, name }) => (
+                  <Select.Default
+                    value={hasValidParentFields ? field.state.value : 'no-valid-options'}
+                    onValueChange={field.handleChange}
+                    disabled={!hasValidParentFields}
+                  >
+                    {hasValidParentFields ? (
+                      selectedParentTableFields.map(({ id, name, dataType }) => (
                         <Select.DefaultItem key={id} value={id}>
-                          {name}
+                          {renderFieldDisplay(name, dataType)}
                         </Select.DefaultItem>
                       ))
                     ) : (
-                      <Select.DefaultItem value="">
-                        {t('data:create_link.must_point_to_unique_field')}
+                      <Select.DefaultItem value="no-valid-options">
+                        {t('data:create_link.no_matching_type_parent_side')}
                       </Select.DefaultItem>
                     )}
                   </Select.Default>
