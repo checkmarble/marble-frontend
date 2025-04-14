@@ -65,8 +65,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!success) return Response.json({ success, errors: error.flatten() });
 
-  console.log('Data', data);
-
   try {
     const promises = [];
 
@@ -95,8 +93,6 @@ export async function action({ request }: ActionFunctionArgs) {
         }),
       );
     }
-
-    console.log('Promises', promises);
 
     if (data.file && data.reportId) {
       const path = getCaseSuspiciousActivityReportFileUploadEndpointById(
