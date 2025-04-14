@@ -39,6 +39,7 @@ export type InnerEditFuzzyMatchModalProps = {
   ) => void;
   algorithm: FuzzyMatchAlgorithm;
   onAlorithmChange: (algorithm: FuzzyMatchAlgorithm) => void;
+  rightOperandFilter: (option: { dataType: string; operandType: string }) => boolean;
 };
 
 export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
@@ -109,9 +110,7 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
           <EditionAstBuilderOperand
             node={props.right as KnownOperandAstNode}
             coerceDataType={['String', 'String[]']}
-            optionsDataType={(option) =>
-              option.dataType === 'String' && option.operandType === 'Field'
-            }
+            optionsDataType={props.rightOperandFilter}
             onChange={(newNode) => {
               props.onRightChange(newNode);
             }}

@@ -46,6 +46,14 @@ export function EditFuzzyMatchComparator(props: Omit<OperandEditModalProps, 'nod
         right={fuzzyMatchNode.children[1]}
         algorithm={algorithmNode.constant}
         threshold={thresholdField.value}
+        rightOperandFilter={(option) =>
+          ['String', 'String[]'].includes(
+            getAstNodeDataType(fuzzyMatchNode.children[1], {
+              dataModel,
+              triggerObjectTable: triggerObjectTable.value,
+            }),
+          ) || option.operandType === 'CustomList'
+        }
         onLeftChange={(newNode) => {
           fuzzyMatchNode.children[0] = newNode;
           nodeSharp.actions.validate();
