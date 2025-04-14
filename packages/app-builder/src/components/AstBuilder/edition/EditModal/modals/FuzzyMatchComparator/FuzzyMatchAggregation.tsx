@@ -1,4 +1,3 @@
-import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { type FuzzyMatchFilterOptionsAstNode } from '@app-builder/models/astNode/aggregation';
 import { isKnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import {
@@ -6,7 +5,6 @@ import {
   adaptFuzzyMatchComparatorThreshold,
   defaultFuzzyMatchComparatorThreshold,
 } from '@app-builder/models/fuzzy-match';
-import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import { computed } from '@preact/signals-react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,9 +16,6 @@ import { InnerEditFuzzyMatchModal } from './InnerFuzzyMatchModal';
 export function EditFuzzyMatchAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   const { t } = useTranslation(['scenarios']);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
-  const dataSharp = AstBuilderDataSharpFactory.useSharp();
-  const dataModel = dataSharp.select((s) => s.data.dataModel);
-  const triggerObjectTable = dataSharp.computed.triggerObjectTable.value;
   const fuzzyMatchNode = nodeSharp.select((s) => s.node as FuzzyMatchFilterOptionsAstNode);
   const algorithmNode = fuzzyMatchNode.namedChildren.algorithm;
   const thresholdNode = fuzzyMatchNode.namedChildren.threshold;
@@ -43,10 +38,7 @@ export function EditFuzzyMatchAggregation(props: Omit<OperandEditModalProps, 'no
         algorithm={algorithmNode.constant}
         threshold={thresholdField.value}
         rightOperandFilter={(option) =>
-          getAstNodeDataType(fuzzyMatchNode.namedChildren.value, {
-            dataModel,
-            triggerObjectTable,
-          }) === 'String' && option.operandType === 'Field'
+          ['String', 'String[]'].includes(option.dataType) && option.operandType === 'Field'
         }
         onRightChange={(newNode) => {
           nodeSharp.update(() => {

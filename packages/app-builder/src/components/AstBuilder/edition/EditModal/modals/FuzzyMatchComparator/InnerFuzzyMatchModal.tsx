@@ -1,6 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
-import { type AstNode } from '@app-builder/models';
+import { type AstNode, type DataType } from '@app-builder/models';
 import { type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { type FuzzyMatchAlgorithm } from '@app-builder/models/fuzzy-match';
 import { fuzzyMatchingDocHref } from '@app-builder/services/documentation-href';
@@ -8,7 +8,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
 
 import { EditionAstBuilderOperand } from '../../../EditionOperand';
-import { getValidationStatus } from '../../../helpers';
+import { type EnrichedMenuOption, getValidationStatus } from '../../../helpers';
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { EditAlgorithm } from './EditAlgorithm';
 import { EditLevel } from './EditLevel';
@@ -39,7 +39,7 @@ export type InnerEditFuzzyMatchModalProps = {
   ) => void;
   algorithm: FuzzyMatchAlgorithm;
   onAlorithmChange: (algorithm: FuzzyMatchAlgorithm) => void;
-  rightOperandFilter: (option: { dataType: string; operandType: string }) => boolean;
+  rightOperandFilter?: DataType[] | ((o: EnrichedMenuOption) => boolean);
 };
 
 export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
