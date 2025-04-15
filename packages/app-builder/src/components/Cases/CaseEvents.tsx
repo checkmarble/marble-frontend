@@ -23,37 +23,21 @@ import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function CaseEvents({
-  events,
-  showLogs = false,
-  inboxes,
-}: {
-  events: CaseEvent[];
-  showLogs?: boolean;
-  inboxes: Inbox[];
-}) {
+export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: Inbox[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [showAll, setShowAll] = useState(false);
   const [olderEvents, setOlderEventsCount] = useState(0);
   const [newerEvents, setNewerEventsCount] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [filters, setFilters] = useState<CaseEventFiltersForm>({
-    type: showLogs ? [] : ['comment_added'],
-  });
+  const [filters, setFilters] = useState<CaseEventFiltersForm>({ types: ['comment_added'] });
   const orderedEvents = useMemo(
     () => events.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     [events],
   );
 
-  useEffect(() => {
-    setFilters((prev) => ({ ...prev, type: showLogs ? [] : ['comment_added'] }));
-  }, [showLogs]);
-
   const filteredEvents = useMemo(() => {
     if (!filters) return orderedEvents;
 
-    console.log(filters);
-
-    const { type, startDate, endDate } = filters;
+    const { types: type, startDate, endDate } = filters;
 
     return filter(orderedEvents, (event) =>
       allPass(event, [
