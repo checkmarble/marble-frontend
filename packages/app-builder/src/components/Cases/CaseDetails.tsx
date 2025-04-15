@@ -16,7 +16,7 @@ import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { type RefObject, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { cn } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { CaseEvents } from './CaseEvents';
@@ -117,12 +117,30 @@ export const CaseDetails = ({
         </div>
       </div>
       <div className="flex flex-col justify-start gap-1.5">
-        <span className="text-r text-grey-00 font-medium">Investigation</span>
+        <span className="text-r text-grey-00 px-1 font-medium">Investigation</span>
         <div className="border-grey-90 bg-grey-100 flex flex-col rounded-lg border">
           <div className="p-4">
             <CaseEvents events={detail.events} inboxes={inboxes} />
           </div>
           <AddComment caseId={detail.id} />
+        </div>
+      </div>
+      <div className="flex flex-col justify-start gap-1.5">
+        <div className="text-r text-grey-00 flex items-center justify-between px-1 font-medium">
+          <span>Alerts</span>
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" size="sm">
+              <Icon icon="arrow-top-left" className="size-3.5" />
+              <span className="text-xs">Review pending sanction checks</span>
+            </Button>
+            <Button variant="secondary" size="sm">
+              <Icon icon="snooze" className="size-5" />
+              <span className="text-xs">Snooze rules</span>
+            </Button>
+          </div>
+        </div>
+        <div className="border-grey-90 bg-grey-100 flex flex-col rounded-lg border">
+          There is {detail.decisions.length} alerts
         </div>
       </div>
     </main>
