@@ -276,8 +276,10 @@ function InsertKeyboardNav() {
   return <KeyboardNav />;
 }
 
-type ComboboxProps = Omit<React.ComponentProps<typeof Command.Input>, 'value'> & {};
-function Combobox({ className, onValueChange, ...props }: ComboboxProps) {
+type ComboboxProps = Omit<React.ComponentProps<typeof Command.Input>, 'value'> & {
+  iconClasses?: string;
+};
+function Combobox({ className, onValueChange, iconClasses, ...props }: ComboboxProps) {
   const internalSharp = InternalMenuSharpFactory.useSharp();
   const menuState = MenuCommandSharpFactory.useSharp();
   const setSearch = useCallbackRef((value: string) => {
@@ -302,7 +304,7 @@ function Combobox({ className, onValueChange, ...props }: ComboboxProps) {
         {...props}
       />
       <div className="text-grey-50 peer-focus:text-grey-00 pointer-events-none absolute inset-y-0 start-0 flex items-center ps-2">
-        <Icon icon="search" className="size-5" />
+        <Icon icon="search" className={cn('size-5', iconClasses)} />
       </div>
     </div>
   );

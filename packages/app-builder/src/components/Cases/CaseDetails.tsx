@@ -13,10 +13,10 @@ import { EscalateCase } from '@app-builder/routes/ressources+/cases+/escalate-ca
 import { OpenCase } from '@app-builder/routes/ressources+/cases+/open-case';
 import { SnoozeCase } from '@app-builder/routes/ressources+/cases+/snooze-case';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { type RefObject, useRef, useState } from 'react';
+import { type RefObject, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { cn, Switch } from 'ui-design-system';
+import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { CaseEvents } from './CaseEvents';
@@ -39,7 +39,6 @@ export const CaseDetails = ({
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
   const infoRef = useRef<HTMLDivElement>(null);
-  const [showLogs, setShowLogs] = useState(false);
   const intersection = useIntersection(infoRef, {
     root: containerRef.current,
     rootMargin: '-48px',
@@ -117,17 +116,11 @@ export const CaseDetails = ({
           <EditCaseSuspicion id={detail.id} reports={reports} />
         </div>
       </div>
-      <div className="flex flex-col gap-1.5">
-        <div className="text-r text-grey-00 flex items-center justify-between px-0.5 font-medium">
-          <span>Investigation</span>
-          <div className="flex items-center gap-2">
-            <span>Display logs</span>
-            <Switch checked={showLogs} onCheckedChange={setShowLogs} />
-          </div>
-        </div>
+      <div className="flex flex-col justify-start gap-1.5">
+        <span className="text-r text-grey-00 font-medium">Investigation</span>
         <div className="border-grey-90 bg-grey-100 flex flex-col rounded-lg border">
           <div className="p-4">
-            <CaseEvents events={detail.events} showLogs={showLogs} inboxes={inboxes} />
+            <CaseEvents events={detail.events} inboxes={inboxes} />
           </div>
           <AddComment caseId={detail.id} />
         </div>
