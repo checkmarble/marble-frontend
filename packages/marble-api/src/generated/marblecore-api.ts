@@ -142,6 +142,26 @@ export type CreateCaseBodyDto = {
     inbox_id: string;
     decision_ids?: string[];
 };
+export type CaseDecisionDto = {
+    id: string;
+    created_at: string;
+    trigger_object: {
+        [key: string]: any;
+    };
+    trigger_object_type: string;
+    outcome: OutcomeDto;
+    pivot_values: PivotValueDto[];
+    review_status?: ReviewStatusDto;
+    scenario: {
+        id: string;
+        name: string;
+        description: string;
+        scenario_iteration_id: string;
+        version: number;
+    };
+    score: number;
+    error?: Error;
+};
 export type CaseEventDtoBase = {
     id: string;
     case_id: string;
@@ -239,7 +259,45 @@ export type CaseUnsnoozedDto = {
     new_value: string;
     previous_value?: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto;
+export type CaseAssignedEventDto = {
+    event_type: "CaseAssignedEventDto";
+} & CaseEventDtoBase & {
+    new_value: string;
+    user_id?: string;
+};
+export type SarCreatedEventDto = {
+    event_type: "SarCreatedEventDto";
+} & CaseEventDtoBase & {
+    new_value: string;
+    user_id?: string;
+    resource_type: string;
+    resource_id: string;
+};
+export type SarDeletedEventDto = {
+    event_type: "SarDeletedEventDto";
+} & CaseEventDtoBase & {
+    new_value: string;
+    user_id?: string;
+    resource_type: string;
+    resource_id: string;
+};
+export type SarStatusChangedEventDto = {
+    event_type: "SarStatusChangedEventDto";
+} & CaseEventDtoBase & {
+    new_value: string;
+    user_id?: string;
+    resource_type: string;
+    resource_id: string;
+};
+export type SarFileUploadedEventDto = {
+    event_type: "SarFileUploadedEventDto";
+} & CaseEventDtoBase & {
+    new_value: string;
+    user_id?: string;
+    resource_type: string;
+    resource_id: string;
+};
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto | CaseAssignedEventDto | SarCreatedEventDto | SarDeletedEventDto | SarStatusChangedEventDto | SarFileUploadedEventDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;
@@ -247,26 +305,7 @@ export type CaseFileDto = {
     file_name: string;
 };
 export type CaseDetailDto = CaseDto & {
-    decisions: {
-        id: string;
-        created_at: string;
-        trigger_object: {
-            [key: string]: any;
-        };
-        trigger_object_type: string;
-        outcome: OutcomeDto;
-        pivot_values: PivotValueDto[];
-        review_status?: ReviewStatusDto;
-        scenario: {
-            id: string;
-            name: string;
-            description: string;
-            scenario_iteration_id: string;
-            version: number;
-        };
-        score: number;
-        error?: Error;
-    }[];
+    decisions: CaseDecisionDto[];
     events: CaseEventDto[];
     files: CaseFileDto[];
 };
@@ -1248,6 +1287,38 @@ export function unassignUser(caseId: string, opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
+ * List a case decisions
+ */
+export function getPaginatedCaseDecisions(caseId: string, { cursorId, limit }: {
+    cursorId?: string;
+    limit?: number;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            decisions: CaseDecisionDto[];
+            pagination: {
+                has_more?: boolean;
+                cursor_id?: string;
+            };
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/decisions${QS.query(QS.explode({
+        cursor_id: cursorId,
+        limit
+    }))}`, {
+        ...opts
+    }));
+}
+/**
  * Add decisions to a case
  */
 export function addDecisionsToCase(caseId: string, body: {
@@ -1425,7 +1496,7 @@ export function reviewDecision(body: {
     })));
 }
 /**
- * -> Return the pivot objects present in a case, computed from the pivot values on decisions in the case. Pivot objects are deduplicated and come with their actual content (if previously ingested) if the pivot value is from an actual unique pivot "object" (not just a value on an entity).
+ * Get case pivot objects
  */
 export function getPivotObjectsForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
