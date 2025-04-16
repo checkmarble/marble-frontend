@@ -36,6 +36,7 @@ import { SegmentScript } from './services/segment/SegmentScript';
 import { getSegmentScript } from './services/segment/segment.server';
 import tailwindStyles from './tailwind.css?url';
 import { getClientEnvVars, getServerEnv } from './utils/environment';
+import { useNonce } from './utils/nonce';
 import { getRoute } from './utils/routes';
 
 export const links: LinksFunction = () => [
@@ -119,6 +120,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const loaderData = useRouteLoaderData<typeof loader>('root');
 
   const { i18n } = useTranslation();
+  const nonce = useNonce();
+
   useSegmentPageTracking();
 
   return (
@@ -127,7 +130,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         {/* <script crossOrigin="anonymous" src="//unpkg.com/react-scan/dist/auto.global.js" /> */}
         <Links />
-        {loaderData?.segmentScript ? <SegmentScript script={loaderData.segmentScript} /> : null}
+        {loaderData?.segmentScript ? (
+          <SegmentScript nonce={nonce} script={loaderData.segmentScript} />
+        ) : null}
         <ExternalScripts />
       </head>
       <body className="selection:text-grey-100 selection:bg-purple-65 h-screen w-full overflow-hidden antialiased">
@@ -135,12 +140,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Tooltip.Provider>{children}</Tooltip.Provider>
         </AuthenticityTokenProvider>
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify(loaderData?.ENV ?? {})}`,
           }}
         />
-        <ScrollRestoration />
-        <Scripts />
+        <ScrollRestoration nonce={nonce} />
+        <Scripts nonce={nonce} />
         <ClientOnly>{() => <MarbleToaster toastMessage={loaderData?.toastMessage} />}</ClientOnly>
       </body>
     </html>

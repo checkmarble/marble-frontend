@@ -5,6 +5,7 @@ import {
 } from '@remix-run/node';
 import { RemixServer } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
+import * as crypto from 'crypto';
 import { isbot } from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
 import { I18nextProvider } from 'react-i18next';
@@ -13,8 +14,7 @@ import { PassThrough } from 'stream';
 import { initServerServices } from './services/init.server';
 import { captureUnexpectedRemixError } from './services/monitoring';
 import { checkEnv, getServerEnv } from './utils/environment';
-
-import crypto from 'crypto';
+import { NonceProvider } from './utils/nonce';
 
 const ABORT_DELAY = 70000;
 
@@ -27,17 +27,26 @@ export default async function handleRequest(
   const { i18nextService } = initServerServices(request);
   const i18n = await i18nextService.getI18nextServerInstance(request, remixContext);
 
+  const nonce = crypto.randomBytes(16).toString('hex');
+
   const App = (
     <I18nextProvider i18n={i18n}>
-      <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />
+      <NonceProvider value={nonce}>
+        <RemixServer
+          context={remixContext}
+          url={request.url}
+          abortDelay={ABORT_DELAY}
+          nonce={nonce}
+        />
+      </NonceProvider>
     </I18nextProvider>
   );
 
   const prohibitOutOfOrderStreaming = isBotRequest(request) || remixContext.isSpaMode;
 
   return prohibitOutOfOrderStreaming
-    ? handleBotRequest(responseStatusCode, responseHeaders, App)
-    : handleBrowserRequest(responseStatusCode, responseHeaders, App);
+    ? handleBotRequest(responseStatusCode, responseHeaders, App, nonce)
+    : handleBrowserRequest(responseStatusCode, responseHeaders, App, nonce);
 }
 
 function isBotRequest(request: Request) {
@@ -49,10 +58,17 @@ function isBotRequest(request: Request) {
   return isbot(userAgent);
 }
 
-function handleBotRequest(responseStatusCode: number, responseHeaders: Headers, App: JSX.Element) {
+function handleBotRequest(
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  App: JSX.Element,
+  nonce?: string,
+) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
+
     const { pipe, abort } = renderToPipeableStream(App, {
+      nonce,
       onAllReady() {
         shellRendered = true;
         const body = new PassThrough();
@@ -91,10 +107,12 @@ function handleBrowserRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   App: JSX.Element,
+  nonce?: string,
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(App, {
+      nonce,
       onShellReady() {
         shellRendered = true;
         const body = new PassThrough();
@@ -107,12 +125,15 @@ function handleBrowserRequest(
           ['frame-ancestors', "'none'"],
           ['object-src', "'none'"],
           ['style-src', "'self' 'unsafe-inline'"],
-          ['script-src', `'self' 'unsafe-inline' cdn.segment.com`],
+          ['script-src', `'self' 'nonce-${nonce}' 'unsafe-eval' https://cdn.segment.com`],
           ['connect-src', "'self' localhost:9099"],
-          ['frame-src', 'your_subdomain.metabaseapp.com'],
+          ['frame-src', `https://subdomain.metabaseapp.com`],
         ];
 
-        responseHeaders.set('content-security-policy', cspOrigins.flatMap(rule => rule.join(' ')).join('; '));
+        responseHeaders.set(
+          'content-security-policy',
+          cspOrigins.flatMap((rule) => rule.join(' ')).join('; '),
+        );
 
         resolve(
           new Response(stream, {
