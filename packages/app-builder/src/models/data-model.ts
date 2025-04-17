@@ -223,7 +223,7 @@ export function findDataModelTableByName({
 }): TableModel {
   const table = dataModel.find((t) => t.name == tableName);
   if (!table) {
-    throw Error(`can't find table in data models named '${tableName}'`);
+    throw Error(`can't find table '${tableName}' in data model`);
   }
   return table;
 }
@@ -242,7 +242,7 @@ export function findDataModelTable({
   for (const linkName of path) {
     const link = table.linksToSingle.find((link) => link.name === linkName);
     if (!link) {
-      throw Error(`can't find link '${linkName}'' in table '${table.name}''`);
+      throw Error(`can't find link '${linkName}' in table '${table.name}'`);
     }
     table = findDataModelTableByName({
       dataModel,
@@ -262,7 +262,7 @@ export function findDataModelField({
 }): DataModelField {
   const field = table.fields.find((f) => f.name == fieldName);
   if (!field) {
-    throw Error("can't find field in table");
+    throw Error(`can't find field '${fieldName}' in table '${table.name}'`);
   }
 
   return field;
