@@ -1,17 +1,6 @@
 import { type TFunction } from 'i18next';
 import { assertNever } from 'typescript-utils';
 
-// export type FuzzyMatchAlgorithm =
-//   | 'ratio'
-//   | 'partial_ratio'
-//   | 'token_sort_ratio'
-//   | 'partial_token_sort_ratio'
-//   | 'token_set_ratio'
-//   | 'partial_token_set_ratio'
-//   | 'bag_of_words_similarity'
-//   | 'bag_of_words_similarity_db'
-//   | 'direct_string_similarity_db';
-
 export type ComparatorFuzzyMatchAlgorithms =
   | 'ratio'
   | 'partial_ratio'
@@ -56,7 +45,6 @@ export interface BaseFuzzyMatchConfig {
   adaptThreshold(level: Level): number;
 }
 
-// Generic type to enforce relationships between properties
 type FuzzyMatchConfigParams<T extends FuzzyMatchAlgorithm> = {
   readonly algorithms: ReadonlySet<T>;
   readonly defaultAlgorithm: T;
