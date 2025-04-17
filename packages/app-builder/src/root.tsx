@@ -178,6 +178,7 @@ function App() {
         defaultOptions: {
           queries: {
             staleTime: 60 * 1000,
+            refetchOnWindowFocus: false,
           },
         },
       }),

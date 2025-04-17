@@ -141,5 +141,15 @@
   "case_detail.history.event_detail.case_snoozed": "Investigation <Style>désactivée</Style> jusqu'à <Style>{{date}}</Style> par <Style>{{actor}}</Style>",
   "case_detail.history.event_detail.case_unsnoozed": "Investigation <Style>réactivée</Style> par <Style>{{actor}}</Style>",
   "case_detail.history.event_detail.created_by": "Investigation créée par <Actor>{{actor}}</Actor>",
-  "case_detail.history.event_detail.file_added": "<Actor>{{actor}}</Actor> a ajouté un fichier <File>{{file}}</File>"
+  "case_detail.history.event_detail.file_added": "<Actor>{{actor}}</Actor> a ajouté un fichier <File>{{file}}</File>",
+  "case_detail.pivot_panel.case_history": "Historique des Cases du client",
+  "case_detail.pivot_panel.explore": "Explorer les données",
+  "case_detail.pivot_panel.informations": "Informations",
+  "case_detail.pivot_panel.less_data": "Voir moins",
+  "case_detail.pivot_panel.more_data": "Voir plus",
+  "case_detail.pivot_panel.related_object": "Objet associé - {{linkName}}",
+  "case_detail.pivot_panel.title": "Client",
+  "data_explorer.columns": "Colonnes",
+  "case_detail.pivot_panel.breadcrumb_client": "Client {{clientName}}",
+  "case_detail.pivot_panel.breadcrumb_explore": "Exploration de données"
 }

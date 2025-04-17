@@ -1440,6 +1440,17 @@ export function getPivotObjectsForCase(caseId: string, opts?: Oazapfts.RequestOp
     }));
 }
 /**
+ * Get cases related to a pivot from a pivot value
+ */
+export function getPivotRelatedCases(pivotValue: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CaseDto[];
+    }>(`/cases/related/pivot/${encodeURIComponent(pivotValue)}`, {
+        ...opts
+    }));
+}
+/**
  * List suspicious activity reports for a case
  */
 export function sarList(caseId: string, opts?: Oazapfts.RequestOpts) {

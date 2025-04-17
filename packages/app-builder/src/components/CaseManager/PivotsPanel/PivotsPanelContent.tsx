@@ -1,0 +1,196 @@
+import { CaseStatusTag } from '@app-builder/components/Cases';
+import { ClientObjectDataList } from '@app-builder/components/DataModelExplorer/ClientObjectDataList';
+import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
+import { type ClientObjectDetail, type DataModel } from '@app-builder/models';
+import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
+import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { Fragment, type ReactNode, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
+import { Button } from 'ui-design-system';
+import { Icon } from 'ui-icons';
+
+export function PivotsPanelContent({
+  case: caseObj,
+  pivotObjects,
+  dataModel,
+  onExplore,
+}: {
+  case: CaseDetail;
+  pivotObjects: PivotObject[];
+  dataModel: DataModel;
+  onExplore: () => void;
+}) {
+  const { t } = useTranslation(['cases']);
+  const dataModelExplorerContext = DataModelExplorerContext.useValue();
+
+  if (!pivotObjects[0]) {
+    throw new Error('no pivot object');
+  }
+
+  const [currentPivotObject, setCurrentPivotObject] = useState(pivotObjects[0]);
+  const currentTable = dataModel.find((t) => t.name === currentPivotObject.pivotObjectName);
+  const pivotObjectData = currentPivotObject.pivotObjectData;
+
+  return (
+    <div className="flex flex-col gap-8">
+      <h2 className="text-l font-semibold">{t('cases:case_detail.pivot_panel.title')}</h2>
+      {pivotObjects.length > 1 ? (
+        <div className="border-grey-90 flex h-12 gap-2 self-start rounded-lg border p-1">
+          {pivotObjects.map((pivotObject, idx) => (
+            <button
+              key={pivotObject.pivotValue}
+              className="text-grey-50 aria-[current=true]:bg-purple-96 aria-[current=true]:text-purple-65 rounded p-1 px-4"
+              aria-current={pivotObject.pivotValue === currentPivotObject.pivotValue}
+              onClick={() => setCurrentPivotObject(pivotObject)}
+            >
+              {pivotObject.pivotObjectName} {idx + 1}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      <PivotObjectDetails pivotObjectData={pivotObjectData} />
+      {currentTable?.navigationOptions ? (
+        <div className="grid grid-cols-[120px,_1fr] gap-3">
+          {currentTable.navigationOptions.map((navigationOption) => (
+            <Fragment key={`${navigationOption.targetTableId}_${navigationOption.filterFieldId}`}>
+              <div>{navigationOption.targetTableName}</div>
+              <Button
+                size="small"
+                variant="secondary"
+                onClick={() => {
+                  dataModelExplorerContext.startNavigation({
+                    pivotObject: currentPivotObject,
+                    sourceObject: pivotObjectData.data,
+                    sourceTableName: currentTable.name,
+                    sourceFieldName: navigationOption.sourceFieldName,
+                    targetTableName: navigationOption.targetTableName,
+                    filterFieldName: navigationOption.filterFieldName,
+                    orderingFieldName: navigationOption.orderingFieldName,
+                  });
+                  onExplore();
+                }}
+                className="flex items-center gap-1"
+              >
+                {t('cases:case_detail.pivot_panel.explore')}
+                <Icon icon="arrow-up-right" className="size-4" />
+              </Button>
+            </Fragment>
+          ))}
+        </div>
+      ) : null}
+      <RelatedCases pivotValue={currentPivotObject.pivotValue} currentCase={caseObj} />
+    </div>
+  );
+}
+
+function RelatedCases({
+  currentCase,
+  pivotValue,
+}: {
+  currentCase: CaseDetail;
+  pivotValue: string;
+}) {
+  const { t } = useTranslation(['common', 'cases']);
+  const casesQuery = usePivotRelatedCasesQuery(pivotValue);
+
+  return match(casesQuery)
+    .with({ isError: true }, () => {
+      return (
+        <DataCard title={t('cases:case_detail.pivot_panel.case_history')}>
+          <div className="border-red-74 bg-red-95 text-red-47 mt-3 rounded border p-2">
+            {t('common:global_error')}
+          </div>
+        </DataCard>
+      );
+    })
+    .with({ isPending: true }, () => {
+      return <>Loading...</>;
+    })
+    .otherwise((query) => {
+      const cases = query.data.cases.filter((caseObj) => caseObj.id !== currentCase.id);
+      if (cases.length === 0) {
+        return null;
+      }
+
+      return (
+        <DataCard borderless title={t('cases:case_detail.pivot_panel.case_history')}>
+          <table className="w-full">
+            {cases.map((caseObj) => (
+              <tr key={caseObj.id} className="border-grey-90 border-y">
+                <td className="border-grey-90 border-r p-2">
+                  <div className="flex justify-between gap-2">
+                    <span className="line-clamp-1 shrink">{caseObj.name}</span>
+                    <Button size="small" variant="secondary" className="shrink-0">
+                      Open
+                    </Button>
+                  </div>
+                </td>
+                <td className="w-24 p-2">
+                  <CaseStatusTag status={caseObj.status} />
+                </td>
+              </tr>
+            ))}
+          </table>
+        </DataCard>
+      );
+    });
+}
+
+type PivotObjectDetailsProps = {
+  pivotObjectData: ClientObjectDetail;
+};
+function PivotObjectDetails({ pivotObjectData }: PivotObjectDetailsProps) {
+  const { t } = useTranslation(['common', 'cases']);
+  const { data, relatedObjects } = pivotObjectData;
+
+  return (
+    <DataCard title={t('cases:case_detail.pivot_panel.informations')}>
+      <div className="mt-3 flex flex-col gap-8">
+        <ClientObjectDataList data={data} />
+        {relatedObjects ? (
+          <div className="">
+            {relatedObjects.map((relatedObject) =>
+              relatedObject.linkName && relatedObject.relatedObjectDetail ? (
+                <Fragment key={relatedObject.linkName}>
+                  <h4 className="border-grey-90 border-b text-right text-xs font-semibold">
+                    {t('cases:case_detail.pivot_panel.related_object', {
+                      vallinkName: relatedObject.linkName,
+                    })}
+                  </h4>
+                  <ClientObjectDataList data={relatedObject.relatedObjectDetail.data} />
+                </Fragment>
+              ) : null,
+            )}
+          </div>
+        ) : null}
+      </div>
+    </DataCard>
+  );
+}
+
+const titleVariants = cva('text-s px-2 py-3 font-semibold', {
+  variants: {
+    borderless: {
+      true: null,
+      false: 'border-b border-grey-90',
+    },
+  },
+  defaultVariants: {
+    borderless: false,
+  },
+});
+
+type DataCardProps = {
+  title: string;
+  children: ReactNode;
+} & VariantProps<typeof titleVariants>;
+function DataCard({ title, children, borderless }: DataCardProps) {
+  return (
+    <div>
+      <h3 className={titleVariants({ borderless })}>{title}</h3>
+      {children}
+    </div>
+  );
+}

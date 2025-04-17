@@ -96,6 +96,12 @@ export const routes = [
             ]
           },
           {
+            "id": "routes/_builder+/cases_new+/$caseId._index",
+            "index": true,
+            "path": "cases_new/:caseId",
+            "file": "routes/_builder+/cases_new+/$caseId._index.tsx"
+          },
+          {
             "id": "routes/_builder+/data+/_layout",
             "path": "data",
             "file": "routes/_builder+/data+/_layout.tsx",
@@ -409,6 +415,12 @@ export const routes = [
         "file": "routes/ressources+/cases+/open-case.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/pivot+/related+/$pivotValue._index",
+        "index": true,
+        "path": "ressources/cases/pivot/related/:pivotValue",
+        "file": "routes/ressources+/cases+/pivot+/related+/$pivotValue._index.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/review-decision",
         "path": "ressources/cases/review-decision",
         "file": "routes/ressources+/cases+/review-decision.tsx"
@@ -422,6 +434,11 @@ export const routes = [
         "id": "routes/ressources+/cases+/snooze-case",
         "path": "ressources/cases/snooze-case",
         "file": "routes/ressources+/cases+/snooze-case.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/$tableName.list-objects",
+        "path": "ressources/data/:tableName/list-objects",
+        "file": "routes/ressources+/data+/$tableName.list-objects.tsx"
       },
       {
         "id": "routes/ressources+/data+/create-pivot",
