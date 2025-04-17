@@ -1,27 +1,29 @@
+import { OperandEditModalContainer } from '@app-builder/components/AstBuilder/edition/EditModal/Container';
+import { InnerEditFuzzyMatchModal } from '@app-builder/components/AstBuilder/edition/EditModal/modals/FuzzyMatchComparator/InnerFuzzyMatchModal';
 import { type FuzzyMatchFilterOptionsAstNode } from '@app-builder/models/astNode/aggregation';
 import { isKnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
-import {
-  adaptFuzzyMatchComparatorLevel,
-  adaptFuzzyMatchComparatorThreshold,
-  defaultFuzzyMatchComparatorThreshold,
-} from '@app-builder/models/fuzzy-match';
+import { AggregationFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/aggregationFuzzyMatchConfig';
+import { type BaseFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
 import { computed } from '@preact/signals-react';
 import { useTranslation } from 'react-i18next';
 
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
-import { OperandEditModalContainer } from '../../Container';
 import { type OperandEditModalProps } from '../../EditModal';
-import { InnerEditFuzzyMatchModal } from './InnerFuzzyMatchModal';
+
+const fuzzyMatchConfig: BaseFuzzyMatchConfig = AggregationFuzzyMatchConfig;
 
 export function EditFuzzyMatchAggregation(props: Omit<OperandEditModalProps, 'node'>) {
+  const defaultAlgorithm = fuzzyMatchConfig.defaultAlgorithm;
+  const defaultThreshold = fuzzyMatchConfig.getDefaultThreshold();
+
   const { t } = useTranslation(['scenarios']);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const fuzzyMatchNode = nodeSharp.select((s) => s.node as FuzzyMatchFilterOptionsAstNode);
   const algorithmNode = fuzzyMatchNode.namedChildren.algorithm;
   const thresholdNode = fuzzyMatchNode.namedChildren.threshold;
   const thresholdField = computed(() => {
-    const thresholdValue = thresholdNode.constant ?? defaultFuzzyMatchComparatorThreshold;
-    const level = adaptFuzzyMatchComparatorLevel(thresholdValue);
+    const thresholdValue = thresholdNode.constant ?? defaultThreshold;
+    const level = fuzzyMatchConfig.adaptLevel(thresholdValue);
     return level !== undefined
       ? ({ mode: 'level', value: thresholdValue, level } as const)
       : ({ mode: 'threshold', value: thresholdValue } as const);
@@ -34,8 +36,9 @@ export function EditFuzzyMatchAggregation(props: Omit<OperandEditModalProps, 'no
       size="medium"
     >
       <InnerEditFuzzyMatchModal
+        fuzzMatchConfig={fuzzyMatchConfig}
         right={fuzzyMatchNode.namedChildren.value}
-        algorithm={algorithmNode.constant}
+        algorithm={algorithmNode.constant ?? defaultAlgorithm}
         threshold={thresholdField.value}
         rightOperandFilter={(option) =>
           ['String', 'String[]'].includes(option.dataType) && option.operandType === 'Field'
@@ -55,7 +58,7 @@ export function EditFuzzyMatchAggregation(props: Omit<OperandEditModalProps, 'no
           if (params.mode === 'threshold') {
             thresholdNode.constant = params.value;
           } else {
-            thresholdNode.constant = adaptFuzzyMatchComparatorThreshold(params.level);
+            thresholdNode.constant = fuzzyMatchConfig.adaptThreshold(params.level);
           }
         }}
       />

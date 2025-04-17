@@ -1,18 +1,20 @@
 import {
+  type BaseFuzzyMatchConfig,
   type FuzzyMatchAlgorithm,
-  isEditableFuzzyMatchAlgorithm,
-} from '@app-builder/models/fuzzy-match';
+} from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
 import { useTranslation } from 'react-i18next';
 
 export function Examples({
+  config,
   algorithm,
   threshold,
 }: {
+  config: BaseFuzzyMatchConfig;
   algorithm: FuzzyMatchAlgorithm;
   threshold: number;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
-  if (!isEditableFuzzyMatchAlgorithm(algorithm)) return null;
+  if (!config.isEditableAlgorithm(algorithm)) return null;
 
   return (
     <table className="border-grey-90 table-auto border-collapse border">
@@ -31,32 +33,22 @@ export function Examples({
         </tr>
       </thead>
       <tbody>
-        {[
-          {
-            left: 'Mr Mrs John Jane OR Doe Smith',
-            right: 'John Doe',
-            score: {
-              ratio: 43,
-              token_set_ratio: 100,
-            },
-          },
-          {
-            left: 'the dog was walking on the sidewalk',
-            right: "the d og as walkin' on the side alk",
-            score: {
-              ratio: 91,
-              token_set_ratio: 72,
-            },
-          },
-        ].map(({ left, right, score }) => (
-          <tr key={`${left}-${right}`}>
-            <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">{left}</td>
-            <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">{right}</td>
-            <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
-              {t(`common:${score[algorithm] > threshold}`)}
-            </td>
-          </tr>
-        ))}
+        {config.examples.map(({ left, right, resultsScores }) => {
+          if (!(algorithm in resultsScores)) return null; // Ensure the algorithm key exists
+          return (
+            <tr key={`${left}-${right}`}>
+              <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
+                {left}
+              </td>
+              <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
+                {right}
+              </td>
+              <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
+                {t(`common:${resultsScores[algorithm]! > threshold}`)}
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );

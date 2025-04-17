@@ -2,7 +2,11 @@ import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type AstNode, type DataType } from '@app-builder/models';
 import { type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
-import { type FuzzyMatchAlgorithm } from '@app-builder/models/fuzzy-match';
+import {
+  type BaseFuzzyMatchConfig,
+  type FuzzyMatchAlgorithm,
+  type Level,
+} from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
 import { fuzzyMatchingDocHref } from '@app-builder/services/documentation-href';
 import { Trans, useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
@@ -19,7 +23,7 @@ export type ThresholdField =
   | {
       readonly mode: 'level';
       readonly value: number;
-      readonly level: 'medium' | 'high';
+      readonly level: Level;
     }
   | {
       readonly mode: 'threshold';
@@ -28,6 +32,7 @@ export type ThresholdField =
     };
 
 export type InnerEditFuzzyMatchModalProps = {
+  fuzzMatchConfig: BaseFuzzyMatchConfig;
   operatorDisplay?: string;
   left?: AstNode;
   onLeftChange?: (node: AstNode) => void;
@@ -63,6 +68,7 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
       <div className="flex flex-col gap-4">
         <div className="flex flex-row gap-4">
           <EditAlgorithm
+            fuzzyMatchConfig={props.fuzzMatchConfig}
             algorithm={props.algorithm}
             onChange={(value) => {
               props.onAlorithmChange(value);
@@ -70,6 +76,7 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
           />
           {props.threshold.mode === 'level' ? (
             <EditLevel
+              config={props.fuzzMatchConfig}
               level={props.threshold.level}
               setLevel={(level) => {
                 props.onThresholdChange({ mode: 'level', level });
@@ -84,7 +91,7 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
             />
           )}
         </div>
-        <Examples algorithm={props.algorithm} threshold={80} />
+        <Examples config={props.fuzzMatchConfig} algorithm={props.algorithm} threshold={80} />
       </div>
       <div className="flex flex-col gap-2">
         <p id="level" className="text-m text-grey-00 font-normal">

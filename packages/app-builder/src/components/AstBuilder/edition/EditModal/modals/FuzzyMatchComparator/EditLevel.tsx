@@ -1,18 +1,19 @@
 import {
-  type FuzzyMatchComparatorLevel,
-  fuzzyMatchComparatorLevelData,
-} from '@app-builder/models/fuzzy-match';
+  type BaseFuzzyMatchConfig,
+  type Level,
+} from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
 import { useTranslation } from 'react-i18next';
 import { Select } from 'ui-design-system';
 
 import { operatorContainerClassnames } from '../../../OperatorSelect';
 
 interface EditLevelProps {
-  level: FuzzyMatchComparatorLevel;
-  setLevel: (level: FuzzyMatchComparatorLevel) => void;
+  config: BaseFuzzyMatchConfig;
+  level: Level;
+  setLevel: (level: Level) => void;
 }
 
-export function EditLevel({ level, setLevel }: EditLevelProps) {
+export function EditLevel({ config, level, setLevel }: EditLevelProps) {
   const { t } = useTranslation(['common', 'scenarios']);
 
   return (
@@ -28,7 +29,7 @@ export function EditLevel({ level, setLevel }: EditLevelProps) {
         </Select.Trigger>
         <Select.Content className="max-h-60">
           <Select.Viewport>
-            {fuzzyMatchComparatorLevelData.map(({ level }) => {
+            {config.getLevels().map((level) => {
               return (
                 <Select.Item className="min-w-[110px]" key={level} value={level}>
                   <Select.ItemText>

@@ -1,10 +1,10 @@
 import { v7 as uuidv7 } from 'uuid';
 
+import { AggregationFuzzyMatchConfig } from '../fuzzy-match/aggregationFuzzyMatchConfig';
 import {
-  defaultEditableFuzzyMatchAlgorithm,
-  defaultFuzzyMatchComparatorThreshold,
+  type BaseFuzzyMatchConfig,
   type FuzzyMatchAlgorithm,
-} from '../fuzzy-match';
+} from '../fuzzy-match/baseFuzzyMatchConfig';
 import { type AggregatorOperator } from '../modale-operators';
 import {
   type AstNode,
@@ -90,14 +90,16 @@ export function isFuzzyMatchFilterOptionsAstNode(
 export function NewFuzzyMatchFilterOptionsAstNode({
   value,
 }: { value?: KnownOperandAstNode } = {}): FuzzyMatchFilterOptionsAstNode {
+  const config: BaseFuzzyMatchConfig = AggregationFuzzyMatchConfig;
+
   return {
     id: uuidv7(),
     name: 'FuzzyMatchOptions',
     children: [],
     namedChildren: {
       value: value ?? NewUndefinedAstNode(),
-      threshold: NewConstantAstNode({ constant: defaultFuzzyMatchComparatorThreshold }),
-      algorithm: NewConstantAstNode({ constant: defaultEditableFuzzyMatchAlgorithm }),
+      threshold: NewConstantAstNode({ constant: config.getDefaultThreshold() }),
+      algorithm: NewConstantAstNode({ constant: config.defaultAlgorithm }),
     },
   };
 }
