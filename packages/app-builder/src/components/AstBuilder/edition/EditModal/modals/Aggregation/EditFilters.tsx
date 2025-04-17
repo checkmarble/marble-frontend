@@ -52,7 +52,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
     (s) => (s.node as AggregationAstNode).namedChildren.filters.children,
   );
   const evaluation = nodeSharp.select((s) => s.validation);
-  const [isEditingFilter, setIsEditingFilter] = useState(false);
+  const [filterEditedIndex, setEditedFilterIndex] = useState<number | null>(null);
 
   const tableName = aggregatedField?.tableName;
   const options = useMemo(() => {
@@ -214,17 +214,20 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                       ) : null}
                       {complexFilter && filter.namedChildren.operator.constant ? (
                         <>
-                          <Button variant="secondary" onClick={() => setIsEditingFilter(true)}>
+                          <Button
+                            variant="secondary"
+                            onClick={() => setEditedFilterIndex(filterIndex)}
+                          >
                             {displayName}
                           </Button>
-                          {filter.namedChildren.value && isEditingFilter ? (
+                          {filter.namedChildren.value && filterEditedIndex === filterIndex ? (
                             <OperandEditModal
                               node={filter.namedChildren.value}
                               onSave={() => {
-                                setIsEditingFilter(false);
+                                setEditedFilterIndex(null);
                               }}
                               onCancel={() => {
-                                setIsEditingFilter(false);
+                                setEditedFilterIndex(null);
                               }}
                             />
                           ) : null}
