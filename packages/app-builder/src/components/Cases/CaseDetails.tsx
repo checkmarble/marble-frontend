@@ -19,6 +19,7 @@ import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+import { CaseAlerts } from './CaseAlerts';
 import { CaseEvents } from './CaseEvents';
 import { casesI18n } from './cases-i18n';
 import { caseStatusMapping } from './CaseStatus';
@@ -130,18 +131,16 @@ export const CaseDetails = ({
           <span>Alerts</span>
           <div className="flex items-center gap-2">
             <Button variant="secondary" size="sm">
-              <Icon icon="arrow-top-left" className="size-3.5" />
+              <Icon icon="north-east" className="size-4" />
               <span className="text-xs">Review pending sanction checks</span>
             </Button>
             <Button variant="secondary" size="sm">
-              <Icon icon="snooze" className="size-5" />
+              <Icon icon="snooze" className="size-4" />
               <span className="text-xs">Snooze rules</span>
             </Button>
           </div>
         </div>
-        <div className="border-grey-90 bg-grey-100 flex flex-col rounded-lg border">
-          There is {detail.decisions.length} alerts
-        </div>
+        <CaseAlerts decisions={detail.decisions} />
       </div>
     </main>
   );
