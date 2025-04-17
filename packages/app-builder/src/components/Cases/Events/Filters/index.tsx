@@ -3,7 +3,7 @@ import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { endOfDay, startOfDay } from 'date-fns';
 import { diff, toggle } from 'radash';
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
+import { type ComponentProps, type Dispatch, type SetStateAction, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Calendar, Checkbox, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -27,6 +27,10 @@ export const caseEventsFilterSchema = z.object({
 
 export type CaseEventFiltersForm = z.infer<typeof caseEventsFilterSchema>;
 
+const Badge = ({ children }: ComponentProps<'span'>) => (
+  <span className="bg-purple-65 text-grey-100 text-2xs rounded px-1 py-0.5">{children}</span>
+);
+
 export const CaseEventFilters = ({
   filters,
   setFilters,
@@ -36,23 +40,24 @@ export const CaseEventFilters = ({
 }) => {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
-
-  useEffect(() => {
-    console.log(diff(filters.types, ['comment_added']));
-  }, [filters.types]);
+  const isDirty = useMemo(
+    () =>
+      diff(filters.types, ['comment_added']).length !== 0 ||
+      filters.types.length === 0 ||
+      filters.startDate ||
+      filters.endDate,
+    [filters],
+  );
 
   return (
     <div className="flex items-center gap-2">
-      {diff(filters.types, ['comment_added']).length !== 0 ||
-      filters.types.length === 0 ||
-      filters.startDate ||
-      filters.endDate ? (
+      {isDirty ? (
         <Button
           variant="secondary"
           size="small"
           onClick={() => setFilters({ types: ['comment_added'] })}
         >
-          <Icon icon="cross" className="size-3.5" />
+          <Icon icon="cross" className="size-4" />
           <span className="text-xs">Reset</span>
         </Button>
       ) : null}
@@ -63,14 +68,10 @@ export const CaseEventFilters = ({
             <span className="text-xs">Type</span>
             {filters.types.length > 0 ? <div className="bg-grey-80 mx-1 h-3 w-px" /> : null}
             {filters.types.length >= 3 ? (
-              <span className="bg-grey-90 text-2xs rounded px-1 py-0.5">
-                {filters.types.length} selected
-              </span>
+              <Badge>{filters.types.length} selected</Badge>
             ) : (
               filters.types.map((type) => (
-                <span key={type} className="bg-grey-90 text-2xs rounded px-1 py-0.5">
-                  {t(`cases:case_detail.history.event_type.${type}`)}
-                </span>
+                <Badge key={type}>{t(`cases:case_detail.history.event_type.${type}`)}</Badge>
               ))
             )}
           </Button>
@@ -110,14 +111,10 @@ export const CaseEventFilters = ({
               <div className="bg-grey-80 mx-1 h-3 w-px" />
             ) : null}
             {filters.startDate ? (
-              <span className="bg-grey-90 text-2xs rounded px-1 py-0.5">
-                From {formatDateTime(filters.startDate, { language })}
-              </span>
+              <Badge>From {formatDateTime(filters.startDate, { language })}</Badge>
             ) : null}
             {filters.endDate ? (
-              <span className="bg-grey-90 text-2xs rounded px-1 py-0.5">
-                To {formatDateTime(filters.endDate, { language })}
-              </span>
+              <Badge>To {formatDateTime(filters.endDate, { language })}</Badge>
             ) : null}
           </Button>
         </MenuCommand.Trigger>
