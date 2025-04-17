@@ -3,11 +3,17 @@ import {
   adaptCase,
   adaptCaseCreateBody,
   adaptCaseDetail,
+  adaptCreateSuspiciousActivityReportBody,
+  adaptSuspiciousActivityReport,
   adaptUpdateCaseBodyDto,
+  adaptUpdateSuspiciousActivityReportBody,
   type Case,
   type CaseDetail,
   type CaseStatus,
   type CaseUpdateBody,
+  type CreateSuspiciousActivityReportBody,
+  type SuspiciousActivityReport,
+  type UpdateSuspiciousActivityReportBody,
 } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import {
@@ -42,6 +48,8 @@ export interface CaseRepository {
   createCase(data: { name: string; inboxId: string; decisionIds?: string[] }): Promise<CaseDetail>;
   getCase(args: { caseId: string }): Promise<CaseDetail>;
   updateCase(args: { caseId: string; body: CaseUpdateBody }): Promise<CaseDetail>;
+  assignUser(args: { caseId: string; userId: string }): Promise<unknown>;
+  unassignUser(args: { caseId: string }): Promise<unknown>;
   snoozeCase(args: { caseId: string; snoozeUntil: string }): Promise<unknown>;
   unsnoozeCase(args: { caseId: string }): Promise<unknown>;
   addComment(args: {
@@ -57,6 +65,17 @@ export interface CaseRepository {
     reviewComment: string;
     reviewStatus: ReviewStatus;
   }): Promise<CaseDetail>;
+  listSuspiciousActivityReports(args: { caseId: string }): Promise<SuspiciousActivityReport[]>;
+  createSuspiciousActivityReport(args: {
+    caseId: string;
+    body: CreateSuspiciousActivityReportBody;
+  }): Promise<SuspiciousActivityReport>;
+  updateSuspiciousActivityReport(args: {
+    caseId: string;
+    reportId: string;
+    body: UpdateSuspiciousActivityReportBody;
+  }): Promise<SuspiciousActivityReport>;
+  deleteSuspiciousActivityReport(args: { caseId: string; reportId: string }): Promise<unknown>;
 }
 
 export function makeGetCaseRepository() {
@@ -87,6 +106,8 @@ export function makeGetCaseRepository() {
         ...adaptPagination(pagination),
       };
     },
+    assignUser: ({ caseId, userId }) => marbleCoreApiClient.assignUser(caseId, { user_id: userId }),
+    unassignUser: ({ caseId }) => marbleCoreApiClient.unassignUser(caseId),
     unsnoozeCase: ({ caseId }) => marbleCoreApiClient.unsnoozeCase(caseId),
     snoozeCase: ({ caseId, snoozeUntil }) =>
       marbleCoreApiClient.snoozeCase(caseId, { until: snoozeUntil }),
@@ -126,5 +147,23 @@ export function makeGetCaseRepository() {
       });
       return adaptCaseDetail(result.case);
     },
+    listSuspiciousActivityReports: async ({ caseId }) => {
+      const result = await marbleCoreApiClient.sarList(caseId);
+      return result.map(adaptSuspiciousActivityReport);
+    },
+    createSuspiciousActivityReport: async ({ caseId, body }) =>
+      adaptSuspiciousActivityReport(
+        await marbleCoreApiClient.sarCreate(caseId, adaptCreateSuspiciousActivityReportBody(body)),
+      ),
+    updateSuspiciousActivityReport: async ({ caseId, body, reportId }) =>
+      adaptSuspiciousActivityReport(
+        await marbleCoreApiClient.sarUpdate(
+          caseId,
+          reportId,
+          adaptUpdateSuspiciousActivityReportBody(body),
+        ),
+      ),
+    deleteSuspiciousActivityReport: async ({ caseId, reportId }) =>
+      marbleCoreApiClient.sarDelete(caseId, reportId),
   });
 }

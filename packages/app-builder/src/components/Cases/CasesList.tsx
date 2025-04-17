@@ -12,7 +12,7 @@ import { Table, Tooltip, useVirtualTable } from 'ui-design-system';
 
 import { CaseContributors } from './CaseContributors';
 import { casesI18n } from './cases-i18n';
-import { CaseStatus } from './CaseStatus';
+import { CaseStatusPreview } from './CaseStatus';
 import { CaseTags } from './CaseTags';
 
 const columnHelper = createColumnHelper<Case>();
@@ -42,7 +42,9 @@ export function CasesList({
         header: t('cases:case.status'),
         size: 50,
         enableSorting: false,
-        cell: ({ getValue }) => <CaseStatus size="big" type="first-letter" status={getValue()} />,
+        cell: ({ getValue }) => (
+          <CaseStatusPreview size="big" type="first-letter" status={getValue()} />
+        ),
       }),
       columnHelper.accessor(({ name }) => name, {
         id: 'name',
