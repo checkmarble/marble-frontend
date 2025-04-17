@@ -58,6 +58,10 @@ CaseDto:
   $ref: cases.yml#/components/schemas/CaseDto
 CaseDetailDto:
   $ref: cases.yml#/components/schemas/CaseDetailDto
+CaseDecisionDto:
+  $ref: cases.yml#/components/schemas/CaseDecisionDto
+NextCaseIdDto:
+  $ref: cases.yml#/components/schemas/NextCaseIdDto
 CaseFileDto:
   $ref: cases.yml#/components/schemas/CaseFileDto
 CaseTagDto:
@@ -70,6 +74,8 @@ CaseStatusUpdatedEventDto:
   $ref: cases.yml#/components/schemas/CaseStatusUpdatedEventDto
 CaseOutcomeUpdatedEventDto:
   $ref: cases.yml#/components/schemas/CaseOutcomeUpdatedEventDto
+CaseAssignedEventDto:
+  $ref: cases.yml#/components/schemas/CaseAssignedEventDto
 DecisionAddedEventDto:
   $ref: cases.yml#/components/schemas/DecisionAddedEventDto
 CommentAddedEventDto:
@@ -86,6 +92,14 @@ RuleSnoozeCreatedDto:
   $ref: cases.yml#/components/schemas/RuleSnoozeCreatedDto
 DecisionReviewedEventDto:
   $ref: cases.yml#/components/schemas/DecisionReviewedEventDto
+SarCreatedEventDto:
+  $ref: cases.yml#/components/schemas/SarCreatedEventDto
+SarDeletedEventDto:
+  $ref: cases.yml#/components/schemas/SarDeletedEventDto
+SarStatusChangedEventDto:
+  $ref: cases.yml#/components/schemas/SarStatusChangedEventDto
+SarFileUploadedEventDto:
+  $ref: cases.yml#/components/schemas/SarFileUploadedEventDto
 CaseSnoozedDto:
   $ref: cases.yml#/components/schemas/CaseSnoozedDto
 CaseUnsnoozedDto:
