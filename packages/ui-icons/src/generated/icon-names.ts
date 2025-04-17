@@ -63,6 +63,7 @@ export const iconNames = [
   'more-menu',
   'new-inbox',
   'news',
+  'north-east',
   'notifications',
   'number',
   'openinnew',
