@@ -11,6 +11,7 @@ import {
   isBinaryAggregationFilter,
   isBinaryAggregationFilterOperator,
   isComplexAggregationFilter,
+  isFuzzyMatchFilterOptionsAstNode,
   isUnaryAggregationFilterOperator,
   NewAggregatorFilterAstNode,
   NewFuzzyMatchFilterOptionsAstNode,
@@ -26,6 +27,7 @@ import { useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
 import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -222,8 +224,12 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                           </Button>
                           {filter.namedChildren.value && filterEditedIndex === filterIndex ? (
                             <OperandEditModal
-                              node={filter.namedChildren.value}
-                              onSave={() => {
+                              node={R.clone(filter.namedChildren.value)}
+                              onSave={(astNode) => {
+                                if (isFuzzyMatchFilterOptionsAstNode(astNode)) {
+                                  filter.namedChildren.value = astNode;
+                                  nodeSharp.actions.validate();
+                                }
                                 setEditedFilterIndex(null);
                               }}
                               onCancel={() => {
