@@ -16,7 +16,6 @@
   "create_link.button_accept": "Créer un lien",
   "create_link.child_field": "le champ",
   "create_link.child_table": "Sur la table",
-  "create_link.must_point_to_unique_field": "Un lien doit pointer vers un champ avec la contrainte d'unicité activée. \nSi vous souhaitez pointer vers un autre champ de la table, veuillez d'abord le marquer comme unique.",
   "create_link.name_placeholder": "Nom du lien",
   "create_link.parent_field": "sur le champ",
   "create_link.parent_table": "fait référence à la table",
@@ -65,5 +64,7 @@
   "your_data_callout": "Voici la liste de tous les objets que vous pouvez envoyer à Marble, ainsi que leurs propriétés. \nContactez l'équipe Marble si vous souhaitez apporter des modifications à votre modèle de données.",
   "viewer.no_object_found": "Aucun objet trouvé pour l'id {{objectId}} dans {{tableName}}",
   "viewer.object_id": "ID d'objet",
-  "viewer.object_type": "Type d'objet"
+  "viewer.object_type": "Type d'objet",
+  "create_link.must_point_to_unique_field": "Un lien pointe généralement vers le champ «Object_id» de la table cible.",
+  "create_link.no_matching_type_parent_side": "Pas de champ assorti sur ce tableau"
 }
