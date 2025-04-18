@@ -12,6 +12,7 @@ import {
   NewTimeNowAstNode,
   NewTimestampExtractAstNode,
 } from '@app-builder/models/astNode/time';
+import { ComparatorFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/comparatorFuzzyMatchConfig';
 import { aggregatorOperators } from '@app-builder/models/modale-operators';
 import { type OperandType } from '@app-builder/models/operand-type';
 import { type TFunction } from 'i18next';
@@ -24,9 +25,10 @@ export type OperandMenuOption = {
   dataType?: DataType;
   icon?: IconName;
 };
+const fuzzyMatchConfig = ComparatorFuzzyMatchConfig;
 
 const FUNCTIONS_OPTIONS: OperandMenuOption[] = [
-  NewFuzzyMatchComparatorAstNode({ funcName: 'FuzzyMatch' }),
+  NewFuzzyMatchComparatorAstNode({ funcName: 'FuzzyMatch', config: fuzzyMatchConfig }),
   NewTimeAddAstNode(),
   NewTimestampExtractAstNode(),
   NewTimeNowAstNode(),

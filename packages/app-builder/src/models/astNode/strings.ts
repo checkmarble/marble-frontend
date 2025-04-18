@@ -1,10 +1,9 @@
 import { v7 as uuidv7 } from 'uuid';
 
 import {
-  defaultEditableFuzzyMatchAlgorithm,
-  defaultFuzzyMatchComparatorThreshold,
+  type BaseFuzzyMatchConfig,
   type FuzzyMatchAlgorithm,
-} from '../fuzzy-match';
+} from '../fuzzy-match/baseFuzzyMatchConfig';
 import {
   type AstNode,
   type CheckNodeId,
@@ -30,10 +29,12 @@ export interface FuzzyMatchAstNode {
 }
 
 export function NewFuzzyMatchAstNode({
+  config,
   left = NewUndefinedAstNode(),
   right = NewUndefinedAstNode(),
-  algorithm = defaultEditableFuzzyMatchAlgorithm,
+  algorithm = config.defaultEditableAlgorithm,
 }: {
+  config: BaseFuzzyMatchConfig;
   left?: AstNode;
   right?: AstNode;
   algorithm?: FuzzyMatchAlgorithm;
@@ -61,10 +62,12 @@ export interface FuzzyMatchAnyOfAstNode {
 }
 
 export function NewFuzzyMatchAnyOfAstNode({
+  config,
   left = NewUndefinedAstNode(),
   right = NewUndefinedAstNode(),
-  algorithm = defaultEditableFuzzyMatchAlgorithm,
+  algorithm = config.defaultEditableAlgorithm,
 }: {
+  config: BaseFuzzyMatchConfig;
   left?: AstNode;
   right?: AstNode;
   algorithm?: FuzzyMatchAlgorithm;
@@ -92,23 +95,27 @@ export function NewFuzzyMatchComparatorAstNode({
   funcName,
   left,
   right,
+  config,
   algorithm,
-  threshold = defaultFuzzyMatchComparatorThreshold,
+  threshold,
 }: {
   funcName: typeof fuzzyMatchAnyOfAstNodeName | typeof fuzzyMatchAstNodeName;
   left?: AstNode;
   right?: AstNode;
+  config: BaseFuzzyMatchConfig;
   algorithm?: FuzzyMatchAlgorithm;
   threshold?: number;
 }): FuzzyMatchComparatorAstNode {
   const fuzzyMatch =
     funcName === fuzzyMatchAstNodeName
       ? NewFuzzyMatchAstNode({
+          config,
           left,
           right,
           algorithm,
         })
       : NewFuzzyMatchAnyOfAstNode({
+          config,
           left,
           right,
           algorithm,
@@ -118,7 +125,10 @@ export function NewFuzzyMatchComparatorAstNode({
     id: uuidv7(),
     name: '>',
     constant: undefined,
-    children: [fuzzyMatch, NewConstantAstNode({ constant: threshold })],
+    children: [
+      fuzzyMatch,
+      NewConstantAstNode({ constant: threshold ?? config.getDefaultThreshold() }),
+    ],
     namedChildren: {},
   };
 }

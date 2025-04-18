@@ -9,7 +9,7 @@ import {
 import {
   type AggregationAstNode,
   isAggregation,
-  isBinaryAggregationFilter,
+  isUnaryAggregationFilter,
 } from '@app-builder/models/astNode/aggregation';
 import {
   type CustomListAccessAstNode,
@@ -187,7 +187,7 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
                 {fieldName.constant ?? '...'}
               </p>
               <ViewingOperator operator={operator.constant} isFilter />
-              {isBinaryAggregationFilter(filter) ? (
+              {!isUnaryAggregationFilter(filter) ? (
                 <ViewingAstBuilderOperand node={filter.namedChildren.value} />
               ) : null}
             </div>

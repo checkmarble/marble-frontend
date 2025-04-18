@@ -1,6 +1,10 @@
 import { v7 as uuidv7 } from 'uuid';
 
-import { type AggregationAstNode, isAggregation } from './aggregation';
+import {
+  type AggregationAstNode,
+  type FuzzyMatchFilterOptionsAstNode,
+  isAggregation,
+} from './aggregation';
 import { type AstNode, isUndefinedAstNode, type UndefinedAstNode } from './ast-node';
 import {
   type BinaryMainAstOperatorFunction,
@@ -33,7 +37,8 @@ export type EditableAstNode =
   | TimeAddAstNode
   | FuzzyMatchComparatorAstNode
   | IsMultipleOfAstNode
-  | StringTemplateAstNode;
+  | StringTemplateAstNode
+  | FuzzyMatchFilterOptionsAstNode;
 
 /**
  * Check if the node is editable in a dedicated modal

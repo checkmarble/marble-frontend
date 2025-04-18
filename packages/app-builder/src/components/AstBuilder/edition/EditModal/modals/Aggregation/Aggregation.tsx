@@ -85,7 +85,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
             )}
           /> */}
         </div>
-        <div className="grid grid-cols-[150px_1fr] gap-2">
+        <div className="grid grid-cols-[240px_1fr] gap-2">
           <div>{t('scenarios:edit_aggregation.function_title')}</div>
           <div>{t('scenarios:edit_aggregation.object_field_title')}</div>
           <div className="flex flex-col gap-2">

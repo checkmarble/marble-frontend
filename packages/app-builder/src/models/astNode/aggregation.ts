@@ -1,7 +1,17 @@
 import { v7 as uuidv7 } from 'uuid';
 
+import { AggregationFuzzyMatchConfig } from '../fuzzy-match/aggregationFuzzyMatchConfig';
+import {
+  type BaseFuzzyMatchConfig,
+  type FuzzyMatchAlgorithm,
+} from '../fuzzy-match/baseFuzzyMatchConfig';
 import { type AggregatorOperator } from '../modale-operators';
-import { type AstNode, type CheckNodeId, type IdLessAstNode } from './ast-node';
+import {
+  type AstNode,
+  type CheckNodeId,
+  type IdLessAstNode,
+  NewUndefinedAstNode,
+} from './ast-node';
 import { type KnownOperandAstNode } from './builder-ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
@@ -22,9 +32,14 @@ export const binaryAggregationFilterOperators = [
 ] as const;
 export type BinaryAggregationFilterOperator = (typeof binaryAggregationFilterOperators)[number];
 
+export const complexAggregationFilterOperators = ['FuzzyMatch'] as const;
+
+export type ComplexAggregationFilterOperator = (typeof complexAggregationFilterOperators)[number];
+
 export const aggregationFilterOperators = [
   ...binaryAggregationFilterOperators,
   ...unaryAggregationFilterOperators,
+  ...complexAggregationFilterOperators,
 ] as const;
 export type AggregationFilterOperator = (typeof aggregationFilterOperators)[number];
 
@@ -54,14 +69,65 @@ export type BinaryAggregationFilterAstNode = {
   };
 };
 
+export type FuzzyMatchFilterOptionsAstNode = {
+  id: string;
+  name: 'FuzzyMatchOptions';
+  constant?: undefined;
+  children: [];
+  namedChildren: {
+    value: KnownOperandAstNode;
+    threshold: ConstantAstNode<number>;
+    algorithm: ConstantAstNode<FuzzyMatchAlgorithm>;
+  };
+};
+
+export function isFuzzyMatchFilterOptionsAstNode(
+  node: IdLessAstNode | AstNode,
+): node is CheckNodeId<FuzzyMatchFilterOptionsAstNode, typeof node> {
+  return node.name === 'FuzzyMatchOptions';
+}
+
+export function NewFuzzyMatchFilterOptionsAstNode({
+  value,
+}: { value?: KnownOperandAstNode } = {}): FuzzyMatchFilterOptionsAstNode {
+  const config: BaseFuzzyMatchConfig = AggregationFuzzyMatchConfig;
+
+  return {
+    id: uuidv7(),
+    name: 'FuzzyMatchOptions',
+    children: [],
+    namedChildren: {
+      value: value ?? NewUndefinedAstNode(),
+      threshold: NewConstantAstNode({ constant: config.getDefaultThreshold() }),
+      algorithm: NewConstantAstNode({ constant: config.defaultAlgorithm }),
+    },
+  };
+}
+
+export type ComplexAggregationFilterAstNode = {
+  id: string;
+  name: typeof aggregationFilterAstNodeName;
+  constant?: undefined;
+  children: never[];
+  namedChildren: {
+    tableName: ConstantAstNode<string | null>;
+    fieldName: ConstantAstNode<string | null>;
+    operator: ConstantAstNode<'FuzzyMatch'>;
+    value: FuzzyMatchFilterOptionsAstNode;
+  };
+};
+
 export type AggregationFilterAstNode =
   | UnaryAggregationFilterAstNode
-  | BinaryAggregationFilterAstNode;
+  | BinaryAggregationFilterAstNode
+  | ComplexAggregationFilterAstNode;
 
 export type GetAggregationFilterOperator<T extends AggregationFilterAstNode> =
   T extends UnaryAggregationFilterAstNode
     ? UnaryAggregationFilterOperator
-    : BinaryAggregationFilterOperator;
+    : T extends BinaryAggregationFilterAstNode
+      ? BinaryAggregationFilterOperator
+      : ComplexAggregationFilterOperator;
 
 export const aggregationAstNodeName = 'Aggregator';
 export interface AggregationAstNode {
@@ -128,6 +194,11 @@ export function isUnaryAggregationFilterOperator(
 ): value is UnaryAggregationFilterOperator {
   return (unaryAggregationFilterOperators as ReadonlyArray<string | null>).includes(value);
 }
+export function isBinaryAggregationFilterOperator(
+  value: string | null,
+): value is BinaryAggregationFilterOperator {
+  return (binaryAggregationFilterOperators as ReadonlyArray<string | null>).includes(value);
+}
 
 export function isUnaryAggregationFilter(
   node: IdLessAstNode<AggregationFilterAstNode> | AggregationFilterAstNode,
@@ -146,6 +217,14 @@ export function isBinaryAggregationFilter(
     (binaryAggregationFilterOperators as ReadonlyArray<AggregationFilterOperator>).includes(
       operator,
     )
+  );
+}
+
+export function isComplexAggregationFilter(
+  node: IdLessAstNode<AggregationFilterAstNode> | AggregationFilterAstNode,
+): node is CheckNodeId<ComplexAggregationFilterAstNode, typeof node> {
+  return (complexAggregationFilterOperators as ReadonlyArray<string>).includes(
+    node.namedChildren.operator.constant as string,
   );
 }
 

@@ -8,7 +8,7 @@ export function getOperatorName(
   t: TFunction<['common', 'scenarios'], undefined>,
   operatorName: string,
   isAggregationFilter?: boolean,
-) {
+): string {
   if (isOperatorOption(operatorName)) {
     switch (operatorName) {
       case '+':
@@ -72,6 +72,8 @@ export function getOperatorName(
         return isAggregationFilter
           ? t('scenarios:operator.filter_contains_none_of')
           : t('scenarios:operator.contains_none_of');
+      case 'FuzzyMatch':
+        return isAggregationFilter ? t('scenarios:operator.filter_fuzzy-match') : '≈';
       case 'AVG':
         return t('scenarios:aggregator.average');
       case 'COUNT':
