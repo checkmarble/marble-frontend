@@ -116,6 +116,7 @@ export const caseEventTypes: CaseEventType[] = [
   'decision_reviewed',
   'case_snoozed',
   'case_unsnoozed',
+  'case_assigned',
 ];
 
 interface CaseEventBase<T extends CaseEventType> {
@@ -185,6 +186,11 @@ export interface CaseUnsnoozedEvent extends CaseEventBase<'case_unsnoozed'> {
   userId: string;
 }
 
+export interface CaseAssignedEvent extends CaseEventBase<'case_assigned'> {
+  userId: string;
+  eventType: 'case_assigned';
+}
+
 export type CaseEvent =
   | CaseCreatedEvent
   | CaseStatusUpdatedEvent
@@ -198,7 +204,8 @@ export type CaseEvent =
   | RuleSnoozeCreatedEvent
   | DecisionReviewedEvent
   | CaseSnoozedEvent
-  | CaseUnsnoozedEvent;
+  | CaseUnsnoozedEvent
+  | CaseAssignedEvent;
 
 export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
   const baseEvent = {
@@ -285,6 +292,11 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
     .with({ event_type: 'case_unsnoozed' }, (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
+      userId: dto.user_id,
+    }))
+    .with({ event_type: 'case_assigned' }, (dto) => ({
+      ...baseEvent,
+      eventType: 'case_assigned',
       userId: dto.user_id,
     }))
     .exhaustive();
