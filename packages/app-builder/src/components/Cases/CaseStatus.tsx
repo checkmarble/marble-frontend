@@ -4,7 +4,7 @@ import { type ParseKeys } from 'i18next';
 import { type CaseStatusForCaseEventDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tooltip } from 'ui-design-system';
+import { Tag, Tooltip } from 'ui-design-system';
 
 import { casesI18n } from './cases-i18n';
 
@@ -116,6 +116,13 @@ export function CaseStatusPreview({
       </div>
     </Tooltip.Default>
   );
+}
+
+export function CaseStatusTag({ status }: { status: CaseStatusForCaseEventDto }) {
+  const { t } = useTranslation(['cases']);
+  const { color, tKey } = caseStatusMapping[status];
+
+  return <Tag color={color ?? undefined}>{t(tKey)}</Tag>;
 }
 
 export function useCaseStatuses() {
