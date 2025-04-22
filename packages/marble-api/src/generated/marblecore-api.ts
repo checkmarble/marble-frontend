@@ -911,6 +911,7 @@ export type InboxDto = {
     status: "active" | "archived";
     users?: InboxUserDto[];
     cases_count?: number;
+    escalation_inbox_id?: string;
 };
 export type CreateInboxBodyDto = {
     name: string;

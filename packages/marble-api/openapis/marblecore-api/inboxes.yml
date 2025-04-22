@@ -121,6 +121,9 @@
             properties:
               name:
                 type: string
+              escalation_inbox_id:
+                type: string
+                format: uuid
       required: true
     responses:
       '200':
@@ -387,6 +390,9 @@ components:
             $ref: '#/components/schemas/InboxUserDto'
         cases_count:
           type: number
+        escalation_inbox_id:
+          type: string
+          format: uuid
     CreateInboxBodyDto:
       type: object
       required:
