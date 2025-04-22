@@ -65,5 +65,11 @@
   "unique.col_header": "Unique",
   "viewer.no_object_found": "No object found for id {{objectId}} in {{tableName}}",
   "viewer.object_type": "Object type",
-  "viewer.object_id": "Object ID"
+  "viewer.object_id": "Object ID",
+  "create_navigation_option.title": "Create a navigation option",
+  "create_navigation_option.errors.duplicate_pivot_value": "A navigation option already exists with these parameters",
+  "create_navigation_option.labels.from": "From",
+  "create_navigation_option.labels.to": "To",
+  "create_navigation_option.labels.ordered_by": "Ordered by",
+  "create_navigation_option.placeholders.ordered_by": "Chose a field"
 }

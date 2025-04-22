@@ -614,7 +614,7 @@ components:
         target_table_id:
           type: string
           format: uuid
-        filtering_field_id:
+        filter_field_id:
           type: string
           format: uuid
         ordering_field_id:

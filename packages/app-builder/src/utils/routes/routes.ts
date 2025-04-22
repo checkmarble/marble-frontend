@@ -96,12 +96,6 @@ export const routes = [
             ]
           },
           {
-            "id": "routes/_builder+/cases_new+/$caseId._index",
-            "index": true,
-            "path": "cases_new/:caseId",
-            "file": "routes/_builder+/cases_new+/$caseId._index.tsx"
-          },
-          {
             "id": "routes/_builder+/data+/_layout",
             "path": "data",
             "file": "routes/_builder+/data+/_layout.tsx",
@@ -434,6 +428,11 @@ export const routes = [
         "id": "routes/ressources+/cases+/snooze-case",
         "path": "ressources/cases/snooze-case",
         "file": "routes/ressources+/cases+/snooze-case.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/$tableId.createNavigationOption",
+        "path": "ressources/data/:tableId/createNavigationOption",
+        "file": "routes/ressources+/data+/$tableId.createNavigationOption.tsx"
       },
       {
         "id": "routes/ressources+/data+/$tableName.list-objects",

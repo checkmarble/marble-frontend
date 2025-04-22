@@ -1,6 +1,6 @@
 import { DataModelExplorer } from '@app-builder/components/DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
-import { type DataModel } from '@app-builder/models';
+import { type CurrentUser, type DataModel } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +8,7 @@ import { CaseManagerDrawerButtons, DrawerBreadcrumb, DrawerContext } from '../Dr
 import { PivotsPanelContent } from './PivotsPanelContent';
 
 type PivotsPanelProps = {
+  currentUser: CurrentUser;
   case: CaseDetail;
   pivotObjects: PivotObject[];
   dataModel: DataModel;
@@ -38,6 +39,7 @@ export function PivotsPanel(props: PivotsPanelProps) {
       ) : (
         <div className="w-[519px] p-8">
           <PivotsPanelContent
+            currentUser={props.currentUser}
             case={props.case}
             pivotObjects={props.pivotObjects}
             dataModel={props.dataModel}

@@ -65,5 +65,11 @@
   "unique.col_header": "فريد",
   "viewer.no_object_found": "لم يتم العثور على كائن للمعرف {{objectId}} في {{tableName}}",
   "viewer.object_id": "معرف الكائن",
-  "viewer.object_type": "نوع الكائن"
+  "viewer.object_type": "نوع الكائن",
+  "create_navigation_option.errors.duplicate_pivot_value": "يوجد بالفعل خيار التنقل مع هذه المعلمات",
+  "create_navigation_option.labels.from": "من",
+  "create_navigation_option.labels.ordered_by": "أمر من قبل",
+  "create_navigation_option.labels.to": "ل",
+  "create_navigation_option.placeholders.ordered_by": "اختار حقل",
+  "create_navigation_option.title": "إنشاء خيار التنقل"
 }
