@@ -76,7 +76,7 @@ export const CaseEventFilters = ({
             )}
           </Button>
         </MenuCommand.Trigger>
-        <MenuCommand.Content className="mt-2 max-h-[400px] max-w-[210px]">
+        <MenuCommand.Content className="mt-2 max-h-[400px] max-w-[210px]" align="end">
           <MenuCommand.Combobox className="m-1 mb-0 h-8 p-0" iconClasses="size-4" />
           <MenuCommand.List className="p-1">
             {caseEventTypes.map((type) => (
