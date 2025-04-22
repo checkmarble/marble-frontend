@@ -1,7 +1,13 @@
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type CurrentUser } from '@app-builder/models';
 import { type CaseDetail, type SuspiciousActivityReport } from '@app-builder/models/cases';
+import {
+  type DecisionDetail as RawDecisionDetail,
+  type RuleExecution,
+} from '@app-builder/models/decision';
 import { type Inbox } from '@app-builder/models/inbox';
+import { type SanctionCheck } from '@app-builder/models/sanction-check';
+import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
 import { CloseCase } from '@app-builder/routes/ressources+/cases+/close-case';
 import { EditCaseAssignee } from '@app-builder/routes/ressources+/cases+/edit-assignee';
@@ -13,7 +19,8 @@ import { EscalateCase } from '@app-builder/routes/ressources+/cases+/escalate-ca
 import { OpenCase } from '@app-builder/routes/ressources+/cases+/open-case';
 import { SnoozeCase } from '@app-builder/routes/ressources+/cases+/snooze-case';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { type RefObject, useRef } from 'react';
+import { Await } from '@remix-run/react';
+import { type RefObject, Suspense, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
@@ -24,18 +31,26 @@ import { CaseEvents } from './CaseEvents';
 import { casesI18n } from './cases-i18n';
 import { caseStatusMapping } from './CaseStatus';
 
+type DecisionDetail = {
+  ruleExecutions: RuleExecution[];
+  scenarioRules: ScenarioIterationRule[];
+  sanctionChecks: SanctionCheck[];
+} & Pick<RawDecisionDetail, 'id' | 'createdAt' | 'triggerObject' | 'score' | 'outcome'>;
+
 export const CaseDetails = ({
   detail,
   containerRef,
   inboxes,
   currentUser,
   reports,
+  decisionsPromise,
 }: {
   detail: CaseDetail;
   containerRef: RefObject<HTMLDivElement>;
   inboxes: Inbox[];
   currentUser: CurrentUser;
   reports: SuspiciousActivityReport[];
+  decisionsPromise: Promise<DecisionDetail[]>;
 }) => {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
@@ -139,7 +154,11 @@ export const CaseDetails = ({
             </Button>
           </div>
         </div>
-        <CaseAlerts decisions={detail.decisions} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Await resolve={decisionsPromise}>
+            {(decisions) => <CaseAlerts decisions={decisions} />}
+          </Await>
+        </Suspense>
       </div>
     </main>
   );
