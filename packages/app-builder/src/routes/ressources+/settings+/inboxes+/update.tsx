@@ -15,7 +15,7 @@ import { pick } from 'radash';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { safeRedirect } from 'remix-utils/safe-redirect';
-import { Button, Modal } from 'ui-design-system';
+import { Button, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -28,6 +28,7 @@ export const handle = {
 const updateInboxFormSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
+  escalationInboxId: z.union([z.string().uuid(), z.null()]),
   redirectRoute: z.enum(redirectRouteOptions),
 });
 
@@ -61,7 +62,10 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    const updatedInbox = await inbox.updateInbox(data.id, pick(data, ['name']));
+    const updatedInbox = await inbox.updateInbox(
+      data.id,
+      pick(data, ['name', 'escalationInboxId']),
+    );
 
     return redirect(
       safeRedirect(
@@ -88,9 +92,11 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export function UpdateInbox({
   inbox,
+  inboxesList,
   redirectRoutePath,
 }: {
   inbox: Inbox;
+  inboxesList: Inbox[];
   redirectRoutePath: (typeof redirectRouteOptions)[number];
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -112,7 +118,11 @@ export function UpdateInbox({
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <UpdateInboxContent inbox={inbox} redirectRoutePath={redirectRoutePath} />
+        <UpdateInboxContent
+          inbox={inbox}
+          inboxesList={inboxesList}
+          redirectRoutePath={redirectRoutePath}
+        />
       </Modal.Content>
     </Modal.Root>
   );
@@ -120,16 +130,24 @@ export function UpdateInbox({
 
 export function UpdateInboxContent({
   inbox,
+  inboxesList,
   redirectRoutePath,
 }: {
   inbox: Inbox;
+  inboxesList: Inbox[];
   redirectRoutePath: (typeof redirectRouteOptions)[number];
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
+  const [isEscalationInboxOpen, setEscalationOpen] = useState(false);
+  const otherInboxes = inboxesList.filter((i) => i.id !== inbox.id);
 
   const form = useForm({
-    defaultValues: { ...inbox, redirectRoute: redirectRoutePath } as UpdateInboxForm,
+    defaultValues: {
+      ...inbox,
+      escalationInboxId: inbox.escalationInboxId ?? null,
+      redirectRoute: redirectRoutePath,
+    } as UpdateInboxForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -171,6 +189,43 @@ export function UpdateInboxContent({
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
+        </form.Field>
+        <form.Field name="escalationInboxId">
+          {(field) => {
+            const selectedInbox = inboxesList.find((inbox) => inbox.id === field.state.value);
+
+            return (
+              <div className="group flex flex-col gap-2">
+                <FormLabel name={field.name}>{t('settings:inboxes.escalation_inbox')}</FormLabel>
+                <MenuCommand.Menu open={isEscalationInboxOpen} onOpenChange={setEscalationOpen}>
+                  <MenuCommand.Trigger>
+                    <MenuCommand.SelectButton>
+                      {selectedInbox
+                        ? selectedInbox.name
+                        : t('settings:inboxes.inbox_details.no_escalation_inbox')}
+                    </MenuCommand.SelectButton>
+                  </MenuCommand.Trigger>
+                  <MenuCommand.Content align="start" sameWidth sideOffset={4}>
+                    <MenuCommand.List>
+                      <MenuCommand.Item value="" onSelect={() => field.handleChange(null)}>
+                        {t('settings:inboxes.inbox_details.no_escalation_inbox')}
+                      </MenuCommand.Item>
+                      {otherInboxes.map((inbox) => (
+                        <MenuCommand.Item
+                          key={inbox.id}
+                          value={inbox.id}
+                          onSelect={field.handleChange}
+                        >
+                          {inbox.name}
+                        </MenuCommand.Item>
+                      ))}
+                    </MenuCommand.List>
+                  </MenuCommand.Content>
+                </MenuCommand.Menu>
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+              </div>
+            );
+          }}
         </form.Field>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>

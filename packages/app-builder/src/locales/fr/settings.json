@@ -117,5 +117,8 @@
   "scenario_sanction_limit_placeholder": "5",
   "scenario_sanction_settings": "Sanction",
   "scenario_sanction_threshold": "Score de similitude minimum (%)",
-  "scenario_sanction_threshold_placeholder": "80"
+  "scenario_sanction_threshold_placeholder": "80",
+  "inboxes.escalation_inbox": "Destination d'escalade",
+  "inboxes.inbox_details.escalation_inbox": "Destination d'escalade",
+  "inboxes.inbox_details.no_escalation_inbox": "Aucune"
 }
