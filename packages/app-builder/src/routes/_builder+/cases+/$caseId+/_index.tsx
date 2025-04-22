@@ -164,7 +164,12 @@ export default function CaseManagerIndexPage() {
                 }
 
                 return (
-                  <PivotsPanel case={details} dataModel={dataModel} pivotObjects={pivotObjects} />
+                  <PivotsPanel
+                    currentUser={currentUser}
+                    case={details}
+                    dataModel={dataModel}
+                    pivotObjects={pivotObjects}
+                  />
                 );
               })
               .exhaustive()}

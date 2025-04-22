@@ -151,5 +151,7 @@
   "case_detail.pivot_panel.title": "عميل",
   "data_explorer.columns": "الأعمدة",
   "case_detail.pivot_panel.breadcrumb_client": "العميل {{clientName}}",
-  "case_detail.pivot_panel.breadcrumb_explore": "استكشاف البيانات"
+  "case_detail.pivot_panel.breadcrumb_explore": "استكشاف البيانات",
+  "case_detail.pivot_panel.create_navigation_option": "إنشاء خيار التنقل",
+  "data_explorer.no_table_data": "لا توجد بيانات للجدول {{tablename}}"
 }

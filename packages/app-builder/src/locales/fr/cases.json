@@ -150,6 +150,8 @@
   "case_detail.pivot_panel.related_object": "Objet associé - {{linkName}}",
   "case_detail.pivot_panel.title": "Client",
   "data_explorer.columns": "Colonnes",
+  "data_explorer.no_table_data": "Aucune donnée pour la table {{tableName}}",
   "case_detail.pivot_panel.breadcrumb_client": "Client {{clientName}}",
-  "case_detail.pivot_panel.breadcrumb_explore": "Exploration de données"
+  "case_detail.pivot_panel.breadcrumb_explore": "Exploration de données",
+  "case_detail.pivot_panel.create_navigation_option": "Créer une option de navigation"
 }

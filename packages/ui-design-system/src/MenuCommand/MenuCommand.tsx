@@ -167,9 +167,9 @@ function Trigger({ children }: React.PropsWithChildren) {
 type ButtonProps = React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
->;
+> & { hasError?: boolean };
 const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function SelectButton(
-  { children, className, ...props },
+  { children, className, hasError = false, ...props },
   ref,
 ) {
   return (
@@ -182,6 +182,7 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
           'bg-grey-100 disabled:border-grey-98 disabled:bg-grey-98',
           'border-grey-90 focus:border-purple-65',
         ]),
+        { 'border-red-47': hasError },
         className,
       )}
       {...props}
