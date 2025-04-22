@@ -90,6 +90,8 @@ CaseSnoozedDto:
   $ref: cases.yml#/components/schemas/CaseSnoozedDto
 CaseUnsnoozedDto:
   $ref: cases.yml#/components/schemas/CaseUnsnoozedDto
+CaseAssignedEventDto:
+  $ref: cases.yml#/components/schemas/CaseAssignedEventDto
 CaseContributorDto:
   $ref: cases.yml#/components/schemas/CaseContributorDto
 UpdateCaseBodyDto:

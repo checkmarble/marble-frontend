@@ -239,7 +239,12 @@ export type CaseUnsnoozedDto = {
     new_value: string;
     previous_value?: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto;
+export type CaseAssignedEventDto = {
+    event_type: "case_assigned";
+} & CaseEventDtoBase & {
+    user_id: string;
+};
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto | CaseAssignedEventDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;

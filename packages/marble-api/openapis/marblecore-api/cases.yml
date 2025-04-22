@@ -824,6 +824,7 @@ components:
           decision_reviewed: '#/components/schemas/DecisionReviewedEventDto'
           case_snoozed: '#/components/schemas/CaseSnoozedDto'
           case_unsnoozed: '#/components/schemas/CaseUnsnoozedDto'
+          case_assigned: '#/components/schemas/CaseAssignedEventDto'
       required:
         - id
         - case_id
@@ -1038,6 +1039,16 @@ components:
             previous_value:
               type: string
               format: date-time
+    CaseAssignedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - user_id
+          properties:
+            user_id:
+              type: string
+              format: uuid
     PivotObjectDto:
       type: object
       properties:
