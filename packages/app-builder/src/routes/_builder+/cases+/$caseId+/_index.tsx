@@ -9,44 +9,26 @@ import { PivotsPanel } from '@app-builder/components/CaseManager/PivotsPanel/Piv
 import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
-import { type CurrentUser, type DataModel } from '@app-builder/models';
-import {
-  type CaseDetail,
-  type PivotObject,
-  type SuspiciousActivityReport,
-} from '@app-builder/models/cases';
-import { type Inbox } from '@app-builder/models/inbox';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { defer, type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
 import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
+import { pick } from 'radash';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-type CaseManagerPageLoaderData = {
-  case: CaseDetail;
-  pivotObjects: PivotObject[] | null;
-  dataModel: DataModel;
-  currentInbox: Inbox;
-  currentUser: CurrentUser;
-  inboxes: Inbox[];
-  reports: SuspiciousActivityReport[];
-};
-
-export const loader = async ({
-  request,
-  params,
-}: LoaderFunctionArgs): Promise<CaseManagerPageLoaderData | Response> => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { authService } = initServerServices(request);
-  const { cases, inbox, user, dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { cases, inbox, user, dataModelRepository, decision, scenario, sanctionCheck } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   const caseId = fromParams(params, 'caseId');
 
@@ -59,6 +41,21 @@ export const loader = async ({
     dataModelRepository.getDataModel(),
   ]);
 
+  const decisionsPromise = Promise.all(
+    currentCase.decisions.map(async (d) => ({
+      ...pick(d, ['id', 'outcome', 'triggerObject', 'createdAt', 'score']),
+      ruleExecutions: await decision.getDecisionById(d.id).then((detail) => detail.rules),
+      scenarioRules: await scenario
+        .getScenarioIteration({
+          iterationId: d.scenario.scenarioIterationId,
+        })
+        .then((iteration) => iteration.rules),
+      sanctionChecks: await sanctionCheck.listSanctionChecks({
+        decisionId: d.id,
+      }),
+    })),
+  );
+
   if (!currentCase) {
     return redirect(getRoute('/cases/inboxes'));
   }
@@ -69,7 +66,7 @@ export const loader = async ({
     return redirect(getRoute('/cases/inboxes'));
   }
 
-  return {
+  return defer({
     case: currentCase,
     pivotObjects,
     dataModel,
@@ -77,7 +74,8 @@ export const loader = async ({
     reports,
     currentUser: user,
     inboxes,
-  };
+    decisionsPromise,
+  });
 };
 
 export const handle = {
@@ -93,7 +91,7 @@ export const handle = {
         </BreadCrumbLink>
       );
     },
-    ({ isLast, data }: BreadCrumbProps<CaseManagerPageLoaderData>) => {
+    ({ isLast, data }: BreadCrumbProps<SerializeFrom<typeof loader>>) => {
       return (
         <BreadCrumbLink
           to={getRoute('/cases/inboxes/:inboxId', {
@@ -105,7 +103,7 @@ export const handle = {
         </BreadCrumbLink>
       );
     },
-    ({ isLast, data }: BreadCrumbProps<CaseManagerPageLoaderData>) => {
+    ({ isLast, data }: BreadCrumbProps<SerializeFrom<typeof loader>>) => {
       return (
         <BreadCrumbLink
           isLast={isLast}
@@ -126,7 +124,8 @@ export default function CaseManagerIndexPage() {
     inboxes,
     currentUser,
     reports,
-  } = useLoaderData<CaseManagerPageLoaderData>();
+    decisionsPromise,
+  } = useLoaderData<typeof loader>();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
   const [drawerContentMode, _setDrawerContentMode] = useState<'pivot'>('pivot');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -150,6 +149,7 @@ export default function CaseManagerIndexPage() {
       >
         <CaseDetails
           detail={details}
+          decisionsPromise={decisionsPromise}
           containerRef={containerRef}
           inboxes={inboxes}
           currentUser={currentUser}
