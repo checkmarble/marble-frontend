@@ -831,6 +831,12 @@ export type CreatePivotInputDto = {
     field_id?: string;
     path_link_ids?: string[];
 };
+export type CreateNavigationOptionDto = {
+    source_field_id?: string;
+    target_table_id?: string;
+    filter_field_id?: string;
+    ordering_field_id?: string;
+};
 export type AnalyticsDto = {
     embedding_type: "global_dashboard" | "unknown_embedding_type";
     signed_embedding_url: string;
@@ -2862,12 +2868,7 @@ export function createDataModelPivot(createPivotInputDto: CreatePivotInputDto, o
 /**
  * Create a new navigation option (one to many link) from a table from the data model. Under the hood, this creates (concurrently) a new index on the target table, which may take some time if there is already data in the table.
  */
-export function postDataModelTableNavigationOption(tableId: string, body: {
-    source_field_id?: string;
-    target_table_id?: string;
-    filtering_field_id?: string;
-    ordering_field_id?: string;
-}, opts?: Oazapfts.RequestOpts) {
+export function postDataModelTableNavigationOption(tableId: string, createNavigationOptionDto: CreateNavigationOptionDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -2882,7 +2883,7 @@ export function postDataModelTableNavigationOption(tableId: string, body: {
     }>(`/data-model/tables/${encodeURIComponent(tableId)}/navigation_options`, oazapfts.json({
         ...opts,
         method: "POST",
-        body
+        body: createNavigationOptionDto
     })));
 }
 /**

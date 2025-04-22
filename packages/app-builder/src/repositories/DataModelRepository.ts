@@ -2,6 +2,7 @@ import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptClientDataListRequestBodyDto,
   adaptClientDataListResponse,
+  adaptCreateNavigationOptionDto,
   adaptCreatePivotInputDto,
   adaptCreateTableFieldDto,
   adaptDataModel,
@@ -11,6 +12,7 @@ import {
   type ClientDataListRequestBody,
   type ClientDataListResponse,
   type CreateFieldInput,
+  type CreateNavigationOption,
   type CreatePivotInput,
   type DataModel,
   type DataModelObject,
@@ -31,6 +33,7 @@ export interface DataModelRepository {
     tableName: string;
     body: ClientDataListRequestBody;
   }): Promise<ClientDataListResponse>;
+  createNavigationOption(tableId: string, options: CreateNavigationOption): Promise<void>;
 }
 
 export function makeGetDataModelRepository() {
@@ -75,6 +78,12 @@ export function makeGetDataModelRepository() {
           params.tableName,
           adaptClientDataListRequestBodyDto(params.body),
         ),
+      );
+    },
+    createNavigationOption: async (tableId, options) => {
+      await marbleCoreApiClient.postDataModelTableNavigationOption(
+        tableId,
+        adaptCreateNavigationOptionDto(options),
       );
     },
   });

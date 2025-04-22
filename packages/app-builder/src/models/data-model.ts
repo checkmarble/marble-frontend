@@ -3,6 +3,7 @@ import {
   type ClientDataListRequestBody as ClientDataListRequestBodyDto,
   type ClientDataListResponseDto,
   type ClientObjectDetailDto,
+  type CreateNavigationOptionDto,
   type CreatePivotInputDto,
   type CreateTableFieldDto,
   type DataModelDto,
@@ -459,5 +460,23 @@ export function adaptClientDataListResponse(
       hasNextPage: dto.pagination.has_next_page,
       nextCursorId: dto.pagination.next_cursor_id,
     },
+  };
+}
+
+export type CreateNavigationOption = {
+  sourceFieldId: string;
+  targetTableId: string;
+  filterFieldId: string;
+  orderingFieldId: string;
+};
+
+export function adaptCreateNavigationOptionDto(
+  model: CreateNavigationOption,
+): CreateNavigationOptionDto {
+  return {
+    source_field_id: model.sourceFieldId,
+    target_table_id: model.targetTableId,
+    filter_field_id: model.filterFieldId,
+    ordering_field_id: model.orderingFieldId,
   };
 }
