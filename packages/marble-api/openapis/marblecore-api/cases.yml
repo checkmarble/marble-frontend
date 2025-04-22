@@ -556,6 +556,30 @@
         $ref: 'components.yml#/responses/401'
       '403':
         $ref: 'components.yml#/responses/403'
+/cases/related/pivot/{pivotValue}:
+  get:
+    tags:
+      - Cases
+    summary: Get cases related to a pivot from a pivot value
+    operationId: getPivotRelatedCases
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: pivotValue
+        description: Pivot value
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: The list of the cases related to the pivot
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CaseDto'
 
 components:
   schemas:
