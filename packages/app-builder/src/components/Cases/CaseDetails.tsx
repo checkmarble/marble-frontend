@@ -130,11 +130,10 @@ export const CaseDetails = ({
         <div className="text-r text-grey-00 flex items-center justify-between px-1 font-medium">
           <span>Alerts</span>
           <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm">
-              <Icon icon="north-east" className="size-4" />
+            <Button variant="secondary" size="small">
               <span className="text-xs">Review pending sanction checks</span>
             </Button>
-            <Button variant="secondary" size="sm">
+            <Button variant="secondary" size="small">
               <Icon icon="snooze" className="size-4" />
               <span className="text-xs">Snooze rules</span>
             </Button>

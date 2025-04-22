@@ -141,5 +141,15 @@
   "case_detail.history.event_detail.name_updated": "تم تحديث الاسم إلى <style> {{name}} </style> بواسطة <style> {{Actor}} </style>",
   "case_detail.history.event_detail.outcome_updated": "تم تحديث النتيجة إلى <style> {{stept}} </style>",
   "case_detail.history.event_detail.status_updated": "تم تحديث الحالة إلى <style> {{الحالة}} </style>",
-  "case_detail.history.event_detail.tags_removed": "<فاعل> {{Actor}} </Actor> إزالة جميع العلامات"
+  "case_detail.history.event_detail.tags_removed": "<فاعل> {{Actor}} </Actor> إزالة جميع العلامات",
+  "case_detail.pivot_panel.case_history": "سجلات العميل",
+  "case_detail.pivot_panel.explore": "استكشاف البيانات",
+  "case_detail.pivot_panel.informations": "المعلومات",
+  "case_detail.pivot_panel.less_data": "عرض أقل",
+  "case_detail.pivot_panel.more_data": "عرض المزيد",
+  "case_detail.pivot_panel.related_object": "كائن ذي صلة - {{linkName}}",
+  "case_detail.pivot_panel.title": "عميل",
+  "data_explorer.columns": "الأعمدة",
+  "case_detail.pivot_panel.breadcrumb_client": "العميل {{clientName}}",
+  "case_detail.pivot_panel.breadcrumb_explore": "استكشاف البيانات"
 }

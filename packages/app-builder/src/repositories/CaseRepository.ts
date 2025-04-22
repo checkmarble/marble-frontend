@@ -4,6 +4,7 @@ import {
   adaptCaseCreateBody,
   adaptCaseDetail,
   adaptCreateSuspiciousActivityReportBody,
+  adaptPivotObject,
   adaptSuspiciousActivityReport,
   adaptUpdateCaseBodyDto,
   adaptUpdateSuspiciousActivityReportBody,
@@ -12,6 +13,7 @@ import {
   type CaseStatus,
   type CaseUpdateBody,
   type CreateSuspiciousActivityReportBody,
+  type PivotObject,
   type SuspiciousActivityReport,
   type UpdateSuspiciousActivityReportBody,
 } from '@app-builder/models/cases';
@@ -52,6 +54,8 @@ export interface CaseRepository {
   unassignUser(args: { caseId: string }): Promise<unknown>;
   snoozeCase(args: { caseId: string; snoozeUntil: string }): Promise<unknown>;
   unsnoozeCase(args: { caseId: string }): Promise<unknown>;
+  listPivotObjects(args: { caseId: string }): Promise<PivotObject[] | null>;
+  getPivotRelatedCases(args: { pivotValue: string | number }): Promise<Case[]>;
   addComment(args: {
     caseId: string;
     body: {
@@ -108,6 +112,14 @@ export function makeGetCaseRepository() {
     },
     assignUser: ({ caseId, userId }) => marbleCoreApiClient.assignUser(caseId, { user_id: userId }),
     unassignUser: ({ caseId }) => marbleCoreApiClient.unassignUser(caseId),
+    listPivotObjects: async ({ caseId }) => {
+      const res = await marbleCoreApiClient.getPivotObjectsForCase(caseId);
+      return res.pivot_objects?.map(adaptPivotObject) ?? null;
+    },
+    getPivotRelatedCases: async ({ pivotValue }) => {
+      const res = await marbleCoreApiClient.getPivotRelatedCases(pivotValue.toString());
+      return res.map((dto) => adaptCase(dto));
+    },
     unsnoozeCase: ({ caseId }) => marbleCoreApiClient.unsnoozeCase(caseId),
     snoozeCase: ({ caseId, snoozeUntil }) =>
       marbleCoreApiClient.snoozeCase(caseId, { until: snoozeUntil }),
