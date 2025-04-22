@@ -144,31 +144,32 @@ export default function CaseManagerIndexPage() {
           <Icon icon="arrow-up" className="size-5 rotate-90" />
         </Button>
       </Page.Header>
-      <Page.Container ref={containerRef}>
-        <Page.Content className="grid h-full grid-cols-[1fr_520px] p-0 lg:p-0">
-          <CaseDetails
-            detail={details}
-            containerRef={containerRef}
-            inboxes={inboxes}
-            currentUser={currentUser}
-            reports={reports}
-          />
-          <DataModelExplorerProvider>
-            <CaseManagerDrawer>
-              {match(drawerContentMode)
-                .with('pivot', () => {
-                  if (!pivotObjects || pivotObjects.length === 0) {
-                    return null;
-                  }
+      <Page.Container
+        ref={containerRef}
+        className="text-r relative grid h-full grid-cols-[1fr_520px] p-0 lg:p-0"
+      >
+        <CaseDetails
+          detail={details}
+          containerRef={containerRef}
+          inboxes={inboxes}
+          currentUser={currentUser}
+          reports={reports}
+        />
+        <DataModelExplorerProvider>
+          <CaseManagerDrawer>
+            {match(drawerContentMode)
+              .with('pivot', () => {
+                if (!pivotObjects || pivotObjects.length === 0) {
+                  return null;
+                }
 
-                  return (
-                    <PivotsPanel case={details} dataModel={dataModel} pivotObjects={pivotObjects} />
-                  );
-                })
-                .exhaustive()}
-            </CaseManagerDrawer>
-          </DataModelExplorerProvider>
-        </Page.Content>
+                return (
+                  <PivotsPanel case={details} dataModel={dataModel} pivotObjects={pivotObjects} />
+                );
+              })
+              .exhaustive()}
+          </CaseManagerDrawer>
+        </DataModelExplorerProvider>
       </Page.Container>
     </Page.Main>
   );

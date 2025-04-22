@@ -51,7 +51,10 @@ const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(
     return (
       <div
         ref={ref}
-        className="scrollbar-gutter-stable flex size-full flex-col overflow-y-scroll"
+        className={cn(
+          'scrollbar-gutter-stable flex size-full flex-col overflow-y-scroll',
+          className,
+        )}
         {...props}
       >
         {children}

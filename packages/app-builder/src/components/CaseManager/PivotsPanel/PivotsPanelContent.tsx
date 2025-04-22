@@ -4,11 +4,14 @@ import { DataModelExplorerContext } from '@app-builder/components/DataModelExplo
 import { type ClientObjectDetail, type DataModel } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { Link } from '@remix-run/react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Fragment, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
+import { Button, CtaClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function PivotsPanelContent({
@@ -85,6 +88,18 @@ export function PivotsPanelContent({
   );
 }
 
+const cellVariants = cva('border-grey-90 border-t p-2', {
+  variants: {
+    isLast: {
+      true: 'border-b',
+      false: null,
+    },
+  },
+  defaultVariants: {
+    isLast: false,
+  },
+});
+
 function RelatedCases({
   currentCase,
   pivotValue,
@@ -116,23 +131,37 @@ function RelatedCases({
 
       return (
         <DataCard borderless title={t('cases:case_detail.pivot_panel.case_history')}>
-          <table className="w-full">
-            {cases.map((caseObj) => (
-              <tr key={caseObj.id} className="border-grey-90 border-y">
-                <td className="border-grey-90 border-r p-2">
-                  <div className="flex justify-between gap-2">
-                    <span className="line-clamp-1 shrink">{caseObj.name}</span>
-                    <Button size="small" variant="secondary" className="shrink-0">
-                      Open
-                    </Button>
+          <div className="grid w-full grid-cols-[1fr_auto_96px]">
+            {cases.map((caseObj, idx) => {
+              const isLast = idx === cases.length - 1;
+
+              return (
+                <Fragment key={caseObj.id}>
+                  <div
+                    className={cellVariants({
+                      isLast,
+                      className: 'shrink truncate leading-[28px]',
+                    })}
+                  >
+                    {caseObj.name}
                   </div>
-                </td>
-                <td className="w-24 p-2">
-                  <CaseStatusTag status={caseObj.status} />
-                </td>
-              </tr>
-            ))}
-          </table>
+                  <div className={cellVariants({ isLast, className: 'shrink-0' })}>
+                    <Link
+                      to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseObj.id) })}
+                      className={CtaClassName({ size: 'small', variant: 'secondary' })}
+                    >
+                      Open
+                    </Link>
+                  </div>
+                  <div
+                    className={cellVariants({ isLast, className: 'flex items-center border-l' })}
+                  >
+                    <CaseStatusTag status={caseObj.status} />
+                  </div>
+                </Fragment>
+              );
+            })}
+          </div>
         </DataCard>
       );
     });
