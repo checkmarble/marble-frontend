@@ -201,122 +201,130 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-3">
         <div className="text-m font-semibold">{table.name}</div>
-        <MenuCommand.Menu>
-          <MenuCommand.Trigger>
-            <Button variant="secondary">
-              <Icon className="size-5" icon="column" />
-              {t('cases:data_explorer.columns')}
-            </Button>
-          </MenuCommand.Trigger>
-          <MenuCommand.Content sideOffset={4} align="start" sameWidth>
-            <MenuCommand.List>
-              {table.fields.map((field) => {
-                return (
-                  <MenuCommand.Item
-                    key={field.name}
-                    onSelect={() => handleToggleColumn(field.name)}
-                  >
-                    {field.name}
-                    {columnList.includes(field.name) ? (
-                      <Icon icon="tick" className="size-5" />
-                    ) : null}
-                  </MenuCommand.Item>
-                );
-              })}
-            </MenuCommand.List>
-          </MenuCommand.Content>
-        </MenuCommand.Menu>
+        {list.length > 0 ? (
+          <MenuCommand.Menu>
+            <MenuCommand.Trigger>
+              <Button variant="secondary">
+                <Icon className="size-5" icon="column" />
+                {t('cases:data_explorer.columns')}
+              </Button>
+            </MenuCommand.Trigger>
+            <MenuCommand.Content sideOffset={4} align="start" sameWidth>
+              <MenuCommand.List>
+                {table.fields.map((field) => {
+                  return (
+                    <MenuCommand.Item
+                      key={field.name}
+                      onSelect={() => handleToggleColumn(field.name)}
+                    >
+                      {field.name}
+                      {columnList.includes(field.name) ? (
+                        <Icon icon="tick" className="size-5" />
+                      ) : null}
+                    </MenuCommand.Item>
+                  );
+                })}
+              </MenuCommand.List>
+            </MenuCommand.Content>
+          </MenuCommand.Menu>
+        ) : null}
       </div>
       <div className="overflow-x-auto">
-        <table className="mb-4 min-w-full">
-          <thead>
-            {reactTable.getHeaderGroups().map((headerGroup) => (
-              <tr
-                key={headerGroup.id}
-                className="text-grey-50 border-grey-90 h-10 border-y text-left"
-              >
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="border-grey-90 px-4 font-normal last:border-l [&:not(:last-child)]:border-r"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {reactTable.getRowModel().rows.map((row) => {
-              const rowElement = (
-                <tr key={row.id} className="hover:bg-grey-98 border-grey-90 h-10 border-y">
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      className="border-grey-90 w-fit min-w-[300px] last:border-l [&:not(:last-child)]:border-r"
-                      key={cell.id}
+        {list.length > 0 ? (
+          <table className="mb-4 min-w-full">
+            <thead>
+              {reactTable.getHeaderGroups().map((headerGroup) => (
+                <tr
+                  key={headerGroup.id}
+                  className="text-grey-50 border-grey-90 h-10 border-y text-left"
+                >
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="border-grey-90 px-4 font-normal last:border-l [&:not(:last-child)]:border-r"
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(header.column.columnDef.header, header.getContext())}
+                    </th>
                   ))}
                 </tr>
-              );
+              ))}
+            </thead>
+            <tbody>
+              {reactTable.getRowModel().rows.map((row) => {
+                const rowElement = (
+                  <tr key={row.id} className="hover:bg-grey-98 border-grey-90 h-10 border-y">
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        className="border-grey-90 w-fit min-w-[300px] last:border-l [&:not(:last-child)]:border-r"
+                        key={cell.id}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                );
 
-              return table.navigationOptions ? (
-                <HoverCard key={row.id} openDelay={50} closeDelay={100}>
-                  <HoverCardTrigger asChild aria-disabled={true}>
-                    {rowElement}
-                  </HoverCardTrigger>
-                  <HoverCardPortal>
-                    <HoverCardContent
-                      side="left"
-                      align="start"
-                      sideOffset={34}
-                      className="z-10 mt-1"
-                    >
-                      <MenuCommand.Menu>
-                        <MenuCommand.Trigger>
-                          <Button
-                            variant="secondary"
-                            size="icon"
-                            className="absolute -left-full size-8"
-                          >
-                            <Icon icon="more-menu" className="size-5" />
-                          </Button>
-                        </MenuCommand.Trigger>
-                        <MenuCommand.Content align="start" sideOffset={4}>
-                          <MenuCommand.List>
-                            {table.navigationOptions.map((navigationOption) => (
-                              <MenuCommand.Item
-                                key={navigationOption.targetTableId}
-                                onSelect={() => {
-                                  navigateTo({
-                                    pivotObject,
-                                    sourceObject: row.original,
-                                    sourceTableName: table.name,
-                                    sourceFieldName: navigationOption.sourceFieldName,
-                                    filterFieldName: navigationOption.filterFieldName,
-                                    targetTableName: navigationOption.targetTableName,
-                                    orderingFieldName: navigationOption.orderingFieldName,
-                                  });
-                                }}
-                              >
-                                Show {navigationOption.targetTableName}
-                              </MenuCommand.Item>
-                            ))}
-                          </MenuCommand.List>
-                        </MenuCommand.Content>
-                      </MenuCommand.Menu>
-                    </HoverCardContent>
-                  </HoverCardPortal>
-                </HoverCard>
-              ) : (
-                rowElement
-              );
-            })}
-          </tbody>
-        </table>
+                return table.navigationOptions ? (
+                  <HoverCard key={row.id} openDelay={50} closeDelay={100}>
+                    <HoverCardTrigger asChild aria-disabled={true}>
+                      {rowElement}
+                    </HoverCardTrigger>
+                    <HoverCardPortal>
+                      <HoverCardContent
+                        side="left"
+                        align="start"
+                        sideOffset={34}
+                        className="z-10 mt-1"
+                      >
+                        <MenuCommand.Menu>
+                          <MenuCommand.Trigger>
+                            <Button
+                              variant="secondary"
+                              size="icon"
+                              className="absolute -left-full size-8"
+                            >
+                              <Icon icon="more-menu" className="size-5" />
+                            </Button>
+                          </MenuCommand.Trigger>
+                          <MenuCommand.Content align="start" sideOffset={4}>
+                            <MenuCommand.List>
+                              {table.navigationOptions.map((navigationOption) => (
+                                <MenuCommand.Item
+                                  key={navigationOption.targetTableId}
+                                  onSelect={() => {
+                                    navigateTo({
+                                      pivotObject,
+                                      sourceObject: row.original,
+                                      sourceTableName: table.name,
+                                      sourceFieldName: navigationOption.sourceFieldName,
+                                      filterFieldName: navigationOption.filterFieldName,
+                                      targetTableName: navigationOption.targetTableName,
+                                      orderingFieldName: navigationOption.orderingFieldName,
+                                    });
+                                  }}
+                                >
+                                  Show {navigationOption.targetTableName}
+                                </MenuCommand.Item>
+                              ))}
+                            </MenuCommand.List>
+                          </MenuCommand.Content>
+                        </MenuCommand.Menu>
+                      </HoverCardContent>
+                    </HoverCardPortal>
+                  </HoverCard>
+                ) : (
+                  rowElement
+                );
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <div className="border-grey-90 rounded border p-2 text-center">
+            {t('cases:data_explorer.no_table_data', { tableName: table.name })}
+          </div>
+        )}
       </div>
       <div className="flex justify-end gap-2">{pagination}</div>
     </div>

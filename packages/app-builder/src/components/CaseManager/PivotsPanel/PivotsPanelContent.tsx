@@ -1,7 +1,6 @@
 import { CaseStatusTag } from '@app-builder/components/Cases';
 import { ClientObjectDataList } from '@app-builder/components/DataModelExplorer/ClientObjectDataList';
-import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
-import { type ClientObjectDetail, type DataModel } from '@app-builder/models';
+import { type ClientObjectDetail, type CurrentUser, type DataModel } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
 import { getRoute } from '@app-builder/utils/routes';
@@ -11,22 +10,24 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { Fragment, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, CtaClassName } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { CtaClassName } from 'ui-design-system';
+
+import { PivotNavigationOptions } from './PivotNavigationOptions';
 
 export function PivotsPanelContent({
+  currentUser,
   case: caseObj,
   pivotObjects,
   dataModel,
   onExplore,
 }: {
+  currentUser: CurrentUser;
   case: CaseDetail;
   pivotObjects: PivotObject[];
   dataModel: DataModel;
   onExplore: () => void;
 }) {
   const { t } = useTranslation(['cases']);
-  const dataModelExplorerContext = DataModelExplorerContext.useValue();
 
   if (!pivotObjects[0]) {
     throw new Error('no pivot object');
@@ -34,7 +35,6 @@ export function PivotsPanelContent({
 
   const [currentPivotObject, setCurrentPivotObject] = useState(pivotObjects[0]);
   const currentTable = dataModel.find((t) => t.name === currentPivotObject.pivotObjectName);
-  const pivotObjectData = currentPivotObject.pivotObjectData;
 
   return (
     <div className="flex flex-col gap-8">
@@ -53,35 +53,15 @@ export function PivotsPanelContent({
           ))}
         </div>
       ) : null}
-      <PivotObjectDetails pivotObjectData={pivotObjectData} />
-      {currentTable?.navigationOptions ? (
-        <div className="grid grid-cols-[120px,_1fr] gap-3">
-          {currentTable.navigationOptions.map((navigationOption) => (
-            <Fragment key={`${navigationOption.targetTableId}_${navigationOption.filterFieldId}`}>
-              <div>{navigationOption.targetTableName}</div>
-              <Button
-                size="small"
-                variant="secondary"
-                onClick={() => {
-                  dataModelExplorerContext.startNavigation({
-                    pivotObject: currentPivotObject,
-                    sourceObject: pivotObjectData.data,
-                    sourceTableName: currentTable.name,
-                    sourceFieldName: navigationOption.sourceFieldName,
-                    targetTableName: navigationOption.targetTableName,
-                    filterFieldName: navigationOption.filterFieldName,
-                    orderingFieldName: navigationOption.orderingFieldName,
-                  });
-                  onExplore();
-                }}
-                className="flex items-center gap-1"
-              >
-                {t('cases:case_detail.pivot_panel.explore')}
-                <Icon icon="arrow-up-right" className="size-4" />
-              </Button>
-            </Fragment>
-          ))}
-        </div>
+      <PivotObjectDetails pivotObjectData={currentPivotObject.pivotObjectData} />
+      {currentTable ? (
+        <PivotNavigationOptions
+          currentUser={currentUser}
+          pivotObject={currentPivotObject}
+          table={currentTable}
+          dataModel={dataModel}
+          onExplore={onExplore}
+        />
       ) : null}
       <RelatedCases pivotValue={currentPivotObject.pivotValue} currentCase={caseObj} />
     </div>

@@ -277,6 +277,8 @@ CreatePivotInputDto:
   $ref: data-model.yml#/components/schemas/CreatePivotInputDto
 NavigationOptionDto:
   $ref: data-model.yml#/components/schemas/NavigationOptionDto
+CreateNavigationOptionDto:
+  $ref: data-model.yml#/components/schemas/CreateNavigationOptionDto
 
 # MISC
 

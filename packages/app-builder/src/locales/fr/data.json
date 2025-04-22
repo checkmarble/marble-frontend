@@ -65,5 +65,11 @@
   "your_data_callout": "Voici la liste de tous les objets que vous pouvez envoyer à Marble, ainsi que leurs propriétés. \nContactez l'équipe Marble si vous souhaitez apporter des modifications à votre modèle de données.",
   "viewer.no_object_found": "Aucun objet trouvé pour l'id {{objectId}} dans {{tableName}}",
   "viewer.object_id": "ID d'objet",
-  "viewer.object_type": "Type d'objet"
+  "viewer.object_type": "Type d'objet",
+  "create_navigation_option.title": "Créer une option de navigation",
+  "create_navigation_option.errors.duplicate_pivot_value": "Une option de navigation existe déjà avec ces paramètres",
+  "create_navigation_option.labels.from": "De",
+  "create_navigation_option.labels.to": "Vers",
+  "create_navigation_option.labels.ordered_by": "Ordonnés par",
+  "create_navigation_option.placeholders.ordered_by": "Choisissez un champs"
 }
