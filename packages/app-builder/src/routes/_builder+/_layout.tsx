@@ -22,9 +22,10 @@ import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { forbidden } from '@app-builder/utils/http/http-responses';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
-import { Outlet, useLoaderData } from '@remix-run/react';
+import { Await, defer, Outlet, useLoaderData } from '@remix-run/react';
 import { captureRemixServerException } from '@sentry/remix';
 import { type Namespace } from 'i18next';
+import { Suspense } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
@@ -36,30 +37,33 @@ async function getDatasetFreshnessInfo(
   sanctionCheckRepository: SanctionCheckRepository,
   scenarioRepository: ScenarioRepository,
 ): Promise<{ lastExport: string } | null> {
-  const datasetFreshness = await sanctionCheckRepository.getDatasetFreshness();
+  try {
+    const datasetFreshness = await sanctionCheckRepository.getDatasetFreshness();
+    if (datasetFreshness.upToDate) {
+      return null;
+    }
 
-  if (datasetFreshness.upToDate) {
+    const allScenarios = await scenarioRepository.listScenarios();
+    const iterationsWithSanctionCheck = R.pipe(
+      await Promise.all(
+        allScenarios.map((scenario) => {
+          return scenario.liveVersionId
+            ? scenarioRepository.getScenarioIteration({ iterationId: scenario.liveVersionId })
+            : null;
+        }),
+      ),
+      R.flat(),
+      R.filter((iteration) => R.isNonNullish(iteration?.sanctionCheckConfig)),
+    ) as ScenarioIteration[];
+
+    if (iterationsWithSanctionCheck.length > 0) {
+      return { lastExport: datasetFreshness.upstream.lastExport };
+    }
+
     return null;
+  } catch (err) {
+    return Promise.resolve(null);
   }
-
-  const allScenarios = await scenarioRepository.listScenarios();
-  const iterationsWithSanctionCheck = R.pipe(
-    await Promise.all(
-      allScenarios.map((scenario) => {
-        return scenario.liveVersionId
-          ? scenarioRepository.getScenarioIteration({ iterationId: scenario.liveVersionId })
-          : null;
-      }),
-    ),
-    R.flat(),
-    R.filter((iteration) => R.isNonNullish(iteration?.sanctionCheckConfig)),
-  ) as ScenarioIteration[];
-
-  if (iterationsWithSanctionCheck.length > 0) {
-    return { lastExport: datasetFreshness.upstream.lastExport };
-  }
-
-  return null;
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -81,31 +85,39 @@ export async function loader({ request }: LoaderFunctionArgs) {
     versionRepository.getBackendVersion(),
   ]);
 
-  let datasetFreshnessInfo: { lastExport: string } | null = null;
   try {
-    datasetFreshnessInfo = await getDatasetFreshnessInfo(sanctionCheck, scenario);
+    // let datasetFreshnessInfo: { lastExport: string } | null = null;
+    const datasetFreshnessInfo = getDatasetFreshnessInfo(sanctionCheck, scenario);
+
+    // try {
+    // } catch (err) {
+    //   if (!isHttpError(err)) {
+    //     captureRemixServerException(err, 'remix.server', request, true);
+    //   }
+    // }
+
+    return defer({
+      user,
+      orgUsers,
+      organization: organizationDetail,
+      orgTags,
+      featuresAccess: {
+        isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
+        analytics: entitlements.analytics,
+        settings: {
+          isAvailable: firstSettings !== undefined,
+          ...(firstSettings !== undefined && { to: firstSettings.to }),
+        },
+      },
+      versions,
+      datasetFreshnessInfo,
+    });
   } catch (err) {
+    console.error('Error while loading dataset freshness info', err);
     if (!isHttpError(err)) {
       captureRemixServerException(err, 'remix.server', request, true);
     }
   }
-
-  return {
-    user,
-    orgUsers,
-    organization: organizationDetail,
-    orgTags,
-    featuresAccess: {
-      isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
-      analytics: entitlements.analytics,
-      settings: {
-        isAvailable: firstSettings !== undefined,
-        ...(firstSettings !== undefined && { to: firstSettings.to }),
-      },
-    },
-    versions,
-    datasetFreshnessInfo,
-  };
 }
 
 export const handle = {
@@ -131,23 +143,30 @@ export default function Builder() {
       <OrganizationUsersContextProvider orgUsers={orgUsers}>
         <OrganizationTagsContextProvider orgTags={orgTags}>
           <div className="flex h-full flex-1 flex-col">
-            {datasetFreshnessInfo ? (
-              <div className="text-red-47 bg-red-95 border-b-red-74 flex items-center gap-2 border-b-[0.5px] p-4 lg:px-8">
-                <Icon icon="error" className="size-5" />
-                <span>
-                  <Trans
-                    t={t}
-                    i18nKey="common:dataset_freshness_banner"
-                    values={{
-                      lastExport: formatDateTime(datasetFreshnessInfo.lastExport, {
-                        language,
-                        timeStyle: undefined,
-                      }),
-                    }}
-                  />
-                </span>
-              </div>
-            ) : null}
+            <Suspense fallback={<></>}>
+              <Await resolve={datasetFreshnessInfo}>
+                {(datasetFreshnessInfo) =>
+                  datasetFreshnessInfo ? (
+                    <div className="text-red-47 bg-red-95 border-b-red-74 flex items-center gap-2 border-b-[0.5px] p-4 lg:px-8">
+                      <Icon icon="error" className="size-5" />
+                      <span>
+                        <Trans
+                          t={t}
+                          i18nKey="common:dataset_freshness_banner"
+                          values={{
+                            lastExport: formatDateTime(datasetFreshnessInfo.lastExport, {
+                              language,
+                              timeStyle: undefined,
+                            }),
+                          }}
+                        />
+                      </span>
+                    </div>
+                  ) : null
+                }
+              </Await>
+            </Suspense>
+
             <div className="flex flex-1 flex-row overflow-hidden">
               <LeftSidebarSharpFactory.Provider value={leftSidebarSharp}>
                 <LeftSidebar>
