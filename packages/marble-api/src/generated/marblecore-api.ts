@@ -260,13 +260,13 @@ export type CaseUnsnoozedDto = {
     previous_value?: string;
 };
 export type CaseAssignedEventDto = {
-    event_type: "CaseAssignedEventDto";
+    event_type: "case_assigned";
 } & CaseEventDtoBase & {
     new_value: string;
     user_id?: string;
 };
 export type SarCreatedEventDto = {
-    event_type: "SarCreatedEventDto";
+    event_type: "sar_created";
 } & CaseEventDtoBase & {
     new_value: string;
     user_id?: string;
@@ -274,7 +274,7 @@ export type SarCreatedEventDto = {
     resource_id: string;
 };
 export type SarDeletedEventDto = {
-    event_type: "SarDeletedEventDto";
+    event_type: "sar_deleted";
 } & CaseEventDtoBase & {
     new_value: string;
     user_id?: string;
@@ -282,7 +282,7 @@ export type SarDeletedEventDto = {
     resource_id: string;
 };
 export type SarStatusChangedEventDto = {
-    event_type: "SarStatusChangedEventDto";
+    event_type: "sar_status_changed";
 } & CaseEventDtoBase & {
     new_value: string;
     user_id?: string;
@@ -290,7 +290,7 @@ export type SarStatusChangedEventDto = {
     resource_id: string;
 };
 export type SarFileUploadedEventDto = {
-    event_type: "SarFileUploadedEventDto";
+    event_type: "sar_file_uploaded";
 } & CaseEventDtoBase & {
     new_value: string;
     user_id?: string;
