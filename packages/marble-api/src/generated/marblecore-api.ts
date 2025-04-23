@@ -3306,6 +3306,7 @@ export function getInbox(inboxId: string, opts?: Oazapfts.RequestOpts) {
  */
 export function updateInbox(inboxId: string, body: {
     name: string;
+    escalation_inbox_id?: string;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
