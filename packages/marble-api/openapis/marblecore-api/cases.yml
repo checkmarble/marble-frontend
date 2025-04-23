@@ -917,6 +917,11 @@ components:
           decision_reviewed: '#/components/schemas/DecisionReviewedEventDto'
           case_snoozed: '#/components/schemas/CaseSnoozedDto'
           case_unsnoozed: '#/components/schemas/CaseUnsnoozedDto'
+          case_assigned: '#/components/schemas/CaseAssignedEventDto'
+          sar_created: '#/components/schemas/SarCreatedEventDto'
+          sar_deleted: '#/components/schemas/SarDeletedEventDto'
+          sar_status_changed: '#/components/schemas/SarStatusChangedEventDto'
+          sar_file_uploaded: '#/components/schemas/SarFileUploadedEventDto'
       required:
         - id
         - case_id

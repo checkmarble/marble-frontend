@@ -1,3 +1,4 @@
+import { CaseAssignedDetail } from '@app-builder/components/Cases/Events/CaseAssignedDetail';
 import { CaseCreatedDetail } from '@app-builder/components/Cases/Events/CaseCreated';
 import { CaseSnoozedDetail } from '@app-builder/components/Cases/Events/CaseSnoozed';
 import { CaseUnsnoozedDetail } from '@app-builder/components/Cases/Events/CaseUnsnoozed';
@@ -13,6 +14,9 @@ import { InboxChangedDetail } from '@app-builder/components/Cases/Events/InboxCh
 import { NameUpdatedDetail } from '@app-builder/components/Cases/Events/NameUpdated';
 import { OutcomeUpdatedDetail } from '@app-builder/components/Cases/Events/OutcomeUpdated';
 import { RuleSnoozeCreatedDetail } from '@app-builder/components/Cases/Events/RuleSnoozed';
+import { SarDeletedDetail } from '@app-builder/components/Cases/Events/SarDeleted';
+import { SarFileUploadedDetail } from '@app-builder/components/Cases/Events/SarFileUploaded';
+import { SarStatusChangedDetail } from '@app-builder/components/Cases/Events/SarStatusChanged';
 import { StatusUpdatedDetail } from '@app-builder/components/Cases/Events/StatusUpdated';
 import { TagsUpdatedDetail } from '@app-builder/components/Cases/Events/TagsUpdated';
 import { type CaseEvent } from '@app-builder/models/cases';
@@ -22,6 +26,8 @@ import { allPass, filter } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+import { SarCreatedDetail } from './Events/SarCreated';
 
 export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: Inbox[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -127,6 +133,11 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
             .with({ eventType: 'decision_reviewed' }, (e) => <DecisionReviewedDetail event={e} />)
             .with({ eventType: 'case_snoozed' }, (e) => <CaseSnoozedDetail event={e} />)
             .with({ eventType: 'case_unsnoozed' }, (e) => <CaseUnsnoozedDetail event={e} />)
+            .with({ eventType: 'case_assigned' }, (e) => <CaseAssignedDetail event={e} />)
+            .with({ eventType: 'sar_created' }, (e) => <SarCreatedDetail event={e} />)
+            .with({ eventType: 'sar_deleted' }, (e) => <SarDeletedDetail event={e} />)
+            .with({ eventType: 'sar_status_changed' }, (e) => <SarStatusChangedDetail event={e} />)
+            .with({ eventType: 'sar_file_uploaded' }, (e) => <SarFileUploadedDetail event={e} />)
             .exhaustive(),
         )}
       </div>
