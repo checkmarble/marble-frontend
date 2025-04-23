@@ -7,7 +7,9 @@ import {
   adaptCreateTableFieldDto,
   adaptDataModel,
   adaptDataModelObject,
+  adaptDataModelTableOptions,
   adaptPivot,
+  adaptSetDataModelTableOptionBodyDto,
   adaptUpdateFieldDto,
   type ClientDataListRequestBody,
   type ClientDataListResponse,
@@ -16,7 +18,9 @@ import {
   type CreatePivotInput,
   type DataModel,
   type DataModelObject,
+  type DataModelTableOptions,
   type Pivot,
+  type SetDataModelTableOptionsBody,
   type UpdateFieldInput,
 } from '@app-builder/models';
 import { type OpenApiSpec } from 'marble-api';
@@ -34,6 +38,8 @@ export interface DataModelRepository {
     body: ClientDataListRequestBody;
   }): Promise<ClientDataListResponse>;
   createNavigationOption(tableId: string, options: CreateNavigationOption): Promise<void>;
+  getDataModelTableOptions(tableId: string): Promise<DataModelTableOptions>;
+  setDataModelTableOptions(tableId: string, body: SetDataModelTableOptionsBody): Promise<void>;
 }
 
 export function makeGetDataModelRepository() {
@@ -84,6 +90,17 @@ export function makeGetDataModelRepository() {
       await marbleCoreApiClient.postDataModelTableNavigationOption(
         tableId,
         adaptCreateNavigationOptionDto(options),
+      );
+    },
+    getDataModelTableOptions: async (tableId) => {
+      return adaptDataModelTableOptions(
+        await marbleCoreApiClient.getDataModelTableOptions(tableId),
+      );
+    },
+    setDataModelTableOptions: async (tableId, body) => {
+      await marbleCoreApiClient.setDataModelTableOptions(
+        tableId,
+        adaptSetDataModelTableOptionBodyDto(body),
       );
     },
   });

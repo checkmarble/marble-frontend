@@ -120,5 +120,7 @@
   "scenario_sanction_threshold_placeholder": "80",
   "inboxes.escalation_inbox": "Destination d'escalade",
   "inboxes.inbox_details.escalation_inbox": "Destination d'escalade",
-  "inboxes.inbox_details.no_escalation_inbox": "Aucune"
+  "inboxes.inbox_details.no_escalation_inbox": "Aucune",
+  "data_display": "Affichage de données",
+  "data_display.global_explanation": "Faites glisser et déposez les champs pour définir l'ordre d'affichage et utilisez le switch pour masquer ceux qui ne sont pas nécessaires par défaut dans la page d'investigations."
 }

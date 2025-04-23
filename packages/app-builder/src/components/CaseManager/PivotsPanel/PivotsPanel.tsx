@@ -1,6 +1,6 @@
 import { DataModelExplorer } from '@app-builder/components/DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
-import { type CurrentUser, type DataModel } from '@app-builder/models';
+import { type CurrentUser, type DataModelWithTableOptions } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +11,7 @@ type PivotsPanelProps = {
   currentUser: CurrentUser;
   case: CaseDetail;
   pivotObjects: PivotObject[];
-  dataModel: DataModel;
+  dataModel: DataModelWithTableOptions;
 };
 
 export function PivotsPanel(props: PivotsPanelProps) {

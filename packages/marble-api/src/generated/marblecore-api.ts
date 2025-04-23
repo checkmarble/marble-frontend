@@ -889,12 +889,16 @@ export type CreateNavigationOptionDto = {
     ordering_field_id?: string;
 };
 export type DataModelTableOptionsDto = {
-    /** List of ordered field IDs to display when navigating the table */
+    /** List of field IDs to display when navigating the table */
     displayed_fields?: string[];
+    /** List of field IDs in their display order */
+    field_order: string[];
 };
 export type SetDataModelTableOptionsBodyDto = {
-    /** List of ordered field IDs to display when navigating the table */
+    /** List of field IDs to display when navigating the table */
     displayed_fields?: string[];
+    /** List of field IDs in their display order */
+    field_order: string[];
 };
 export type AnalyticsDto = {
     embedding_type: "global_dashboard" | "unknown_embedding_type";

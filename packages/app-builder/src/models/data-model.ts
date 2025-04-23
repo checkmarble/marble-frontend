@@ -8,10 +8,12 @@ import {
   type CreateTableFieldDto,
   type DataModelDto,
   type DataModelObjectDto,
+  type DataModelTableOptionsDto,
   type FieldDto,
   type LinkToSingleDto,
   type NavigationOptionDto,
   type PivotDto,
+  type SetDataModelTableOptionsBodyDto,
   type TableDto,
   type UpdateTableFieldDto,
 } from 'marble-api';
@@ -480,3 +482,35 @@ export function adaptCreateNavigationOptionDto(
     ordering_field_id: model.orderingFieldId,
   };
 }
+
+export type DataModelTableOptions = {
+  displayedFields?: string[];
+  fieldOrder: string[];
+};
+
+export function adaptDataModelTableOptions(dto: DataModelTableOptionsDto): DataModelTableOptions {
+  return {
+    displayedFields: dto.displayed_fields,
+    fieldOrder: dto.field_order,
+  };
+}
+
+export type SetDataModelTableOptionsBody = {
+  displayedFields: string[];
+  fieldOrder: string[];
+};
+
+export function adaptSetDataModelTableOptionBodyDto(
+  model: SetDataModelTableOptionsBody,
+): SetDataModelTableOptionsBodyDto {
+  return {
+    displayed_fields: model.displayedFields,
+    field_order: model.fieldOrder,
+  };
+}
+
+export type TableModelWithOptions = TableModel & {
+  options: DataModelTableOptions;
+};
+
+export type DataModelWithTableOptions = TableModelWithOptions[];

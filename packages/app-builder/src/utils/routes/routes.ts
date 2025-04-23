@@ -279,6 +279,11 @@ export const routes = [
                 "file": "routes/_builder+/settings+/api-keys.tsx"
               },
               {
+                "id": "routes/_builder+/settings+/data-display",
+                "path": "data-display",
+                "file": "routes/_builder+/settings+/data-display.tsx"
+              },
+              {
                 "id": "routes/_builder+/settings+/inboxes.$inboxId",
                 "path": "inboxes/:inboxId",
                 "file": "routes/_builder+/settings+/inboxes.$inboxId.tsx"

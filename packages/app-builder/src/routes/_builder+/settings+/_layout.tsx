@@ -5,7 +5,7 @@ import {
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
 import { Nudge } from '@app-builder/components/Nudge';
-import { type CurrentUser } from '@app-builder/models';
+import { type CurrentUser, isAdmin } from '@app-builder/models';
 import {
   isAccessible,
   isReadAllInboxesAvailable,
@@ -79,6 +79,13 @@ export function getSettings(user: CurrentUser) {
       section: 'api' as const,
       title: 'webhooks' as const,
       to: getRoute('/settings/webhooks'),
+    });
+  }
+  if (isAdmin(user)) {
+    settings.push({
+      section: 'case_manager' as const,
+      title: 'data_display' as const,
+      to: getRoute('/settings/data-display'),
     });
   }
   return settings;

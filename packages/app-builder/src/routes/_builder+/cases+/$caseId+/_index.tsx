@@ -10,6 +10,7 @@ import { PivotsPanel } from '@app-builder/components/CaseManager/PivotsPanel/Piv
 import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
+import { type DataModelWithTableOptions, type TableModelWithOptions } from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
@@ -67,6 +68,14 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       customListsRepository.listCustomLists(),
     ]);
 
+  const dataModelWithTableOptions = (await Promise.all(
+    dataModel.map<Promise<TableModelWithOptions>>((table) =>
+      dataModelRepository.getDataModelTableOptions(table.id).then((options) => {
+        return { ...table, options };
+      }),
+    ),
+  )) satisfies DataModelWithTableOptions;
+
   const decisionsPromise = Promise.all(
     currentCase.decisions.map(async (d) => ({
       ...pick(d, [
@@ -105,7 +114,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return defer({
     case: currentCase,
     pivotObjects,
-    dataModel,
+    dataModelWithTableOptions,
     currentInbox,
     reports,
     currentUser: user,
@@ -158,7 +167,7 @@ export const handle = {
 export default function CaseManagerIndexPage() {
   const {
     case: details,
-    dataModel,
+    dataModelWithTableOptions,
     pivotObjects,
     currentUser,
     nextCaseId,
@@ -214,7 +223,7 @@ export default function CaseManagerIndexPage() {
                   <PivotsPanel
                     currentUser={currentUser}
                     case={details}
-                    dataModel={dataModel}
+                    dataModel={dataModelWithTableOptions}
                     pivotObjects={pivotObjects}
                   />
                 );

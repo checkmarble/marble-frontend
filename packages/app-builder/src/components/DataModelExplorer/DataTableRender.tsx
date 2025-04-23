@@ -1,4 +1,8 @@
-import { type ClientDataListResponse, type DataModel, type TableModel } from '@app-builder/models';
+import {
+  type ClientDataListResponse,
+  type DataModelWithTableOptions,
+  type TableModelWithOptions,
+} from '@app-builder/models';
 import { type PivotObject } from '@app-builder/models/cases';
 import { useClientObjectListQuery } from '@app-builder/queries/client-object-list';
 import { useFormatLanguage } from '@app-builder/utils/format';
@@ -18,6 +22,7 @@ import {
 import clsx from 'clsx';
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -28,7 +33,7 @@ import { type DataModelExplorerNavigationTab } from './types';
 
 export type DataTableRenderProps = {
   item: DataModelExplorerNavigationTab;
-  dataModel: DataModel;
+  dataModel: DataModelWithTableOptions;
   navigateTo: (tabItem: DataModelExplorerNavigationTab) => void;
 };
 
@@ -66,17 +71,25 @@ export function DataTableRender({ dataModel, item, navigateTo }: DataTableRender
     );
   }
 
+  const sourceTableModel = dataModel.find((tm) => tm.name === item.sourceTableName);
+  const pivotTableModel = dataModel.find((tm) => tm.name === item.pivotObject.pivotObjectName);
+
   return (
     <div className="mt-3 flex flex-col gap-3">
-      <div className="grid grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <span className="text-s font-semibold">{item.sourceTableName}</span>
-          <ClientObjectDataList data={item.sourceObject} />
-        </div>
-        {filterFieldValue !== item.pivotObject.pivotValue ? (
+      <div className="grid grid-cols-2 gap-3">
+        {sourceTableModel ? (
           <div className="flex flex-col gap-2">
+            <span className="text-s font-semibold">{item.sourceTableName}</span>
+            <ClientObjectDataList tableModel={sourceTableModel} data={item.sourceObject} />
+          </div>
+        ) : null}
+        {filterFieldValue !== item.pivotObject.pivotValue && pivotTableModel ? (
+          <div className="col-start-2 flex flex-col gap-2">
             <span className="text-s font-semibold">{item.pivotObject.pivotObjectName}</span>
-            <ClientObjectDataList data={item.pivotObject.pivotObjectData.data} />
+            <ClientObjectDataList
+              tableModel={pivotTableModel}
+              data={item.pivotObject.pivotObjectData.data}
+            />
           </div>
         ) : null}
       </div>
@@ -133,9 +146,23 @@ function DataTablePagination({ pagination, onNext }: DataTablePaginationProps) {
   );
 }
 
+function getColumnList(tableModel: TableModelWithOptions) {
+  if (tableModel.options.displayedFields) {
+    const fields = R.pipe(
+      tableModel.options.displayedFields,
+      R.map((fieldId) => tableModel.fields.find((f) => f.id === fieldId)?.name),
+      R.filter((name): name is string => !!name),
+    );
+
+    return fields;
+  }
+
+  return tableModel.fields.map((f) => f.name);
+}
+
 type DataTableProps = {
   pivotObject: PivotObject;
-  table: TableModel;
+  table: TableModelWithOptions;
   list: ClientDataListResponse['data'];
   pagination: ReactElement;
   navigateTo: (tab: DataModelExplorerNavigationTab) => void;
@@ -146,15 +173,13 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
   const language = useFormatLanguage();
 
   const columnHelper = createColumnHelper<Record<string, unknown>>();
-  const [columnList, setColumnList] = useState(() => table.fields.map((f) => f.name));
-  const columnOrder = useMemo(
-    () => ['object_id', ...table.fields.map((f) => f.name).filter((f) => f !== 'object_id')],
-    [table],
-  );
+  const [columnList, setColumnList] = useState(() => {
+    return getColumnList(table);
+  });
   const tableData = useMemo(() => list.map((d) => d.data), [list]);
 
   useEffect(() => {
-    setColumnList(table.fields.map((f) => f.name));
+    setColumnList(getColumnList(table));
   }, [table]);
 
   const columns = useMemo(() => {
@@ -179,7 +204,7 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
 
   const reactTable = useReactTable({
     state: {
-      columnOrder,
+      columnOrder: table.options.fieldOrder,
     },
     data: tableData,
     columns,

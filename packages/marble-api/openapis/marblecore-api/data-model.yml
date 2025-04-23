@@ -682,18 +682,35 @@ components:
           format: uuid
     DataModelTableOptionsDto:
       type: object
+      required:
+        - field_order
       properties:
         displayed_fields:
-          description: List of ordered field IDs to display when navigating the table
+          description: List of field IDs to display when navigating the table
           type: array
           items:
             type: string
             format: uuid
+        field_order:
+          description: List of field IDs in their display order
+          type: array
+          items:
+            type: string
+            format: uuid
+
     SetDataModelTableOptionsBodyDto:
       type: object
+      required:
+        - field_order
       properties:
         displayed_fields:
-          description: List of ordered field IDs to display when navigating the table
+          description: List of field IDs to display when navigating the table
+          type: array
+          items:
+            type: string
+            format: uuid
+        field_order:
+          description: List of field IDs in their display order
           type: array
           items:
             type: string

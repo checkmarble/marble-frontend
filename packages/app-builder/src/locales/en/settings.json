@@ -120,5 +120,7 @@
   "scenario_sanction_callout": "Changing this value will immediately impact all live scenario versions",
   "inboxes.escalation_inbox": "Escalation inbox",
   "inboxes.inbox_details.escalation_inbox": "Escalation inbox",
-  "inboxes.inbox_details.no_escalation_inbox": "None"
+  "inboxes.inbox_details.no_escalation_inbox": "None",
+  "data_display": "Data display",
+  "data_display.global_explanation": "Drag and drop the fields to set the display order, and use the toggle to hide those not needed by default in the case manager."
 }

@@ -251,7 +251,12 @@ const CollapsedDetail = ({
 };
 
 export function DecisionPanel({ selectDecision, decisionId }: DecisionPanelProps) {
-  const { decisionsPromise, pivots, dataModel, customLists } = useLoaderData<typeof loader>();
+  const {
+    decisionsPromise,
+    pivots,
+    dataModelWithTableOptions: dataModel,
+    customLists,
+  } = useLoaderData<typeof loader>();
   const { isExpanded, setExpanded } = DrawerContext.useValue();
 
   return (
