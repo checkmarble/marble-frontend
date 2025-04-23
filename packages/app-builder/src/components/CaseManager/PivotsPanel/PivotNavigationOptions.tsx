@@ -1,5 +1,5 @@
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
-import { type DataModel, isAdmin, type TableModel } from '@app-builder/models';
+import { type CurrentUser, type DataModel, isAdmin, type TableModel } from '@app-builder/models';
 import { type PivotObject } from '@app-builder/models/cases';
 import { CreateNavigationOptionModal } from '@app-builder/routes/ressources+/data+/$tableId.createNavigationOption';
 import { Fragment, useMemo } from 'react';

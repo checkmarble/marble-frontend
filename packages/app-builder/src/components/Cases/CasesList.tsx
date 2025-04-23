@@ -10,6 +10,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, Tooltip, useVirtualTable } from 'ui-design-system';
 
+import { CaseAssignedTo } from './CaseAssignedTo';
 import { CaseContributors } from './CaseContributors';
 import { casesI18n } from './cases-i18n';
 import { CaseStatusPreview } from './CaseStatus';
@@ -98,6 +99,14 @@ export function CasesList({
             <CaseTags caseTagIds={getValue().map(({ tagId }) => tagId)} orgTags={orgTags} />
           </div>
         ),
+      }),
+      columnHelper.accessor(({ assignedTo }) => assignedTo, {
+        id: 'assignedTo',
+        header: t('cases:case.assignedTo'),
+        size: 80,
+        minSize: 80,
+        enableSorting: false,
+        cell: ({ getValue }) => (getValue() ? <CaseAssignedTo userId={getValue()!} /> : null),
       }),
       columnHelper.accessor(({ contributors }) => contributors, {
         id: 'contributors',

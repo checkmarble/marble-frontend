@@ -296,7 +296,7 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
     }))
     .with({ event_type: 'case_assigned' }, (dto) => ({
       ...baseEvent,
-      eventType: 'case_assigned',
+      eventType: dto.event_type,
       userId: dto.user_id,
     }))
     .exhaustive();

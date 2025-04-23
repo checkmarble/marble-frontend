@@ -153,5 +153,6 @@
   "snooze.modal.heading": "Snooze until...",
   "unsnooze.callout": "By continuing, you will unsnooze this case",
   "unsnooze.title": "Unsnooze",
-  "include_snoozed": "Include snoozed"
+  "include_snoozed": "Include snoozed",
+  "case.assignedTo": "Assigned"
 }
