@@ -1,3 +1,4 @@
+import { type UnionToArray } from '@app-builder/utils/types';
 import {
   type CaseContributorDto,
   type CaseDetailDto,
@@ -10,6 +11,7 @@ import {
   type CreateCaseBodyDto,
   type CreateSuspiciousActivityReportBodyDto,
   type Error,
+  type Outcome,
   type PivotObjectDto,
   type SuspiciousActivityReportDto,
   type UpdateCaseBodyDto,
@@ -21,7 +23,7 @@ import { match } from 'ts-pattern';
 
 import { adaptClientObjectDetail, type ClientObjectDetail } from './data-model';
 import { type ReviewStatus } from './decision';
-import { type Outcome } from './outcome';
+import { type Outcome as DecisionOutcome } from './outcome';
 
 export interface CaseContributor {
   id: string;
@@ -56,18 +58,22 @@ export function adaptCaseTag(dto: CaseTagDto): CaseTag {
 }
 
 export type CaseStatus = CaseStatusDto;
-export const caseStatuses: CaseStatus[] = ['investigating', 'closed', 'pending'];
+export const caseStatuses: UnionToArray<CaseStatus> = ['pending', 'investigating', 'closed'];
 
-export type CaseOutcome = NonNullable<CaseDto['outcome']>;
-export const caseOutcomes: CaseOutcome[] = [
-  'confirmed_risk',
+export type CaseOutcome = Outcome;
+export const caseOutcomes: UnionToArray<CaseOutcome> = [
   'false_positive',
   'valuable_alert',
+  'confirmed_risk',
   'unset',
 ];
 
 export type FinalOutcome = Exclude<CaseOutcome, 'unset'>;
-export const finalOutcomes: FinalOutcome[] = ['confirmed_risk', 'false_positive', 'valuable_alert'];
+export const finalOutcomes: UnionToArray<FinalOutcome> = [
+  'false_positive',
+  'valuable_alert',
+  'confirmed_risk',
+];
 
 export interface Case {
   id: string;
@@ -102,7 +108,7 @@ export const adaptCase = (dto: CaseDto): Case => ({
 //
 
 export type CaseEventType = CaseEventDto['event_type'];
-export const caseEventTypes: CaseEventType[] = [
+export const caseEventTypes: UnionToArray<CaseEventType> = [
   'case_created',
   'status_updated',
   'outcome_updated',
@@ -116,6 +122,11 @@ export const caseEventTypes: CaseEventType[] = [
   'decision_reviewed',
   'case_snoozed',
   'case_unsnoozed',
+  'case_assigned',
+  'sar_created',
+  'sar_deleted',
+  'sar_status_changed',
+  'sar_file_uploaded',
 ];
 
 interface CaseEventBase<T extends CaseEventType> {
@@ -166,13 +177,16 @@ export interface InboxChangedEvent extends CaseEventBase<'inbox_changed'> {
 }
 export interface RuleSnoozeCreatedEvent extends CaseEventBase<'rule_snooze_created'> {
   ruleSnoozeId: string;
+  resourceType: string;
+  additionalNote: string;
   userId: string;
   comment: string;
 }
 export interface DecisionReviewedEvent extends CaseEventBase<'decision_reviewed'> {
   userId: string;
-  reviewComment: string;
-  finalStatus: 'approve' | 'decline';
+  comment: string;
+  status: 'approve' | 'decline';
+  previous: string;
   decisionId: string;
 }
 
@@ -183,6 +197,33 @@ export interface CaseSnoozedEvent extends CaseEventBase<'case_snoozed'> {
 
 export interface CaseUnsnoozedEvent extends CaseEventBase<'case_unsnoozed'> {
   userId: string;
+}
+
+export interface CaseAssignedEvent extends CaseEventBase<'case_assigned'> {
+  userId?: string;
+  assignedTo: string;
+}
+
+export interface SarCreatedEvent extends CaseEventBase<'sar_created'> {
+  userId?: string;
+  sarId: string;
+  status: string;
+}
+
+export interface SarDeletedEvent extends CaseEventBase<'sar_deleted'> {
+  userId?: string;
+  sarId: string;
+}
+export interface SarStatusChangedEvent extends CaseEventBase<'sar_status_changed'> {
+  userId?: string;
+  sarId: string;
+  status: string;
+}
+
+export interface SarFileUploadedEvent extends CaseEventBase<'sar_file_uploaded'> {
+  userId?: string;
+  sarId: string;
+  filename: string;
 }
 
 export type CaseEvent =
@@ -198,7 +239,12 @@ export type CaseEvent =
   | RuleSnoozeCreatedEvent
   | DecisionReviewedEvent
   | CaseSnoozedEvent
-  | CaseUnsnoozedEvent;
+  | CaseUnsnoozedEvent
+  | CaseAssignedEvent
+  | SarCreatedEvent
+  | SarDeletedEvent
+  | SarStatusChangedEvent
+  | SarFileUploadedEvent;
 
 export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
   const baseEvent = {
@@ -267,13 +313,16 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
       userId: dto.user_id,
       comment: dto.additional_note,
       ruleSnoozeId: dto.resource_id,
+      resourceType: dto.resource_type,
+      additionalNote: dto.additional_note,
     }))
     .with({ event_type: 'decision_reviewed' }, (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
-      reviewComment: dto.additional_note,
-      finalStatus: dto.new_value,
+      comment: dto.additional_note,
+      status: dto.new_value,
+      previous: dto.previous_value,
       decisionId: dto.resource_id,
     }))
     .with({ event_type: 'case_snoozed' }, (dto) => ({
@@ -286,6 +335,39 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
+    }))
+    .with({ event_type: 'case_assigned' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      assignedTo: dto.new_value,
+    }))
+    .with({ event_type: 'sar_created' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      sarId: dto.resource_id,
+      status: dto.new_value,
+    }))
+    .with({ event_type: 'sar_deleted' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      sarId: dto.resource_id,
+    }))
+    .with({ event_type: 'sar_status_changed' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      sarId: dto.resource_id,
+      status: dto.new_value,
+    }))
+    .with({ event_type: 'sar_file_uploaded' }, (dto) => ({
+      ...baseEvent,
+      eventType: dto.event_type,
+      userId: dto.user_id,
+      sarId: dto.resource_id,
+      filename: dto.new_value,
     }))
     .exhaustive();
 }
@@ -316,7 +398,7 @@ export interface CaseDetail extends Case {
     createdAt: string;
     triggerObject: Record<string, unknown>;
     triggerObjectType: string;
-    outcome: Outcome;
+    outcome: DecisionOutcome;
     pivotValues: {
       id?: string;
       value?: string;
@@ -399,7 +481,7 @@ export function adaptUpdateCaseBodyDto(body: CaseUpdateBody): UpdateCaseBodyDto 
 //
 
 export type SuspiciousActivityReportStatus = 'pending' | 'completed';
-export const suspiciousActivityReportStatuses: SuspiciousActivityReportStatus[] = [
+export const suspiciousActivityReportStatuses: UnionToArray<SuspiciousActivityReportStatus> = [
   'pending',
   'completed',
 ];
