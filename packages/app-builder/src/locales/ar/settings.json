@@ -117,5 +117,8 @@
   "scenario_sanction_limit_placeholder": "5",
   "scenario_sanction_settings": "إعدادات العقوبات",
   "scenario_sanction_threshold": "الحد الأدنى لدرجة التشابه (٪)",
-  "scenario_sanction_threshold_placeholder": "80"
+  "scenario_sanction_threshold_placeholder": "80",
+  "inboxes.escalation_inbox": "صندوق الوارد",
+  "inboxes.inbox_details.escalation_inbox": "صندوق الوارد",
+  "inboxes.inbox_details.no_escalation_inbox": "لا أحد"
 }
