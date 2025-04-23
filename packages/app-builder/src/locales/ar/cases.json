@@ -152,5 +152,6 @@
   "case_detail.history.event_type.sar_deleted": "تم حذف SAR",
   "case_detail.history.event_type.sar_file_uploaded": "تم تحميل ملف SAR",
   "case_detail.history.event_type.sar_status_changed": "تغيرت حالة SAR",
-  "case.escalated": "تصاعدت القضية بنجاح"
+  "case.escalated": "تصاعدت القضية بنجاح",
+  "case.assignedTo": "مُسند إلى"
 }
