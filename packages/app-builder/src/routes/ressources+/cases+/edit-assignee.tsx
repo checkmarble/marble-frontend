@@ -95,14 +95,19 @@ export const EditCaseAssignee = ({
                   ) : null}
                 </span>
               </span>
-            ) : null}
+            ) : (
+              <Button
+                variant="secondary"
+                size="small"
+                onClick={() => field.handleChange(currentUser.actorIdentity.userId as string)}
+              >
+                <Icon icon="plus" className="text-grey-50 size-4" />
+                <span className="text-grey-50 text-xs">Assigned to me</span>
+              </Button>
+            )}
             <MenuCommand.Menu open={open} onOpenChange={setOpen}>
               <MenuCommand.Trigger>
-                <Button
-                  className="w-fit p-0.5"
-                  variant="secondary"
-                  size={assignee ? 'icon' : 'small'}
-                >
+                <Button variant="secondary" size={assignee ? 'icon' : 'small'}>
                   <Icon icon={assignee ? 'edit-square' : 'plus'} className="text-grey-50 size-4" />
                   {!assignee ? <span className="text-grey-50 text-xs">Add</span> : null}
                 </Button>
