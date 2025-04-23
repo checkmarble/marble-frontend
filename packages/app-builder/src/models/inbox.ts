@@ -47,11 +47,11 @@ export interface InboxUpdateBody {
 
 export function adaptUpdateInboxDto(model: InboxUpdateBody): {
   name: string;
-  escalation_inbox_id?: string | null;
+  escalation_inbox_id?: string;
 } {
   return {
     name: model.name,
-    escalation_inbox_id: model.escalationInboxId,
+    escalation_inbox_id: model.escalationInboxId ?? undefined,
   };
 }
 
