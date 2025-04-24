@@ -80,6 +80,7 @@ export interface CaseRepository {
     body: UpdateSuspiciousActivityReportBody;
   }): Promise<SuspiciousActivityReport>;
   deleteSuspiciousActivityReport(args: { caseId: string; reportId: string }): Promise<unknown>;
+  getNextUnassignedCaseId(args: { caseId: string }): Promise<string | null>;
 }
 
 export function makeGetCaseRepository() {
@@ -177,5 +178,10 @@ export function makeGetCaseRepository() {
       ),
     deleteSuspiciousActivityReport: async ({ caseId, reportId }) =>
       marbleCoreApiClient.sarDelete(caseId, reportId),
+    getNextUnassignedCaseId: async ({ caseId }) =>
+      marbleCoreApiClient
+        .getNextCase(caseId)
+        .then(({ id }) => id)
+        .catch(() => null),
   });
 }

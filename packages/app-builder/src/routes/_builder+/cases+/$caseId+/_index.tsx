@@ -33,8 +33,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const caseId = fromParams(params, 'caseId');
 
   // Get case by ID
-  const [currentCase, reports, inboxes, pivotObjects, dataModel] = await Promise.all([
+  const [currentCase, nextCaseId, reports, inboxes, pivotObjects, dataModel] = await Promise.all([
     cases.getCase({ caseId }),
+    cases.getNextUnassignedCaseId({ caseId }),
     cases.listSuspiciousActivityReports({ caseId }),
     inbox.listInboxes(),
     cases.listPivotObjects({ caseId }),
@@ -73,6 +74,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     currentInbox,
     reports,
     currentUser: user,
+    nextCaseId,
     inboxes,
     decisionsPromise,
   });
@@ -125,10 +127,12 @@ export default function CaseManagerIndexPage() {
     currentUser,
     reports,
     decisionsPromise,
+    nextCaseId,
   } = useLoaderData<typeof loader>();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
   const [drawerContentMode, _setDrawerContentMode] = useState<'pivot'>('pivot');
   const containerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     leftSidebarSharp.actions.setExpanded(false);
@@ -138,10 +142,16 @@ export default function CaseManagerIndexPage() {
     <Page.Main>
       <Page.Header className="justify-between">
         <BreadCrumbs />
-        <Button variant="secondary" size="medium">
-          <span className="text-xs font-medium">Go to the next unassigned case</span>
-          <Icon icon="arrow-up" className="size-5 rotate-90" />
-        </Button>
+        {nextCaseId ? (
+          <Button
+            variant="secondary"
+            size="medium"
+            onClick={() => navigate(getRoute('/cases/:caseId', { caseId: nextCaseId }))}
+          >
+            <span className="text-xs font-medium">Go to the next unassigned case</span>
+            <Icon icon="arrow-up" className="size-5 rotate-90" />
+          </Button>
+        ) : null}
       </Page.Header>
       <Page.Container
         ref={containerRef}
