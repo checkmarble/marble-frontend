@@ -14,7 +14,7 @@
   "search": "Search",
   "missing_configuration_title": "Missing Configuration",
   "missing_configuration": "Marble identified missing configuration for this feature. Please check the docs for the correct configuration setup.",
-  "dataset_freshness_banner": "The data used for your sanction screening is not up to date (last version published at {{ lastExport }} has not been pulled yet).<br />Consult your platform team if the issues does not resolve itself soon.",
+  "dataset_freshness_banner": "The data used for your sanction screening is not up to date (last version published at {{ lastExport }} has not been pulled yet). Consult your platform team if the issues does not resolve itself soon.",
   "error_one": "{{count}} error",
   "error_other": "{{count}} errors",
   "validation_error_one": "{{count}} validation error",

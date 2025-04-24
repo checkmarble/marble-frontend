@@ -70,5 +70,5 @@
   "select_all": "Sélectionnez tout",
   "missing_configuration": "Marble a identifié une mauvaise configuration pour cette fonctionnalité. \nVeuillez vérifier la documentation pour la bonne configuration.",
   "missing_configuration_title": "Configuration manquante",
-  "dataset_freshness_banner": "Les données utilisées pour votre dépistage de sanction ne sont pas à jour (la dernière version publiée le {{ lastExport }} n'a pas encore été récupérée). <br />Consultez votre équipe de plate-forme si les problèmes persistent."
+  "dataset_freshness_banner": "Les données utilisées pour votre dépistage de sanction ne sont pas à jour (la dernière version publiée le {{ lastExport }} n'a pas encore été récupérée). Consultez votre équipe de plate-forme si les problèmes persistent."
 }
