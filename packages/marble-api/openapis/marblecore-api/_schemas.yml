@@ -293,6 +293,10 @@ NavigationOptionDto:
   $ref: data-model.yml#/components/schemas/NavigationOptionDto
 CreateNavigationOptionDto:
   $ref: data-model.yml#/components/schemas/CreateNavigationOptionDto
+DataModelTableOptionsDto:
+  $ref: data-model.yml#/components/schemas/DataModelTableOptionsDto
+SetDataModelTableOptionsBodyDto:
+  $ref: data-model.yml#/components/schemas/SetDataModelTableOptionsBodyDto
 
 # MISC
 
