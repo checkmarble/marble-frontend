@@ -207,7 +207,6 @@ export interface CaseAssignedEvent extends CaseEventBase<'case_assigned'> {
 export interface SarCreatedEvent extends CaseEventBase<'sar_created'> {
   userId?: string;
   sarId: string;
-  status: string;
 }
 
 export interface SarDeletedEvent extends CaseEventBase<'sar_deleted'> {
@@ -347,7 +346,6 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
       eventType: dto.event_type,
       userId: dto.user_id,
       sarId: dto.resource_id,
-      status: dto.new_value,
     }))
     .with({ event_type: 'sar_deleted' }, (dto) => ({
       ...baseEvent,
