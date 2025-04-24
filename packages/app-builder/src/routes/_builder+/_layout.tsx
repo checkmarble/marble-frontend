@@ -6,11 +6,9 @@ import {
   ToggleSidebar,
 } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
+import { DatasetFreshnessBanner } from '@app-builder/components/Sanctions/DatasetFresshnessBanner';
 import { UserInfo } from '@app-builder/components/UserInfo';
-import { isHttpError, isMarbleCoreUser } from '@app-builder/models';
-import { type ScenarioIteration } from '@app-builder/models/scenario-iteration';
-import { type SanctionCheckRepository } from '@app-builder/repositories/SanctionCheckRepository';
-import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
+import { isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
 import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -18,56 +16,22 @@ import { OrganizationDetailsContextProvider } from '@app-builder/services/organi
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
 import { OrganizationUsersContextProvider } from '@app-builder/services/organization/organization-users';
 import { useSegmentIdentification } from '@app-builder/services/segment';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { forbidden } from '@app-builder/utils/http/http-responses';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
-import { captureRemixServerException } from '@sentry/remix';
 import { type Namespace } from 'i18next';
-import { Trans, useTranslation } from 'react-i18next';
-import * as R from 'remeda';
+import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
 import { getSettings } from './settings+/_layout';
 
-async function getDatasetFreshnessInfo(
-  sanctionCheckRepository: SanctionCheckRepository,
-  scenarioRepository: ScenarioRepository,
-): Promise<{ lastExport: string } | null> {
-  const datasetFreshness = await sanctionCheckRepository.getDatasetFreshness();
-
-  if (datasetFreshness.upToDate) {
-    return null;
-  }
-
-  const allScenarios = await scenarioRepository.listScenarios();
-  const iterationsWithSanctionCheck = R.pipe(
-    await Promise.all(
-      allScenarios.map((scenario) => {
-        return scenario.liveVersionId
-          ? scenarioRepository.getScenarioIteration({ iterationId: scenario.liveVersionId })
-          : null;
-      }),
-    ),
-    R.flat(),
-    R.filter((iteration) => R.isNonNullish(iteration?.sanctionCheckConfig)),
-  ) as ScenarioIteration[];
-
-  if (iterationsWithSanctionCheck.length > 0) {
-    return { lastExport: datasetFreshness.upstream.lastExport };
-  }
-
-  return null;
-}
-
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService, versionRepository } = initServerServices(request);
-  const { user, organization, entitlements, sanctionCheck, scenario } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const { user, organization, entitlements } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   if (!isMarbleCoreUser(user)) {
     throw forbidden('Only Marble Core users can access this app.');
@@ -80,15 +44,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     organization.listTags(),
     versionRepository.getBackendVersion(),
   ]);
-
-  let datasetFreshnessInfo: { lastExport: string } | null = null;
-  try {
-    datasetFreshnessInfo = await getDatasetFreshnessInfo(sanctionCheck, scenario);
-  } catch (err) {
-    if (!isHttpError(err)) {
-      captureRemixServerException(err, 'remix.server', request, true);
-    }
-  }
 
   return {
     user,
@@ -104,7 +59,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
       },
     },
     versions,
-    datasetFreshnessInfo,
   };
 }
 
@@ -113,11 +67,10 @@ export const handle = {
 };
 
 export default function Builder() {
-  const { user, orgUsers, organization, orgTags, featuresAccess, versions, datasetFreshnessInfo } =
+  const { user, orgUsers, organization, orgTags, featuresAccess, versions } =
     useLoaderData<typeof loader>();
   useSegmentIdentification(user);
   const { t } = useTranslation(handle.i18n);
-  const language = useFormatLanguage();
   const leftSidebarSharp = LeftSidebarSharpFactory.createSharp();
 
   // Refresh is done in the JSX because it needs to be done in the browser
@@ -131,23 +84,7 @@ export default function Builder() {
       <OrganizationUsersContextProvider orgUsers={orgUsers}>
         <OrganizationTagsContextProvider orgTags={orgTags}>
           <div className="flex h-full flex-1 flex-col">
-            {datasetFreshnessInfo ? (
-              <div className="text-red-47 bg-red-95 border-b-red-74 flex items-center gap-2 border-b-[0.5px] p-4 lg:px-8">
-                <Icon icon="error" className="size-5" />
-                <span>
-                  <Trans
-                    t={t}
-                    i18nKey="common:dataset_freshness_banner"
-                    values={{
-                      lastExport: formatDateTime(datasetFreshnessInfo.lastExport, {
-                        language,
-                        timeStyle: undefined,
-                      }),
-                    }}
-                  />
-                </span>
-              </div>
-            ) : null}
+            <DatasetFreshnessBanner />
             <div className="flex flex-1 flex-row overflow-hidden">
               <LeftSidebarSharpFactory.Provider value={leftSidebarSharp}>
                 <LeftSidebar>
