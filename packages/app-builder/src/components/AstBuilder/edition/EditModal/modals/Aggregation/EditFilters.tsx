@@ -136,7 +136,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                       <span>{t('scenarios:edit_aggregation.filter_operator_label')}</span>
                       <OperatorSelect
                         isFilter
-                        options={aggregationFilterOperators}
+                        options={aggregationFilterOperators.filter((op) => op !== 'FuzzyMatch')}
                         operator={filter.namedChildren.operator.constant}
                         onOperatorChange={(operator) => {
                           nodeSharp.update(() => {
