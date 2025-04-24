@@ -262,39 +262,48 @@ export type CaseUnsnoozedDto = {
 export type CaseAssignedEventDto = {
     event_type: "case_assigned";
 } & CaseEventDtoBase & {
+    /** ID of the user the case was assigned to */
     new_value: string;
     user_id?: string;
 };
 export type SarCreatedEventDto = {
     event_type: "sar_created";
 } & CaseEventDtoBase & {
-    new_value: string;
     user_id?: string;
+    /** Resource being created, should be `sar` */
     resource_type: string;
+    /** ID of the suspicious activity report being created */
     resource_id: string;
 };
 export type SarDeletedEventDto = {
     event_type: "sar_deleted";
 } & CaseEventDtoBase & {
-    new_value: string;
     user_id?: string;
+    /** Resource being deleted, should be `sar` */
     resource_type: string;
+    /** ID of the suspicious activity report being deleted */
     resource_id: string;
 };
 export type SarStatusChangedEventDto = {
     event_type: "sar_status_changed";
 } & CaseEventDtoBase & {
+    /** New status for the suspicious activity report */
     new_value: string;
     user_id?: string;
+    /** Resource being modified, should be `sar` */
     resource_type: string;
+    /** ID of the suspicious activity report being modified */
     resource_id: string;
 };
 export type SarFileUploadedEventDto = {
     event_type: "sar_file_uploaded";
 } & CaseEventDtoBase & {
+    /** Name of the file that was uploaded */
     new_value: string;
     user_id?: string;
+    /** Resource being modified, should be `sar` */
     resource_type: string;
+    /** ID of the suspicious activity report the file was uploaded to */
     resource_id: string;
 };
 export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto | CaseAssignedEventDto | SarCreatedEventDto | SarDeletedEventDto | SarStatusChangedEventDto | SarFileUploadedEventDto;
@@ -875,6 +884,14 @@ export type CreateNavigationOptionDto = {
     target_table_id?: string;
     filter_field_id?: string;
     ordering_field_id?: string;
+};
+export type DataModelTableOptionsDto = {
+    /** List of ordered field IDs to display when navigating the table */
+    displayed_fields?: string[];
+};
+export type SetDataModelTableOptionsBodyDto = {
+    /** List of ordered field IDs to display when navigating the table */
+    displayed_fields?: string[];
 };
 export type AnalyticsDto = {
     embedding_type: "global_dashboard" | "unknown_embedding_type";
@@ -2956,6 +2973,47 @@ export function postDataModelTableNavigationOption(tableId: string, createNaviga
         ...opts,
         method: "POST",
         body: createNavigationOptionDto
+    })));
+}
+/**
+ * Get display options for data model tables
+ */
+export function getDataModelTableOptions(tableId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: DataModelTableOptionsDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/data-model/tables/${encodeURIComponent(tableId)}/options`, {
+        ...opts
+    }));
+}
+/**
+ * Set display options for data model tables
+ */
+export function setDataModelTableOptions(tableId: string, setDataModelTableOptionsBodyDto: SetDataModelTableOptionsBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/data-model/tables/${encodeURIComponent(tableId)}/options`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: setDataModelTableOptionsBodyDto
     })));
 }
 /**
