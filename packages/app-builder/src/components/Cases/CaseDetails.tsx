@@ -1,13 +1,6 @@
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type CurrentUser } from '@app-builder/models';
-import { type CaseDetail, type SuspiciousActivityReport } from '@app-builder/models/cases';
-import {
-  type DecisionDetail as RawDecisionDetail,
-  type RuleExecution,
-} from '@app-builder/models/decision';
-import { type Inbox } from '@app-builder/models/inbox';
-import { type SanctionCheck } from '@app-builder/models/sanction-check';
-import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
+import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
 import { CloseCase } from '@app-builder/routes/ressources+/cases+/close-case';
 import { EditCaseAssignee } from '@app-builder/routes/ressources+/cases+/edit-assignee';
@@ -19,8 +12,8 @@ import { EscalateCase } from '@app-builder/routes/ressources+/cases+/escalate-ca
 import { OpenCase } from '@app-builder/routes/ressources+/cases+/open-case';
 import { SnoozeCase } from '@app-builder/routes/ressources+/cases+/snooze-case';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { Await } from '@remix-run/react';
-import { type RefObject, Suspense, useRef } from 'react';
+import { useLoaderData } from '@remix-run/react';
+import { type RefObject, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
@@ -31,27 +24,14 @@ import { CaseEvents } from './CaseEvents';
 import { casesI18n } from './cases-i18n';
 import { caseStatusMapping } from './CaseStatus';
 
-type DecisionDetail = {
-  ruleExecutions: RuleExecution[];
-  scenarioRules: ScenarioIterationRule[];
-  sanctionChecks: SanctionCheck[];
-} & Pick<RawDecisionDetail, 'id' | 'createdAt' | 'triggerObject' | 'score' | 'outcome'>;
-
 export const CaseDetails = ({
-  detail,
   containerRef,
-  inboxes,
   currentUser,
-  reports,
-  decisionsPromise,
 }: {
-  detail: CaseDetail;
   containerRef: RefObject<HTMLDivElement>;
-  inboxes: Inbox[];
   currentUser: CurrentUser;
-  reports: SuspiciousActivityReport[];
-  decisionsPromise: Promise<DecisionDetail[]>;
 }) => {
+  const { case: detail, inboxes, reports } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
   const infoRef = useRef<HTMLDivElement>(null);
@@ -146,21 +126,12 @@ export const CaseDetails = ({
       <div className="flex flex-col justify-start gap-1.5">
         <div className="text-r text-grey-00 flex items-center justify-between px-1 font-medium">
           <span>Alerts</span>
-          <div className="flex items-center gap-2">
-            <Button variant="secondary" size="small">
-              <span className="text-xs">Review pending sanction checks</span>
-            </Button>
-            <Button variant="secondary" size="small">
-              <Icon icon="snooze" className="size-4" />
-              <span className="text-xs">Snooze rules</span>
-            </Button>
-          </div>
+          <Button variant="secondary" size="small">
+            <Icon icon="snooze" className="size-4" />
+            <span className="text-xs">Snooze rules</span>
+          </Button>
         </div>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Await resolve={decisionsPromise}>
-            {(decisions) => <CaseAlerts decisions={decisions} />}
-          </Await>
-        </Suspense>
+        <CaseAlerts />
       </div>
     </main>
   );
