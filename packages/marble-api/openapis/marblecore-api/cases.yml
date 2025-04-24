@@ -1081,6 +1081,7 @@ components:
             - new_value
           properties:
             new_value:
+              description: ID of the user the case was assigned to
               type: string
               format: uuid
             user_id:
@@ -1093,17 +1094,15 @@ components:
           required:
             - resource_type
             - resource_id
-            - new_value
           properties:
-            new_value:
-              type: string
-              format: uuid
             user_id:
               type: string
               format: uuid
             resource_type:
+              description: Resource being created, should be `sar`
               type: string
             resource_id:
+              description: ID of the suspicious activity report being created
               type: string
               format: uuid
     SarDeletedEventDto:
@@ -1113,17 +1112,15 @@ components:
           required:
             - resource_type
             - resource_id
-            - new_value
           properties:
-            new_value:
-              type: string
-              format: uuid
             user_id:
               type: string
               format: uuid
             resource_type:
+              description: Resource being deleted, should be `sar`
               type: string
             resource_id:
+              description: ID of the suspicious activity report being deleted
               type: string
               format: uuid
     SarStatusChangedEventDto:
@@ -1136,14 +1133,16 @@ components:
             - new_value
           properties:
             new_value:
+              description: New status for the suspicious activity report
               type: string
-              format: uuid
             user_id:
               type: string
               format: uuid
             resource_type:
+              description: Resource being modified, should be `sar`
               type: string
             resource_id:
+              description: ID of the suspicious activity report being modified
               type: string
               format: uuid
     SarFileUploadedEventDto:
@@ -1156,14 +1155,16 @@ components:
             - new_value
           properties:
             new_value:
+              description: Name of the file that was uploaded
               type: string
-              format: uuid
             user_id:
               type: string
               format: uuid
             resource_type:
+              description: Resource being modified, should be `sar`
               type: string
             resource_id:
+              description: ID of the suspicious activity report the file was uploaded to
               type: string
               format: uuid
     RuleSnoozeCreatedDto:
