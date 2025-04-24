@@ -71,7 +71,9 @@ export const CaseDetails = ({
       >
         <EditCaseName name={detail.name} id={detail.id} />
         <div className="flex shrink-0 items-center gap-2">
-          {detail.status !== 'closed' ? <EscalateCase id={detail.id} /> : null}
+          {detail.status !== 'closed' ? (
+            <EscalateCase id={detail.id} inboxId={detail.inboxId} />
+          ) : null}
           <SnoozeCase caseId={detail.id} snoozeUntil={detail.snoozedUntil} />
           {detail.status !== 'closed' ? <CloseCase id={detail.id} /> : <OpenCase id={detail.id} />}
         </div>

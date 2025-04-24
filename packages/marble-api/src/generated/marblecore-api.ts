@@ -1552,6 +1552,26 @@ export function getNextCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
+ * Escalate a case
+ */
+export function escalateCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/escalate`, {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
  * List suspicious activity reports for a case
  */
 export function sarList(caseId: string, opts?: Oazapfts.RequestOpts) {

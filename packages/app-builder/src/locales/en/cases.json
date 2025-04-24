@@ -4,6 +4,7 @@
   "case.date": "Date",
   "case.status": "Status",
   "case.tags": "Tags",
+  "case.escalated": "Case successfully escalated",
   "case.contributors": "Contributors",
   "case.decisions": "Decisions",
   "case.decision_detail": "Decision detail",

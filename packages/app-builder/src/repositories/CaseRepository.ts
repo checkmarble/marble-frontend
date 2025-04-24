@@ -81,6 +81,7 @@ export interface CaseRepository {
   }): Promise<SuspiciousActivityReport>;
   deleteSuspiciousActivityReport(args: { caseId: string; reportId: string }): Promise<unknown>;
   getNextUnassignedCaseId(args: { caseId: string }): Promise<string | null>;
+  escalateCase(args: { caseId: string }): Promise<unknown>;
 }
 
 export function makeGetCaseRepository() {
@@ -183,5 +184,6 @@ export function makeGetCaseRepository() {
         .getNextCase(caseId)
         .then(({ id }) => id)
         .catch(() => null),
+    escalateCase: ({ caseId }) => marbleCoreApiClient.escalateCase(caseId),
   });
 }

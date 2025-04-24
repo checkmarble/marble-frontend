@@ -198,6 +198,31 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/cases/{caseId}/escalate:
+  post:
+    tags:
+      - Cases
+    summary: Escalate a case
+    operationId: escalateCase
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case that needs to be escalated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: The case was successfully escalated
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /cases/{caseId}/assignee:
   post:
     tags:
