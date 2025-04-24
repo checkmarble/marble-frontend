@@ -1,18 +1,81 @@
 import { Callout, casesI18n } from '@app-builder/components';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { initServerServices } from '@app-builder/services/init.server';
 import { handleSubmit } from '@app-builder/utils/form';
+import { getRoute } from '@app-builder/utils/routes';
+import { type ActionFunctionArgs, redirect } from '@remix-run/node';
+import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
-const schema = z.object({ caseId: z.string() });
+const schema = z.object({ caseId: z.string(), inboxId: z.string() });
 
-export const EscalateCase = ({ id }: { id: string }) => {
+export async function action({ request }: ActionFunctionArgs) {
+  const {
+    authService,
+    i18nextService: { getFixedT },
+    toastSessionService: { getSession, commitSession },
+  } = initServerServices(request);
+
+  const [raw, session, t, { cases }] = await Promise.all([
+    request.json(),
+    getSession(request),
+    getFixedT(request, ['cases', 'common']),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
+
+  const { success, data, error } = schema.safeParse(raw);
+
+  if (!success) return { success: false, errors: error.flatten() };
+
+  try {
+    await cases.escalateCase({ caseId: data.caseId });
+
+    setToastMessage(session, {
+      type: 'success',
+      messageKey: t('cases:case.escalated'),
+    });
+
+    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: data.inboxId }), {
+      headers: {
+        'Set-Cookie': await commitSession(session),
+      },
+    });
+  } catch (error) {
+    setToastMessage(session, {
+      type: 'error',
+      messageKey: t('common:errors.unknown'),
+    });
+
+    return Response.json(
+      { success: false, errors: [] },
+      {
+        headers: {
+          'Set-Cookie': await commitSession(session),
+        },
+      },
+    );
+  }
+}
+
+export const EscalateCase = ({ id, inboxId }: { id: string; inboxId: string }) => {
   const { t } = useTranslation(casesI18n);
+  const fetcher = useFetcher<typeof action>();
 
   const form = useForm({
-    defaultValues: { caseId: id },
+    onSubmit: async ({ value }) => {
+      fetcher.submit(value, {
+        method: 'POST',
+        action: getRoute('/ressources/cases/escalate-case'),
+        encType: 'application/json',
+      });
+    },
+    defaultValues: { caseId: id, inboxId },
     validators: {
       onChange: schema,
       onBlur: schema,
