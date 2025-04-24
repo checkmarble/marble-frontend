@@ -35,7 +35,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
   const tabObjectId = currentTab.sourceObject[currentTab.sourceFieldName];
 
   return (
-    <div className="min-w-[80vw] p-14 pt-2">
+    <div className="h-[calc(100vh_-_210px)] min-w-[80vw] overflow-y-scroll p-14 py-2">
       <div className="flex flex-col gap-3">
         <div className="before:bg-grey-90 relative py-2 pr-40 before:absolute before:inset-x-0 before:bottom-0 before:h-px">
           {tabs.map((tab, i) => (

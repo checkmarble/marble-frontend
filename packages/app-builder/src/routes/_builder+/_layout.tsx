@@ -83,7 +83,7 @@ export default function Builder() {
     <OrganizationDetailsContextProvider org={organization} currentUser={user}>
       <OrganizationUsersContextProvider orgUsers={orgUsers}>
         <OrganizationTagsContextProvider orgTags={orgTags}>
-          <div className="flex h-full flex-1 flex-col">
+          <div className="flex h-screen flex-1 flex-col">
             <DatasetFreshnessBanner />
             <div className="flex flex-1 flex-row overflow-hidden">
               <LeftSidebarSharpFactory.Provider value={leftSidebarSharp}>
