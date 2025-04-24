@@ -21,7 +21,7 @@ type UseClientObjectListQueryParams = {
 };
 export function useClientObjectListQuery(params: UseClientObjectListQueryParams) {
   const strQs = QueryString.stringify(
-    { ...params.params, limit: 10 },
+    { ...params.params },
     { skipNulls: true, addQueryPrefix: true },
   );
   const queryKey = ['resources', 'data-list-object', params.tableName!, strQs] as const;

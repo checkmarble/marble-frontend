@@ -10,10 +10,7 @@ export const DrawerContext = createSimpleContext<{
 }>('Drawer');
 
 const drawerVariants = cva(
-  [
-    'w-[520px] h-[calc(100vh_-_80px)] border-grey-90 sticky z-10 top-0 border-l',
-    'transition-all duration-500',
-  ],
+  ['w-[520px] h-full border-grey-90 sticky z-10 top-0 border-l', 'transition-all duration-500'],
   {
     variants: {
       expanded: {
