@@ -146,7 +146,9 @@ export default function CaseManagerIndexPage() {
           <Button
             variant="secondary"
             size="medium"
-            onClick={() => navigate(getRoute('/cases/:caseId', { caseId: nextCaseId }))}
+            onClick={() =>
+              navigate(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(nextCaseId) }))
+            }
           >
             <span className="text-xs font-medium">Go to the next unassigned case</span>
             <Icon icon="arrow-up" className="size-5 rotate-90" />
