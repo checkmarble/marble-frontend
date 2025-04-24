@@ -54,7 +54,7 @@ export const CaseEventFilters = ({
       {isDirty ? (
         <Button
           variant="secondary"
-          size="small-md"
+          size="xs"
           onClick={() => setFilters({ types: ['comment_added'] })}
         >
           <Icon icon="cross" className="size-4" />
@@ -63,7 +63,7 @@ export const CaseEventFilters = ({
       ) : null}
       <MenuCommand.Menu>
         <MenuCommand.Trigger>
-          <Button variant="secondary" size="small-md">
+          <Button variant="secondary" size="xs">
             <Icon icon="add-circle" className="size-3.5" />
             <span className="text-xs">Type</span>
             {filters.types.length > 0 ? <div className="bg-grey-80 mx-1 h-3 w-px" /> : null}

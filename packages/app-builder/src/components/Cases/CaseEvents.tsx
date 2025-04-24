@@ -102,7 +102,7 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
         </span>
         <div className="flex items-center gap-2">
           <CaseEventFilters filters={filters} setFilters={setFilters} />
-          <Button variant="secondary" onClick={() => setShowAll(!showAll)} size="small-md">
+          <Button variant="secondary" onClick={() => setShowAll(!showAll)} size="xs">
             <Icon icon={showAll ? 'eye-slash' : 'eye'} className="size-3.5" />
             <span className="text-xs">{showAll ? 'View less' : 'View all'}</span>
           </Button>
