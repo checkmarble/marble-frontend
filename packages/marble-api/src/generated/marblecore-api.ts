@@ -354,6 +354,9 @@ export type PivotObjectDto = {
     /** Number of decisions that have this pivot value */
     number_of_decisions: number;
 };
+export type NextCaseIdDto = {
+    id: string;
+};
 export type SuspiciousActivityReportDto = {
     id: string;
     status: "pending" | "completed";
@@ -1525,6 +1528,26 @@ export function getPivotRelatedCases(pivotValue: string, opts?: Oazapfts.Request
         status: 200;
         data: CaseDto[];
     }>(`/cases/related/pivot/${encodeURIComponent(pivotValue)}`, {
+        ...opts
+    }));
+}
+/**
+ * Get the next unassigned case
+ */
+export function getNextCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: NextCaseIdDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/next`, {
         ...opts
     }));
 }

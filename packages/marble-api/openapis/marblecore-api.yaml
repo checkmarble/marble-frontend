@@ -82,6 +82,8 @@ paths:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1pivot_objects
   /cases/related/pivot/{pivotValue}:
     $ref: ./marblecore-api/cases.yml#/~1cases~1related~1pivot~1{pivotValue}
+  /cases/{caseId}/next:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1next
 
   # SUSPICIOUS ACTIVITY REPORTS
 
