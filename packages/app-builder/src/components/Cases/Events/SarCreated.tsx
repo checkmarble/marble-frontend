@@ -25,11 +25,7 @@ export const SarCreatedDetail = ({ event }: { event: SarCreatedEvent }) => {
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
         <Trans
           t={t}
-          i18nKey={
-            event.status === 'pending'
-              ? 'case_detail.history.event_detail.sar_requested'
-              : 'case_detail.history.event_detail.sar_reported'
-          }
+          i18nKey="case_detail.history.event_detail.sar_requested"
           components={{
             Actor: <span className="font-bold capitalize" />,
           }}
