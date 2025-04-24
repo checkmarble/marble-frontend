@@ -123,10 +123,7 @@ export default function CaseManagerIndexPage() {
     case: details,
     dataModel,
     pivotObjects,
-    inboxes,
     currentUser,
-    reports,
-    decisionsPromise,
     nextCaseId,
   } = useLoaderData<typeof loader>();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
@@ -159,14 +156,7 @@ export default function CaseManagerIndexPage() {
         ref={containerRef}
         className="text-r relative grid h-full grid-cols-[1fr_520px] p-0 lg:p-0"
       >
-        <CaseDetails
-          detail={details}
-          decisionsPromise={decisionsPromise}
-          containerRef={containerRef}
-          inboxes={inboxes}
-          currentUser={currentUser}
-          reports={reports}
-        />
+        <CaseDetails containerRef={containerRef} currentUser={currentUser} />
         <DataModelExplorerProvider>
           <CaseManagerDrawer>
             {match(drawerContentMode)
