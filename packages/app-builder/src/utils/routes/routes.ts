@@ -491,6 +491,11 @@ export const routes = [
         "file": "routes/ressources+/locales.ts"
       },
       {
+        "id": "routes/ressources+/opensanctions+/dataset-freshness",
+        "path": "ressources/opensanctions/dataset-freshness",
+        "file": "routes/ressources+/opensanctions+/dataset-freshness.tsx"
+      },
+      {
         "id": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId",
         "path": "ressources/rule-snoozes/read/:ruleSnoozeId",
         "file": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId.tsx"
