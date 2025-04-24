@@ -44,7 +44,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const decisionsPromise = Promise.all(
     currentCase.decisions.map(async (d) => ({
-      ...pick(d, ['id', 'outcome', 'triggerObject', 'createdAt', 'score']),
+      ...pick(d, ['id', 'outcome', 'triggerObject', 'createdAt', 'score', 'scenario']),
       ruleExecutions: await decision.getDecisionById(d.id).then((detail) => detail.rules),
       scenarioRules: await scenario
         .getScenarioIteration({
