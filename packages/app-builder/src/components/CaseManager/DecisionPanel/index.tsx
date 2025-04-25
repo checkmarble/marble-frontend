@@ -280,27 +280,29 @@ export function DecisionPanel({ selectDecision, decisionId }: DecisionPanelProps
                     +{decision.score}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-grey-50 text-xs">Current statut</span>
-                  <div className="flex items-center gap-1">
-                    <div
-                      className={cn('size-4 rounded-full', {
-                        'bg-green-38': decision.outcome === 'approve',
-                        'bg-red-47': decision.outcome === 'decline',
-                        'border-red-47 border-2': decision.outcome === 'review',
-                        'border-2 border-yellow-50': decision.outcome === 'block_and_review',
-                        'bg-grey-50': decision.outcome === 'unknown',
-                      })}
-                    />
-                    <span className="text-xs font-medium">
-                      {match(decision.outcome)
-                        .with('approve', () => 'Manually approved')
-                        .with('decline', () => 'Manually declined')
-                        .with('block_and_review', () => 'Blocked and review')
-                        .with('review', () => 'Review')
-                        .with('unknown', () => 'Unknown')
-                        .exhaustive()}
-                    </span>
+                <div className="flex flex-col items-start gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-grey-50 text-xs">Current statut</span>
+                    <div className="flex items-center gap-1">
+                      <div
+                        className={cn('size-4 rounded-full', {
+                          'bg-green-38': decision.outcome === 'approve',
+                          'bg-red-47': decision.outcome === 'decline',
+                          'border-red-47 border-2': decision.outcome === 'review',
+                          'border-2 border-yellow-50': decision.outcome === 'block_and_review',
+                          'bg-grey-50': decision.outcome === 'unknown',
+                        })}
+                      />
+                      <span className="text-xs font-medium">
+                        {match(decision.outcome)
+                          .with('approve', () => 'Manually approved')
+                          .with('decline', () => 'Manually declined')
+                          .with('block_and_review', () => 'Blocked and review')
+                          .with('review', () => 'Review')
+                          .with('unknown', () => 'Unknown')
+                          .exhaustive()}
+                      </span>
+                    </div>
                   </div>
                   <RequiredActions decision={decision} />
                 </div>
