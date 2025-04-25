@@ -152,5 +152,6 @@
   "case_detail.history.event_type.sar_deleted": "SAR supprimé",
   "case_detail.history.event_type.sar_file_uploaded": "Ajout de Fichier au SAR",
   "case_detail.history.event_type.sar_status_changed": "SAR mis à jour",
-  "case.escalated": "Case a réussi à intensifier"
+  "case.escalated": "Case a réussi à intensifier",
+  "case.assignedTo": "Assigné"
 }
