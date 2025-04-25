@@ -9,7 +9,9 @@ import { captureRemixServerException } from '@sentry/remix';
 import * as R from 'remeda';
 
 export type OpenSanctionDatasetFreshnessInfoResource = {
-  lastExport: string;
+  datasetFreshnessInfo: {
+    lastExport: string;
+  } | null;
 };
 
 async function getDatasetFreshnessInfo(

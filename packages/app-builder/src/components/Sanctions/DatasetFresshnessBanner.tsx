@@ -8,7 +8,7 @@ export function DatasetFreshnessBanner() {
   const language = useFormatLanguage();
   const datasetFreshnessQuery = useOpenSanctionsDatasetFreshnessInfo();
 
-  if (!datasetFreshnessQuery.isSuccess || !datasetFreshnessQuery.data) {
+  if (!datasetFreshnessQuery.isSuccess || !datasetFreshnessQuery.data.datasetFreshnessInfo) {
     return null;
   }
 
@@ -20,7 +20,7 @@ export function DatasetFreshnessBanner() {
           t={t}
           i18nKey="common:dataset_freshness_banner"
           values={{
-            lastExport: formatDateTime(datasetFreshnessQuery.data.lastExport, {
+            lastExport: formatDateTime(datasetFreshnessQuery.data.datasetFreshnessInfo.lastExport, {
               language,
               timeStyle: undefined,
             }),

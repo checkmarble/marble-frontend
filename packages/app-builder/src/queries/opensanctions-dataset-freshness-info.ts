@@ -11,7 +11,7 @@ export function useOpenSanctionsDatasetFreshnessInfo() {
     queryKey,
     queryFn: async () => {
       const response = await fetch(endpoint(), { method: 'GET' });
-      return response.json() as Promise<OpenSanctionDatasetFreshnessInfoResource | null>;
+      return response.json() as Promise<OpenSanctionDatasetFreshnessInfoResource>;
     },
   });
 }
