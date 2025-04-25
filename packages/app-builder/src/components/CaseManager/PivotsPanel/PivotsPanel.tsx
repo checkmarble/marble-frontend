@@ -21,7 +21,8 @@ export function PivotsPanel(props: PivotsPanelProps) {
 
   return (
     <>
-      <CaseManagerDrawerButtons expandable={!!dataModelExplorerContext.explorerState}>
+      <div className="flex items-center">
+        <CaseManagerDrawerButtons expandable={!!dataModelExplorerContext.explorerState} />
         {drawerContext.isExpanded && dataModelExplorerContext.explorerState ? (
           <DrawerBreadcrumb
             items={[
@@ -33,7 +34,7 @@ export function PivotsPanel(props: PivotsPanelProps) {
             ]}
           />
         ) : null}
-      </CaseManagerDrawerButtons>
+      </div>
       {drawerContext.isExpanded ? (
         <DataModelExplorer dataModel={props.dataModel} />
       ) : (

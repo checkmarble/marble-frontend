@@ -4,6 +4,7 @@ import {
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
+import { DecisionPanel } from '@app-builder/components/CaseManager/DecisionPanel';
 import { CaseManagerDrawer } from '@app-builder/components/CaseManager/Drawer/Drawer';
 import { PivotsPanel } from '@app-builder/components/CaseManager/PivotsPanel/PivotsPanel';
 import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
@@ -127,13 +128,19 @@ export default function CaseManagerIndexPage() {
     nextCaseId,
   } = useLoaderData<typeof loader>();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
-  const [drawerContentMode, _setDrawerContentMode] = useState<'pivot'>('pivot');
+  const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision'>('pivot');
+  const [selectedDecision, selectDecision] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     leftSidebarSharp.actions.setExpanded(false);
   }, [leftSidebarSharp]);
+
+  useEffect(() => {
+    if (selectedDecision) setDrawerContentMode('decision');
+    else setDrawerContentMode('pivot');
+  }, [selectedDecision]);
 
   return (
     <Page.Main>
@@ -156,14 +163,16 @@ export default function CaseManagerIndexPage() {
         ref={containerRef}
         className="text-r relative grid h-full grid-cols-[1fr_520px] p-0 lg:p-0"
       >
-        <CaseDetails containerRef={containerRef} currentUser={currentUser} />
+        <CaseDetails
+          containerRef={containerRef}
+          currentUser={currentUser}
+          selectDecision={selectDecision}
+        />
         <DataModelExplorerProvider>
           <CaseManagerDrawer>
             {match(drawerContentMode)
               .with('pivot', () => {
-                if (!pivotObjects || pivotObjects.length === 0) {
-                  return null;
-                }
+                if (!pivotObjects || pivotObjects.length === 0) return null;
 
                 return (
                   <PivotsPanel
@@ -174,6 +183,11 @@ export default function CaseManagerIndexPage() {
                   />
                 );
               })
+              .with('decision', () =>
+                !selectedDecision ? null : (
+                  <DecisionPanel decisionId={selectedDecision} selectDecision={selectDecision} />
+                ),
+              )
               .exhaustive()}
           </CaseManagerDrawer>
         </DataModelExplorerProvider>

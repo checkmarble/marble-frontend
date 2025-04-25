@@ -48,18 +48,12 @@ export function CaseManagerDrawer({ children }: CaseManagerDrawerProps) {
   );
 }
 
-export function CaseManagerDrawerButtons({
-  children,
-  expandable = false,
-}: {
-  children?: ReactNode;
-  expandable?: boolean;
-}) {
+export function CaseManagerDrawerButtons({ expandable = false }: { expandable?: boolean }) {
   const context = DrawerContext.useValue();
 
   return (
-    <div className="bg-grey-100 sticky top-0 z-10 flex items-center gap-4 p-3">
-      <div className="border-grey-90 flex gap-2 rounded border p-2">
+    <div className="p-4">
+      <div className="border-grey-90 bg-grey-100 sticky top-2 z-10 flex gap-2 rounded border p-1">
         <DrawerIcon
           size="small"
           active={!context.isExpanded}
@@ -72,7 +66,6 @@ export function CaseManagerDrawerButtons({
           onClick={expandable ? () => context.setExpanded(true) : undefined}
         />
       </div>
-      {children}
     </div>
   );
 }

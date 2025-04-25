@@ -18,19 +18,21 @@ import { FormatData } from '../FormatData';
 const RequiredActions = ({
   decision,
 }: {
-  decision: Pick<DecisionDetail, 'case' | 'id' | 'outcome'> & { sanctionChecks: SanctionCheck[] };
+  decision: Pick<DecisionDetail, 'case' | 'id' | 'outcome' | 'reviewStatus'> & {
+    sanctionChecks: SanctionCheck[];
+  };
 }) => {
   const reviewDecisionModalStore = useDialogStore();
-  const pendingMatches =
+  const pendingSanctionMatches =
     decision.sanctionChecks[0]?.matches.filter((m) => m.status === 'pending').length ?? 0;
 
-  return ['block_and_review', 'review'].includes(decision.outcome) ? (
+  return decision.reviewStatus === 'pending' && decision.outcome === 'block_and_review' ? (
     <div className="bg-grey-98 group-hover:bg-grey-95 flex flex-col gap-2.5 rounded p-4 transition-colors">
       <span className="text-grey-50 text-xs">Required actions</span>
       {decision.sanctionChecks.length > 0 ? (
         <div className="flex items-center gap-2.5">
-          <Checkbox disabled={true} size="small" checked={pendingMatches === 0} />
-          {pendingMatches > 0 ? (
+          <Checkbox disabled={true} size="small" checked={pendingSanctionMatches === 0} />
+          {pendingSanctionMatches > 0 ? (
             <Link
               to={getRoute('/cases/:caseId/sanctions/:decisionId', {
                 caseId: fromUUIDtoSUUID(decision.case?.id as string),
@@ -39,7 +41,7 @@ const RequiredActions = ({
             >
               <Button variant="secondary" size="xs">
                 <span>Review pending sanction checks</span>
-                <span>({pendingMatches})</span>
+                <span>({pendingSanctionMatches})</span>
               </Button>
             </Link>
           ) : (
@@ -51,7 +53,7 @@ const RequiredActions = ({
         <Checkbox size="small" disabled={true} />
         <DialogDisclosure
           store={reviewDecisionModalStore}
-          render={<Button variant="secondary" size="xs" disabled={pendingMatches > 0} />}
+          render={<Button variant="secondary" size="xs" disabled={pendingSanctionMatches > 0} />}
         >
           Decide final status
         </DialogDisclosure>
@@ -65,7 +67,7 @@ const RequiredActions = ({
   ) : null;
 };
 
-export const CaseAlerts = () => {
+export const CaseAlerts = ({ selectDecision }: { selectDecision: (id: string) => void }) => {
   const { decisionsPromise } = useLoaderData<typeof loader>();
   const language = useFormatLanguage();
 
@@ -126,7 +128,12 @@ export const CaseAlerts = () => {
                         +{decision.score}
                       </span>
                     </div>
-                    <Button variant="secondary" size="xs" className="hidden group-hover:flex">
+                    <Button
+                      variant="secondary"
+                      size="xs"
+                      className="hidden group-hover:flex"
+                      onClick={() => selectDecision(decision.id)}
+                    >
                       Open
                     </Button>
                   </div>

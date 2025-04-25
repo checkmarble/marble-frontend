@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
 
-const drawerIconColorVariants = cva([''], {
+const drawerIconColorVariants = cva(['flex items-center justify-center'], {
   variants: {
     active: {
       false: 'text-grey-90',
@@ -25,18 +25,11 @@ export function DrawerIcon({ size, active, onClick }: DrawerIconProps) {
   return (
     <button
       tabIndex={-1}
-      className={clsx('', drawerIconColorVariants({ active, clickable: !!onClick }))}
+      className={clsx('size-5', drawerIconColorVariants({ active, clickable: !!onClick }))}
       onClick={onClick}
       disabled={!onClick}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        className="size-6"
-      >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
         {size === 'large' ? (
           <path
             fillRule="evenodd"

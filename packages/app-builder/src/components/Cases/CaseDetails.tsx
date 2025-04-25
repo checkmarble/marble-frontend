@@ -27,9 +27,11 @@ import { caseStatusMapping } from './CaseStatus';
 export const CaseDetails = ({
   containerRef,
   currentUser,
+  selectDecision,
 }: {
   containerRef: RefObject<HTMLDivElement>;
   currentUser: CurrentUser;
+  selectDecision: (id: string) => void;
 }) => {
   const { case: detail, inboxes, reports } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
@@ -131,7 +133,7 @@ export const CaseDetails = ({
             <span className="text-xs">Snooze rules</span>
           </Button>
         </div>
-        <CaseAlerts />
+        <CaseAlerts selectDecision={selectDecision} />
       </div>
     </main>
   );
