@@ -26,27 +26,49 @@ import { Icon } from 'ui-icons';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { authService } = initServerServices(request);
-  const { cases, inbox, user, dataModelRepository, decision, scenario, sanctionCheck } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const {
+    cases,
+    inbox,
+    user,
+    editor,
+    dataModelRepository,
+    decision,
+    scenario,
+    sanctionCheck,
+    customListsRepository,
+  } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const caseId = fromParams(params, 'caseId');
 
   // Get case by ID
-  const [currentCase, nextCaseId, reports, inboxes, pivotObjects, dataModel] = await Promise.all([
-    cases.getCase({ caseId }),
-    cases.getNextUnassignedCaseId({ caseId }),
-    cases.listSuspiciousActivityReports({ caseId }),
-    inbox.listInboxes(),
-    cases.listPivotObjects({ caseId }),
-    dataModelRepository.getDataModel(),
-  ]);
+  const [currentCase, nextCaseId, reports, inboxes, pivotObjects, dataModel, pivots, customLists] =
+    await Promise.all([
+      cases.getCase({ caseId }),
+      cases.getNextUnassignedCaseId({ caseId }),
+      cases.listSuspiciousActivityReports({ caseId }),
+      inbox.listInboxes(),
+      cases.listPivotObjects({ caseId }),
+      dataModelRepository.getDataModel(),
+      dataModelRepository.listPivots({}),
+      customListsRepository.listCustomLists(),
+    ]);
 
   const decisionsPromise = Promise.all(
     currentCase.decisions.map(async (d) => ({
-      ...pick(d, ['id', 'outcome', 'triggerObject', 'createdAt', 'score', 'scenario']),
+      ...pick(d, [
+        'id',
+        'outcome',
+        'triggerObject',
+        'triggerObjectType',
+        'pivotValues',
+        'createdAt',
+        'score',
+        'scenario',
+      ]),
       ruleExecutions: await decision.getDecisionById(d.id).then((detail) => detail.rules),
+      accessors: await editor.listAccessors({ scenarioId: d.scenario.id }),
       scenarioRules: await scenario
         .getScenarioIteration({
           iterationId: d.scenario.scenarioIterationId,
@@ -77,6 +99,8 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     currentUser: user,
     nextCaseId,
     inboxes,
+    pivots,
+    customLists,
     decisionsPromise,
   });
 };

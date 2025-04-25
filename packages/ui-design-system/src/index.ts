@@ -18,6 +18,7 @@ export * from './SelectWithCombobox/SelectWithCombobox';
 export * from './Separator/Separator';
 export * from './Switch/Switch';
 export * from './Table/Table';
+export * from './Tabs/Tabs';
 export * from './Tag/Tag';
 export * from './TextArea/TextArea';
 export * from './Tooltip/Tooltip';
