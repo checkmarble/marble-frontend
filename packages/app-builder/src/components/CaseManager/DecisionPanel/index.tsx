@@ -10,7 +10,7 @@ type DecisionPanelProps = {
 export function DecisionPanel({ selectDecision }: DecisionPanelProps) {
   return (
     <div className="flex flex-col pl-4">
-      <div className="flex items-center">
+      <div className="sticky top-0 z-10 flex items-center">
         <Button variant="secondary" size="small" onClick={() => selectDecision(null)}>
           <Icon icon="left-panel-close" className="size-4" />
         </Button>

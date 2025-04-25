@@ -53,7 +53,7 @@ export function CaseManagerDrawerButtons({ expandable = false }: { expandable?: 
 
   return (
     <div className="p-4">
-      <div className="border-grey-90 bg-grey-100 sticky top-2 z-10 flex gap-2 rounded border p-1">
+      <div className="border-grey-90 bg-grey-100 z-10 flex gap-2 rounded border p-1">
         <DrawerIcon
           size="small"
           active={!context.isExpanded}
