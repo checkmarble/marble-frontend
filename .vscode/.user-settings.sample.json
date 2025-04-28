@@ -1,0 +1,6 @@
+{
+  "mise.configureExtensionsUseSymLinks": true,
+  "debug.javascript.defaultRuntimeExecutable": {
+    "pwa-node": "${workspaceFolder}/.vscode/mise-tools/node"
+  }
+}
