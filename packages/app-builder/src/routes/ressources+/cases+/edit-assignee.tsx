@@ -101,7 +101,10 @@ export const EditCaseAssignee = ({
               <Button
                 variant="secondary"
                 size="small"
-                onClick={() => field.handleChange(currentUser.actorIdentity.userId as string)}
+                onClick={() => {
+                  field.handleChange(currentUser.actorIdentity.userId as string);
+                  form.handleSubmit();
+                }}
               >
                 <Icon icon="plus" className="text-grey-50 size-4" />
                 <span className="text-grey-50 text-xs">
