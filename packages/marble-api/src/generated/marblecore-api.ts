@@ -327,6 +327,45 @@ export type UpdateCaseBodyDto = {
 export type AssignCaseBodyDto = {
     user_id: string;
 };
+export type ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 = {
+    id: string;
+    case_id: string;
+    annotated_by: string;
+    created_at: string;
+};
+export type GroupedAnnotations = {
+    comments?: (ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 & {
+        "type": "comment";
+        payload: {
+            /** body of the comment */
+            text: string;
+        };
+    })[];
+    tags?: ({
+        id: string;
+        case_id: string;
+        annotated_by: string;
+        created_at: string;
+    } & {
+        "type": "tag";
+        payload: {
+            tag_id?: string;
+            required?: any;
+        };
+    })[];
+    files?: (ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 & {
+        "type": "file";
+        payload: {
+            caption: string;
+            bucket: string;
+            files: {
+                id: string;
+                key: string;
+                filename: string;
+            }[];
+        };
+    })[];
+};
 export type ClientObjectDetailDto = {
     /** Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested. */
     metadata?: {
@@ -345,6 +384,7 @@ export type ClientObjectDetailDto = {
         link_name?: string;
         related_object_detail?: ClientObjectDetailDto;
     }[];
+    annotations?: GroupedAnnotations;
 };
 export type PivotObjectDto = {
     /** The "object_id" field of the pivot object. Can be null if the pivot type is "field" or if the pivot does point to another unique field than "object_id", and the object has not been ingested yet. */
