@@ -31,13 +31,13 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
 ) {
   return (
     <Dialog.Portal>
-      <Dialog.Overlay className="animate-overlayShow bg-grey-00/20 fixed inset-0 flex items-center justify-center p-4 backdrop-blur-sm" />
+      <Dialog.Overlay className="animate-overlayShow bg-grey-00/20 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm" />
       <Dialog.Content
         ref={ref}
         {...props}
         className={modalContentClassnames({
           size,
-          className: clsx('fixed left-1/2 -translate-x-1/2', className),
+          className: clsx('fixed left-1/2 z-50 -translate-x-1/2', className),
         })}
       />
     </Dialog.Portal>
@@ -80,7 +80,7 @@ export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(
           size,
           fixedHeight,
           className: clsx(
-            'scale-95 opacity-0 transition-all data-[enter]:scale-100 data-[enter]:opacity-100',
+            'z-50 scale-95 opacity-0 transition-all data-[enter]:scale-100 data-[enter]:opacity-100',
             className,
           ),
         })}

@@ -6,6 +6,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { nonPendingReviewStatuses } from '@app-builder/models/decision';
+import { type Outcome } from '@app-builder/models/outcome';
 import { type SanctionCheck } from '@app-builder/models/sanction-check';
 import { blockingReviewDocHref } from '@app-builder/services/documentation-href';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -126,7 +127,7 @@ function ReviewDecisionContent({
     defaultValues: {
       decisionId,
       reviewComment: '',
-      reviewStatus: 'decline',
+      reviewStatus: '' as Outcome,
     } as ReviewDecisionForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {

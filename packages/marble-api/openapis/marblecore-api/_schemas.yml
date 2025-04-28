@@ -52,10 +52,16 @@ ReviewStatusDto:
   $ref: cases.yml#/components/schemas/ReviewStatusDto
 CaseStatusDto:
   $ref: cases.yml#/components/schemas/CaseStatusDto
+CaseStatusForCaseEventDto:
+  $ref: cases.yml#/components/schemas/CaseStatusForCaseEventDto
 CaseDto:
   $ref: cases.yml#/components/schemas/CaseDto
 CaseDetailDto:
   $ref: cases.yml#/components/schemas/CaseDetailDto
+CaseDecisionDto:
+  $ref: cases.yml#/components/schemas/CaseDecisionDto
+NextCaseIdDto:
+  $ref: cases.yml#/components/schemas/NextCaseIdDto
 CaseFileDto:
   $ref: cases.yml#/components/schemas/CaseFileDto
 CaseTagDto:
@@ -66,6 +72,10 @@ CaseCreatedEventDto:
   $ref: cases.yml#/components/schemas/CaseCreatedEventDto
 CaseStatusUpdatedEventDto:
   $ref: cases.yml#/components/schemas/CaseStatusUpdatedEventDto
+CaseOutcomeUpdatedEventDto:
+  $ref: cases.yml#/components/schemas/CaseOutcomeUpdatedEventDto
+CaseAssignedEventDto:
+  $ref: cases.yml#/components/schemas/CaseAssignedEventDto
 DecisionAddedEventDto:
   $ref: cases.yml#/components/schemas/DecisionAddedEventDto
 CommentAddedEventDto:
@@ -82,6 +92,14 @@ RuleSnoozeCreatedDto:
   $ref: cases.yml#/components/schemas/RuleSnoozeCreatedDto
 DecisionReviewedEventDto:
   $ref: cases.yml#/components/schemas/DecisionReviewedEventDto
+SarCreatedEventDto:
+  $ref: cases.yml#/components/schemas/SarCreatedEventDto
+SarDeletedEventDto:
+  $ref: cases.yml#/components/schemas/SarDeletedEventDto
+SarStatusChangedEventDto:
+  $ref: cases.yml#/components/schemas/SarStatusChangedEventDto
+SarFileUploadedEventDto:
+  $ref: cases.yml#/components/schemas/SarFileUploadedEventDto
 CaseSnoozedDto:
   $ref: cases.yml#/components/schemas/CaseSnoozedDto
 CaseUnsnoozedDto:
@@ -98,6 +116,17 @@ PivotObjectDto:
   $ref: cases.yml#/components/schemas/PivotObjectDto
 ClientObjectDetailDto:
   $ref: cases.yml#/components/schemas/ClientObjectDetailDto
+
+# SUSPICIOUS ACTIVITY REPORTS
+
+SuspiciousActivityReportDto:
+  $ref: sar.yml#/components/schemas/SuspiciousActivityReportDto
+CreateSuspiciousActivityReportBodyDto:
+  $ref: sar.yml#/components/schemas/CreateSuspiciousActivityReportBodyDto
+UpdateSuspiciousActivityReportBodyDto:
+  $ref: sar.yml#/components/schemas/UpdateSuspiciousActivityReportBodyDto
+UploadSuspiciousActivityReportBodyDto:
+  $ref: sar.yml#/components/schemas/UploadSuspiciousActivityReportBodyDto
 
 # TAGS
 
@@ -262,6 +291,12 @@ CreatePivotInputDto:
   $ref: data-model.yml#/components/schemas/CreatePivotInputDto
 NavigationOptionDto:
   $ref: data-model.yml#/components/schemas/NavigationOptionDto
+CreateNavigationOptionDto:
+  $ref: data-model.yml#/components/schemas/CreateNavigationOptionDto
+DataModelTableOptionsDto:
+  $ref: data-model.yml#/components/schemas/DataModelTableOptionsDto
+SetDataModelTableOptionsBodyDto:
+  $ref: data-model.yml#/components/schemas/SetDataModelTableOptionsBodyDto
 
 # MISC
 

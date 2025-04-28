@@ -1,0 +1,275 @@
+/cases/{caseId}/sar:
+  get:
+    tags:
+      - Suspicious Activity Report
+    summary: List suspicious activity reports for a case
+    operationId: sarList
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: List of suspicious activity reports on the case
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/SuspiciousActivityReportDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+  post:
+    tags:
+      - Suspicious Activity Report
+    summary: Create a suspicious activity report
+    operationId: sarCreate
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: The suspicious activity report to create
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateSuspiciousActivityReportBodyDto'
+      required: true
+    responses:
+      '201':
+        description: The suspicious activity report was created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuspiciousActivityReportDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+/cases/{caseId}/sar/{reportId}:
+  patch:
+    tags:
+      - Suspicious Activity Report
+    summary: Update a suspicious activity report
+    operationId: sarUpdate
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: reportId
+        description: ID of the report
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: The updates to the suspicious activity report
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateSuspiciousActivityReportBodyDto'
+      required: true
+    responses:
+      '200':
+        description: The suspicious activity report was updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuspiciousActivityReportDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+  delete:
+    tags:
+      - Suspicious Activity Report
+    summary: Delete a suspicious activity report
+    operationId: sarDelete
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: reportId
+        description: ID of the report
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: The suspicious activity report was deleted
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+/cases/{caseId}/sar/{reportId}/file:
+  post:
+    tags:
+      - Suspicious Activity Report
+    summary: Upload a file to a suspicious activity report
+    operationId: sarUpload
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: reportId
+        description: ID of the report
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: The file to upload to the suspicious activity report
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/UploadSuspiciousActivityReportBodyDto'
+    responses:
+      '200':
+        description: The file was successfully added to the suspicious activity report
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuspiciousActivityReportDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+/cases/{caseId}/sar/{reportId}/download:
+  get:
+    tags:
+      - Suspicious Activity Report
+    summary: Download a suspicious activity report file
+    operationId: sarDownload
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: reportId
+        description: ID of the report
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: List of corresponding cases
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ['url']
+              properties:
+                url:
+                  type: string
+                  format: url
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
+components:
+  schemas:
+    SuspiciousActivityReportDto:
+      type: object
+      required:
+        - id
+        - status
+        - has_file
+        - created_by
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: ['pending', 'completed']
+        has_file:
+          type: boolean
+        created_by:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: uuid
+
+    CreateSuspiciousActivityReportBodyDto:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: ['pending', 'completed']
+
+    UpdateSuspiciousActivityReportBodyDto:
+      type: object
+      required: ['status']
+      properties:
+        status:
+          type: string
+          enum: ['pending', 'completed']
+
+    UploadSuspiciousActivityReportBodyDto:
+      type: object
+      required: ['file']
+      properties:
+        file:
+          type: string
+          format: binary

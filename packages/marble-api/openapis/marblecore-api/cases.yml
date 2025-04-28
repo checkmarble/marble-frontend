@@ -169,11 +169,66 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/cases/{caseId}/next:
+  get:
+    tags:
+      - Cases
+    summary: Get the next unassigned case
+    operationId: getNextCase
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case that needs to be fetched
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The case corresponding to the provided `caseId`
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NextCaseIdDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/cases/{caseId}/escalate:
+  post:
+    tags:
+      - Cases
+    summary: Escalate a case
+    operationId: escalateCase
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case that needs to be escalated
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '204':
+        description: The case was successfully escalated
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /cases/{caseId}/assignee:
   post:
     tags:
       - Cases
-    summary: Assign a case to a user
+    summary: Assign a user to a case
+    operationId: assignUser
     security:
       - bearerAuth: []
     parameters:
@@ -205,7 +260,8 @@
   delete:
     tags:
       - Cases
-    summary: Unassign a case
+    summary: Unassign a user from a case
+    operationId: unassignUser
     security:
       - bearerAuth: []
     parameters:
@@ -228,6 +284,59 @@
       '404':
         $ref: 'components.yml#/responses/404'
 /cases/{caseId}/decisions:
+  get:
+    tags:
+      - Cases
+    summary: List a case decisions
+    operationId: getPaginatedCaseDecisions
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case to retrieve decisions from
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor_id
+        description: The cursor from which to return a page of decisions
+        in: query
+        schema:
+          type: string
+      - name: limit
+        description: How many decisions to return per page
+        in: query
+        schema:
+          type: integer
+          default: 50
+    responses:
+      '200':
+        description: The paginated list of decisions in the case
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decisions, pagination]
+              properties:
+                decisions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/CaseDecisionDto'
+                pagination:
+                  type: object
+                  required: [has_more cursor_id]
+                  properties:
+                    has_more:
+                      type: boolean
+                    cursor_id:
+                      type: string
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
   post:
     tags:
       - Cases
@@ -442,7 +551,8 @@
   get:
     tags:
       - Cases
-    summary: ->
+    summary: Get case pivot objects
+    description: |
       Return the pivot objects present in a case, computed from the pivot values on decisions
       in the case. Pivot objects are deduplicated and come with their actual content (if previously
       ingested) if the pivot value is from an actual unique pivot "object" (not just a value on an entity).
@@ -554,6 +664,30 @@
         $ref: 'components.yml#/responses/401'
       '403':
         $ref: 'components.yml#/responses/403'
+/cases/related/pivot/{pivotValue}:
+  get:
+    tags:
+      - Cases
+    summary: Get cases related to a pivot from a pivot value
+    operationId: getPivotRelatedCases
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: pivotValue
+        description: Pivot value
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: The list of the cases related to the pivot
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CaseDto'
 
 components:
   schemas:
@@ -562,7 +696,13 @@ components:
       enum: ['pending', 'approve', 'decline']
     CaseStatusDto:
       type: string
-      enum: ['open', 'investigating', 'discarded', 'resolved']
+      enum: ['pending', 'investigating', 'closed']
+    CaseStatusForCaseEventDto:
+      # Old statuses (open, discarded and resolved) are kept for backward compatibility with existing case events.
+      enum: ['pending', 'investigating', 'closed', 'open', 'discarded', 'resolved']
+    CaseOutcomeDto:
+      type: string
+      enum: ['false_positive', 'valuable_alert', 'confirmed_risk', 'unset']
     CaseDto:
       type: object
       required:
@@ -587,6 +727,8 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/CaseStatusDto'
+        outcome:
+          $ref: '#/components/schemas/CaseOutcomeDto'
         inbox_id:
           type: string
           format: uuid
@@ -616,60 +758,7 @@ components:
             decisions:
               type: array
               items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  created_at:
-                    type: string
-                    format: date-time
-                  trigger_object:
-                    additionalProperties: true
-                  trigger_object_type:
-                    type: string
-                  outcome:
-                    $ref: 'decisions.yml#/components/schemas/OutcomeDto'
-                  pivot_values:
-                    type: array
-                    items:
-                      $ref: 'components.yml#/schemas/PivotValueDto'
-                  review_status:
-                    $ref: '#/components/schemas/ReviewStatusDto'
-                  scenario:
-                    type: object
-                    required:
-                      - id
-                      - name
-                      - description
-                      - scenario_iteration_id
-                      - version
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                      name:
-                        type: string
-                      description:
-                        type: string
-                      scenario_iteration_id:
-                        type: string
-                        format: uuid
-                      version:
-                        type: integer
-                  score:
-                    type: integer
-                  error:
-                    $ref: 'components.yml#/schemas/Error'
-                required:
-                  - id
-                  - created_at
-                  - trigger_object
-                  - trigger_object_type
-                  - outcome
-                  - pivot_values
-                  - scenario
-                  - score
+                $ref: '#/components/schemas/CaseDecisionDto'
             events:
               type: array
               items:
@@ -678,6 +767,69 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/CaseFileDto'
+    CaseDecisionDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        trigger_object:
+          additionalProperties: true
+        trigger_object_type:
+          type: string
+        outcome:
+          $ref: 'decisions.yml#/components/schemas/OutcomeDto'
+        pivot_values:
+          type: array
+          items:
+            $ref: 'components.yml#/schemas/PivotValueDto'
+        review_status:
+          $ref: '#/components/schemas/ReviewStatusDto'
+        scenario:
+          type: object
+          required:
+            - id
+            - name
+            - description
+            - scenario_iteration_id
+            - version
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            description:
+              type: string
+            scenario_iteration_id:
+              type: string
+              format: uuid
+            version:
+              type: integer
+        score:
+          type: integer
+        error:
+          $ref: 'components.yml#/schemas/Error'
+      required:
+        - id
+        - created_at
+        - trigger_object
+        - trigger_object_type
+        - outcome
+        - pivot_values
+        - scenario
+        - score
+    NextCaseIdDto:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
     CaseFileDto:
       type: object
       required:
@@ -747,6 +899,8 @@ components:
           format: uuid
         status:
           $ref: '#/components/schemas/CaseStatusDto'
+        outcome:
+          $ref: '#/components/schemas/CaseOutcomeDto'
     AssignCaseBodyDto:
       type: object
       required: ['user_id']
@@ -777,6 +931,7 @@ components:
         mapping:
           case_created: '#/components/schemas/CaseCreatedEventDto'
           status_updated: '#/components/schemas/CaseStatusUpdatedEventDto'
+          outcome_updated: '#/components/schemas/CaseOutcomeUpdatedEventDto'
           decision_added: '#/components/schemas/DecisionAddedEventDto'
           comment_added: '#/components/schemas/CommentAddedEventDto'
           name_updated: '#/components/schemas/NameUpdatedEventDto'
@@ -787,6 +942,11 @@ components:
           decision_reviewed: '#/components/schemas/DecisionReviewedEventDto'
           case_snoozed: '#/components/schemas/CaseSnoozedDto'
           case_unsnoozed: '#/components/schemas/CaseUnsnoozedDto'
+          case_assigned: '#/components/schemas/CaseAssignedEventDto'
+          sar_created: '#/components/schemas/SarCreatedEventDto'
+          sar_deleted: '#/components/schemas/SarDeletedEventDto'
+          sar_status_changed: '#/components/schemas/SarStatusChangedEventDto'
+          sar_file_uploaded: '#/components/schemas/SarFileUploadedEventDto'
       required:
         - id
         - case_id
@@ -821,7 +981,20 @@ components:
             - user_id
           properties:
             new_value:
-              $ref: '#/components/schemas/CaseStatusDto'
+              $ref: '#/components/schemas/CaseStatusForCaseEventDto'
+            user_id:
+              type: string
+              format: uuid
+    CaseOutcomeUpdatedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - new_value
+            - user_id
+          properties:
+            new_value:
+              $ref: '#/components/schemas/CaseOutcomeDto'
             user_id:
               type: string
               format: uuid
@@ -900,6 +1073,100 @@ components:
             user_id:
               type: string
               format: uuid
+    CaseAssignedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - new_value
+          properties:
+            new_value:
+              description: ID of the user the case was assigned to
+              type: string
+              format: uuid
+            user_id:
+              type: string
+              format: uuid
+    SarCreatedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - resource_type
+            - resource_id
+          properties:
+            user_id:
+              type: string
+              format: uuid
+            resource_type:
+              description: Resource being created, should be `sar`
+              type: string
+            resource_id:
+              description: ID of the suspicious activity report being created
+              type: string
+              format: uuid
+    SarDeletedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - resource_type
+            - resource_id
+          properties:
+            user_id:
+              type: string
+              format: uuid
+            resource_type:
+              description: Resource being deleted, should be `sar`
+              type: string
+            resource_id:
+              description: ID of the suspicious activity report being deleted
+              type: string
+              format: uuid
+    SarStatusChangedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - resource_type
+            - resource_id
+            - new_value
+          properties:
+            new_value:
+              description: New status for the suspicious activity report
+              type: string
+            user_id:
+              type: string
+              format: uuid
+            resource_type:
+              description: Resource being modified, should be `sar`
+              type: string
+            resource_id:
+              description: ID of the suspicious activity report being modified
+              type: string
+              format: uuid
+    SarFileUploadedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - resource_type
+            - resource_id
+            - new_value
+          properties:
+            new_value:
+              description: Name of the file that was uploaded
+              type: string
+            user_id:
+              type: string
+              format: uuid
+            resource_type:
+              description: Resource being modified, should be `sar`
+              type: string
+            resource_id:
+              description: ID of the suspicious activity report the file was uploaded to
+              type: string
+              format: uuid
     RuleSnoozeCreatedDto:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'
@@ -960,6 +1227,7 @@ components:
         - type: object
           required:
             - new_value
+            - user_id
           properties:
             user_id:
               type: string

@@ -41,7 +41,7 @@ export type Pagination = {
     start_index: number;
     end_index: number;
 };
-export type CaseStatusDto = "open" | "investigating" | "discarded" | "resolved";
+export type CaseStatusDto = "pending" | "investigating" | "closed";
 export type CaseContributorDto = {
     id: string;
     case_id: string;
@@ -60,6 +60,7 @@ export type CaseDto = {
     decisions_count: number;
     name: string;
     status: CaseStatusDto;
+    outcome?: "false_positive" | "valuable_alert" | "confirmed_risk" | "unset";
     inbox_id: string;
     contributors: CaseContributorDto[];
     tags: CaseTagDto[];
@@ -141,6 +142,26 @@ export type CreateCaseBodyDto = {
     inbox_id: string;
     decision_ids?: string[];
 };
+export type CaseDecisionDto = {
+    id: string;
+    created_at: string;
+    trigger_object: {
+        [key: string]: any;
+    };
+    trigger_object_type: string;
+    outcome: OutcomeDto;
+    pivot_values: PivotValueDto[];
+    review_status?: ReviewStatusDto;
+    scenario: {
+        id: string;
+        name: string;
+        description: string;
+        scenario_iteration_id: string;
+        version: number;
+    };
+    score: number;
+    error?: Error;
+};
 export type CaseEventDtoBase = {
     id: string;
     case_id: string;
@@ -152,10 +173,18 @@ export type CaseCreatedEventDto = {
 } & CaseEventDtoBase & {
     user_id?: string;
 };
+export type CaseStatusForCaseEventDto = "pending" | "investigating" | "closed" | "open" | "discarded" | "resolved";
 export type CaseStatusUpdatedEventDto = {
     event_type: "status_updated";
 } & CaseEventDtoBase & {
-    new_value: CaseStatusDto;
+    new_value: CaseStatusForCaseEventDto;
+    user_id: string;
+};
+export type Outcome = "false_positive" | "valuable_alert" | "confirmed_risk" | "unset";
+export type CaseOutcomeUpdatedEventDto = {
+    event_type: "outcome_updated";
+} & CaseEventDtoBase & {
+    new_value: Outcome;
     user_id: string;
 };
 export type DecisionAddedEventDto = {
@@ -219,7 +248,7 @@ export type DecisionReviewedEventDto = {
 export type CaseSnoozedDto = {
     event_type: "case_snoozed";
 } & CaseEventDtoBase & {
-    user_id?: string;
+    user_id: string;
     new_value: string;
     previous_value?: string;
 };
@@ -230,7 +259,54 @@ export type CaseUnsnoozedDto = {
     new_value: string;
     previous_value?: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto;
+export type CaseAssignedEventDto = {
+    event_type: "case_assigned";
+} & CaseEventDtoBase & {
+    /** ID of the user the case was assigned to */
+    new_value: string;
+    user_id?: string;
+};
+export type SarCreatedEventDto = {
+    event_type: "sar_created";
+} & CaseEventDtoBase & {
+    user_id?: string;
+    /** Resource being created, should be `sar` */
+    resource_type: string;
+    /** ID of the suspicious activity report being created */
+    resource_id: string;
+};
+export type SarDeletedEventDto = {
+    event_type: "sar_deleted";
+} & CaseEventDtoBase & {
+    user_id?: string;
+    /** Resource being deleted, should be `sar` */
+    resource_type: string;
+    /** ID of the suspicious activity report being deleted */
+    resource_id: string;
+};
+export type SarStatusChangedEventDto = {
+    event_type: "sar_status_changed";
+} & CaseEventDtoBase & {
+    /** New status for the suspicious activity report */
+    new_value: string;
+    user_id?: string;
+    /** Resource being modified, should be `sar` */
+    resource_type: string;
+    /** ID of the suspicious activity report being modified */
+    resource_id: string;
+};
+export type SarFileUploadedEventDto = {
+    event_type: "sar_file_uploaded";
+} & CaseEventDtoBase & {
+    /** Name of the file that was uploaded */
+    new_value: string;
+    user_id?: string;
+    /** Resource being modified, should be `sar` */
+    resource_type: string;
+    /** ID of the suspicious activity report the file was uploaded to */
+    resource_id: string;
+};
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto | CaseAssignedEventDto | SarCreatedEventDto | SarDeletedEventDto | SarStatusChangedEventDto | SarFileUploadedEventDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;
@@ -238,26 +314,7 @@ export type CaseFileDto = {
     file_name: string;
 };
 export type CaseDetailDto = CaseDto & {
-    decisions: {
-        id: string;
-        created_at: string;
-        trigger_object: {
-            [key: string]: any;
-        };
-        trigger_object_type: string;
-        outcome: OutcomeDto;
-        pivot_values: PivotValueDto[];
-        review_status?: ReviewStatusDto;
-        scenario: {
-            id: string;
-            name: string;
-            description: string;
-            scenario_iteration_id: string;
-            version: number;
-        };
-        score: number;
-        error?: Error;
-    }[];
+    decisions: CaseDecisionDto[];
     events: CaseEventDto[];
     files: CaseFileDto[];
 };
@@ -265,6 +322,7 @@ export type UpdateCaseBodyDto = {
     name?: string;
     inbox_id?: string;
     status?: CaseStatusDto;
+    outcome?: Outcome;
 };
 export type AssignCaseBodyDto = {
     user_id: string;
@@ -304,6 +362,25 @@ export type PivotObjectDto = {
     pivot_object_data: ClientObjectDetailDto;
     /** Number of decisions that have this pivot value */
     number_of_decisions: number;
+};
+export type NextCaseIdDto = {
+    id: string;
+};
+export type SuspiciousActivityReportDto = {
+    id: string;
+    status: "pending" | "completed";
+    has_file: boolean;
+    created_by: string;
+    created_at: string;
+};
+export type CreateSuspiciousActivityReportBodyDto = {
+    status?: "pending" | "completed";
+};
+export type UpdateSuspiciousActivityReportBodyDto = {
+    status: "pending" | "completed";
+};
+export type UploadSuspiciousActivityReportBodyDto = {
+    file: Blob;
 };
 export type Tag = {
     id: string;
@@ -805,6 +882,20 @@ export type CreatePivotInputDto = {
     field_id?: string;
     path_link_ids?: string[];
 };
+export type CreateNavigationOptionDto = {
+    source_field_id?: string;
+    target_table_id?: string;
+    filter_field_id?: string;
+    ordering_field_id?: string;
+};
+export type DataModelTableOptionsDto = {
+    /** List of ordered field IDs to display when navigating the table */
+    displayed_fields?: string[];
+};
+export type SetDataModelTableOptionsBodyDto = {
+    /** List of ordered field IDs to display when navigating the table */
+    displayed_fields?: string[];
+};
 export type AnalyticsDto = {
     embedding_type: "global_dashboard" | "unknown_embedding_type";
     signed_embedding_url: string;
@@ -879,6 +970,7 @@ export type InboxDto = {
     status: "active" | "archived";
     users?: InboxUserDto[];
     cases_count?: number;
+    escalation_inbox_id?: string;
 };
 export type CreateInboxBodyDto = {
     name: string;
@@ -1168,9 +1260,9 @@ export function updateCase(caseId: string, updateCaseBodyDto: UpdateCaseBodyDto,
     })));
 }
 /**
- * Assign a case to a user
+ * Assign a user to a case
  */
-export function postCasesByCaseIdAssignee(caseId: string, assignCaseBodyDto: AssignCaseBodyDto, opts?: Oazapfts.RequestOpts) {
+export function assignUser(caseId: string, assignCaseBodyDto: AssignCaseBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -1192,9 +1284,9 @@ export function postCasesByCaseIdAssignee(caseId: string, assignCaseBodyDto: Ass
     })));
 }
 /**
- * Unassign a case
+ * Unassign a user from a case
  */
-export function deleteCasesByCaseIdAssignee(caseId: string, opts?: Oazapfts.RequestOpts) {
+export function unassignUser(caseId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -1212,6 +1304,38 @@ export function deleteCasesByCaseIdAssignee(caseId: string, opts?: Oazapfts.Requ
     }>(`/cases/${encodeURIComponent(caseId)}/assignee`, {
         ...opts,
         method: "DELETE"
+    }));
+}
+/**
+ * List a case decisions
+ */
+export function getPaginatedCaseDecisions(caseId: string, { cursorId, limit }: {
+    cursorId?: string;
+    limit?: number;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            decisions: CaseDecisionDto[];
+            pagination: {
+                has_more?: boolean;
+                cursor_id?: string;
+            };
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/decisions${QS.query(QS.explode({
+        cursor_id: cursorId,
+        limit
+    }))}`, {
+        ...opts
     }));
 }
 /**
@@ -1392,7 +1516,7 @@ export function reviewDecision(body: {
     })));
 }
 /**
- * -> Return the pivot objects present in a case, computed from the pivot values on decisions in the case. Pivot objects are deduplicated and come with their actual content (if previously ingested) if the pivot value is from an actual unique pivot "object" (not just a value on an entity).
+ * Get case pivot objects
  */
 export function getPivotObjectsForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -1410,6 +1534,182 @@ export function getPivotObjectsForCase(caseId: string, opts?: Oazapfts.RequestOp
         status: 404;
         data: string;
     }>(`/cases/${encodeURIComponent(caseId)}/pivot_objects`, {
+        ...opts
+    }));
+}
+/**
+ * Get cases related to a pivot from a pivot value
+ */
+export function getPivotRelatedCases(pivotValue: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CaseDto[];
+    }>(`/cases/related/pivot/${encodeURIComponent(pivotValue)}`, {
+        ...opts
+    }));
+}
+/**
+ * Get the next unassigned case
+ */
+export function getNextCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: NextCaseIdDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/next`, {
+        ...opts
+    }));
+}
+/**
+ * Escalate a case
+ */
+export function escalateCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/escalate`, {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
+ * List suspicious activity reports for a case
+ */
+export function sarList(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SuspiciousActivityReportDto[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/sar`, {
+        ...opts
+    }));
+}
+/**
+ * Create a suspicious activity report
+ */
+export function sarCreate(caseId: string, createSuspiciousActivityReportBodyDto: CreateSuspiciousActivityReportBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: SuspiciousActivityReportDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/sar`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createSuspiciousActivityReportBodyDto
+    })));
+}
+/**
+ * Update a suspicious activity report
+ */
+export function sarUpdate(caseId: string, reportId: string, updateSuspiciousActivityReportBodyDto: UpdateSuspiciousActivityReportBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SuspiciousActivityReportDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/sar/${encodeURIComponent(reportId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateSuspiciousActivityReportBodyDto
+    })));
+}
+/**
+ * Delete a suspicious activity report
+ */
+export function sarDelete(caseId: string, reportId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/sar/${encodeURIComponent(reportId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * Upload a file to a suspicious activity report
+ */
+export function sarUpload(caseId: string, reportId: string, uploadSuspiciousActivityReportBodyDto?: UploadSuspiciousActivityReportBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SuspiciousActivityReportDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/sar/${encodeURIComponent(reportId)}/file`, oazapfts.multipart({
+        ...opts,
+        method: "POST",
+        body: uploadSuspiciousActivityReportBodyDto
+    })));
+}
+/**
+ * Download a suspicious activity report file
+ */
+export function sarDownload(caseId: string, reportId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            url: string;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/sar/${encodeURIComponent(reportId)}/download`, {
         ...opts
     }));
 }
@@ -2700,12 +3000,7 @@ export function createDataModelPivot(createPivotInputDto: CreatePivotInputDto, o
 /**
  * Create a new navigation option (one to many link) from a table from the data model. Under the hood, this creates (concurrently) a new index on the target table, which may take some time if there is already data in the table.
  */
-export function postDataModelTableNavigationOption(tableId: string, body: {
-    source_field_id?: string;
-    target_table_id?: string;
-    filtering_field_id?: string;
-    ordering_field_id?: string;
-}, opts?: Oazapfts.RequestOpts) {
+export function postDataModelTableNavigationOption(tableId: string, createNavigationOptionDto: CreateNavigationOptionDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -2720,7 +3015,48 @@ export function postDataModelTableNavigationOption(tableId: string, body: {
     }>(`/data-model/tables/${encodeURIComponent(tableId)}/navigation_options`, oazapfts.json({
         ...opts,
         method: "POST",
-        body
+        body: createNavigationOptionDto
+    })));
+}
+/**
+ * Get display options for data model tables
+ */
+export function getDataModelTableOptions(tableId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: DataModelTableOptionsDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/data-model/tables/${encodeURIComponent(tableId)}/options`, {
+        ...opts
+    }));
+}
+/**
+ * Set display options for data model tables
+ */
+export function setDataModelTableOptions(tableId: string, setDataModelTableOptionsBodyDto: SetDataModelTableOptionsBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/data-model/tables/${encodeURIComponent(tableId)}/options`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: setDataModelTableOptionsBodyDto
     })));
 }
 /**
@@ -3142,6 +3478,7 @@ export function getInbox(inboxId: string, opts?: Oazapfts.RequestOpts) {
  */
 export function updateInbox(inboxId: string, body: {
     name: string;
+    escalation_inbox_id?: string;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
