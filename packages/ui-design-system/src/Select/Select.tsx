@@ -170,7 +170,7 @@ const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(function Select
         <Select.Arrow />
       </Select.Trigger>
       <Select.Content
-        className="max-h-60 min-w-[var(--radix-select-trigger-width)]"
+        className="z-50 max-h-60 min-w-[var(--radix-select-trigger-width)]"
         align={border === 'rounded' ? 'center' : 'start'}
       >
         <Select.Viewport>{children}</Select.Viewport>

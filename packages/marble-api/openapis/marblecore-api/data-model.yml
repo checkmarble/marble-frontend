@@ -144,6 +144,66 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/data-model/tables/{tableId}/options:
+  get:
+    tags:
+      - Data Model
+    summary: Get display options for data model tables
+    operationId: getDataModelTableOptions
+    parameters:
+      - name: tableId
+        description: ID of the source table for the display options
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Display options for the provided table
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataModelTableOptionsDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+  post:
+    tags:
+      - Data Model
+    summary: Set display options for data model tables
+    operationId: setDataModelTableOptions
+    parameters:
+      - name: tableId
+        description: ID of the source table for the display options
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Display options for the provided table
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SetDataModelTableOptionsBodyDto'
+      required: true
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Empty response body
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /data-model/fields/{fieldId}:
   patch:
     tags:
@@ -614,9 +674,27 @@ components:
         target_table_id:
           type: string
           format: uuid
-        filtering_field_id:
+        filter_field_id:
           type: string
           format: uuid
         ordering_field_id:
           type: string
           format: uuid
+    DataModelTableOptionsDto:
+      type: object
+      properties:
+        displayed_fields:
+          description: List of ordered field IDs to display when navigating the table
+          type: array
+          items:
+            type: string
+            format: uuid
+    SetDataModelTableOptionsBodyDto:
+      type: object
+      properties:
+        displayed_fields:
+          description: List of ordered field IDs to display when navigating the table
+          type: array
+          items:
+            type: string
+            format: uuid

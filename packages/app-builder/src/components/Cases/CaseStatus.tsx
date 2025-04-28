@@ -1,9 +1,10 @@
-import { type CaseStatus } from '@app-builder/models/cases';
+import { caseStatuses } from '@app-builder/models/cases';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { type ParseKeys } from 'i18next';
+import { type CaseStatusForCaseEventDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tooltip } from 'ui-design-system';
+import { Tag, Tooltip } from 'ui-design-system';
 
 import { casesI18n } from './cases-i18n';
 
@@ -12,8 +13,8 @@ export const caseStatusVariants = cva('inline-flex items-center justify-center r
     color: {
       red: 'text-red-47 bg-red-95',
       blue: 'text-blue-58 bg-blue-96',
-      grey: 'text-grey-50 bg-grey-90',
       green: 'text-green-38 bg-green-94',
+      grey: 'text-grey-50 bg-grey-95',
     },
     size: {
       small: undefined,
@@ -48,12 +49,47 @@ export const caseStatusVariants = cva('inline-flex items-center justify-center r
   ],
 });
 
-export function CaseStatus({
+type CaseStatusMapping = Record<
+  CaseStatusForCaseEventDto,
+  {
+    color: VariantProps<typeof caseStatusVariants>['color'];
+    tKey: ParseKeys<['cases']>;
+  }
+>;
+
+export const caseStatusMapping: CaseStatusMapping = {
+  investigating: {
+    color: 'blue',
+    tKey: 'cases:case.status.investigating',
+  },
+  pending: {
+    color: 'red',
+    tKey: 'cases:case.status.pending',
+  },
+  closed: {
+    color: 'green',
+    tKey: 'cases:case.status.closed',
+  },
+  resolved: {
+    color: 'green',
+    tKey: 'cases:case.status.resolved',
+  },
+  discarded: {
+    color: 'grey',
+    tKey: 'cases:case.status.discarded',
+  },
+  open: {
+    color: 'red',
+    tKey: 'cases:case.status.open',
+  },
+};
+
+export function CaseStatusPreview({
   status,
   size,
   type,
 }: {
-  status: CaseStatus;
+  status: CaseStatusForCaseEventDto;
   size?: VariantProps<typeof caseStatusVariants>['size'];
   type?: VariantProps<typeof caseStatusVariants>['type'];
 }) {
@@ -82,38 +118,19 @@ export function CaseStatus({
   );
 }
 
-export const caseStatusMapping = {
-  open: {
-    color: 'red',
-    tKey: 'cases:case.status.open',
-  },
-  investigating: {
-    color: 'blue',
-    tKey: 'cases:case.status.investigating',
-  },
-  discarded: {
-    color: 'grey',
-    tKey: 'cases:case.status.discarded',
-  },
-  resolved: {
-    color: 'green',
-    tKey: 'cases:case.status.resolved',
-  },
-} satisfies Record<
-  CaseStatus,
-  {
-    color: VariantProps<typeof caseStatusVariants>['color'];
-    tKey: ParseKeys<['cases']>;
-  }
->;
+export function CaseStatusTag({ status }: { status: CaseStatusForCaseEventDto }) {
+  const { t } = useTranslation(['cases']);
+  const { color, tKey } = caseStatusMapping[status];
 
-const statuses = ['discarded', 'investigating', 'open', 'resolved'] satisfies CaseStatus[];
+  return <Tag color={color ?? undefined}>{t(tKey)}</Tag>;
+}
+
 export function useCaseStatuses() {
   const { t } = useTranslation(casesI18n);
 
   return useMemo(
     () =>
-      statuses.map((status) => ({
+      caseStatuses.map((status) => ({
         value: status,
         label: t(caseStatusMapping[status].tKey),
       })),

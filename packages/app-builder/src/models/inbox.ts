@@ -9,6 +9,7 @@ export interface Inbox {
   updatedAt: string;
   status: 'active' | 'archived';
   users: InboxUser[];
+  escalationInboxId?: string;
 }
 
 export function adaptInbox(inbox: InboxDto): Inbox {
@@ -19,6 +20,7 @@ export function adaptInbox(inbox: InboxDto): Inbox {
     updatedAt: inbox.updated_at,
     status: inbox.status,
     users: (inbox.users ?? []).map(adaptInboxUser),
+    escalationInboxId: inbox.escalation_inbox_id,
   };
 }
 
@@ -40,6 +42,17 @@ export interface InboxCreateBody {
 
 export interface InboxUpdateBody {
   name: string;
+  escalationInboxId?: string | null;
+}
+
+export function adaptUpdateInboxDto(model: InboxUpdateBody): {
+  name: string;
+  escalation_inbox_id?: string;
+} {
+  return {
+    name: model.name,
+    escalation_inbox_id: model.escalationInboxId ?? undefined,
+  };
 }
 
 export type InboxUser = {

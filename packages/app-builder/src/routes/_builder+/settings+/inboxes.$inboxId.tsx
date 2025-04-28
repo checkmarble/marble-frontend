@@ -74,6 +74,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   return json({
     inbox,
+    inboxesList,
+    escalationInbox: inbox.escalationInboxId
+      ? await inboxApi.getInbox(inbox.escalationInboxId)
+      : null,
     caseCount: inbox.casesCount,
     entitlements,
     inboxUserRoles: getInboxUserRoles(entitlements),
@@ -91,6 +95,8 @@ export default function Inbox() {
   const {
     caseCount,
     inbox,
+    inboxesList,
+    escalationInbox,
     inboxUserRoles,
     entitlements,
     isEditInboxAvailable,
@@ -179,7 +185,11 @@ export default function Inbox() {
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:inboxes.inbox_details.title')}</span>
             {isEditInboxAvailable ? (
-              <UpdateInbox inbox={inbox} redirectRoutePath="/settings/inboxes/:inboxId" />
+              <UpdateInbox
+                inbox={inbox}
+                inboxesList={inboxesList}
+                redirectRoutePath="/settings/inboxes/:inboxId"
+              />
             ) : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
@@ -188,6 +198,10 @@ export default function Inbox() {
               {inbox.name}
               <span className="font-bold">{t('settings:inboxes.inbox_details.case_count')}</span>
               {caseCount}
+              <span className="font-bold">
+                {t('settings:inboxes.inbox_details.escalation_inbox')}
+              </span>
+              {escalationInbox?.name ?? t('settings:inboxes.inbox_details.no_escalation_inbox')}
             </div>
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>

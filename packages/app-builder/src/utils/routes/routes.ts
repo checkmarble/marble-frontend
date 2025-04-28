@@ -50,51 +50,30 @@ export const routes = [
             "file": "routes/_builder+/api.tsx"
           },
           {
-            "id": "routes/_builder+/cases+/$caseId._layout",
+            "id": "routes/_builder+/cases+/$caseId+/_index",
+            "index": true,
             "path": "cases/:caseId",
-            "file": "routes/_builder+/cases+/$caseId._layout.tsx",
-            "children": [
-              {
-                "id": "routes/_builder+/cases+/$caseId._index",
-                "index": true,
-                "file": "routes/_builder+/cases+/$caseId._index.tsx"
-              },
-              {
-                "id": "routes/_builder+/cases+/$caseId.decisions",
-                "path": "decisions",
-                "file": "routes/_builder+/cases+/$caseId.decisions.tsx"
-              },
-              {
-                "id": "routes/_builder+/cases+/$caseId.files",
-                "path": "files",
-                "file": "routes/_builder+/cases+/$caseId.files.tsx"
-              },
-              {
-                "id": "routes/_builder+/cases+/$caseId.information",
-                "path": "information",
-                "file": "routes/_builder+/cases+/$caseId.information.tsx"
-              }
-            ]
+            "file": "routes/_builder+/cases+/$caseId+/_index.tsx"
           },
           {
-            "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_layout",
+            "id": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_layout",
             "path": "cases/:caseId/sanctions/:decisionId",
-            "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_layout.tsx",
+            "file": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_layout.tsx",
             "children": [
               {
-                "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_index",
+                "id": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_index",
                 "index": true,
-                "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/_index.tsx"
+                "file": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_index.tsx"
               },
               {
-                "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/files",
+                "id": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/files",
                 "path": "files",
-                "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/files.tsx"
+                "file": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/files.tsx"
               },
               {
-                "id": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/hits",
+                "id": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/hits",
                 "path": "hits",
-                "file": "routes/_builder+/cases+/$caseId_.sanctions.$decisionId+/hits.tsx"
+                "file": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/hits.tsx"
               }
             ]
           },
@@ -115,12 +94,6 @@ export const routes = [
                 "file": "routes/_builder+/cases+/inboxes.$inboxId.tsx"
               }
             ]
-          },
-          {
-            "id": "routes/_builder+/cases_new+/$caseId._index",
-            "index": true,
-            "path": "cases_new/:caseId",
-            "file": "routes/_builder+/cases_new+/$caseId._index.tsx"
           },
           {
             "id": "routes/_builder+/data+/_layout",
@@ -391,24 +364,55 @@ export const routes = [
         "file": "routes/ressources+/cases+/add-to-case.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/close-case",
+        "path": "ressources/cases/close-case",
+        "file": "routes/ressources+/cases+/close-case.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/create-case",
         "path": "ressources/cases/create-case",
         "file": "routes/ressources+/cases+/create-case.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/edit-snooze",
-        "path": "ressources/cases/edit-snooze",
-        "file": "routes/ressources+/cases+/edit-snooze.tsx"
+        "id": "routes/ressources+/cases+/edit-assignee",
+        "path": "ressources/cases/edit-assignee",
+        "file": "routes/ressources+/cases+/edit-assignee.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/edit-status",
-        "path": "ressources/cases/edit-status",
-        "file": "routes/ressources+/cases+/edit-status.tsx"
+        "id": "routes/ressources+/cases+/edit-inbox",
+        "path": "ressources/cases/edit-inbox",
+        "file": "routes/ressources+/cases+/edit-inbox.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/edit",
-        "path": "ressources/cases/edit",
-        "file": "routes/ressources+/cases+/edit.tsx"
+        "id": "routes/ressources+/cases+/edit-name",
+        "path": "ressources/cases/edit-name",
+        "file": "routes/ressources+/cases+/edit-name.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/edit-suspicion",
+        "path": "ressources/cases/edit-suspicion",
+        "file": "routes/ressources+/cases+/edit-suspicion.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/edit-tags",
+        "path": "ressources/cases/edit-tags",
+        "file": "routes/ressources+/cases+/edit-tags.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/escalate-case",
+        "path": "ressources/cases/escalate-case",
+        "file": "routes/ressources+/cases+/escalate-case.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/open-case",
+        "path": "ressources/cases/open-case",
+        "file": "routes/ressources+/cases+/open-case.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/pivot+/related+/$pivotValue._index",
+        "index": true,
+        "path": "ressources/cases/pivot/related/:pivotValue",
+        "file": "routes/ressources+/cases+/pivot+/related+/$pivotValue._index.tsx"
       },
       {
         "id": "routes/ressources+/cases+/review-decision",
@@ -419,6 +423,21 @@ export const routes = [
         "id": "routes/ressources+/cases+/review-sanction-match",
         "path": "ressources/cases/review-sanction-match",
         "file": "routes/ressources+/cases+/review-sanction-match.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/snooze-case",
+        "path": "ressources/cases/snooze-case",
+        "file": "routes/ressources+/cases+/snooze-case.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/$tableId.createNavigationOption",
+        "path": "ressources/data/:tableId/createNavigationOption",
+        "file": "routes/ressources+/data+/$tableId.createNavigationOption.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/$tableName.list-objects",
+        "path": "ressources/data/:tableName/list-objects",
+        "file": "routes/ressources+/data+/$tableName.list-objects.tsx"
       },
       {
         "id": "routes/ressources+/data+/create-pivot",

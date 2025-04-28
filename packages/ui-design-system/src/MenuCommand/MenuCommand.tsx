@@ -94,24 +94,40 @@ type SubMenuProps = Omit<RootProps, 'open' | 'onOpenChange'> & {
   className?: string;
   trigger: React.ReactNode;
   forceMount?: boolean;
+  arrow?: boolean;
+  disabled?: boolean;
 };
-function SubMenu({ value, children, trigger, forceMount, className, ...props }: SubMenuProps) {
+
+function SubMenu({
+  children,
+  trigger,
+  forceMount,
+  className,
+  arrow,
+  hover = true,
+  disabled = false,
+  ...props
+}: SubMenuProps) {
   const [open, setOpen] = React.useState(false);
   return (
     <Command.Group forceMount={forceMount}>
-      <Root {...props} hover open={open} onOpenChange={setOpen}>
+      <Root {...props} hover={hover} open={open} onOpenChange={setOpen}>
         <Trigger>
           <Item
-            value={value}
-            className="group/menu-item grid grid-cols-[1fr_20px]"
-            onSelect={() => setOpen(true)}
+            disabled={disabled}
+            className={cn('group/menu-item flex w-full items-center justify-between')}
+            onSelect={() => {
+              setOpen(true);
+            }}
           >
-            <span>{trigger}</span>
-            <Icon
-              aria-hidden="true"
-              icon="arrow-right"
-              className="group-data-[state=open]/menu-item:text-purple-65 ml-auto size-5 shrink-0 rtl:rotate-180"
-            />
+            {trigger}
+            {arrow !== undefined && arrow === false ? null : (
+              <Icon
+                aria-hidden="true"
+                icon="arrow-right"
+                className="group-data-[state=open]/menu-item:text-purple-65 ml-auto size-5 shrink-0 rtl:rotate-180"
+              />
+            )}
           </Item>
         </Trigger>
         <Content
@@ -153,9 +169,9 @@ function Trigger({ children }: React.PropsWithChildren) {
 type ButtonProps = React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
->;
+> & { hasError?: boolean };
 const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function SelectButton(
-  { children, className, ...props },
+  { children, className, hasError = false, ...props },
   ref,
 ) {
   return (
@@ -168,6 +184,7 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
           'bg-grey-100 disabled:border-grey-98 disabled:bg-grey-98',
           'border-grey-90 focus:border-purple-65',
         ]),
+        { 'border-red-47': hasError },
         className,
       )}
       {...props}
@@ -182,7 +199,7 @@ function MenuArrow() {
   return <Icon icon="caret-down" className="size-4 shrink-0" />;
 }
 
-const contentClassname = cva('flex', {
+const contentClassname = cva('flex z-50', {
   variants: {
     hover: {
       true: 'max-h-[min(var(--radix-hover-card-content-available-height),_500px)]',
@@ -196,7 +213,7 @@ const contentClassname = cva('flex', {
 
 const commandClassname = cva(
   [
-    'flex flex-col w-full flex-1 overflow-hidden text-s',
+    'flex flex-col z-50 w-full flex-1 overflow-hidden text-s',
     'bg-grey-100 border-grey-90 rounded border shadow-md outline-none',
     'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
     'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
@@ -262,8 +279,10 @@ function InsertKeyboardNav() {
   return <KeyboardNav />;
 }
 
-type ComboboxProps = Omit<React.ComponentProps<typeof Command.Input>, 'value'> & {};
-function Combobox({ className, onValueChange, ...props }: ComboboxProps) {
+type ComboboxProps = Omit<React.ComponentProps<typeof Command.Input>, 'value'> & {
+  iconClasses?: string;
+};
+function Combobox({ className, onValueChange, iconClasses, ...props }: ComboboxProps) {
   const internalSharp = InternalMenuSharpFactory.useSharp();
   const menuState = MenuCommandSharpFactory.useSharp();
   const setSearch = useCallbackRef((value: string) => {
@@ -279,16 +298,16 @@ function Combobox({ className, onValueChange, ...props }: ComboboxProps) {
   }, [internalSharp]);
 
   return (
-    <div className={cn('relative m-2 h-10', className)}>
+    <div className={cn('relative m-2 mb-0 h-10', className)}>
       <Command.Input
         ref={inputRef}
-        className={cn(inputClassname(), 'ps-10')}
+        className={cn(inputClassname(), 'ps-8')}
         value={menuState.value.search}
         onValueChange={setSearch}
         {...props}
       />
       <div className="text-grey-50 peer-focus:text-grey-00 pointer-events-none absolute inset-y-0 start-0 flex items-center ps-2">
-        <Icon icon="search" className="size-6" />
+        <Icon icon="search" className={cn('size-5', iconClasses)} />
       </div>
     </div>
   );
@@ -331,16 +350,24 @@ const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
       ref={ref}
       className={cn(
         [
-          'aria-selected:bg-purple-98 data-[state=open]:bg-purple-98 outline-none',
+          'aria-selected:bg-purple-98 data-[state=open]:bg-purple-98 aria-[disabled=true]:text-grey-80 outline-none',
           'flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2',
         ],
-        { '': selected },
+        { '': selected, 'cursor-pointer': props.onSelect && !props.disabled },
         className,
       )}
       {...props}
     />
   );
 });
+
+const Separator = React.forwardRef<
+  React.ElementRef<typeof Command.Separator>,
+  React.ComponentPropsWithoutRef<typeof Command.Separator>
+>(({ className, ...props }, ref) => (
+  <Command.Separator ref={ref} className={cn('bg-border -mx-1 h-px', className)} {...props} />
+));
+Separator.displayName = Command.Separator.displayName;
 
 type ListProps = Omit<React.ComponentProps<typeof Command.List>, 'asChild'> & {};
 function List({ className, ...props }: ListProps) {
@@ -364,5 +391,6 @@ export const MenuCommand = {
   SubMenu,
   Trigger,
   SelectButton,
+  Separator,
   State: MenuCommandSharpFactory,
 };
