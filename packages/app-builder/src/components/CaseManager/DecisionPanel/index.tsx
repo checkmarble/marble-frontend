@@ -252,12 +252,19 @@ const CollapsedDetail = ({
 
 export function DecisionPanel({ selectDecision, decisionId }: DecisionPanelProps) {
   const { decisionsPromise, pivots, dataModel, customLists } = useLoaderData<typeof loader>();
-  const drawerContext = DrawerContext.useValue();
+  const { isExpanded, setExpanded } = DrawerContext.useValue();
 
   return (
     <div className="flex flex-col pl-4">
       <div className="sticky top-0 z-10 flex items-center">
-        <Button variant="secondary" size="small" onClick={() => selectDecision(null)}>
+        <Button
+          variant="secondary"
+          size="small"
+          onClick={() => {
+            setExpanded(false);
+            selectDecision(null);
+          }}
+        >
           <Icon icon="left-panel-close" className="size-4" />
         </Button>
         <CaseManagerDrawerButtons expandable={true} />
@@ -306,7 +313,7 @@ export function DecisionPanel({ selectDecision, decisionId }: DecisionPanelProps
                   </div>
                   <RequiredActions decision={decision} />
                 </div>
-                {drawerContext.isExpanded ? (
+                {isExpanded ? (
                   <ExpandedDetail
                     detail={{ ...decision, pivots }}
                     dataModel={dataModel}
