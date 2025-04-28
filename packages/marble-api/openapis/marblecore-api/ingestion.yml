@@ -229,7 +229,7 @@ components:
         data:
           type: array
           items:
-            $ref: 'cases.yml#/components/schemas/ClientObjectDetailDto'
+            $ref: '#/components/schemas/ClientObjectDetailDto'
         pagination:
           type: object
           required:
@@ -243,3 +243,46 @@ components:
             has_next_page:
               type: boolean
               description: Whether there are more objects to paginate
+    ClientObjectDetailDto:
+      description: ->
+        Nested object containing the details of an ingested client object. "data" holds the data of the object as described in the client data model.
+        "related_objects" holds a list of other ingested "parent" objects, reached by a many to one link from the base object. An arbitrary limit on the depth
+        of nesting and early stop in case of loops may be applied by the backend.
+      type: object
+      required:
+        - data
+        - related_objects
+      properties:
+        metadata:
+          description: Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested.
+          type: object
+          required:
+            - valid_from
+            - object_type
+          properties:
+            valid_from:
+              type: string
+              format: date-timeme
+            object_type:
+              type: string
+              description: object type in the data model that the data corresponds to
+        data:
+          type: object
+          description: The actual data of the object, as described in the client data model.
+          properties:
+            object_id:
+              type: string
+            updated_at:
+              type: string
+              format: date-time
+          additionalProperties: true
+        related_objects:
+          type: array
+          items:
+            type: object
+            properties:
+              link_name:
+                type: string
+                description: The name of the link pointing to the object
+              related_object_detail:
+                $ref: '#/components/schemas/ClientObjectDetailDto'
