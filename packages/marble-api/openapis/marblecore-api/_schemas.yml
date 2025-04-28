@@ -24,6 +24,11 @@ Pagination:
     end_index:
       type: integer
 
+# ANNOTATIONS
+
+GroupedAnnotations:
+  $ref: annotations.yml#/components/schemas/GroupedAnnotations
+
 # AUTHORIZATION
 
 Token:
