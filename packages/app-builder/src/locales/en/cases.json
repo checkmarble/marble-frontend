@@ -153,5 +153,6 @@
   "unsnooze.callout": "By continuing, you will unsnooze this case",
   "unsnooze.title": "Unsnooze",
   "include_snoozed": "Include snoozed",
-  "case.assignedTo": "Assigned"
+  "case.assignedTo": "Assigned",
+  "case_detail.assign-to-me-button.label": "Assign to me"
 }

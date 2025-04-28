@@ -9,6 +9,7 @@ import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
 import { capitalize } from 'radash';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Avatar, Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
@@ -54,6 +55,7 @@ export const EditCaseAssignee = ({
   currentUser: CurrentUser;
   id: string;
 }) => {
+  const { t } = useTranslation(['cases']);
   const { submit } = useFetcher<typeof action>();
   const [open, setOpen] = useState(false);
   const { getOrgUserById, orgUsers } = useOrganizationUsers();
@@ -99,10 +101,15 @@ export const EditCaseAssignee = ({
               <Button
                 variant="secondary"
                 size="small"
-                onClick={() => field.handleChange(currentUser.actorIdentity.userId as string)}
+                onClick={() => {
+                  field.handleChange(currentUser.actorIdentity.userId as string);
+                  form.handleSubmit();
+                }}
               >
                 <Icon icon="plus" className="text-grey-50 size-4" />
-                <span className="text-grey-50 text-xs">Assigned to me</span>
+                <span className="text-grey-50 text-xs">
+                  {t('cases:case_detail.assign-to-me-button.label')}
+                </span>
               </Button>
             )}
             <MenuCommand.Menu open={open} onOpenChange={setOpen}>
