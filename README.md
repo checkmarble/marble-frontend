@@ -61,6 +61,7 @@ pnpm install
 There is a recommended extensions list in the `.vscode/extensions.json` file.
 
 All required configuration settings are already included inside the `.vscode/settings.json` file.
+Recommended settings are in the `.vscode/.user-settings.sample.json` file. Cherry-pick them to your user config file.
 
 ### Launch
 
