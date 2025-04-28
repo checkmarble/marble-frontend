@@ -15,7 +15,7 @@
   "data.viewer": "Ingested data viewer",
   "expand": "Expand",
   "collapse": "Collapse",
-  "api": "Marble API",
+  "api": "Regulon API",
   "case_manager": "Case Manager",
   "case_manager.information": "Information",
   "case_manager.decisions": "Decisions",
