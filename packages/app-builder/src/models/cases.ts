@@ -18,7 +18,6 @@ import {
   type UpdateSuspiciousActivityReportBodyDto,
   type UploadSuspiciousActivityReportBodyDto,
 } from 'marble-api';
-import { isNonNullish } from 'remeda';
 import { match } from 'ts-pattern';
 
 import { adaptClientObjectDetail, type ClientObjectDetail } from './data-model';
@@ -439,7 +438,7 @@ export function adaptCaseDetail(dto: CaseDetailDto): CaseDetail {
       },
       score: decisionDto.score,
     })),
-    events: dto.events.map(adaptCaseEventDto).filter(isNonNullish),
+    events: dto.events.filter((e) => caseEventTypes.includes(e.event_type)).map(adaptCaseEventDto),
     files: dto.files.map(adaptCaseFile),
   };
 }
