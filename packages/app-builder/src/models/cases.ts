@@ -60,7 +60,7 @@ export type CaseStatus = CaseStatusDto;
 export const caseStatuses: UnionToArray<CaseStatus> = ['pending', 'investigating', 'closed'];
 
 export type CaseOutcome = Outcome;
-export const caseOutcomes: UnionToArray<CaseOutcome> = [
+export const caseOutcomes: CaseOutcome[] = [
   'false_positive',
   'valuable_alert',
   'confirmed_risk',
