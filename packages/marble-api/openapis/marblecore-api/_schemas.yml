@@ -114,8 +114,6 @@ CreateCaseBodyDto:
   $ref: cases.yml#/components/schemas/CreateCaseBodyDto
 PivotObjectDto:
   $ref: cases.yml#/components/schemas/PivotObjectDto
-ClientObjectDetailDto:
-  $ref: cases.yml#/components/schemas/ClientObjectDetailDto
 
 # SUSPICIOUS ACTIVITY REPORTS
 
@@ -143,6 +141,8 @@ ClientDataListRequestBody:
   $ref: ingestion.yml#/components/schemas/ClientDataListRequestBody
 ClientDataListResponseDto:
   $ref: ingestion.yml#/components/schemas/ClientDataListResponseDto
+ClientObjectDetailDto:
+  $ref: ingestion.yml#/components/schemas/ClientObjectDetailDto
 
 # CUSTOM LISTS
 
