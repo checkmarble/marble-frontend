@@ -28,10 +28,12 @@ export const CaseDetails = ({
   containerRef,
   currentUser,
   selectDecision,
+  setDrawerContentMode,
 }: {
   containerRef: RefObject<HTMLDivElement>;
   currentUser: CurrentUser;
   selectDecision: (id: string) => void;
+  setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
 }) => {
   const { case: detail, inboxes, reports } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
@@ -128,12 +130,12 @@ export const CaseDetails = ({
       <div className="flex flex-col justify-start gap-1.5">
         <div className="text-r text-grey-00 flex items-center justify-between px-1 font-medium">
           <span>Alerts</span>
-          <Button variant="secondary" size="small">
+          <Button variant="secondary" size="small" onClick={() => setDrawerContentMode('snooze')}>
             <Icon icon="snooze" className="size-4" />
             <span className="text-xs">Snooze rules</span>
           </Button>
         </div>
-        <CaseAlerts selectDecision={selectDecision} />
+        <CaseAlerts selectDecision={selectDecision} setDrawerContentMode={setDrawerContentMode} />
       </div>
     </main>
   );

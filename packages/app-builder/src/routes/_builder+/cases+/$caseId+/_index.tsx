@@ -4,9 +4,10 @@ import {
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
-import { DecisionPanel } from '@app-builder/components/CaseManager/DecisionPanel';
+import { DecisionPanel } from '@app-builder/components/CaseManager/DecisionPanel/DecisionPanel';
 import { CaseManagerDrawer } from '@app-builder/components/CaseManager/Drawer/Drawer';
 import { PivotsPanel } from '@app-builder/components/CaseManager/PivotsPanel/PivotsPanel';
+import { SnoozePanel } from '@app-builder/components/CaseManager/SnoozePanel/SnoozePanel';
 import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
@@ -29,10 +30,13 @@ import {
   useRouteError,
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
+import { Future, Result } from '@swan-io/boxed';
 import { type Namespace } from 'i18next';
 import { pick } from 'radash';
+import { unique } from 'radash';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { filter, flat, groupBy, map, mapValues, omit, pipe } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -105,6 +109,55 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     })),
   );
 
+  const rulesByPivotPromise = Future.allFromDict(
+    pipe(
+      filter(currentCase.decisions, (d) => d.pivotValues.length > 0),
+      groupBy((d) => d.pivotValues[0]!.value!),
+      mapValues((decisions) => {
+        return Future.allFromDict({
+          scenarioRules: Future.all(
+            pipe(
+              unique(map(decisions, (d) => d.scenario.scenarioIterationId)),
+              map((id) =>
+                Future.fromPromise(
+                  scenario
+                    .getScenarioIteration({ iterationId: id })
+                    .then((iteration) => iteration.rules),
+                ),
+              ),
+            ),
+          )
+            .map(Result.all)
+            .mapOk(flat()),
+          details: Future.all(
+            map(decisions, (d) => Future.fromPromise(decision.getDecisionById(d.id))),
+          )
+            .map(Result.all)
+            .mapOk((details) => unique(flat(details), (d) => d.id)),
+        })
+          .map(Result.allFromDict)
+          .mapOk(({ scenarioRules, details }) => {
+            const result = pipe(
+              map(details, (d) =>
+                d.rules
+                  .filter((r) => r.outcome === 'hit')
+                  .map((r) => ({
+                    ...omit(r, ['outcome', 'evaluation']),
+                    decisionId: d.id,
+                    ruleGroup: scenarioRules.find((sr) => sr.id === r.ruleId)?.ruleGroup,
+                    outcome: d.outcome,
+                  })),
+              ),
+            ).flat();
+
+            return result;
+          });
+      }),
+    ),
+  )
+    .map(Result.allFromDict)
+    .resultToPromise();
+
   if (!currentCase) {
     return redirect(getRoute('/cases/inboxes'));
   }
@@ -127,6 +180,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     pivots,
     customLists,
     decisionsPromise,
+    rulesByPivotPromise,
   });
 };
 
@@ -176,20 +230,17 @@ export default function CaseManagerIndexPage() {
     currentUser,
     nextCaseId,
   } = useLoaderData<typeof loader>();
+  const navigate = useNavigate();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
-  const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision'>('pivot');
   const [selectedDecision, selectDecision] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
+  const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision' | 'snooze'>(
+    'pivot',
+  );
 
   useEffect(() => {
     leftSidebarSharp.actions.setExpanded(false);
   }, [leftSidebarSharp]);
-
-  useEffect(() => {
-    if (selectedDecision) setDrawerContentMode('decision');
-    else setDrawerContentMode('pivot');
-  }, [selectedDecision]);
 
   return (
     <Page.Main>
@@ -216,6 +267,7 @@ export default function CaseManagerIndexPage() {
           containerRef={containerRef}
           currentUser={currentUser}
           selectDecision={selectDecision}
+          setDrawerContentMode={setDrawerContentMode}
         />
         <DataModelExplorerProvider>
           <CaseManagerDrawer>
@@ -234,9 +286,13 @@ export default function CaseManagerIndexPage() {
               })
               .with('decision', () =>
                 !selectedDecision ? null : (
-                  <DecisionPanel decisionId={selectedDecision} selectDecision={selectDecision} />
+                  <DecisionPanel
+                    decisionId={selectedDecision}
+                    setDrawerContentMode={setDrawerContentMode}
+                  />
                 ),
               )
+              .with('snooze', () => <SnoozePanel setDrawerContentMode={setDrawerContentMode} />)
               .exhaustive()}
           </CaseManagerDrawer>
         </DataModelExplorerProvider>
