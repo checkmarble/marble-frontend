@@ -15,7 +15,7 @@ import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { defer, type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
+import { type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
 import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
@@ -54,7 +54,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       cases.getCase({ caseId }),
       cases.getNextUnassignedCaseId({ caseId }),
       cases.listSuspiciousActivityReports({ caseId }),
-      inbox.listInboxes(),
+      inbox.listInboxes().then((inboxes) => {
+        console.log(inboxes);
+        return inboxes;
+      }),
       cases.listPivotObjects({ caseId }),
       dataModelRepository.getDataModel(),
       dataModelRepository.listPivots({}),
@@ -96,7 +99,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     return redirect(getRoute('/cases/inboxes'));
   }
 
-  return defer({
+  return {
     case: currentCase,
     pivotObjects,
     dataModel,
@@ -108,7 +111,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     pivots,
     customLists,
     decisionsPromise,
-  });
+  };
 };
 
 export const handle = {

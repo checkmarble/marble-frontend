@@ -154,5 +154,8 @@
   "unsnooze.title": "Unsnooze",
   "include_snoozed": "Include snoozed",
   "case.assignedTo": "Assigned",
-  "case_detail.assign-to-me-button.label": "Assign to me"
+  "case_detail.assign-to-me-button.label": "Assign to me",
+  "case.escalate-button.hint": "Escalate the case to {{inboxName}}.",
+  "case.escalate-button.forbidden.hint": "There is no escalation inbox set. Please contact your administrator.",
+  "case.escalate-button.forbidden.hint.admin": "There is no escalation inbox set."
 }
