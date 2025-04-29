@@ -59,6 +59,11 @@ export async function parseParamsSafe<Output, Def extends ZodTypeDef = ZodTypeDe
   return result;
 }
 
+/**
+ * Parse and validate UUID/sUUID param from LoaderFunctionArgs or ActionFunctionArgs.
+ *
+ * Returns the parsed UUID. Doesn't throw if validation fails.
+ */
 export async function parseIdParamSafe<KeyName extends string>(
   params: Params,
   keyName: KeyName,
