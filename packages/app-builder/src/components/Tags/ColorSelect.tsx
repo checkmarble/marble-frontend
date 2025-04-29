@@ -16,7 +16,7 @@ export const ColorSelect = ({
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <Button variant="secondary" className="h-full gap-4">
+        <Button variant="secondary" className="h-10 gap-4">
           <ColorPreview color={value} />
           <MenuCommand.Arrow />
         </Button>
