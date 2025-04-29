@@ -154,5 +154,6 @@
   "case_detail.history.event_type.sar_status_changed": "تغيرت حالة SAR",
   "case.escalated": "تصاعدت القضية بنجاح",
   "case.assignedTo": "مُسند إلى",
-  "case_detail.assign-to-me-button.label": "تعيين لي"
+  "case_detail.assign-to-me-button.label": "تعيين لي",
+  "case_detail.add_a_tag.empty": "لا توجد علامة"
 }

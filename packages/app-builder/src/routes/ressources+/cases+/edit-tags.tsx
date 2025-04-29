@@ -115,6 +115,9 @@ export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) =
                     </div>
                   </MenuCommand.Item>
                 ))}
+                <MenuCommand.Empty>
+                  <div className="text-center">{t('cases:case_detail.add_a_tag.empty')}</div>
+                </MenuCommand.Empty>
               </MenuCommand.List>
             </MenuCommand.Content>
           </MenuCommand.Menu>
