@@ -11,6 +11,7 @@ import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
 import { initServerServices } from '@app-builder/services/init.server';
+import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -43,7 +44,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const parsedResult = await parseIdParamSafe(params, 'caseId');
   if (!parsedResult.success) {
-    throw new Response(null, { status: 404, statusText: 'Case not found' });
+    return badRequest('Invalid UUID');
   }
   const { caseId } = parsedResult.data;
 
