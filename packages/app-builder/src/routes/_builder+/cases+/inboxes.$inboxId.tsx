@@ -17,9 +17,10 @@ import { type Case, type CaseStatus } from '@app-builder/models/cases';
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
 import { initServerServices } from '@app-builder/services/init.server';
-import { parseQuerySafe } from '@app-builder/utils/input-validation';
+import { badRequest } from '@app-builder/utils/http/http-responses';
+import { parseIdParamSafe, parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
@@ -66,7 +67,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const inboxId = fromParams(params, 'inboxId');
+  const parsedResult = await parseIdParamSafe(params, 'inboxId');
+  if (!parsedResult.success) {
+    return badRequest('Invalid inbox UUID');
+  }
+  const { inboxId } = parsedResult.data;
 
   const parsedQuery = await parseQuerySafe(request, casesFiltersSchema);
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
@@ -85,6 +90,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const caseList = await cases.listCases(filtersForBackend);
 
     return {
+      inboxId,
       casesData: caseList,
       filters: parsedQuery.data,
       pagination: parsedPaginationQuery.data,
@@ -161,11 +167,11 @@ const ToggleSnoozed = ({
 export default function Cases() {
   const { t } = useTranslation(casesI18n);
   const {
+    inboxId,
     casesData: initialCasesData,
     filters,
     pagination: initialPagination,
   } = useLoaderData<typeof loader>();
-  const inboxId = useParam('inboxId');
 
   const { data, next, previous, reset } = useCursorPaginatedFetcher<
     typeof loader,

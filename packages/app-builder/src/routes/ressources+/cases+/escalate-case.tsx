@@ -3,6 +3,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { initServerServices } from '@app-builder/services/init.server';
 import { handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
@@ -41,11 +42,14 @@ export async function action({ request }: ActionFunctionArgs) {
       messageKey: t('cases:case.escalated'),
     });
 
-    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: data.inboxId }), {
-      headers: {
-        'Set-Cookie': await commitSession(session),
+    return redirect(
+      getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUIDtoSUUID(data.inboxId) }),
+      {
+        headers: {
+          'Set-Cookie': await commitSession(session),
+        },
       },
-    });
+    );
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
