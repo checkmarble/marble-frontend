@@ -34,7 +34,7 @@ import { Icon } from 'ui-icons';
 
 type DecisionPanelProps = {
   decisionId: string;
-  selectDecision: (id: string | null) => void;
+  setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
 };
 
 type Detail = Pick<Decision, 'pivotValues' | 'scenario' | 'triggerObject' | 'triggerObjectType'> & {
@@ -250,13 +250,9 @@ const CollapsedDetail = ({
   );
 };
 
-export function DecisionPanel({ selectDecision, decisionId }: DecisionPanelProps) {
-  const {
-    decisionsPromise,
-    pivots,
-    dataModelWithTableOptions: dataModel,
-    customLists,
-  } = useLoaderData<typeof loader>();
+export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPanelProps) {
+  const { pivots, dataModelWithTableOptions, customLists, decisionsPromise } =
+    useLoaderData<typeof loader>();
   const { isExpanded, setExpanded } = DrawerContext.useValue();
 
   return (
@@ -267,7 +263,7 @@ export function DecisionPanel({ selectDecision, decisionId }: DecisionPanelProps
           size="small"
           onClick={() => {
             setExpanded(false);
-            selectDecision(null);
+            setDrawerContentMode('pivot');
           }}
         >
           <Icon icon="left-panel-close" className="size-4" />
@@ -321,13 +317,13 @@ export function DecisionPanel({ selectDecision, decisionId }: DecisionPanelProps
                 {isExpanded ? (
                   <ExpandedDetail
                     detail={{ ...decision, pivots }}
-                    dataModel={dataModel}
+                    dataModel={dataModelWithTableOptions}
                     customLists={customLists}
                   />
                 ) : (
                   <CollapsedDetail
                     detail={{ ...decision, pivots }}
-                    dataModel={dataModel}
+                    dataModel={dataModelWithTableOptions}
                     customLists={customLists}
                   />
                 )}

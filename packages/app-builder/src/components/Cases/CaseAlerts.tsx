@@ -10,7 +10,13 @@ import { Button, cn } from 'ui-design-system';
 import { FormatData } from '../FormatData';
 import { RequiredActions } from './RequiredActions';
 
-export const CaseAlerts = ({ selectDecision }: { selectDecision: (id: string) => void }) => {
+export const CaseAlerts = ({
+  selectDecision,
+  setDrawerContentMode,
+}: {
+  selectDecision: (id: string) => void;
+  setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
+}) => {
   const { decisionsPromise } = useLoaderData<typeof loader>();
   const language = useFormatLanguage();
 
@@ -25,16 +31,10 @@ export const CaseAlerts = ({ selectDecision }: { selectDecision: (id: string) =>
               <span className="p-2">Trigger object</span>
               <span className="p-2">Rules hit</span>
             </div>
-            {decisions.map((decision, index) => (
+            {decisions.map((decision) => (
               <div
                 key={decision.id}
-                className={cn(
-                  'border-grey-90 hover:bg-grey-98 group grid min-h-24 grid-cols-[82px_1fr_250px_175px] border-y transition-colors',
-                  {
-                    'border-b-0': index === decisions.length - 1,
-                    'border-t-0': index !== 0,
-                  },
-                )}
+                className="border-grey-90 hover:bg-grey-98 group grid min-h-24 grid-cols-[82px_1fr_250px_175px] border-t transition-colors"
               >
                 <div className="flex min-h-full flex-col items-center p-2">
                   <span className="text-grey-50 text-xs font-normal">
@@ -75,7 +75,10 @@ export const CaseAlerts = ({ selectDecision }: { selectDecision: (id: string) =>
                       variant="secondary"
                       size="xs"
                       className="hidden group-hover:flex"
-                      onClick={() => selectDecision(decision.id)}
+                      onClick={() => {
+                        selectDecision(decision.id);
+                        setDrawerContentMode('decision');
+                      }}
                     >
                       Open
                     </Button>
