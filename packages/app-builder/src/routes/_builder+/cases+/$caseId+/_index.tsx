@@ -11,8 +11,9 @@ import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
 import { initServerServices } from '@app-builder/services/init.server';
+import { parseIdParamSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
 import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -40,7 +41,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const caseId = fromParams(params, 'caseId');
+  const parsedResult = await parseIdParamSafe(params, 'caseId');
+  if (!parsedResult.success) {
+    throw new Response(null, { status: 404, statusText: 'Case not found' });
+  }
+  const { caseId } = parsedResult.data;
 
   // Get case by ID
   const [currentCase, nextCaseId, reports, inboxes, pivotObjects, dataModel, pivots, customLists] =
