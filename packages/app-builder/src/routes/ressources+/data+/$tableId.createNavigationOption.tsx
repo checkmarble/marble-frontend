@@ -154,11 +154,13 @@ export function CreateNavigationOptionModal({
         >
           <span>{t('data:create_navigation_option.labels.from')}</span>
           <div>
-            <MenuCommand.SelectButton disabled>{link.parentTableName}</MenuCommand.SelectButton>
+            <MenuCommand.SelectButton disabled noArrow>
+              {link.parentTableName}
+            </MenuCommand.SelectButton>
           </div>
           <span>{t('data:create_navigation_option.labels.to')}</span>
           <div>
-            <MenuCommand.SelectButton disabled className="inline-flex">
+            <MenuCommand.SelectButton disabled noArrow>
               {link.childTableName}
             </MenuCommand.SelectButton>
           </div>
@@ -213,9 +215,7 @@ export function CreateNavigationOptionModal({
             </form.Field>
           </div>
           <div className="col-span-full mt-4">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum distinctio exercitationem
-            obcaecati debitis quibusdam in earum adipisci illum laudantium, accusantium velit quos
-            modi suscipit. Eum eligendi tenetur magni magnam vel.
+            {t('data:create_navigation_option.explanation_text')}
           </div>
         </form>
         <Modal.Footer>

@@ -71,5 +71,6 @@
   "create_navigation_option.labels.ordered_by": "أمر من قبل",
   "create_navigation_option.labels.to": "ل",
   "create_navigation_option.placeholders.ordered_by": "اختار حقل",
-  "create_navigation_option.title": "إنشاء خيار التنقل"
+  "create_navigation_option.title": "إنشاء خيار التنقل",
+  "create_navigation_option.explanation_text": "حدد الحقل المستخدم لفرز البيانات بشكل افتراضي. \nيمكن أن يكون حسب التاريخ ، الاسم ... للكائنات التي تحتوي على الكثير من البيانات ، مثل المعاملات ، نوصي باستخدام تاريخ حدث الحدث."
 }

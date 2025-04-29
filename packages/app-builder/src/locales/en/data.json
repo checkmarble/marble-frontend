@@ -71,5 +71,6 @@
   "create_navigation_option.labels.from": "From",
   "create_navigation_option.labels.to": "To",
   "create_navigation_option.labels.ordered_by": "Ordered by",
-  "create_navigation_option.placeholders.ordered_by": "Chose a field"
+  "create_navigation_option.placeholders.ordered_by": "Chose a field",
+  "create_navigation_option.explanation_text": "Select the field used for sorting the data by default. It can be by date, name... For objects containing a lot of data, like transactions, we recommend using the date the event happened."
 }
