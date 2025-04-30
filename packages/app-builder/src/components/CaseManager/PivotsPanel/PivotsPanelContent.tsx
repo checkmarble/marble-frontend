@@ -1,6 +1,12 @@
 import { CaseStatusTag } from '@app-builder/components/Cases';
 import { ClientObjectDataList } from '@app-builder/components/DataModelExplorer/ClientObjectDataList';
-import { type ClientObjectDetail, type CurrentUser, type DataModel } from '@app-builder/models';
+import {
+  type ClientObjectDetail,
+  type CurrentUser,
+  type DataModelWithTableOptions,
+  type TableModel,
+  type TableModelWithOptions,
+} from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
 import { getRoute } from '@app-builder/utils/routes';
@@ -24,7 +30,7 @@ export function PivotsPanelContent({
   currentUser: CurrentUser;
   case: CaseDetail;
   pivotObjects: PivotObject[];
-  dataModel: DataModel;
+  dataModel: DataModelWithTableOptions;
   onExplore: () => void;
 }) {
   const { t } = useTranslation(['cases']);
@@ -53,15 +59,21 @@ export function PivotsPanelContent({
           ))}
         </div>
       ) : null}
-      <PivotObjectDetails pivotObjectData={currentPivotObject.pivotObjectData} />
       {currentTable ? (
-        <PivotNavigationOptions
-          currentUser={currentUser}
-          pivotObject={currentPivotObject}
-          table={currentTable}
-          dataModel={dataModel}
-          onExplore={onExplore}
-        />
+        <>
+          <PivotObjectDetails
+            tableModel={currentTable}
+            dataModel={dataModel}
+            pivotObjectData={currentPivotObject.pivotObjectData}
+          />
+          <PivotNavigationOptions
+            currentUser={currentUser}
+            pivotObject={currentPivotObject}
+            table={currentTable}
+            dataModel={dataModel}
+            onExplore={onExplore}
+          />
+        </>
       ) : null}
       <RelatedCases pivotValue={currentPivotObject.pivotValue} currentCase={caseObj} />
     </div>
@@ -147,31 +159,54 @@ function RelatedCases({
     });
 }
 
+function getTableFromLinkName<T extends TableModel>(
+  dataModel: T[],
+  tableModel: T,
+  linkName?: string,
+) {
+  if (!linkName) return null;
+  const linkToSingle = tableModel.linksToSingle.find((lts) => lts.name === linkName);
+
+  return dataModel.find((tm) => tm.id === linkToSingle?.childTableId) ?? null;
+}
+
 type PivotObjectDetailsProps = {
+  tableModel: TableModelWithOptions;
+  dataModel: DataModelWithTableOptions;
   pivotObjectData: ClientObjectDetail;
 };
-function PivotObjectDetails({ pivotObjectData }: PivotObjectDetailsProps) {
+function PivotObjectDetails({ tableModel, dataModel, pivotObjectData }: PivotObjectDetailsProps) {
   const { t } = useTranslation(['common', 'cases']);
   const { data, relatedObjects } = pivotObjectData;
 
   return (
     <DataCard title={t('cases:case_detail.pivot_panel.informations')}>
       <div className="mt-3 flex flex-col gap-8">
-        <ClientObjectDataList data={data} />
+        <ClientObjectDataList tableModel={tableModel} data={data} />
         {relatedObjects ? (
           <div className="">
-            {relatedObjects.map((relatedObject) =>
-              relatedObject.linkName && relatedObject.relatedObjectDetail ? (
+            {relatedObjects.map((relatedObject) => {
+              const relatedObjectTable = getTableFromLinkName(
+                dataModel,
+                tableModel,
+                relatedObject.linkName,
+              );
+              if (!relatedObjectTable) return null;
+
+              return relatedObject.linkName && relatedObject.relatedObjectDetail ? (
                 <Fragment key={relatedObject.linkName}>
                   <h4 className="border-grey-90 border-b text-right text-xs font-semibold">
                     {t('cases:case_detail.pivot_panel.related_object', {
                       vallinkName: relatedObject.linkName,
                     })}
                   </h4>
-                  <ClientObjectDataList data={relatedObject.relatedObjectDetail.data} />
+                  <ClientObjectDataList
+                    tableModel={relatedObjectTable}
+                    data={relatedObject.relatedObjectDetail.data}
+                  />
                 </Fragment>
-              ) : null,
-            )}
+              ) : null;
+            })}
           </div>
         ) : null}
       </div>

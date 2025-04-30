@@ -120,5 +120,7 @@
   "scenario_sanction_threshold_placeholder": "80",
   "inboxes.escalation_inbox": "صندوق الوارد",
   "inboxes.inbox_details.escalation_inbox": "صندوق الوارد",
-  "inboxes.inbox_details.no_escalation_inbox": "لا أحد"
+  "inboxes.inbox_details.no_escalation_inbox": "لا أحد",
+  "data_display": "عرض البيانات",
+  "data_display.global_explanation": "اسحب الحقول وإسقاطها لتعيين ترتيب العرض ، واستخدم Toggle لإخفاء تلك التي لا تحتاجها افتراضيًا في مدير الحالة."
 }

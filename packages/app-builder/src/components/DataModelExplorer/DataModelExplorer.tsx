@@ -1,4 +1,4 @@
-import { type DataModel } from '@app-builder/models';
+import { type DataModelWithTableOptions } from '@app-builder/models';
 import { useCallback, useState } from 'react';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -8,7 +8,7 @@ import { DataModelExplorerContext, type DataModelExplorerState } from './Provide
 import { type DataModelExplorerNavigationTab } from './types';
 
 export type DataModelExplorerProps = {
-  dataModel: DataModel;
+  dataModel: DataModelWithTableOptions;
 };
 
 export function DataModelExplorer(props: DataModelExplorerProps) {

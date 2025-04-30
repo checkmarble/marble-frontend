@@ -7,6 +7,7 @@ import {
   NewStringConcatAstNode,
   type StringConcatAstNode,
 } from '@app-builder/models/astNode/strings';
+import { reorder } from '@app-builder/utils/list';
 import { DragDropContext, Draggable, Droppable, type OnDragEndResponder } from '@hello-pangea/dnd';
 import { nanoid } from 'nanoid';
 import { replace } from 'radash';
@@ -16,13 +17,6 @@ import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { MatchOperand } from './MatchOperand';
-
-function reorder<TItem>(list: TItem[], startIndex: number, endIndex: number): TItem[] {
-  const result = [...list];
-  const [removed] = result.splice(startIndex, 1);
-  if (removed) result.splice(endIndex, 0, removed);
-  return result;
-}
 
 export function FieldNodeConcat({
   value,
