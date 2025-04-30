@@ -134,10 +134,15 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
           )
             .map(Result.all)
             .mapOk((details) => unique(flat(details), (d) => d.id)),
+          snoozes: Future.all(
+            map(decisions, (d) => Future.fromPromise(decision.getDecisionActiveSnoozes(d.id))),
+          )
+            .map(Result.all)
+            .mapOk((result) => flat(map(result, (r) => r.ruleSnoozes))),
         })
           .map(Result.allFromDict)
-          .mapOk(({ scenarioRules, details }) => {
-            const result = pipe(
+          .mapOk(({ scenarioRules, details, snoozes }) =>
+            pipe(
               map(details, (d) =>
                 d.rules
                   .filter((r) => r.outcome === 'hit')
@@ -146,12 +151,17 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
                     decisionId: d.id,
                     ruleGroup: scenarioRules.find((sr) => sr.id === r.ruleId)?.ruleGroup,
                     outcome: d.outcome,
+                    start: snoozes.find(
+                      (s) => s.ruleId === r.ruleId && s.createdFromDecisionId === d.id,
+                    )?.startsAt as string,
+                    end: snoozes.find(
+                      (s) => s.ruleId === r.ruleId && s.createdFromDecisionId === d.id,
+                    )?.endsAt as string,
                   })),
               ),
-            ).flat();
-
-            return result;
-          });
+              flat(),
+            ),
+          );
       }),
     ),
   )
