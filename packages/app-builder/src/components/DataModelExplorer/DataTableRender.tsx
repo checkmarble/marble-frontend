@@ -147,17 +147,7 @@ function DataTablePagination({ pagination, onNext }: DataTablePaginationProps) {
 }
 
 function getColumnList(tableModel: TableModelWithOptions) {
-  if (tableModel.options.displayedFields) {
-    const fields = R.pipe(
-      tableModel.options.displayedFields,
-      R.map((fieldId) => tableModel.fields.find((f) => f.id === fieldId)?.name),
-      R.filter((name): name is string => !!name),
-    );
-
-    return fields;
-  }
-
-  return tableModel.fields.map((f) => f.name);
+  return tableModel.fields.filter((f) => f.displayed).map((f) => f.name);
 }
 
 type DataTableProps = {
@@ -177,6 +167,13 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
     return getColumnList(table);
   });
   const tableData = useMemo(() => list.map((d) => d.data), [list]);
+  const fieldOrder = useMemo(() => {
+    return R.pipe(
+      table.options.fieldOrder,
+      R.map((fieldId) => table.fields.find((f) => f.id === fieldId)?.name),
+      R.filter((fieldName): fieldName is string => !!fieldName),
+    );
+  }, [table]);
 
   useEffect(() => {
     setColumnList(getColumnList(table));
@@ -204,7 +201,7 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
 
   const reactTable = useReactTable({
     state: {
-      columnOrder: table.options.fieldOrder,
+      columnOrder: fieldOrder,
     },
     data: tableData,
     columns,

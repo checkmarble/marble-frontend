@@ -3,6 +3,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import {
   type DataModel,
   type DataModelWithTableOptions,
+  mergeDataModelWithTableOptions,
   type SetDataModelTableOptionsBody,
   type TableModel,
   type TableModelWithOptions,
@@ -53,7 +54,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const dataModelWithTableOptions = (await Promise.all(
     dataModel.map<Promise<TableModelWithOptions>>((table) =>
       dataModelRepository.getDataModelTableOptions(table.id).then((options) => {
-        return { ...table, options };
+        return mergeDataModelWithTableOptions(table, options);
       }),
     ),
   )) satisfies DataModelWithTableOptions;
@@ -126,13 +127,11 @@ export default function DataDisplaySettings() {
             table.id,
             {
               ...table.options,
-              displayedFields:
-                table.options.displayedFields ??
-                R.pipe(
-                  table.fields,
-                  R.map((f) => f.id),
-                  R.filter((f) => f !== 'object_id'),
-                ),
+              displayedFields: R.pipe(
+                table.fields,
+                R.filter((f) => f.displayed && f.name !== 'object_id'),
+                R.map((f) => f.id),
+              ),
             },
           ] as const,
       ),

@@ -4,7 +4,6 @@ import {
   type ClientObjectDetail,
   type CurrentUser,
   type DataModelWithTableOptions,
-  type TableModel,
   type TableModelWithOptions,
 } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
@@ -159,17 +158,6 @@ function RelatedCases({
     });
 }
 
-function getTableFromLinkName<T extends TableModel>(
-  dataModel: T[],
-  tableModel: T,
-  linkName?: string,
-) {
-  if (!linkName) return null;
-  const linkToSingle = tableModel.linksToSingle.find((lts) => lts.name === linkName);
-
-  return dataModel.find((tm) => tm.id === linkToSingle?.childTableId) ?? null;
-}
-
 type PivotObjectDetailsProps = {
   tableModel: TableModelWithOptions;
   dataModel: DataModelWithTableOptions;
@@ -186,18 +174,17 @@ function PivotObjectDetails({ tableModel, dataModel, pivotObjectData }: PivotObj
         {relatedObjects ? (
           <div className="">
             {relatedObjects.map((relatedObject) => {
-              const relatedObjectTable = getTableFromLinkName(
-                dataModel,
-                tableModel,
-                relatedObject.linkName,
-              );
+              if (!relatedObject.relatedObjectDetail?.metadata) return null;
+
+              const relatedObjectType = relatedObject.relatedObjectDetail.metadata.objectType;
+              const relatedObjectTable = dataModel.find((tm) => tm.name === relatedObjectType);
               if (!relatedObjectTable) return null;
 
-              return relatedObject.linkName && relatedObject.relatedObjectDetail ? (
-                <Fragment key={relatedObject.linkName}>
-                  <h4 className="border-grey-90 border-b text-right text-xs font-semibold">
+              return (
+                <Fragment key={relatedObjectType}>
+                  <h4 className="border-grey-90 mb-3 border-b text-right text-xs font-semibold">
                     {t('cases:case_detail.pivot_panel.related_object', {
-                      vallinkName: relatedObject.linkName,
+                      tableName: relatedObject.linkName ?? relatedObjectType,
                     })}
                   </h4>
                   <ClientObjectDataList
@@ -205,7 +192,7 @@ function PivotObjectDetails({ tableModel, dataModel, pivotObjectData }: PivotObj
                     data={relatedObject.relatedObjectDetail.data}
                   />
                 </Fragment>
-              ) : null;
+              );
             })}
           </div>
         ) : null}
