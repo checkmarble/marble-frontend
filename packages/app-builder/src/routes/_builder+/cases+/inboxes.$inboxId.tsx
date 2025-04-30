@@ -268,12 +268,14 @@ export default function Cases() {
                   <CasesFiltersMenu filterNames={casesFilterNames}>
                     <FiltersButton />
                   </CasesFiltersMenu>
-                  <CaseRightPanel.Trigger asChild data={{ inboxId }}>
-                    <Button>
-                      <Icon icon="plus" className="size-5" />
-                      {t('cases:case.new_case')}
-                    </Button>
-                  </CaseRightPanel.Trigger>
+                  {inboxId ? (
+                    <CaseRightPanel.Trigger asChild data={{ inboxId }}>
+                      <Button>
+                        <Icon icon="plus" className="size-5" />
+                        {t('cases:case.new_case')}
+                      </Button>
+                    </CaseRightPanel.Trigger>
+                  ) : null}
                 </div>
               </div>
               <CasesFiltersBar />
