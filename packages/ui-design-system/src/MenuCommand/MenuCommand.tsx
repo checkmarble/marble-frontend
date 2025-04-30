@@ -393,4 +393,5 @@ export const MenuCommand = {
   SelectButton,
   Separator,
   State: MenuCommandSharpFactory,
+  Empty: Command.Empty,
 };

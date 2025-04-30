@@ -154,5 +154,6 @@
   "case_detail.history.event_type.sar_status_changed": "SAR mis à jour",
   "case.escalated": "Case a réussi à intensifier",
   "case.assignedTo": "Assigné",
-  "case_detail.assign-to-me-button.label": "M'assigner"
+  "case_detail.assign-to-me-button.label": "M'assigner",
+  "case_detail.add_a_tag.empty": "Aucun label trouvé"
 }
