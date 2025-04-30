@@ -1,9 +1,10 @@
 import { knownOutcomes, type Outcome } from '@app-builder/models/outcome';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
-import { useMemo } from 'react';
+import { type ComponentProps, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, type TagProps } from 'ui-design-system';
+import { match } from 'ts-pattern';
+import { cn, Tag, type TagProps } from 'ui-design-system';
 
 import { decisionsI18n } from './decisions-i18n';
 
@@ -83,6 +84,35 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
       >
         {t(tKey)}
       </div>
+    </div>
+  );
+}
+
+export function OutcomeBadge({
+  outcome,
+  className,
+  ...rest
+}: ComponentProps<'div'> & { outcome: Outcome }) {
+  return (
+    <div {...rest} className={cn('flex items-center gap-1', className)}>
+      <div
+        className={cn('size-4 rounded-full', {
+          'bg-green-38': outcome === 'approve',
+          'bg-red-47': outcome === 'decline',
+          'border-red-47 border-2': outcome === 'review',
+          'border-2 border-yellow-50': outcome === 'block_and_review',
+          'bg-grey-50': outcome === 'unknown',
+        })}
+      />
+      <span className="text-xs font-medium">
+        {match(outcome)
+          .with('approve', () => 'Manually approved')
+          .with('decline', () => 'Manually declined')
+          .with('block_and_review', () => 'Blocked and review')
+          .with('review', () => 'Review')
+          .with('unknown', () => 'Unknown')
+          .exhaustive()}
+      </span>
     </div>
   );
 }
