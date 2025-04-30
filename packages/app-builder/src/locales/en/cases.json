@@ -158,5 +158,6 @@
   "case.escalate-button.hint": "Escalate the case to {{inboxName}}.",
   "case.escalate-button.forbidden.hint": "There is no escalation inbox set. Please contact your administrator.",
   "case.escalate-button.forbidden.hint.admin": "There is no escalation inbox set.",
-  "case_detail.add_a_tag.empty": "There's no tag"
+  "case_detail.add_a_tag.empty": "There's no tag",
+  "inbox.assigned_to_me": "All my cases"
 }
