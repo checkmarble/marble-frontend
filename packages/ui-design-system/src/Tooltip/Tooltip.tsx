@@ -25,7 +25,7 @@ export function DefaultTooltip({
     <TooltipPrimitive.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
       <TooltipPrimitive.Portal>
-        <TooltipPrimitive.Content side="top" align="center" className="drop-shadow" {...props}>
+        <TooltipPrimitive.Content side="top" align="center" className="z-50 drop-shadow" {...props}>
           <div className={cn('bg-grey-100 max-h-40 overflow-y-auto rounded p-2', className)}>
             {content}
           </div>

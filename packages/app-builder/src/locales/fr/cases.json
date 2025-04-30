@@ -155,5 +155,8 @@
   "case.escalated": "Case a réussi à intensifier",
   "case.assignedTo": "Assigné",
   "case_detail.assign-to-me-button.label": "M'assigner",
+  "case.escalate-button.hint": "Escalader le cas vers {{inboxName}}.",
+  "case.escalate-button.forbidden.hint": "Aucune boîte de réception d’escalade n’est définie. Veuillez contacter votre administrateur.",
+  "case.escalate-button.forbidden.hint.admin": "Aucune boîte de réception d’escalade n’est définie.",
   "case_detail.add_a_tag.empty": "Aucun label trouvé"
 }
