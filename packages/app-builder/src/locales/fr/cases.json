@@ -134,7 +134,7 @@
   "case_detail.pivot_panel.informations": "Informations",
   "case_detail.pivot_panel.less_data": "Voir moins",
   "case_detail.pivot_panel.more_data": "Voir plus",
-  "case_detail.pivot_panel.related_object": "Objet associé - {{linkName}}",
+  "case_detail.pivot_panel.related_object": "Objet associé - {{tableName}}",
   "case_detail.pivot_panel.title": "Client",
   "data_explorer.columns": "Colonnes",
   "data_explorer.no_table_data": "Aucune donnée pour la table {{tableName}}",

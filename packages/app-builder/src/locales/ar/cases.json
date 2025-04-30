@@ -134,7 +134,7 @@
   "case_detail.pivot_panel.informations": "المعلومات",
   "case_detail.pivot_panel.less_data": "عرض أقل",
   "case_detail.pivot_panel.more_data": "عرض المزيد",
-  "case_detail.pivot_panel.related_object": "كائن ذي صلة - {{linkName}}",
+  "case_detail.pivot_panel.related_object": "كائن ذي صلة - {{tableName}}",
   "case_detail.pivot_panel.title": "عميل",
   "data_explorer.columns": "الأعمدة",
   "case_detail.pivot_panel.breadcrumb_client": "العميل {{clientName}}",

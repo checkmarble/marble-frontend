@@ -124,7 +124,7 @@
   "case_detail.review_decision": "Review",
   "case_detail.pivot_panel.title": "Client",
   "case_detail.pivot_panel.informations": "Informations",
-  "case_detail.pivot_panel.related_object": "Related object - {{linkName}}",
+  "case_detail.pivot_panel.related_object": "Related object - {{tableName}}",
   "case_detail.pivot_panel.less_data": "View less",
   "case_detail.pivot_panel.more_data": "View more",
   "case_detail.pivot_panel.explore": "Explore data",

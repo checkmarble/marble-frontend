@@ -10,7 +10,11 @@ import { PivotsPanel } from '@app-builder/components/CaseManager/PivotsPanel/Piv
 import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
-import { type DataModelWithTableOptions, type TableModelWithOptions } from '@app-builder/models';
+import {
+  type DataModelWithTableOptions,
+  mergeDataModelWithTableOptions,
+  type TableModelWithOptions,
+} from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
@@ -71,7 +75,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const dataModelWithTableOptions = (await Promise.all(
     dataModel.map<Promise<TableModelWithOptions>>((table) =>
       dataModelRepository.getDataModelTableOptions(table.id).then((options) => {
-        return { ...table, options };
+        return mergeDataModelWithTableOptions(table, options);
       }),
     ),
   )) satisfies DataModelWithTableOptions;

@@ -19,6 +19,7 @@ export function ClientObjectDataList({ tableModel, data }: ClientObjectDataListP
   const language = useFormatLanguage();
   const parsedData = R.pipe(data, R.mapValues(parseUnknownData));
   const [isExpanded, setIsExpanded] = useState(false);
+  const shouldShowButton = tableModel.fields.some((f) => !f.displayed);
 
   return (
     <div className="grid grid-cols-[160px,_1fr] gap-x-3 gap-y-2">
@@ -27,11 +28,8 @@ export function ClientObjectDataList({ tableModel, data }: ClientObjectDataListP
         if (!field) return null;
 
         const data = parsedData[field.name];
-        const isDisplayed =
-          !tableModel.options.displayedFields ||
-          tableModel.options.displayedFields.includes(fieldId);
 
-        return data && (isDisplayed || isExpanded) ? (
+        return data && (field.displayed || isExpanded) ? (
           <Fragment key={field.id}>
             <div className="text-grey-50 truncate">{field.name}</div>
             <div className="truncate">
@@ -41,15 +39,17 @@ export function ClientObjectDataList({ tableModel, data }: ClientObjectDataListP
         ) : null;
       })}
 
-      <Button
-        size="small"
-        variant="secondary"
-        className="mt-3"
-        onClick={() => setIsExpanded((e) => !e)}
-      >
-        {t(`cases:case_detail.pivot_panel.${isExpanded ? 'less_data' : 'more_data'}`)}
-        <Icon icon={isExpanded ? 'minus' : 'plus'} className="size-4" />
-      </Button>
+      {shouldShowButton ? (
+        <Button
+          size="small"
+          variant="secondary"
+          className="mt-3"
+          onClick={() => setIsExpanded((e) => !e)}
+        >
+          {t(`cases:case_detail.pivot_panel.${isExpanded ? 'less_data' : 'more_data'}`)}
+          <Icon icon={isExpanded ? 'minus' : 'plus'} className="size-4" />
+        </Button>
+      ) : null}
     </div>
   );
 }

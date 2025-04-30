@@ -392,6 +392,7 @@ export type ClientObjectDetail = {
   /** Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested. */
   metadata?: {
     validFrom: string;
+    objectType: string;
   };
   /** The actual data of the object, as described in the client data model. */
   data: {
@@ -408,7 +409,9 @@ export type ClientObjectDetail = {
 
 export function adaptClientObjectDetail(dto: ClientObjectDetailDto): ClientObjectDetail {
   return {
-    metadata: dto.metadata ? { validFrom: dto.metadata.valid_from } : undefined,
+    metadata: dto.metadata
+      ? { validFrom: dto.metadata.valid_from, objectType: dto.metadata.object_type }
+      : undefined,
     data: dto.data,
     relatedObjects: dto.related_objects.map((rel) => ({
       linkName: rel.link_name,
@@ -509,8 +512,36 @@ export function adaptSetDataModelTableOptionBodyDto(
   };
 }
 
-export type TableModelWithOptions = TableModel & {
-  options: DataModelTableOptions;
+export type DataModelFieldWithDisplay = DataModelField & {
+  displayed: boolean;
+};
+
+export type TableModelWithOptions = Omit<TableModel, 'fields'> & {
+  options: {
+    fieldOrder: DataModelTableOptions['fieldOrder'];
+  };
+  fields: DataModelFieldWithDisplay[];
 };
 
 export type DataModelWithTableOptions = TableModelWithOptions[];
+
+export function mergeDataModelWithTableOptions(
+  table: TableModel,
+  options: DataModelTableOptions,
+): TableModelWithOptions {
+  return {
+    ...table,
+    fields: table.fields.map((field) => {
+      return {
+        ...field,
+        displayed:
+          field.name === 'object_id'
+            ? true
+            : options.displayedFields
+              ? options.displayedFields.includes(field.id)
+              : true,
+      };
+    }),
+    options,
+  };
+}
