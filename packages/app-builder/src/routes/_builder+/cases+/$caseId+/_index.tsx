@@ -1,4 +1,4 @@
-import { ErrorComponent, Page } from '@app-builder/components';
+import { casesI18n, ErrorComponent, Page } from '@app-builder/components';
 import {
   BreadCrumbLink,
   type BreadCrumbProps,
@@ -113,7 +113,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     pipe(
       filter(currentCase.decisions, (d) => d.pivotValues.length > 0),
       groupBy((d) => d.pivotValues[0]!.value!),
-      mapValues((decisions) => {
+      mapValues((decisions, pivotValue) => {
         return Future.allFromDict({
           scenarioRules: Future.all(
             pipe(
@@ -148,6 +148,12 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
                   .filter((r) => r.outcome === 'hit')
                   .map((r) => ({
                     ...omit(r, ['outcome', 'evaluation']),
+                    isSnoozed: snoozes.find(
+                      (s) => s.pivotValue === pivotValue && r.ruleId === s.ruleId,
+                    )
+                      ? true
+                      : false,
+                    hitAt: d.createdAt,
                     decisionId: d.id,
                     ruleGroup: scenarioRules.find((sr) => sr.id === r.ruleId)?.ruleGroup,
                     outcome: d.outcome,
@@ -313,7 +319,7 @@ export default function CaseManagerIndexPage() {
 
 export function ErrorBoundary() {
   const navigate = useNavigate();
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(casesI18n);
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);
 

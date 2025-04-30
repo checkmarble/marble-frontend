@@ -4,10 +4,11 @@ import { parseUnknownData } from '@app-builder/utils/parse';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { Suspense } from 'react';
-import { match } from 'ts-pattern';
-import { Button, cn } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 
+import { OutcomeBadge } from '../Decisions';
 import { FormatData } from '../FormatData';
+import { ScoreModifier } from '../Scenario/Rules/ScoreModifier';
 import { RequiredActions } from './RequiredActions';
 
 export const CaseAlerts = ({
@@ -44,32 +45,11 @@ export const CaseAlerts = ({
                 <div className="border-grey-90 flex min-h-full flex-col gap-2 border-x p-2">
                   <div className="flex items-center justify-between">
                     <div className="flex size-full items-center gap-2">
-                      <div className="flex items-center gap-1">
-                        <div
-                          className={cn('size-4 rounded-full', {
-                            'bg-green-38': decision.outcome === 'approve',
-                            'bg-red-47': decision.outcome === 'decline',
-                            'border-red-47 border-2': decision.outcome === 'review',
-                            'border-2 border-yellow-50': decision.outcome === 'block_and_review',
-                            'bg-grey-50': decision.outcome === 'unknown',
-                          })}
-                        />
-                        <span className="text-xs font-medium">
-                          {match(decision.outcome)
-                            .with('approve', () => 'Manually approved')
-                            .with('decline', () => 'Manually declined')
-                            .with('block_and_review', () => 'Blocked and review')
-                            .with('review', () => 'Review')
-                            .with('unknown', () => 'Unknown')
-                            .exhaustive()}
-                        </span>
-                      </div>
+                      <OutcomeBadge outcome={decision.outcome} />
                       <span className="text-ellipsis text-xs font-normal">
                         {decision.scenario.name}
                       </span>
-                      <span className="bg-purple-96 text-purple-65 rounded-full px-2 py-[3px] text-xs font-normal">
-                        +{decision.score}
-                      </span>
+                      <ScoreModifier score={decision.score} />
                     </div>
                     <Button
                       variant="secondary"
@@ -109,7 +89,7 @@ export const CaseAlerts = ({
                         className="border-grey-90 flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-normal"
                       >
                         <span>{r.scoreModifier > 0 ? '+' : '-'}</span>
-                        <span>{r.scoreModifier}</span>
+                        <span>{Math.abs(r.scoreModifier)}</span>
                         <span>{r.name}</span>
                       </span>
                     ))}
