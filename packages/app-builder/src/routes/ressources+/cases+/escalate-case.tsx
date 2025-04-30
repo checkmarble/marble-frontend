@@ -104,10 +104,10 @@ export const EscalateCase = ({ id, inboxId }: { id: string; inboxId: string }) =
           <div className="pb-2">
             <div>
               {canEscalate
-                ? t('cases:case.escalate-button.hint', { inboxName: targetInbox?.name })
+                ? t('cases:escalate-button.hint', { inboxName: targetInbox?.name })
                 : isAdminUser
-                  ? t('cases:case.escalate-button.forbidden.hint.admin')
-                  : t('cases:case.escalate-button.forbidden.hint')}
+                  ? t('cases:escalate-button.forbidden.hint.admin')
+                  : t('cases:escalate-button.forbidden.hint')}
             </div>
             {!canEscalate && isAdminUser ? (
               <Link
@@ -125,17 +125,14 @@ export const EscalateCase = ({ id, inboxId }: { id: string; inboxId: string }) =
         <Modal.Trigger asChild>
           <Button variant="secondary" size="medium" type="button" disabled={!canEscalate}>
             <Icon icon="arrow-up" className="size-5" aria-hidden />
-            Escalate
+            {t('cases:escalate-button.label')}
           </Button>
         </Modal.Trigger>
       </Tooltip.Default>
       <Modal.Content>
         <Modal.Title>Escalate Case</Modal.Title>
         <div className="flex flex-col gap-8 p-8">
-          <Callout>
-            By escalating this decision, you will no longer have access to the case and will no
-            longer be assigned to the case. You will be redirected to your inbox.
-          </Callout>
+          <Callout>{t('cases:escalate-case.modal.callout')}</Callout>
           <form onSubmit={handleSubmit(form)} className="flex w-full flex-row gap-2">
             <Modal.Close asChild>
               <Button variant="secondary" type="button" className="flex-1 first-letter:capitalize">
@@ -144,7 +141,7 @@ export const EscalateCase = ({ id, inboxId }: { id: string; inboxId: string }) =
             </Modal.Close>
 
             <Button type="submit" className="flex-1 first-letter:capitalize">
-              Escalate
+              {t('cases:escalate-case.modal.submit-button.label')}
             </Button>
           </form>
         </div>

@@ -189,5 +189,11 @@
   "decisions.rule.rule_group": "Groupe de règles",
   "decisions.outcome": "Résultat",
   "decisions.rules": "Règles",
-  "next_unassigned_case": "Aller à la prochaine investigation non-affectée"
+  "next_unassigned_case": "Aller à la prochaine investigation non-affectée",
+  "escalate-button.hint": "Escalader le cas vers {{inboxName}}.",
+  "escalate-button.forbidden.hint": "Aucune boîte de réception d’escalade n’est définie. Veuillez contacter votre administrateur.",
+  "escalate-button.forbidden.hint.admin": "Aucune boîte de réception d’escalade n’est définie.",
+  "escalate-case.modal.callout": "En procédant à l’escalade de ce cas, il ne vous sera plus attribué et vous n’y aurez plus accès. Vous serez redirigé vers votre boîte de réception.",
+  "escalate-button.label": "Escalader",
+  "escalate-case.modal.submit-button.label": "Escalader"
 }
