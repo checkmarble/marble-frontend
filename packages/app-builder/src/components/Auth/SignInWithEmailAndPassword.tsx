@@ -3,7 +3,6 @@ import {
   InvalidLoginCredentials,
   NetworkRequestFailed,
   useEmailAndPasswordSignIn,
-  UserNotFoundError,
   WrongPasswordError,
 } from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
@@ -55,7 +54,6 @@ export function SignInWithEmailAndPassword({
     onSubmit: async ({ value: { credentials }, formApi }) => {
       try {
         const result = await emailAndPasswordSignIn(credentials.email, credentials.password);
-
         if (!result) return;
         const { idToken, csrf } = result;
         if (!idToken) return;
@@ -65,21 +63,13 @@ export function SignInWithEmailAndPassword({
       } catch (error) {
         if (error instanceof EmailUnverified) {
           navigate(getRoute('/email-verification'));
-        } else if (error instanceof UserNotFoundError) {
-          formApi.setFieldMeta('credentials.email', (prev) => ({
-            ...prev,
-            errors: [t('auth:sign_in.errors.user_not_found')],
-          }));
-        } else if (error instanceof WrongPasswordError) {
-          formApi.setFieldMeta('credentials.password', (prev) => ({
-            ...prev,
-            errors: [t('auth:sign_in.errors.wrong_password_error')],
-          }));
-        } else if (error instanceof InvalidLoginCredentials) {
-          formApi.setFieldMeta('credentials', (prev) => ({
-            ...prev,
-            errors: [t('auth:sign_in.errors.invalid_login_credentials')],
-          }));
+        } else if (
+          error instanceof WrongPasswordError ||
+          error instanceof InvalidLoginCredentials
+        ) {
+          formApi
+            .getFieldMeta('credentials.password')
+            ?.errors.push({ message: t('auth:sign_in.errors.invalid_login_credentials') });
         } else if (error instanceof NetworkRequestFailed) {
           toast.error(t('common:errors.firebase_network_error'));
         } else {
