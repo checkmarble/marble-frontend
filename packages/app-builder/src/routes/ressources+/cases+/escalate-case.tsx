@@ -99,36 +99,36 @@ export const EscalateCase = ({ id, inboxId }: { id: string; inboxId: string }) =
 
   return (
     <Modal.Root>
-      <Modal.Trigger asChild>
-        <Tooltip.Default
-          content={
-            <div className="pb-2">
-              <div>
-                {canEscalate
-                  ? t('cases:case.escalate-button.hint', { inboxName: targetInbox?.name })
-                  : isAdminUser
-                    ? t('cases:case.escalate-button.forbidden.hint.admin')
-                    : t('cases:case.escalate-button.forbidden.hint')}
-              </div>
-              {!canEscalate && isAdminUser ? (
-                <Link
-                  to={getRoute('/settings/inboxes/:inboxId', {
-                    inboxId: fromUUIDtoSUUID(inboxId),
-                  })}
-                  className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
-                >
-                  Inbox settings
-                </Link>
-              ) : null}
+      <Tooltip.Default
+        content={
+          <div className="pb-2">
+            <div>
+              {canEscalate
+                ? t('cases:case.escalate-button.hint', { inboxName: targetInbox?.name })
+                : isAdminUser
+                  ? t('cases:case.escalate-button.forbidden.hint.admin')
+                  : t('cases:case.escalate-button.forbidden.hint')}
             </div>
-          }
-        >
+            {!canEscalate && isAdminUser ? (
+              <Link
+                to={getRoute('/settings/inboxes/:inboxId', {
+                  inboxId: fromUUIDtoSUUID(inboxId),
+                })}
+                className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
+              >
+                Inbox settings
+              </Link>
+            ) : null}
+          </div>
+        }
+      >
+        <Modal.Trigger asChild>
           <Button variant="secondary" size="medium" type="button" disabled={!canEscalate}>
             <Icon icon="arrow-up" className="size-5" aria-hidden />
             Escalate
           </Button>
-        </Tooltip.Default>
-      </Modal.Trigger>
+        </Modal.Trigger>
+      </Tooltip.Default>
       <Modal.Content>
         <Modal.Title>Escalate Case</Modal.Title>
         <div className="flex flex-col gap-8 p-8">
