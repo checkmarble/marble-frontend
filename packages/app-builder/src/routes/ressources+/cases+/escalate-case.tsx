@@ -101,9 +101,8 @@ export const EscalateCase = ({ id, inboxId }: { id: string; inboxId: string }) =
     <Modal.Root>
       <Modal.Trigger asChild>
         <Tooltip.Default
-          open={true}
           content={
-            <div className="z-20 pb-2">
+            <div className="pb-2">
               <div>
                 {canEscalate
                   ? t('cases:case.escalate-button.hint', { inboxName: targetInbox?.name })
