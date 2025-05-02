@@ -68,7 +68,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
     () =>
       tableModel.linksToSingle.map((link) => ({
         foreignKey: link.childFieldName,
-        parentTable: link.parentFieldName,
+        parentTable: link.parentTableName,
         parentFieldName: link.parentFieldName,
         exampleUsage: `${tableModel.name}.${link.name}.${link.parentFieldName} = ${tableModel.name}.${link.childFieldName}`,
       })),
