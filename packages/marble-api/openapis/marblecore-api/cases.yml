@@ -717,6 +717,7 @@ components:
         - decisions_count
         - name
         - status
+        - outcome
         - inbox_id
         - contributors
         - tags

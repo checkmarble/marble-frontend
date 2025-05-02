@@ -1,4 +1,4 @@
-import { caseStatuses } from '@app-builder/models/cases';
+import { type CaseOutcome, caseStatuses, type FinalOutcome } from '@app-builder/models/cases';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { type ParseKeys } from 'i18next';
 import { type CaseStatusForCaseEventDto } from 'marble-api';
@@ -15,6 +15,7 @@ export const caseStatusVariants = cva('inline-flex items-center justify-center r
       blue: 'text-blue-58 bg-blue-96',
       green: 'text-green-38 bg-green-94',
       grey: 'text-grey-50 bg-grey-95',
+      yellow: 'text-yellow-50 bg-yellow-90',
     },
     size: {
       small: undefined,
@@ -50,7 +51,7 @@ export const caseStatusVariants = cva('inline-flex items-center justify-center r
 });
 
 type CaseStatusMapping = Record<
-  CaseStatusForCaseEventDto,
+  CaseStatusForCaseEventDto | FinalOutcome,
   {
     color: VariantProps<typeof caseStatusVariants>['color'];
     tKey: ParseKeys<['cases']>;
@@ -63,7 +64,7 @@ export const caseStatusMapping: CaseStatusMapping = {
     tKey: 'cases:case.status.investigating',
   },
   pending: {
-    color: 'red',
+    color: 'grey',
     tKey: 'cases:case.status.pending',
   },
   closed: {
@@ -81,6 +82,18 @@ export const caseStatusMapping: CaseStatusMapping = {
   open: {
     color: 'red',
     tKey: 'cases:case.status.open',
+  },
+  confirmed_risk: {
+    color: 'red',
+    tKey: 'cases:case.outcome.confirmed_risk',
+  },
+  false_positive: {
+    color: 'grey',
+    tKey: 'cases:case.outcome.false_positive',
+  },
+  valuable_alert: {
+    color: 'yellow',
+    tKey: 'cases:case.outcome.valuable_alert',
   },
 };
 
@@ -118,9 +131,15 @@ export function CaseStatusPreview({
   );
 }
 
-export function CaseStatusTag({ status }: { status: CaseStatusForCaseEventDto }) {
+export function CaseStatusTag({
+  status,
+  outcome,
+}: {
+  status: CaseStatusForCaseEventDto;
+  outcome: CaseOutcome;
+}) {
   const { t } = useTranslation(['cases']);
-  const { color, tKey } = caseStatusMapping[status];
+  const { color, tKey } = caseStatusMapping[outcome === 'unset' ? status : outcome];
 
   return <Tag color={color ?? undefined}>{t(tKey)}</Tag>;
 }
