@@ -1,4 +1,4 @@
-import { casesI18n, ErrorComponent, Page } from '@app-builder/components';
+import { casesI18n, CopyToClipboardButton, ErrorComponent, Page } from '@app-builder/components';
 import {
   BreadCrumbLink,
   type BreadCrumbProps,
@@ -226,13 +226,23 @@ export const handle = {
       );
     },
     ({ isLast, data }: BreadCrumbProps<SerializeFrom<typeof loader>>) => {
+      const caseDetail = data.case; // Safely access caseDetail from the loader data
+
       return (
-        <BreadCrumbLink
-          isLast={isLast}
-          to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(data.case.id) })}
-        >
-          {data.case.name}
-        </BreadCrumbLink>
+        <div className="flex items-center gap-4">
+          <BreadCrumbLink
+            to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })}
+            isLast={isLast}
+          >
+            <span className="line-clamp-2 text-start">{caseDetail.name}</span>
+          </BreadCrumbLink>
+          <CopyToClipboardButton toCopy={caseDetail.id}>
+            <span className="text-s flex max-w-40 gap-1 font-normal">
+              <span className="shrink-0 font-medium">ID</span>{' '}
+              <span className="text-rtl truncate">{caseDetail.id}</span>
+            </span>
+          </CopyToClipboardButton>
+        </div>
       );
     },
   ],
