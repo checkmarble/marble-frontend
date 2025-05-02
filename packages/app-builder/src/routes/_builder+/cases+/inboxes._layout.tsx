@@ -60,6 +60,20 @@ export default function Cases() {
       </Page.Header>
       <div className="flex h-full flex-row overflow-hidden">
         <div className="border-e-grey-90 bg-grey-100 flex h-full w-fit min-w-[200px] max-w-[300px] shrink-0 flex-col overflow-y-auto border-e p-4">
+          <NavLink
+            className={({ isActive }) =>
+              clsx(
+                'border-grey-90 my-6 flex w-full cursor-pointer flex-row items-center justify-center gap-2 rounded border p-2',
+                isActive
+                  ? 'bg-purple-96 text-purple-65'
+                  : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+              )
+            }
+            to={`/cases/inboxes/${MY_INBOX_ID}`}
+          >
+            <Icon icon="person" className="size-5" />
+            <p className="font-semibold">{t('cases:inbox.assigned_to_me')}</p>
+          </NavLink>
           <div className="flex flex-row items-center gap-2">
             <Icon icon="inbox" className="size-5" />
             <p className="font-bold">{t('cases:case.inboxes')}</p>
@@ -67,21 +81,6 @@ export default function Cases() {
           <div className="mb-6 mt-4">
             <nav>
               <ul className="flex flex-col gap-1">
-                <li>
-                  <NavLink
-                    className={({ isActive }) =>
-                      clsx(
-                        'text-s flex w-full cursor-pointer flex-row items-center rounded p-2 font-medium',
-                        isActive
-                          ? 'bg-purple-96 text-purple-65'
-                          : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
-                      )
-                    }
-                    to={`/cases/inboxes/${MY_INBOX_ID}`}
-                  >
-                    {t('cases:inbox.assigned_to_me')}
-                  </NavLink>
-                </li>
                 {inboxes.map((inbox) => (
                   <li key={inbox.id}>
                     <NavLink
