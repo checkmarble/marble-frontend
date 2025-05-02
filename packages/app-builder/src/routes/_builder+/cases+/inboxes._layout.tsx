@@ -67,6 +67,21 @@ export default function Cases() {
           <div className="mb-6 mt-4">
             <nav>
               <ul className="flex flex-col gap-1">
+                <li>
+                  <NavLink
+                    className={({ isActive }) =>
+                      clsx(
+                        'text-s flex w-full cursor-pointer flex-row items-center rounded p-2 font-medium',
+                        isActive
+                          ? 'bg-purple-96 text-purple-65'
+                          : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+                      )
+                    }
+                    to={`/cases/inboxes/${MY_INBOX_ID}`}
+                  >
+                    {t('cases:inbox.assigned_to_me')}
+                  </NavLink>
+                </li>
                 {inboxes.map((inbox) => (
                   <li key={inbox.id}>
                     <NavLink
@@ -86,21 +101,6 @@ export default function Cases() {
                     </NavLink>
                   </li>
                 ))}
-                <li>
-                  <NavLink
-                    className={({ isActive }) =>
-                      clsx(
-                        'text-s flex w-full cursor-pointer flex-row items-center rounded p-2 font-medium',
-                        isActive
-                          ? 'bg-purple-96 text-purple-65'
-                          : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
-                      )
-                    }
-                    to={`/cases/inboxes/${MY_INBOX_ID}`}
-                  >
-                    {t('cases:inbox.assigned_to_me')}
-                  </NavLink>
-                </li>
               </ul>
             </nav>
           </div>
