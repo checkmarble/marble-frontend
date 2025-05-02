@@ -147,7 +147,7 @@ function RelatedCases({
                   <div
                     className={cellVariants({ isLast, className: 'flex items-center border-l' })}
                   >
-                    <CaseStatusTag status={caseObj.status} />
+                    <CaseStatusTag status={caseObj.status} outcome={caseObj.outcome} />
                   </div>
                 </Fragment>
               );

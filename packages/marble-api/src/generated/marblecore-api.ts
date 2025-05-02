@@ -60,7 +60,7 @@ export type CaseDto = {
     decisions_count: number;
     name: string;
     status: CaseStatusDto;
-    outcome?: "false_positive" | "valuable_alert" | "confirmed_risk" | "unset";
+    outcome: "false_positive" | "valuable_alert" | "confirmed_risk" | "unset";
     inbox_id: string;
     contributors: CaseContributorDto[];
     tags: CaseTagDto[];

@@ -82,7 +82,7 @@ export interface Case {
   status: CaseStatus;
   inboxId: string;
   contributors: CaseContributor[];
-  outcome?: CaseOutcome;
+  outcome: CaseOutcome;
   tags: CaseTag[];
   snoozedUntil?: string;
   assignedTo?: string;
