@@ -1160,7 +1160,7 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
 /**
  * List cases
  */
-export function listCases({ status, inboxId, startDate, endDate, sorting, name, offsetId, limit, order, includeSnoozed }: {
+export function listCases({ status, inboxId, startDate, endDate, sorting, name, offsetId, limit, order, includeSnoozed, assigneeId }: {
     status?: CaseStatusDto[];
     inboxId?: string[];
     startDate?: string;
@@ -1171,6 +1171,7 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, name, 
     limit?: number;
     order?: "ASC" | "DESC";
     includeSnoozed?: boolean;
+    assigneeId?: string;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -1193,7 +1194,8 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, name, 
         offset_id: offsetId,
         limit,
         order,
-        include_snoozed: includeSnoozed
+        include_snoozed: includeSnoozed,
+        assignee_id: assigneeId
     }))}`, {
         ...opts
     }));

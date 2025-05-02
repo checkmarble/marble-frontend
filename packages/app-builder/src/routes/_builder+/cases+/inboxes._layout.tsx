@@ -84,6 +84,21 @@ export default function Cases() {
                     </NavLink>
                   </li>
                 ))}
+                <li>
+                  <NavLink
+                    className={({ isActive }) =>
+                      clsx(
+                        'text-s flex w-full cursor-pointer flex-row items-center rounded p-2 font-medium',
+                        isActive
+                          ? 'bg-purple-96 text-purple-65'
+                          : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+                      )
+                    }
+                    to="/cases/inboxes/assigned-to-me"
+                  >
+                    {t('cases:inbox.assigned_to_me')}
+                  </NavLink>
+                </li>
               </ul>
             </nav>
           </div>

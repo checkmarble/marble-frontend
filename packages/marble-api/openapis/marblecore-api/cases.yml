@@ -50,6 +50,12 @@
         schema:
           type: boolean
           default: false
+      - name: assignee_id
+        description: Include cases that are assigned to a specific user
+        in: query
+        required: false
+        schema:
+          type: string
     responses:
       '200':
         description: List of corresponding cases

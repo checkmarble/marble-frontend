@@ -41,6 +41,7 @@ export type CaseFilters = {
         fromNow: string;
       };
   inboxIds?: string[];
+  assigneeId?: string;
 };
 
 export type CaseFiltersWithPagination = FiltersWithPagination<CaseFilters>;

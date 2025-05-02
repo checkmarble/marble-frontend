@@ -63,27 +63,32 @@ export const buildQueryParams = (
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { cases } = await authService.isAuthenticated(request, {
+  const { cases, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const parsedResult = await parseIdParamSafe(params, 'inboxId');
-  if (!parsedResult.success) {
+  // The 'assigned-to-me' is not an actual inboxId, but a special case to get the cases assigned to the user
+  if (!parsedResult.success && params['inboxId'] !== 'assigned-to-me') {
     return badRequest('Invalid inbox UUID');
   }
-  const { inboxId } = parsedResult.data;
+
+  const inboxId = parsedResult.success ? parsedResult.data.inboxId : null;
 
   const parsedQuery = await parseQuerySafe(request, casesFiltersSchema);
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
   if (!parsedQuery.success || !parsedPaginationQuery.success) {
-    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUIDtoSUUID(inboxId) }));
+    return inboxId
+      ? redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUIDtoSUUID(inboxId) }))
+      : redirect(getRoute('/cases'));
   }
 
   const filtersForBackend: CaseFilters = {
     ...parsedQuery.data,
     ...parsedPaginationQuery.data,
-    inboxIds: [inboxId],
+    ...(inboxId && { inboxIds: [inboxId] }),
     statuses: parsedQuery.data.statuses as CaseStatus[] | undefined,
+    ...(!inboxId && { assigneeId: user.actorIdentity.userId }),
   };
 
   try {
@@ -193,7 +198,9 @@ export default function Cases() {
       if (!pagination) {
         reset();
 
-        const pathname = getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUIDtoSUUID(inboxId) });
+        const pathname = getRoute('/cases/inboxes/:inboxId', {
+          inboxId: inboxId ? fromUUIDtoSUUID(inboxId) : 'assigned-to-me',
+        });
         const search = qs.stringify(buildQueryParams(casesFilters, null, null), {
           addQueryPrefix: true,
           skipNulls: true,
@@ -219,7 +226,7 @@ export default function Cases() {
         navigate(
           {
             pathname: getRoute('/cases/inboxes/:inboxId', {
-              inboxId: fromUUIDtoSUUID(inboxId),
+              inboxId: inboxId ? fromUUIDtoSUUID(inboxId) : 'assigned-to-me',
             }),
             search: qs.stringify(buildQueryParams(casesFilters, null, pagination.order), {
               addQueryPrefix: true,

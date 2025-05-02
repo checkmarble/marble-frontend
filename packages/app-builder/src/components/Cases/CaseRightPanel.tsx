@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { casesI18n } from './cases-i18n';
 
 type Data = {
-  inboxId: string;
+  inboxId: string | null;
 };
 
 type State =
