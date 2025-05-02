@@ -10,7 +10,7 @@ import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { type LoaderFunctionArgs } from '@remix-run/node';
 import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
@@ -43,10 +43,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const inboxes = await inbox.listInboxes();
 
-  return json({
+  return {
     inboxes,
     isCreateInboxAvailable: isCreateInboxAvailable(user),
-  });
+  };
 }
 
 export default function Cases() {

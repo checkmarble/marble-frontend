@@ -3,7 +3,7 @@ import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/
 import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { hasAtLeast } from 'remeda';
@@ -23,9 +23,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: MY_INBOX_ID }));
   }
 
-  return json({
+  return {
     isCreateInboxAvailable: isCreateInboxAvailable(user),
-  });
+  };
 }
 
 export default function Cases() {
