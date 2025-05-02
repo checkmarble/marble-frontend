@@ -17,6 +17,8 @@ import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
+import { MY_INBOX_ID } from './_index';
+
 export const handle = {
   i18n: ['navigation', 'cases', 'settings', ...casesI18n] satisfies Namespace,
   BreadCrumbs: [
@@ -94,7 +96,7 @@ export default function Cases() {
                           : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
                       )
                     }
-                    to="/cases/inboxes/assigned-to-me"
+                    to={`/cases/inboxes/${MY_INBOX_ID}`}
                   >
                     {t('cases:inbox.assigned_to_me')}
                   </NavLink>
