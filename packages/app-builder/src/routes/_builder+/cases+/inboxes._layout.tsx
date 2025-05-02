@@ -72,7 +72,7 @@ export default function Cases() {
             to={`/cases/inboxes/${MY_INBOX_ID}`}
           >
             <Icon icon="person" className="size-5" />
-            <p className="font-semibold">{t('cases:inbox.assigned_to_me')}</p>
+            <p className="font-semibold">{t('cases:inbox.my-inbox.link')}</p>
           </NavLink>
           <div className="flex flex-row items-center gap-2">
             <Icon icon="inbox" className="size-5" />

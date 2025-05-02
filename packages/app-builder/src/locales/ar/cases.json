@@ -159,5 +159,5 @@
   "case.escalate-button.forbidden.hint": "لا توجد علبة وارد للتصعيد مُعينة. يرجى التواصل مع المسؤول.",
   "case.escalate-button.forbidden.hint.admin": "لم يتم تعيين علبة وارد للتصعيد.",
   "case_detail.add_a_tag.empty": "لا توجد علامة",
-  "inbox.assigned_to_me": "جميع قضاياي"
+  "inbox.my-inbox.link": "صندوق الوارد الخاص بي"
 }
