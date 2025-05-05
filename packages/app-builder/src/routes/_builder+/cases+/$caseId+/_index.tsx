@@ -36,7 +36,7 @@ import { pick } from 'radash';
 import { unique } from 'radash';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { filter, flat, groupBy, map, mapValues, omit, pipe } from 'remeda';
+import { filter, flat, groupBy, map, mapValues, omit, pipe, uniqueBy } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -134,9 +134,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
           .mapOk(({ scenarioRules, details, snoozes }) =>
             pipe(
               map(details, (d) =>
-                d.rules
-                  .filter((r) => r.outcome === 'hit')
-                  .map((r) => ({
+                pipe(
+                  d.rules,
+                  filter((r) => r.outcome === 'hit'),
+                  map((r) => ({
                     ...omit(r, ['outcome', 'evaluation']),
                     isSnoozed: snoozes.find(
                       (s) => s.pivotValue === pivotValue && r.ruleId === s.ruleId,
@@ -154,8 +155,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
                       (s) => s.ruleId === r.ruleId && s.createdFromDecisionId === d.id,
                     )?.endsAt as string,
                   })),
+                ),
               ),
               flat(),
+              uniqueBy((r) => r.ruleId),
             ),
           );
       }),
