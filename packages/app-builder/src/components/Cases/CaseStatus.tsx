@@ -141,7 +141,11 @@ export function CaseStatusTag({
   const { t } = useTranslation(['cases']);
   const { color, tKey } = caseStatusMapping[outcome === 'unset' ? status : outcome];
 
-  return <Tag color={color ?? undefined}>{t(tKey)}</Tag>;
+  return (
+    <Tag color={color ?? undefined} className="capitalize">
+      {t(tKey)}
+    </Tag>
+  );
 }
 
 export function useCaseStatuses() {
