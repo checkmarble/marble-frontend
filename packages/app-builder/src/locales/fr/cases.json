@@ -159,5 +159,8 @@
   "case.escalate-button.forbidden.hint": "Aucune boîte de réception d’escalade n’est définie. Veuillez contacter votre administrateur.",
   "case.escalate-button.forbidden.hint.admin": "Aucune boîte de réception d’escalade n’est définie.",
   "case_detail.add_a_tag.empty": "Aucun label trouvé",
-  "inbox.my-inbox.link": "Ma boîte de réception"
+  "inbox.my-inbox.link": "Ma boîte de réception",
+  "case_detail.pivot_panel.missing_pivot": "Aucune des décisions liées à cette investigation n'a de valeur de pivot définie sur leur objet déclencheur. Demandez à un administrateur d'en configurer un dans la page d'édition du modèle de données.",
+  "case_detail.pivot_panel.missing_pivot.admin": "Aucune des décisions liées à cette investigation n'a de valeur de pivot définie sur leur charge utile. Accédez à la page d'édition du modèle de données pour en configurer un.",
+  "case_detail.pivot_panel.missing_pivot_cta": "Accédez à la page d'édition du modèle de données"
 }

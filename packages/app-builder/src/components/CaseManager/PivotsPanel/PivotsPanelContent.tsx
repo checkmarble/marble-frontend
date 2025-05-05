@@ -4,6 +4,7 @@ import {
   type ClientObjectDetail,
   type CurrentUser,
   type DataModelWithTableOptions,
+  isAdmin,
   type TableModelWithOptions,
 } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
@@ -12,12 +13,18 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Fragment, type ReactNode, useState } from 'react';
+import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { CtaClassName } from 'ui-design-system';
 
 import { PivotNavigationOptions } from './PivotNavigationOptions';
+
+function pivotUniqKey(pivotObject?: PivotObject) {
+  return pivotObject
+    ? `${pivotObject.pivotObjectName}_${pivotObject.pivotFieldName}_${pivotObject.pivotValue}`
+    : null;
+}
 
 export function PivotsPanelContent({
   currentUser,
@@ -34,31 +41,54 @@ export function PivotsPanelContent({
 }) {
   const { t } = useTranslation(['cases']);
 
-  if (!pivotObjects[0]) {
-    throw new Error('no pivot object');
-  }
-
   const [currentPivotObject, setCurrentPivotObject] = useState(pivotObjects[0]);
-  const currentTable = dataModel.find((t) => t.name === currentPivotObject.pivotObjectName);
+  const currentTable = dataModel.find((t) => t.name === currentPivotObject?.pivotObjectName);
+  const decisionsPivotValues = useMemo(
+    () => caseObj.decisions.flatMap((d) => d.pivotValues),
+    [caseObj],
+  );
+  const isAllMissingPivotObject = decisionsPivotValues.every(
+    (pivotValue) =>
+      !pivotObjects.find((pivotObject) => pivotObject.pivotValue === pivotValue.value),
+  );
 
   return (
     <div className="flex flex-col gap-8">
-      <h2 className="text-l font-semibold">{t('cases:case_detail.pivot_panel.title')}</h2>
-      {pivotObjects.length > 1 ? (
-        <div className="border-grey-90 flex h-12 gap-2 self-start rounded-lg border p-1">
-          {pivotObjects.map((pivotObject, idx) => (
-            <button
-              key={pivotObject.pivotValue}
-              className="text-grey-50 aria-[current=true]:bg-purple-96 aria-[current=true]:text-purple-65 rounded p-1 px-4"
-              aria-current={pivotObject.pivotValue === currentPivotObject.pivotValue}
-              onClick={() => setCurrentPivotObject(pivotObject)}
+      {isAllMissingPivotObject ? (
+        <div className="border-grey-90 flex h-40 flex-col items-center justify-center gap-2 rounded border p-8">
+          <span className="text-center">
+            {isAdmin(currentUser)
+              ? t('cases:case_detail.pivot_panel.missing_pivot.admin')
+              : t('cases:case_detail.pivot_panel.missing_pivot')}
+          </span>
+          {isAdmin(currentUser) ? (
+            <Link
+              to={getRoute('/data')}
+              className={CtaClassName({ variant: 'secondary', size: 'small' })}
             >
-              {pivotObject.pivotObjectName} {idx + 1}
-            </button>
-          ))}
+              {t('cases:case_detail.pivot_panel.missing_pivot_cta')}
+            </Link>
+          ) : null}
         </div>
       ) : null}
-      {currentTable ? (
+      {pivotObjects.length > 1 ? (
+        <div className="border-grey-90 flex h-12 gap-2 self-start rounded-lg border p-1">
+          {pivotObjects.map((pivotObject, idx) => {
+            const uniqKey = pivotUniqKey(pivotObject);
+            return (
+              <button
+                key={uniqKey}
+                className="text-grey-50 aria-[current=true]:bg-purple-96 aria-[current=true]:text-purple-65 rounded p-1 px-4"
+                aria-current={uniqKey === pivotUniqKey(currentPivotObject)}
+                onClick={() => setCurrentPivotObject(pivotObject)}
+              >
+                {pivotObject.pivotObjectName} {idx + 1}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+      {currentTable && currentPivotObject ? (
         <>
           <PivotObjectDetails
             tableModel={currentTable}
@@ -74,7 +104,9 @@ export function PivotsPanelContent({
           />
         </>
       ) : null}
-      <RelatedCases pivotValue={currentPivotObject.pivotValue} currentCase={caseObj} />
+      {currentPivotObject ? (
+        <RelatedCases pivotValue={currentPivotObject.pivotValue} currentCase={caseObj} />
+      ) : null}
     </div>
   );
 }

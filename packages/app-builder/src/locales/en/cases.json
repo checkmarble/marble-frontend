@@ -159,5 +159,8 @@
   "case.escalate-button.forbidden.hint": "There is no escalation inbox set. Please contact your administrator.",
   "case.escalate-button.forbidden.hint.admin": "There is no escalation inbox set.",
   "case_detail.add_a_tag.empty": "There's no tag",
-  "inbox.my-inbox.link": "My inbox"
+  "inbox.my-inbox.link": "My inbox",
+  "case_detail.pivot_panel.missing_pivot": "None of the decisions linked to this case have a pivot value defined on their payload. Ask an admin to configure one in the data model edition page",
+  "case_detail.pivot_panel.missing_pivot.admin": "None of the decisions linked to this case have a pivot value defined on their payload. Go to the data model edition page to configure one",
+  "case_detail.pivot_panel.missing_pivot_cta": "Go to data model edition page"
 }
