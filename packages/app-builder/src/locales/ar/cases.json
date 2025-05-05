@@ -159,5 +159,8 @@
   "case.escalate-button.forbidden.hint": "لا توجد علبة وارد للتصعيد مُعينة. يرجى التواصل مع المسؤول.",
   "case.escalate-button.forbidden.hint.admin": "لم يتم تعيين علبة وارد للتصعيد.",
   "case_detail.add_a_tag.empty": "لا توجد علامة",
-  "inbox.my-inbox.link": "صندوق الوارد الخاص بي"
+  "inbox.my-inbox.link": "صندوق الوارد الخاص بي",
+  "case_detail.pivot_panel.missing_pivot": "لا يوجد أي من القرارات المرتبطة بهذه الحالة لها قيمة محورية محددة على حمولةها. \nاطلب من المسؤول تكوين واحد في صفحة إصدار نموذج البيانات",
+  "case_detail.pivot_panel.missing_pivot.admin": "لا يوجد أي من القرارات المرتبطة بهذه الحالة لها قيمة محورية محددة على حمولةها. \nانتقل إلى صفحة إصدار نموذج البيانات لتكوين واحدة",
+  "case_detail.pivot_panel.missing_pivot_cta": "انتقل إلى صفحة طبعة نموذج البيانات"
 }
