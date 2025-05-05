@@ -16,11 +16,6 @@ import {
 } from '@app-builder/components/Decisions/RulesExecutions/RulesExecutions';
 import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { type Pivot, type TableModel } from '@app-builder/models';
-import {
-  type DatabaseAccessAstNode,
-  type PayloadAstNode,
-} from '@app-builder/models/astNode/data-accessor';
-import { type CustomList } from '@app-builder/models/custom-list';
 import { type Decision, type RuleExecution } from '@app-builder/models/decision';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
@@ -41,21 +36,9 @@ type Detail = Pick<Decision, 'pivotValues' | 'scenario' | 'triggerObject' | 'tri
   pivots: Pivot[];
   ruleExecutions: RuleExecution[];
   scenarioRules: ScenarioIterationRule[];
-  accessors: {
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-  };
 };
 
-const DecisionRuleExecutions = ({
-  detail,
-  dataModel,
-  customLists,
-}: {
-  detail: Detail;
-  dataModel: TableModel[];
-  customLists: CustomList[];
-}) => {
+const DecisionRuleExecutions = ({ detail }: { detail: Detail }) => {
   const { t } = useTranslation(casesI18n);
   const [showHitOnly, setShowHitOnly] = useState(true);
 
@@ -91,13 +74,7 @@ const DecisionRuleExecutions = ({
                   scenarioId={detail.scenario.id}
                   key={ruleExecution.ruleId}
                   ruleExecution={ruleExecution}
-                  triggerObjectType={detail.triggerObjectType}
-                  astRuleData={{
-                    dataModel,
-                    customLists,
-                    ...detail.accessors,
-                    rules: detail.scenarioRules,
-                  }}
+                  rules={detail.scenarioRules}
                 />
               </RuleExecutionContent>
             </RuleExecutionCollapsible>
@@ -208,32 +185,16 @@ const DecisionDetailSkeleton = () => (
   </div>
 );
 
-const ExpandedDetail = ({
-  detail,
-  dataModel,
-  customLists,
-}: {
-  detail: Detail;
-  dataModel: TableModel[];
-  customLists: CustomList[];
-}) => {
+const ExpandedDetail = ({ detail, dataModel }: { detail: Detail; dataModel: TableModel[] }) => {
   return (
     <div className="flex flex-row gap-6">
-      <DecisionRuleExecutions detail={detail} dataModel={dataModel} customLists={customLists} />
+      <DecisionRuleExecutions detail={detail} />
       <DecisionTriggerObject detail={detail} dataModel={dataModel} />
     </div>
   );
 };
 
-const CollapsedDetail = ({
-  detail,
-  dataModel,
-  customLists,
-}: {
-  detail: Detail;
-  dataModel: TableModel[];
-  customLists: CustomList[];
-}) => {
+const CollapsedDetail = ({ detail, dataModel }: { detail: Detail; dataModel: TableModel[] }) => {
   return (
     <Tabs defaultValue="hits" className="flex flex-col items-start gap-6">
       <TabsList>
@@ -241,7 +202,7 @@ const CollapsedDetail = ({
         <TabsTrigger value="trigger">Trigger</TabsTrigger>
       </TabsList>
       <TabsContent value="hits" className="w-full">
-        <DecisionRuleExecutions detail={detail} dataModel={dataModel} customLists={customLists} />
+        <DecisionRuleExecutions detail={detail} />
       </TabsContent>
       <TabsContent value="trigger" className="w-full">
         <DecisionTriggerObject detail={detail} dataModel={dataModel} />
@@ -251,8 +212,12 @@ const CollapsedDetail = ({
 };
 
 export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPanelProps) {
-  const { pivots, dataModelWithTableOptions, customLists, decisionsPromise } =
-    useLoaderData<typeof loader>();
+  const {
+    pivots,
+    dataModelWithTableOptions,
+    decisionsPromise,
+    case: caseDetail,
+  } = useLoaderData<typeof loader>();
   const { isExpanded, setExpanded } = DrawerContext.useValue();
 
   return (
@@ -312,19 +277,17 @@ export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPane
                       </span>
                     </div>
                   </div>
-                  <RequiredActions decision={decision} />
+                  <RequiredActions decision={decision} caseId={caseDetail.id} />
                 </div>
                 {isExpanded ? (
                   <ExpandedDetail
                     detail={{ ...decision, pivots }}
                     dataModel={dataModelWithTableOptions}
-                    customLists={customLists}
                   />
                 ) : (
                   <CollapsedDetail
                     detail={{ ...decision, pivots }}
                     dataModel={dataModelWithTableOptions}
-                    customLists={customLists}
                   />
                 )}
               </div>
