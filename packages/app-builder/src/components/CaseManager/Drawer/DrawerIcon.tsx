@@ -7,28 +7,17 @@ const drawerIconColorVariants = cva(['flex items-center justify-center'], {
       false: 'text-grey-90',
       true: 'text-purple-65',
     },
-    clickable: {
-      true: 'cursor-pointer',
-    },
   },
   defaultVariants: {
     active: false,
-    clickable: false,
   },
 });
 
-type DrawerIconProps = { size: 'small' | 'large'; onClick?: () => void } & VariantProps<
-  typeof drawerIconColorVariants
->;
+type DrawerIconProps = { size: 'small' | 'large' } & VariantProps<typeof drawerIconColorVariants>;
 
-export function DrawerIcon({ size, active, onClick }: DrawerIconProps) {
+export function DrawerIcon({ size, active }: DrawerIconProps) {
   return (
-    <button
-      tabIndex={-1}
-      className={clsx('size-5', drawerIconColorVariants({ active, clickable: !!onClick }))}
-      onClick={onClick}
-      disabled={!onClick}
-    >
+    <span tabIndex={-1} className={clsx('size-5', drawerIconColorVariants({ active }))}>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
         {size === 'large' ? (
           <path
@@ -46,6 +35,6 @@ export function DrawerIcon({ size, active, onClick }: DrawerIconProps) {
           />
         )}
       </svg>
-    </button>
+    </span>
   );
 }
