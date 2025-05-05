@@ -5,6 +5,7 @@ import {
   SignUpWithEmailAndPassword,
   StaticSignUpWithEmailAndPassword,
 } from '@app-builder/components/Auth/SignUpWithEmailAndPassword';
+import { type AuthErrors } from '@app-builder/models/auth-errors';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
@@ -28,13 +29,22 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request);
   const error = session.get('authError');
 
-  const { migrationsRun, hasAnOrganization, hasAUser } = await getSignupStatus();
+  try {
+    const { migrationsRun, hasAnOrganization, hasAUser } = await getSignupStatus();
 
-  return {
-    isSignupReady: migrationsRun && hasAnOrganization && hasAUser,
-    haveMigrationsRun: migrationsRun,
-    authError: error?.message,
-  };
+    return {
+      isSignupReady: migrationsRun && hasAnOrganization && hasAUser,
+      haveMigrationsRun: migrationsRun,
+      authError: error?.message,
+    };
+  } catch (_err) {
+    console.error('Error fetching signup status API');
+    return {
+      isSignupReady: false,
+      haveMigrationsRun: false,
+      authError: 'BackendUnavailable',
+    };
+  }
 }
 
 export default function SignUp() {
@@ -83,7 +93,7 @@ export default function SignUp() {
           }}
         />
       </p>
-      {authError ? <AuthError error={authError} className="mt-8" /> : null}
+      {authError ? <AuthError error={authError as AuthErrors} className="mt-8" /> : null}
     </div>
   );
 }
