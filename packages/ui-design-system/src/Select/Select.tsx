@@ -30,7 +30,7 @@ function SelectContent({
   return (
     <Portal>
       <Content
-        className={clsx('bg-grey-100 border-grey-90 mt-2 rounded border shadow-md', className)}
+        className={clsx('bg-grey-100 border-grey-90 z-50 mt-2 rounded border shadow-md', className)}
         position="popper"
         {...props}
       >
