@@ -67,7 +67,7 @@ export const SnoozePanel = ({
                     value={id}
                     className="border-grey-90 bg-grey-100 rounded-lg border"
                   >
-                    <div className="text-2xs text-grey-50 grid grid-cols-[91px_70px_1fr_1fr_176px_176px] font-normal">
+                    <div className="text-2xs text-grey-50 grid grid-cols-[110px_70px_1fr_1fr_176px_176px] font-normal">
                       <span className="p-2">{t('cases:snooze.title')}</span>
                       <span className="p-2">Hit date</span>
                       <span className="p-2">Name and Score Modifier</span>
@@ -82,14 +82,12 @@ export const SnoozePanel = ({
                         </span>
                       );
 
-                      console.log(r.decisionId);
-
                       return (
                         <div
                           key={r.ruleId}
-                          className="border-grey-90 hover:bg-purple-98 grid grid-cols-[91px_70px_1fr_1fr_176px_176px] items-center border-t transition-colors"
+                          className="border-grey-90 hover:bg-purple-98 grid grid-cols-[110px_70px_1fr_1fr_176px_176px] items-center border-t transition-colors"
                         >
-                          <div className="min-h-full p-2">
+                          <div className="flex min-h-full justify-center p-2">
                             <AddRuleSnooze decisionId={r.decisionId} ruleId={r.ruleId}>
                               <Button
                                 variant="secondary"
