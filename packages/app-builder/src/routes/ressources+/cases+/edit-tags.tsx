@@ -89,7 +89,7 @@ export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) =
           ))}
           <MenuCommand.Menu open={open} onOpenChange={setOpen}>
             <MenuCommand.Trigger>
-              <Button variant="secondary" size={ids.length ? 'icon' : 'small'}>
+              <Button variant="secondary" size={ids.length ? 'icon' : 'xs'}>
                 <Icon icon={ids.length ? 'edit-square' : 'plus'} className="text-grey-50 size-4" />
                 {!ids.length ? (
                   <span className="text-grey-50 text-xs">{t('common:add')}</span>
