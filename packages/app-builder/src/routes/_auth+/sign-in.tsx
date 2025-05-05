@@ -7,12 +7,12 @@ import {
 } from '@app-builder/components/Auth/SignInWithEmailAndPassword';
 import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle';
 import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicrosoft';
+import { type AuthErrors } from '@app-builder/models/auth-errors';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
-import { tryit } from 'radash';
 import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { safeRedirect } from 'remix-utils/safe-redirect';
@@ -32,15 +32,32 @@ export async function loader({ request }: LoaderFunctionArgs) {
     successRedirect: getRoute('/app-router'),
   });
   const session = await authSessionService.getSession(request);
-  const [backendError, isSsoEnabled] = await tryit(licenseService.isSsoEnabled)();
 
-  const { migrationsRun, hasAnOrganization, hasAUser } = await getSignupStatus();
+  const [ssoResponse, signInStatusResponse] = await Promise.allSettled([
+    licenseService.isSsoEnabled(),
+    getSignupStatus(),
+  ]);
+
+  if (ssoResponse.status === 'rejected') {
+    console.error('Error fetching internal SSO-enabled API');
+  }
+  if (signInStatusResponse.status === 'rejected') {
+    console.error('Error fetching internal signup-status API');
+  }
 
   return {
-    isSignupReady: migrationsRun && hasAnOrganization && hasAUser,
-    haveMigrationsRun: migrationsRun,
-    authError: backendError ? 'BackendUnavailable' : session.get('authError')?.message,
-    isSsoEnabled,
+    isSignupReady:
+      signInStatusResponse.status === 'fulfilled' &&
+      signInStatusResponse.value.migrationsRun &&
+      signInStatusResponse.value.hasAnOrganization &&
+      signInStatusResponse.value.hasAUser,
+    haveMigrationsRun:
+      signInStatusResponse.status === 'fulfilled' && signInStatusResponse.value.migrationsRun,
+    authError:
+      ssoResponse.status === 'rejected'
+        ? 'BackendUnavailable'
+        : (session.get('authError')?.message as AuthErrors),
+    isSsoEnabled: ssoResponse.status === 'fulfilled' && ssoResponse.value,
   };
 }
 
@@ -142,7 +159,7 @@ export default function Login() {
           {t('auth:sign_in.forgot_password')}
         </Link>
       </div>
-      {authError ? <AuthError error={authError} className="mt-8" /> : null}
+      {authError ? <AuthError error={authError as AuthErrors} className="mt-8" /> : null}
     </div>
   );
 }
