@@ -31,14 +31,9 @@ export const SnoozePanel = ({
 
   if (!pivotObjects?.[0]) throw new Error('no pivot object');
 
-  console.log('Pivot Objects', pivotObjects);
-  console.log('DataModel', dataModelWithTableOptions);
-
   const currentTable = dataModelWithTableOptions.find(
     (t) => t.name === pivotObjects[0]!.pivotObjectName,
   );
-
-  console.log('Current Table', currentTable);
 
   useEffect(() => {
     setExpanded(true);
