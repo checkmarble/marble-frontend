@@ -18,7 +18,7 @@ import { z } from 'zod';
 
 const createCaseFormSchema = z.object({
   name: z.string().min(1),
-  inboxId: z.string().min(1),
+  inboxId: z.string().uuid(),
 });
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -84,7 +84,7 @@ export function CreateCase() {
     defaultValues: {
       name: '',
       inboxId: data?.inboxId ?? '',
-    } as CreateCaseForm,
+    } satisfies CreateCaseForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -96,7 +96,6 @@ export function CreateCase() {
     },
     validators: {
       onChange: createCaseFormSchema,
-      onBlur: createCaseFormSchema,
       onSubmit: createCaseFormSchema,
     },
   });
@@ -121,7 +120,6 @@ export function CreateCase() {
                 name={field.name}
                 defaultValue={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
-                onBlur={field.handleBlur}
                 valid={field.state.meta.errors.length === 0}
                 placeholder={t('cases:case.new_case.placeholder')}
               />
@@ -138,8 +136,8 @@ export function CreateCase() {
               <Select.Default
                 className="w-full overflow-hidden"
                 defaultValue={field.state.value}
-                onValueChange={(type) => {
-                  field.handleChange(type);
+                onValueChange={(inboxId) => {
+                  field.handleChange(inboxId);
                 }}
               >
                 {inboxes.map(({ name, id }) => {
@@ -150,6 +148,7 @@ export function CreateCase() {
                   );
                 })}
               </Select.Default>
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>
