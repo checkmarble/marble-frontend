@@ -1,4 +1,4 @@
-import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
+import { type AstNode, isUndefinedAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   isKnownOperandAstNode,
   type KnownOperandAstNode,
@@ -9,10 +9,9 @@ import {
 } from '@app-builder/models/astNode/strings';
 import { reorder } from '@app-builder/utils/list';
 import { DragDropContext, Draggable, Droppable, type OnDragEndResponder } from '@hello-pangea/dnd';
-import { nanoid } from 'nanoid';
 import { replace } from 'radash';
 import { useEffect, useState } from 'react';
-import { hasSubObject, omit, splice } from 'remeda';
+import { splice } from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -34,13 +33,18 @@ export function FieldNodeConcat({
   viewOnly?: boolean;
 }) {
   const [nodes, setNodes] = useState<KnownOperandAstNode[]>(
-    value?.children?.length ? value.children : [NewUndefinedAstNode()],
+    value?.children?.length ? value.children : [],
   );
 
   useEffect(() => {
-    const finalNodes = nodes.filter(
-      (n) => !hasSubObject(NewUndefinedAstNode() as AstNode, omit(n, ['id'])),
-    );
+    if (nodes.length === 0) {
+      setNodes([NewUndefinedAstNode()]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- We only want to trigger this useEffect on mount
+  }, []);
+
+  useEffect(() => {
+    const finalNodes = nodes.filter((n) => !isUndefinedAstNode(n));
 
     const result =
       finalNodes.length !== 0 ? NewStringConcatAstNode(finalNodes, { withSeparator: true }) : null;
@@ -103,7 +107,7 @@ export function FieldNodeConcat({
                                 setNodes((prev) =>
                                   splice(prev, index, 1, [
                                     { ...prev[index]!, id: prev[index]!.id },
-                                    { ...NewUndefinedAstNode(), id: nanoid() },
+                                    NewUndefinedAstNode(),
                                   ]),
                                 )
                               }
