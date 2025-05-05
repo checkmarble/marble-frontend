@@ -95,6 +95,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         'createdAt',
         'score',
         'scenario',
+        'reviewStatus',
       ]),
       ruleExecutions: await decision.getDecisionById(d.id).then((detail) => detail.rules),
       accessors: await editor.listAccessors({ scenarioId: d.scenario.id }),
