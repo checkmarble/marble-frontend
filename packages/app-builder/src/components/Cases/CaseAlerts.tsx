@@ -3,8 +3,8 @@ import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
-import { Suspense } from 'react';
-import { Button } from 'ui-design-system';
+import { Suspense, useState } from 'react';
+import { Button, cn } from 'ui-design-system';
 
 import { OutcomeBadge } from '../Decisions';
 import { FormatData } from '../FormatData';
@@ -14,12 +14,15 @@ import { RequiredActions } from './RequiredActions';
 export const CaseAlerts = ({
   selectDecision,
   setDrawerContentMode,
+  drawerContentMode,
 }: {
   selectDecision: (id: string) => void;
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
+  drawerContentMode: 'pivot' | 'decision' | 'snooze';
 }) => {
   const { decisionsPromise, case: caseDetail } = useLoaderData<typeof loader>();
   const language = useFormatLanguage();
+  const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -35,7 +38,13 @@ export const CaseAlerts = ({
             {decisions.map((decision) => (
               <div
                 key={decision.id}
-                className="border-grey-90 hover:bg-grey-98 group grid min-h-24 grid-cols-[82px_1fr_250px_175px] border-t transition-colors"
+                className={cn(
+                  'border-grey-90 hover:bg-grey-98 group grid min-h-24 grid-cols-[82px_1fr_250px_175px] border-t transition-colors',
+                  {
+                    'bg-purple-98':
+                      selectedDecision === decision.id && drawerContentMode === 'decision',
+                  },
+                )}
               >
                 <div className="flex min-h-full flex-col items-center p-2">
                   <span className="text-grey-50 text-xs font-normal">
@@ -57,6 +66,7 @@ export const CaseAlerts = ({
                       className="absolute right-0 top-0 hidden group-hover:flex"
                       onClick={() => {
                         selectDecision(decision.id);
+                        setSelectedDecision(decision.id);
                         setDrawerContentMode('decision');
                       }}
                     >

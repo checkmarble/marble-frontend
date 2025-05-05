@@ -221,7 +221,7 @@ export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPane
   const { isExpanded, setExpanded } = DrawerContext.useValue();
 
   return (
-    <div className="flex flex-col pl-4">
+    <div className="flex flex-col pl-4 pr-2">
       <div className="sticky top-0 z-10 flex items-center">
         <Button
           variant="secondary"
@@ -231,7 +231,7 @@ export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPane
             setDrawerContentMode('pivot');
           }}
         >
-          <Icon icon="left-panel-close" className="size-4" />
+          <Icon icon="left-panel-close" className="size-5" />
         </Button>
         <CaseManagerDrawerButtons expandable={true} />
       </div>
