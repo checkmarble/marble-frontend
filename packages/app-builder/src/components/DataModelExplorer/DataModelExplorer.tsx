@@ -1,5 +1,6 @@
 import { type DataModelWithTableOptions } from '@app-builder/models';
-import { useCallback, useState } from 'react';
+import { useCallbackRef } from '@marble/shared';
+import { useState } from 'react';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -14,18 +15,41 @@ export type DataModelExplorerProps = {
 export function DataModelExplorer(props: DataModelExplorerProps) {
   const explorerContext = DataModelExplorerContext.useValue();
 
-  const addTab = useCallback(
-    (tab: DataModelExplorerNavigationTab) => {
-      if (!explorerContext.explorerState) return;
+  const addTab = useCallbackRef((tab: DataModelExplorerNavigationTab) => {
+    if (!explorerContext.explorerState) return;
 
-      explorerContext.setExplorerState({
-        tabs: [...explorerContext.explorerState.tabs, tab],
-        lastActiveTab: explorerContext.explorerState.currentTab,
-        currentTab: tab,
-      });
-    },
-    [explorerContext],
-  );
+    explorerContext.setExplorerState({
+      tabs: [...explorerContext.explorerState.tabs, tab],
+      lastActiveTab: explorerContext.explorerState.currentTab,
+      currentTab: tab,
+    });
+  });
+  const closeTab = useCallbackRef((tab: DataModelExplorerNavigationTab) => {
+    const nextState: Partial<DataModelExplorerState> = {};
+    const tabIndex = tabs.indexOf(tab);
+
+    if (tabIndex < 0) {
+      return;
+    }
+
+    if (tab === currentTab) {
+      const nextTab = lastActiveTab ?? tabs[tabIndex + 1] ?? tabs[tabIndex - 1];
+      if (nextTab) {
+        nextState.lastActiveTab = null;
+        nextState.currentTab = nextTab;
+      }
+    }
+
+    const nextTabsState = [...tabs.slice(0, tabIndex), ...tabs.slice(tabIndex + 1)];
+    if (nextTabsState.length === 0) {
+      explorerContext.setExplorerState(null);
+    }
+
+    nextState.closedTabsHistory = [...closedTabsHistory, tab];
+    nextState.tabs = nextTabsState;
+
+    explorerContext.setExplorerState(nextState);
+  });
 
   if (!explorerContext.explorerState) {
     return null;
@@ -38,7 +62,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
     <div className="h-[calc(100vh_-_210px)] min-w-[80vw] overflow-y-scroll p-14 py-2">
       <div className="flex flex-col gap-3">
         <div className="before:bg-grey-90 relative py-2 pr-40 before:absolute before:inset-x-0 before:bottom-0 before:h-px">
-          {tabs.map((tab, i) => (
+          {tabs.map((tab) => (
             <DataModelExplorerTab
               current={tab === currentTab}
               key={`${tabObjectId ?? 'unknown'}_${tab.targetTableName}`}
@@ -50,20 +74,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
                 });
               }}
               onClose={() => {
-                const nextState: Partial<DataModelExplorerState> = {};
-
-                if (tab === currentTab) {
-                  const nextTab = lastActiveTab ?? tabs[i + 1] ?? tabs[i - 1];
-                  if (nextTab) {
-                    nextState.lastActiveTab = null;
-                    nextState.currentTab = nextTab;
-                  }
-                }
-
-                nextState.closedTabsHistory = [...closedTabsHistory, tab];
-                nextState.tabs = [...tabs.slice(0, i), ...tabs.slice(i + 1)];
-
-                explorerContext.setExplorerState(nextState);
+                closeTab(tab);
               }}
             />
           ))}

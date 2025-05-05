@@ -2,6 +2,7 @@ import { DataModelExplorer } from '@app-builder/components/DataModelExplorer/Dat
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
 import { type CurrentUser, type DataModelWithTableOptions } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CaseManagerDrawerButtons, DrawerBreadcrumb, DrawerContext } from '../Drawer/Drawer';
@@ -18,6 +19,12 @@ export function PivotsPanel(props: PivotsPanelProps) {
   const { t } = useTranslation(['common', 'cases']);
   const dataModelExplorerContext = DataModelExplorerContext.useValue();
   const drawerContext = DrawerContext.useValue();
+
+  useEffect(() => {
+    if (!dataModelExplorerContext.explorerState && drawerContext.isExpanded) {
+      drawerContext.setExpanded(false);
+    }
+  }, [dataModelExplorerContext.explorerState, drawerContext]);
 
   return (
     <>
