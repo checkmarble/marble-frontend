@@ -18,7 +18,7 @@ export const CaseAlerts = ({
   selectDecision: (id: string) => void;
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
 }) => {
-  const { decisionsPromise } = useLoaderData<typeof loader>();
+  const { decisionsPromise, case: caseDetail } = useLoaderData<typeof loader>();
   const language = useFormatLanguage();
 
   return (
@@ -63,7 +63,7 @@ export const CaseAlerts = ({
                       Open
                     </Button>
                   </div>
-                  <RequiredActions decision={decision} />
+                  <RequiredActions decision={decision} caseId={caseDetail.id} />
                 </div>
                 <div className="border-grey-90 flex h-0 min-h-full flex-col items-start gap-1 truncate border-r p-2">
                   {Dict.entries(decision.triggerObject).map(([key, value]) => {
