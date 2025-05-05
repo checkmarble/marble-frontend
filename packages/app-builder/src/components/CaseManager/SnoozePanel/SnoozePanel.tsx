@@ -42,7 +42,7 @@ export const SnoozePanel = ({
             setDrawerContentMode('pivot');
           }}
         >
-          <Icon icon="left-panel-close" className="size-4" />
+          <Icon icon="left-panel-close" className="size-5" />
         </Button>
         <CaseManagerDrawerButtons expandable={false} />
       </div>

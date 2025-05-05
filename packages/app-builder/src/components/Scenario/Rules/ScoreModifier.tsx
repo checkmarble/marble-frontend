@@ -14,7 +14,7 @@ export const ScoreModifier = ({
         className,
       )}
     >
-      <span>{score > 0 ? '+' : '-'}</span>
+      <span>{score >= 0 ? '+' : '-'}</span>
       <span>{score}</span>
     </span>
   );

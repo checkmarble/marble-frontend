@@ -282,6 +282,7 @@ export default function CaseManagerIndexPage() {
           containerRef={containerRef}
           currentUser={currentUser}
           selectDecision={selectDecision}
+          drawerContentMode={drawerContentMode}
           setDrawerContentMode={setDrawerContentMode}
         />
         <DataModelExplorerProvider>

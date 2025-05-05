@@ -27,11 +27,13 @@ export const CaseDetails = ({
   containerRef,
   currentUser,
   selectDecision,
+  drawerContentMode,
   setDrawerContentMode,
 }: {
   containerRef: RefObject<HTMLDivElement>;
   currentUser: CurrentUser;
   selectDecision: (id: string) => void;
+  drawerContentMode: 'pivot' | 'decision' | 'snooze';
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
 }) => {
   const { case: detail, inboxes } = useLoaderData<typeof loader>();
@@ -134,7 +136,11 @@ export const CaseDetails = ({
             <span className="text-xs">Snooze rules</span>
           </Button>
         </div>
-        <CaseAlerts selectDecision={selectDecision} setDrawerContentMode={setDrawerContentMode} />
+        <CaseAlerts
+          selectDecision={selectDecision}
+          setDrawerContentMode={setDrawerContentMode}
+          drawerContentMode={drawerContentMode}
+        />
       </div>
     </main>
   );
