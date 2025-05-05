@@ -100,7 +100,7 @@ export const EditCaseAssignee = ({
             ) : (
               <Button
                 variant="secondary"
-                size="small"
+                size="xs"
                 onClick={() => {
                   field.handleChange(currentUser.actorIdentity.userId as string);
                   form.handleSubmit();
@@ -114,7 +114,7 @@ export const EditCaseAssignee = ({
             )}
             <MenuCommand.Menu open={open} onOpenChange={setOpen}>
               <MenuCommand.Trigger>
-                <Button variant="secondary" size={assignee ? 'icon' : 'small'}>
+                <Button variant="secondary" size={assignee ? 'icon' : 'xs'}>
                   <Icon icon={assignee ? 'edit-square' : 'plus'} className="text-grey-50 size-4" />
                   {!assignee ? <span className="text-grey-50 text-xs">Add</span> : null}
                 </Button>

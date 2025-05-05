@@ -104,7 +104,7 @@ export const CaseEventFilters = ({
       </MenuCommand.Menu>
       <MenuCommand.Menu>
         <MenuCommand.Trigger>
-          <Button variant="secondary" size="small">
+          <Button variant="secondary" size="xs">
             <Icon icon="add-circle" className="size-3.5" />
             <span className="text-xs">Date</span>
             {filters.startDate || filters.endDate ? (
