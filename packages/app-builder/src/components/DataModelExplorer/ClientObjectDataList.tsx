@@ -4,7 +4,7 @@ import { parseUnknownData } from '@app-builder/utils/parse';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { FormatData } from '../FormatData';
@@ -12,9 +12,10 @@ import { FormatData } from '../FormatData';
 type ClientObjectDataListProps = {
   tableModel: TableModelWithOptions;
   data: ClientObjectDetail['data'];
+  className?: string;
 };
 
-export function ClientObjectDataList({ tableModel, data }: ClientObjectDataListProps) {
+export function ClientObjectDataList({ tableModel, data, className }: ClientObjectDataListProps) {
   const { t } = useTranslation(['common', 'cases']);
   const language = useFormatLanguage();
   const parsedData = R.pipe(data, R.mapValues(parseUnknownData));
@@ -22,7 +23,7 @@ export function ClientObjectDataList({ tableModel, data }: ClientObjectDataListP
   const shouldShowButton = tableModel.fields.some((f) => !f.displayed);
 
   return (
-    <div className="grid grid-cols-[160px,_1fr] gap-x-3 gap-y-2">
+    <div className={cn('grid grid-cols-[160px,_1fr] gap-x-3 gap-y-2', className)}>
       {tableModel.options.fieldOrder.map((fieldId) => {
         const field = tableModel.fields.find((f) => f.id === fieldId);
         if (!field) return null;
