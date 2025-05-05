@@ -53,7 +53,7 @@ type OperandInfosProps = {
 };
 
 const contentClassnames = clsx([
-  'flex flex-col w-full flex-1 overflow-hidden',
+  'flex flex-col w-full flex-1 overflow-hidden z-50',
   'bg-grey-100 border-grey-90 rounded border shadow-md outline-none',
 ]);
 

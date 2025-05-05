@@ -1,16 +1,10 @@
 import { decisionsI18n, Paper } from '@app-builder/components';
-import { type AstNode, type DataModel } from '@app-builder/models';
-import {
-  type DatabaseAccessAstNode,
-  type PayloadAstNode,
-} from '@app-builder/models/astNode/data-accessor';
-import { type CustomList } from '@app-builder/models/custom-list';
+import { type AstNode } from '@app-builder/models';
 import { type RuleExecution } from '@app-builder/models/decision';
 import { NewNodeEvaluation, type NodeEvaluation } from '@app-builder/models/node-evaluation';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { generateFlatEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
-import { Await } from '@remix-run/react';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Collapsible, Switch } from 'ui-design-system';
@@ -27,19 +21,11 @@ import {
 export function RulesDetail({
   scenarioId,
   ruleExecutions,
-  triggerObjectType,
-  astRuleData,
+  rules,
 }: {
   scenarioId: string;
   ruleExecutions: RuleExecution[];
-  triggerObjectType: string;
-  astRuleData: Promise<{
-    rules: ScenarioIterationRule[];
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: DataModel;
-    customLists: CustomList[];
-  }>;
+  rules: ScenarioIterationRule[];
 }) {
   const { t } = useTranslation(decisionsI18n);
 
@@ -54,19 +40,11 @@ export function RulesDetail({
                 <RuleExecutionTitle ruleExecution={ruleExecution} />
                 <RuleExecutionContent>
                   <RuleExecutionDescription description={ruleExecution.description} />
-
-                  <React.Suspense fallback={t('common:loading')}>
-                    <Await resolve={astRuleData}>
-                      {(astRuleData) => (
-                        <RuleExecutionDetail
-                          scenarioId={scenarioId}
-                          ruleExecution={ruleExecution}
-                          triggerObjectType={triggerObjectType}
-                          astRuleData={astRuleData}
-                        />
-                      )}
-                    </Await>
-                  </React.Suspense>
+                  <RuleExecutionDetail
+                    scenarioId={scenarioId}
+                    ruleExecution={ruleExecution}
+                    rules={rules}
+                  />
                 </RuleExecutionContent>
               </RuleExecutionCollapsible>
             );
@@ -80,25 +58,17 @@ export function RulesDetail({
 export function RuleExecutionDetail({
   scenarioId,
   ruleExecution,
-  triggerObjectType,
-  astRuleData,
+  rules,
 }: {
   scenarioId: string;
   ruleExecution: RuleExecution;
-  triggerObjectType: string;
-  astRuleData: {
-    rules: ScenarioIterationRule[];
-    databaseAccessors: DatabaseAccessAstNode[];
-    payloadAccessors: PayloadAstNode[];
-    dataModel: DataModel;
-    customLists: CustomList[];
-  };
+  rules: ScenarioIterationRule[];
 }) {
   const { t } = useTranslation(decisionsI18n);
   const language = useFormatLanguage();
   const currentRule = React.useMemo(
-    () => astRuleData.rules.find((rule) => rule.id === ruleExecution.ruleId),
-    [astRuleData.rules, ruleExecution.ruleId],
+    () => rules.find((rule) => rule.id === ruleExecution.ruleId),
+    [rules, ruleExecution.ruleId],
   );
   const [showValues, setShowValues] = React.useState(false);
 
@@ -137,11 +107,6 @@ export function RuleExecutionDetail({
         scenarioId={scenarioId}
         formula={currentRule.formula}
         evaluation={ruleExecution.evaluation}
-        databaseAccessors={astRuleData.databaseAccessors}
-        payloadAccessors={astRuleData.payloadAccessors}
-        dataModel={astRuleData.dataModel}
-        customLists={astRuleData.customLists}
-        triggerObjectType={triggerObjectType}
         showValues={showValues}
       />
     </>
@@ -172,22 +137,12 @@ function DisplayReturnValuesSwitch({
 function RuleFormula({
   scenarioId,
   formula,
-  databaseAccessors,
   evaluation,
-  payloadAccessors,
-  dataModel,
-  customLists,
-  triggerObjectType,
   showValues,
 }: {
   scenarioId: string;
   formula: AstNode;
   evaluation?: NodeEvaluation;
-  databaseAccessors: DatabaseAccessAstNode[];
-  payloadAccessors: PayloadAstNode[];
-  dataModel: DataModel;
-  customLists: CustomList[];
-  triggerObjectType: string;
   showValues: boolean;
 }) {
   const validation = React.useMemo(
@@ -199,18 +154,7 @@ function RuleFormula({
   );
   return (
     <Paper.Container className="bg-grey-100">
-      <AstBuilder.Provider
-        scenarioId={scenarioId}
-        initialData={{
-          customLists,
-          dataModel,
-          databaseAccessors,
-          payloadAccessors,
-          triggerObjectType,
-        }}
-        mode="view"
-        showValues={showValues}
-      >
+      <AstBuilder.Provider scenarioId={scenarioId} mode="view" showValues={showValues}>
         <AstBuilder.Root node={formula} validation={validation} />
       </AstBuilder.Provider>
     </Paper.Container>
