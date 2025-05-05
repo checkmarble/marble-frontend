@@ -6,7 +6,6 @@ import { CloseCase } from '@app-builder/routes/ressources+/cases+/close-case';
 import { EditCaseAssignee } from '@app-builder/routes/ressources+/cases+/edit-assignee';
 import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
 import { EditCaseName } from '@app-builder/routes/ressources+/cases+/edit-name';
-import { EditCaseSuspicion } from '@app-builder/routes/ressources+/cases+/edit-suspicion';
 import { EditCaseTags } from '@app-builder/routes/ressources+/cases+/edit-tags';
 import { EscalateCase } from '@app-builder/routes/ressources+/cases+/escalate-case';
 import { OpenCase } from '@app-builder/routes/ressources+/cases+/open-case';
@@ -35,7 +34,7 @@ export const CaseDetails = ({
   selectDecision: (id: string) => void;
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
 }) => {
-  const { case: detail, inboxes, reports } = useLoaderData<typeof loader>();
+  const { case: detail, inboxes } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
   const infoRef = useRef<HTMLDivElement>(null);
@@ -113,10 +112,10 @@ export const CaseDetails = ({
             id={detail.id}
           />
         </div>
-        <div className="grid grid-cols-[120px,1fr] items-center">
+        {/* <div className="grid grid-cols-[120px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">Report of suspicion</span>
           <EditCaseSuspicion id={detail.id} reports={reports} />
-        </div>
+        </div> */}
       </div>
       <div className="flex flex-col justify-start gap-1.5">
         <span className="text-r text-grey-00 px-1 font-medium">Investigation</span>
