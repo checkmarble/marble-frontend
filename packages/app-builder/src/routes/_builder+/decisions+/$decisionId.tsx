@@ -66,7 +66,7 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { decision, editor, customListsRepository, scenario, dataModelRepository, sanctionCheck } =
+  const { decision, scenario, dataModelRepository, sanctionCheck } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
@@ -81,28 +81,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
     const pivotsPromise = dataModelRepository.listPivots({});
 
-    const astRuleData = Promise.all([
-      scenario.getScenarioIteration({
+    const scenarioRules = await scenario
+      .getScenarioIteration({
         iterationId: currentDecision.scenario.scenarioIterationId,
-      }),
-      editor.listAccessors({
-        scenarioId: currentDecision.scenario.id,
-      }),
-      dataModelRepository.getDataModel(),
-      customListsRepository.listCustomLists(),
-    ]).then(([scenarioIteration, accessors, dataModel, customLists]) => ({
-      rules: scenarioIteration.rules,
-      databaseAccessors: accessors.databaseAccessors,
-      payloadAccessors: accessors.payloadAccessors,
-      dataModel,
-      customLists,
-    }));
+      })
+      .then((iteration) => iteration.rules);
 
     return defer({
       decision: currentDecision,
+      scenarioRules,
       pivots: await pivotsPromise,
       sanctionCheck: (await sanctionCheck.listSanctionChecks({ decisionId }))?.[0],
-      astRuleData,
     });
   } catch (error) {
     if (isNotFoundHttpError(error)) {
@@ -114,7 +103,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function DecisionPage() {
-  const { decision, pivots, astRuleData, sanctionCheck } = useLoaderData<typeof loader>();
+  const { decision, pivots, scenarioRules, sanctionCheck } = useLoaderData<typeof loader>();
 
   const pivotValues = R.pipe(
     decision.pivotValues,
@@ -153,8 +142,7 @@ export default function DecisionPage() {
                 <RulesDetail
                   scenarioId={decision.scenario.id}
                   ruleExecutions={decision.rules}
-                  triggerObjectType={decision.triggerObjectType}
-                  astRuleData={astRuleData}
+                  rules={scenarioRules}
                 />
                 {sanctionCheck ? <SanctionCheckDetail sanctionCheck={sanctionCheck} /> : null}
               </div>
