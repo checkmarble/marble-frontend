@@ -43,7 +43,7 @@ export function UserInfo({ email, firstName, lastName, role, orgOrPartnerName }:
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="bg-grey-100 border-grey-90 animate-slideUpAndFade w-full max-w-xs rounded-md border border-solid p-6 drop-shadow-md will-change-auto"
+          className="bg-grey-100 border-grey-90 animate-slideUpAndFade z-50 w-full max-w-xs rounded-md border border-solid p-6 drop-shadow-md will-change-auto"
           side="bottom"
           align="start"
           sideOffset={4}
