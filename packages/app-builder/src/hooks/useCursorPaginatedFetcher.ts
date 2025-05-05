@@ -34,14 +34,14 @@ export const useCursorPaginatedFetcher = <T, D = T>({
 
   useEffect(() => {
     if (paginationState.isPristine) {
-      return;
+      return () => reset();
     }
 
     const queryParams = getQueryParamsRef(paginationState.cursor) ?? {};
     submit(qs.stringify(queryParams, { skipNulls: true }), {
       method: 'GET',
     });
-  }, [paginationState, submit, getQueryParamsRef]);
+  }, [paginationState, submit, reset, getQueryParamsRef]);
 
   const [previousInitialData, setPreviousInitialData] = useState(initialData);
   if (initialData !== previousInitialData && paginationState.isPristine) {
