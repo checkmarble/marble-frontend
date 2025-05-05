@@ -10,12 +10,14 @@ import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { type LoaderFunctionArgs } from '@remix-run/node';
 import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
+
+import { MY_INBOX_ID } from './_index';
 
 export const handle = {
   i18n: ['navigation', 'cases', 'settings', ...casesI18n] satisfies Namespace,
@@ -41,10 +43,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const inboxes = await inbox.listInboxes();
 
-  return json({
+  return {
     inboxes,
     isCreateInboxAvailable: isCreateInboxAvailable(user),
-  });
+  };
 }
 
 export default function Cases() {
@@ -58,6 +60,20 @@ export default function Cases() {
       </Page.Header>
       <div className="flex h-full flex-row overflow-hidden">
         <div className="border-e-grey-90 bg-grey-100 flex h-full w-fit min-w-[200px] max-w-[300px] shrink-0 flex-col overflow-y-auto border-e p-4">
+          <NavLink
+            className={({ isActive }) =>
+              clsx(
+                'border-grey-90 my-6 flex w-full cursor-pointer flex-row items-center justify-center gap-2 rounded border p-2',
+                isActive
+                  ? 'bg-purple-96 text-purple-65'
+                  : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+              )
+            }
+            to={`/cases/inboxes/${MY_INBOX_ID}`}
+          >
+            <Icon icon="person" className="size-5" />
+            <p className="font-semibold">{t('cases:inbox.my-inbox.link')}</p>
+          </NavLink>
           <div className="flex flex-row items-center gap-2">
             <Icon icon="inbox" className="size-5" />
             <p className="font-bold">{t('cases:case.inboxes')}</p>
@@ -84,21 +100,6 @@ export default function Cases() {
                     </NavLink>
                   </li>
                 ))}
-                <li>
-                  <NavLink
-                    className={({ isActive }) =>
-                      clsx(
-                        'text-s flex w-full cursor-pointer flex-row items-center rounded p-2 font-medium',
-                        isActive
-                          ? 'bg-purple-96 text-purple-65'
-                          : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
-                      )
-                    }
-                    to="/cases/inboxes/assigned-to-me"
-                  >
-                    {t('cases:inbox.assigned_to_me')}
-                  </NavLink>
-                </li>
               </ul>
             </nav>
           </div>

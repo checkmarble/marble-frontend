@@ -31,6 +31,8 @@ import { omit } from 'remeda';
 import { Button, Checkbox, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+import { MY_INBOX_ID } from './_index';
+
 export const handle = {
   i18n: ['navigation', ...casesI18n] satisfies Namespace,
 };
@@ -68,8 +70,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   });
 
   const parsedResult = await parseIdParamSafe(params, 'inboxId');
-  // The 'assigned-to-me' is not an actual inboxId, but a special case to get the cases assigned to the user
-  if (!parsedResult.success && params['inboxId'] !== 'assigned-to-me') {
+  // The MY_INBOX_ID is not an actual inboxId, but a special case to get the cases assigned to the user
+  if (!parsedResult.success && params['inboxId'] !== MY_INBOX_ID) {
     return badRequest('Invalid inbox UUID');
   }
 
@@ -199,7 +201,7 @@ export default function Cases() {
         reset();
 
         const pathname = getRoute('/cases/inboxes/:inboxId', {
-          inboxId: inboxId ? fromUUIDtoSUUID(inboxId) : 'assigned-to-me',
+          inboxId: inboxId ? fromUUIDtoSUUID(inboxId) : MY_INBOX_ID,
         });
         const search = qs.stringify(buildQueryParams(casesFilters, null, null), {
           addQueryPrefix: true,
@@ -226,7 +228,7 @@ export default function Cases() {
         navigate(
           {
             pathname: getRoute('/cases/inboxes/:inboxId', {
-              inboxId: inboxId ? fromUUIDtoSUUID(inboxId) : 'assigned-to-me',
+              inboxId: inboxId ? fromUUIDtoSUUID(inboxId) : MY_INBOX_ID,
             }),
             search: qs.stringify(buildQueryParams(casesFilters, null, pagination.order), {
               addQueryPrefix: true,

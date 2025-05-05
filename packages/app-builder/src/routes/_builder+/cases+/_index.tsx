@@ -3,12 +3,13 @@ import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/
 import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { hasAtLeast } from 'remeda';
 import { Icon } from 'ui-icons';
+
+export const MY_INBOX_ID = 'my-inbox';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
@@ -19,14 +20,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const inboxes = await inbox.listInboxes();
 
   if (hasAtLeast(inboxes, 1)) {
-    return redirect(
-      getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUIDtoSUUID(inboxes[0].id) }),
-    );
+    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: MY_INBOX_ID }));
   }
 
-  return json({
+  return {
     isCreateInboxAvailable: isCreateInboxAvailable(user),
-  });
+  };
 }
 
 export default function Cases() {
