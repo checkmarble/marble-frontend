@@ -1,11 +1,12 @@
 import { type Case } from '@app-builder/models/cases';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateRelative, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel, type SortingState } from '@tanstack/react-table';
 import clsx from 'clsx';
+import { differenceInDays } from 'date-fns/differenceInDays';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, Tooltip, useVirtualTable } from 'ui-design-system';
@@ -75,10 +76,26 @@ export function CasesList({
         minSize: 70,
         cell: ({ getValue }) => {
           const dateTime = getValue();
-          return (
+          return Math.abs(differenceInDays(new Date(), dateTime)) > 1 ? (
             <time dateTime={dateTime}>
               {formatDateTime(dateTime, { language, timeStyle: undefined })}
             </time>
+          ) : (
+            <Tooltip.Default
+              arrow={false}
+              className="border-grey-90 flex items-center border px-1.5 py-1"
+              content={
+                <span className="text-2xs font-normal">
+                  {formatDateTime(dateTime, {
+                    language,
+                    timeStyle: undefined,
+                    dateStyle: 'short',
+                  })}
+                </span>
+              }
+            >
+              <span>{formatDateRelative(dateTime, { language })}</span>
+            </Tooltip.Default>
           );
         },
       }),
