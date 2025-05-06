@@ -56,7 +56,7 @@ export const SnoozePanel = ({
           {(rulesByPivot) => (
             <div className="flex flex-col gap-6 px-2">
               <span className="text-l font-semibold">Rules</span>
-              <Tabs className="flex flex-col gap-6" value={Object.keys(rulesByPivot)[0]}>
+              <Tabs className="flex flex-col gap-6" defaultValue={Object.keys(rulesByPivot)[0]}>
                 <TabsList className="w-fit">
                   {Object.keys(rulesByPivot).map((pivotValue) => {
                     const client = findDataFromPivotValue(pivotObjects ?? [], pivotValue);
