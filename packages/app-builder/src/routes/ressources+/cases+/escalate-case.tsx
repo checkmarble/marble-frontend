@@ -116,7 +116,7 @@ export const EscalateCase = ({ id, inboxId }: { id: string; inboxId: string }) =
                 })}
                 className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
               >
-                Inbox settings
+                {t('cases:case.inbox_settings_link')}
               </Link>
             ) : null}
           </div>

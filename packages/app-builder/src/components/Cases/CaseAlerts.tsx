@@ -4,11 +4,13 @@ import { parseUnknownData } from '@app-builder/utils/parse';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { Suspense, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, cn } from 'ui-design-system';
 
 import { OutcomeBadge } from '../Decisions';
 import { FormatData } from '../FormatData';
 import { ScoreModifier } from '../Scenario/Rules/ScoreModifier';
+import { casesI18n } from './cases-i18n';
 import { RequiredActions } from './RequiredActions';
 
 export const CaseAlerts = ({
@@ -20,6 +22,7 @@ export const CaseAlerts = ({
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
   drawerContentMode: 'pivot' | 'decision' | 'snooze';
 }) => {
+  const { t } = useTranslation(casesI18n);
   const { decisionsPromise, case: caseDetail } = useLoaderData<typeof loader>();
   const language = useFormatLanguage();
   const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
@@ -30,10 +33,10 @@ export const CaseAlerts = ({
         {(decisions) => (
           <div className="border-grey-90 bg-grey-100 rounded-lg border">
             <div className="text-2xs text-grey-50 grid grid-cols-[82px_1fr_250px_175px] font-normal">
-              <span className="p-2">Date</span>
-              <span className="p-2">Alert</span>
-              <span className="p-2">Trigger object</span>
-              <span className="p-2">Rules hit</span>
+              <span className="p-2">{t('cases:decisions.date')}</span>
+              <span className="p-2">{t('cases:decisions.alert')}</span>
+              <span className="p-2">{t('cases:decisions.trigger_object')}</span>
+              <span className="p-2">{t('cases:decisions.rule_hits')}</span>
             </div>
             {decisions.map((decision) => (
               <div

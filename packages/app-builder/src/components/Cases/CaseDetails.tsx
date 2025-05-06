@@ -73,7 +73,7 @@ export const CaseDetails = ({
               .with('pending', () => <div className="border-red-47 size-4 rounded-full border-2" />)
               .with('closed', () => <div className="bg-green-38 size-4 rounded-full" />)
               .exhaustive()}
-            <span className="text-xs font-medium capitalize">
+            <span className="text-xs font-medium first-letter:capitalize">
               {t(caseStatusMapping[detail.status].tKey)}
             </span>
             {detail.outcome && detail.outcome !== 'unset' ? (
@@ -90,7 +90,7 @@ export const CaseDetails = ({
           </span>
         </div>
         <div className="grid grid-cols-[120px,1fr] items-center">
-          <span className="text-grey-50 text-xs font-normal">Creation date</span>
+          <span className="text-grey-50 text-xs font-normal">{t('cases:creation_date')}</span>
           <time className="text-xs font-medium" dateTime={detail.createdAt}>
             {formatDateTime(detail.createdAt, {
               language,
@@ -99,15 +99,15 @@ export const CaseDetails = ({
           </time>
         </div>
         <div className="grid grid-cols-[120px,1fr] items-center">
-          <span className="text-grey-50 text-xs font-normal">Inbox</span>
+          <span className="text-grey-50 text-xs font-normal">{t('cases:case.inbox')}</span>
           <EditCaseInbox id={detail.id} inboxId={detail.inboxId} inboxes={inboxes} />
         </div>
         <div className="grid grid-cols-[120px,1fr] items-center">
-          <span className="text-grey-50 text-xs font-normal">Tags</span>
+          <span className="text-grey-50 text-xs font-normal">{t('cases:case.tags')}</span>
           <EditCaseTags id={detail.id} tagIds={detail.tags.map(({ tagId }) => tagId)} />
         </div>
         <div className="grid grid-cols-[120px,1fr] items-center">
-          <span className="text-grey-50 text-xs font-normal">Assigned to</span>
+          <span className="text-grey-50 text-xs font-normal">{t('cases:assigned_to')}</span>
           <EditCaseAssignee
             disabled={detail.status === 'closed'}
             assigneeId={detail.assignedTo}
@@ -124,7 +124,7 @@ export const CaseDetails = ({
         </div> */}
       </div>
       <div className="flex flex-col justify-start gap-1.5">
-        <span className="text-r text-grey-00 px-1 font-medium">Investigation</span>
+        <span className="text-r text-grey-00 px-1 font-medium">{t('cases:investigation')}</span>
         <div className="border-grey-90 bg-grey-100 flex flex-col rounded-lg border">
           <div className="p-4">
             <CaseEvents events={detail.events} inboxes={inboxes} />
@@ -134,10 +134,10 @@ export const CaseDetails = ({
       </div>
       <div className="flex flex-col justify-start gap-1.5">
         <div className="text-r text-grey-00 flex items-center justify-between px-1 font-medium">
-          <span>Alerts</span>
+          <span>{t('cases:alerts')}</span>
           <Button variant="secondary" size="small" onClick={() => setDrawerContentMode('snooze')}>
             <Icon icon="snooze" className="size-4" />
-            <span className="text-xs">Snooze rules</span>
+            <span className="text-xs">{t('cases:decisions.snooze_rules')}</span>
           </Button>
         </div>
         <CaseAlerts

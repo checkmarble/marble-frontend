@@ -106,11 +106,13 @@ export const SnoozePanel = ({
                       <div className="border-grey-90 bg-grey-100 rounded-lg border">
                         <div className="text-2xs text-grey-50 grid grid-cols-[110px_90px_1fr_1fr_176px_176px] font-normal">
                           <span className="p-2">{t('cases:snooze.title')}</span>
-                          <span className="p-2">Hit date</span>
-                          <span className="p-2">Name and Score Modifier</span>
-                          <span className="p-2">Description</span>
-                          <span className="p-2">Rule Group</span>
-                          <span className="p-2">Outcome</span>
+                          <span className="p-2">
+                            {t('cases:decisions.rule.last_hit_timestamp')}
+                          </span>
+                          <span className="p-2">{t('cases:decisions.rule.name_and_score')}</span>
+                          <span className="p-2">{t('cases:decisions.rule.description')}</span>
+                          <span className="p-2">{t('cases:decisions.rule.rule_group')}</span>
+                          <span className="p-2">{t('cases:decisions.outcome')}</span>
                         </div>
                         {rules.map((r) => {
                           const formattedHitAt = (

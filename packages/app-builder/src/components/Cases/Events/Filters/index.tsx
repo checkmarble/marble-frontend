@@ -58,7 +58,7 @@ export const CaseEventFilters = ({
           onClick={() => setFilters({ types: ['comment_added'] })}
         >
           <Icon icon="cross" className="size-4" />
-          <span className="text-xs">Reset</span>
+          <span className="text-xs">{t('cases:case_detail.history.filter_reset')}</span>
         </Button>
       ) : null}
       <MenuCommand.Menu>
@@ -68,7 +68,9 @@ export const CaseEventFilters = ({
             <span className="text-xs">Type</span>
             {filters.types.length > 0 ? <div className="bg-grey-80 mx-1 h-3 w-px" /> : null}
             {filters.types.length >= 3 ? (
-              <Badge>{filters.types.length} selected</Badge>
+              <Badge>
+                {t('cases:case_detail.history.nb_selected', { count: filters.types.length })}
+              </Badge>
             ) : (
               filters.types.map((type) => (
                 <Badge key={type}>{t(`cases:case_detail.history.event_type.${type}`)}</Badge>

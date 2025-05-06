@@ -248,6 +248,7 @@ export default function CaseManagerIndexPage() {
     currentUser,
     nextCaseId,
   } = useLoaderData<typeof loader>();
+  const { t } = useTranslation(casesI18n);
   const navigate = useNavigate();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
   const [selectedDecision, selectDecision] = useState<string | null>(null);
@@ -272,7 +273,7 @@ export default function CaseManagerIndexPage() {
               navigate(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(nextCaseId) }))
             }
           >
-            <span className="text-xs font-medium">Go to the next unassigned case</span>
+            <span className="text-xs font-medium">{t('cases:next_unassigned_case')}</span>
             <Icon icon="arrow-up" className="size-5 rotate-90" />
           </Button>
         ) : null}

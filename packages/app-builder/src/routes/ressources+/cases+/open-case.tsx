@@ -102,11 +102,11 @@ export const OpenCase = ({ id }: { id: string }) => {
       <Modal.Trigger asChild>
         <Button variant="primary" size="medium" className="flex-1 first-letter:capitalize">
           <Icon icon="save" className="size-5" />
-          Re-Open case
+          {t('cases:case.reopen')}
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <Modal.Title>Re-Open case</Modal.Title>
+        <Modal.Title>{t('cases:case.reopen')}</Modal.Title>
         <form onSubmit={handleSubmit(form)} className="flex flex-col gap-8 p-8">
           <Callout>Are you sure you want to re-open the case ?</Callout>
           <form.Field name="comment">
