@@ -96,9 +96,9 @@ export function OutcomeBadge({
 }: ComponentProps<'div'> & { outcome: Outcome; reviewStatus?: string | null }) {
   const { t } = useTranslation(decisionsI18n);
   return (
-    <div {...rest} className={cn('flex items-center gap-1', className)}>
+    <div {...rest} className={cn('flex items-center gap-1.5', className)}>
       <div
-        className={cn('size-4 rounded-full', {
+        className={cn('size-4 shrink-0 rounded-full', {
           'bg-green-38': outcome === 'approve',
           'bg-red-47': outcome === 'decline',
           'border-red-47 border-2': outcome === 'review',

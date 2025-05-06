@@ -37,7 +37,7 @@ export const RequiredActions = ({
               })}
             >
               <Button variant="secondary" size="xs">
-                <span>Review pending sanction checks</span>
+                <span>Review screening hits</span>
                 <span>({pendingSanctionMatches})</span>
               </Button>
             </Link>
