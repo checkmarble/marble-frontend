@@ -6,7 +6,7 @@ import { casesI18n } from '@app-builder/components/Cases';
 import { CasePivotValues } from '@app-builder/components/Cases/CasePivotValues';
 import { RequiredActions } from '@app-builder/components/Cases/RequiredActions';
 import { IngestedObjectDetailModal } from '@app-builder/components/Data/IngestedObjectDetailModal';
-import { RuleExecutionDetail } from '@app-builder/components/Decisions';
+import { decisionsI18n, RuleExecutionDetail } from '@app-builder/components/Decisions';
 import {
   RuleExecutionCollapsible,
   RuleExecutionContent,
@@ -221,6 +221,7 @@ export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPane
     case: caseDetail,
   } = useLoaderData<typeof loader>();
   const { isExpanded, setExpanded } = DrawerContext.useValue();
+  const { t } = useTranslation(decisionsI18n);
 
   return (
     <div className="flex flex-col pl-4 pr-2">
@@ -270,11 +271,11 @@ export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPane
                       />
                       <span className="text-xs font-medium">
                         {match(decision.outcome)
-                          .with('approve', () => 'Manually approved')
-                          .with('decline', () => 'Manually declined')
-                          .with('block_and_review', () => 'Blocked and review')
-                          .with('review', () => 'Review')
-                          .with('unknown', () => 'Unknown')
+                          .with('approve', () => t('decisions:outcome.tag.approved.label'))
+                          .with('decline', () => t('decisions:outcome.tag.declined.label'))
+                          .with('block_and_review', () => t('decisions:outcome.tag.blocked.label'))
+                          .with('review', () => t('decisions:outcome.tag.review.label'))
+                          .with('unknown', () => t('decisions:outcome.tag.unknown.label'))
                           .exhaustive()}
                       </span>
                     </div>

@@ -59,5 +59,10 @@
   "rules.description": "Description",
   "rules.error.not_found": "The associated rule info could not be found. Please try again or contact your admin.",
   "rules.show_contextual_values": "Show contextual values",
-  "sanction_check.title": "Sanction check"
+  "sanction_check.title": "Sanction check",
+  "outcome.tag.approved.label": "Manually approved",
+  "outcome.tag.declined.label": "Declined",
+  "outcome.tag.blocked.label": "Blocked and review",
+  "outcome.tag.review.label": "Review",
+  "outcome.tag.unknown.label": "Unknown"
 }
