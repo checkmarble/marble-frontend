@@ -233,14 +233,14 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
             </MenuCommand.Trigger>
             <MenuCommand.Content sideOffset={4} align="start" sameWidth>
               <MenuCommand.List>
-                {table.fields.map((field) => {
+                {fieldOrder.map((fieldName) => {
                   return (
                     <MenuCommand.Item
-                      key={field.name}
-                      onSelect={() => handleToggleColumn(field.name)}
+                      key={fieldName}
+                      onSelect={() => handleToggleColumn(fieldName)}
                     >
-                      {field.name}
-                      {columnList.includes(field.name) ? (
+                      {fieldName}
+                      {columnList.includes(fieldName) ? (
                         <Icon icon="tick" className="size-5" />
                       ) : null}
                     </MenuCommand.Item>
