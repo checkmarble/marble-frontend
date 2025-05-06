@@ -135,7 +135,7 @@ export function SnoozeCase({
                 className="size-5"
                 aria-hidden
               />
-              {t('cases:snooze.title')}
+              {field.state.value ? t('cases:unsnooze.title') : t('cases:snooze.title')}
             </Button>
           </MenuCommand.Trigger>
           <MenuCommand.Content className="mt-2 min-w-[264px]">

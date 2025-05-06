@@ -20,6 +20,7 @@ import { type Decision, type RuleExecution } from '@app-builder/models/decision'
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
 import { Await, useLoaderData } from '@remix-run/react';
+import { t } from 'i18next';
 import { Suspense, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, isNonNullish, map, pipe } from 'remeda';
@@ -53,7 +54,7 @@ const DecisionRuleExecutions = ({ detail }: { detail: Detail }) => {
   return (
     <div className="flex h-fit flex-[2] flex-col gap-4">
       <div className="flex items-center justify-between">
-        <span className="text-m text-grey-00 font-semibold">Hits</span>
+        <span className="text-m text-grey-00 font-semibold">{t('cases:decisions.rules')}</span>
         <div className="flex flex-row items-center gap-4">
           <label htmlFor="showHitOnly" className="text-grey-00 cursor-pointer select-none text-xs">
             {t('cases:case_detail.rules_execution.show_hit_only')}
@@ -198,8 +199,8 @@ const CollapsedDetail = ({ detail, dataModel }: { detail: Detail; dataModel: Tab
   return (
     <Tabs defaultValue="hits" className="flex flex-col items-start gap-6">
       <TabsList>
-        <TabsTrigger value="hits">Hits</TabsTrigger>
-        <TabsTrigger value="trigger">Trigger</TabsTrigger>
+        <TabsTrigger value="hits">{t('cases:decisions.rules')}</TabsTrigger>
+        <TabsTrigger value="trigger">{t('cases:case_detail.trigger_object')}</TabsTrigger>
       </TabsList>
       <TabsContent value="hits" className="w-full">
         <DecisionRuleExecutions detail={detail} />
@@ -212,6 +213,7 @@ const CollapsedDetail = ({ detail, dataModel }: { detail: Detail; dataModel: Tab
 };
 
 export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPanelProps) {
+  const { t } = useTranslation(casesI18n);
   const {
     pivots,
     dataModelWithTableOptions,
@@ -255,7 +257,7 @@ export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPane
                 </div>
                 <div className="flex flex-col items-start gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-grey-50 text-xs">Current statut</span>
+                    <span className="text-grey-50 text-xs">{t('cases:decisions.outcome')}</span>
                     <div className="flex items-center gap-1">
                       <div
                         className={cn('size-4 rounded-full', {

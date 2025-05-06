@@ -22,14 +22,17 @@ import { TagsUpdatedDetail } from '@app-builder/components/Cases/Events/TagsUpda
 import { type CaseEvent } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { allPass, filter } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+import { casesI18n } from './cases-i18n';
 import { SarCreatedDetail } from './Events/SarCreated';
 
 export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: Inbox[] }) {
+  const { t } = useTranslation(casesI18n);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showAll, setShowAll] = useState(false);
   const [olderEvents, setOlderEventsCount] = useState(0);
@@ -98,13 +101,15 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
             'text-grey-100': showAll || newerEvents === 0,
           })}
         >
-          {newerEvents} newer
+          {t('cases:investigation.more_recent', { number: newerEvents })}
         </span>
         <div className="flex items-center gap-2">
           <CaseEventFilters filters={filters} setFilters={setFilters} />
           <Button variant="secondary" onClick={() => setShowAll(!showAll)} size="xs">
             <Icon icon={showAll ? 'eye-slash' : 'eye'} className="size-3.5" />
-            <span className="text-xs">{showAll ? 'View less' : 'View all'}</span>
+            <span className="text-xs">
+              {showAll ? t('cases:investigation.collapse') : t('cases:investigation.expand')}
+            </span>
           </Button>
         </div>
       </div>
@@ -147,7 +152,9 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
             'text-grey-100': showAll,
           })}
         >
-          {olderEvents === 0 ? `No older events` : `${olderEvents} older`}
+          {olderEvents === 0
+            ? t('cases:investigation.no_older')
+            : t('cases:investigation.older', { number: olderEvents })}
         </span>
       )}
     </div>

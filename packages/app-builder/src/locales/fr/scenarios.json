@@ -28,7 +28,7 @@
   "operator.is_in": "est dans",
   "operator.is_empty": "est vide",
   "operator.is_not_empty": "n'est pas vide",
-  "rules.consequence.score_modifier": "Modification du score : <Score>{{score}}</Score>",
+  "rules.consequence.score_modifier": "Score : <Score>{{score}}</Score>",
   "rules.decision": "Décision",
   "rules.description": "Description",
   "rules.empty": "Vous n'avez aucune règle. Cliquer sur nouvelle règle pour en créer une",

@@ -112,11 +112,11 @@ export const CloseCase = ({ id }: { id: string }) => {
       <Modal.Trigger asChild>
         <Button variant="primary" size="medium" className="flex-1 first-letter:capitalize">
           <Icon icon="save" className="size-5" />
-          Close case
+          {t('cases:case.close')}
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <Modal.Title>Close case</Modal.Title>
+        <Modal.Title>{t('cases:case.close')}</Modal.Title>
         <form onSubmit={handleSubmit(form)} className="flex flex-col gap-8 p-8">
           <form.Field name="outcome">
             {(field) => (
