@@ -13,9 +13,15 @@ type ClientObjectDataListProps = {
   tableModel: TableModelWithOptions;
   data: ClientObjectDetail['data'];
   className?: string;
+  isIncompleteObject?: boolean;
 };
 
-export function ClientObjectDataList({ tableModel, data, className }: ClientObjectDataListProps) {
+export function ClientObjectDataList({
+  tableModel,
+  isIncompleteObject = false,
+  data,
+  className,
+}: ClientObjectDataListProps) {
   const { t } = useTranslation(['common', 'cases']);
   const language = useFormatLanguage();
   const parsedData = R.pipe(data, R.mapValues(parseUnknownData));
@@ -40,7 +46,7 @@ export function ClientObjectDataList({ tableModel, data, className }: ClientObje
         ) : null;
       })}
 
-      {shouldShowButton ? (
+      {shouldShowButton && !isIncompleteObject ? (
         <Button
           size="small"
           variant="secondary"

@@ -1,7 +1,6 @@
 import { CaseStatusTag } from '@app-builder/components/Cases';
 import { ClientObjectDataList } from '@app-builder/components/DataModelExplorer/ClientObjectDataList';
 import {
-  type ClientObjectDetail,
   type CurrentUser,
   type DataModelWithTableOptions,
   isAdmin,
@@ -93,7 +92,7 @@ export function PivotsPanelContent({
           <PivotObjectDetails
             tableModel={currentTable}
             dataModel={dataModel}
-            pivotObjectData={currentPivotObject.pivotObjectData}
+            pivotObject={currentPivotObject}
           />
           <PivotNavigationOptions
             currentUser={currentUser}
@@ -193,16 +192,20 @@ function RelatedCases({
 type PivotObjectDetailsProps = {
   tableModel: TableModelWithOptions;
   dataModel: DataModelWithTableOptions;
-  pivotObjectData: ClientObjectDetail;
+  pivotObject: PivotObject;
 };
-function PivotObjectDetails({ tableModel, dataModel, pivotObjectData }: PivotObjectDetailsProps) {
+function PivotObjectDetails({ tableModel, dataModel, pivotObject }: PivotObjectDetailsProps) {
   const { t } = useTranslation(['common', 'cases']);
-  const { data, relatedObjects } = pivotObjectData;
+  const { data, relatedObjects } = pivotObject.pivotObjectData;
 
   return (
-    <DataCard title={t('cases:case_detail.pivot_panel.informations')}>
+    <DataCard title={t('cases:case_detail.pivot_panel.informations')} subtitle={tableModel.name}>
       <div className="mt-3 flex flex-col gap-8">
-        <ClientObjectDataList tableModel={tableModel} data={data} />
+        <ClientObjectDataList
+          tableModel={tableModel}
+          data={data}
+          isIncompleteObject={!pivotObject.isIngested}
+        />
         {relatedObjects ? (
           <div className="">
             {relatedObjects.map((relatedObject) => {
@@ -233,7 +236,7 @@ function PivotObjectDetails({ tableModel, dataModel, pivotObjectData }: PivotObj
   );
 }
 
-const titleVariants = cva('text-s px-2 py-3 font-semibold', {
+const titleVariants = cva('text-s px-2 py-3 font-semibold flex justify-between items-center', {
   variants: {
     borderless: {
       true: null,
@@ -247,12 +250,16 @@ const titleVariants = cva('text-s px-2 py-3 font-semibold', {
 
 type DataCardProps = {
   title: string;
+  subtitle?: string;
   children: ReactNode;
 } & VariantProps<typeof titleVariants>;
-function DataCard({ title, children, borderless }: DataCardProps) {
+function DataCard({ title, subtitle, children, borderless }: DataCardProps) {
   return (
     <div>
-      <h3 className={titleVariants({ borderless })}>{title}</h3>
+      <h3 className={titleVariants({ borderless })}>
+        <span>{title}</span>
+        {subtitle ? <span className="text-purple-82 text-xs">{subtitle}</span> : null}
+      </h3>
       {children}
     </div>
   );

@@ -89,6 +89,7 @@ export function DataTableRender({ dataModel, item, navigateTo }: DataTableRender
             <ClientObjectDataList
               tableModel={pivotTableModel}
               data={item.pivotObject.pivotObjectData.data}
+              isIncompleteObject={!item.pivotObject.isIngested}
             />
           </div>
         ) : null}
