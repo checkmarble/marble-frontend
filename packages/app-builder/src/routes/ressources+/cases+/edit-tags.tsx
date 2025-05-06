@@ -85,6 +85,7 @@ export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) =
       {(field) => (
         <div className="flex items-center gap-2">
           <MenuCommand.Menu
+            persistOnSelect
             onOpenChange={(open) => {
               if (
                 open === false &&
