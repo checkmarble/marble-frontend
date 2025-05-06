@@ -56,14 +56,10 @@ export const SnoozePanel = ({
           {(rulesByPivot) => (
             <div className="flex flex-col gap-6 px-2">
               <span className="text-l font-semibold">Rules</span>
-              <Tabs className="flex flex-col gap-6" defaultValue={Object.keys(rulesByPivot)[0]}>
-                <TabsList className="w-fit">
+              <Tabs className="flex flex-col" defaultValue={Object.keys(rulesByPivot)[0]}>
+                <TabsList className="mb-6 w-fit">
                   {Object.keys(rulesByPivot).map((pivotValue) => {
                     const client = findDataFromPivotValue(pivotObjects ?? [], pivotValue);
-
-                    const tableName =
-                      dataModelWithTableOptions.find((t) => t.name === client?.pivotObjectName)
-                        ?.name ?? 'Client';
 
                     const clientName =
                       client?.pivotObjectData.data &&
@@ -78,8 +74,7 @@ export const SnoozePanel = ({
                         value={pivotValue}
                         className="gap-2"
                       >
-                        <span>{tableName}</span>
-                        <span>{clientName}</span>
+                        <span className="font-medium">{clientName}</span>
                       </TabsTrigger>
                     );
                   })}
@@ -128,7 +123,7 @@ export const SnoozePanel = ({
                               key={r.ruleId}
                               className="border-grey-90 hover:bg-purple-98 grid grid-cols-[110px_90px_1fr_1fr_176px_176px] items-center border-t transition-colors"
                             >
-                              <div className="flex min-h-full justify-center p-2">
+                              <div className="flex min-h-full items-center justify-center p-2">
                                 <AddRuleSnooze decisionId={r.decisionId} ruleId={r.ruleId}>
                                   <Button
                                     variant="secondary"
