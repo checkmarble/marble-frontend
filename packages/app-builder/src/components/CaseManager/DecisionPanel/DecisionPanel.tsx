@@ -20,7 +20,6 @@ import { type Decision, type RuleExecution } from '@app-builder/models/decision'
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
 import { Await, useLoaderData } from '@remix-run/react';
-import { t } from 'i18next';
 import { Suspense, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, isNonNullish, map, pipe } from 'remeda';
@@ -196,6 +195,7 @@ const ExpandedDetail = ({ detail, dataModel }: { detail: Detail; dataModel: Tabl
 };
 
 const CollapsedDetail = ({ detail, dataModel }: { detail: Detail; dataModel: TableModel[] }) => {
+  const { t } = useTranslation(casesI18n);
   return (
     <Tabs defaultValue="hits" className="flex flex-col items-start gap-6">
       <TabsList>
