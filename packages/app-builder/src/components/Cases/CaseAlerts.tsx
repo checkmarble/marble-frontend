@@ -57,7 +57,10 @@ export const CaseAlerts = ({
                 <div className="border-grey-90 flex min-h-full flex-col gap-2 border-x p-2">
                   <div className="relative flex items-center justify-between">
                     <div className="flex size-full items-center gap-2">
-                      <OutcomeBadge outcome={decision.outcome} />
+                      <OutcomeBadge
+                        outcome={decision.outcome}
+                        reviewStatus={decision.reviewStatus}
+                      />
                       <span className="text-ellipsis text-xs font-normal">
                         {decision.scenario.name}
                       </span>
