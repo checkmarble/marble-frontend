@@ -12,7 +12,7 @@ import { PassThrough } from 'stream';
 
 import { initServerServices } from './services/init.server';
 import { captureUnexpectedRemixError } from './services/monitoring';
-import { getServerEnv } from './utils/environment';
+import { checkEnv, getServerEnv } from './utils/environment';
 
 const ABORT_DELAY = 70000;
 
@@ -192,3 +192,6 @@ export const handleError: HandleErrorFunction = (error, { request }) => {
   }
   captureUnexpectedRemixError(error, 'remix.server', request);
 };
+
+// Sanity check at startup to verify we have all the environment needed to start the server
+checkEnv();

@@ -67,7 +67,7 @@ export function initServerServices(request: Request) {
     getMarbleCoreAPIClientWithAuth,
     getTransfercheckAPIClientWithAuth,
     sessionStorageRepositoryOptions: {
-      maxAge: Number(getServerEnv('SESSION_MAX_AGE')),
+      maxAge: Number(getServerEnv('SESSION_MAX_AGE')) || 43200,
       secrets: [getServerEnv('SESSION_SECRET')],
       secure:
         getServerEnv('ENV') !== 'development'

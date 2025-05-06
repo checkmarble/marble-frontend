@@ -22,7 +22,7 @@ const PublicEnvVarsSchema = z.object({
   NODE_ENV: z.string(),
   APP_VERSION: z.string().optional(),
 
-  SESSION_MAX_AGE: z.string(),
+  SESSION_MAX_AGE: z.string().optional(),
   MARBLE_API_URL_CLIENT: z.string(),
   MARBLE_API_URL_SERVER: z.string(),
   MARBLE_APP_URL: z.string(),
@@ -78,7 +78,7 @@ interface ServerEnvVars {
   ENV: string;
   NODE_ENV: string;
   APP_VERSION?: string;
-  SESSION_MAX_AGE: string;
+  SESSION_MAX_AGE?: string;
   MARBLE_API_URL_CLIENT: string;
   MARBLE_API_URL_SERVER: string;
   MARBLE_APP_URL: string;
