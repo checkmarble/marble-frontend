@@ -7,8 +7,9 @@ import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
 import { type Tag } from 'marble-api';
 import { pick, toggle } from 'radash';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { isDeepEqual } from 'remeda';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
@@ -49,7 +50,6 @@ export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) =
   const { submit } = useFetcher<typeof action>();
   const { orgTags } = useOrganizationTags();
   const { t } = useTranslation(casesI18n);
-  const [open, setOpen] = useState(false);
 
   const formattedTags = useMemo(
     () =>
@@ -84,10 +84,17 @@ export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) =
     <form.Field name="tagIds">
       {(field) => (
         <div className="flex items-center gap-2">
-          {field.state.value.map((id) => (
-            <TagPreview key={id} name={formattedTags[id]!.name} />
-          ))}
-          <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+          <MenuCommand.Menu
+            onOpenChange={(open) => {
+              if (
+                open === false &&
+                form.state.isDirty &&
+                !isDeepEqual(form.options.defaultValues, form.state.values)
+              ) {
+                form.handleSubmit();
+              }
+            }}
+          >
             <MenuCommand.Trigger>
               <Button variant="secondary" size={ids.length ? 'icon' : 'xs'}>
                 <Icon icon={ids.length ? 'edit-square' : 'plus'} className="text-grey-50 size-4" />
@@ -104,7 +111,6 @@ export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) =
                     className="cursor-pointer"
                     onSelect={() => {
                       field.handleChange(toggle(field.state.value, caseId));
-                      form.handleSubmit();
                     }}
                   >
                     <div className="inline-flex w-full justify-between">
@@ -121,6 +127,9 @@ export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) =
               </MenuCommand.List>
             </MenuCommand.Content>
           </MenuCommand.Menu>
+          {field.state.value.map((id) => (
+            <TagPreview key={id} name={formattedTags[id]!.name} />
+          ))}
         </div>
       )}
     </form.Field>
