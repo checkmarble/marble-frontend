@@ -38,8 +38,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const explorationOptions = explorationOptionsSchema.parse(queryParams);
   const paginationQuery = paginationSchema.parse(queryParams);
 
-  console.log(paginationQuery);
-
   const [clientDataListResponse] = await Promise.all([
     dataModelRepository.listClientObjects({
       tableName,
