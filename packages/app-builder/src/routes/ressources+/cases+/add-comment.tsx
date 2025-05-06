@@ -14,7 +14,7 @@ import { toggle } from 'radash';
 import { useEffect } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import { useTranslation } from 'react-i18next';
-import { Button, cn } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -23,7 +23,7 @@ const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const schema = z.object({
   caseId: z.string().nonempty(),
-  comment: z.string().nonempty(),
+  comment: z.string(),
   files: z.array(z.instanceof(File)),
 });
 
@@ -154,10 +154,7 @@ export function AddComment({ caseId }: { caseId: string }) {
               onBlur={field.handleBlur}
               name={field.name}
               placeholder={t('cases:case_detail.add_a_comment.placeholder')}
-              className={cn(
-                'form-textarea text-s w-full resize-none border-none bg-transparent outline-none',
-                { 'placeholder:text-red-47': field.state.meta.errors.length !== 0 },
-              )}
+              className="form-textarea text-s w-full resize-none border-none bg-transparent outline-none"
             />
           )}
         </form.Field>
