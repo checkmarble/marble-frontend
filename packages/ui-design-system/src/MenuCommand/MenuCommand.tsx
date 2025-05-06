@@ -22,11 +22,17 @@ const MenuCommandSharpFactory = createSharpFactory({
   },
 });
 
-type MenuCommandContextValue = { hover: boolean; onSelect: () => void; hasCombobox: boolean };
+type MenuCommandContextValue = {
+  hover: boolean;
+  persistOnSelect: boolean;
+  onSelect: () => void;
+  hasCombobox: boolean;
+};
 export const InternalMenuSharpFactory = createSharpFactory({
   name: 'InternalMenu',
   initializer: (initialState: {
     hover: boolean;
+    persistOnSelect: boolean;
     onSelect: () => void;
   }): MenuCommandContextValue => {
     return { ...initialState, hasCombobox: false };
@@ -35,6 +41,7 @@ export const InternalMenuSharpFactory = createSharpFactory({
 
 type RootProps = Omit<React.ComponentProps<typeof Popover.Root>, 'className'> & {
   hover?: boolean;
+  persistOnSelect?: boolean;
 };
 /**
  * A Menu command, it can be used as a select, a menu, can have a search bar and be nested
@@ -69,14 +76,20 @@ function Menu(props: RootProps) {
   );
 }
 
-function Root({ hover = false, ...props }: RootProps) {
+function Root({ hover = false, persistOnSelect, ...props }: RootProps) {
   const onOpenChange = props.onOpenChange;
 
   const parentInternalSharp = InternalMenuSharpFactory.useOptionalSharp();
+  const shouldPersistOnSelect =
+    persistOnSelect ?? parentInternalSharp?.value.persistOnSelect ?? false;
+
   const internalSharp = InternalMenuSharpFactory.createSharp({
     hover,
+    persistOnSelect: shouldPersistOnSelect,
     onSelect: () => {
-      onOpenChange?.(false);
+      if (!shouldPersistOnSelect) {
+        onOpenChange?.(false);
+      }
       parentInternalSharp?.value.onSelect();
     },
   });
@@ -96,6 +109,7 @@ type SubMenuProps = Omit<RootProps, 'open' | 'onOpenChange'> & {
   forceMount?: boolean;
   arrow?: boolean;
   disabled?: boolean;
+  persistOnSelect?: boolean;
 };
 
 function SubMenu({
