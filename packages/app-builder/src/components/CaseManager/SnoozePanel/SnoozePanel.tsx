@@ -105,7 +105,7 @@ export const SnoozePanel = ({
                       ) : null}
                       <div className="border-grey-90 bg-grey-100 rounded-lg border">
                         <div className="text-2xs text-grey-50 grid grid-cols-[110px_90px_1fr_1fr_176px_176px] font-normal">
-                          <span className="p-2">{t('cases:snooze.title')}</span>
+                          <span className="p-2">{t('cases:decisions.rule.snooze')}</span>
                           <span className="p-2">
                             {t('cases:decisions.rule.last_hit_timestamp')}
                           </span>
