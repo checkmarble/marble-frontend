@@ -92,9 +92,11 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
 
   return (
     <div className="relative z-0 flex w-full flex-col gap-3">
-      <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center">
-        <div className="bg-grey-90 -z-10 h-full w-px" />
-      </div>
+      {filteredEvents.length > 0 ? (
+        <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center">
+          <div className="bg-grey-90 -z-10 h-full w-px" />
+        </div>
+      ) : null}
       <div className="bg-grey-100 sticky left-0 top-0 z-[-15] flex w-full items-center justify-between pl-6">
         <span
           className={cn('text-grey-50 text-xs', {
@@ -152,9 +154,11 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
             'text-grey-100': showAll,
           })}
         >
-          {olderEvents === 0
+          {filteredEvents.length === 0
             ? t('cases:investigation.no_older')
-            : t('cases:investigation.older', { number: olderEvents })}
+            : olderEvents === 0
+              ? t('cases:investigation.no_older')
+              : t('cases:investigation.older', { number: olderEvents })}
         </span>
       )}
     </div>
