@@ -94,13 +94,6 @@ export const CaseEventFilters = ({
                 <span className="text-s">{t(`cases:case_detail.history.event_type.${type}`)}</span>
               </MenuCommand.Item>
             ))}
-            {filters.types.length > 0 ? (
-              <MenuCommand.Item
-                onSelect={() => setFilters((prev) => ({ ...prev, types: ['comment_added'] }))}
-              >
-                Clear Filter
-              </MenuCommand.Item>
-            ) : null}
           </MenuCommand.List>
         </MenuCommand.Content>
       </MenuCommand.Menu>
