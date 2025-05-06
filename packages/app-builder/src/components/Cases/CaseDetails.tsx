@@ -109,14 +109,15 @@ export const CaseDetails = ({
         <div className="grid grid-cols-[120px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">Assigned to</span>
           <EditCaseAssignee
+            disabled={detail.status === 'closed'}
             assigneeId={detail.assignedTo}
             currentUser={currentUser}
             id={detail.id}
           />
         </div>
 
-        {/* 
-        TODO: Add this section when SAR is properly spec back & front        
+        {/*
+        TODO: Add this section when SAR is properly spec back & front
         <div className="grid grid-cols-[120px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">Report of suspicion</span>
           <EditCaseSuspicion id={detail.id} reports={reports} />

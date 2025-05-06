@@ -47,10 +47,12 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export const EditCaseAssignee = ({
+  disabled,
   assigneeId,
   currentUser,
   id,
 }: {
+  disabled: boolean;
   assigneeId?: string;
   currentUser: CurrentUser;
   id: string;
@@ -97,7 +99,7 @@ export const EditCaseAssignee = ({
                   ) : null}
                 </span>
               </span>
-            ) : (
+            ) : !disabled ? (
               <Button
                 variant="secondary"
                 size="xs"
@@ -111,37 +113,42 @@ export const EditCaseAssignee = ({
                   {t('cases:case_detail.assign-to-me-button.label')}
                 </span>
               </Button>
-            )}
-            <MenuCommand.Menu open={open} onOpenChange={setOpen}>
-              <MenuCommand.Trigger>
-                <Button variant="secondary" size={assignee ? 'icon' : 'xs'}>
-                  <Icon icon={assignee ? 'edit-square' : 'plus'} className="text-grey-50 size-4" />
-                  {!assignee ? <span className="text-grey-50 text-xs">Add</span> : null}
-                </Button>
-              </MenuCommand.Trigger>
-              <MenuCommand.Content sameWidth className="mt-2">
-                <MenuCommand.Combobox placeholder="Search..." />
-                <MenuCommand.List>
-                  {orgUsers.map(({ userId, firstName, lastName }) => (
-                    <MenuCommand.Item
-                      key={userId}
-                      className="cursor-pointer"
-                      onSelect={() => {
-                        field.handleChange(userId === selectedUserId ? null : userId);
-                        form.handleSubmit();
-                      }}
-                    >
-                      <span className="inline-flex w-full justify-between">
-                        <span>{`${capitalize(firstName)} ${capitalize(lastName)}`}</span>
-                        {userId === selectedUserId ? (
-                          <Icon icon="tick" className="text-purple-65 size-6" />
-                        ) : null}
-                      </span>
-                    </MenuCommand.Item>
-                  ))}
-                </MenuCommand.List>
-              </MenuCommand.Content>
-            </MenuCommand.Menu>
+            ) : null}
+            {!disabled ? (
+              <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+                <MenuCommand.Trigger>
+                  <Button variant="secondary" size={assignee ? 'icon' : 'xs'}>
+                    <Icon
+                      icon={assignee ? 'edit-square' : 'plus'}
+                      className="text-grey-50 size-4"
+                    />
+                    {!assignee ? <span className="text-grey-50 text-xs">Add</span> : null}
+                  </Button>
+                </MenuCommand.Trigger>
+                <MenuCommand.Content sameWidth className="mt-2">
+                  <MenuCommand.Combobox placeholder="Search..." />
+                  <MenuCommand.List>
+                    {orgUsers.map(({ userId, firstName, lastName }) => (
+                      <MenuCommand.Item
+                        key={userId}
+                        className="cursor-pointer"
+                        onSelect={() => {
+                          field.handleChange(userId === selectedUserId ? null : userId);
+                          form.handleSubmit();
+                        }}
+                      >
+                        <span className="inline-flex w-full justify-between">
+                          <span>{`${capitalize(firstName)} ${capitalize(lastName)}`}</span>
+                          {userId === selectedUserId ? (
+                            <Icon icon="tick" className="text-purple-65 size-6" />
+                          ) : null}
+                        </span>
+                      </MenuCommand.Item>
+                    ))}
+                  </MenuCommand.List>
+                </MenuCommand.Content>
+              </MenuCommand.Menu>
+            ) : null}
           </div>
           <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
         </div>
