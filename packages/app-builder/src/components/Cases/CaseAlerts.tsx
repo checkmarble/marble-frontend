@@ -5,6 +5,7 @@ import { Await, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { filter, map, pipe, take } from 'remeda';
 import { Button, cn } from 'ui-design-system';
 
 import { OutcomeBadge } from '../Decisions';
@@ -12,6 +13,8 @@ import { FormatData } from '../FormatData';
 import { ScoreModifier } from '../Scenario/Rules/ScoreModifier';
 import { casesI18n } from './cases-i18n';
 import { RequiredActions } from './RequiredActions';
+
+const MAX_ITEMS_DISPLAYED = 4;
 
 export const CaseAlerts = ({
   selectDecision,
@@ -32,7 +35,7 @@ export const CaseAlerts = ({
       <Await resolve={decisionsPromise}>
         {(decisions) => (
           <div className="border-grey-90 bg-grey-100 rounded-lg border">
-            <div className="text-2xs text-grey-50 grid grid-cols-[82px_1fr_250px_175px] font-normal">
+            <div className="text-2xs text-grey-50 grid grid-cols-[82px_2fr_1.3fr_1fr] font-normal">
               <span className="p-2">{t('cases:decisions.date')}</span>
               <span className="p-2">{t('cases:decisions.alert')}</span>
               <span className="p-2">{t('cases:decisions.trigger_object')}</span>
@@ -42,7 +45,7 @@ export const CaseAlerts = ({
               <div
                 key={decision.id}
                 className={cn(
-                  'border-grey-90 hover:bg-grey-98 group grid min-h-24 grid-cols-[82px_1fr_250px_175px] border-t transition-colors',
+                  'border-grey-90 hover:bg-grey-98 group grid min-h-28 grid-cols-[82px_2fr_1.3fr_1fr] border-t transition-colors',
                   {
                     'bg-purple-98':
                       selectedDecision === decision.id && drawerContentMode === 'decision',
@@ -56,12 +59,12 @@ export const CaseAlerts = ({
                 </div>
                 <div className="border-grey-90 flex min-h-full flex-col gap-2 border-x p-2">
                   <div className="relative flex items-center justify-between">
-                    <div className="flex size-full items-center gap-2">
+                    <div className="flex size-full items-center gap-2.5">
                       <OutcomeBadge
                         outcome={decision.outcome}
                         reviewStatus={decision.reviewStatus}
                       />
-                      <span className="text-ellipsis text-xs font-normal">
+                      <span className="text-grey-50 text-ellipsis text-xs font-normal">
                         {decision.scenario.name}
                       </span>
                       <ScoreModifier score={decision.score} />
@@ -81,34 +84,68 @@ export const CaseAlerts = ({
                   </div>
                   <RequiredActions decision={decision} caseId={caseDetail.id} />
                 </div>
-                <div className="border-grey-90 flex h-0 min-h-full flex-col items-start gap-1 truncate border-r p-2">
-                  {Dict.entries(decision.triggerObject).map(([key, value]) => {
-                    if (['account_id', 'object_id', 'company_id'].includes(key)) return null;
-
-                    return (
+                <div className="border-grey-90 flex h-full flex-col items-start gap-1 overflow-hidden border-r p-2">
+                  {pipe(
+                    Dict.entries(decision.triggerObject),
+                    filter(([key]) => !['account_id', 'object_id', 'company_id'].includes(key)),
+                    (arr) => {
+                      const items = take(arr, MAX_ITEMS_DISPLAYED - 1);
+                      if (arr.length > MAX_ITEMS_DISPLAYED - 1) {
+                        items.push(['decisions-remains', arr.length - MAX_ITEMS_DISPLAYED - 1]);
+                      }
+                      return items;
+                    },
+                    map(([key, value]) => (
                       <span
                         key={key}
-                        className="border-grey-90 flex gap-1 rounded-sm border px-1.5 py-0.5 text-xs"
+                        className="border-grey-90 flex w-fit gap-1 truncate rounded-sm border px-1.5 py-0.5 text-xs"
                       >
-                        <span>{key}:</span>
-                        <FormatData data={parseUnknownData(value)} language={language} />
+                        {key === 'decisions-remains' ? (
+                          <span>+{value as number} more</span>
+                        ) : (
+                          <>
+                            <span>{key}:</span>
+                            <FormatData data={parseUnknownData(value)} language={language} />
+                          </>
+                        )}
                       </span>
-                    );
-                  })}
+                    )),
+                  )}
                 </div>
                 <div className="flex min-h-full flex-col items-start gap-1 truncate p-2">
-                  {decision.ruleExecutions
-                    .filter((r) => r.outcome === 'hit')
-                    .map((r) => (
+                  {pipe(
+                    decision.ruleExecutions,
+                    filter((r) => r.outcome === 'hit'),
+                    (arr) => {
+                      const items = take(arr, MAX_ITEMS_DISPLAYED - 1);
+                      if (arr.length > MAX_ITEMS_DISPLAYED - 1) {
+                        // We add a fake rule execution to display the number of remaining executions
+                        items.push({
+                          name: 'executions-remains',
+                          scoreModifier: arr.length - MAX_ITEMS_DISPLAYED - 1,
+                          outcome: 'hit',
+                          ruleId: '',
+                        });
+                      }
+                      return items;
+                    },
+                    map((r) => (
                       <span
                         key={r.name}
                         className="border-grey-90 flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-normal"
                       >
-                        <span>{r.scoreModifier > 0 ? '+' : '-'}</span>
-                        <span>{Math.abs(r.scoreModifier)}</span>
-                        <span>{r.name}</span>
+                        {r.name === 'executions-remains' ? (
+                          <span>+{r.scoreModifier} more</span>
+                        ) : (
+                          <>
+                            <span>{r.scoreModifier > 0 ? '+' : '-'}</span>
+                            <span>{Math.abs(r.scoreModifier)}</span>
+                            <span>{r.name}</span>
+                          </>
+                        )}
                       </span>
-                    ))}
+                    )),
+                  )}
                 </div>
               </div>
             ))}
