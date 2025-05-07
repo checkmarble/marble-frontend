@@ -59,5 +59,11 @@
   "review_status.decline": "انخفاض",
   "review_status.pending": "قيد الانتظار",
   "rules.status.snoozed": "مؤجلة",
-  "sanction_check.title": "فحص العقوبة"
+  "sanction_check.title": "فحص العقوبة",
+  "outcome.tag.approved.label": "موافقة",
+  "outcome.tag.declined.label": "انخفض",
+  "outcome.tag.blocked.label": "محظور ومراجعة",
+  "outcome.tag.review.label": "مراجعة",
+  "outcome.tag.unknown.label": "مجهول",
+  "outcome.tag.manually_approved.label": "تمت الموافقة عليها يدويًا"
 }

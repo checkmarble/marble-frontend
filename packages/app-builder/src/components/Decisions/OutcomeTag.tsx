@@ -90,9 +90,11 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
 
 export function OutcomeBadge({
   outcome,
+  reviewStatus = null,
   className,
   ...rest
-}: ComponentProps<'div'> & { outcome: Outcome }) {
+}: ComponentProps<'div'> & { outcome: Outcome; reviewStatus?: string | null }) {
+  const { t } = useTranslation(decisionsI18n);
   return (
     <div {...rest} className={cn('flex items-center gap-1', className)}>
       <div
@@ -106,11 +108,15 @@ export function OutcomeBadge({
       />
       <span className="text-xs font-medium">
         {match(outcome)
-          .with('approve', () => 'Manually approved')
-          .with('decline', () => 'Manually declined')
-          .with('block_and_review', () => 'Blocked and review')
-          .with('review', () => 'Review')
-          .with('unknown', () => 'Unknown')
+          .with('approve', () => t('decisions:outcome.tag.approved.label'))
+          .with('decline', () => t('decisions:outcome.tag.declined.label'))
+          .with('block_and_review', () =>
+            reviewStatus
+              ? t('decisions:outcome.tag.manually_approved.label')
+              : t('decisions:outcome.tag.blocked.label'),
+          )
+          .with('review', () => t('decisions:outcome.tag.review.label'))
+          .with('unknown', () => t('decisions:outcome.tag.unknown.label'))
           .exhaustive()}
       </span>
     </div>

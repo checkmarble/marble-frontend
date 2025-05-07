@@ -59,5 +59,11 @@
   "rules.status.snoozed": "mis en veille",
   "rules.title": "Règles",
   "scenario.version": "Version",
-  "sanction_check.title": "Contrôle de sanction"
+  "sanction_check.title": "Contrôle de sanction",
+  "outcome.tag.approved.label": "Approuvé",
+  "outcome.tag.declined.label": "Refusé",
+  "outcome.tag.blocked.label": "Bloqué et à vérifier",
+  "outcome.tag.review.label": "Vérifier",
+  "outcome.tag.unknown.label": "Inconnu",
+  "outcome.tag.manually_approved.label": "Approuvé manuellement"
 }

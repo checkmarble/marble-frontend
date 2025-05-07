@@ -6,7 +6,7 @@ import { casesI18n } from '@app-builder/components/Cases';
 import { CasePivotValues } from '@app-builder/components/Cases/CasePivotValues';
 import { RequiredActions } from '@app-builder/components/Cases/RequiredActions';
 import { IngestedObjectDetailModal } from '@app-builder/components/Data/IngestedObjectDetailModal';
-import { RuleExecutionDetail } from '@app-builder/components/Decisions';
+import { OutcomeBadge, RuleExecutionDetail } from '@app-builder/components/Decisions';
 import {
   RuleExecutionCollapsible,
   RuleExecutionContent,
@@ -23,8 +23,7 @@ import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, isNonNullish, map, pipe } from 'remeda';
-import { match } from 'ts-pattern';
-import { Button, cn, Switch, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui-design-system';
+import { Button, Switch, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type DecisionPanelProps = {
@@ -258,26 +257,7 @@ export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPane
                 <div className="flex flex-col items-start gap-2">
                   <div className="flex items-center gap-2">
                     <span className="text-grey-50 text-xs">{t('cases:decisions.outcome')}</span>
-                    <div className="flex items-center gap-1">
-                      <div
-                        className={cn('size-4 rounded-full', {
-                          'bg-green-38': decision.outcome === 'approve',
-                          'bg-red-47': decision.outcome === 'decline',
-                          'border-red-47 border-2': decision.outcome === 'review',
-                          'border-2 border-yellow-50': decision.outcome === 'block_and_review',
-                          'bg-grey-50': decision.outcome === 'unknown',
-                        })}
-                      />
-                      <span className="text-xs font-medium">
-                        {match(decision.outcome)
-                          .with('approve', () => 'Manually approved')
-                          .with('decline', () => 'Manually declined')
-                          .with('block_and_review', () => 'Blocked and review')
-                          .with('review', () => 'Review')
-                          .with('unknown', () => 'Unknown')
-                          .exhaustive()}
-                      </span>
-                    </div>
+                    <OutcomeBadge outcome={decision.outcome} reviewStatus={decision.reviewStatus} />
                   </div>
                   <RequiredActions decision={decision} caseId={caseDetail.id} />
                 </div>
