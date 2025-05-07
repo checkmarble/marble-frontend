@@ -1,3 +1,4 @@
+import i18next from 'eslint-plugin-i18next';
 import eslintJsxA11y from 'eslint-plugin-jsx-a11y';
 import eslintReact from 'eslint-plugin-react';
 import eslintReactHooks from 'eslint-plugin-react-hooks';
@@ -35,4 +36,5 @@ export default [
       ],
     },
   },
+  i18next.configs['flat/recommended'],
 ];
