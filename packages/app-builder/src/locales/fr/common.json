@@ -73,5 +73,6 @@
   "dataset_freshness_banner": "Les données utilisées pour votre dépistage de sanction ne sont pas à jour (la dernière version publiée le {{ lastExport }} n'a pas encore été récupérée). Consultez votre équipe de plate-forme si les problèmes persistent.",
   "more_remains": "{{count}} de plus",
   "open": "Ouvrir",
-  "load_more_results": "Afficher plus de résultats"
+  "load_more_results": "Afficher plus de résultats",
+  "documents": "Documents"
 }

@@ -96,6 +96,7 @@ export const iconNames = [
   'smallarrow-up',
   'snooze-on',
   'snooze',
+  'spinner',
   'status',
   'stop',
   'string',
