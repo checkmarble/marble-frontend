@@ -194,7 +194,6 @@
   "escalate-button.forbidden.hint": "Aucune boîte de réception d’escalade n’est définie. Veuillez contacter votre administrateur.",
   "escalate-button.forbidden.hint.admin": "Vous devez configurer vers quelle boîte de réception les investigations de cette boîte sont escaladées.",
   "escalate-case.modal.callout": "En procédant à l’escalade de ce cas, il ne vous sera plus affecté et vous n’y aurez plus accès si vous n'êtes pas membre de la boîte de réception cible. Vous serez redirigé vers la boîte de réception actuelle.",
-  "escalate-button.forbidden.inbox-settings.link.label": "Paramètres de la boîte de réception",
   "escalate-button.label": "Escalader",
   "escalate-case.modal.submit-button.label": "Escalader"
 }
