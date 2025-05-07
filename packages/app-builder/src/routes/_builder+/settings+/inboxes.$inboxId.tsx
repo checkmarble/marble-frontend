@@ -81,11 +81,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     caseCount: inbox.casesCount,
     entitlements,
     inboxUserRoles: getInboxUserRoles(entitlements),
-    isEditInboxAvailable: isEditInboxAvailable(user),
+    isEditInboxAvailable: isEditInboxAvailable(user, inbox),
     isDeleteInboxAvailable: isDeleteInboxAvailable(user),
-    isCreateInboxUserAvailable: isCreateInboxUserAvailable(user),
-    isEditInboxUserAvailable: isEditInboxUserAvailable(user),
-    isDeleteInboxUserAvailable: isDeleteInboxUserAvailable(user),
+    isCreateInboxUserAvailable: isCreateInboxUserAvailable(user, inbox),
+    isEditInboxUserAvailable: isEditInboxUserAvailable(user, inbox),
+    isDeleteInboxUserAvailable: isDeleteInboxUserAvailable(user, inbox),
   });
 }
 
