@@ -48,11 +48,13 @@ export function getSettings(user: CurrentUser, inboxes: Inbox[]) {
       to: getRoute('/settings/users'),
     });
   }
-  settings.push({
-    section: 'scenarios' as const,
-    title: 'scenarios' as const,
-    to: getRoute('/settings/scenarios'),
-  });
+  if (isAdmin(user)) {
+    settings.push({
+      section: 'scenarios' as const,
+      title: 'scenarios' as const,
+      to: getRoute('/settings/scenarios'),
+    });
+  }
   if (inboxes.length > 0) {
     settings.push({
       section: 'case_manager' as const,

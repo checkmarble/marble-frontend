@@ -10,7 +10,7 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { UTC, validTimezones } from '@app-builder/utils/validTimezones';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
-import { useFetcher, useLoaderData } from '@remix-run/react';
+import { redirect, useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { decode as formDataToObject } from 'decode-formdata';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
+
+  if (!isAdmin(user)) {
+    return redirect(getRoute('/'));
+  }
 
   return {
     organization: await repository.getCurrentOrganization(),
