@@ -49,8 +49,6 @@ export const CaseAlerts = ({
                 ({ name }) => name === decision.triggerObjectType,
               );
 
-              console.log('Trigger Object Options', triggerObjectOptions);
-
               return (
                 <div
                   key={decision.id}
@@ -107,8 +105,6 @@ export const CaseAlerts = ({
                         const property = triggerObjectOptions?.fields.find(
                           (f) => f.id === id,
                         )?.name;
-
-                        console.log('Property name', property);
 
                         return property ? (
                           <span
