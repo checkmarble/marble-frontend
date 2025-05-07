@@ -27,7 +27,7 @@ const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const schema = z.object({
   caseId: z.string().nonempty(),
-  comment: z.string(),
+  comment: z.string().nonempty(),
   files: z.array(z.instanceof(File)),
 });
 
@@ -137,13 +137,17 @@ export function AddComment({ caseId }: { caseId: string }) {
       });
     },
     validators: {
-      onBlur: schema,
+      onChange: schema,
+      onMount: schema,
       onSubmit: schema,
     },
   });
 
   useEffect(() => {
-    if (lastData?.success) form.reset();
+    if (lastData?.success) {
+      form.reset();
+      form.validate('mount');
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastData]);
 
@@ -209,15 +213,19 @@ export function AddComment({ caseId }: { caseId: string }) {
           )}
         </form.Field>
       </div>
-      <Button
-        type="submit"
-        variant="primary"
-        size="medium"
-        aria-label={t('cases:case_detail.add_a_comment.post')}
-        disabled={form.state.isSubmitting}
-      >
-        <Icon icon="send" className="size-5" />
-      </Button>
+      <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
+        {([canSubmit, isSubmitting]) => (
+          <Button
+            type="submit"
+            variant="primary"
+            size="medium"
+            aria-label={t('cases:case_detail.add_a_comment.post')}
+            disabled={!canSubmit || isSubmitting}
+          >
+            <Icon icon="send" className="size-5" />
+          </Button>
+        )}
+      </form.Subscribe>
     </form>
   );
 }
