@@ -56,7 +56,7 @@ export function getSettings(user: CurrentUser, inboxes: Inbox[]) {
       to: getRoute('/settings/scenarios'),
     });
   }
-  if (inboxes.some((inbox) => isInboxAdmin(user, inbox))) {
+  if (isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox))) {
     settings.push({
       section: 'case_manager' as const,
       title: 'inboxes' as const,

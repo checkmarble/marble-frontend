@@ -1,5 +1,6 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
+import { isAdmin } from '@app-builder/models';
 import { type InboxUser, tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { DeleteInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/delete';
 import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.create';
@@ -72,7 +73,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const inbox = inboxesList.find((inbox) => inbox.id === inboxId);
 
   if (!inbox) return redirect(getRoute('/settings/inboxes'));
-  if (!isInboxAdmin(user, inbox)) {
+  if (!isAdmin(user) && !isInboxAdmin(user, inbox)) {
     return redirect(getRoute('/'));
   }
 
