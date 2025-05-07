@@ -517,9 +517,7 @@ export type DataModelFieldWithDisplay = DataModelField & {
 };
 
 export type TableModelWithOptions = Omit<TableModel, 'fields'> & {
-  options: {
-    fieldOrder: DataModelTableOptions['fieldOrder'];
-  };
+  options: DataModelTableOptions;
   fields: DataModelFieldWithDisplay[];
 };
 
