@@ -31,7 +31,7 @@ export const CaseAlerts = ({
   const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div>...</div>}>
       <Await resolve={decisionsPromise}>
         {(decisions) => (
           <div className="border-grey-90 bg-grey-100 rounded-lg border">
@@ -79,7 +79,7 @@ export const CaseAlerts = ({
                         setDrawerContentMode('decision');
                       }}
                     >
-                      Open
+                      {t('common:open')}
                     </Button>
                   </div>
                   <RequiredActions decision={decision} caseId={caseDetail.id} />
@@ -88,26 +88,14 @@ export const CaseAlerts = ({
                   {pipe(
                     Dict.entries(decision.triggerObject),
                     filter(([key]) => !['account_id', 'object_id', 'company_id'].includes(key)),
-                    (arr) => {
-                      const items = take(arr, MAX_ITEMS_DISPLAYED - 1);
-                      if (arr.length > MAX_ITEMS_DISPLAYED - 1) {
-                        items.push(['decisions-remains', arr.length - MAX_ITEMS_DISPLAYED - 1]);
-                      }
-                      return items;
-                    },
+                    take(MAX_ITEMS_DISPLAYED - 1),
                     map(([key, value]) => (
                       <span
                         key={key}
                         className="border-grey-90 flex w-fit gap-1 truncate rounded-sm border px-1.5 py-0.5 text-xs"
                       >
-                        {key === 'decisions-remains' ? (
-                          <span>+{value as number} more</span>
-                        ) : (
-                          <>
-                            <span>{key}:</span>
-                            <FormatData data={parseUnknownData(value)} language={language} />
-                          </>
-                        )}
+                        <span>{key}:</span>
+                        <FormatData data={parseUnknownData(value)} language={language} />
                       </span>
                     )),
                   )}
@@ -117,17 +105,17 @@ export const CaseAlerts = ({
                     decision.ruleExecutions,
                     filter((r) => r.outcome === 'hit'),
                     (arr) => {
-                      const items = take(arr, MAX_ITEMS_DISPLAYED - 1);
-                      if (arr.length > MAX_ITEMS_DISPLAYED - 1) {
+                      if (arr.length > MAX_ITEMS_DISPLAYED) {
                         // We add a fake rule execution to display the number of remaining executions
+                        const items = take(arr, MAX_ITEMS_DISPLAYED - 1);
                         items.push({
                           name: 'executions-remains',
-                          scoreModifier: arr.length - MAX_ITEMS_DISPLAYED - 1,
+                          scoreModifier: arr.length - items.length,
                           outcome: 'hit',
                           ruleId: '',
                         });
                       }
-                      return items;
+                      return take(arr, MAX_ITEMS_DISPLAYED);
                     },
                     map((r) => (
                       <span
@@ -135,7 +123,7 @@ export const CaseAlerts = ({
                         className="border-grey-90 flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-normal"
                       >
                         {r.name === 'executions-remains' ? (
-                          <span>+{r.scoreModifier} more</span>
+                          <span>{t('common:more_remains', { count: r.scoreModifier })}</span>
                         ) : (
                           <>
                             <span>{r.scoreModifier > 0 ? '+' : '-'}</span>

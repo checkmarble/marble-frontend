@@ -5,7 +5,10 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { DialogDisclosure, useDialogStore } from '@ariakit/react/dialog';
 import { Link } from '@remix-run/react';
+import { useTranslation } from 'react-i18next';
 import { Button, Checkbox } from 'ui-design-system';
+
+import { casesI18n } from './cases-i18n';
 
 export const RequiredActions = ({
   decision,
@@ -16,6 +19,7 @@ export const RequiredActions = ({
     sanctionChecks: SanctionCheck[];
   };
 }) => {
+  const { t } = useTranslation(casesI18n);
   const reviewDecisionModalStore = useDialogStore();
   const pendingSanctionMatches =
     decision.sanctionChecks[0]?.matches.filter((m) => m.status === 'pending').length ?? 0;
@@ -37,12 +41,15 @@ export const RequiredActions = ({
               })}
             >
               <Button variant="secondary" size="xs">
-                <span>Review screening hits</span>
-                <span>({pendingSanctionMatches})</span>
+                <span>
+                  {t('cases:required_actions.review_screening_hits', {
+                    count: pendingSanctionMatches,
+                  })}
+                </span>
               </Button>
             </Link>
           ) : (
-            <span>No more pending sanction checks</span>
+            <span>{t('cases:required_actions.no_more_pending_sanction_checks')}</span>
           )}
         </div>
       ) : null}
@@ -53,7 +60,7 @@ export const RequiredActions = ({
             store={reviewDecisionModalStore}
             render={<Button variant="secondary" size="xs" disabled={pendingSanctionMatches > 0} />}
           >
-            Decide final status
+            {t('cases:required_actions.decide_final_status')}
           </DialogDisclosure>
           <ReviewDecisionModal
             decisionId={decision.id}
