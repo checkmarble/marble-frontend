@@ -98,7 +98,9 @@ export const CaseAlerts = ({
                     {pipe(
                       triggerObjectOptions?.options.fieldOrder ?? [],
                       filter((id) =>
-                        (triggerObjectOptions?.options.displayedFields ?? []).includes(id),
+                        triggerObjectOptions?.options.displayedFields
+                          ? triggerObjectOptions.options.displayedFields.includes(id)
+                          : true,
                       ),
                       take(MAX_ITEMS_DISPLAYED),
                       map((id) => {

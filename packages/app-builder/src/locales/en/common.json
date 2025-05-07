@@ -13,6 +13,7 @@
   "auth.logout": "Log out",
   "open": "Open",
   "more_remains": "+{{count}} more",
+  "documents": "Documents",
   "search": "Search",
   "missing_configuration_title": "Missing Configuration",
   "missing_configuration": "Marble identified missing configuration for this feature. Please check the docs for the correct configuration setup.",

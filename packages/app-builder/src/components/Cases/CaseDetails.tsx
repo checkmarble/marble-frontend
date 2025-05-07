@@ -10,6 +10,8 @@ import { EditCaseTags } from '@app-builder/routes/ressources+/cases+/edit-tags';
 import { EscalateCase } from '@app-builder/routes/ressources+/cases+/escalate-case';
 import { OpenCase } from '@app-builder/routes/ressources+/cases+/open-case';
 import { SnoozeCase } from '@app-builder/routes/ressources+/cases+/snooze-case';
+import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
+import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { useLoaderData } from '@remix-run/react';
 import { type RefObject, useRef } from 'react';
@@ -20,6 +22,7 @@ import { Icon } from 'ui-icons';
 
 import { CaseAlerts } from './CaseAlerts';
 import { CaseEvents } from './CaseEvents';
+import { CaseFile } from './CaseFile';
 import { casesI18n } from './cases-i18n';
 import { caseStatusMapping } from './CaseStatus';
 
@@ -115,7 +118,6 @@ export const CaseDetails = ({
             id={detail.id}
           />
         </div>
-
         {/*
         TODO: Add this section when SAR is properly spec back & front
         <div className="grid grid-cols-[120px,1fr] items-center">
@@ -145,6 +147,23 @@ export const CaseDetails = ({
           setDrawerContentMode={setDrawerContentMode}
           drawerContentMode={drawerContentMode}
         />
+      </div>
+      <div className="flex flex-col justify-start gap-1.5">
+        <div className="flex items-center justify-between px-1">
+          <span className="text-grey-00 text-r font-medium">{t('common:documents')}</span>
+          <UploadFile uploadFileEndpoint={getCaseFileUploadEndpoint(detail)}>
+            <Button variant="secondary" size="small">
+              <Icon icon="plus" className="size-3.5" />
+              {t('common:add')}
+            </Button>
+          </UploadFile>
+        </div>
+
+        <div className="border-grey-90 bg-grey-100 flex flex-wrap gap-2 rounded-lg border p-4">
+          {detail.files.map((file) => (
+            <CaseFile key={file.id} file={file} />
+          ))}
+        </div>
       </div>
     </main>
   );
