@@ -12,15 +12,7 @@ import {
  */
 export const ComparatorFuzzyMatchConfig =
   createBaseFuzzyMatchConfig<ComparatorFuzzyMatchAlgorithms>({
-    algorithms: new Set([
-      'ratio',
-      'partial_ratio',
-      'token_sort_ratio',
-      'partial_token_sort_ratio',
-      'partial_token_set_ratio',
-      'token_set_ratio',
-      'bag_of_words_similarity',
-    ]),
+    algorithms: new Set(['ratio', 'token_set_ratio', 'bag_of_words_similarity']),
     defaultAlgorithm: 'ratio',
     editablesAlgorithms: new Set(['ratio', 'token_set_ratio']),
     defaultEditableAlgorithm: 'token_set_ratio',

@@ -3,11 +3,7 @@ import { assertNever } from 'typescript-utils';
 
 export type ComparatorFuzzyMatchAlgorithms =
   | 'ratio'
-  | 'partial_ratio'
-  | 'token_sort_ratio'
-  | 'partial_token_sort_ratio'
   | 'token_set_ratio'
-  | 'partial_token_set_ratio'
   | 'bag_of_words_similarity';
 
 export type AggregationFuzzyMatchAlgorithms =
@@ -95,14 +91,6 @@ export function createBaseFuzzyMatchConfig<T extends FuzzyMatchAlgorithm>(
       switch (fuzzyMatchAlgorithm) {
         case 'ratio':
           return t('scenarios:edit_fuzzy_match.algorithm.ratio');
-        case 'partial_ratio':
-          return 'partial_ratio';
-        case 'token_sort_ratio':
-          return 'token_sort_ratio';
-        case 'partial_token_sort_ratio':
-          return 'partial_token_sort_ratio';
-        case 'partial_token_set_ratio':
-          return 'partial_token_set_ratio';
         case 'token_set_ratio':
         case 'bag_of_words_similarity':
           return t('scenarios:edit_fuzzy_match.algorithm.token_set_ratio');
