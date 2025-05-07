@@ -20,7 +20,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
@@ -43,14 +43,6 @@ export function DataTableRender({ dataModel, item, navigateTo }: DataTableRender
   const sourceField = item.sourceObject[item.sourceFieldName];
   const filterFieldValue =
     typeof sourceField === 'string' || typeof sourceField === 'number' ? sourceField : '';
-  const [currentOffset, setCurrentOffset] = useState<string | number | null>(null);
-  const uniqueRelationKey = `${filterFieldValue}_${item.targetTableName}`;
-  const uniqueRelationKeyRef = useRef(uniqueRelationKey);
-
-  if (uniqueRelationKeyRef.current !== uniqueRelationKey) {
-    uniqueRelationKeyRef.current = uniqueRelationKey;
-    setCurrentOffset(null);
-  }
 
   const dataListQuery = useClientObjectListQuery({
     tableName: item.targetTableName,
@@ -59,7 +51,6 @@ export function DataTableRender({ dataModel, item, navigateTo }: DataTableRender
       filterFieldName: item.filterFieldName,
       filterFieldValue,
       orderingFieldName: item.orderingFieldName,
-      offsetId: currentOffset,
     },
   });
 
@@ -112,12 +103,13 @@ export function DataTableRender({ dataModel, item, navigateTo }: DataTableRender
               pivotObject={item.pivotObject}
               table={currentTable}
               navigateTo={navigateTo}
-              list={query.data.clientDataListResponse.data}
+              list={query.data.pages.flatMap((page) => page.clientDataListResponse.data)}
               pagination={
                 <DataTablePagination
-                  pagination={query.data.clientDataListResponse.pagination}
-                  onNext={(offsetId) => {
-                    setCurrentOffset(offsetId);
+                  hasNext={query.hasNextPage}
+                  isLoading={query.isFetchingNextPage}
+                  onNext={() => {
+                    query.fetchNextPage();
                   }}
                 />
               }
@@ -129,18 +121,19 @@ export function DataTableRender({ dataModel, item, navigateTo }: DataTableRender
 }
 
 type DataTablePaginationProps = {
-  pagination: ClientDataListResponse['pagination'];
-  onNext: (offsetId: string | number) => void;
+  hasNext: boolean;
+  isLoading: boolean;
+  onNext: () => void;
 };
 
-function DataTablePagination({ pagination, onNext }: DataTablePaginationProps) {
-  const nextCursorId =
-    pagination.hasNextPage && pagination.nextCursorId ? pagination.nextCursorId : null;
+function DataTablePagination({ hasNext, isLoading, onNext }: DataTablePaginationProps) {
+  const { t } = useTranslation(['common']);
   return (
     <>
-      {nextCursorId ? (
-        <Button variant="secondary" onClick={() => onNext(nextCursorId)}>
-          <Icon icon="arrow-right" className="size-4" />
+      {hasNext ? (
+        <Button variant="secondary" size="small" onClick={onNext} disabled={isLoading}>
+          <Icon icon="arrow-up" className="size-4 rotate-180" />
+          {t('common:load_more_results')}
         </Button>
       ) : null}
     </>
