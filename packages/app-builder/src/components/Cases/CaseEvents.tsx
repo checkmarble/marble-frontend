@@ -37,7 +37,9 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
   const [showAll, setShowAll] = useState(false);
   const [olderEvents, setOlderEventsCount] = useState(0);
   const [newerEvents, setNewerEventsCount] = useState(0);
-  const [filters, setFilters] = useState<CaseEventFiltersForm>({ types: ['comment_added'] });
+  const [filters, setFilters] = useState<CaseEventFiltersForm>({
+    types: ['comment_added', 'file_added'],
+  });
   const orderedEvents = useMemo(
     () => events.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     [events],
