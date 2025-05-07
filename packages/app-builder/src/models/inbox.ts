@@ -1,5 +1,10 @@
 import { type ParseKeys } from 'i18next';
-import { type AddInboxUserBodyDto, type InboxDto, type InboxUserDto } from 'marble-api';
+import {
+  type AddInboxUserBodyDto,
+  type InboxDto,
+  type InboxMetadataDto,
+  type InboxUserDto,
+} from 'marble-api';
 import invariant from 'tiny-invariant';
 
 export interface Inbox {
@@ -21,6 +26,18 @@ export function adaptInbox(inbox: InboxDto): Inbox {
     status: inbox.status,
     users: (inbox.users ?? []).map(adaptInboxUser),
     escalationInboxId: inbox.escalation_inbox_id,
+  };
+}
+
+export interface InboxMetadata {
+  id: string;
+  name: string;
+}
+
+export function adaptInboxMetadata(inbox: InboxMetadataDto): InboxMetadata {
+  return {
+    id: inbox.id,
+    name: inbox.name,
   };
 }
 

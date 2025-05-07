@@ -328,6 +328,8 @@ CreatedApiKeyDto:
 
 InboxDto:
   $ref: inboxes.yml#/components/schemas/InboxDto
+InboxMetadataDto:
+  $ref: inboxes.yml#/components/schemas/InboxMetadataDto
 CreateInboxBodyDto:
   $ref: inboxes.yml#/components/schemas/CreateInboxBodyDto
 InboxUserDto:

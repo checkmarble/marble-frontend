@@ -250,8 +250,12 @@ paths:
 
   /inboxes:
     $ref: ./marblecore-api/inboxes.yml#/~1inboxes
+  /inboxes/metadata:
+    $ref: ./marblecore-api/inboxes.yml#/~1inboxes~1metadata
   /inboxes/{inboxId}:
     $ref: ./marblecore-api/inboxes.yml#/~1inboxes~1{inboxId}
+  /inboxes/{inboxId}/metadata:
+    $ref: ./marblecore-api/inboxes.yml#/~1inboxes~1{inboxId}~1metadata
   /inboxes/{inboxId}/users:
     $ref: ./marblecore-api/inboxes.yml#/~1inboxes~1{inboxId}~1users
   /inbox_users:

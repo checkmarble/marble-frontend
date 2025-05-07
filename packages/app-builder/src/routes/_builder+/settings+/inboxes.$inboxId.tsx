@@ -13,6 +13,7 @@ import {
   isDeleteInboxUserAvailable,
   isEditInboxAvailable,
   isEditInboxUserAvailable,
+  isInboxAdmin,
 } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -71,12 +72,18 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const inbox = inboxesList.find((inbox) => inbox.id === inboxId);
 
   if (!inbox) return redirect(getRoute('/settings/inboxes'));
+  if (!isInboxAdmin(user, inbox)) {
+    return redirect(getRoute('/'));
+  }
+
+  const escalationInboxes = await inboxApi.listInboxesMetadata();
 
   return json({
     inbox,
     inboxesList,
+    escalationInboxes,
     escalationInbox: inbox.escalationInboxId
-      ? await inboxApi.getInbox(inbox.escalationInboxId)
+      ? await inboxApi.getInboxMetadata(inbox.escalationInboxId)
       : null,
     caseCount: inbox.casesCount,
     entitlements,
@@ -95,7 +102,7 @@ export default function Inbox() {
   const {
     caseCount,
     inbox,
-    inboxesList,
+    escalationInboxes,
     escalationInbox,
     inboxUserRoles,
     entitlements,
@@ -187,7 +194,7 @@ export default function Inbox() {
             {isEditInboxAvailable ? (
               <UpdateInbox
                 inbox={inbox}
-                inboxesList={inboxesList}
+                escalationInboxes={escalationInboxes}
                 redirectRoutePath="/settings/inboxes/:inboxId"
               />
             ) : null}

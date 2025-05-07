@@ -979,6 +979,10 @@ export type InboxDto = {
 export type CreateInboxBodyDto = {
     name: string;
 };
+export type InboxMetadataDto = {
+    id: string;
+    name: string;
+};
 export type AddInboxUserBodyDto = {
     user_id: string;
     role: string;
@@ -3458,6 +3462,26 @@ export function createInbox(createInboxBodyDto: CreateInboxBodyDto, opts?: Oazap
     })));
 }
 /**
+ * Get an inbox metadata by id
+ */
+export function listInboxesMetadata(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: InboxMetadataDto[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/inboxes/metadata", {
+        ...opts
+    }));
+}
+/**
  * Get an inbox by id
  */
 export function getInbox(inboxId: string, opts?: Oazapfts.RequestOpts) {
@@ -3518,6 +3542,26 @@ export function deleteInbox(inboxId: string, opts?: Oazapfts.RequestOpts) {
     }>(`/inboxes/${encodeURIComponent(inboxId)}`, {
         ...opts,
         method: "DELETE"
+    }));
+}
+/**
+ * Get an inbox metadata by id
+ */
+export function getInboxMetadata(inboxId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: InboxMetadataDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/inboxes/${encodeURIComponent(inboxId)}/metadata`, {
+        ...opts
     }));
 }
 /**

@@ -1,7 +1,7 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { type InboxWithCasesCount, tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
-import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
+import { isCreateInboxAvailable, isInboxAdmin } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -21,7 +21,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const inboxes = await inbox.listInboxesWithCaseCount();
 
-  if (inboxes.length === 0) {
+  if (!inboxes.some((inbox) => isInboxAdmin(user, inbox))) {
     return redirect(getRoute('/'));
   }
 
