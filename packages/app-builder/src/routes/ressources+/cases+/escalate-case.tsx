@@ -9,7 +9,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Button, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
@@ -132,7 +132,9 @@ export const EscalateCase = ({ id, inboxId }: { id: string; inboxId: string }) =
       <Modal.Content>
         <Modal.Title>Escalate Case</Modal.Title>
         <div className="flex flex-col gap-8 p-8">
-          <Callout>{t('cases:escalate-case.modal.callout')}</Callout>
+          <Callout className="text-balance">
+            <Trans i18nKey="cases:escalate-case.modal.callout" />
+          </Callout>
           <form onSubmit={handleSubmit(form)} className="flex w-full flex-row gap-2">
             <Modal.Close asChild>
               <Button variant="secondary" type="button" className="flex-1 first-letter:capitalize">
