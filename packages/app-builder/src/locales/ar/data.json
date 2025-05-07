@@ -59,7 +59,7 @@
   "edit_table.button_accept": "حفظ التغيرات",
   "edit_table.title": "تعديل التفاصيل",
   "empty_description": "لا يوجد تفاصيل",
-  "upload_data": "تحميل البيانات",
+  "upload_data": "رفع البيانات",
   "required": "متطلب",
   "nullable": "يمكن أن يكون الحقل فارغ",
   "unique.col_header": "فريد",
