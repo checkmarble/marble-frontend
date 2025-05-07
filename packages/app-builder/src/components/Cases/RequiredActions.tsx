@@ -58,7 +58,7 @@ export const RequiredActions = ({
           <Checkbox size="small" disabled={true} />
           <DialogDisclosure
             store={reviewDecisionModalStore}
-            render={<Button variant="secondary" size="xs" disabled={pendingSanctionMatches > 0} />}
+            render={<Button variant="secondary" size="xs" />}
           >
             {t('cases:required_actions.decide_final_status')}
           </DialogDisclosure>
