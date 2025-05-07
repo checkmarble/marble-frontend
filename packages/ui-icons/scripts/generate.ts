@@ -1,21 +1,19 @@
-import { mkdir, readdir, readFile, rm, writeFile } from 'fs/promises';
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { basename, join } from 'node:path';
+import type { Stream } from 'node:stream';
+
+import { Biome, Distribution } from '@biomejs/js-api';
 import ora from 'ora';
-import { basename, join } from 'path';
-import * as prettier from 'prettier';
-import { type Stream } from 'stream';
 import SVGSpriter from 'svg-sprite';
 
 const OUT_DIR = join(process.cwd(), '/src/generated');
 const IN_ICONS_DIR = join(process.cwd(), '/svgs/icons/');
 const IN_LOGOS_DIR = join(process.cwd(), '/svgs/logos');
 
-async function getPrettierOptions() {
-  const options = await prettier.resolveConfig(OUT_DIR);
-  return {
-    parser: 'typescript',
-    ...(options ?? {}),
-  };
-}
+const biome = await Biome.create({
+  distribution: Distribution.NODE,
+});
+const projectKey = biome.openProject(`${process.cwd()}/../..`);
 
 async function buildIconTypeFile(svgFileNames: string[]) {
   const icons = svgFileNames.map((file) => basename(file, '.svg'));
@@ -26,10 +24,9 @@ ${icons.map((icon) => `  "${icon}",`).join('\n')}
 export type IconName = typeof iconNames[number];
 `;
 
-  await writeFile(
-    join(OUT_DIR, 'icon-names.ts'),
-    await prettier.format(output, await getPrettierOptions()),
-  );
+  biome.formatContent(projectKey, output, {
+    filePath: `${OUT_DIR}/icon-names.ts`,
+  });
 }
 
 async function buildIconSvgSprite(svgFileNames: string[]) {
@@ -82,11 +79,9 @@ ${logos.map((logo) => `  "${logo}",`).join('\n')}
 
 export type LogoName = typeof logoNames[number];
 `;
-
-  await writeFile(
-    join(OUT_DIR, 'logo-names.ts'),
-    await prettier.format(output, await getPrettierOptions()),
-  );
+  biome.formatContent(projectKey, output, {
+    filePath: `${OUT_DIR}/logo-names.ts`,
+  });
 }
 
 async function buildLogoSvgSprite(svgFileNames: string[]) {
@@ -144,7 +139,7 @@ async function generateIcons() {
     ]);
     spinner.succeed(`${logosSVGFileNames.length} logos succesfully generated`);
 
-    spinner.succeed(`svg sprites succesfully generated`);
+    spinner.succeed('svg sprites succesfully generated');
   } catch (error) {
     spinner.fail('Fail to generate svg sprites');
     throw error;
@@ -157,6 +152,7 @@ async function main() {
     await mkdir(OUT_DIR);
 
     await generateIcons();
+    biome.shutdown();
   } catch (error) {
     console.error('\n', error);
     process.exit(1);
