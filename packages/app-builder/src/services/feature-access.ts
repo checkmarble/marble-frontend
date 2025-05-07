@@ -1,4 +1,5 @@
 import { type CurrentUser } from '@app-builder/models';
+import { type Inbox } from '@app-builder/models/inbox';
 import { type LicenseEntitlements } from '@app-builder/models/license';
 import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 
@@ -15,6 +16,9 @@ export const isReadUserAvailable = ({ role }: CurrentUser) =>
 
 export const isReadAllInboxesAvailable = ({ role }: CurrentUser) =>
   role === 'ADMIN' || role === 'MARBLE_ADMIN';
+
+export const isInboxAdmin = ({ actorIdentity: { userId } }: CurrentUser, inbox: Inbox) =>
+  inbox.users.some((inboxUser) => inboxUser.userId === userId && inboxUser.role === 'admin');
 
 export const isReadTagAvailable = ({ role }: CurrentUser) =>
   role === 'ADMIN' || role === 'MARBLE_ADMIN';
@@ -95,18 +99,19 @@ export const isDeleteApiKeyAvailable = ({ permissions }: CurrentUser) =>
 export const getInboxUserRoles = (entitlements: LicenseEntitlements) =>
   isAccessible(entitlements.userRoles) ? (['admin', 'member'] as const) : (['admin'] as const);
 
-export const isEditInboxAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
+export const isEditInboxAvailable = (user: CurrentUser, inbox: Inbox) =>
+  user.permissions.canEditInboxes || isInboxAdmin(user, inbox);
 
 export const isDeleteInboxAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
-export const isCreateInboxUserAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canEditInboxes;
+export const isCreateInboxUserAvailable = (user: CurrentUser, inbox: Inbox) =>
+  user.permissions.canEditInboxes || isInboxAdmin(user, inbox);
 
-export const isEditInboxUserAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canEditInboxes;
+export const isEditInboxUserAvailable = (user: CurrentUser, inbox: Inbox) =>
+  user.permissions.canEditInboxes || isInboxAdmin(user, inbox);
 
-export const isDeleteInboxUserAvailable = ({ permissions }: CurrentUser) =>
-  permissions.canEditInboxes;
+export const isDeleteInboxUserAvailable = (user: CurrentUser, inbox: Inbox) =>
+  user.permissions.canEditInboxes || isInboxAdmin(user, inbox);
 
 export const isCreateTagAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 

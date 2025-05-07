@@ -11,11 +11,12 @@ export const handle = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { user } = await authService.isAuthenticated(request, {
+  const { user, inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const settings = getSettings(user);
+  const inboxes = await inbox.listInboxes();
+  const settings = getSettings(user, inboxes);
   const firstSettings = settings[0];
 
   if (firstSettings) {
