@@ -1,12 +1,14 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptInbox,
+  adaptInboxMetadata,
   adaptInboxUser,
   adaptInboxUserCreateBody,
   adaptInboxWithCasesCount,
   adaptUpdateInboxDto,
   type Inbox,
   type InboxCreateBody,
+  type InboxMetadata,
   type InboxUpdateBody,
   type InboxUser,
   type InboxUserCreateBody,
@@ -17,9 +19,11 @@ import * as R from 'remeda';
 
 export interface InboxRepository {
   listInboxes(): Promise<Inbox[]>;
+  listInboxesMetadata(): Promise<InboxMetadata[]>;
   listInboxesWithCaseCount(): Promise<InboxWithCasesCount[]>;
   createInbox(data: InboxCreateBody): Promise<Inbox>;
   getInbox(inboxId: string): Promise<Inbox>;
+  getInboxMetadata(inboxId: string): Promise<InboxMetadata>;
   updateInbox(inboxId: string, data: InboxUpdateBody): Promise<Inbox>;
   deleteInbox(inboxId: string): Promise<void>;
   listAllInboxUsers(): Promise<InboxUser[]>;
@@ -44,6 +48,11 @@ export function makeGetInboxRepository() {
 
       return inboxes.map(adaptInboxWithCasesCount);
     },
+    listInboxesMetadata: async () => {
+      const inboxes = await marbleCoreApiClient.listInboxesMetadata();
+
+      return R.pipe(inboxes, R.map(adaptInboxMetadata), R.sortBy(R.prop('name')));
+    },
     createInbox: async (data) => {
       const { inbox } = await marbleCoreApiClient.createInbox(data);
 
@@ -53,6 +62,11 @@ export function makeGetInboxRepository() {
       const { inbox } = await marbleCoreApiClient.getInbox(inboxId);
 
       return adaptInbox(inbox);
+    },
+    getInboxMetadata: async (inboxId) => {
+      const inbox = await marbleCoreApiClient.getInboxMetadata(inboxId);
+
+      return adaptInboxMetadata(inbox);
     },
     updateInbox: async (inboxId, data) => {
       const { inbox } = await marbleCoreApiClient.updateInbox(inboxId, adaptUpdateInboxDto(data));

@@ -2,7 +2,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { type Inbox } from '@app-builder/models/inbox';
+import { type Inbox, type InboxMetadata } from '@app-builder/models/inbox';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
@@ -92,11 +92,11 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export function UpdateInbox({
   inbox,
-  inboxesList,
+  escalationInboxes,
   redirectRoutePath,
 }: {
   inbox: Inbox;
-  inboxesList: Inbox[];
+  escalationInboxes: InboxMetadata[];
   redirectRoutePath: (typeof redirectRouteOptions)[number];
 }) {
   const { t } = useTranslation(handle.i18n);
@@ -120,7 +120,7 @@ export function UpdateInbox({
       <Modal.Content onClick={(e) => e.stopPropagation()}>
         <UpdateInboxContent
           inbox={inbox}
-          inboxesList={inboxesList}
+          escalationInboxes={escalationInboxes}
           redirectRoutePath={redirectRoutePath}
         />
       </Modal.Content>
@@ -130,17 +130,17 @@ export function UpdateInbox({
 
 export function UpdateInboxContent({
   inbox,
-  inboxesList,
+  escalationInboxes,
   redirectRoutePath,
 }: {
   inbox: Inbox;
-  inboxesList: Inbox[];
+  escalationInboxes: InboxMetadata[];
   redirectRoutePath: (typeof redirectRouteOptions)[number];
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
   const [isEscalationInboxOpen, setEscalationOpen] = useState(false);
-  const otherInboxes = inboxesList.filter((i) => i.id !== inbox.id);
+  const otherInboxes = escalationInboxes.filter((i) => i.id !== inbox.id);
 
   const form = useForm({
     defaultValues: {
@@ -192,7 +192,7 @@ export function UpdateInboxContent({
         </form.Field>
         <form.Field name="escalationInboxId">
           {(field) => {
-            const selectedInbox = inboxesList.find((inbox) => inbox.id === field.state.value);
+            const selectedInbox = escalationInboxes.find((inbox) => inbox.id === field.state.value);
 
             return (
               <div className="group flex flex-col gap-2">

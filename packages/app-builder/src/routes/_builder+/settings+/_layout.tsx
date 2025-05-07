@@ -9,6 +9,7 @@ import { type CurrentUser, isAdmin } from '@app-builder/models';
 import { type Inbox } from '@app-builder/models/inbox';
 import {
   isAccessible,
+  isInboxAdmin,
   isReadApiKeyAvailable,
   isReadTagAvailable,
   isReadUserAvailable,
@@ -55,7 +56,7 @@ export function getSettings(user: CurrentUser, inboxes: Inbox[]) {
       to: getRoute('/settings/scenarios'),
     });
   }
-  if (inboxes.length > 0) {
+  if (inboxes.some((inbox) => isInboxAdmin(user, inbox))) {
     settings.push({
       section: 'case_manager' as const,
       title: 'inboxes' as const,
