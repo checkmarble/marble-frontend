@@ -161,6 +161,9 @@
   "case.escalate-button.forbidden.hint": "There is no escalation inbox set. Please contact your administrator.",
   "case.escalate-button.forbidden.hint.admin": "There is no escalation inbox set.",
   "case_detail.add_a_tag.empty": "No case tags have been configured yet. Go to the Settings/tags page to create a first one.",
+  "escalate-case.modal.callout": "Upon escalating this case, you will no longer be assigned to it, and you will lose access if you are not a member of the target inbox. You will be redirected to the list of cases in the current inbox.",
+  "escalate-button.label": "Escalate",
+  "escalate-case.modal.submit-button.label": "Escalate",
   "inbox.my-inbox.link": "My inbox",
   "case_detail.pivot_panel.missing_pivot": "None of the decisions linked to this case have a pivot value defined on their payload. Ask an admin to configure one in the data model edition page",
   "case_detail.pivot_panel.missing_pivot.admin": "None of the decisions linked to this case have a pivot value defined on their payload. Go to the data model edition page to configure one",
@@ -189,5 +192,8 @@
   "decisions.rule.snooze": "Snooze",
   "decisions.outcome": "Outcome",
   "decisions.rules": "Rules",
-  "next_unassigned_case": "Go to the next unassigned case"
+  "next_unassigned_case": "Go to the next unassigned case",
+  "escalate-button.hint": "Escalate the case to {{inboxName}}.",
+  "escalate-button.forbidden.hint": "There is no escalation inbox set. Please contact your administrator.",
+  "escalate-button.forbidden.hint.admin": "There is no escalation inbox set."
 }
