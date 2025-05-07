@@ -214,6 +214,7 @@ export function AddComment({ caseId }: { caseId: string }) {
         variant="primary"
         size="medium"
         aria-label={t('cases:case_detail.add_a_comment.post')}
+        disabled={form.state.isSubmitting}
       >
         <Icon icon="send" className="size-5" />
       </Button>
