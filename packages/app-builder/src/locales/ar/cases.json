@@ -193,7 +193,7 @@
   "escalate-button.hint": "تصعيد الحالة إلى {{inboxName}}.",
   "escalate-button.forbidden.hint": "لا توجد علبة وارد للتصعيد مُعينة. يرجى التواصل مع المسؤول.",
   "escalate-button.forbidden.hint.admin": "لم يتم تعيين علبة وارد للتصعيد.",
-  "escalate-case.modal.callout": "عند تصعيد هذه القضية، لن تُكلّف بها بعد الآن، كما أنك لن تحتفظ بحق الوصول إليها. سيتم تحويلك إلى صندوق الوارد الخاص بك.",
+  "escalate-case.modal.callout": "عند تصعيد هذه القضية، لن تُكلّف بها بعد الآن، وستفقد حق الوصول إليها إذا لم تكن من أعضاء صندوق الوارد الهدف.<br/>سيتم توجيهك إلى قائمة القضايا في صندوق الوارد الحالي.",
   "escalate-button.label": "تصعيد",
   "escalate-case.modal.submit-button.label": "تصعيد"
 }
