@@ -6,7 +6,6 @@ import {
 import { getCaseFileDownloadEndpoint } from '@app-builder/utils/files';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { ClientOnly } from 'remix-utils/client-only';
 import { Button, type ButtonProps, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -35,24 +34,20 @@ export const CaseFile = ({ file, className, size }: CaseFileProps) => {
   );
 
   return (
-    <ClientOnly>
-      {() => (
-        <Button
-          variant="secondary"
-          size={size}
-          onClick={() => {
-            void downloadCaseFile();
-          }}
-          disabled={downloadingCaseFile}
-          className={className}
-        >
-          <Icon
-            icon={downloadingCaseFile ? 'spinner' : 'download'}
-            className={cn('size-3.5', { 'animate-spin': downloadingCaseFile })}
-          />
-          {file.fileName}
-        </Button>
-      )}
-    </ClientOnly>
+    <Button
+      variant="secondary"
+      size={size}
+      onClick={() => {
+        void downloadCaseFile();
+      }}
+      disabled={downloadingCaseFile}
+      className={className}
+    >
+      <Icon
+        icon={downloadingCaseFile ? 'spinner' : 'download'}
+        className={cn('size-3.5', { 'animate-spin': downloadingCaseFile })}
+      />
+      {file.fileName}
+    </Button>
   );
 };

@@ -16,6 +16,7 @@ import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { useLoaderData } from '@remix-run/react';
 import { type RefObject, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -159,11 +160,15 @@ export const CaseDetails = ({
           </UploadFile>
         </div>
 
-        <div className="border-grey-90 bg-grey-100 flex flex-wrap gap-2 rounded-lg border p-4">
-          {detail.files.map((file) => (
-            <CaseFile key={file.id} file={file} />
-          ))}
-        </div>
+        <ClientOnly>
+          {() => (
+            <div className="border-grey-90 bg-grey-100 flex flex-wrap gap-2 rounded-lg border p-4">
+              {detail.files.map((file) => (
+                <CaseFile key={file.id} file={file} />
+              ))}
+            </div>
+          )}
+        </ClientOnly>
       </div>
     </main>
   );
