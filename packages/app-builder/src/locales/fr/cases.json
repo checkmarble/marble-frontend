@@ -197,6 +197,6 @@
   "escalate-button.label": "Escalader",
   "escalate-case.modal.submit-button.label": "Escalader",
   "required_actions.decide_final_status": "Choisir le statut final",
-  "required_actions.no_more_pending_sanction_checks": "Check de sanction terminé",
-  "required_actions.review_screening_hits": "Check de sanctions ({{count}})"
+  "required_actions.no_more_pending_sanction_checks": "Filtrage de sanction terminé",
+  "required_actions.review_screening_hits": "Filtrage de sanctions ({{count}})"
 }
