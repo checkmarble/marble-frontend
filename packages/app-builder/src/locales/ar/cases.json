@@ -195,5 +195,8 @@
   "escalate-button.forbidden.hint.admin": "لم يتم تعيين علبة وارد للتصعيد.",
   "escalate-case.modal.callout": "عند تصعيد هذه القضية، لن تُكلّف بها بعد الآن، وستفقد حق الوصول إليها إذا لم تكن من أعضاء صندوق الوارد الهدف.<br/>سيتم توجيهك إلى قائمة القضايا في صندوق الوارد الحالي.",
   "escalate-button.label": "تصعيد",
-  "escalate-case.modal.submit-button.label": "تصعيد"
+  "escalate-case.modal.submit-button.label": "تصعيد",
+  "required_actions.decide_final_status": "تقرر الوضع النهائي",
+  "required_actions.no_more_pending_sanction_checks": "لا مزيد من الشيكات العقوبات المعلقة",
+  "required_actions.review_screening_hits": "مراجعة عربات الفحص ({{count}})"
 }
