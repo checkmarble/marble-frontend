@@ -42,7 +42,7 @@ export const CaseEventFilters = ({
   const language = useFormatLanguage();
   const isDirty = useMemo(
     () =>
-      diff(filters.types, ['comment_added']).length !== 0 ||
+      diff(filters.types, ['comment_added', 'file_added']).length !== 0 ||
       filters.types.length === 0 ||
       filters.startDate ||
       filters.endDate,
@@ -55,7 +55,7 @@ export const CaseEventFilters = ({
         <Button
           variant="secondary"
           size="xs"
-          onClick={() => setFilters({ types: ['comment_added'] })}
+          onClick={() => setFilters({ types: ['comment_added', 'file_added'] })}
         >
           <Icon icon="cross" className="size-4" />
           <span className="text-xs">{t('cases:case_detail.history.filter_reset')}</span>
