@@ -25,11 +25,13 @@ import { z } from 'zod';
 const MAX_FILE_SIZE_MB = 20;
 const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-const schema = z.object({
-  caseId: z.string().nonempty(),
-  comment: z.string(),
-  files: z.array(z.instanceof(File)),
-});
+const schema = z
+  .object({
+    caseId: z.string().uuid().nonempty(),
+    comment: z.string(),
+    files: z.array(z.instanceof(File)),
+  })
+  .refine((data) => data.comment.trim() !== '' || data.files.length > 0);
 
 type CaseCommentForm = z.infer<typeof schema>;
 
@@ -137,18 +139,25 @@ export function AddComment({ caseId }: { caseId: string }) {
       });
     },
     validators: {
-      onBlur: schema,
+      onChange: schema,
+      onMount: schema,
       onSubmit: schema,
     },
   });
 
   useEffect(() => {
-    if (lastData?.success) form.reset();
+    if (lastData?.success) {
+      form.reset();
+      form.validate('mount');
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastData]);
 
   const { getInputProps, getRootProps } = useDropzone({
-    onDrop: (acceptedFiles) => form.setFieldValue('files', (prev) => [...prev, ...acceptedFiles]),
+    onDrop: (acceptedFiles) => {
+      form.setFieldValue('files', (prev) => [...prev, ...acceptedFiles]);
+      form.validate('change');
+    },
     accept: {
       'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
       'application/pdf': ['.pdf'],
@@ -200,6 +209,7 @@ export function AddComment({ caseId }: { caseId: string }) {
                       onClick={(e) => {
                         e.preventDefault();
                         field.handleChange((prev) => toggle(prev, file));
+                        form.validate('change');
                       }}
                     />
                   </div>
@@ -209,14 +219,23 @@ export function AddComment({ caseId }: { caseId: string }) {
           )}
         </form.Field>
       </div>
-      <Button
-        type="submit"
-        variant="primary"
-        size="medium"
-        aria-label={t('cases:case_detail.add_a_comment.post')}
-      >
-        <Icon icon="send" className="size-5" />
-      </Button>
+      <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitSuccessful]}>
+        {([canSubmit, isSubmitSuccessful]) => (
+          <Button
+            type="submit"
+            variant="primary"
+            size="medium"
+            aria-label={t('cases:case_detail.add_a_comment.post')}
+            disabled={!canSubmit || isSubmitSuccessful}
+          >
+            {isSubmitSuccessful ? (
+              <Icon icon="spinner" className="size-5 animate-spin" />
+            ) : (
+              <Icon icon="send" className="size-5" />
+            )}
+          </Button>
+        )}
+      </form.Subscribe>
     </form>
   );
 }
