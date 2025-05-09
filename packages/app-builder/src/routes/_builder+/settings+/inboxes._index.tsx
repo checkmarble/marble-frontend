@@ -20,9 +20,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const inboxes = await inbox.listInboxesWithCaseCount();
+  const inboxes = (await inbox.listInboxesWithCaseCount()).filter(
+    (inbox) => isAdmin(user) || isInboxAdmin(user, inbox),
+  );
 
-  if (!isAdmin(user) && !inboxes.some((inbox) => isInboxAdmin(user, inbox))) {
+  if (inboxes.length === 0) {
     return redirect(getRoute('/'));
   }
 
