@@ -25,11 +25,13 @@ import { z } from 'zod';
 const MAX_FILE_SIZE_MB = 20;
 const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-const schema = z.object({
-  caseId: z.string().nonempty(),
-  comment: z.string().nonempty(),
-  files: z.array(z.instanceof(File)),
-});
+const schema = z
+  .object({
+    caseId: z.string().nonempty(),
+    comment: z.string(),
+    files: z.array(z.instanceof(File)),
+  })
+  .refine((data) => data.comment.trim() !== '' || data.files.length > 0);
 
 type CaseCommentForm = z.infer<typeof schema>;
 
@@ -152,7 +154,10 @@ export function AddComment({ caseId }: { caseId: string }) {
   }, [lastData]);
 
   const { getInputProps, getRootProps } = useDropzone({
-    onDrop: (acceptedFiles) => form.setFieldValue('files', (prev) => [...prev, ...acceptedFiles]),
+    onDrop: (acceptedFiles) => {
+      form.setFieldValue('files', (prev) => [...prev, ...acceptedFiles]);
+      form.validate('change');
+    },
     accept: {
       'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
       'application/pdf': ['.pdf'],
@@ -204,6 +209,7 @@ export function AddComment({ caseId }: { caseId: string }) {
                       onClick={(e) => {
                         e.preventDefault();
                         field.handleChange((prev) => toggle(prev, file));
+                        form.validate('change');
                       }}
                     />
                   </div>
