@@ -5,12 +5,16 @@ import { getServerEnv } from '@app-builder/utils/environment';
 import { getCaseFileUploadEndpointById } from '@app-builder/utils/files';
 import { handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs } from '@remix-run/node';
+import {
+  type ActionFunctionArgs,
+  unstable_createMemoryUploadHandler,
+  unstable_parseMultipartFormData,
+} from '@remix-run/node';
 import { redirect, useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { decode } from 'decode-formdata';
 import { serialize } from 'object-to-formdata';
-import { toggle } from 'radash';
+import { toggle, tryit } from 'radash';
 import { useEffect } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import { useTranslation } from 'react-i18next';
@@ -37,15 +41,33 @@ export async function action({ request }: ActionFunctionArgs) {
     authSessionService: { getSession: getAuthSession },
   } = initServerServices(request);
 
-  const [t, session, authSession, raw, { cases }] = await Promise.all([
+  const [err, raw] = await tryit(unstable_parseMultipartFormData)(
+    request,
+    unstable_createMemoryUploadHandler({
+      maxPartSize: MAX_FILE_SIZE,
+    }),
+  );
+
+  const [t, session, authSession, { cases }] = await Promise.all([
     getFixedT(request, ['common']),
     getSession(request),
     getAuthSession(request),
-    request.formData(),
     authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     }),
   ]);
+
+  if (err) {
+    setToastMessage(session, {
+      type: 'error',
+      message: t('common:max_size_exceeded', { size: MAX_FILE_SIZE_MB }),
+    });
+
+    return Response.json(
+      { success: false, errors: [] },
+      { headers: { 'Set-Cookie': await commitSession(session) } },
+    );
+  }
 
   const token = authSession.get('authToken')?.access_token;
 

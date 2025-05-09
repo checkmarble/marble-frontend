@@ -74,5 +74,6 @@
   "more_remains": "{{count}} أكثر",
   "open": "يفتح",
   "load_more_results": "تحميل المزيد من النتائج",
-  "documents": "وثائق"
+  "documents": "وثائق",
+  "max_size_exceeded": "{{size}} MB هي أقصى حجم ملف. يرجى إعادة المحاولة مع ملف أصغر."
 }
