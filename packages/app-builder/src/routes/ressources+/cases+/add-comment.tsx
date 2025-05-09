@@ -27,7 +27,7 @@ const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const schema = z
   .object({
-    caseId: z.string().nonempty(),
+    caseId: z.string().uuid().nonempty(),
     comment: z.string(),
     files: z.array(z.instanceof(File)),
   })
@@ -219,16 +219,20 @@ export function AddComment({ caseId }: { caseId: string }) {
           )}
         </form.Field>
       </div>
-      <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
-        {([canSubmit, isSubmitting]) => (
+      <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitSuccessful]}>
+        {([canSubmit, isSubmitSuccessful]) => (
           <Button
             type="submit"
             variant="primary"
             size="medium"
             aria-label={t('cases:case_detail.add_a_comment.post')}
-            disabled={!canSubmit || isSubmitting}
+            disabled={!canSubmit || isSubmitSuccessful}
           >
-            <Icon icon="send" className="size-5" />
+            {isSubmitSuccessful ? (
+              <Icon icon="spinner" className="size-5 animate-spin" />
+            ) : (
+              <Icon icon="send" className="size-5" />
+            )}
           </Button>
         )}
       </form.Subscribe>
