@@ -1,0 +1,121 @@
+components:
+  schemas:
+    GroupedAnnotations:
+      type: object
+      properties:
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommentEntityAnnotationDto'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagEntityAnnotationDto'
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileEntityAnnotationDto'
+    CommonEntityAnnotationDto:
+      type: object
+      required:
+        - id
+        - case_id
+        - annotated_by
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        case_id:
+          type: string
+          format: uuid
+        annotated_by:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+    TagEntityAnnotationPayloadDto:
+      type: object
+      properties:
+        tag_id:
+          type: string
+          format: uuid
+        required:
+          - tag_id
+    CommentEntityAnnotationPayloadDto:
+      type: object
+      properties:
+        text:
+          type: string
+          description: body of the comment
+      required:
+        - text
+    FileEntityAnnotationPayloadDto:
+      type: object
+      properties:
+        caption:
+          type: string
+        bucket:
+          type: string
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityAnnotationFileDetailDto'
+      required:
+        - caption
+        - bucket
+        - files
+    EntityAnnotationFileDetailDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        key:
+          type: string
+        filename:
+          type: string
+      required:
+        - id
+        - key
+        - filename
+    TagEntityAnnotationDto:
+      allOf:
+        - $ref: '#/components/schemas/CommonEntityAnnotationDto'
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: ['tag']
+            payload:
+              $ref: '#/components/schemas/TagEntityAnnotationPayloadDto'
+          required:
+            - type
+            - payload
+    CommentEntityAnnotationDto:
+      allOf:
+        - $ref: '#/components/schemas/CommonEntityAnnotationDto'
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: ['comment']
+            payload:
+              $ref: '#/components/schemas/CommentEntityAnnotationPayloadDto'
+          required:
+            - type
+            - payload
+    FileEntityAnnotationDto:
+      allOf:
+        - $ref: '#/components/schemas/CommonEntityAnnotationDto'
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: ['file']
+            payload:
+              $ref: '#/components/schemas/FileEntityAnnotationPayloadDto'
+          required:
+            - type
+            - payload
