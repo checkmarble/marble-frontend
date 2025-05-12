@@ -22,6 +22,11 @@ on:
       SEGMENT_WRITE_KEY_OPENSOURCE:
         description: write key for segment (open source deployment). Can be overridden at runtime
 
+permissions:
+  contents: read
+  actions: read
+  id-token: 'write' # needed for using open id token to authenticate with GCP
+
 jobs:
   main:
     runs-on: ubuntu-latest
