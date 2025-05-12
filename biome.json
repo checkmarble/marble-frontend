@@ -15,7 +15,11 @@
       "**/*.jsx",
       "**/*.json",
       "**/*.md",
-      "!**/node_modules/**"
+      "!**/node_modules/**",
+      "!**/build/**",
+      "!**/dist/**",
+      "!**/coverage/**",
+      "!**/public/**"
     ]
   },
   "formatter": {
