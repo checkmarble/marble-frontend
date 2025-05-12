@@ -37,7 +37,10 @@ const PublicEnvVarsSchema = z.object({
   SENTRY_ENVIRONMENT: z.string().optional(),
 
   SEGMENT_WRITE_KEY: z.string().optional(),
-  DISABLE_SEGMENT: z.boolean().optional(),
+  DISABLE_SEGMENT: z
+    .string()
+    .transform((val) => val === 'true')
+    .optional(),
 });
 type PublicEnvVars = z.infer<typeof PublicEnvVarsSchema>;
 
