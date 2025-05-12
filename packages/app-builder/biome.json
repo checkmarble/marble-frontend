@@ -4,5 +4,9 @@
     "domains": {
       "react": "recommended"
     }
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": ["!./public/**"]
   }
 }
