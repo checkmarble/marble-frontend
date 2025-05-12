@@ -4,15 +4,14 @@
 #   https://lefthook.dev/configuration/
 #
 pre-push:
-  jobs:
-    - run: pnpm run -r type-check
+  commands:
+    check:
+      glob: '*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}'
+      run: npx @biomejs/biome check --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {push_files}
 
 pre-commit:
-  parallel: true
   commands:
-    lint:
-      run: pnpm run -r lint --fix
-      stage_fixed: true
-    format:
-      run: pnpm run format:write
+    check:
+      glob: '*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}'
+      run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
