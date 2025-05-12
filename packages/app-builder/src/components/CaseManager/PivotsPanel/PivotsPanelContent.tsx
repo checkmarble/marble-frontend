@@ -14,6 +14,7 @@ import { Link } from '@remix-run/react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { isDeepEqual } from 'remeda';
 import { match } from 'ts-pattern';
 import { CtaClassName } from 'ui-design-system';
 
@@ -41,6 +42,11 @@ export function PivotsPanelContent({
   const { t } = useTranslation(['cases']);
 
   const [currentPivotObject, setCurrentPivotObject] = useState(pivotObjects[0]);
+
+  if (!isDeepEqual(currentPivotObject, pivotObjects[0])) {
+    setCurrentPivotObject(pivotObjects[0]);
+  }
+
   const currentTable = dataModel.find((t) => t.name === currentPivotObject?.pivotObjectName);
   const decisionsPivotValues = useMemo(
     () => caseObj.decisions.flatMap((d) => d.pivotValues),
