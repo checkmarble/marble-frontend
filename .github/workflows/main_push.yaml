@@ -29,3 +29,4 @@ jobs:
       SENTRY_RELEASE: ${{ github.sha }}
     secrets:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SEGMENT_WRITE_KEY_OPENSOURCE: ${{ secrets.SEGMENT_WRITE_KEY_OPENSOURCE }}

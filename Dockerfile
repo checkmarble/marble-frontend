@@ -27,6 +27,8 @@ ENV NODE_ENV=production
 ENV PORT=${PORT:-8080}
 ARG APP_VERSION
 ENV APP_VERSION=$APP_VERSION
+ARG SEGMENT_WRITE_KEY_OPENSOURCE=""
+ENV SEGMENT_WRITE_KEY_OPENSOURCE=${SEGMENT_WRITE_KEY_OPENSOURCE:-""}
 COPY --from=build /prod/app-builder/node_modules /prod/app-builder/node_modules
 COPY --from=build /prod/app-builder/build /prod/app-builder/build
 WORKDIR /prod/app-builder

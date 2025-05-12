@@ -37,6 +37,7 @@ const PublicEnvVarsSchema = z.object({
   SENTRY_ENVIRONMENT: z.string().optional(),
 
   SEGMENT_WRITE_KEY: z.string().optional(),
+  DISABLE_SEGMENT: z.boolean().optional(),
 });
 type PublicEnvVars = z.infer<typeof PublicEnvVarsSchema>;
 
@@ -86,6 +87,7 @@ interface ServerEnvVars {
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT?: string;
   SEGMENT_WRITE_KEY?: string;
+  DISABLE_SEGMENT?: boolean;
   SESSION_SECRET: string;
 }
 
