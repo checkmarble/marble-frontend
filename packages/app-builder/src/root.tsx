@@ -82,6 +82,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (csrfCookieHeader) headers.append('set-cookie', csrfCookieHeader);
 
   const segmentApiKey = getServerEnv('SEGMENT_WRITE_KEY');
+  const disableSegment = getServerEnv('DISABLE_SEGMENT');
 
   return json(
     {
@@ -89,7 +90,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       locale,
       csrf: csrfToken,
       toastMessage,
-      segmentScript: segmentApiKey ? getSegmentScript(segmentApiKey) : undefined,
+      segmentScript: !disableSegment && segmentApiKey ? getSegmentScript(segmentApiKey) : undefined,
     },
     {
       headers,
