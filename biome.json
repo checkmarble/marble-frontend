@@ -69,7 +69,7 @@
   },
   "javascript": {
     "formatter": {
-      "quoteStyle": "double",
+      "quoteStyle": "single",
       "arrowParentheses": "always",
       "bracketSameLine": false,
       "bracketSpacing": true,
