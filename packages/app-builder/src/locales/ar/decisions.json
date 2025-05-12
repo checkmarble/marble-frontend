@@ -65,5 +65,6 @@
   "outcome.tag.blocked.label": "محظور ومراجعة",
   "outcome.tag.review.label": "مراجعة",
   "outcome.tag.unknown.label": "مجهول",
-  "outcome.tag.manually_approved.label": "تمت الموافقة عليها يدويًا"
+  "outcome.tag.manually_approved.label": "تمت الموافقة عليها يدويًا",
+  "outcome.tag.manually_declined.label": "تم الرفض يدويًا"
 }

@@ -65,5 +65,6 @@
   "outcome.tag.blocked.label": "Bloqué et à vérifier",
   "outcome.tag.review.label": "Vérifier",
   "outcome.tag.unknown.label": "Inconnu",
-  "outcome.tag.manually_approved.label": "Approuvé manuellement"
+  "outcome.tag.manually_approved.label": "Approuvé manuellement",
+  "outcome.tag.manually_declined.label": "Refusé manuellement"
 }

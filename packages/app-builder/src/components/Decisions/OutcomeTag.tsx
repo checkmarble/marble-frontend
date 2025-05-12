@@ -1,3 +1,4 @@
+import { type ReviewStatus } from '@app-builder/models/decision';
 import { knownOutcomes, type Outcome } from '@app-builder/models/outcome';
 import clsx from 'clsx';
 import { type ParseKeys } from 'i18next';
@@ -93,16 +94,19 @@ export function OutcomeBadge({
   reviewStatus = null,
   className,
   ...rest
-}: ComponentProps<'div'> & { outcome: Outcome; reviewStatus?: string | null }) {
+}: ComponentProps<'div'> & { outcome: Outcome; reviewStatus?: ReviewStatus | null }) {
   const { t } = useTranslation(decisionsI18n);
+
   return (
     <div {...rest} className={cn('flex items-center gap-1.5', className)}>
       <div
         className={cn('size-4 shrink-0 rounded-full', {
-          'bg-green-38': outcome === 'approve',
-          'bg-red-47': outcome === 'decline',
+          'bg-green-38':
+            outcome === 'approve' || (outcome === 'block_and_review' && reviewStatus === 'approve'),
+          'bg-red-47':
+            outcome === 'decline' || (outcome === 'block_and_review' && reviewStatus === 'decline'),
           'border-red-47 border-2': outcome === 'review',
-          'border-2 border-yellow-50': outcome === 'block_and_review',
+          'border-2 border-yellow-50': outcome === 'block_and_review' && reviewStatus === 'pending',
           'bg-grey-50': outcome === 'unknown',
         })}
       />
@@ -111,9 +115,10 @@ export function OutcomeBadge({
           .with('approve', () => t('decisions:outcome.tag.approved.label'))
           .with('decline', () => t('decisions:outcome.tag.declined.label'))
           .with('block_and_review', () =>
-            reviewStatus
-              ? t('decisions:outcome.tag.manually_approved.label')
-              : t('decisions:outcome.tag.blocked.label'),
+            match(reviewStatus)
+              .with('approve', () => t('decisions:outcome.tag.manually_approved.label'))
+              .with('decline', () => t('decisions:outcome.tag.manually_declined.label'))
+              .otherwise(() => t('decisions:outcome.block_and_review')),
           )
           .with('review', () => t('decisions:outcome.tag.review.label'))
           .with('unknown', () => t('decisions:outcome.tag.unknown.label'))
