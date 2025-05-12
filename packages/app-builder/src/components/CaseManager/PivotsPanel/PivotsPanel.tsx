@@ -48,7 +48,6 @@ export function PivotsPanel(props: PivotsPanelProps) {
         <div className="w-[519px] p-8 pt-0">
           <PivotsPanelContent
             currentUser={props.currentUser}
-            key={props.case.id}
             case={props.case}
             pivotObjects={props.pivotObjects}
             dataModel={props.dataModel}
