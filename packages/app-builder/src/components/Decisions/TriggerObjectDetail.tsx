@@ -1,4 +1,4 @@
-import { type TableModel } from '@app-builder/models';
+import type { TableModel } from '@app-builder/models';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import clsx from 'clsx';

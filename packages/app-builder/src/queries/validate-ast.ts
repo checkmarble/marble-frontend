@@ -1,6 +1,6 @@
-import {
-  type AstValidationPayload,
-  type AstValidationReturnType,
+import type {
+  AstValidationPayload,
+  AstValidationReturnType,
 } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';

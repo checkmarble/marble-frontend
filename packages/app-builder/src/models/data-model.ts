@@ -1,24 +1,24 @@
-import { type ParseKeys } from 'i18next';
-import {
-  type ClientDataListRequestBody as ClientDataListRequestBodyDto,
-  type ClientDataListResponseDto,
-  type ClientObjectDetailDto,
-  type CreateNavigationOptionDto,
-  type CreatePivotInputDto,
-  type CreateTableFieldDto,
-  type DataModelDto,
-  type DataModelObjectDto,
-  type DataModelTableOptionsDto,
-  type FieldDto,
-  type LinkToSingleDto,
-  type NavigationOptionDto,
-  type PivotDto,
-  type SetDataModelTableOptionsBodyDto,
-  type TableDto,
-  type UpdateTableFieldDto,
+import type { ParseKeys } from 'i18next';
+import type {
+  ClientDataListRequestBody as ClientDataListRequestBodyDto,
+  ClientDataListResponseDto,
+  ClientObjectDetailDto,
+  CreateNavigationOptionDto,
+  CreatePivotInputDto,
+  CreateTableFieldDto,
+  DataModelDto,
+  DataModelObjectDto,
+  DataModelTableOptionsDto,
+  FieldDto,
+  LinkToSingleDto,
+  NavigationOptionDto,
+  PivotDto,
+  SetDataModelTableOptionsBodyDto,
+  TableDto,
+  UpdateTableFieldDto,
 } from 'marble-api';
 import * as R from 'remeda';
-import { type IconName } from 'ui-icons';
+import type { IconName } from 'ui-icons';
 
 type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'unknown';
@@ -211,12 +211,11 @@ export function adaptCreatePivotInputDto(createPivotInput: CreatePivotInput): Cr
       base_table_id: createPivotInput.baseTableId,
       field_id: createPivotInput.fieldId,
     };
-  } else {
-    return {
-      base_table_id: createPivotInput.baseTableId,
-      path_link_ids: createPivotInput.pathLinkIds,
-    };
   }
+  return {
+    base_table_id: createPivotInput.baseTableId,
+    path_link_ids: createPivotInput.pathLinkIds,
+  };
 }
 
 export interface CreateFieldInput {

@@ -1,13 +1,13 @@
-import { type DataModel } from '@app-builder/models';
-import {
-  type DatabaseAccessAstNode,
-  type PayloadAstNode,
+import type { DataModel } from '@app-builder/models';
+import type {
+  DatabaseAccessAstNode,
+  PayloadAstNode,
 } from '@app-builder/models/astNode/data-accessor';
-import { type CustomList } from '@app-builder/models/custom-list';
+import type { CustomList } from '@app-builder/models/custom-list';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import { type ActionFunctionArgs } from '@remix-run/node';
+import type { ActionFunctionArgs } from '@remix-run/node';
 
 export type BuilderOptionsResource = {
   customLists: CustomList[];

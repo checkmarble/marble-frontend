@@ -1,5 +1,5 @@
 import { ExternalLink } from '@app-builder/components/ExternalLink';
-import { type OpenSanctionEntitySchema } from '@app-builder/models/sanction-check';
+import type { OpenSanctionEntitySchema } from '@app-builder/models/sanction-check';
 
 export type PropertyDataType = 'string' | 'country' | 'url' | 'date' | 'wikidataId';
 export type PropertyForSchema<

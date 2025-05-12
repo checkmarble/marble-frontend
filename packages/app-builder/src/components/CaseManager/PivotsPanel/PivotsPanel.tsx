@@ -1,8 +1,8 @@
 import { DataModelExplorer } from '@app-builder/components/DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { type CurrentUser, type DataModelWithTableOptions } from '@app-builder/models';
-import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
+import type { CurrentUser, DataModelWithTableOptions } from '@app-builder/models';
+import type { CaseDetail, PivotObject } from '@app-builder/models/cases';
 import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -2,7 +2,7 @@ import { casesI18n } from '@app-builder/components/Cases';
 import { initServerServices } from '@app-builder/services/init.server';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs } from '@remix-run/node';
+import type { ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
 import {

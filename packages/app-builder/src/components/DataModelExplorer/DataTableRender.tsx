@@ -1,9 +1,9 @@
-import {
-  type ClientDataListResponse,
-  type DataModelWithTableOptions,
-  type TableModelWithOptions,
+import type {
+  ClientDataListResponse,
+  DataModelWithTableOptions,
+  TableModelWithOptions,
 } from '@app-builder/models';
-import { type PivotObject } from '@app-builder/models/cases';
+import type { PivotObject } from '@app-builder/models/cases';
 import { useClientObjectListQuery } from '@app-builder/queries/client-object-list';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
@@ -29,7 +29,7 @@ import { Icon } from 'ui-icons';
 
 import { FormatData } from '../FormatData';
 import { ClientObjectDataList } from './ClientObjectDataList';
-import { type DataModelExplorerNavigationTab } from './types';
+import type { DataModelExplorerNavigationTab } from './types';
 
 export type DataTableRenderProps = {
   item: DataModelExplorerNavigationTab;
@@ -207,9 +207,8 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
       if (cl.includes(colName)) {
         const idx = cl.indexOf(colName);
         return [...cl.slice(0, idx), ...cl.slice(idx + 1)];
-      } else {
-        return [...cl, colName];
       }
+      return [...cl, colName];
     });
   };
 

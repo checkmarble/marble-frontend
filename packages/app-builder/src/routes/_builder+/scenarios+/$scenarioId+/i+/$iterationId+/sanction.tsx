@@ -21,7 +21,7 @@ import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { knownOutcomes, type SanctionOutcome } from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
-import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
+import type { BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
@@ -31,7 +31,7 @@ import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-r
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { useForm } from '@tanstack/react-form';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';

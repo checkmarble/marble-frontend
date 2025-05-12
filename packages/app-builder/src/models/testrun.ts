@@ -1,13 +1,13 @@
-import {
-  type TestRunCreateInputDto,
-  type TestRunDecisionDataDto,
-  type TestRunDto,
-  type TestRunRuleExecutionDataDto,
-  type TestRunStatusDto,
+import type {
+  TestRunCreateInputDto,
+  TestRunDecisionDataDto,
+  TestRunDto,
+  TestRunRuleExecutionDataDto,
+  TestRunStatusDto,
 } from 'marble-api/generated/marblecore-api';
 import { toUpperCase } from 'remeda';
 
-import { type knownOutcomes } from './outcome';
+import type { knownOutcomes } from './outcome';
 
 type Outcome = (typeof knownOutcomes)[number];
 

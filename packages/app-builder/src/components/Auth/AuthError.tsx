@@ -1,6 +1,6 @@
-import { type AuthErrors } from '@app-builder/models';
+import type { AuthErrors } from '@app-builder/models';
 import clsx from 'clsx';
-import { type ParseKeys } from 'i18next';
+import type { ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import { authI18n } from './auth-i18n';

@@ -1,4 +1,4 @@
-import { type Meta, type StoryFn } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import { Button } from '../Button/Button';
 import { HiddenInputs } from './HiddenInputs';

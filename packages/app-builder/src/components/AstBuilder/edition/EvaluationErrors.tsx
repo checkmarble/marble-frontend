@@ -1,4 +1,4 @@
-import { type EvaluationErrorCode } from '@app-builder/models/node-evaluation';
+import type { EvaluationErrorCode } from '@app-builder/models/node-evaluation';
 import {
   adaptEvaluationErrorViewModels,
   commonErrorMessages,
@@ -17,7 +17,7 @@ type EditionEvaluationErrorsProps = {
   className?: string;
   filterOut?: EvaluationErrorCode[];
 };
-export const EditionEvaluationErrors = memo(function (props: EditionEvaluationErrorsProps) {
+export const EditionEvaluationErrors = memo((props: EditionEvaluationErrorsProps) => {
   const { t } = useTranslation(['scenarios']);
   const nodeSharp = AstBuilderNodeSharpFactory.useOptionalSharp();
   const evaluation = nodeSharp?.select((s) => s.validation.evaluation);

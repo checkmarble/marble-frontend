@@ -25,7 +25,7 @@ import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import type { LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useRevalidator, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import {
@@ -35,7 +35,7 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import * as React from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import toast from 'react-hot-toast';
@@ -185,7 +185,7 @@ export default function Lists() {
                 </p>
               </div>
             ) : (
-              <Table.Default {...virtualTable}></Table.Default>
+              <Table.Default {...virtualTable} />
             )}
           </div>
           {listFeatureAccess.isDeleteListAvailable ? <DeleteList listId={customList.id} /> : null}

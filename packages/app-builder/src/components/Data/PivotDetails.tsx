@@ -1,4 +1,4 @@
-import { type Pivot } from '@app-builder/models/data-model';
+import type { Pivot } from '@app-builder/models/data-model';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';

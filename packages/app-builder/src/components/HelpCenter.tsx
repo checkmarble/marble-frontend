@@ -1,4 +1,4 @@
-import { type AppVersions } from '@app-builder/models/version';
+import type { AppVersions } from '@app-builder/models/version';
 import {
   blockingReviewDocHref,
   executeAScenarioDocHref,

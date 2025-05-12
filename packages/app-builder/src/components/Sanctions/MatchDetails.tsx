@@ -1,7 +1,7 @@
-import { type PropertyForSchema } from '@app-builder/constants/sanction-check-entity';
-import {
-  type SanctionCheckMatch,
-  type SanctionCheckSanctionEntity,
+import type { PropertyForSchema } from '@app-builder/constants/sanction-check-entity';
+import type {
+  SanctionCheckMatch,
+  SanctionCheckSanctionEntity,
 } from '@app-builder/models/sanction-check';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

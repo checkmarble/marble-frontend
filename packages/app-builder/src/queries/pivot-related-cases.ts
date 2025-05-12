@@ -1,4 +1,4 @@
-import { type PivotRelatedCasesResource } from '@app-builder/routes/ressources+/cases+/pivot+/related+/$pivotValue._index';
+import type { PivotRelatedCasesResource } from '@app-builder/routes/ressources+/cases+/pivot+/related+/$pivotValue._index';
 import { getRoute } from '@app-builder/utils/routes';
 import { useQuery } from '@tanstack/react-query';
 

@@ -1,11 +1,11 @@
-import { type EditableAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import type { EditableAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { useCallbackRef } from '@marble/shared';
-import { type ReactElement, type ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, cn, Modal } from 'ui-design-system';
 
 import { AstBuilderNodeSharpFactory } from '../node-store';
-import { type OperandEditModalProps } from './EditModal';
+import type { OperandEditModalProps } from './EditModal';
 
 export type OperandEditModalContainerProps = Omit<OperandEditModalProps, 'node'> & {
   title: ReactElement | string;

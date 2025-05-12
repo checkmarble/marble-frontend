@@ -8,7 +8,7 @@ import { getAtPath, parsePath } from '@app-builder/utils/tree';
 import { AddLogicalOperatorButton } from '@ast-builder/styles/AddLogicalOperatorButton';
 import { LogicalOperatorLabel } from '@ast-builder/styles/LogicalOperatorLabel';
 import { RemoveButton } from '@ast-builder/styles/RemoveButton';
-import { type AstBuilderRootProps } from '@ast-builder/types';
+import type { AstBuilderRootProps } from '@ast-builder/types';
 import { computed } from '@preact/signals-react';
 import invariant from 'tiny-invariant';
 

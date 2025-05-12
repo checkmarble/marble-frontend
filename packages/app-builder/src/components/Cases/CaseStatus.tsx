@@ -1,6 +1,6 @@
-import { type CaseOutcome, type CaseStatus } from '@app-builder/models/cases';
+import type { CaseOutcome, CaseStatus } from '@app-builder/models/cases';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { cn } from 'ui-design-system';

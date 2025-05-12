@@ -1,6 +1,6 @@
 import { Callout, scenarioI18n } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
-import { type AstBuilderNodeStore } from '@app-builder/components/AstBuilder/edition/node-store';
+import type { AstBuilderNodeStore } from '@app-builder/components/AstBuilder/edition/node-store';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
@@ -11,7 +11,7 @@ import {
   NewEmptyTriggerAstNode,
   NewUndefinedAstNode,
 } from '@app-builder/models';
-import { type ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
+import type { ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import {
   createDecisionDocHref,
@@ -25,7 +25,7 @@ import { fromParams } from '@app-builder/utils/short-uuid';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Collapsible } from 'ui-design-system';

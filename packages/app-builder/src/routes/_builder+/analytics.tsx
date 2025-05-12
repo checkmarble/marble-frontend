@@ -11,7 +11,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
@@ -65,7 +65,7 @@ export default function Analytics() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
       </Page.Header>
-      <iframe src={globalDashbord.src} title={globalDashbord.title} className="size-full"></iframe>
+      <iframe src={globalDashbord.src} title={globalDashbord.title} className="size-full" />
     </Page.Main>
   );
 }

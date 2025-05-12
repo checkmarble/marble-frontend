@@ -1,4 +1,4 @@
-import { type LinkToSingle } from '@app-builder/models';
+import type { LinkToSingle } from '@app-builder/models';
 import {
   BaseEdge,
   type DefaultEdgeOptions,

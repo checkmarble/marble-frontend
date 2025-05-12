@@ -1,6 +1,6 @@
-import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
+import type { PaginatedResponse, PaginationParams } from '@app-builder/models/pagination';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
-import { type Table } from '@tanstack/react-table';
+import type { Table } from '@tanstack/react-table';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';

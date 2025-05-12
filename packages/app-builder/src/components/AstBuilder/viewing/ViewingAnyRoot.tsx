@@ -1,4 +1,4 @@
-import { type AstBuilderRootProps } from '@ast-builder/types';
+import type { AstBuilderRootProps } from '@ast-builder/types';
 import { useMemo } from 'react';
 
 import { ViewingEvaluationErrors } from './ViewingEvaluationErrors';

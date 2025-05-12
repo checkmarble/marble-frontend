@@ -1,6 +1,6 @@
-import {
-  type CreateScenarioPublicationBody as CreateScenarioPublicationBodyDto,
-  type ScenarioPublicationStatusDto,
+import type {
+  CreateScenarioPublicationBody as CreateScenarioPublicationBodyDto,
+  ScenarioPublicationStatusDto,
 } from 'marble-api';
 
 export interface ScenarioPublicationStatus {

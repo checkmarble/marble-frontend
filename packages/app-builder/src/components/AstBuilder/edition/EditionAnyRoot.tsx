@@ -1,4 +1,4 @@
-import { type AstBuilderRootProps } from '@ast-builder/types';
+import type { AstBuilderRootProps } from '@ast-builder/types';
 
 import { EditionAstBuilderNode } from './EditionNode';
 import { EditionEvaluationErrors } from './EvaluationErrors';

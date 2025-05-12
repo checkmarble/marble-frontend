@@ -1,9 +1,9 @@
-import {
-  type CookieParseOptions,
-  type CookieSerializeOptions,
-  type Session,
-  type SessionData,
-  type SessionStorage,
+import type {
+  CookieParseOptions,
+  CookieSerializeOptions,
+  Session,
+  SessionData,
+  SessionStorage,
 } from '@remix-run/node';
 
 export type SessionService<Data = SessionData, FlashData = Data> = {

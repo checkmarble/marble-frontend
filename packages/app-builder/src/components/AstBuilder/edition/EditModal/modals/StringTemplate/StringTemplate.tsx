@@ -5,7 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Modal } from 'ui-design-system';
 
 import { OperandEditModalContainer } from '../../Container';
-import { type OperandEditModalProps } from '../../EditModal';
+import type { OperandEditModalProps } from '../../EditModal';
 import { StringTemplateForm } from './StringTemplateForm';
 
 export function EditStringTemplate(props: Omit<OperandEditModalProps, 'node'>) {

@@ -1,4 +1,4 @@
-import { type FirebaseClientWrapper } from '@app-builder/infra/firebase';
+import type { FirebaseClientWrapper } from '@app-builder/infra/firebase';
 
 import {
   type AuthenticationClientRepository,

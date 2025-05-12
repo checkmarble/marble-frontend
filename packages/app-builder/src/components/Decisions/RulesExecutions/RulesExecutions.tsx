@@ -1,4 +1,4 @@
-import { type RuleExecution } from '@app-builder/models/decision';
+import type { RuleExecution } from '@app-builder/models/decision';
 import clsx from 'clsx';
 import type * as React from 'react';
 import { CollapsibleV2 } from 'ui-design-system';

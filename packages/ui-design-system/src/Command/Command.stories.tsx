@@ -1,5 +1,5 @@
 import * as Popover from '@radix-ui/react-popover';
-import { type Meta, type StoryFn } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { Icon } from 'ui-icons';
 
 import { Button } from '../Button/Button';

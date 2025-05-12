@@ -1,8 +1,4 @@
-import {
-  type ScenarioCreateInputDto,
-  type ScenarioDto,
-  type ScenarioUpdateInputDto,
-} from 'marble-api';
+import type { ScenarioCreateInputDto, ScenarioDto, ScenarioUpdateInputDto } from 'marble-api';
 import * as z from 'zod';
 
 import { adaptAstNode, adaptNodeDto } from './astNode/ast-node';

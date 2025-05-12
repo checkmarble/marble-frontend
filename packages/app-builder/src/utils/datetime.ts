@@ -1,7 +1,7 @@
 import { Temporal } from 'temporal-polyfill';
 import { assertNever } from 'typescript-utils';
 
-import { type DateRangeFilter } from './schema/filterSchema';
+import type { DateRangeFilter } from './schema/filterSchema';
 
 export function getDateRangeFilter(
   dateRangeFilter: DateRangeFilter,

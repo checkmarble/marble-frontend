@@ -1,11 +1,11 @@
-import { type AstNode } from '@app-builder/models';
+import type { AstNode } from '@app-builder/models';
 import { type ReactNode, useState } from 'react';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 import { DiscoveryList } from './DiscoveryList';
 import { SearchResults } from './SearchResults';
-import { type SmartMenuListProps } from './types';
+import type { SmartMenuListProps } from './types';
 
 export type BottomAction = {
   id: string;

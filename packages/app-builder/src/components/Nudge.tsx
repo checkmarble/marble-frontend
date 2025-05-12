@@ -1,8 +1,8 @@
 import { Hovercard, HovercardAnchor, HovercardProvider } from '@ariakit/react/hovercard';
-import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import type { FeatureAccessDto } from 'marble-api/generated/license-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { cn, CtaClassName } from 'ui-design-system';
+import { CtaClassName, cn } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
 type NudgeProps = {

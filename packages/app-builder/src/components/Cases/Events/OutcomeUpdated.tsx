@@ -1,6 +1,6 @@
 import { casesI18n } from '@app-builder/components';
 import { EventTime } from '@app-builder/components/Cases/Events/Time';
-import { type CaseOutcomeUpdatedEvent } from '@app-builder/models/cases';
+import type { CaseOutcomeUpdatedEvent } from '@app-builder/models/cases';
 import { Trans, useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 

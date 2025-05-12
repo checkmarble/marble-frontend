@@ -1,6 +1,6 @@
-import { type NonOmittedReturnValue, type ReturnValue } from '@app-builder/models/node-evaluation';
+import type { NonOmittedReturnValue, ReturnValue } from '@app-builder/models/node-evaluation';
 import { formatConstant } from '@app-builder/services/ast-node/formatConstant';
-import { type TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 
 export function formatReturnValue(
   returnValue: ReturnValue | undefined,

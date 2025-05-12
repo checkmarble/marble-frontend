@@ -1,11 +1,11 @@
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
-import { type AstNode, type DataType } from '@app-builder/models';
-import { type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
-import {
-  type BaseFuzzyMatchConfig,
-  type FuzzyMatchAlgorithm,
-  type Level,
+import type { AstNode, DataType } from '@app-builder/models';
+import type { KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import type {
+  BaseFuzzyMatchConfig,
+  FuzzyMatchAlgorithm,
+  Level,
 } from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
 import { fuzzyMatchingDocHref } from '@app-builder/services/documentation-href';
 import { Trans, useTranslation } from 'react-i18next';

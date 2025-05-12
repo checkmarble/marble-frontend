@@ -1,6 +1,6 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { Link } from '@remix-run/react';
-import { type TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';

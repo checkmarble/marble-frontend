@@ -1,4 +1,4 @@
-import { type TestRunDecision } from '@app-builder/models/testrun';
+import type { TestRunDecision } from '@app-builder/models/testrun';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 

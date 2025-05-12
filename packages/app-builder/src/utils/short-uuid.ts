@@ -4,7 +4,7 @@
  * - fromSUUIDtoUUID: convert URL segment id to UUID
  */
 
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import type { LoaderFunctionArgs } from '@remix-run/node';
 import { useParams } from '@remix-run/react';
 import shortUUID, { type UUID } from 'short-uuid';
 import invariant from 'tiny-invariant';

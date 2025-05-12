@@ -1,10 +1,10 @@
-import { type AstNode, type DataType, type EnumValue } from '@app-builder/models';
-import { type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import type { AstNode, DataType, EnumValue } from '@app-builder/models';
+import type { KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 
 import { EditionAstBuilderOperand } from './edition/EditionOperand';
-import { type EnrichedMenuOption } from './edition/helpers';
+import type { EnrichedMenuOption } from './edition/helpers';
 import { AstBuilderDataSharpFactory } from './Provider';
-import { type AstBuilderBaseProps } from './types';
+import type { AstBuilderBaseProps } from './types';
 import { ViewingAstBuilderOperand } from './viewing/ViewingOperand';
 
 export type AstBuilderOperandProps = AstBuilderBaseProps<KnownOperandAstNode> & {

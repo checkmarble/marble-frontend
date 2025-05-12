@@ -1,14 +1,14 @@
 import { Callout } from '@app-builder/components';
-import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { AuthError } from '@app-builder/components/Auth/AuthError';
+import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import {
   SignUpWithEmailAndPassword,
   StaticSignUpWithEmailAndPassword,
 } from '@app-builder/components/Auth/SignUpWithEmailAndPassword';
-import { type AuthErrors } from '@app-builder/models/auth-errors';
+import type { AuthErrors } from '@app-builder/models/auth-errors';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import type { LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useNavigate } from '@remix-run/react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';

@@ -1,25 +1,25 @@
-import { type UnionToArray } from '@app-builder/utils/types';
-import {
-  type CaseContributorDto,
-  type CaseDetailDto,
-  type CaseDto,
-  type CaseEventDto,
-  type CaseFileDto,
-  type CaseStatusDto,
-  type CaseStatusForCaseEventDto,
-  type CaseTagDto,
-  type CreateCaseBodyDto,
-  type Error,
-  type Outcome,
-  type PivotObjectDto,
-  type SuspiciousActivityReportDto,
-  type UpdateCaseBodyDto,
+import type { UnionToArray } from '@app-builder/utils/types';
+import type {
+  CaseContributorDto,
+  CaseDetailDto,
+  CaseDto,
+  CaseEventDto,
+  CaseFileDto,
+  CaseStatusDto,
+  CaseStatusForCaseEventDto,
+  CaseTagDto,
+  CreateCaseBodyDto,
+  Error,
+  Outcome,
+  PivotObjectDto,
+  SuspiciousActivityReportDto,
+  UpdateCaseBodyDto,
 } from 'marble-api';
 import { match } from 'ts-pattern';
 
 import { adaptClientObjectDetail, type ClientObjectDetail } from './data-model';
-import { type ReviewStatus } from './decision';
-import { type Outcome as DecisionOutcome } from './outcome';
+import type { ReviewStatus } from './decision';
+import type { Outcome as DecisionOutcome } from './outcome';
 
 export interface CaseContributor {
   id: string;

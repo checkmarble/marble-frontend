@@ -1,4 +1,4 @@
-import { type ScenarioValidationDto, type ScenarioValidationErrorCodeDto } from 'marble-api';
+import type { ScenarioValidationDto, ScenarioValidationErrorCodeDto } from 'marble-api';
 import * as R from 'remeda';
 
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';

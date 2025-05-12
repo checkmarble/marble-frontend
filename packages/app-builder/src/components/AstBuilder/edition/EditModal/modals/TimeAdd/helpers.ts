@@ -1,6 +1,6 @@
-import { type Temporal } from 'temporal-polyfill';
+import type { Temporal } from 'temporal-polyfill';
 
-import { type DurationUnit } from './DurationUnitSelect';
+import type { DurationUnit } from './DurationUnitSelect';
 
 export const adaptDurationAndUnitFromTemporalDuration = (
   temporalDuration: Temporal.Duration,
@@ -10,12 +10,14 @@ export const adaptDurationAndUnitFromTemporalDuration = (
       duration: temporalDuration.total('second'),
       durationUnit: 'seconds',
     };
-  } else if (temporalDuration.minutes > 0) {
+  }
+  if (temporalDuration.minutes > 0) {
     return {
       duration: temporalDuration.total('minute'),
       durationUnit: 'minutes',
     };
-  } else if (temporalDuration.hours > 0) {
+  }
+  if (temporalDuration.hours > 0) {
     return {
       duration: temporalDuration.total('hour'),
       durationUnit: 'hours',

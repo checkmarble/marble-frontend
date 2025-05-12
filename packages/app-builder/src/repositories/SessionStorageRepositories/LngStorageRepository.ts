@@ -1,6 +1,6 @@
 import { createCookie, createCookieSessionStorage } from '@remix-run/node';
 
-import { type SessionStorageRepositoryOptions } from './SessionStorageRepository';
+import type { SessionStorageRepositoryOptions } from './SessionStorageRepository';
 
 export function getLngStorageRepository({
   secrets,

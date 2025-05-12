@@ -1,5 +1,5 @@
 import { assertNever } from 'typescript-utils';
-import { type IconName } from 'ui-icons';
+import type { IconName } from 'ui-icons';
 
 export const decisionFilterNames = [
   'dateRange',

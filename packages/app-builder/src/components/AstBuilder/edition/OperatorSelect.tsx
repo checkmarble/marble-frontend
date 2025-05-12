@@ -88,9 +88,8 @@ function mapOptions<Op extends string>(
   return values.map((value) => {
     if (isOpSelect) {
       return { value, ...options[value] };
-    } else {
-      return { value };
     }
+    return { value };
   });
 }
 

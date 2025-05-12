@@ -1,14 +1,14 @@
 import { Callout } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { StatusRadioGroup } from '@app-builder/components/Sanctions/StatusRadioGroup';
-import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
+import type { SanctionCheckMatch } from '@app-builder/models/sanction-check';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { decode } from 'decode-formdata';
-import { type UpdateSanctionCheckMatchDto } from 'marble-api';
+import type { UpdateSanctionCheckMatchDto } from 'marble-api';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2, Switch, TextArea } from 'ui-design-system';

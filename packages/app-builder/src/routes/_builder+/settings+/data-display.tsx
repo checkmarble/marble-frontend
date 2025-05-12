@@ -14,7 +14,7 @@ import { reorder } from '@app-builder/utils/list';
 import { getRoute } from '@app-builder/utils/routes';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useCallbackRef } from '@marble/shared';
-import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
+import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { useForm } from '@tanstack/react-form';

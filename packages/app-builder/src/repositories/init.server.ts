@@ -1,9 +1,9 @@
-import { type GetLicenseAPIClientWithAuth, type LicenseApi } from '@app-builder/infra/license-api';
-import {
-  type GetMarbleCoreAPIClientWithAuth,
-  type MarbleCoreApi,
+import type { GetLicenseAPIClientWithAuth, LicenseApi } from '@app-builder/infra/license-api';
+import type {
+  GetMarbleCoreAPIClientWithAuth,
+  MarbleCoreApi,
 } from '@app-builder/infra/marblecore-api';
-import { type GetTransfercheckAPIClientWithAuth } from '@app-builder/infra/transfercheck-api';
+import type { GetTransfercheckAPIClientWithAuth } from '@app-builder/infra/transfercheck-api';
 
 import { makeGetAnalyticsRepository } from './AnalyticsRepository';
 import { makeGetApiKeyRepository } from './ApiKeyRepository';

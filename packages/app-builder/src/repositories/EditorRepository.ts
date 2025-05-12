@@ -1,4 +1,4 @@
-import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import type { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { adaptAstNode } from '@app-builder/models';
 import {
   type DatabaseAccessAstNode,

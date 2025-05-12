@@ -1,4 +1,4 @@
-import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import type { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { adaptRuleSnooze, type RuleSnooze } from '@app-builder/models/rule-snooze';
 
 export interface RuleSnoozeRepository {

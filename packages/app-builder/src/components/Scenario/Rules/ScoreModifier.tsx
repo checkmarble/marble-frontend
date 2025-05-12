@@ -1,4 +1,4 @@
-import { type ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { cn } from 'ui-design-system';
 
 export const ScoreModifier = ({

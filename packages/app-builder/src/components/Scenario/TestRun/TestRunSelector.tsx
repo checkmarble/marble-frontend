@@ -1,6 +1,6 @@
-import { type User } from '@app-builder/models';
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
-import { type TestRun } from '@app-builder/models/testrun';
+import type { User } from '@app-builder/models';
+import type { ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import type { TestRun } from '@app-builder/models/testrun';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';

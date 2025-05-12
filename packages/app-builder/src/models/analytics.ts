@@ -1,4 +1,4 @@
-import { type AnalyticsDto } from 'marble-api';
+import type { AnalyticsDto } from 'marble-api';
 
 export interface Analytics {
   embeddingType: 'global_dashboard' | 'unknown_embedding_type';

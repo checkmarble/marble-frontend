@@ -7,7 +7,7 @@ import {
 } from '@app-builder/models/decision';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
-import { type TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import { decisionsI18n } from '../decisions-i18n';

@@ -1,6 +1,6 @@
-import { type ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
-import { type EvaluationError } from '@app-builder/models/node-evaluation';
-import { type TFunction } from 'i18next';
+import type { ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
+import type { EvaluationError } from '@app-builder/models/node-evaluation';
+import type { TFunction } from 'i18next';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
@@ -255,7 +255,7 @@ export function useGetScenarioErrorMessage() {
         case 'FORMULA_MUST_RETURN_BOOLEAN':
           return t('scenarios:validation.decision.formula_must_return_boolean');
         default:
-          if (evaluationErrorCode.startsWith(`FORMULA_INCORRECT_RETURN_TYPE`)) {
+          if (evaluationErrorCode.startsWith('FORMULA_INCORRECT_RETURN_TYPE')) {
             const errorCode = evaluationErrorCode as Extract<
               typeof evaluationErrorCode,
               `FORMULA_INCORRECT_RETURN_TYPE${string}`

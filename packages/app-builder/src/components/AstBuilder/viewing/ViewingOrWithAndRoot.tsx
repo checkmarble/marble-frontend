@@ -1,12 +1,9 @@
-import { type AstNode } from '@app-builder/models';
-import {
-  type AndAstNode,
-  type OrWithAndAstNode,
-} from '@app-builder/models/astNode/builder-ast-node';
-import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import type { AstNode } from '@app-builder/models';
+import type { AndAstNode, OrWithAndAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import type { FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { LogicalOperatorLabel } from '@ast-builder/styles/LogicalOperatorLabel';
-import { type AstBuilderRootProps } from '@ast-builder/types';
+import type { AstBuilderRootProps } from '@ast-builder/types';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';

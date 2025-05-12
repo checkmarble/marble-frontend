@@ -1,4 +1,4 @@
-import { type ApiKeyDto, type CreatedApiKeyDto } from 'marble-api';
+import type { ApiKeyDto, CreatedApiKeyDto } from 'marble-api';
 import { assertNever } from 'typescript-utils';
 
 export const apiKeyRoleOptions = ['API_CLIENT'] as const;

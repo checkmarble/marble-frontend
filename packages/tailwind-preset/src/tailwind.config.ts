@@ -1,6 +1,6 @@
 import type { Config } from 'tailwindcss';
 import defaultTheme from 'tailwindcss/defaultTheme';
-import { type PluginAPI } from 'tailwindcss/types/config';
+import type { PluginAPI } from 'tailwindcss/types/config';
 import tailwindcssAnimate from 'tailwindcss-animate';
 import tailwindcssRadix from 'tailwindcss-radix';
 
@@ -229,10 +229,10 @@ export default {
   plugins: [
     tailwindcssRadix,
     tailwindcssAnimate,
-    function ({ addVariant }: PluginAPI) {
+    ({ addVariant }: PluginAPI) => {
       addVariant('not-last', '&>*:not(:last-child)');
     },
-    function ({ addBase, addUtilities }: PluginAPI) {
+    ({ addBase, addUtilities }: PluginAPI) => {
       addBase({
         '*': {
           '--scrollbar-color-thumb': 'rgb(193, 192, 200)',

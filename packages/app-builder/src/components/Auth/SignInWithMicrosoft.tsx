@@ -5,7 +5,7 @@ import {
   PopupBlockedByClient,
   useMicrosoftSignIn,
 } from '@app-builder/services/auth/auth.client';
-import { type AuthPayload } from '@app-builder/services/auth/auth.server';
+import type { AuthPayload } from '@app-builder/services/auth/auth.server';
 import { clientServices } from '@app-builder/services/init.client';
 import useAsync from '@app-builder/utils/hooks/use-async';
 import * as Sentry from '@sentry/remix';

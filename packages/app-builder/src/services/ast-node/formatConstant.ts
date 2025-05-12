@@ -1,7 +1,7 @@
-import { type ConstantType } from '@app-builder/models';
+import type { ConstantType } from '@app-builder/models';
 import { formatDateTime, formatNumber } from '@app-builder/utils/format';
 import { dateTimeDataTypeSchema } from '@app-builder/utils/schema/dataTypeSchema';
-import { type TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import * as R from 'remeda';
 
 export function formatConstant(

@@ -1,9 +1,9 @@
-import {
-  type CreateCustomListBodyDto,
-  type CustomListDto,
-  type CustomListValueDto,
-  type CustomListWithValuesDto,
-  type UpdateCustomListBodyDto,
+import type {
+  CreateCustomListBodyDto,
+  CustomListDto,
+  CustomListValueDto,
+  CustomListWithValuesDto,
+  UpdateCustomListBodyDto,
 } from 'marble-api';
 
 export type CustomListValuesCount = {

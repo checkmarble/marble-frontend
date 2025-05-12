@@ -1,7 +1,7 @@
-import { type Case } from '@app-builder/models/cases';
+import type { Case } from '@app-builder/models/cases';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import type { LoaderFunctionArgs } from '@remix-run/node';
 import invariant from 'tiny-invariant';
 
 export type PivotRelatedCasesResource = {

@@ -1,4 +1,4 @@
-import { type DataModelWithTableOptions } from '@app-builder/models';
+import type { DataModelWithTableOptions } from '@app-builder/models';
 import { useCallbackRef } from '@marble/shared';
 import { useState } from 'react';
 import { Button, MenuCommand } from 'ui-design-system';
@@ -6,7 +6,7 @@ import { Icon } from 'ui-icons';
 
 import { DataTableRender } from './DataTableRender';
 import { DataModelExplorerContext, type DataModelExplorerState } from './Provider';
-import { type DataModelExplorerNavigationTab } from './types';
+import type { DataModelExplorerNavigationTab } from './types';
 
 export type DataModelExplorerProps = {
   dataModel: DataModelWithTableOptions;

@@ -1,4 +1,4 @@
-import { type TransferAlertStatus } from '@app-builder/models/transfer-alert';
+import type { TransferAlertStatus } from '@app-builder/models/transfer-alert';
 import { formatDateRelative, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'ui-design-system';

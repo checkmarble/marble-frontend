@@ -10,7 +10,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Modal, Select } from 'ui-design-system';
@@ -95,19 +95,18 @@ export async function action({ request }: ActionFunctionArgs) {
         { success: 'false', errors: [] },
         { headers: { 'Set-Cookie': await commitSession(session) } },
       );
-    } else {
-      setToastMessage(session, {
-        type: 'error',
-        message: t('common:errors.unknown'),
-      });
-
-      captureUnexpectedRemixError(error, 'createField@action', request);
-
-      return json(
-        { success: 'false', errors: [] },
-        { headers: { 'Set-Cookie': await commitSession(session) } },
-      );
     }
+    setToastMessage(session, {
+      type: 'error',
+      message: t('common:errors.unknown'),
+    });
+
+    captureUnexpectedRemixError(error, 'createField@action', request);
+
+    return json(
+      { success: 'false', errors: [] },
+      { headers: { 'Set-Cookie': await commitSession(session) } },
+    );
   }
 }
 

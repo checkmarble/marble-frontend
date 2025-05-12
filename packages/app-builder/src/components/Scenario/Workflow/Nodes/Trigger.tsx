@@ -1,8 +1,8 @@
-import { type NodeProps } from 'reactflow';
+import type { NodeProps } from 'reactflow';
 import { assertNever } from 'typescript-utils';
 import { Separator } from 'ui-design-system';
 
-import { type TriggerData } from '../models/nodes';
+import type { TriggerData } from '../models/nodes';
 import { DecisionCreatedTriggerContent } from './DecisionCreatedTriggerContent';
 import { NodeTitle, TriggerNodeContainer } from './shared';
 

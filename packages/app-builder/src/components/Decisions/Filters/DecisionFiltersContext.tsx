@@ -1,7 +1,7 @@
 import { type ReviewStatus, reviewStatuses } from '@app-builder/models/decision';
-import { type Inbox } from '@app-builder/models/inbox';
+import type { Inbox } from '@app-builder/models/inbox';
 import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
-import { type Scenario } from '@app-builder/models/scenario';
+import type { Scenario } from '@app-builder/models/scenario';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { type DateRangeFilterForm, dateRangeSchema } from '@app-builder/utils/schema/filterSchema';

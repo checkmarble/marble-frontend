@@ -1,13 +1,13 @@
 import { Callout } from '@app-builder/components/Callout';
 import { useTranslation } from 'react-i18next';
 
-import { type CreateCaseAction } from '../models/nodes';
-import { workflowI18n } from '../workflow-i18n';
+import type { CreateCaseAction } from '../models/nodes';
 import {
   useWorkflowActions,
   useWorkflowData,
   useWorkflowDataFeatureAccess,
 } from '../WorkflowProvider';
+import { workflowI18n } from '../workflow-i18n';
 import { CaseNameEditor } from './CaseNameEditor';
 import { SelectInbox } from './SelectInbox';
 

@@ -1,5 +1,5 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { type Tag } from 'marble-api';
+import type { Tag } from 'marble-api';
 import { useMemo } from 'react';
 
 interface OrganizationTagsContext {

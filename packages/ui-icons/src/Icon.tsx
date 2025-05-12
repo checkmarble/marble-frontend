@@ -1,6 +1,6 @@
 import { forwardRef, type SVGProps } from 'react';
 
-import { type IconName } from './generated/icon-names';
+import type { IconName } from './generated/icon-names';
 import svgSpriteHref from './generated/icons-svg-sprite.svg';
 
 export const Icon = forwardRef<

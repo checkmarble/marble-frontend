@@ -90,7 +90,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (!success) return Response.json({ success, errors: error.flatten() });
 
   try {
-    let sar: SuspiciousActivityReport | undefined = undefined;
+    let sar: SuspiciousActivityReport | undefined;
 
     if (data.reportId && data.status === 'none') {
       await cases.deleteSuspiciousActivityReport({
@@ -149,7 +149,8 @@ export const ReportFile = ({
         if (e instanceof AlreadyDownloadingError) {
           // Already downloading, do nothing
           return;
-        } else if (e instanceof AuthRequestError) {
+        }
+        if (e instanceof AuthRequestError) {
           toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
         } else {
           toast.error(t('cases:case.file.errors.downloading_link.unknown'));

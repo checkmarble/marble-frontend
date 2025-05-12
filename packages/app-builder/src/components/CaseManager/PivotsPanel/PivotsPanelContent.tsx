@@ -6,7 +6,7 @@ import {
   isAdmin,
   type TableModelWithOptions,
 } from '@app-builder/models';
-import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
+import type { CaseDetail, PivotObject } from '@app-builder/models/cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';

@@ -1,4 +1,4 @@
-import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import type { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptDecision,
   adaptDecisionDetail,
@@ -9,7 +9,7 @@ import {
   type ScheduledExecution,
 } from '@app-builder/models/decision';
 import { adaptGoTimeDuration } from '@app-builder/models/duration';
-import { type Outcome } from '@app-builder/models/outcome';
+import type { Outcome } from '@app-builder/models/outcome';
 import {
   adaptPagination,
   type FiltersWithPagination,

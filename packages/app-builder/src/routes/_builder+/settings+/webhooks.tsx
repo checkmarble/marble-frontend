@@ -1,7 +1,7 @@
 import { Callout, CollapsiblePaper, Page } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
-import { type Webhook } from '@app-builder/models/webhook';
+import type { Webhook } from '@app-builder/models/webhook';
 import { CreateWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/create';
 import { webhooksSetupDocHref } from '@app-builder/services/documentation-href';
 import {
@@ -15,7 +15,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Table, useTable } from 'ui-design-system';

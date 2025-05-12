@@ -1,9 +1,9 @@
-import { type ReviewStatus } from '@app-builder/models/decision';
-import { type Outcome } from '@app-builder/models/outcome';
+import type { ReviewStatus } from '@app-builder/models/decision';
+import type { Outcome } from '@app-builder/models/outcome';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
-import { type ParseKeys } from 'i18next';
-import { type ComponentProps } from 'react';
+import type { ParseKeys } from 'i18next';
+import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { cn, type TagProps } from 'ui-design-system';

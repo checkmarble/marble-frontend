@@ -13,9 +13,9 @@ import {
 import { TestRunNudge } from '@app-builder/components/Scenario/TestRun/TestRunNudge';
 import { WorkflowNudge } from '@app-builder/components/Scenario/Workflow/WorkflowNudge';
 import { Spinner } from '@app-builder/components/Spinner';
-import { type ScheduledExecution } from '@app-builder/models/decision';
-import { type Scenario } from '@app-builder/models/scenario';
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import type { ScheduledExecution } from '@app-builder/models/decision';
+import type { Scenario } from '@app-builder/models/scenario';
+import type { ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';
@@ -32,8 +32,8 @@ import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-r
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
-import { type Namespace, type ParseKeys } from 'i18next';
-import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import type { Namespace, ParseKeys } from 'i18next';
+import type { FeatureAccessDto } from 'marble-api/generated/license-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';

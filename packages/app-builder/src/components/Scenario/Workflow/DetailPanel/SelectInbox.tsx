@@ -1,5 +1,5 @@
 import { Highlight } from '@app-builder/components/Highlight';
-import { type Inbox } from '@app-builder/models/inbox';
+import type { Inbox } from '@app-builder/models/inbox';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';

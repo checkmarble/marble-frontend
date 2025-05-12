@@ -1,5 +1,5 @@
 import { CaseStatusBadge, decisionsI18n } from '@app-builder/components';
-import { type DecisionDetail } from '@app-builder/models/decision';
+import type { DecisionDetail } from '@app-builder/models/decision';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';

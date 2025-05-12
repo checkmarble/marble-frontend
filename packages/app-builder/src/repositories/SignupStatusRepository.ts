@@ -1,5 +1,5 @@
-import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import { type SignupStatus } from '@app-builder/models/signup-status';
+import type { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import type { SignupStatus } from '@app-builder/models/signup-status';
 
 export interface SignupStatusRepository {
   getSignupStatus(): Promise<SignupStatus>;

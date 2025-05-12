@@ -1,4 +1,4 @@
-import { type Pagination as PaginationDto } from 'marble-api';
+import type { Pagination as PaginationDto } from 'marble-api';
 
 export type Pagination = {
   hasNextPage: boolean;

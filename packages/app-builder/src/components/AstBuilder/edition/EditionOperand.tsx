@@ -12,7 +12,7 @@ import {
 } from '@app-builder/models/astNode/builder-ast-node';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import { type AstBuilderOperandProps } from '@ast-builder/Operand';
+import type { AstBuilderOperandProps } from '@ast-builder/Operand';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import {
   OperandDisplayName,
@@ -172,7 +172,7 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
           } as const,
         ]
       : []),
-    ...(nodeSharp && nodeSharp.value.copiedNode
+    ...(nodeSharp?.value.copiedNode
       ? [
           {
             id: 'paste',

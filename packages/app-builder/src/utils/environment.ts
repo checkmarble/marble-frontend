@@ -1,4 +1,4 @@
-import { type FirebaseConfig } from '@app-builder/infra/firebase';
+import type { FirebaseConfig } from '@app-builder/infra/firebase';
 import * as z from 'zod';
 
 /**
@@ -140,7 +140,7 @@ export function getClientEnv<K extends keyof ClientEnvVars>(clientEnvVarName: K)
     //@ts-expect-error ENV is a custom global variable injected in root.tsx
     clientEnv = window.ENV as ClientEnvVars;
     if (clientEnv === undefined) {
-      throw new Error(`[MissingEnv] window.ENV is not defined. Check the root.tsx loader`);
+      throw new Error('[MissingEnv] window.ENV is not defined. Check the root.tsx loader');
     }
   }
 

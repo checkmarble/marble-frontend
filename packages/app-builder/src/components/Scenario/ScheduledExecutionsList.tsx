@@ -1,16 +1,16 @@
-import { type ScheduledExecution } from '@app-builder/models/decision';
+import type { ScheduledExecution } from '@app-builder/models/decision';
 import { formatDateTime, formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import { type ParseKeys } from 'i18next';
+import type { ParseKeys } from 'i18next';
 import qs from 'qs';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { type DecisionFilters } from '../Decisions';
+import type { DecisionFilters } from '../Decisions';
 import { scenarioI18n } from './scenario-i18n';
 
 const columnHelper = createColumnHelper<ScheduledExecution>();

@@ -1,4 +1,4 @@
-import { type Meta, type StoryFn } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import { Select, type SelectProps } from './Select';
 import { selectBorder, selectBorderColor } from './Select.constants';

@@ -1,6 +1,6 @@
 import { v7 as uuidv7 } from 'uuid';
 
-import { type AstNode, type CheckNodeId, type ConstantType, type IdLessAstNode } from './ast-node';
+import type { AstNode, CheckNodeId, ConstantType, IdLessAstNode } from './ast-node';
 
 export interface ConstantAstNode<T extends ConstantType = ConstantType> {
   id: string;

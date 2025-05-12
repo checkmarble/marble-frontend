@@ -1,6 +1,6 @@
-import {
-  type BaseFuzzyMatchConfig,
-  type Level,
+import type {
+  BaseFuzzyMatchConfig,
+  Level,
 } from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
 import { useTranslation } from 'react-i18next';
 import { Select } from 'ui-design-system';

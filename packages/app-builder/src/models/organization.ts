@@ -1,4 +1,4 @@
-import { type OrganizationDto } from 'marble-api';
+import type { OrganizationDto } from 'marble-api';
 
 export interface Organization {
   id: string;

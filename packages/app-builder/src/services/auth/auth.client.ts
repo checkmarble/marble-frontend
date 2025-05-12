@@ -1,4 +1,4 @@
-import { type AuthenticationClientRepository } from '@app-builder/repositories/AuthenticationRepository';
+import type { AuthenticationClientRepository } from '@app-builder/repositories/AuthenticationRepository';
 import { getClientEnv } from '@app-builder/utils/environment';
 import { FirebaseError } from 'firebase/app';
 import { AuthErrorCodes } from 'firebase/auth';

@@ -10,7 +10,7 @@ import { EditionAstBuilderAndRoot } from './edition/EditionAndRoot';
 import { EditionAstBuilderAnyRoot } from './edition/EditionAnyRoot';
 import { EditionAstBuilderOrWithAndRoot } from './edition/EditionOrWithAndRoot';
 import { AstBuilderDataSharpFactory } from './Provider';
-import { type AstBuilderRootProps } from './types';
+import type { AstBuilderRootProps } from './types';
 import { ViewingAstBuilderAndRoot } from './viewing/ViewingAndRoot';
 import { ViewingAstBuilderOrWithAndRoot } from './viewing/ViewingOrWithAndRoot';
 

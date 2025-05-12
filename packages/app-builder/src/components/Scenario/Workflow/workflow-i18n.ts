@@ -1,4 +1,4 @@
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 
 export const workflowI18n = [
   'common',

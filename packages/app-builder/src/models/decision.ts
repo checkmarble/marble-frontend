@@ -1,16 +1,16 @@
-import {
-  type DecisionDetailDto,
-  type DecisionDto,
-  type Error,
-  type RuleExecutionDto,
-  type ScheduledExecutionDto,
+import type {
+  DecisionDetailDto,
+  DecisionDto,
+  Error,
+  RuleExecutionDto,
+  ScheduledExecutionDto,
 } from 'marble-api';
 import invariant from 'tiny-invariant';
 import { assertNever } from 'typescript-utils';
 
 import { adaptCase, type Case } from './cases';
 import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
-import { type Outcome } from './outcome';
+import type { Outcome } from './outcome';
 
 export const nonPendingReviewStatuses = ['approve', 'decline'] as const;
 export const reviewStatuses = ['pending', ...nonPendingReviewStatuses] as const;

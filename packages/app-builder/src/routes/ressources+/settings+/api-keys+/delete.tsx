@@ -1,4 +1,4 @@
-import { type ApiKey } from '@app-builder/models/api-keys';
+import type { ApiKey } from '@app-builder/models/api-keys';
 import { initServerServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';

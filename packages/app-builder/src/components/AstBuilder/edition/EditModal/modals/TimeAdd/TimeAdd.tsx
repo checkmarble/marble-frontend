@@ -15,7 +15,7 @@ import { getValidationStatus } from '../../../helpers';
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { OperatorSelect } from '../../../OperatorSelect';
 import { OperandEditModalContainer } from '../../Container';
-import { type OperandEditModalProps } from '../../EditModal';
+import type { OperandEditModalProps } from '../../EditModal';
 import { type DurationUnit, DurationUnitSelect } from './DurationUnitSelect';
 import { adaptDurationAndUnitFromTemporalDuration } from './helpers';
 

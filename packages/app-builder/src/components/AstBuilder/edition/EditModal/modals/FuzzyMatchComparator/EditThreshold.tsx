@@ -19,8 +19,8 @@ export function EditThreshold({ threshold, setThreshold }: EditThresholdProps) {
         type="number"
         value={threshold}
         onChange={(e) => {
-          const newThreshold = parseInt(e.target.value, 10);
-          if (isNaN(newThreshold)) {
+          const newThreshold = Number.parseInt(e.target.value, 10);
+          if (Number.isNaN(newThreshold)) {
             setThreshold(0);
             return;
           }

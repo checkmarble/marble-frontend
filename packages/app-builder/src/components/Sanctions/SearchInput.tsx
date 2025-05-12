@@ -1,4 +1,4 @@
-import { type SanctionCheckQuery } from '@app-builder/models/sanction-check';
+import type { SanctionCheckQuery } from '@app-builder/models/sanction-check';
 import { Fragment } from 'react/jsx-runtime';
 import * as R from 'remeda';
 import { Separator } from 'ui-design-system';

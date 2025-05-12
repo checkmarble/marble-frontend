@@ -1,11 +1,11 @@
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { Label } from '@radix-ui/react-label';
-import { type ParseKeys } from 'i18next';
+import type { ParseKeys } from 'i18next';
 import { Trans, useTranslation } from 'react-i18next';
 import { Checkbox, Select } from 'ui-design-system';
 
 import { scenarioI18n } from '../../scenario-i18n';
-import { type ScheduleOption } from './models';
+import type { ScheduleOption } from './models';
 
 const textForFrequency = {
   daily: 'scenarios:trigger.schedule_scenario.schedule_detail_daily_label',
@@ -199,7 +199,7 @@ const getWeekDayName = (option: string, locale: string, format?: 'long' | 'short
     weekday: format ?? 'long',
     timeZone: 'UTC',
   });
-  const day = parseInt(option) + 1;
+  const day = Number.parseInt(option) + 1;
   const date = new Date(`2017-01-0${day}T00:00:00+00:00`);
   return formatter.format(date);
 };

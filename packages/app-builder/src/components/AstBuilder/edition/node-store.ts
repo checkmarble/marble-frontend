@@ -1,5 +1,5 @@
-import { type AstNode, type IdLessAstNode } from '@app-builder/models';
-import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import type { AstNode, IdLessAstNode } from '@app-builder/models';
+import type { FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { getAtPath, getParentPath, parsePath } from '@app-builder/utils/tree';
 import { clone } from 'remeda';
 import { createSharpFactory, type InferSharpApi } from 'sharpstate';

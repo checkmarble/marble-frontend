@@ -1,8 +1,8 @@
 import { decisionsI18n, Paper } from '@app-builder/components';
-import { type AstNode } from '@app-builder/models';
-import { type RuleExecution } from '@app-builder/models/decision';
+import type { AstNode } from '@app-builder/models';
+import type { RuleExecution } from '@app-builder/models/decision';
 import { NewNodeEvaluation, type NodeEvaluation } from '@app-builder/models/node-evaluation';
-import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
+import type { ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { generateFlatEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import * as React from 'react';

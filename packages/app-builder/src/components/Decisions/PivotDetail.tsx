@@ -1,5 +1,5 @@
 import { Callout, type DecisionFilters, decisionsI18n } from '@app-builder/components';
-import { type Pivot } from '@app-builder/models';
+import type { Pivot } from '@app-builder/models';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getRoute } from '@app-builder/utils/routes';

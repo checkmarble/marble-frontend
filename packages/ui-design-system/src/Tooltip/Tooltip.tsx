@@ -1,4 +1,4 @@
-import { type TooltipContentProps, type TooltipProps } from '@radix-ui/react-tooltip';
+import type { TooltipContentProps, TooltipProps } from '@radix-ui/react-tooltip';
 import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { forwardRef } from 'react';
 

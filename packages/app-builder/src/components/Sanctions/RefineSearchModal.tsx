@@ -1,13 +1,10 @@
 import { Callout } from '@app-builder/components/Callout';
-import { type PropertyForSchema } from '@app-builder/constants/sanction-check-entity';
+import type { PropertyForSchema } from '@app-builder/constants/sanction-check-entity';
+import type { SanctionCheck, SanctionCheckMatchPayload } from '@app-builder/models/sanction-check';
+import type { action as refineAction } from '@app-builder/routes/ressources+/sanction-check+/refine';
 import {
-  type SanctionCheck,
-  type SanctionCheckMatchPayload,
-} from '@app-builder/models/sanction-check';
-import { type action as refineAction } from '@app-builder/routes/ressources+/sanction-check+/refine';
-import {
-  type action as searchAction,
   refineSearchSchema,
+  type action as searchAction,
 } from '@app-builder/routes/ressources+/sanction-check+/search';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
@@ -21,11 +18,11 @@ import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Input, ModalV2, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { type z } from 'zod';
+import type { z } from 'zod';
 
 import { MatchResult } from './MatchResult';
-import { sanctionsI18n } from './sanctions-i18n';
 import { SanctionStatusTag } from './SanctionStatusTag';
+import { sanctionsI18n } from './sanctions-i18n';
 
 function setAdditionalFields(fields: string[], prev: Record<string, string>) {
   const additionalFields = {} as Record<string, string>;
@@ -180,7 +177,9 @@ export function RefineSearchModal({
                 className="flex-1"
                 variant="primary"
                 onClick={handleRefine}
-                disabled={searchResults.length > (sanctionCheck.request?.limit ?? Infinity)}
+                disabled={
+                  searchResults.length > (sanctionCheck.request?.limit ?? Number.POSITIVE_INFINITY)
+                }
               >
                 {t('sanctions:refine_modal.apply_search')}
               </Button>

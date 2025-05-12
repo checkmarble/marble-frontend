@@ -1,18 +1,18 @@
 import { v7 as uuidv7 } from 'uuid';
 
 import { AggregationFuzzyMatchConfig } from '../fuzzy-match/aggregationFuzzyMatchConfig';
-import {
-  type BaseFuzzyMatchConfig,
-  type FuzzyMatchAlgorithm,
+import type {
+  BaseFuzzyMatchConfig,
+  FuzzyMatchAlgorithm,
 } from '../fuzzy-match/baseFuzzyMatchConfig';
-import { type AggregatorOperator } from '../modale-operators';
+import type { AggregatorOperator } from '../modale-operators';
 import {
   type AstNode,
   type CheckNodeId,
   type IdLessAstNode,
   NewUndefinedAstNode,
 } from './ast-node';
-import { type KnownOperandAstNode } from './builder-ast-node';
+import type { KnownOperandAstNode } from './builder-ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
 export const unaryAggregationFilterOperators = ['IsEmpty', 'IsNotEmpty'] as const;
@@ -89,7 +89,9 @@ export function isFuzzyMatchFilterOptionsAstNode(
 
 export function NewFuzzyMatchFilterOptionsAstNode({
   value,
-}: { value?: KnownOperandAstNode } = {}): FuzzyMatchFilterOptionsAstNode {
+}: {
+  value?: KnownOperandAstNode;
+} = {}): FuzzyMatchFilterOptionsAstNode {
   const config: BaseFuzzyMatchConfig = AggregationFuzzyMatchConfig;
 
   return {

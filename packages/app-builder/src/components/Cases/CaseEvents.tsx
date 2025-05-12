@@ -19,8 +19,8 @@ import { SarFileUploadedDetail } from '@app-builder/components/Cases/Events/SarF
 import { SarStatusChangedDetail } from '@app-builder/components/Cases/Events/SarStatusChanged';
 import { StatusUpdatedDetail } from '@app-builder/components/Cases/Events/StatusUpdated';
 import { TagsUpdatedDetail } from '@app-builder/components/Cases/Events/TagsUpdated';
-import { type CaseEvent } from '@app-builder/models/cases';
-import { type Inbox } from '@app-builder/models/inbox';
+import type { CaseEvent } from '@app-builder/models/cases';
+import type { Inbox } from '@app-builder/models/inbox';
 import { debounce, unique } from 'radash';
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

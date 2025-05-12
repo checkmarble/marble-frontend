@@ -1,6 +1,6 @@
 import { assertNever } from 'typescript-utils';
 
-import { type DecisionFilterName } from '../filters';
+import type { DecisionFilterName } from '../filters';
 import { CaseInboxFilter } from './CaseInboxFilter';
 import { DecisionsDateRangeFilter } from './DecisionsDateRangeFilter';
 import { HasCaseFilter } from './HasCaseFilter';

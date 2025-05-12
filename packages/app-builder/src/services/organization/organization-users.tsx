@@ -1,4 +1,4 @@
-import { type User } from '@app-builder/models';
+import type { User } from '@app-builder/models';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useMemo } from 'react';
 

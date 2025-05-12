@@ -1,4 +1,4 @@
-import { type Transfer } from '@app-builder/models/transfer';
+import type { Transfer } from '@app-builder/models/transfer';
 import { formatCurrency, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';

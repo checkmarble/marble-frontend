@@ -5,7 +5,7 @@ import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/Trigg
 import { SanctionReviewSection } from '@app-builder/components/Sanctions/SanctionReview';
 import { SearchInputDisplay } from '@app-builder/components/Sanctions/SearchInput';
 import { usePivotValues } from '@app-builder/hooks/decisions/usePivotValues';
-import { type SanctionCheck } from '@app-builder/models/sanction-check';
+import type { SanctionCheck } from '@app-builder/models/sanction-check';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';

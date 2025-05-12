@@ -1,22 +1,22 @@
-import { type AstNode } from '@app-builder/models';
-import {
-  type AstValidation,
-  type ScenarioValidationErrorCode,
+import type { AstNode } from '@app-builder/models';
+import type {
+  AstValidation,
+  ScenarioValidationErrorCode,
 } from '@app-builder/models/ast-validation';
 import {
   isKnownOperandAstNode,
   isLeafOperandAstNode,
 } from '@app-builder/models/astNode/builder-ast-node';
-import {
-  type EvaluationError,
-  type NodeEvaluation,
-  type ReturnValue,
-  type ReturnValueType,
+import type {
+  EvaluationError,
+  NodeEvaluation,
+  ReturnValue,
+  ReturnValueType,
 } from '@app-builder/models/node-evaluation';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import { type ActionFunctionArgs } from '@remix-run/node';
+import type { ActionFunctionArgs } from '@remix-run/node';
 import * as R from 'remeda';
 
 export type AstValidationPayload = {

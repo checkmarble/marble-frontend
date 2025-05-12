@@ -1,9 +1,4 @@
-import {
-  type DataModel,
-  type DataType,
-  type IdLessAstNode,
-  type TableModel,
-} from '@app-builder/models';
+import type { DataModel, DataType, IdLessAstNode, TableModel } from '@app-builder/models';
 import { type ConstantAstNode, isConstant } from '@app-builder/models/astNode/constant';
 import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';

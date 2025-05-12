@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
-import { type DateRange } from 'react-day-picker';
+import type { DateRange } from 'react-day-picker';
 
 import { Calendar, type CalendarProps } from './Calendar';
 

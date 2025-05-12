@@ -1,4 +1,4 @@
-import { type DataModelObject, type TableModel } from '@app-builder/models';
+import type { DataModelObject, TableModel } from '@app-builder/models';
 import { getRoute } from '@app-builder/utils/routes';
 import { useFetcher } from '@remix-run/react';
 import { useEffect } from 'react';

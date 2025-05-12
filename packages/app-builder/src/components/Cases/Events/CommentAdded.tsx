@@ -1,5 +1,5 @@
 import { EventTime } from '@app-builder/components/Cases/Events/Time';
-import { type CommentAddedEvent } from '@app-builder/models/cases';
+import type { CommentAddedEvent } from '@app-builder/models/cases';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { useMemo } from 'react';
 import { Avatar } from 'ui-design-system';

@@ -20,7 +20,7 @@ import {
   isDataAccessorAstNode,
 } from '@app-builder/models/astNode/data-accessor';
 import { isTimeAdd } from '@app-builder/models/astNode/time';
-import { type CustomList } from '@app-builder/models/custom-list';
+import type { CustomList } from '@app-builder/models/custom-list';
 import {
   getOperandTypeIcon,
   getOperandTypeTKey,

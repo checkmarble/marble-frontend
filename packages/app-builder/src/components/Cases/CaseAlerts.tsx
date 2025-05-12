@@ -1,4 +1,4 @@
-import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
+import type { loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { Await, useLoaderData } from '@remix-run/react';

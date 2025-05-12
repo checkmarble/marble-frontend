@@ -1,5 +1,5 @@
-import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import { type AppVersions } from '@app-builder/models/version';
+import type { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import type { AppVersions } from '@app-builder/models/version';
 import { getServerEnv } from '@app-builder/utils/environment';
 
 export interface VersionRepository {

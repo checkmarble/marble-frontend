@@ -1,4 +1,4 @@
-import { type RuleSnoozeDetail } from '@app-builder/models/rule-snooze';
+import type { RuleSnoozeDetail } from '@app-builder/models/rule-snooze';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';

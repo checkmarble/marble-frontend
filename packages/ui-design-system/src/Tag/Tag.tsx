@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import * as React from 'react';
 
-import { type tagBorder, type tagColors, type tagSize } from './Tag.constants';
+import type { tagBorder, tagColors, tagSize } from './Tag.constants';
 
 export interface TagProps extends React.ComponentProps<'span'> {
   border?: (typeof tagBorder)[number];

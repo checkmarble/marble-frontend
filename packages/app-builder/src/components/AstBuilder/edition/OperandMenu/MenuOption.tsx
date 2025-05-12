@@ -1,11 +1,11 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { type AstNode, getDataTypeIcon, injectIdToNode } from '@app-builder/models';
 import { OperandInfos } from '@ast-builder/OperandInfos';
-import { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { type EnrichedMenuOption } from '../helpers';
+import type { EnrichedMenuOption } from '../helpers';
 
 type MenuOptionProps = {
   option: EnrichedMenuOption;

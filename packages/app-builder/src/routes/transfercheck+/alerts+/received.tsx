@@ -2,7 +2,7 @@ import { AlertsList } from '@app-builder/components/TransferAlerts/AlertsList';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import type { LoaderFunctionArgs } from '@remix-run/node';
 import { json, Link, useLoaderData } from '@remix-run/react';
 
 export async function loader({ request }: LoaderFunctionArgs) {

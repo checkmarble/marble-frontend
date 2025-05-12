@@ -1,4 +1,4 @@
-import { type TestRunRuleExecutionCount } from '@app-builder/models/testrun';
+import type { TestRunRuleExecutionCount } from '@app-builder/models/testrun';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
 import { t } from 'i18next';

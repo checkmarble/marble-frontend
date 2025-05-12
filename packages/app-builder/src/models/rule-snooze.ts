@@ -1,11 +1,11 @@
-import {
-  type RuleSnoozeDto,
-  type RuleSnoozeInformationDto,
-  type RuleSnoozeWithRuleIdDto,
-  type SnoozesOfDecisionDto,
-  type SnoozesOfIterationDto,
+import type {
+  RuleSnoozeDto,
+  RuleSnoozeInformationDto,
+  RuleSnoozeWithRuleIdDto,
+  SnoozesOfDecisionDto,
+  SnoozesOfIterationDto,
 } from 'marble-api';
-import { type Temporal } from 'temporal-polyfill';
+import type { Temporal } from 'temporal-polyfill';
 
 export interface RuleSnooze {
   id: string;

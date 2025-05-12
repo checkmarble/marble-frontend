@@ -1,5 +1,5 @@
 import { MenuGroupLabel, MenuSeparator } from '@ariakit/react';
-import { type Meta, type StoryFn } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { Fragment, useDeferredValue, useMemo, useState } from 'react';
 
 import { Button } from '../Button/Button';

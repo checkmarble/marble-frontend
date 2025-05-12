@@ -1,8 +1,8 @@
 import { v7 as uuidv7 } from 'uuid';
 
-import {
-  type BaseFuzzyMatchConfig,
-  type FuzzyMatchAlgorithm,
+import type {
+  BaseFuzzyMatchConfig,
+  FuzzyMatchAlgorithm,
 } from '../fuzzy-match/baseFuzzyMatchConfig';
 import {
   type AstNode,
@@ -10,7 +10,7 @@ import {
   type IdLessAstNode,
   NewUndefinedAstNode,
 } from './ast-node';
-import { type KnownOperandAstNode } from './builder-ast-node';
+import type { KnownOperandAstNode } from './builder-ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
 ////////////////////////
@@ -178,7 +178,7 @@ export interface StringTemplateAstNode {
 }
 
 export function NewStringTemplateAstNode(
-  template: string = '',
+  template = '',
   variables: Record<string, AstNode> = {},
 ): StringTemplateAstNode {
   return {

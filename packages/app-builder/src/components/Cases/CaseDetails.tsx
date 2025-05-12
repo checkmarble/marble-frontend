@@ -1,6 +1,6 @@
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { type CurrentUser } from '@app-builder/models';
-import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
+import type { CurrentUser } from '@app-builder/models';
+import type { loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
 import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
 import { CloseCase } from '@app-builder/routes/ressources+/cases+/close-case';
 import { EditCaseAssignee } from '@app-builder/routes/ressources+/cases+/edit-assignee';
@@ -24,8 +24,8 @@ import { Icon } from 'ui-icons';
 import { CaseAlerts } from './CaseAlerts';
 import { CaseEvents } from './CaseEvents';
 import { CaseFile } from './CaseFile';
-import { casesI18n } from './cases-i18n';
 import { CaseStatusBadge } from './CaseStatus';
+import { casesI18n } from './cases-i18n';
 
 export const CaseDetails = ({
   currentUser,

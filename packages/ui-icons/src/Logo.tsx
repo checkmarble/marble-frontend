@@ -1,6 +1,6 @@
 import { forwardRef, type SVGProps } from 'react';
 
-import { type LogoName } from './generated/logo-names';
+import type { LogoName } from './generated/logo-names';
 import svgSpriteHref from './generated/logos-svg-sprite.svg';
 
 export const Logo = forwardRef<

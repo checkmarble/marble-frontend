@@ -1,5 +1,5 @@
-import { type Inbox } from '@app-builder/models/inbox';
-import { type Scenario } from '@app-builder/models/scenario';
+import type { Inbox } from '@app-builder/models/inbox';
+import type { Scenario } from '@app-builder/models/scenario';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { nanoid } from 'nanoid';
 import * as React from 'react';
@@ -23,7 +23,7 @@ import {
   isTriggerData,
   type NodeData,
 } from './models/nodes';
-import { type ValidWorkflow } from './models/validation';
+import type { ValidWorkflow } from './models/validation';
 import { validateWorkflow } from './validate';
 
 interface WorkflowState {

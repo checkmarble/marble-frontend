@@ -1,7 +1,7 @@
-import { type ToastFlashData, type ToastSessionData } from '@app-builder/models/toast-session';
+import type { ToastFlashData, ToastSessionData } from '@app-builder/models/toast-session';
 import { createCookie, createCookieSessionStorage } from '@remix-run/node';
 
-import { type SessionStorageRepositoryOptions } from './SessionStorageRepository';
+import type { SessionStorageRepositoryOptions } from './SessionStorageRepository';
 
 export function getToastStorageRepository({
   maxAge,

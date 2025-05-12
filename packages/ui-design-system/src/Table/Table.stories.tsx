@@ -1,5 +1,5 @@
 import { fakerEN } from '@faker-js/faker';
-import { type Meta, type StoryFn } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { type ColumnDef, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
 

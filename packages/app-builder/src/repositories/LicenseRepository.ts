@@ -1,4 +1,4 @@
-import { type LicenseApi } from '@app-builder/infra/license-api';
+import type { LicenseApi } from '@app-builder/infra/license-api';
 import {
   adaptLicenseEntitlements,
   emptyLicenseEntitlements,

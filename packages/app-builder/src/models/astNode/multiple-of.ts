@@ -6,7 +6,7 @@ import {
   type IdLessAstNode,
   NewUndefinedAstNode,
 } from './ast-node';
-import { type KnownOperandAstNode } from './builder-ast-node';
+import type { KnownOperandAstNode } from './builder-ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
 export const isMultipleOfAstNodeName = 'IsMultipleOf';

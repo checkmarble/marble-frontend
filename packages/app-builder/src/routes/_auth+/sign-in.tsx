@@ -1,17 +1,17 @@
 import { Callout } from '@app-builder/components';
-import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { AuthError } from '@app-builder/components/Auth/AuthError';
+import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import {
   SignInWithEmailAndPassword,
   StaticSignInWithEmailAndPassword,
 } from '@app-builder/components/Auth/SignInWithEmailAndPassword';
 import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle';
 import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicrosoft';
-import { type AuthErrors } from '@app-builder/models/auth-errors';
-import { type AuthPayload } from '@app-builder/services/auth/auth.server';
+import type { AuthErrors } from '@app-builder/models/auth-errors';
+import type { AuthPayload } from '@app-builder/services/auth/auth.server';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
+import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';

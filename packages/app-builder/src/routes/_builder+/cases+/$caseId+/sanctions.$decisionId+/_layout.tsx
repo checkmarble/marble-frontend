@@ -4,7 +4,7 @@ import {
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
-import { casesI18n, CaseStatusBadge } from '@app-builder/components/Cases';
+import { CaseStatusBadge, casesI18n } from '@app-builder/components/Cases';
 import { SanctionStatusTag } from '@app-builder/components/Sanctions/SanctionStatusTag';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
@@ -14,7 +14,7 @@ import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
 import { Outlet, useLoaderData, useRouteLoaderData } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -127,9 +127,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     // On purpuse catch 403 errors to display a 404 page
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
       throw new Response(null, { status: 404, statusText: 'Not Found' });
-    } else {
-      throw error;
     }
+    throw error;
   }
 }
 

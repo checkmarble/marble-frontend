@@ -1,11 +1,7 @@
-import {
-  type EvaluationErrorCodeDto,
-  type EvaluationErrorDto,
-  type NodeEvaluationDto,
-} from 'marble-api';
+import type { EvaluationErrorCodeDto, EvaluationErrorDto, NodeEvaluationDto } from 'marble-api';
 import * as R from 'remeda';
 
-import { type ConstantType } from './astNode/ast-node';
+import type { ConstantType } from './astNode/ast-node';
 
 export type ReturnValue =
   | {

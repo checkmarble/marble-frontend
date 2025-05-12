@@ -1,5 +1,5 @@
-import { type ClientObjectDetail } from '@app-builder/models';
-import { type PivotObject } from '@app-builder/models/cases';
+import type { ClientObjectDetail } from '@app-builder/models';
+import type { PivotObject } from '@app-builder/models/cases';
 
 export type DataModelExplorerNavigationTab = {
   pivotObject: PivotObject;

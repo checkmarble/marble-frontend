@@ -1,7 +1,7 @@
-import { type ParseKeys } from 'i18next';
-import { type CredentialsDto, type UserDto } from 'marble-api';
+import type { ParseKeys } from 'i18next';
+import type { CredentialsDto, UserDto } from 'marble-api';
 import * as R from 'remeda';
-import { type RequiredKeys } from 'typescript-utils';
+import type { RequiredKeys } from 'typescript-utils';
 
 export interface CurrentUser {
   organizationId: string;

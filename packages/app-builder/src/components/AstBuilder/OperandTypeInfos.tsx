@@ -5,7 +5,7 @@ import {
   type OperandType,
 } from '@app-builder/models/operand-type';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { Icon } from 'ui-icons';
 
 const operandTypeInfosClassnames = cva(

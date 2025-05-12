@@ -1,4 +1,4 @@
-import { type Meta, type StoryFn } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import * as React from 'react';
 
 import { ScrollAreaV2 } from '../ScrollArea/ScrollArea';

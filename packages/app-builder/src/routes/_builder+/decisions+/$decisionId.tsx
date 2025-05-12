@@ -29,7 +29,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs } from '@remix-run/node';
 import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button } from 'ui-design-system';
@@ -96,9 +96,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   } catch (error) {
     if (isNotFoundHttpError(error)) {
       return notFound(null);
-    } else {
-      throw error;
     }
+    throw error;
   }
 }
 
