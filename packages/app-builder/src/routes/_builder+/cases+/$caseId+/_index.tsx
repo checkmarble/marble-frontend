@@ -283,6 +283,7 @@ export default function CaseManagerIndexPage() {
         className="text-r relative grid h-full grid-cols-[1fr_520px] p-0 lg:p-0"
       >
         <CaseDetails
+          key={details.id}
           containerRef={containerRef}
           currentUser={currentUser}
           selectDecision={selectDecision}
@@ -297,6 +298,7 @@ export default function CaseManagerIndexPage() {
 
                 return (
                   <PivotsPanel
+                    key={details.id}
                     currentUser={currentUser}
                     case={details}
                     dataModel={dataModelWithTableOptions}
@@ -307,12 +309,15 @@ export default function CaseManagerIndexPage() {
               .with('decision', () =>
                 !selectedDecision ? null : (
                   <DecisionPanel
+                    key={details.id}
                     decisionId={selectedDecision}
                     setDrawerContentMode={setDrawerContentMode}
                   />
                 ),
               )
-              .with('snooze', () => <SnoozePanel setDrawerContentMode={setDrawerContentMode} />)
+              .with('snooze', () => (
+                <SnoozePanel key={details.id} setDrawerContentMode={setDrawerContentMode} />
+              ))
               .exhaustive()}
           </CaseManagerDrawer>
         </DataModelExplorerProvider>
