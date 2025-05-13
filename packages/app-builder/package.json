@@ -17,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@biomejs/js-api": "^0.7.1",
     "@marble/eslint-config": "workspace:*",
     "@remix-run/dev": "^2.16.5",
     "@segment/analytics-next": "^1.78.1",
@@ -120,5 +121,8 @@
     "uuid": "^11.1.0",
     "zod": "^3.24.2",
     "zustand": "^5.0.3"
+  },
+  "peerDependencies": {
+    "@biomejs/wasm-nodejs": "^2.0.0-beta.3"
   }
 }
