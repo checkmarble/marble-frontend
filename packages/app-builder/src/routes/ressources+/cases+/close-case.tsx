@@ -50,24 +50,24 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!success) return Response.json({ sucess: false, errors: error.flatten() });
 
+  const { caseId, outcome, comment } = data;
+
   try {
-    const promises = [];
+    const promises = [
+      cases.updateCase({
+        caseId,
+        body: { status: 'closed', outcome },
+      }),
+    ];
 
     if (data.comment !== '') {
       promises.push(
         cases.addComment({
-          caseId: data.caseId,
-          body: { comment: data.comment },
+          caseId,
+          body: { comment },
         }),
       );
     }
-
-    promises.push(
-      cases.updateCase({
-        caseId: data.caseId,
-        body: { status: 'closed', outcome: data.outcome },
-      }),
-    );
 
     await Promise.allSettled(promises);
 
