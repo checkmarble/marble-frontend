@@ -269,6 +269,7 @@ export default function CaseManagerIndexPage() {
           <Button
             variant="secondary"
             size="medium"
+            disabled={!!(nextCaseId === details.id && !details.assignedTo)}
             onClick={() =>
               navigate(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(nextCaseId) }))
             }
