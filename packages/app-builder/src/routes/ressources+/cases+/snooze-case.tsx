@@ -4,7 +4,18 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
-import { addDays, addMonths, format, isMonday, isSameDay, isThisMonth, nextMonday } from 'date-fns';
+import {
+  addDays,
+  addHours,
+  addMonths,
+  format,
+  isBefore,
+  isMonday,
+  isSameDay,
+  isThisMonth,
+  nextMonday,
+  startOfHour,
+} from 'date-fns';
 import { type Namespace } from 'i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -207,7 +218,11 @@ export function SnoozeCase({
                       selected={field.state.value ? new Date(field.state.value) : undefined}
                       onSelect={(date) => {
                         if (date) {
-                          field.handleChange(setTo9AM(date).toISOString());
+                          field.handleChange(
+                            isBefore(date, new Date())
+                              ? startOfHour(addHours(new Date(), 3)).toISOString()
+                              : setTo9AM(date).toISOString(),
+                          );
                           setIsOpen(false);
                           form.handleSubmit();
                         }
