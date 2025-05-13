@@ -75,5 +75,10 @@
   "open": "يفتح",
   "load_more_results": "تحميل المزيد من النتائج",
   "documents": "وثائق",
-  "max_size_exceeded": "{{size}} MB هي أقصى حجم ملف. يرجى إعادة المحاولة مع ملف أصغر."
+  "max_size_exceeded": "{{size}} MB هي أقصى حجم ملف. يرجى إعادة المحاولة مع ملف أصغر.",
+  "snooze.tomorrow": "الغد",
+  "snooze.oneWeek": "أسبوع",
+  "snooze.oneMonth": "شهر",
+  "snooze.nextMonday": "الأسبوع القادم",
+  "snooze.custom": "مخصص"
 }
