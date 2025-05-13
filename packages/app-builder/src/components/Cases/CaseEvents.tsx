@@ -40,6 +40,7 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
   const [filters, setFilters] = useState<CaseEventFiltersForm>({
     types: ['comment_added', 'file_added'],
   });
+
   const orderedEvents = useMemo(
     () => events.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     [events],

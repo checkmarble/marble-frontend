@@ -94,6 +94,24 @@ export const CaseEventFilters = ({
                 <span className="text-s">{t(`cases:case_detail.history.event_type.${type}`)}</span>
               </MenuCommand.Item>
             ))}
+            <div className="bg-grey-100 sticky bottom-0 flex w-full gap-2">
+              <Button
+                variant="secondary"
+                size="small"
+                className="basis-full"
+                onClick={() => setFilters({ types: ['file_added', 'comment_added'] })}
+              >
+                <Icon icon="filters-off" className="size-4" />
+              </Button>
+              <Button
+                variant="secondary"
+                size="small"
+                className="basis-full"
+                onClick={() => setFilters({ types: caseEventTypes })}
+              >
+                <Icon icon="checked" className="size-3.5" />
+              </Button>
+            </div>
           </MenuCommand.List>
         </MenuCommand.Content>
       </MenuCommand.Menu>
