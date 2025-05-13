@@ -18,9 +18,15 @@ import { Button, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
+type CloseCaseForm = {
+  caseId: string;
+  comment: string;
+  outcome?: FinalOutcome;
+};
+
 const schema = z.object({
   caseId: z.string().uuid(),
-  outcome: z.enum(finalOutcomes),
+  outcome: z.enum(finalOutcomes).optional(),
   comment: z.string(),
 });
 
@@ -84,6 +90,12 @@ export const CloseCase = ({ id }: { id: string }) => {
   const fetcher = useFetcher<typeof action>();
   const [open, setOpen] = useState(false);
 
+  const defaultValues: CloseCaseForm = {
+    caseId: id,
+    comment: '',
+    outcome: undefined,
+  };
+
   const form = useForm({
     onSubmit: ({ value }) => {
       setOpen(false);
@@ -93,7 +105,7 @@ export const CloseCase = ({ id }: { id: string }) => {
         encType: 'application/json',
       });
     },
-    defaultValues: { caseId: id, outcome: 'false-positive', comment: '' },
+    defaultValues,
     validators: {
       onChange: schema,
       onBlur: schema,
