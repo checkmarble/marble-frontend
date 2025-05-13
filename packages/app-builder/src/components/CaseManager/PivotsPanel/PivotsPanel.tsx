@@ -1,8 +1,10 @@
 import { DataModelExplorer } from '@app-builder/components/DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
+import useIntersection from '@app-builder/hooks/useIntersection';
 import { type CurrentUser, type DataModelWithTableOptions } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
-import { useEffect } from 'react';
+import clsx from 'clsx';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { CaseManagerDrawerButtons, DrawerBreadcrumb, DrawerContext } from '../Drawer/Drawer';
@@ -19,6 +21,12 @@ export function PivotsPanel(props: PivotsPanelProps) {
   const { t } = useTranslation(['common', 'cases']);
   const dataModelExplorerContext = DataModelExplorerContext.useValue();
   const drawerContext = DrawerContext.useValue();
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const intersection = useIntersection(sentinelRef, {
+    root: drawerContext.container.current,
+    rootMargin: '1px',
+    threshold: 1,
+  });
 
   useEffect(() => {
     if (!dataModelExplorerContext.explorerState && drawerContext.isExpanded) {
@@ -28,7 +36,12 @@ export function PivotsPanel(props: PivotsPanelProps) {
 
   return (
     <>
-      <div className="sticky top-0 z-10 flex items-center">
+      <div ref={sentinelRef} />
+      <div
+        className={clsx('bg-grey-100 sticky top-0 z-10 flex items-center', {
+          'shadow-sticky-top': !intersection?.isIntersecting,
+        })}
+      >
         <CaseManagerDrawerButtons expandable={!!dataModelExplorerContext.explorerState} />
         {drawerContext.isExpanded && dataModelExplorerContext.explorerState ? (
           <DrawerBreadcrumb

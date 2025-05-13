@@ -15,12 +15,14 @@ import {
   RulesExecutionsContainer,
 } from '@app-builder/components/Decisions/RulesExecutions/RulesExecutions';
 import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
+import useIntersection from '@app-builder/hooks/useIntersection';
 import { type Pivot, type TableModel } from '@app-builder/models';
 import { type Decision, type RuleExecution } from '@app-builder/models/decision';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
 import { Await, useLoaderData } from '@remix-run/react';
-import { Suspense, useMemo, useState } from 'react';
+import clsx from 'clsx';
+import { Suspense, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, isNonNullish, map, pipe } from 'remeda';
 import { Button, Switch, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui-design-system';
@@ -219,11 +221,22 @@ export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPane
     decisionsPromise,
     case: caseDetail,
   } = useLoaderData<typeof loader>();
-  const { isExpanded, setExpanded } = DrawerContext.useValue();
+  const { isExpanded, setExpanded, container } = DrawerContext.useValue();
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const intersection = useIntersection(sentinelRef, {
+    root: container.current,
+    rootMargin: '1px',
+    threshold: 1,
+  });
 
   return (
-    <div className="flex flex-col pl-4 pr-2">
-      <div className="sticky top-0 z-10 flex items-center">
+    <>
+      <div ref={sentinelRef} />
+      <div
+        className={clsx('bg-grey-100 sticky top-0 z-10 flex items-center pl-4', {
+          'shadow-sticky-top': !intersection?.isIntersecting,
+        })}
+      >
         <Button
           variant="secondary"
           size="small"
@@ -236,47 +249,51 @@ export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPane
         </Button>
         <CaseManagerDrawerButtons expandable={true} />
       </div>
+      <div className="flex flex-col pl-4 pr-2">
+        <Suspense fallback={<DecisionDetailSkeleton />}>
+          <Await resolve={decisionsPromise}>
+            {(decisions) => {
+              const decision = decisions.find((d) => d.id === decisionId);
 
-      <Suspense fallback={<DecisionDetailSkeleton />}>
-        <Await resolve={decisionsPromise}>
-          {(decisions) => {
-            const decision = decisions.find((d) => d.id === decisionId);
+              if (!decision) return <DecisionDetailSkeleton />;
 
-            if (!decision) return <DecisionDetailSkeleton />;
-
-            return (
-              <div className="flex flex-col gap-6">
-                <div className="flex items-center gap-3">
-                  <span className="text-l text-grey-00 font-semibold">
-                    {decision.scenario.name}
-                  </span>
-                  <span className="bg-purple-96 text-purple-65 rounded-full px-2 py-[3px] text-xs font-normal">
-                    +{decision.score}
-                  </span>
-                </div>
-                <div className="flex flex-col items-start gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-grey-50 text-xs">{t('cases:decisions.outcome')}</span>
-                    <OutcomeBadge outcome={decision.outcome} reviewStatus={decision.reviewStatus} />
+              return (
+                <div className="flex flex-col gap-6">
+                  <div className="flex items-center gap-3">
+                    <span className="text-l text-grey-00 font-semibold">
+                      {decision.scenario.name}
+                    </span>
+                    <span className="bg-purple-96 text-purple-65 rounded-full px-2 py-[3px] text-xs font-normal">
+                      +{decision.score}
+                    </span>
                   </div>
-                  <RequiredActions decision={decision} caseId={caseDetail.id} />
+                  <div className="flex flex-col items-start gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-grey-50 text-xs">{t('cases:decisions.outcome')}</span>
+                      <OutcomeBadge
+                        outcome={decision.outcome}
+                        reviewStatus={decision.reviewStatus}
+                      />
+                    </div>
+                    <RequiredActions decision={decision} caseId={caseDetail.id} />
+                  </div>
+                  {isExpanded ? (
+                    <ExpandedDetail
+                      detail={{ ...decision, pivots }}
+                      dataModel={dataModelWithTableOptions}
+                    />
+                  ) : (
+                    <CollapsedDetail
+                      detail={{ ...decision, pivots }}
+                      dataModel={dataModelWithTableOptions}
+                    />
+                  )}
                 </div>
-                {isExpanded ? (
-                  <ExpandedDetail
-                    detail={{ ...decision, pivots }}
-                    dataModel={dataModelWithTableOptions}
-                  />
-                ) : (
-                  <CollapsedDetail
-                    detail={{ ...decision, pivots }}
-                    dataModel={dataModelWithTableOptions}
-                  />
-                )}
-              </div>
-            );
-          }}
-        </Await>
-      </Suspense>
-    </div>
+              );
+            }}
+          </Await>
+        </Suspense>
+      </div>
+    </>
   );
 }

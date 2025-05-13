@@ -14,7 +14,7 @@ import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
 import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { useLoaderData } from '@remix-run/react';
-import { type RefObject, useRef } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
@@ -28,13 +28,11 @@ import { casesI18n } from './cases-i18n';
 import { caseStatusMapping } from './CaseStatus';
 
 export const CaseDetails = ({
-  containerRef,
   currentUser,
   selectDecision,
   drawerContentMode,
   setDrawerContentMode,
 }: {
-  containerRef: RefObject<HTMLDivElement>;
   currentUser: CurrentUser;
   selectDecision: (id: string) => void;
   drawerContentMode: 'pivot' | 'decision' | 'snooze';
@@ -43,18 +41,23 @@ export const CaseDetails = ({
   const { case: detail, inboxes } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
-  const infoRef = useRef<HTMLDivElement>(null);
-  const intersection = useIntersection(infoRef, {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const intersection = useIntersection(sentinelRef, {
     root: containerRef.current,
-    rootMargin: '-48px',
+    rootMargin: '32px',
     threshold: 1,
   });
 
   return (
-    <main className="flex w-full min-w-0 flex-col gap-6 px-12 py-8">
+    <main
+      ref={containerRef}
+      className="relative flex w-full min-w-0 flex-col gap-6 overflow-y-scroll p-8 px-12"
+    >
+      <div ref={sentinelRef} className="absolute left-0 top-0" />
       <div
         className={cn(
-          'bg-purple-99 sticky top-0 z-10 flex h-[88px] items-center justify-between gap-4',
+          'bg-purple-99 sticky -top-8 z-10 flex h-[88px] shrink-0 items-center justify-between gap-4',
           { 'border-b-grey-90 border-b': !intersection?.isIntersecting },
         )}
       >
@@ -68,7 +71,7 @@ export const CaseDetails = ({
         </div>
       </div>
 
-      <div className="border-b-grey-90 flex flex-col gap-2 border-b pb-6" ref={infoRef}>
+      <div className="border-b-grey-90 flex flex-col gap-2 border-b pb-6">
         <div className="grid grid-cols-[120px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:case.status')}</span>
           <span className="inline-flex items-center gap-1">
@@ -161,13 +164,15 @@ export const CaseDetails = ({
         </div>
 
         <ClientOnly>
-          {() => (
-            <div className="border-grey-90 bg-grey-100 flex flex-wrap gap-2 rounded-lg border p-4">
-              {detail.files.map((file) => (
-                <CaseFile key={file.id} file={file} />
-              ))}
-            </div>
-          )}
+          {() =>
+            detail.files.length > 0 ? (
+              <div className="border-grey-90 bg-grey-100 flex flex-wrap gap-2 rounded-lg border p-4">
+                {detail.files.map((file) => (
+                  <CaseFile key={file.id} file={file} />
+                ))}
+              </div>
+            ) : null
+          }
         </ClientOnly>
       </div>
     </main>

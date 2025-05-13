@@ -71,7 +71,7 @@ export function PivotsPanelContent({
         </div>
       ) : null}
       {pivotObjects.length > 1 ? (
-        <div className="border-grey-90 flex h-12 gap-2 self-start rounded-lg border p-1">
+        <div className="border-grey-90 mt-4 flex h-12 gap-2 self-start rounded-lg border p-1">
           {pivotObjects.map((pivotObject, idx) => {
             const uniqKey = pivotUniqKey(pivotObject);
             return (

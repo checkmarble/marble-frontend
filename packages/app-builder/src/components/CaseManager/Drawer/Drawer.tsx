@@ -1,12 +1,21 @@
 import { createSimpleContext } from '@marble/shared';
 import { cva } from 'class-variance-authority';
-import { type Dispatch, Fragment, type ReactNode, type SetStateAction, useState } from 'react';
+import {
+  type Dispatch,
+  Fragment,
+  type ReactNode,
+  type RefObject,
+  type SetStateAction,
+  useRef,
+  useState,
+} from 'react';
 
 import { DrawerIcon } from './DrawerIcon';
 
 export const DrawerContext = createSimpleContext<{
   isExpanded: boolean;
   setExpanded: Dispatch<SetStateAction<boolean>>;
+  container: RefObject<HTMLDivElement>;
 }>('Drawer');
 
 const drawerVariants = cva(
@@ -38,11 +47,20 @@ export type CaseManagerDrawerProps = {
 
 export function CaseManagerDrawer({ children }: CaseManagerDrawerProps) {
   const [drawerExpanded, setDrawerExpanded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <DrawerContext.Provider value={{ isExpanded: drawerExpanded, setExpanded: setDrawerExpanded }}>
+    <DrawerContext.Provider
+      value={{
+        isExpanded: drawerExpanded,
+        container: containerRef,
+        setExpanded: setDrawerExpanded,
+      }}
+    >
       <aside className={drawerVariants({ expanded: drawerExpanded })}>
-        <div className={drawerContainerVariants({ expanded: drawerExpanded })}>{children}</div>
+        <div ref={containerRef} className={drawerContainerVariants({ expanded: drawerExpanded })}>
+          {children}
+        </div>
       </aside>
     </DrawerContext.Provider>
   );
