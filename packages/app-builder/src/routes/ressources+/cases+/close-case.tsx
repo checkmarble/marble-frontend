@@ -19,14 +19,8 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
 const schema = z.object({
-  caseId: z.string(),
-  outcome: z.union(
-    finalOutcomes.map((o) => z.literal(o)) as [
-      z.ZodLiteral<FinalOutcome>,
-      z.ZodLiteral<FinalOutcome>,
-      ...z.ZodLiteral<FinalOutcome>[],
-    ],
-  ),
+  caseId: z.string().uuid(),
+  outcome: z.enum(finalOutcomes),
   comment: z.string(),
 });
 
