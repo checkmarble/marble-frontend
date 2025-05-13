@@ -16,17 +16,12 @@ import {
   nextMonday,
   startOfHour,
 } from 'date-fns';
-import { type Namespace } from 'i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, Calendar, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
-export const handle = {
-  i18n: [...casesI18n, 'common'] satisfies Namespace,
-};
 
 const editSnoozeSchema = z.object({
   caseId: z.string(),
@@ -90,7 +85,7 @@ export function SnoozeCase({
   caseId,
   snoozeUntil,
 }: Pick<EditSnoozeForm, 'caseId'> & { snoozeUntil?: string }) {
-  const { t } = useTranslation(handle.i18n);
+  const { t } = useTranslation(casesI18n);
   const fetcher = useFetcher<typeof action>();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -164,10 +159,10 @@ export function SnoozeCase({
                   <span className="text-r inline-flex items-center gap-1">
                     <span>
                       {match(duration)
-                        .with('tomorrow', () => 'Tomorrow')
-                        .with('oneWeek', () => 'Next week')
-                        .with('oneMonth', () => 'Next month')
-                        .with('nextMonday', () => 'Next Monday')
+                        .with('tomorrow', () => t('common:snooze.tomorrow'))
+                        .with('oneWeek', () => t('common:snooze.oneWeek'))
+                        .with('oneMonth', () => t('common:snooze.oneMonth'))
+                        .with('nextMonday', () => t('common:snooze.nextMonday'))
                         .exhaustive()}
                     </span>
                     <span className="text-2xs text-grey-50">{formatDate(date)}</span>
@@ -185,7 +180,7 @@ export function SnoozeCase({
                   }}
                 >
                   <span className="text-r inline-flex h-full items-center gap-1">
-                    <span>Custom</span>
+                    <span>{t('common:snooze.custom')}</span>
                     <span className="text-2xs text-grey-50">
                       {formatDate(new Date(field.state.value))}
                     </span>
@@ -199,7 +194,7 @@ export function SnoozeCase({
                   trigger={
                     <>
                       <span className="text-r inline-flex h-full items-center gap-1">
-                        <span>Custom</span>
+                        <span>{t('common:snooze.custom')}</span>
                         {field.state.value && isCustomDate ? (
                           <span className="text-2xs text-grey-50">
                             {formatDate(new Date(field.state.value))}
