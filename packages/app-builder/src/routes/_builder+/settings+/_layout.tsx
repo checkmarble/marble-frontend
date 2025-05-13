@@ -8,8 +8,8 @@ import { Nudge } from '@app-builder/components/Nudge';
 import { type CurrentUser, isAdmin } from '@app-builder/models';
 import { type Inbox } from '@app-builder/models/inbox';
 import {
+  canAccessInboxesSettings,
   isAccessible,
-  isInboxAdmin,
   isReadApiKeyAvailable,
   isReadTagAvailable,
   isReadUserAvailable,
@@ -56,7 +56,7 @@ export function getSettings(user: CurrentUser, inboxes: Inbox[]) {
       to: getRoute('/settings/scenarios'),
     });
   }
-  if (isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox))) {
+  if (canAccessInboxesSettings(user, inboxes)) {
     settings.push({
       section: 'case_manager' as const,
       title: 'inboxes' as const,
