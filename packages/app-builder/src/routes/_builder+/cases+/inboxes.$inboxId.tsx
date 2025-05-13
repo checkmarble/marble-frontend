@@ -280,6 +280,7 @@ export default function Cases() {
               </div>
               <CasesFiltersBar />
               <CasesList
+                key={inboxId}
                 cases={cases}
                 className="max-h-[60dvh]"
                 onSortingChange={(state) => {
