@@ -1,4 +1,4 @@
-import { type CurrentUser } from '@app-builder/models';
+import { type CurrentUser, isAdmin } from '@app-builder/models';
 import { type Inbox } from '@app-builder/models/inbox';
 import { type LicenseEntitlements } from '@app-builder/models/license';
 import { type FeatureAccessDto } from 'marble-api/generated/license-api';
@@ -19,6 +19,9 @@ export const isReadAllInboxesAvailable = ({ role }: CurrentUser) =>
 
 export const isInboxAdmin = ({ actorIdentity: { userId } }: CurrentUser, inbox: Inbox) =>
   inbox.users.some((inboxUser) => inboxUser.userId === userId && inboxUser.role === 'admin');
+
+export const canAccessInboxesSettings = (user: CurrentUser, inboxes: Inbox[]) =>
+  isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
 
 export const isReadTagAvailable = ({ role }: CurrentUser) =>
   role === 'ADMIN' || role === 'MARBLE_ADMIN';

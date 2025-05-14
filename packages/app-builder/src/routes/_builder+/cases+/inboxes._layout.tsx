@@ -6,15 +6,19 @@ import {
 } from '@app-builder/components/Breadcrumbs';
 import { casesI18n } from '@app-builder/components/Cases';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
-import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
+import {
+  canAccessInboxesSettings,
+  isCreateInboxAvailable,
+} from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs } from '@remix-run/node';
-import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
+import { Link, NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { CtaClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { MY_INBOX_ID } from './_index';
@@ -46,17 +50,28 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return {
     inboxes,
     isCreateInboxAvailable: isCreateInboxAvailable(user),
+    canAccessInboxSettings: canAccessInboxesSettings(user, inboxes),
   };
 }
 
 export default function Cases() {
   const { t } = useTranslation(handle.i18n);
-  const { inboxes, isCreateInboxAvailable } = useLoaderData<typeof loader>();
+  const { inboxes, isCreateInboxAvailable, canAccessInboxSettings } =
+    useLoaderData<typeof loader>();
 
   return (
     <Page.Main>
-      <Page.Header>
+      <Page.Header className="justify-between">
         <BreadCrumbs />
+        {canAccessInboxSettings ? (
+          <Link
+            to={getRoute('/settings/inboxes')}
+            className={CtaClassName({ variant: 'secondary', size: 'small' })}
+          >
+            <Icon icon="settings" className="size-4" />
+            {t('cases:case.inbox_settings_link')}
+          </Link>
+        ) : null}
       </Page.Header>
       <div className="flex h-full flex-row overflow-hidden">
         <div className="border-e-grey-90 bg-grey-100 flex h-full w-fit min-w-[200px] max-w-[300px] shrink-0 flex-col overflow-y-auto border-e p-4">
@@ -103,7 +118,7 @@ export default function Cases() {
               </ul>
             </nav>
           </div>
-          {isCreateInboxAvailable ? (
+          {isCreateInboxAvailable && inboxes.length === 0 ? (
             <CreateInbox redirectRoutePath="/cases/inboxes/:inboxId" />
           ) : null}
         </div>
