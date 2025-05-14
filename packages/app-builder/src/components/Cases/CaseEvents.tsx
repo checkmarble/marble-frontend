@@ -32,6 +32,9 @@ import { Icon } from 'ui-icons';
 import { casesI18n } from './cases-i18n';
 import { SarCreatedDetail } from './Events/SarCreated';
 
+const MAX_EVENTS_BEFORE_DEBOUNCE = 60;
+const EVENT_DELAY = 100;
+
 export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: Inbox[] }) {
   const { t } = useTranslation(casesI18n);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -92,8 +95,8 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
       setOlderEventsCount(itemsAfterVisible);
     };
 
-    if (filteredEvents.length > 60) {
-      callback = debounce({ delay: 100 }, callback);
+    if (filteredEvents.length > MAX_EVENTS_BEFORE_DEBOUNCE) {
+      callback = debounce({ delay: EVENT_DELAY }, callback);
     }
 
     callback();
