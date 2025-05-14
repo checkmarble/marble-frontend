@@ -182,7 +182,7 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
           return (
             <span
               className={clsx('relative line-clamp-1 px-4', {
-                'text-right': parsedData.type === 'number',
+                'text-right': parsedData.type === 'number' || parsedData.value === null,
               })}
             >
               <FormatData data={parsedData} language={language} />
