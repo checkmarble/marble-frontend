@@ -85,5 +85,6 @@
   "items_displayed_same_datetime": "على <emph> {{Date}} </emph> في <emph> {{time}} </emph>",
   "items_displayed_ranks": "من <emph> {{start}} </emph> إلى <remphown> {{end}} </emph>",
   "from": "من {{input}}",
-  "to": "إلى {{input}}"
+  "to": "إلى {{input}}",
+  "success.deleted": "تم حذفه بنجاح"
 }

@@ -184,5 +184,18 @@
   "sar.modale.confirm_without_file": "Save without file",
   "sar.modale.title": "Suspicious activity report completed",
   "sar.modale.title_choose_file": "Choose a file",
-  "sar.modale.save": "Save"
+  "sar.modale.save": "Save",
+  "annotations.delete_files.title": "Are you sure you want to delete <Filenames>{{filenames}}</Filenames>?<br />This action cannot be undone",
+  "case_detail.pivot_panel.annotations": "Annotations",
+  "annotations.tags.title": "Tags",
+  "annotations.documents.title": "Documents",
+  "annotations.documents.add_file": "Add a file",
+  "annotations.documents.upload_file": "Upload a file",
+  "annotations.documents.plus_one": "+{{count}} other",
+  "annotations.documents.plus_other": "+{{count}} others",
+  "annotations.comments.title": "Comments",
+  "annotations.comments.see_others_one": "See {{count}} other",
+  "annotations.comments.see_others_other": "See {{count}} others",
+  "annotations.popover.annotate.title": "Annotate",
+  "annotations.popover.annotate.subtitle": "Comment, add file, add tag"
 }

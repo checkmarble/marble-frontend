@@ -445,6 +445,11 @@ export const routes = [
         "file": "routes/ressources+/data+/$tableName.list-objects.tsx"
       },
       {
+        "id": "routes/ressources+/data+/create-annotation",
+        "path": "ressources/data/create-annotation",
+        "file": "routes/ressources+/data+/create-annotation.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/create-pivot",
         "path": "ressources/data/create-pivot",
         "file": "routes/ressources+/data+/create-pivot.tsx"
@@ -463,6 +468,11 @@ export const routes = [
         "id": "routes/ressources+/data+/createTable",
         "path": "ressources/data/createTable",
         "file": "routes/ressources+/data+/createTable.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/delete-annotation.$annotationId",
+        "path": "ressources/data/delete-annotation/:annotationId",
+        "file": "routes/ressources+/data+/delete-annotation.$annotationId.tsx"
       },
       {
         "id": "routes/ressources+/data+/editField",

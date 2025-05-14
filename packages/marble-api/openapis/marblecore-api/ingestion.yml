@@ -92,6 +92,47 @@
         $ref: 'components.yml#/responses/401'
       '403':
         $ref: 'components.yml#/responses/403'
+/client_data/{tableName}/{objectId}/annotations:
+  post:
+    tags:
+      - Ingestion
+    summary: Create an annotation on client data
+    operationId: createAnnotation
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: tableName
+        description: The table on which the object to annotate is
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: objectId
+        description: The ID of the object to annotate
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      description: Payload and type of the annotation to add
+      content:
+        application/json:
+          schema:
+            $ref: 'annotations.yml#/components/schemas/CreateAnnotationDto'
+      required: true
+    responses:
+      '200':
+        description: Annotation created
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '422':
+        $ref: 'components.yml#/responses/422'
 /client_data/{tableName}/list:
   post:
     tags:
@@ -121,6 +162,34 @@
           application/json:
             schema:
               $ref: '#/components/schemas/ClientDataListResponseDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+      '422':
+        $ref: 'components.yml#/responses/422'
+/annotations/{annotationId}:
+  delete:
+    tags:
+      - Annotations
+    summary: Removes an annotation by ID
+    operationId: deleteAnnotation
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: annotationId
+        description: The ID of the annotation to delete
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Annotation deleted
       '400':
         $ref: 'components.yml#/responses/400'
       '401':

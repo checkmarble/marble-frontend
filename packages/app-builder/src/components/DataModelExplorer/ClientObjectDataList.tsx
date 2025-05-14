@@ -29,7 +29,7 @@ export function ClientObjectDataList({
   const shouldShowButton = tableModel.fields.some((f) => !f.displayed);
 
   return (
-    <div className={cn('grid grid-cols-[160px,_1fr] gap-x-3 gap-y-2', className)}>
+    <div className={cn('grid grid-cols-[116px,_1fr] gap-x-3 gap-y-2', className)}>
       {tableModel.options.fieldOrder.map((fieldId) => {
         const field = tableModel.fields.find((f) => f.id === fieldId);
         if (!field) return null;

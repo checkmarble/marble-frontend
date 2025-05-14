@@ -14,7 +14,7 @@ export const EventTime = ({ time }: { time: string }) => {
   return (
     <TooltipV2.Provider>
       <TooltipV2.Tooltip>
-        <TooltipV2.TooltipTrigger>
+        <TooltipV2.TooltipTrigger asChild>
           <span className="text-grey-50 shrink-0 grow-0 text-xs font-normal">
             {formatDateRelative(date, { language })}
           </span>
