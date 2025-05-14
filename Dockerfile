@@ -16,6 +16,7 @@ RUN apt-get -y install ca-certificates
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 RUN pnpm install --frozen-lockfile
+RUN pnpm --filter ui-icons generate-icons
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
       export SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN) && \
       pnpm --filter=app-builder run build

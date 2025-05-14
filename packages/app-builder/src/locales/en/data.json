@@ -1,5 +1,5 @@
 {
-  "your_data_callout": "This is the list of all the objects you can send to Marble, as well as their properties. Get in touch with the Marble team if you'd like to make changes to your data model.",
+  "your_data_callout": "This is the list of all the objects you can send to Regulon, as well as their properties. Get in touch with the RegulonM team if you'd like to make changes to your data model.",
   "description": "Description",
   "field_name": "Name",
   "field_type": "Type",
@@ -41,7 +41,7 @@
   "create_pivot.select.label": "Select a pivot",
   "create_pivot.select.empty_matches": "No pivot matches your search",
   "create_pivot.button_accept": "Create pivot",
-  "create_pivot.errors.data.duplicate_pivot_value": "A pivot value already exist for this table. Contact Marble to change it.",
+  "create_pivot.errors.data.duplicate_pivot_value": "A pivot value already exist for this table. Contact Regulon to change it.",
   "create_field.option_optional": "Optional",
   "create_field.option_required": "Required",
   "create_field.type_string": "String",

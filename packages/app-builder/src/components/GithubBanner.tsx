@@ -16,7 +16,7 @@ export const GithubBanner = () => {
         <span>
           <span>{t('common:github_banner')} </span>
           <a
-            href="https://github.com/checkmarble/marble"
+            href=""
             className="underline"
             target="_blank"
             rel="noreferrer"

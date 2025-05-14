@@ -106,7 +106,7 @@ export const meta: MetaFunction = () => [
     charset: 'utf-8',
   },
   {
-    title: 'Marble',
+    title: 'Regulon',
   },
   {
     name: 'viewport',
