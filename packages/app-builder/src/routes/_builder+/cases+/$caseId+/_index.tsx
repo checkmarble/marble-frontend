@@ -289,7 +289,7 @@ export default function CaseManagerIndexPage() {
           <CaseManagerDrawer>
             {match(drawerContentMode)
               .with('pivot', () => {
-                if (!pivotObjects || pivotObjects.length === 0) return null;
+                if (!pivotObjects) return null;
 
                 return (
                   <PivotsPanel
