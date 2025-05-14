@@ -21,6 +21,7 @@ import { StatusUpdatedDetail } from '@app-builder/components/Cases/Events/Status
 import { TagsUpdatedDetail } from '@app-builder/components/Cases/Events/TagsUpdated';
 import { type CaseEvent } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
+import { debounce, unique } from 'radash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { allPass, filter } from 'remeda';
@@ -46,6 +47,11 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
     [events],
   );
 
+  const allowedEventTypes = useMemo(
+    () => unique(orderedEvents.map((e) => e.eventType)),
+    [orderedEvents],
+  );
+
   const filteredEvents = useMemo(() => {
     if (!filters) return orderedEvents;
 
@@ -67,7 +73,7 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
     const containerRect = container.getBoundingClientRect();
     const items = Array.from(container.children);
 
-    const callback = () => {
+    let callback = () => {
       // Reset counts
       let itemsBeforeVisible = 0;
       let itemsAfterVisible = 0;
@@ -85,6 +91,10 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
       setNewerEventsCount(itemsBeforeVisible);
       setOlderEventsCount(itemsAfterVisible);
     };
+
+    if (filteredEvents.length > 60) {
+      callback = debounce({ delay: 100 }, callback);
+    }
 
     callback();
 
@@ -109,7 +119,11 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
           {t('cases:investigation.more_recent', { number: newerEvents })}
         </span>
         <div className="flex items-center gap-2">
-          <CaseEventFilters filters={filters} setFilters={setFilters} />
+          <CaseEventFilters
+            filters={filters}
+            allowedEventTypes={allowedEventTypes}
+            setFilters={setFilters}
+          />
           <Button variant="secondary" onClick={() => setShowAll(!showAll)} size="xs">
             <Icon icon={showAll ? 'eye-slash' : 'eye'} className="size-3.5" />
             <span className="text-xs">
@@ -157,11 +171,9 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
             'text-grey-100': showAll,
           })}
         >
-          {filteredEvents.length === 0
+          {filteredEvents.length === 0 || olderEvents === 0
             ? t('cases:investigation.no_older')
-            : olderEvents === 0
-              ? t('cases:investigation.no_older')
-              : t('cases:investigation.older', { number: olderEvents })}
+            : t('cases:investigation.older', { number: olderEvents })}
         </span>
       )}
     </div>

@@ -99,7 +99,7 @@ export const SnoozePanel = ({
                         />
                       ) : null}
                       <div className="border-grey-90 bg-grey-100 rounded-lg border">
-                        <div className="text-2xs text-grey-50 grid grid-cols-[150px_90px_1fr_1fr_176px_176px] font-normal">
+                        <div className="text-2xs text-grey-50 grid grid-cols-[150px_100px_1fr_1fr_176px_176px] font-normal">
                           <span className="p-2">{t('cases:decisions.rule.snooze')}</span>
                           <span className="p-2">
                             {t('cases:decisions.rule.last_hit_timestamp')}
@@ -121,7 +121,7 @@ export const SnoozePanel = ({
                           return (
                             <div
                               key={r.ruleId}
-                              className="border-grey-90 hover:bg-purple-98 grid grid-cols-[150px_90px_1fr_1fr_176px_176px] items-center border-t transition-colors"
+                              className="border-grey-90 hover:bg-purple-98 grid grid-cols-[150px_100px_1fr_1fr_176px_176px] items-center border-t transition-colors"
                             >
                               <div className="flex min-h-full items-center justify-center p-2">
                                 <AddRuleSnooze decisionId={r.decisionId} ruleId={r.ruleId}>

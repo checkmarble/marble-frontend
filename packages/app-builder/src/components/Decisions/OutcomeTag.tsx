@@ -106,7 +106,7 @@ export function OutcomeBadge({
           'bg-red-47':
             outcome === 'decline' || (outcome === 'block_and_review' && reviewStatus === 'decline'),
           'border-red-47 border-2': outcome === 'review',
-          'border-2 border-yellow-50': outcome === 'block_and_review' && reviewStatus === 'pending',
+          'border-2 border-yellow-50': outcome === 'block_and_review' || reviewStatus === 'pending',
           'bg-grey-50': outcome === 'unknown',
         })}
       />
