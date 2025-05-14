@@ -34,7 +34,7 @@ import { Future, Result } from '@swan-io/boxed';
 import { type Namespace } from 'i18next';
 import { pick } from 'radash';
 import { unique } from 'radash';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, flat, groupBy, map, mapValues, omit, pipe, uniqueBy } from 'remeda';
 import { match } from 'ts-pattern';
@@ -252,7 +252,6 @@ export default function CaseManagerIndexPage() {
   const navigate = useNavigate();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
   const [selectedDecision, selectDecision] = useState<string | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision' | 'snooze'>(
     'pivot',
   );
@@ -278,13 +277,9 @@ export default function CaseManagerIndexPage() {
           </Button>
         ) : null}
       </Page.Header>
-      <Page.Container
-        ref={containerRef}
-        className="text-r relative grid h-full grid-cols-[1fr_520px] p-0 lg:p-0"
-      >
+      <Page.Container className="text-r relative h-full flex-row p-0 lg:p-0">
         <CaseDetails
           key={details.id}
-          containerRef={containerRef}
           currentUser={currentUser}
           selectDecision={selectDecision}
           drawerContentMode={drawerContentMode}

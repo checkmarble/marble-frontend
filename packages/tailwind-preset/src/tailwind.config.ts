@@ -222,6 +222,7 @@ export default {
       },
       boxShadow: {
         'sticky-bottom': '0 -8px 24px rgba(8,5,37,0.06)',
+        'sticky-top': '0 8px 24px rgba(8,5,37,0.06)',
       },
     },
   },
