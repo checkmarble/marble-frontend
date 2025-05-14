@@ -45,6 +45,10 @@
       //     }
       //   }
       // },
+      "complexity": {
+        "useLiteralKeys": "off"
+      },
+
       "style": {
         "useLiteralEnumMembers": "error",
         "noCommaOperator": "error",
