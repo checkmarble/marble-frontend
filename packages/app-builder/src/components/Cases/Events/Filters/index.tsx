@@ -33,9 +33,11 @@ const Badge = ({ children }: ComponentProps<'span'>) => (
 
 export const CaseEventFilters = ({
   filters,
+  allowedEventTypes,
   setFilters,
 }: {
   filters: CaseEventFiltersForm;
+  allowedEventTypes?: CaseEventType[];
   setFilters: Dispatch<SetStateAction<CaseEventFiltersForm>>;
 }) => {
   const { t } = useTranslation(casesI18n);
@@ -81,7 +83,7 @@ export const CaseEventFilters = ({
         <MenuCommand.Content className="mt-2 max-h-[400px] max-w-[210px]" align="end">
           <MenuCommand.Combobox className="m-1 mb-0 h-8 p-0" iconClasses="size-4" />
           <MenuCommand.List className="p-1">
-            {caseEventTypes.map((type) => (
+            {(allowedEventTypes ?? caseEventTypes).map((type) => (
               <MenuCommand.Item
                 onSelect={() =>
                   setFilters((prev) => ({ ...prev, types: toggle(prev.types, type) }))
