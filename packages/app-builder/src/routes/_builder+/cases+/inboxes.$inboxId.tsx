@@ -144,28 +144,30 @@ const SearchByName = ({
   );
 };
 
-const ToggleSnoozed = ({
+const ToggleInclude = ({
   onCheckedChange,
-  snoozed,
+  field,
+  label,
+  value,
 }: {
-  snoozed: boolean;
+  field: 'assigned' | 'snoozed';
+  label: string;
+  value: boolean;
   onCheckedChange: (state: boolean) => void;
 }) => {
-  const { t } = useTranslation(['cases']);
-
   return (
     <div className="flex gap-2 p-2">
       <Checkbox
-        id="snoozed"
-        defaultChecked={snoozed}
+        id={field}
+        defaultChecked={value}
         onCheckedChange={(state) => {
           if (state !== 'indeterminate') {
             onCheckedChange(state);
           }
         }}
       />
-      <FormLabel name="snoozed" className="font-medium">
-        {t('cases:include_snoozed')}
+      <FormLabel name="field" className="font-medium">
+        {label}
       </FormLabel>
     </div>
   );
@@ -259,8 +261,10 @@ export default function Cases() {
                       navigateCasesList({ ...filters, name: value });
                     }}
                   />
-                  <ToggleSnoozed
-                    snoozed={filters.snoozed ?? false}
+                  <ToggleInclude
+                    field="snoozed"
+                    value={filters.snoozed ?? false}
+                    label={t('cases:include_snoozed')}
                     onCheckedChange={(snoozed) => {
                       navigateCasesList({ ...filters, snoozed });
                     }}
