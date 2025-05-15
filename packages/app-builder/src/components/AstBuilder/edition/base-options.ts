@@ -14,9 +14,9 @@ import {
 } from '@app-builder/models/astNode/time';
 import { ComparatorFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/comparatorFuzzyMatchConfig';
 import { aggregatorOperators } from '@app-builder/models/modale-operators';
-import { type OperandType } from '@app-builder/models/operand-type';
-import { type TFunction } from 'i18next';
-import { type IconName } from 'ui-icons';
+import type { OperandType } from '@app-builder/models/operand-type';
+import type { TFunction } from 'i18next';
+import type { IconName } from 'ui-icons';
 
 export type OperandMenuOption = {
   astNode: IdLessAstNode;

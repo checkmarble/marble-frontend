@@ -1,7 +1,7 @@
 import { Callout, casesI18n } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isAdmin } from '@app-builder/models';
-import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
+import type { loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
 import { initServerServices } from '@app-builder/services/init.server';
 import { handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';

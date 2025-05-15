@@ -1,10 +1,10 @@
-import {
-  type SanctionCheckDto,
-  type SanctionCheckErrorDto,
-  type SanctionCheckFileDto,
-  type SanctionCheckMatchDto,
-  type SanctionCheckMatchPayloadDto,
-  type SanctionCheckRequestDto,
+import type {
+  SanctionCheckDto,
+  SanctionCheckErrorDto,
+  SanctionCheckFileDto,
+  SanctionCheckMatchDto,
+  SanctionCheckMatchPayloadDto,
+  SanctionCheckRequestDto,
 } from 'marble-api';
 import * as R from 'remeda';
 

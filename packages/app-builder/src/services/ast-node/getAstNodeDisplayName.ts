@@ -7,7 +7,7 @@ import {
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
-import { isIsMultipleOf, type IsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
+import { type IsMultipleOfAstNode, isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import {
   type FuzzyMatchComparatorAstNode,
   isFuzzyMatchComparator,
@@ -21,11 +21,11 @@ import {
   type TimeAddAstNode,
   type TimestampExtractAstNode,
 } from '@app-builder/models/astNode/time';
-import { type CustomList } from '@app-builder/models/custom-list';
+import type { CustomList } from '@app-builder/models/custom-list';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
 import { isAggregatorOperator } from '@app-builder/models/modale-operators';
 import { formatNumber } from '@app-builder/utils/format';
-import { type TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import * as R from 'remeda';
 import { Temporal } from 'temporal-polyfill';
 

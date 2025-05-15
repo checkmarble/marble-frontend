@@ -1,4 +1,4 @@
-import { type SanctionCheckMatchPayload } from '@app-builder/models/sanction-check';
+import type { SanctionCheckMatchPayload } from '@app-builder/models/sanction-check';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';

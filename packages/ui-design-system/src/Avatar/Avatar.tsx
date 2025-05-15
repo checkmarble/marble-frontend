@@ -1,4 +1,4 @@
-import { type AvatarProps as RootAvatarProps, Fallback, Image, Root } from '@radix-ui/react-avatar';
+import { Fallback, Image, Root, type AvatarProps as RootAvatarProps } from '@radix-ui/react-avatar';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const avatar = cva(

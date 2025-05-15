@@ -1,4 +1,4 @@
-import { type TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { assertNever } from 'typescript-utils';
 
 export type ComparatorFuzzyMatchAlgorithms =

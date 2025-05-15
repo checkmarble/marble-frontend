@@ -4,7 +4,7 @@ import {
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
-import { casesI18n, caseStatusMapping } from '@app-builder/components/Cases';
+import { caseStatusMapping, casesI18n } from '@app-builder/components/Cases';
 import { SanctionStatusTag } from '@app-builder/components/Sanctions/SanctionStatusTag';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
@@ -14,7 +14,7 @@ import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
 import { Outlet, useLoaderData, useRouteLoaderData } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';

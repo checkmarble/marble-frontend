@@ -1,4 +1,4 @@
-import { type ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { Icon } from 'ui-icons';
 
 export const RuleGroup = ({

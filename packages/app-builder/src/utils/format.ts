@@ -1,6 +1,6 @@
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import cronstrue from 'cronstrue';
-import { type Options as ConstrueOptions } from 'cronstrue/dist/options';
+import type { Options as ConstrueOptions } from 'cronstrue/dist/options';
 import { add } from 'date-fns/add';
 import { formatDistanceStrict } from 'date-fns/formatDistanceStrict';
 import { formatRelative } from 'date-fns/formatRelative';

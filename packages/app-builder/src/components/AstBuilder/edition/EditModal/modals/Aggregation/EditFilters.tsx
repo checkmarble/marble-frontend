@@ -103,7 +103,9 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                 : '...';
 
             return (
-              <Fragment key={filterIndex}>
+              <Fragment
+                key={`filter_${filter.namedChildren.tableName.constant}_${filter.namedChildren.fieldName.constant}`}
+              >
                 <div className="border-grey-90 flex flex-col gap-4 rounded-md border-[0.5px] p-4">
                   <div className="flex items-center justify-between">
                     <div className="text-grey-50 flex items-center gap-2 pl-2 text-xs">

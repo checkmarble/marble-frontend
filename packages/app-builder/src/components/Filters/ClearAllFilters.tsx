@@ -1,5 +1,5 @@
 import { Link } from '@remix-run/react';
-import { type RemixLinkProps } from '@remix-run/react/dist/components';
+import type { RemixLinkProps } from '@remix-run/react/dist/components';
 import { clsx } from 'clsx';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';

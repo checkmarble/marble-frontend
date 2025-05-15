@@ -1,5 +1,5 @@
 import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
-import { type DataModel, type Pivot } from '@app-builder/models/data-model';
+import type { DataModel, Pivot } from '@app-builder/models/data-model';
 import { CreateTable } from '@app-builder/routes/ressources+/data+/createTable';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import Dagre from '@dagrejs/dagre';

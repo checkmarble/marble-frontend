@@ -1,5 +1,5 @@
-import { type ReviewStatus } from '@app-builder/models/decision';
-import { type Outcome as TOutcome } from '@app-builder/models/outcome';
+import type { ReviewStatus } from '@app-builder/models/decision';
+import type { Outcome as TOutcome } from '@app-builder/models/outcome';
 import clsx from 'clsx';
 import * as React from 'react';
 import * as R from 'remeda';

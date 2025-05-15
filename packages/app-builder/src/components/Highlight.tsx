@@ -1,5 +1,5 @@
 import { adaptHighlightedParts } from '@app-builder/utils/search';
-import { forwardRef, Fragment } from 'react';
+import { Fragment, forwardRef } from 'react';
 
 /**
  * Highlight a part of a text that matches a query.

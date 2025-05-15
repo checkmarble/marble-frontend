@@ -1,14 +1,14 @@
 import { OperandEditModalContainer } from '@app-builder/components/AstBuilder/edition/EditModal/Container';
 import { InnerEditFuzzyMatchModal } from '@app-builder/components/AstBuilder/edition/EditModal/modals/FuzzyMatchComparator/InnerFuzzyMatchModal';
-import { type FuzzyMatchFilterOptionsAstNode } from '@app-builder/models/astNode/aggregation';
+import type { FuzzyMatchFilterOptionsAstNode } from '@app-builder/models/astNode/aggregation';
 import { isKnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { AggregationFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/aggregationFuzzyMatchConfig';
-import { type BaseFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
+import type { BaseFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
 import { computed } from '@preact/signals-react';
 import { useTranslation } from 'react-i18next';
 
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
-import { type OperandEditModalProps } from '../../EditModal';
+import type { OperandEditModalProps } from '../../EditModal';
 
 const fuzzyMatchConfig: BaseFuzzyMatchConfig = AggregationFuzzyMatchConfig;
 

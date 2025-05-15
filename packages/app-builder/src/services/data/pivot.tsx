@@ -1,9 +1,9 @@
-import {
-  type DataModel,
-  type DataModelField,
-  type LinkToSingle,
-  type Pivot,
-  type TableModel,
+import type {
+  DataModel,
+  DataModelField,
+  LinkToSingle,
+  Pivot,
+  TableModel,
 } from '@app-builder/models';
 import * as R from 'remeda';
 

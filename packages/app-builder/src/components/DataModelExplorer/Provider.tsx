@@ -1,7 +1,7 @@
 import { createSimpleContext } from '@marble/shared';
 import { type ReactNode, useCallback, useState } from 'react';
 
-import { type DataModelExplorerNavigationTab } from './types';
+import type { DataModelExplorerNavigationTab } from './types';
 
 export type DataModelExplorerState = {
   tabs: DataModelExplorerNavigationTab[];

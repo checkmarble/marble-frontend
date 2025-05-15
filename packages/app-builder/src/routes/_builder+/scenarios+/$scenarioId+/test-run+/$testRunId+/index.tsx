@@ -6,7 +6,7 @@ import {
 } from '@app-builder/components/Breadcrumbs';
 import { DistributionOfDecisionChart } from '@app-builder/components/Scenario/TestRun/Graphs/DistributionOfDecisionChart';
 import { FilterTransactionByDecision } from '@app-builder/components/Scenario/TestRun/Graphs/FilterTransactionByDecision';
-import { type Versions } from '@app-builder/components/Scenario/TestRun/Graphs/HamburgerGraph';
+import type { Versions } from '@app-builder/components/Scenario/TestRun/Graphs/HamburgerGraph';
 import { DistributionOfDecisionChartSkeleton } from '@app-builder/components/Scenario/TestRun/Skeletons/DistributionOfDecicionSkeleton';
 import { FilterTransactionByDecisionSkeleton } from '@app-builder/components/Scenario/TestRun/Skeletons/FilterTransactionByDecicionSkeleton';
 import { TestRunDetails } from '@app-builder/components/Scenario/TestRun/TestRunDetails';

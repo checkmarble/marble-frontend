@@ -4,7 +4,7 @@ import { useDataModel } from '@app-builder/services/data/data-model';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { HttpError } from '@oazapfts/runtime';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import type { LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 

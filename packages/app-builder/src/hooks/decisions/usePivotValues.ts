@@ -1,5 +1,5 @@
-import { type Pivot } from '@app-builder/models';
-import { type CaseDetail } from '@app-builder/models/cases';
+import type { Pivot } from '@app-builder/models';
+import type { CaseDetail } from '@app-builder/models/cases';
 import { useMemo } from 'react';
 import * as R from 'remeda';
 

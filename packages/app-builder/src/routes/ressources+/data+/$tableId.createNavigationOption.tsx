@@ -5,7 +5,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { useCallbackRef } from '@marble/shared';
-import { type ActionFunctionArgs } from '@remix-run/node';
+import type { ActionFunctionArgs } from '@remix-run/node';
 import { json, useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';

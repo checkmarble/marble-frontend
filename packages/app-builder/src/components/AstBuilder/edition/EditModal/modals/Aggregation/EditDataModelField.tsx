@@ -60,6 +60,7 @@ export const EditDataModelField = ({
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
         <button
+          type="button"
           disabled={disabled}
           className="border-grey-90 text-s bg-grey-100 aria-disabled:bg-grey-98 text-grey-00 flex h-10 items-center justify-between rounded border px-2"
         >

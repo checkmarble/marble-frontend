@@ -1,8 +1,8 @@
-import { mkdir, readdir, readFile, rm, writeFile } from 'fs/promises';
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { basename, join } from 'node:path';
+import type { Stream } from 'node:stream';
 import ora from 'ora';
-import { basename, join } from 'path';
 import * as prettier from 'prettier';
-import { type Stream } from 'stream';
 import SVGSpriter from 'svg-sprite';
 
 const OUT_DIR = join(process.cwd(), '/src/generated');

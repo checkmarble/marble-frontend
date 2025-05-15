@@ -78,7 +78,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
   path: string;
 }) {
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
-  const data = dataSharp.value.$data!.value;
+  const data = dataSharp.value.$data?.value;
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
 
   const node = computed(() => getAtPath(nodeSharp.value.node, parsePath(props.path)));
@@ -88,7 +88,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
   // Calculate enumValues based on neighbours
   const enumValues = computed(() => {
     const enums = [];
-    const triggerTable = data.dataModel.find((t) => t.name === data.triggerObjectType);
+    const triggerTable = data?.dataModel.find((t) => t.name === data.triggerObjectType);
     if (!triggerTable) {
       return;
     }
@@ -96,7 +96,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
     for (const neighbourNode of siblings) {
       if (isDataAccessorAstNode(neighbourNode)) {
         const field = getDataAccessorAstNodeField(neighbourNode, {
-          dataModel: data.dataModel,
+          dataModel: data?.dataModel ?? [],
           triggerObjectTable: triggerTable,
         });
         if (field.isEnum) {
@@ -115,10 +115,18 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
   const setOperator = (operator: string) => {
     if (node.value) {
       node.value.name = operator;
-      if (isUnaryMainAstOperatorFunction(operator) && node.value.children.length > 1) {
-        node.value.children = [node.value.children[0]!];
-      } else if (isBinaryMainAstOperatorFunction(operator) && node.value.children.length < 2) {
-        node.value.children = [node.value.children[0]!, NewUndefinedAstNode()];
+      if (
+        isUnaryMainAstOperatorFunction(operator) &&
+        node.value.children[0] &&
+        node.value.children.length > 1
+      ) {
+        node.value.children = [node.value.children[0]];
+      } else if (
+        isBinaryMainAstOperatorFunction(operator) &&
+        node.value.children[0] &&
+        node.value.children.length < 2
+      ) {
+        node.value.children = [node.value.children[0], NewUndefinedAstNode()];
       }
       nodeSharp.actions.validate();
     }
@@ -259,7 +267,10 @@ const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <button className="text-grey-00 border-grey-90 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-95 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:border-grey-50 flex h-10 items-center justify-center rounded border px-2">
+        <button
+          type="button"
+          className="text-grey-00 border-grey-90 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-95 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:border-grey-50 flex h-10 items-center justify-center rounded border px-2"
+        >
           {children}
         </button>
       </MenuCommand.Trigger>

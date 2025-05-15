@@ -1,4 +1,4 @@
-import { type DataModel, type Pivot } from '@app-builder/models/data-model';
+import type { DataModel, Pivot } from '@app-builder/models/data-model';
 import { getLinksToSingleMap } from '@app-builder/services/data/data-model';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import * as React from 'react';

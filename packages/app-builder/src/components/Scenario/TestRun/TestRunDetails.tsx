@@ -1,6 +1,6 @@
-import { type User } from '@app-builder/models';
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
-import { type TestRun } from '@app-builder/models/testrun';
+import type { User } from '@app-builder/models';
+import type { ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import type { TestRun } from '@app-builder/models/testrun';
 import { useTranslation } from 'react-i18next';
 import { Avatar } from 'ui-design-system';
 

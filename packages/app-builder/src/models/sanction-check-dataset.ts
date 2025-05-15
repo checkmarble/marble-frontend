@@ -1,4 +1,4 @@
-import { type OpenSanctionsCatalogDto, type OpenSanctionsDatasetFreshnessDto } from 'marble-api';
+import type { OpenSanctionsCatalogDto, OpenSanctionsDatasetFreshnessDto } from 'marble-api';
 
 export type OpenSanctionsCatalogDataset = {
   name: string;

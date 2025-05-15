@@ -1,5 +1,5 @@
 import { isKnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
-import { type IsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
+import type { IsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import { MenuCommand } from 'ui-design-system';
@@ -9,7 +9,7 @@ import { EditionEvaluationErrors } from '../../../EvaluationErrors';
 import { getValidationStatus } from '../../../helpers';
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { OperandEditModalContainer } from '../../Container';
-import { type OperandEditModalProps } from '../../EditModal';
+import type { OperandEditModalProps } from '../../EditModal';
 import { Examples } from './Examples';
 
 const dividerOptions = [

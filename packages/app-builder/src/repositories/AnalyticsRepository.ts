@@ -1,5 +1,5 @@
-import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import { adaptAnalytics, type Analytics } from '@app-builder/models/analytics';
+import type { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import { type Analytics, adaptAnalytics } from '@app-builder/models/analytics';
 
 export interface AnalyticsRepository {
   listAnalytics(): Promise<Analytics[]>;

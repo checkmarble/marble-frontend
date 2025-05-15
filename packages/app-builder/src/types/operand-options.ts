@@ -1,6 +1,6 @@
-import { type AstNode, type DataType } from '@app-builder/models';
-import { type OperandType } from '@app-builder/models/operand-type';
-import { type IconName } from 'ui-icons';
+import type { AstNode, DataType } from '@app-builder/models';
+import type { OperandType } from '@app-builder/models/operand-type';
+import type { IconName } from 'ui-icons';
 
 export type OperandEditorContext = {
   searchValue?: string;

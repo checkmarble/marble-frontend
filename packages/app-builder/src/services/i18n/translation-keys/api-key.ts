@@ -1,4 +1,4 @@
-import { type ApiKey } from '@app-builder/models/api-keys';
+import type { ApiKey } from '@app-builder/models/api-keys';
 
 export function tKeyForApiKeyRole(role: ApiKey['role']) {
   switch (role) {

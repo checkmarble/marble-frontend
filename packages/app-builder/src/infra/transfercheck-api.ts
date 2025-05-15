@@ -5,7 +5,7 @@ import {
   transfercheckApi,
 } from 'marble-api';
 import * as R from 'remeda';
-import { type FunctionKeys } from 'typescript-utils';
+import type { FunctionKeys } from 'typescript-utils';
 
 export type TransfercheckApi = {
   [P in FunctionKeys<typeof transfercheckApi>]: (typeof transfercheckApi)[P];

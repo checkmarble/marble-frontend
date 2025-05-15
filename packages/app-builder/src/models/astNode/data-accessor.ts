@@ -1,6 +1,6 @@
 import { v7 as uuidv7 } from 'uuid';
 
-import { type AstNode, type CheckNodeId, type IdLessAstNode } from './ast-node';
+import type { AstNode, CheckNodeId, IdLessAstNode } from './ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
 export const databaseAccessAstNodeName = 'DatabaseAccess';

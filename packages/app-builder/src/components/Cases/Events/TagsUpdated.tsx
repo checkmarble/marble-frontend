@@ -1,7 +1,7 @@
 import { casesI18n } from '@app-builder/components';
 import { CaseTags } from '@app-builder/components/Cases/CaseTags';
 import { EventTime } from '@app-builder/components/Cases/Events/Time';
-import { type CaseTagsUpdatedEvent } from '@app-builder/models/cases';
+import type { CaseTagsUpdatedEvent } from '@app-builder/models/cases';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';

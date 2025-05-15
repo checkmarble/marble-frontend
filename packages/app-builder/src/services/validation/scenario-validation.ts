@@ -1,5 +1,5 @@
-import { type ScenarioValidation } from '@app-builder/models';
-import { type EvaluationError, type NodeEvaluation } from '@app-builder/models/node-evaluation';
+import type { ScenarioValidation } from '@app-builder/models';
+import type { EvaluationError, NodeEvaluation } from '@app-builder/models/node-evaluation';
 import invariant from 'tiny-invariant';
 
 // return just an array of error from a recursive evaluation

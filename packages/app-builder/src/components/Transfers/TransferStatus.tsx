@@ -1,4 +1,4 @@
-import { type TransferStatus } from '@app-builder/models/transfer';
+import type { TransferStatus } from '@app-builder/models/transfer';
 import { CreateAlert } from '@app-builder/routes/transfercheck+/ressources+/alert.create';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';

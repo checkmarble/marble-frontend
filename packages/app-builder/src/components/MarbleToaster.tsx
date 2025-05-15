@@ -1,12 +1,12 @@
 import {
   isNewToastMessage,
   type ToastMessage,
-  toastMessageSchema,
   type ToastSession,
+  toastMessageSchema,
 } from '@app-builder/models/toast-session';
 import { getClientEnv } from '@app-builder/utils/environment';
 import { useEffect } from 'react';
-import { toast, ToastBar, Toaster } from 'react-hot-toast';
+import { ToastBar, Toaster, toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 

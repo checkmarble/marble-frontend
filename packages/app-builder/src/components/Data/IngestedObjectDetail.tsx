@@ -1,4 +1,4 @@
-import { type DataModelObject, type TableModel } from '@app-builder/models';
+import type { DataModelObject, TableModel } from '@app-builder/models';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { getRoute } from '@app-builder/utils/routes';

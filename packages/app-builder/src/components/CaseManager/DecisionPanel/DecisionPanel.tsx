@@ -16,10 +16,10 @@ import {
 } from '@app-builder/components/Decisions/RulesExecutions/RulesExecutions';
 import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { type Pivot, type TableModel } from '@app-builder/models';
-import { type Decision, type RuleExecution } from '@app-builder/models/decision';
-import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
-import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
+import type { Pivot, TableModel } from '@app-builder/models';
+import type { Decision, RuleExecution } from '@app-builder/models/decision';
+import type { ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
+import type { loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
 import { Await, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { Suspense, useMemo, useRef, useState } from 'react';

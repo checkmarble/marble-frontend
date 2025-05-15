@@ -1,7 +1,7 @@
-import { type ReviewStatus } from '@app-builder/models/decision';
+import type { ReviewStatus } from '@app-builder/models/decision';
 import { knownOutcomes, type Outcome } from '@app-builder/models/outcome';
 import clsx from 'clsx';
-import { type ParseKeys } from 'i18next';
+import type { ParseKeys } from 'i18next';
 import { type ComponentProps, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';

@@ -37,7 +37,7 @@ export function parsePath(stringPath: string): Path {
 
     switch (type) {
       case 'children': {
-        const index = parseInt(value, 10);
+        const index = Number.parseInt(value, 10);
         if (Number.isNaN(index)) {
           throw new Error('invalid path: index must be a number');
         }
@@ -59,7 +59,7 @@ export function getParentPath(path: Path) {
   if (R.hasAtLeast(path, 1)) {
     return {
       path: path.slice(0, -1),
-      childPathSegment: path[path.length - 1]!,
+      childPathSegment: path.length > 0 ? path[path.length - 1] : undefined,
     };
   }
   return undefined;

@@ -1,9 +1,8 @@
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import clsx from 'clsx';
-import { type OpenSanctionsCatalogSection } from 'marble-api';
+import type { OpenSanctionsCatalogSection } from 'marble-api';
 import { diff, toggle } from 'radash';
-import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
-import { memo } from 'react';
+import { type Dispatch, memo, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, CollapsibleV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';

@@ -1,6 +1,6 @@
-import { type IdLessAstNode } from '@app-builder/models';
-import { type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
-import { type AstBuilderOperandProps } from '@ast-builder/Operand';
+import type { IdLessAstNode } from '@app-builder/models';
+import type { KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import type { AstBuilderOperandProps } from '@ast-builder/Operand';
 import { OperandDisplayName } from '@ast-builder/styles/OperandDisplayName';
 import { cva } from 'class-variance-authority';
 

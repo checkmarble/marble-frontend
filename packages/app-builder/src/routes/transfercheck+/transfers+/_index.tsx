@@ -1,14 +1,14 @@
 import { Page } from '@app-builder/components';
 import { Spinner } from '@app-builder/components/Spinner';
-import { transfersI18n } from '@app-builder/components/Transfers/transfers-i18n';
 import { TransfersList } from '@app-builder/components/Transfers/TransfersList';
-import { type Transfer } from '@app-builder/models/transfer';
+import { transfersI18n } from '@app-builder/components/Transfers/transfers-i18n';
+import type { Transfer } from '@app-builder/models/transfer';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Form, useLoaderData, useNavigation, useSubmit } from '@remix-run/react';
 import clsx from 'clsx';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from 'ui-design-system';

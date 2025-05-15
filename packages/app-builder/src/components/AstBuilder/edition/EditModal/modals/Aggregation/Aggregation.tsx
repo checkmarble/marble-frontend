@@ -1,7 +1,7 @@
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
-import { type AggregationAstNode } from '@app-builder/models/astNode/aggregation';
+import type { AggregationAstNode } from '@app-builder/models/astNode/aggregation';
 import { aggregatorOperators } from '@app-builder/models/modale-operators';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
 import { computed } from '@preact/signals-react';
@@ -13,7 +13,7 @@ import { EditionEvaluationErrors } from '../../../EvaluationErrors';
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { OperatorSelect } from '../../../OperatorSelect';
 import { OperandEditModalContainer } from '../../Container';
-import { type OperandEditModalProps } from '../../EditModal';
+import type { OperandEditModalProps } from '../../EditModal';
 import { type DataModelFieldOption, EditDataModelField } from './EditDataModelField';
 import { EditFilters } from './EditFilters';
 

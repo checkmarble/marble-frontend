@@ -6,7 +6,7 @@ import {
 } from '@app-builder/components/Breadcrumbs';
 import { Nudge } from '@app-builder/components/Nudge';
 import { type CurrentUser, isAdmin } from '@app-builder/models';
-import { type Inbox } from '@app-builder/models/inbox';
+import type { Inbox } from '@app-builder/models/inbox';
 import {
   canAccessInboxesSettings,
   isAccessible,
@@ -16,10 +16,10 @@ import {
 } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import type { LoaderFunctionArgs } from '@remix-run/node';
 import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Icon } from 'ui-icons';

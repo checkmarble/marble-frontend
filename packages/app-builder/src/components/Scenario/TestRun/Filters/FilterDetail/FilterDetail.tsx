@@ -1,6 +1,6 @@
 import { match } from 'ts-pattern';
 
-import { type TestRunFilterName } from '../filters';
+import type { TestRunFilterName } from '../filters';
 import { CreatorsFilter } from './CreatorsFilter';
 import { StartedAfterFilter } from './StartedAfterFilter';
 import { StatusesFilter } from './StatusesFilter';

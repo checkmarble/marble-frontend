@@ -1,5 +1,5 @@
+import { join } from 'node:path';
 import type * as Oazapfts from 'oazapfts';
-import { join } from 'path';
 
 export interface Config {
   apiName: string;

@@ -5,8 +5,8 @@ import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { type ActionData, type TriggerData, useTitleInfo } from '../models/nodes';
-import { workflowI18n } from '../workflow-i18n';
 import { useIsSourceConnectable, useWorkflowActions } from '../WorkflowProvider';
+import { workflowI18n } from '../workflow-i18n';
 
 export function NodeRoot({ children }: { children: React.ReactNode }) {
   return <div className="group relative min-w-72 max-w-96">{children}</div>;

@@ -6,7 +6,7 @@ import {
   isAdmin,
   type TableModelWithOptions,
 } from '@app-builder/models';
-import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
+import type { CaseDetail, PivotObject } from '@app-builder/models/cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -76,6 +76,7 @@ export function PivotsPanelContent({
             const uniqKey = pivotUniqKey(pivotObject);
             return (
               <button
+                type="button"
                 key={uniqKey}
                 className="text-grey-50 aria-[current=true]:bg-purple-96 aria-[current=true]:text-purple-65 rounded p-1 px-4"
                 aria-current={uniqKey === pivotUniqKey(currentPivotObject)}

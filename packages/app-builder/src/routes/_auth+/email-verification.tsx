@@ -5,7 +5,7 @@ import {
 } from '@app-builder/components/Auth/SendEmailVerification';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import type { LoaderFunctionArgs } from '@remix-run/node';
 import { Link } from '@remix-run/react';
 import { Trans, useTranslation } from 'react-i18next';
 

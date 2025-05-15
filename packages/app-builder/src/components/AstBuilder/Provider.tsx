@@ -1,6 +1,6 @@
 import { findDataModelTableByName } from '@app-builder/models';
 import { useBuilderOptionsQuery } from '@app-builder/queries/builder-options';
-import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
+import type { BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { type ReactNode, type RefObject, useEffect } from 'react';
 import { createSharpFactory, type InferSharpApi } from 'sharpstate';
 

@@ -1,4 +1,4 @@
-import { mkdir, rm, writeFile } from 'fs/promises';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
 import * as Oazapfts from 'oazapfts';
 import ora from 'ora';
 

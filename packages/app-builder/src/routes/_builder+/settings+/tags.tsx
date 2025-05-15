@@ -1,6 +1,6 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { ColorPreview } from '@app-builder/components/Tags/ColorPreview';
-import { type TagColor } from '@app-builder/models/tags';
+import type { TagColor } from '@app-builder/models/tags';
 import { CreateTag } from '@app-builder/routes/ressources+/settings+/tags+/create';
 import { DeleteTag } from '@app-builder/routes/ressources+/settings+/tags+/delete';
 import { UpdateTag } from '@app-builder/routes/ressources+/settings+/tags+/update';
@@ -15,7 +15,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import { type Tag } from 'marble-api';
+import type { Tag } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';

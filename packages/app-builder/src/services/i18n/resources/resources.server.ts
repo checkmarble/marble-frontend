@@ -1,4 +1,4 @@
-import { type supportedLngs } from '../i18n-config';
+import type { supportedLngs } from '../i18n-config';
 import { ar } from './ar.server';
 import { en } from './en.server';
 import { fr } from './fr.server';
