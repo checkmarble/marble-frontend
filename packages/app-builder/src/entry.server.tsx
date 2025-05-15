@@ -13,7 +13,7 @@ import { PassThrough } from 'stream';
 
 import { initServerServices } from './services/init.server';
 import { captureUnexpectedRemixError } from './services/monitoring';
-import { checkEnv, getServerEnv } from './utils/environment';
+import { checkEnv, getClientEnvVars, getServerEnv } from './utils/environment';
 import { NonceProvider } from './utils/nonce';
 
 const ABORT_DELAY = 70000;
@@ -120,15 +120,28 @@ function handleBrowserRequest(
 
         responseHeaders.set('Content-Type', 'text/html');
 
+        const clientEnv = getClientEnvVars();
+        const firebaseUrl = clientEnv.FIREBASE_CONFIG.withEmulator
+          ? clientEnv.FIREBASE_CONFIG.authEmulatorUrl
+          : 'https://identitytoolkit.googleapis.com';
+
+        const externalDomains = ['cdn.segment.com', 'api.segment.io', '*.sentry.io'];
+
         const cspOrigins = [
+          ['base-uri', "'none'"],
           ['default-src', "'self'"],
           ['frame-ancestors', "'none'"],
           ['object-src', "'none'"],
-          ['style-src', "'self' 'unsafe-inline'"],
-          ['script-src', `'self' 'nonce-${nonce}' 'unsafe-eval' https://cdn.segment.com`],
-          ['connect-src', "'self' localhost:9099"],
-          ['frame-src', `https://subdomain.metabaseapp.com`],
+          ['style-src', "'self' 'unsafe-inline'"], // unsafe-inline seems to trigger a lot of errors, even though it did not seem to break the UI.
+          ['script-src', `'nonce-${nonce}' 'unsafe-eval' 'strict-dynamic'`], // unsafe-eval seems to be required by lottie.js for home page animations.
+          [
+            'connect-src',
+            `'self' ${clientEnv.MARBLE_API_URL} ${firebaseUrl} ${externalDomains.map((d) => `https://${d}`).join(' ')}`,
+          ],
+          ['img-src', "'self' data:"],
         ];
+
+        if (clientEnv.METABASE_URL) cspOrigins.push(['frame-src', clientEnv.METABASE_URL]);
 
         responseHeaders.set(
           'content-security-policy',
