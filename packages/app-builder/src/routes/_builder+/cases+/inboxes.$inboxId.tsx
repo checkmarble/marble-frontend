@@ -151,7 +151,7 @@ const ToggleFilter = ({
   label,
   value,
 }: {
-  field: 'excludeAssigned' | 'includeSnoozed';
+  field: 'excludeAssigned' | 'includeSnoozed' | 'closedOnly';
   label: string;
   value: boolean;
   onCheckedChange: (state: boolean) => void;
@@ -276,6 +276,17 @@ export default function Cases() {
                     label={t('cases:exclude_assigned')}
                     onCheckedChange={(excludeAssigned) => {
                       navigateCasesList({ ...filters, excludeAssigned });
+                    }}
+                  />
+                  <ToggleFilter
+                    field="closedOnly"
+                    value={filters.statuses?.includes('closed') ?? false}
+                    label={t('cases:closed_only')}
+                    onCheckedChange={(closedOnly) => {
+                      navigateCasesList({
+                        ...filters,
+                        statuses: closedOnly ? ['closed'] : [],
+                      });
                     }}
                   />
                 </div>
