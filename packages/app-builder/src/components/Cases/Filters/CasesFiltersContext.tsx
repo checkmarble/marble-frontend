@@ -17,6 +17,10 @@ export const casesFiltersSchema = z.object({
     .enum(['true', 'false'])
     .transform((val) => val === 'true')
     .optional(),
+  excludeAssigned: z
+    .enum(['true', 'false'])
+    .transform((val) => val === 'true')
+    .optional(),
 });
 
 export type CasesFilters = z.infer<typeof casesFiltersSchema>;
