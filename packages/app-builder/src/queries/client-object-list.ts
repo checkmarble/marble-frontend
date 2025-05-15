@@ -1,4 +1,4 @@
-import { type DataTableObjectListResource } from '@app-builder/routes/ressources+/data+/$tableName.list-objects';
+import type { DataTableObjectListResource } from '@app-builder/routes/ressources+/data+/$tableName.list-objects';
 import { getRoute } from '@app-builder/utils/routes';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import QueryString from 'qs';

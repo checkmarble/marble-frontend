@@ -1,5 +1,5 @@
-import { type ReviewStatus } from '@app-builder/models/decision';
-import { type KnownOutcome } from '@app-builder/models/outcome';
+import type { ReviewStatus } from '@app-builder/models/decision';
+import type { KnownOutcome } from '@app-builder/models/outcome';
 import { matchSorter } from '@app-builder/utils/search';
 import * as Ariakit from '@ariakit/react';
 import * as React from 'react';

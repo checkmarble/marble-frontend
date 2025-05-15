@@ -23,10 +23,10 @@ import * as Ariakit from '@ariakit/react';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, CtaClassName, Tag } from 'ui-design-system';
+import { Button, CtaClassName, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 

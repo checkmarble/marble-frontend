@@ -1,8 +1,8 @@
-import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import type { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
+  type ApiKey,
   adaptApiKey,
   adaptCreatedApiKey,
-  type ApiKey,
   type CreatedApiKey,
 } from '@app-builder/models/api-keys';
 

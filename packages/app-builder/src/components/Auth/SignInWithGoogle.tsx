@@ -5,7 +5,7 @@ import {
   PopupBlockedByClient,
   useGoogleSignIn,
 } from '@app-builder/services/auth/auth.client';
-import { type AuthPayload } from '@app-builder/services/auth/auth.server';
+import type { AuthPayload } from '@app-builder/services/auth/auth.server';
 import { clientServices } from '@app-builder/services/init.client';
 import useAsync from '@app-builder/utils/hooks/use-async';
 import * as Sentry from '@sentry/remix';
@@ -22,6 +22,7 @@ function SignInWithGoogleButton({ onClick, loading }: { onClick?: () => void; lo
 
   return (
     <button
+      type="button"
       className="relative flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)] disabled:cursor-wait"
       onClick={onClick}
       disabled={loading}

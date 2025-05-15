@@ -1,4 +1,4 @@
-import { type PartnerDto } from 'marble-api/generated/transfercheck-api';
+import type { PartnerDto } from 'marble-api/generated/transfercheck-api';
 
 export interface Partner {
   id: string;

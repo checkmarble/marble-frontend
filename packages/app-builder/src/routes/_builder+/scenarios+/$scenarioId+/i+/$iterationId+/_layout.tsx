@@ -4,7 +4,7 @@ import {
   getFormattedVersion,
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import type { ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import {
   type EditorMode,
   EditorModeContextProvider,
@@ -17,7 +17,7 @@ import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
 import { Outlet, useLoaderData, useLocation, useRouteLoaderData } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';

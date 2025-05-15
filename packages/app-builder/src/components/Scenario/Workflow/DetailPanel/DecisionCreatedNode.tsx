@@ -1,16 +1,16 @@
 import { Callout } from '@app-builder/components/Callout';
 import { OutcomeTag, useOutcomes } from '@app-builder/components/Decisions';
 import { Highlight } from '@app-builder/components/Highlight';
-import { type Outcome } from '@app-builder/models/outcome';
-import { type Scenario } from '@app-builder/models/scenario';
+import type { Outcome } from '@app-builder/models/outcome';
+import type { Scenario } from '@app-builder/models/scenario';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
-import { type DecisionCreatedTrigger } from '../models/nodes';
-import { workflowI18n } from '../workflow-i18n';
+import type { DecisionCreatedTrigger } from '../models/nodes';
 import { useWorkflowActions, useWorkflowData } from '../WorkflowProvider';
+import { workflowI18n } from '../workflow-i18n';
 
 export function DecisionCreatedNode({ id, data }: { id: string; data: DecisionCreatedTrigger }) {
   const { t } = useTranslation(workflowI18n);

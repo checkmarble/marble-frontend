@@ -1,5 +1,5 @@
 import { Spinner } from '@app-builder/components/Spinner';
-import { type TestRunStatus as TestRStatus } from '@app-builder/models/testrun';
+import type { TestRunStatus as TestRStatus } from '@app-builder/models/testrun';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Tag } from 'ui-design-system';

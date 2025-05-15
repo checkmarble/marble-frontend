@@ -1,4 +1,4 @@
-import { type EvaluationErrorCode } from '@app-builder/models/node-evaluation';
+import type { EvaluationErrorCode } from '@app-builder/models/node-evaluation';
 import {
   adaptEvaluationErrorViewModels,
   commonErrorMessages,
@@ -8,7 +8,6 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { cn } from 'ui-design-system';
-
 import { AstBuilderNodeSharpFactory } from './node-store';
 
 type EditionEvaluationErrorsProps = {
@@ -17,7 +16,7 @@ type EditionEvaluationErrorsProps = {
   className?: string;
   filterOut?: EvaluationErrorCode[];
 };
-export const EditionEvaluationErrors = memo(function (props: EditionEvaluationErrorsProps) {
+export const EditionEvaluationErrors = memo((props: EditionEvaluationErrorsProps) => {
   const { t } = useTranslation(['scenarios']);
   const nodeSharp = AstBuilderNodeSharpFactory.useOptionalSharp();
   const evaluation = nodeSharp?.select((s) => s.validation.evaluation);
@@ -40,9 +39,9 @@ export const EditionEvaluationErrors = memo(function (props: EditionEvaluationEr
 
   return (
     <div className={cn('flex flex-row flex-wrap gap-2', props.className)}>
-      {errorModels.map((errorModel, i) => (
+      {errorModels.map((errorModel) => (
         <span
-          key={i}
+          key={errorModel.error}
           className="bg-red-95 text-s text-red-47 flex h-8 items-center justify-center rounded px-2 py-1 font-medium"
         >
           {translateError(errorModel)}

@@ -12,8 +12,7 @@ import {
   type TriggerData,
   useTitleInfo,
 } from '../models/nodes';
-import { type ValidWorkflow } from '../models/validation';
-import { workflowI18n } from '../workflow-i18n';
+import type { ValidWorkflow } from '../models/validation';
 import {
   useCreateNodeType,
   useSelectedNodes,
@@ -21,6 +20,7 @@ import {
   useWorkflowActions,
   useWorkflowData,
 } from '../WorkflowProvider';
+import { workflowI18n } from '../workflow-i18n';
 import { AddToCaseIfPossibleNode } from './AddToCaseIfPossibleNode';
 import { Checklist } from './Checklist';
 import { CreateCaseNode } from './CreateCaseNode';

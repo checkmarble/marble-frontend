@@ -2,7 +2,7 @@ import { Page, TabLink } from '@app-builder/components';
 import { alertsI18n } from '@app-builder/components/TransferAlerts/alerts-i18n';
 import { getRoute } from '@app-builder/utils/routes';
 import { Outlet } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 

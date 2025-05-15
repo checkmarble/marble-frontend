@@ -1,7 +1,7 @@
 import { Radio, RadioGroup, RadioProvider } from '@ariakit/react';
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
-import { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Icon } from 'ui-icons';
 
 import { StatusTag } from './StatusTag';

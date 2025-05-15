@@ -1,7 +1,7 @@
 import { casesI18n } from '@app-builder/components';
 import { EventTime } from '@app-builder/components/Cases/Events/Time';
-import { type InboxChangedEvent } from '@app-builder/models/cases';
-import { type Inbox } from '@app-builder/models/inbox';
+import type { InboxChangedEvent } from '@app-builder/models/cases';
+import type { Inbox } from '@app-builder/models/inbox';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { useMemo } from 'react';

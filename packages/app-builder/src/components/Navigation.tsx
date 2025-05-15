@@ -1,8 +1,8 @@
 import { NavLink } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
-import { type Namespace, type ParseKeys } from 'i18next';
-import { type IconProps } from 'packages/ui-icons/src/Icon';
+import type { Namespace, ParseKeys } from 'i18next';
+import type { IconProps } from 'packages/ui-icons/src/Icon';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 

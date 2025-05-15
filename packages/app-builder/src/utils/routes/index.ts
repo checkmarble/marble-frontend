@@ -1,6 +1,6 @@
-import { type RouteID, type RoutePath } from './types';
+import type { RouteID, RoutePath } from './types';
 
-export { type RouteID };
+export type { RouteID };
 
 type NonEmptySplit<
   Value extends string,

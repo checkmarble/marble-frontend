@@ -20,7 +20,7 @@ import {
   isDataAccessorAstNode,
 } from '@app-builder/models/astNode/data-accessor';
 import { isTimeAdd } from '@app-builder/models/astNode/time';
-import { type CustomList } from '@app-builder/models/custom-list';
+import type { CustomList } from '@app-builder/models/custom-list';
 import {
   getOperandTypeIcon,
   getOperandTypeTKey,
@@ -172,7 +172,7 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
       {filters.children.map((filter, index) => {
         const { operator, fieldName } = filter.namedChildren;
         return (
-          <Fragment key={`filter_${index}`}>
+          <Fragment key={`filter_${operator}_${fieldName}`}>
             <LogicalOperatorLabel operator={index === 0 ? 'where' : 'and'} type="text" />
             <div className="flex items-center gap-1">
               {/* TODO: replace with OperandLabel for consistency,

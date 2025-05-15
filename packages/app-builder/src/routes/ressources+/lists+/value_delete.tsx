@@ -3,7 +3,7 @@ import { parseFormSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, Modal } from 'ui-design-system';

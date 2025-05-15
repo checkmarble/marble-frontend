@@ -1,7 +1,7 @@
 import { type CaseOutcome, caseStatuses, type FinalOutcome } from '@app-builder/models/cases';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type ParseKeys } from 'i18next';
-import { type CaseStatusForCaseEventDto } from 'marble-api';
+import type { ParseKeys } from 'i18next';
+import type { CaseStatusForCaseEventDto } from 'marble-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tag, Tooltip } from 'ui-design-system';

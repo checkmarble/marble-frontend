@@ -1,4 +1,4 @@
-import { type Pivot } from '@app-builder/models';
+import type { Pivot } from '@app-builder/models';
 import * as Ariakit from '@ariakit/react';
 import clsx from 'clsx';
 import React from 'react';

@@ -1,6 +1,6 @@
 import { assertNever } from 'typescript-utils';
 
-import { type AlertsFilterName } from '../filters';
+import type { AlertsFilterName } from '../filters';
 import { AlertsDateRangeFilter } from './AlertsDateRangeFilter';
 import { StatusesFilter } from './StatusesFilter';
 

@@ -1,5 +1,5 @@
-import { type IdLessAstNode } from '@app-builder/models';
-import { type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import type { IdLessAstNode } from '@app-builder/models';
+import type { KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getAstNodeOperandType } from '@app-builder/services/ast-node/getAstNodeOperandType';
@@ -7,7 +7,7 @@ import { useFormatLanguage } from '@app-builder/utils/format';
 import { cva } from 'class-variance-authority';
 import { useTranslation } from 'react-i18next';
 
-import { type AstBuilderOperandProps } from '../Operand';
+import type { AstBuilderOperandProps } from '../Operand';
 import { OperandInfos } from '../OperandInfos';
 import { OperandTypeInfos, type OperandTypeVariantProps } from '../OperandTypeInfos';
 import { AstBuilderDataSharpFactory } from '../Provider';

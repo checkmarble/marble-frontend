@@ -11,7 +11,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Select, Switch } from 'ui-design-system';

@@ -1,6 +1,6 @@
 import { casesI18n } from '@app-builder/components';
 import { EventTime } from '@app-builder/components/Cases/Events/Time';
-import { type DecisionAddedEvent } from '@app-builder/models/cases';
+import type { DecisionAddedEvent } from '@app-builder/models/cases';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { useMemo } from 'react';

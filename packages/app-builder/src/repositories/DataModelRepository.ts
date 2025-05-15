@@ -1,4 +1,4 @@
-import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import type { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptClientDataListRequestBodyDto,
   adaptClientDataListResponse,
@@ -23,7 +23,7 @@ import {
   type SetDataModelTableOptionsBody,
   type UpdateFieldInput,
 } from '@app-builder/models';
-import { type OpenApiSpec } from 'marble-api';
+import type { OpenApiSpec } from 'marble-api';
 
 export interface DataModelRepository {
   getDataModel(): Promise<DataModel>;

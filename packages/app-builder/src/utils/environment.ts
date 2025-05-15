@@ -1,4 +1,4 @@
-import { type FirebaseConfig } from '@app-builder/infra/firebase';
+import type { FirebaseConfig } from '@app-builder/infra/firebase';
 import * as z from 'zod';
 
 /**
@@ -164,7 +164,7 @@ function parseFirebaseConfigFromEnv(): FirebaseConfig {
   }
 
   try {
-    const authEmulatorUrl = new URL('http://' + firebaseAuthEmulatorHost).toString();
+    const authEmulatorUrl = new URL(`http://${firebaseAuthEmulatorHost}`).toString();
     return {
       withEmulator: true as const,
       authEmulatorUrl,

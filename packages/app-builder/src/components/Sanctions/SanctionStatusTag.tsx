@@ -1,5 +1,5 @@
-import { type SanctionCheckStatus } from '@app-builder/models/sanction-check';
-import { type ParseKeys } from 'i18next';
+import type { SanctionCheckStatus } from '@app-builder/models/sanction-check';
+import type { ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 

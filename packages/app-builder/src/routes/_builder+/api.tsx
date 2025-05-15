@@ -9,7 +9,7 @@ import { downloadFile } from '@app-builder/utils/download-file';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LinksFunction, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';

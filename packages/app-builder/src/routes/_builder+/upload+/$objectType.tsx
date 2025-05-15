@@ -1,6 +1,6 @@
 import { Page, Paper } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
-import { type TableModel } from '@app-builder/models';
+import type { TableModel } from '@app-builder/models';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { isIngestDataAvailable } from '@app-builder/services/feature-access';
@@ -13,8 +13,8 @@ import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useRevalidator } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type Namespace, type ParseKeys } from 'i18next';
-import { type UploadLog } from 'marble-api';
+import type { Namespace, ParseKeys } from 'i18next';
+import type { UploadLog } from 'marble-api';
 import { useCallback, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import { Trans, useTranslation } from 'react-i18next';

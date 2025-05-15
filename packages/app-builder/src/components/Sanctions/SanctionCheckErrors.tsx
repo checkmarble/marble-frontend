@@ -1,4 +1,4 @@
-import { type SanctionCheckError } from '@app-builder/models/sanction-check';
+import type { SanctionCheckError } from '@app-builder/models/sanction-check';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 

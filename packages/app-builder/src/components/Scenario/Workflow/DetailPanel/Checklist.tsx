@@ -15,8 +15,8 @@ import {
   type GlobalChecklistVM,
   type NodeChecklistVM,
 } from '../models/validation';
-import { workflowI18n } from '../workflow-i18n';
 import { useNodeData, useValidationPayload, useWorkflowActions } from '../WorkflowProvider';
+import { workflowI18n } from '../workflow-i18n';
 
 export function Checklist() {
   const { t } = useTranslation(workflowI18n);

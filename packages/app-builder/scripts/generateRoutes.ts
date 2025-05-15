@@ -1,7 +1,7 @@
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { routes } from '@app-builder/utils/routes/routes';
-import { writeFile } from 'fs/promises';
 import ora from 'ora';
-import { join } from 'path';
 import * as prettier from 'prettier';
 
 const outTypesFile = join(process.cwd(), '/src/utils/routes/types.ts');

@@ -18,10 +18,10 @@ import { segment, useSegmentIdentification } from '@app-builder/services/segment
 import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
 import { CONFLICT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import type { LoaderFunctionArgs } from '@remix-run/node';
 import { Form, isRouteErrorResponse, Outlet, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';

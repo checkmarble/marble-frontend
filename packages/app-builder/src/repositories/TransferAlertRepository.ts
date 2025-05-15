@@ -1,4 +1,4 @@
-import { type TransfercheckApi } from '@app-builder/infra/transfercheck-api';
+import type { TransfercheckApi } from '@app-builder/infra/transfercheck-api';
 import {
   adaptTransferAlertBeneficiary,
   adaptTransferAlertCreateBodyDto,

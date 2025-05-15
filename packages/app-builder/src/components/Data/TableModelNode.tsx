@@ -1,11 +1,11 @@
-import {
-  type DataModel,
-  type DataModelField,
-  type DataType,
-  type LinkToSingle,
-  type Pivot,
-  type TableModel,
-  type UnicityConstraintType,
+import type {
+  DataModel,
+  DataModelField,
+  DataType,
+  LinkToSingle,
+  Pivot,
+  TableModel,
+  UnicityConstraintType,
 } from '@app-builder/models/data-model';
 import { CreatePivot } from '@app-builder/routes/ressources+/data+/create-pivot';
 import { CreateField } from '@app-builder/routes/ressources+/data+/createField';
@@ -191,14 +191,14 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id} className="bg-grey-98 border-b-grey-80 border-b">
               {/* This is the handle for the left side of the table */}
-              <th></th>
+              <th />
               {headerGroup.headers.map((header) => (
                 <th key={header.id} colSpan={header.colSpan}>
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
               ))}
               {/* This is the handle for the right side of the table */}
-              <th></th>
+              <th />
             </tr>
           ))}
         </thead>

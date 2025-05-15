@@ -1,5 +1,5 @@
 import * as Label from '@radix-ui/react-label';
-import { type Meta, type StoryFn } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import { Switch } from './Switch';
 

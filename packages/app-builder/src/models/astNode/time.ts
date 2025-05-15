@@ -1,6 +1,6 @@
 import { v7 as uuidv7 } from 'uuid';
 
-import { type timeAddOperators } from '../modale-operators';
+import type { timeAddOperators } from '../modale-operators';
 import {
   type AstNode,
   type CheckNodeId,

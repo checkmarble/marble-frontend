@@ -1,4 +1,4 @@
-import { type AstNode } from '@app-builder/models';
+import type { AstNode } from '@app-builder/models';
 import {
   getOperandTypeIcon,
   getOperandTypeTKey,
@@ -15,7 +15,7 @@ import { Icon } from 'ui-icons';
 import { EditionOperandSharpFactory } from '../EditionOperand';
 import { type EnrichedMenuOption, getOptionDisplayName, groupByOperandType } from '../helpers';
 import { MenuOption } from './MenuOption';
-import { type SmartMenuListProps } from './types';
+import type { SmartMenuListProps } from './types';
 
 export function DiscoveryList({ onSelect }: SmartMenuListProps) {
   const dataSharp = AstBuilderDataSharpFactory.useSharp();

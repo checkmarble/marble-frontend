@@ -1,4 +1,4 @@
-import { type FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import type { FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import {
   adaptEvaluationErrorViewModels,
   commonErrorMessages,
@@ -31,9 +31,9 @@ export const ViewingEvaluationErrors = memo(function ViewingEvaluationErrors({
 
   return (
     <div className={cn('flex flex-row flex-wrap gap-2', className)}>
-      {errorModels.map((errorModel, i) => (
+      {errorModels.map((errorModel) => (
         <span
-          key={i}
+          key={errorModel.error}
           className="bg-red-95 text-s text-red-47 flex h-8 items-center justify-center rounded px-2 py-1 font-medium"
         >
           {translateError(errorModel)}

@@ -1,7 +1,7 @@
-import { type Row, type RowData } from '@tanstack/react-table';
+import type { Row, RowData } from '@tanstack/react-table';
 
 import { getDateRangeFilter } from './datetime';
-import { type DateRangeFilter } from './schema/filterSchema';
+import type { DateRangeFilter } from './schema/filterSchema';
 
 export function dateRangeFilterFn<TData extends RowData>(
   row: Row<TData>,

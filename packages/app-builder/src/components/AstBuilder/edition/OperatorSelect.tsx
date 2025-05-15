@@ -85,13 +85,7 @@ function mapOptions<Op extends string>(
   const isOpSelect = isOperationSelectOptions(options);
   const values = isOpSelect ? (Object.keys(options) as Op[]) : options;
 
-  return values.map((value) => {
-    if (isOpSelect) {
-      return { value, ...options[value] };
-    } else {
-      return { value };
-    }
-  });
+  return values.map((value) => (isOpSelect ? { value, ...options[value] } : { value }));
 }
 
 function isOperationSelectOptions<Op extends string>(

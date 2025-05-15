@@ -1,4 +1,4 @@
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import type { ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';

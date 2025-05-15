@@ -1,6 +1,6 @@
 import { formatCurrency, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
-import { type Currency } from 'dinero.js';
+import type { Currency } from 'dinero.js';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Callout } from '../Callout';

@@ -1,7 +1,7 @@
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 
 import { getSettings } from './_layout';
 

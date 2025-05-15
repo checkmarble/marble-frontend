@@ -1,6 +1,6 @@
 import { useValidateAstMutation } from '@app-builder/queries/validate-ast';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
-import { type AstBuilderRootProps } from '@ast-builder/types';
+import type { AstBuilderRootProps } from '@ast-builder/types';
 import { useCallbackRef } from '@marble/shared';
 import { useEffect, useRef } from 'react';
 
@@ -45,7 +45,7 @@ export function useRoot(props: AstBuilderRootProps, autoValidate = true) {
     if (autoValidate) {
       nodeStore.actions.validate();
     }
-  }, [autoValidate, nodeStore, onValidationUpdate]);
+  }, [autoValidate, nodeStore]);
 
   useEffect(() => {
     onStoreChange(nodeStore);

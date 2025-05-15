@@ -1,4 +1,4 @@
-import { casesI18n, CopyToClipboardButton, ErrorComponent, Page } from '@app-builder/components';
+import { CopyToClipboardButton, casesI18n, ErrorComponent, Page } from '@app-builder/components';
 import {
   BreadCrumbLink,
   type BreadCrumbProps,
@@ -31,9 +31,8 @@ import {
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { Future, Result } from '@swan-io/boxed';
-import { type Namespace } from 'i18next';
-import { pick } from 'radash';
-import { unique } from 'radash';
+import type { Namespace } from 'i18next';
+import { pick, unique } from 'radash';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, flat, groupBy, map, mapValues, omit, pipe, uniqueBy } from 'remeda';

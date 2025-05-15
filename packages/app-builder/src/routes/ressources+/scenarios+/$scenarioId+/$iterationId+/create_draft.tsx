@@ -4,7 +4,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigate } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';

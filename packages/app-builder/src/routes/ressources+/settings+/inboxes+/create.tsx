@@ -9,7 +9,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, ModalV2 } from 'ui-design-system';

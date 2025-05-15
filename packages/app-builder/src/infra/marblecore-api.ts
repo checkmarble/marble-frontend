@@ -5,7 +5,7 @@ import {
   type TokenService,
 } from 'marble-api';
 import * as R from 'remeda';
-import { type FunctionKeys } from 'typescript-utils';
+import type { FunctionKeys } from 'typescript-utils';
 
 export type MarbleCoreApi = {
   [P in FunctionKeys<typeof marblecoreApi>]: (typeof marblecoreApi)[P];

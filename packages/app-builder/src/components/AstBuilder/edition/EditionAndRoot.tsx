@@ -1,10 +1,10 @@
 import { NewUndefinedAstNode } from '@app-builder/models';
-import { type AndAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import type { AndAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { AddLogicalOperatorButton } from '@ast-builder/styles/AddLogicalOperatorButton';
 import { LogicalOperatorLabel } from '@ast-builder/styles/LogicalOperatorLabel';
 import { RemoveButton } from '@ast-builder/styles/RemoveButton';
-import { type AstBuilderRootProps } from '@ast-builder/types';
+import type { AstBuilderRootProps } from '@ast-builder/types';
 import clsx from 'clsx';
 
 import { EditionAstBuilderNode } from './EditionNode';

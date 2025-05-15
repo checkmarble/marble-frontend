@@ -5,7 +5,7 @@ import {
   PopupBlockedByClient,
   useMicrosoftSignIn,
 } from '@app-builder/services/auth/auth.client';
-import { type AuthPayload } from '@app-builder/services/auth/auth.server';
+import type { AuthPayload } from '@app-builder/services/auth/auth.server';
 import { clientServices } from '@app-builder/services/init.client';
 import useAsync from '@app-builder/utils/hooks/use-async';
 import * as Sentry from '@sentry/remix';
@@ -28,6 +28,7 @@ function SignInWithMicrosoftButton({
 
   return (
     <button
+      type="button"
       className="bg-grey-100 hover:bg-grey-95 active:bg-grey-90 relative flex h-10 w-full items-center border border-[#8C8C8C] p-px transition disabled:cursor-wait"
       onClick={() => {
         void onClick?.();

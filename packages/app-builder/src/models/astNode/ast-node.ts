@@ -1,4 +1,4 @@
-import { type NodeDto } from 'marble-api';
+import type { NodeDto } from 'marble-api';
 import * as R from 'remeda';
 import { v7 as uuidv7 } from 'uuid';
 import { z } from 'zod';

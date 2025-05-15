@@ -1,4 +1,4 @@
-import { type TransfercheckApi } from '@app-builder/infra/transfercheck-api';
+import type { TransfercheckApi } from '@app-builder/infra/transfercheck-api';
 import { adaptPartner, type Partner } from '@app-builder/models/partner';
 
 export interface PartnerRepository {

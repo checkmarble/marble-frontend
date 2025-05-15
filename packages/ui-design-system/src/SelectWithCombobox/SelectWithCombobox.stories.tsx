@@ -1,4 +1,4 @@
-import { type Meta, type StoryFn } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { useDeferredValue, useMemo, useState } from 'react';
 
 import { Input } from '../Input/Input';

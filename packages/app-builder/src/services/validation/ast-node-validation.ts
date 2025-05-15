@@ -1,7 +1,7 @@
-import { type AstNode } from '@app-builder/models';
+import type { AstNode } from '@app-builder/models';
 import { isLeafOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
-import { type EvaluationError } from '@app-builder/models/node-evaluation';
-import { type PathSegment, type Tree } from '@app-builder/utils/tree';
+import type { EvaluationError } from '@app-builder/models/node-evaluation';
+import type { PathSegment, Tree } from '@app-builder/utils/tree';
 import * as R from 'remeda';
 import invariant from 'tiny-invariant';
 
@@ -184,19 +184,18 @@ export function computeLineErrors(
   if (isLeafOperandAstNode(astNode)) {
     const { nodeErrors } = separateChildrenErrors(errors);
     return nodeErrors;
-  } else {
-    return [
-      ...errors,
-      ...astNode.children.flatMap((child, index) => {
-        const childValidation = astNodeErrors.children[index];
-        if (!childValidation) return [];
-        return computeLineErrors(child, childValidation);
-      }),
-      ...Object.entries(astNode.namedChildren).flatMap(([key, namedChild]) => {
-        const namedChildValidation = astNodeErrors.namedChildren[key];
-        if (!namedChildValidation) return [];
-        return computeLineErrors(namedChild, namedChildValidation);
-      }),
-    ];
   }
+  return [
+    ...errors,
+    ...astNode.children.flatMap((child, index) => {
+      const childValidation = astNodeErrors.children[index];
+      if (!childValidation) return [];
+      return computeLineErrors(child, childValidation);
+    }),
+    ...Object.entries(astNode.namedChildren).flatMap(([key, namedChild]) => {
+      const namedChildValidation = astNodeErrors.namedChildren[key];
+      if (!namedChildValidation) return [];
+      return computeLineErrors(namedChild, namedChildValidation);
+    }),
+  ];
 }

@@ -1,4 +1,4 @@
-import { type TagColor } from '@app-builder/models/tags';
+import type { TagColor } from '@app-builder/models/tags';
 
 export const ColorPreview = ({ color }: { color: TagColor }) => {
   return (

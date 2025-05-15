@@ -1,11 +1,11 @@
-import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import type { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { adaptUser, type User } from '@app-builder/models';
 import {
   adaptOrganizationDto,
   type Organization,
   type OrganizationUpdateInput,
 } from '@app-builder/models/organization';
-import { type Tag } from 'marble-api';
+import type { Tag } from 'marble-api';
 
 export interface OrganizationRepository {
   getCurrentOrganization(): Promise<Organization>;

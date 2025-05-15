@@ -23,7 +23,7 @@ import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
 import { useLoaderData, useRouteLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, Tooltip, useTable } from 'ui-design-system';

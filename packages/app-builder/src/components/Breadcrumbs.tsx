@@ -58,7 +58,7 @@ export const BreadCrumbs = ({ back }: { back?: string }) => {
       {back ? (
         <Page.BackLink to={back} />
       ) : links.length > 1 ? (
-        <Page.BackLink to={links.at(-2)!.pathname} />
+        <Page.BackLink to={links.at(-2)?.pathname ?? '/'} />
       ) : null}
       {links.map(({ Elements, pathname, data }, linkIndex) => {
         const isLastLink = linkIndex === links.length - 1;
