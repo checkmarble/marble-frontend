@@ -46,6 +46,7 @@ export const buildQueryParams = (
     statuses: filters.statuses ?? [],
     name: filters.name,
     snoozed: filters.snoozed,
+    assigned: filters.assigned,
     dateRange: filters.dateRange
       ? filters.dateRange.type === 'static'
         ? {
@@ -144,7 +145,7 @@ const SearchByName = ({
   );
 };
 
-const ToggleInclude = ({
+const ToggleFilter = ({
   onCheckedChange,
   field,
   label,
@@ -261,12 +262,20 @@ export default function Cases() {
                       navigateCasesList({ ...filters, name: value });
                     }}
                   />
-                  <ToggleInclude
+                  <ToggleFilter
                     field="snoozed"
                     value={filters.snoozed ?? false}
                     label={t('cases:include_snoozed')}
                     onCheckedChange={(snoozed) => {
                       navigateCasesList({ ...filters, snoozed });
+                    }}
+                  />
+                  <ToggleFilter
+                    field="assigned"
+                    value={filters.assigned ?? false}
+                    label={t('cases:include_assigned')}
+                    onCheckedChange={(assigned) => {
+                      navigateCasesList({ ...filters, assigned });
                     }}
                   />
                 </div>

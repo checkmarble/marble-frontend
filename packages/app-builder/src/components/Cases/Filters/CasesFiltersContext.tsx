@@ -10,17 +10,7 @@ import * as z from 'zod';
 import { type CasesFilterName, casesFilterNames } from './filters';
 
 export const casesFiltersSchema = z.object({
-  statuses: z
-    .array(
-      z.union(
-        caseStatuses.map((s) => z.literal(s)) as [
-          z.ZodLiteral<CaseStatus>,
-          z.ZodLiteral<CaseStatus>,
-          ...z.ZodLiteral<CaseStatus>[],
-        ],
-      ),
-    )
-    .optional(),
+  statuses: z.array(z.enum(caseStatuses)).optional(),
   dateRange: dateRangeSchema.optional(),
   name: z.string().optional(),
   snoozed: z
