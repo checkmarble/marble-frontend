@@ -27,6 +27,8 @@ const PublicEnvVarsSchema = z.object({
   MARBLE_API_URL_SERVER: z.string(),
   MARBLE_APP_URL: z.string(),
 
+  METABASE_URL: z.string().optional(),
+
   FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
   FIREBASE_API_KEY: z.string(),
   FIREBASE_APP_ID: z.string().optional(),
@@ -87,6 +89,7 @@ interface ServerEnvVars {
   MARBLE_API_URL_SERVER: string;
   MARBLE_APP_URL: string;
   FIREBASE_CONFIG: FirebaseConfig;
+  METABASE_URL?: string;
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT?: string;
   SEGMENT_WRITE_KEY?: string;
@@ -117,6 +120,7 @@ interface ClientEnvVars {
   MARBLE_APP_URL: string;
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT?: string;
+  METABASE_URL?: string;
 }
 export function getClientEnvVars(): ClientEnvVars {
   return {
@@ -126,6 +130,7 @@ export function getClientEnvVars(): ClientEnvVars {
     MARBLE_APP_URL: getServerEnv('MARBLE_APP_URL'),
     SENTRY_DSN: getServerEnv('SENTRY_DSN'),
     SENTRY_ENVIRONMENT: getServerEnv('SENTRY_ENVIRONMENT'),
+    METABASE_URL: getServerEnv('METABASE_URL'),
   };
 }
 
