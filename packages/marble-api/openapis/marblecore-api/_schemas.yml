@@ -302,6 +302,8 @@ SetDataModelTableOptionsBodyDto:
 
 AnalyticsDto:
   $ref: misc.yml#/components/schemas/AnalyticsDto
+AppConfigDto:
+  $ref: misc.yml#/components/schemas/AppConfigDto
 
 # ADMINISTRATION
 

@@ -30,6 +30,7 @@ export type FirebaseClientWrapper = {
 export type FirebaseConfig =
   | {
       withEmulator: false;
+      authEmulatorUrl?: undefined;
       options: FirebaseOptions;
     }
   | {

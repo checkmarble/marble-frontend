@@ -1,0 +1,16 @@
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import { adaptAppConfig, type AppConfig } from '@app-builder/models/app-config';
+import { getServerEnv } from '@app-builder/utils/environment';
+
+export interface AppConfigRepository {
+  getAppConfig(): Promise<AppConfig>;
+}
+
+export function makeGetAppConfigRepository() {
+  return (marbleCoreApiClient: MarbleCoreApi): AppConfigRepository => ({
+    async getAppConfig() {
+      const appVersion = getServerEnv('APP_VERSION') ?? 'dev';
+      return adaptAppConfig(await marbleCoreApiClient.getAppConfig(), appVersion);
+    },
+  });
+}
