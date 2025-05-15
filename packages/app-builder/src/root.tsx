@@ -1,9 +1,4 @@
-import {
-  json,
-  type LinksFunction,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from '@remix-run/node';
+import { type LinksFunction, type LoaderFunctionArgs, type MetaFunction } from '@remix-run/node';
 import {
   Link,
   Links,
@@ -30,6 +25,7 @@ import { iconsSVGSpriteHref, Logo, logosSVGSpriteHref } from 'ui-icons';
 
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
+import { AppConfigContext } from './contexts/AppConfigContext';
 import { initServerServices } from './services/init.server';
 import { useSegmentPageTracking } from './services/segment';
 import { SegmentScript } from './services/segment/SegmentScript';
@@ -66,7 +62,8 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { i18nextService, toastSessionService, csrfService } = initServerServices(request);
+  const { i18nextService, toastSessionService, csrfService, appConfigRepository } =
+    initServerServices(request);
   const locale = await i18nextService.getLocale(request);
 
   const [toastSession, [csrfToken, csrfCookieHeader]] = await Promise.all([
@@ -84,14 +81,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const segmentApiKey = getServerEnv('SEGMENT_WRITE_KEY');
   const disableSegment = getServerEnv('DISABLE_SEGMENT') ?? false;
+  const appConfig = await appConfigRepository.getAppConfig();
 
-  return json(
+  return Response.json(
     {
       ENV,
       locale,
       csrf: csrfToken,
       toastMessage,
       segmentScript: !disableSegment && segmentApiKey ? getSegmentScript(segmentApiKey) : undefined,
+      appConfig,
     },
     {
       headers,
@@ -190,13 +189,15 @@ function App() {
         },
       }),
   );
-  const { locale } = useLoaderData<typeof loader>();
+  const { locale, appConfig } = useLoaderData<typeof loader>();
 
   useChangeLanguage(locale);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <AppConfigContext.Provider value={appConfig}>
+        <Outlet />
+      </AppConfigContext.Provider>
     </QueryClientProvider>
   );
 }

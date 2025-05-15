@@ -28,7 +28,10 @@ import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService, versionRepository } = initServerServices(request);
+  const {
+    authService,
+    appConfigRepository: { getAppConfig },
+  } = initServerServices(request);
   const { user, partnerRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -46,7 +49,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return {
     user,
     partner,
-    versions: await versionRepository.getBackendVersion(),
+    versions: (await getAppConfig()).versions,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
   };
 }

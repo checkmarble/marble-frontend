@@ -1,4 +1,5 @@
-import { type FirebaseApp, type FirebaseOptions, initializeApp } from 'firebase/app';
+import { type AppConfig } from '@app-builder/models/app-config';
+import { type FirebaseApp, initializeApp } from 'firebase/app';
 import {
   type Auth,
   connectAuthEmulator,
@@ -27,24 +28,19 @@ export type FirebaseClientWrapper = {
   logout: typeof signOut;
 };
 
-export type FirebaseConfig =
-  | {
-      withEmulator: false;
-      options: FirebaseOptions;
-    }
-  | {
-      withEmulator: true;
-      authEmulatorUrl: string;
-      options: FirebaseOptions;
-    };
-
-export function initializeFirebaseClient(config: FirebaseConfig): FirebaseClientWrapper {
-  const app = initializeApp(config.options);
+export function initializeFirebaseClient(
+  config: AppConfig['auth']['firebase'],
+): FirebaseClientWrapper {
+  const app = initializeApp({
+    apiKey: config.apiKey,
+    authDomain: config.authDomain,
+    projectId: config.projectId,
+  });
 
   const clientAuth = getAuth(app);
 
-  if (config.withEmulator) {
-    connectAuthEmulator(clientAuth, config.authEmulatorUrl, {
+  if (config.isEmulator) {
+    connectAuthEmulator(clientAuth, config.emulatorUrl, {
       disableWarnings: process.env.NODE_ENV !== 'production',
     });
   }
@@ -57,7 +53,7 @@ export function initializeFirebaseClient(config: FirebaseConfig): FirebaseClient
   return {
     app,
     clientAuth,
-    isFirebaseEmulator: config.withEmulator,
+    isFirebaseEmulator: config.isEmulator,
     googleAuthProvider,
     microsoftAuthProvider,
     signInWithOAuth: signInWithPopup,

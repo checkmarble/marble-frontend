@@ -1,4 +1,4 @@
-import { type FirebaseConfig } from '@app-builder/infra/firebase';
+import { type FirebaseOptions } from 'firebase/app';
 import * as z from 'zod';
 
 /**
@@ -29,11 +29,10 @@ const PublicEnvVarsSchema = z.object({
 
   METABASE_URL: z.string().optional(),
 
-  FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
-  FIREBASE_API_KEY: z.string(),
-  FIREBASE_APP_ID: z.string().optional(),
+  // FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
+  FIREBASE_API_KEY: z.string().optional(),
   FIREBASE_AUTH_DOMAIN: z.string().optional(),
-  FIREBASE_PROJECT_ID: z.string(),
+  FIREBASE_PROJECT_ID: z.string().optional(),
 
   SENTRY_DSN: z.string().optional(),
   SENTRY_ENVIRONMENT: z.string().optional(),
@@ -88,7 +87,7 @@ interface ServerEnvVars {
   MARBLE_API_URL_CLIENT: string;
   MARBLE_API_URL_SERVER: string;
   MARBLE_APP_URL: string;
-  FIREBASE_CONFIG: FirebaseConfig;
+  FIREBASE_CONFIG: FirebaseOptions;
   METABASE_URL?: string;
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT?: string;
@@ -115,7 +114,6 @@ export function getServerEnv<K extends keyof ServerEnvVars>(serverEnvVarName: K)
  */
 interface ClientEnvVars {
   ENV: string;
-  FIREBASE_CONFIG: FirebaseConfig;
   MARBLE_API_URL: string;
   MARBLE_APP_URL: string;
   SENTRY_DSN?: string;
@@ -125,7 +123,6 @@ interface ClientEnvVars {
 export function getClientEnvVars(): ClientEnvVars {
   return {
     ENV: getServerEnv('ENV'),
-    FIREBASE_CONFIG: getServerEnv('FIREBASE_CONFIG'),
     MARBLE_API_URL: getServerEnv('MARBLE_API_URL_CLIENT'),
     MARBLE_APP_URL: getServerEnv('MARBLE_APP_URL'),
     SENTRY_DSN: getServerEnv('SENTRY_DSN'),
@@ -152,30 +149,12 @@ export function getClientEnv<K extends keyof ClientEnvVars>(clientEnvVarName: K)
   return clientEnv[clientEnvVarName];
 }
 
-function parseFirebaseConfigFromEnv(): FirebaseConfig {
-  const options: FirebaseConfig['options'] = {
+function parseFirebaseConfigFromEnv(): FirebaseOptions {
+  const options: FirebaseOptions = {
     apiKey: getEnv('FIREBASE_API_KEY'),
     authDomain: getEnv('FIREBASE_AUTH_DOMAIN'),
     projectId: getEnv('FIREBASE_PROJECT_ID'),
-    appId: getEnv('FIREBASE_APP_ID'),
   };
 
-  const firebaseAuthEmulatorHost = getEnv('FIREBASE_AUTH_EMULATOR_HOST');
-  if (!firebaseAuthEmulatorHost) {
-    return {
-      withEmulator: false as const,
-      options,
-    };
-  }
-
-  try {
-    const authEmulatorUrl = new URL('http://' + firebaseAuthEmulatorHost).toString();
-    return {
-      withEmulator: true as const,
-      authEmulatorUrl,
-      options,
-    };
-  } catch (_e) {
-    throw new Error(`Invalid FIREBASE_AUTH_EMULATOR_HOST: ${firebaseAuthEmulatorHost}`);
-  }
+  return options;
 }

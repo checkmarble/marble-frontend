@@ -27,19 +27,6 @@ export type FeatureAccessDto = {
     ai_assist: FeatureAccessLevelDto;
 };
 /**
- * Check if SSO is enabled
- */
-export function isSsoEnabled(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            is_sso_enabled: boolean;
-        };
-    }>("/is-sso-available", {
-        ...opts
-    }));
-}
-/**
  * Get the entitlements of an organization
  */
 export function getEntitlements(opts?: Oazapfts.RequestOpts) {

@@ -28,8 +28,7 @@ function makeServerServices(repositories: ServerRepositories) {
     authSessionService,
     csrfService,
     toastSessionService,
-    signupRepository: repositories.getSignupStatusRepository(repositories.marbleCoreApiClient),
-    versionRepository: repositories.getVersionRepository(repositories.marbleCoreApiClient),
+    appConfigRepository: repositories.getAppConfigRepository(repositories.marbleCoreApiClient),
     featureAccessService: repositories.getFeatureAccessRepository(
       repositories.getFeatureAccessApiClientWithoutAuth(),
     ),

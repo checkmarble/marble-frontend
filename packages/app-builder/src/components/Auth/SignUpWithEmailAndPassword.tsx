@@ -5,7 +5,7 @@ import {
   useEmailAndPasswordSignUp,
   WeakPasswordError,
 } from '@app-builder/services/auth/auth.client';
-import { clientServices } from '@app-builder/services/init.client';
+import { useClientServices } from '@app-builder/services/init.client';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import * as Sentry from '@sentry/remix';
 import { useForm } from '@tanstack/react-form';
@@ -29,6 +29,7 @@ type EmailAndPasswordForm = z.infer<typeof emailAndPasswordFormSchema>;
 
 export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
   const { t } = useTranslation(['auth', 'common']);
+  const clientServices = useClientServices();
 
   const emailAndPasswordSignUp = useEmailAndPasswordSignUp(
     clientServices.authenticationClientService,

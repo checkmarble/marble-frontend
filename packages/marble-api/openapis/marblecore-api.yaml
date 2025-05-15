@@ -235,6 +235,8 @@ paths:
 
   /analytics:
     $ref: ./marblecore-api/misc.yml#/~1analytics
+  /config:
+    $ref: ./marblecore-api/misc.yml#/~1config
 
   # ADMINISTRATION
 
@@ -297,15 +299,6 @@ paths:
   /scenario-testruns/{test_run_id}/data_by_rule_execution:
     $ref: ./marblecore-api/scenario-testrun.yml#/~1scenario-testruns~1{test_run_id}~1data_by_rule_execution
 
-  # VERSION
-
-  /version:
-    $ref: ./marblecore-api/version.yml#/~1version
-
-  # SIGNUP STATUS
-
-  /signup-status:
-    $ref: ./marblecore-api/signup-status.yml#/~1signup-status
 components:
   securitySchemes:
     $ref: marblecore-api/_common.yml#/securitySchemes

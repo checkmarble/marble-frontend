@@ -1,5 +1,5 @@
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
-import { clientServices } from '@app-builder/services/init.client';
+import { useClientServices } from '@app-builder/services/init.client';
 import { useNavigation, useRevalidator } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import clsx from 'clsx';
@@ -48,6 +48,7 @@ function UploadFileContent({
   setOpen: (open: boolean) => void;
 }) {
   const { t } = useTranslation(['common', 'cases']);
+  const clientServices = useClientServices();
   const [loading, setLoading] = useState(false);
   const revalidator = useRevalidator();
 
