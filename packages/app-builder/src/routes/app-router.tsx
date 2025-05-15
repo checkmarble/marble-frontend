@@ -27,6 +27,7 @@ export const handle = {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
+
   const { user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

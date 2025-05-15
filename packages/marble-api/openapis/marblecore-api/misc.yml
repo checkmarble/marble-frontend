@@ -26,6 +26,19 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/config:
+  get:
+    tags:
+      - Application config
+    summary: Retrieves the configuration of the frontend app
+    operationId: getAppConfig
+    responses:
+      '200':
+        description: The config
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppConfigDto'
 /editor/{scenarioId}/identifiers:
   get:
     tags:
@@ -80,3 +93,71 @@ components:
         signed_embedding_url:
           type: string
           format: uri
+    AppConfigDto:
+      type: object
+      required:
+        - version
+        - status
+        - urls
+        - auth
+        - features
+      properties:
+        version:
+          type: string
+        status:
+          type: object
+          required:
+            - migrations
+            - has_org
+            - has_user
+          properties:
+            migrations:
+              type: boolean
+            has_org:
+              type: boolean
+            has_user:
+              type: boolean
+        urls:
+          type: object
+          required:
+            - marble
+            - metabase
+          properties:
+            marble:
+              type: string
+            metabase:
+              type: string
+        auth:
+          type: object
+          required:
+            - firebase
+          properties:
+            firebase:
+              type: object
+              required:
+                - is_emulator
+                - emulator_host
+                - project_id
+                - api_key
+                - auth_domain
+              properties:
+                is_emulator:
+                  type: boolean
+                emulator_host:
+                  type: string
+                project_id:
+                  type: string
+                api_key:
+                  type: string
+                auth_domain:
+                  type: string
+        features:
+          type: object
+          required:
+            - sso
+            - segment
+          properties:
+            sso:
+              type: boolean
+            segment:
+              type: boolean

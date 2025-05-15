@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { z } from 'zod';
 
 import { useBackendInfo } from './auth/auth.client';
-import { clientServices } from './init.client';
+import { useClientServices } from './init.client';
 
 export class AlreadyDownloadingError extends Error {}
 export class FetchLinkError extends Error {}
@@ -46,6 +46,7 @@ export function useDownloadFile(
   endpoint: string,
   { onError }: { onError?: (error: DownloadFileError) => void } = {},
 ) {
+  const clientServices = useClientServices();
   const [downloading, setDownloading] = useState(false);
   const { backendUrl, getAccessToken } = useBackendInfo(clientServices.authenticationClientService);
 

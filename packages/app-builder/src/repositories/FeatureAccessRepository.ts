@@ -3,13 +3,11 @@ import { adaptFeatureAccesses, type FeatureAccesses } from '@app-builder/models/
 
 export interface FeatureAccessRepository {
   getEntitlements(): Promise<FeatureAccesses>;
-  isSsoEnabled(): Promise<boolean>;
 }
 
 export const makeGetFeatureAccessRepository =
   () =>
   (client: FeatureAccessApi): FeatureAccessRepository => ({
-    isSsoEnabled: async () => (await client.isSsoEnabled()).is_sso_enabled,
     getEntitlements: async () =>
       adaptFeatureAccesses((await client.getEntitlements()).feature_access),
   });
