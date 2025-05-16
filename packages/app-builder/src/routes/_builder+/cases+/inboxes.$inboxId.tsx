@@ -239,7 +239,7 @@ export default function Cases() {
                   </CaseRightPanel.Trigger>
                 </div>
               </div>
-              <CasesFiltersBar />
+              <CasesFiltersBar excludedFilters={!inboxId ? ['excludeAssigned'] : undefined} />
               <CasesList
                 key={inboxId}
                 cases={cases}
