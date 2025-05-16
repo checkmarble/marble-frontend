@@ -14,7 +14,7 @@ export type CasesFilterName = (typeof casesFilterNames)[number];
 export const getFilterIcon = (filterName: CasesFilterName) =>
   match<CasesFilterName, IconName>(filterName)
     .with('dateRange', () => 'calendar-month')
-    .with('statuses', () => 'category')
+    .with('statuses', () => 'checked')
     .with('includeSnoozed', () => 'snooze')
     .with('excludeAssigned', () => 'person')
     .exhaustive();
@@ -22,7 +22,7 @@ export const getFilterIcon = (filterName: CasesFilterName) =>
 export const getFilterTKey = (filterName: CasesFilterName) =>
   match<CasesFilterName, ParseKeys<['cases']>>(filterName)
     .with('dateRange', () => 'cases:case.date')
-    .with('statuses', () => 'cases:case.status')
+    .with('statuses', () => 'cases:filter.closed_only.label')
     .with('includeSnoozed', () => 'cases:filter.include_snoozed.label')
     .with('excludeAssigned', () => 'cases:filter.exclude_assigned.label')
     .exhaustive();

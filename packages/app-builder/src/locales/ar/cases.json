@@ -193,5 +193,6 @@
   "case_detail.history.event_detail.decision_reviewed": "قرار تمت مراجعته إلى <Status /> بواسطة <Actor>{{Actor}}</Actor>",
   "case_detail.history.event_detail.rule_snooze_created": "القاعدة snoozed بواسطة <Actor>{{Actor}}</Actor>",
   "filter.include_snoozed.label": "عرض المؤجّلة",
-  "filter.exclude_assigned.label": "استثناء المعيّنة"
+  "filter.exclude_assigned.label": "استثناء المعيّنة",
+  "filter.closed_only.label": "المغلقة فقط"
 }
