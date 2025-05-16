@@ -36,10 +36,6 @@ export function CasesFiltersBar() {
   const { undefinedCasesFilterNames, definedCasesFilterNames } = useCasesFiltersPartition();
   const clearFilter = useClearFilter();
 
-  if (definedCasesFilterNames.length === 0) {
-    return null;
-  }
-
   return (
     <>
       <Separator className="bg-grey-90" decorative />

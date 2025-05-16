@@ -13,7 +13,7 @@ export const casesFiltersSchema = z.object({
   statuses: z.array(z.enum(caseStatuses)).optional(),
   dateRange: dateRangeSchema.optional(),
   name: z.string().optional(),
-  snoozed: z
+  includeSnoozed: z
     .enum(['true', 'false'])
     .transform((val) => val === 'true')
     .optional(),
@@ -37,7 +37,7 @@ export type CasesFiltersForm = {
   statuses: CaseStatus[];
   dateRange: DateRangeFilterForm;
   name?: string;
-  snoozed?: boolean;
+  includeSnoozed?: boolean;
 };
 
 const emptyCasesFilters: CasesFiltersForm = {
