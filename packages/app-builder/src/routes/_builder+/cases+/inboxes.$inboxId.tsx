@@ -4,13 +4,9 @@ import { CaseRightPanel } from '@app-builder/components/Cases/CaseRightPanel';
 import {
   type CasesFilters,
   CasesFiltersBar,
-  CasesFiltersMenu,
   CasesFiltersProvider,
   casesFiltersSchema,
 } from '@app-builder/components/Cases/Filters';
-import { casesFilterNames } from '@app-builder/components/Cases/Filters/filters';
-import { FiltersButton } from '@app-builder/components/Filters';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { type Case, type CaseStatus } from '@app-builder/models/cases';
@@ -28,7 +24,7 @@ import qs from 'qs';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { omit } from 'remeda';
-import { Button, Checkbox, Input } from 'ui-design-system';
+import { Button, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { MY_INBOX_ID } from './_index';
@@ -45,7 +41,7 @@ export const buildQueryParams = (
   return {
     statuses: filters.statuses ?? [],
     name: filters.name,
-    snoozed: filters.snoozed,
+    includeSnoozed: filters.includeSnoozed,
     excludeAssigned: filters.excludeAssigned,
     dateRange: filters.dateRange
       ? filters.dateRange.type === 'static'
@@ -145,35 +141,6 @@ const SearchByName = ({
   );
 };
 
-const ToggleFilter = ({
-  onCheckedChange,
-  field,
-  label,
-  value,
-}: {
-  field: 'excludeAssigned' | 'includeSnoozed' | 'closedOnly';
-  label: string;
-  value: boolean;
-  onCheckedChange: (state: boolean) => void;
-}) => {
-  return (
-    <div className="flex gap-2 p-2">
-      <Checkbox
-        id={field}
-        defaultChecked={value}
-        onCheckedChange={(state) => {
-          if (state !== 'indeterminate') {
-            onCheckedChange(state);
-          }
-        }}
-      />
-      <FormLabel name="field" className="font-medium">
-        {label}
-      </FormLabel>
-    </div>
-  );
-};
-
 export default function Cases() {
   const { t } = useTranslation(casesI18n);
   const {
@@ -262,38 +229,8 @@ export default function Cases() {
                       navigateCasesList({ ...filters, name: value });
                     }}
                   />
-                  <ToggleFilter
-                    field="includeSnoozed"
-                    value={filters.snoozed ?? false}
-                    label={t('cases:include_snoozed')}
-                    onCheckedChange={(snoozed) => {
-                      navigateCasesList({ ...filters, snoozed });
-                    }}
-                  />
-                  <ToggleFilter
-                    field="excludeAssigned"
-                    value={filters.excludeAssigned ?? false}
-                    label={t('cases:exclude_assigned')}
-                    onCheckedChange={(excludeAssigned) => {
-                      navigateCasesList({ ...filters, excludeAssigned });
-                    }}
-                  />
-                  <ToggleFilter
-                    field="closedOnly"
-                    value={filters.statuses?.includes('closed') ?? false}
-                    label={t('cases:closed_only')}
-                    onCheckedChange={(closedOnly) => {
-                      navigateCasesList({
-                        ...filters,
-                        statuses: closedOnly ? ['closed'] : [],
-                      });
-                    }}
-                  />
                 </div>
                 <div className="flex gap-4">
-                  <CasesFiltersMenu filterNames={casesFilterNames}>
-                    <FiltersButton />
-                  </CasesFiltersMenu>
                   <CaseRightPanel.Trigger asChild data={{ inboxId }}>
                     <Button>
                       <Icon icon="plus" className="size-5" />
