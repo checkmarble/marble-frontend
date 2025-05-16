@@ -38,6 +38,7 @@ export type CasesFiltersForm = {
   dateRange: DateRangeFilterForm;
   name?: string;
   includeSnoozed?: boolean;
+  excludeAssigned?: boolean;
 };
 
 const emptyCasesFilters: CasesFiltersForm = {
