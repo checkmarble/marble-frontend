@@ -20,7 +20,7 @@ import { CasesFiltersMenu } from './CasesFiltersMenu';
 import { FilterDetail } from './FilterDetail';
 import { getFilterIcon, getFilterTKey } from './filters';
 
-export function CasesFiltersBar() {
+export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonly string[] }) {
   const { t } = useTranslation(casesI18n);
   const { onCasesFilterClose } = useCasesFiltersContext();
 
@@ -33,7 +33,8 @@ export function CasesFiltersBar() {
     [onCasesFilterClose],
   );
 
-  const { undefinedCasesFilterNames, definedCasesFilterNames } = useCasesFiltersPartition();
+  const { undefinedCasesFilterNames, definedCasesFilterNames } =
+    useCasesFiltersPartition(excludedFilters);
   const clearFilter = useClearFilter();
 
   return (

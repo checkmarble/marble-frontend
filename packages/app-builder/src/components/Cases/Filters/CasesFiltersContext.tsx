@@ -143,11 +143,11 @@ export function useNameFilter() {
  * - undefinedCasesFilterNames: filter values are undefined
  * - definedCasesFilterNames: filter values are defined
  */
-export function useCasesFiltersPartition() {
+export function useCasesFiltersPartition(excludedFilters?: readonly string[]) {
   const { filterValues } = useCasesFiltersContext();
 
   const [undefinedCasesFilterNames, definedCasesFilterNames] = R.pipe(
-    casesFilterNames,
+    casesFilterNames.filter((filterName) => !excludedFilters?.includes(filterName)),
     R.partition((filterName) => {
       const value = filterValues[filterName];
       if (R.isArray(value)) return value.length === 0;
