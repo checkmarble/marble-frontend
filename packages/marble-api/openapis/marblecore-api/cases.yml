@@ -50,6 +50,13 @@
         schema:
           type: boolean
           default: false
+      - name: exclude_assigned
+        description: Exclude cases that are assigned
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
       - name: assignee_id
         description: Include cases that are assigned to a specific user
         in: query
