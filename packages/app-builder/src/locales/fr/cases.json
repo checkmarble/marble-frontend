@@ -192,5 +192,6 @@
   "required_actions.review_screening_hits": "Filtrage de sanctions ({{count}})",
   "case_detail.history.event_detail.decision_reviewed": "Décision examinée à <Statut /> par <Actor>{{actor}}</Actor>",
   "case_detail.history.event_detail.rule_snooze_created": "Règle désactivée par <Actor>{{actor}}</Actor>",
-  "filter.include_snoozed.label": "Inclure les mis en veille"
+  "filter.include_snoozed.label": "Inclure les mis en veille",
+  "filter.exclude_assigned.label": "Exclure les assignées"
 }
