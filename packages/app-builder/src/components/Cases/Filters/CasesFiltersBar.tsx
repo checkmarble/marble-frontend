@@ -41,6 +41,11 @@ export function CasesFiltersBar() {
       <Separator className="bg-grey-90" decorative />
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex flex-row flex-wrap gap-2">
+          {undefinedCasesFilterNames.length > 0 ? (
+            <CasesFiltersMenu filterNames={undefinedCasesFilterNames}>
+              <AddNewFilterButton />
+            </CasesFiltersMenu>
+          ) : null}
           {definedCasesFilterNames.map((filterName) => {
             const icon = getFilterIcon(filterName);
             const tKey = getFilterTKey(filterName);
@@ -64,11 +69,6 @@ export function CasesFiltersBar() {
               </FilterPopover.Root>
             );
           })}
-          {undefinedCasesFilterNames.length > 0 ? (
-            <CasesFiltersMenu filterNames={undefinedCasesFilterNames}>
-              <AddNewFilterButton />
-            </CasesFiltersMenu>
-          ) : null}
         </div>
         <ClearAllFiltersLink to={getRoute('/cases')} replace />
       </div>
