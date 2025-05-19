@@ -119,7 +119,7 @@ export function CasesList({
       }),
       columnHelper.accessor(({ assignedTo }) => assignedTo, {
         id: 'assignedTo',
-        header: t('cases:case.assignedTo'),
+        header: t('cases:case.assigned_to'),
         size: 80,
         minSize: 80,
         enableSorting: false,
