@@ -91,6 +91,7 @@
   "case_detail.add_rule_snooze.duration_unit": "Duration unit",
   "case_detail.add_rule_snooze.errors.max_duration": "The maximum duration is 180 days",
   "case_detail.add_rule_snooze.errors.duplicate_rule_snooze": "A snooze rule with this pivot value already exists for this rule",
+  "case_detail.add_rule_snooze.confirm": "Snooze",
   "case_detail.review_decision.title": "Review decision",
   "case_detail.review_decision.callout": "Reviewing a decision will change its status and dispatch a webhook to trigger the next step in your workflow (<DocLink>learn more</DocLink>)",
   "case_detail.review_decision.comment.label": "Comment",
