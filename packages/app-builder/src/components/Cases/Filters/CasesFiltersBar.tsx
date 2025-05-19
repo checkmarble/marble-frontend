@@ -3,6 +3,7 @@ import {
   ClearAllFiltersLink,
   FilterItem,
   FilterPopover,
+  FiltersButton,
 } from '@app-builder/components/Filters';
 import { getRoute } from '@app-builder/utils/routes';
 import { useCallback } from 'react';
@@ -23,7 +24,6 @@ import { getFilterIcon, getFilterTKey } from './filters';
 export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonly string[] }) {
   const { t } = useTranslation(casesI18n);
   const { onCasesFilterClose } = useCasesFiltersContext();
-
   const onOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
@@ -42,9 +42,9 @@ export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonl
       <Separator className="bg-grey-90" decorative />
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex flex-row flex-wrap gap-2">
-          {undefinedCasesFilterNames.length > 0 ? (
+          {undefinedCasesFilterNames.length > 0 && !definedCasesFilterNames.length ? (
             <CasesFiltersMenu filterNames={undefinedCasesFilterNames}>
-              <AddNewFilterButton />
+              <FiltersButton />
             </CasesFiltersMenu>
           ) : null}
           {definedCasesFilterNames.map((filterName) => {
@@ -70,6 +70,12 @@ export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonl
               </FilterPopover.Root>
             );
           })}
+
+          {definedCasesFilterNames.length > 0 && undefinedCasesFilterNames.length > 0 ? (
+            <CasesFiltersMenu filterNames={undefinedCasesFilterNames}>
+              <AddNewFilterButton />
+            </CasesFiltersMenu>
+          ) : null}
         </div>
         <ClearAllFiltersLink to={getRoute('/cases')} replace />
       </div>
