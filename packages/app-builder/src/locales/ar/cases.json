@@ -191,5 +191,7 @@
   "required_actions.no_more_pending_sanction_checks": "لا مزيد من الشيكات العقوبات المعلقة",
   "required_actions.review_screening_hits": "مراجعة عربات الفحص ({{count}})",
   "case_detail.history.event_detail.decision_reviewed": "قرار تمت مراجعته إلى <Status /> بواسطة <Actor>{{Actor}}</Actor>",
-  "case_detail.history.event_detail.rule_snooze_created": "القاعدة snoozed بواسطة <Actor>{{Actor}}</Actor>"
+  "case_detail.history.event_detail.rule_snooze_created": "القاعدة snoozed بواسطة <Actor>{{Actor}}</Actor>",
+  "case.status.snoozed": "غفوة",
+  "case.status.waiting_for_action": "في انتظار العمل"
 }
