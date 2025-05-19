@@ -4,8 +4,11 @@ import { formatDateTime, formatDuration, useFormatLanguage } from '@app-builder/
 import { clsx } from 'clsx';
 import { add, sub } from 'date-fns';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { Calendar, type DateRange } from 'ui-design-system';
+
+import { filtersI18n } from './filters-i18n';
 
 interface StaticDateRangeFilterType {
   type: 'static';
@@ -112,6 +115,7 @@ export const fromNowDurations = [
 function DateRangeFilterFromNowPicker({ title, className }: { title: string; className?: string }) {
   const language = useFormatLanguage();
   const { onFromNowSelect } = useDateRangeFilterContext();
+  const { fromNow } = useDateRangeFilterContext();
 
   return (
     <div className={clsx('flex flex-col gap-4 p-4', className)}>
@@ -125,7 +129,11 @@ function DateRangeFilterFromNowPicker({ title, className }: { title: string; cla
             onClick={() => {
               onFromNowSelect(duration);
             }}
-            className="text-s hover:bg-purple-98 active:bg-purple-96 bg-grey-100 text-grey-00 border-grey-100 hover:text-purple-65 focus:border-purple-65 flex h-10 items-center rounded border p-2 outline-none"
+            className={clsx(
+              'text-s bg-grey-100 text-grey-00 border-grey-100 flex h-10 items-center rounded border p-2 outline-none',
+              'hover:bg-purple-98 active:bg-purple-96 hover:text-purple-65',
+              fromNow === duration && 'bg-purple-96 border-purple-65 text-purple-65', // highlight the currently selected
+            )}
           >
             <time dateTime={duration}>{formatDuration(duration, language)}</time>
           </button>
@@ -154,13 +162,19 @@ function DateRangeFilterCalendar({ className }: { className?: string }) {
 
 function DateRangeFilterSummary({ className }: { className?: string }) {
   const language = useFormatLanguage();
+  const { t } = useTranslation(filtersI18n);
   const { fromNow, calendarSelected } = useDateRangeFilterContext();
 
   if (fromNow) {
     return (
       <div className={clsx('m-4 flex h-10 w-full items-center justify-center', className)}>
-        <time className="text-grey-00" dateTime={fromNow}>
-          {formatDuration(fromNow, language)}
+        <time
+          className="text-s text-grey-00 flex h-10 items-center rounded p-2 outline-none"
+          dateTime={fromNow}
+        >
+          {t('filters:up_to', {
+            duration: formatDuration(fromNow, language),
+          })}
         </time>
       </div>
     );

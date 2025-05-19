@@ -1,5 +1,6 @@
 {
   "filters": "الفلاتر",
   "new_filter": "فلتر جدبد",
-  "clear_filters": "مسح الفلاتر"
+  "clear_filters": "مسح الفلاتر",
+  "up_to": "حتى {{date}}"
 }
