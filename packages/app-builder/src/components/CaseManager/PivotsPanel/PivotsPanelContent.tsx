@@ -1,4 +1,4 @@
-import { CaseStatusTag } from '@app-builder/components/Cases';
+import { CaseStatusBadge } from '@app-builder/components/Cases';
 import { ClientObjectDataList } from '@app-builder/components/DataModelExplorer/ClientObjectDataList';
 import {
   type CurrentUser,
@@ -178,7 +178,12 @@ function RelatedCases({
                   <div
                     className={cellVariants({ isLast, className: 'flex items-center border-l' })}
                   >
-                    <CaseStatusTag status={caseObj.status} outcome={caseObj.outcome} />
+                    <CaseStatusBadge
+                      status={caseObj.status}
+                      showText={false}
+                      showBackground={false}
+                      outcome={caseObj.outcome}
+                    />
                   </div>
                 </Fragment>
               );

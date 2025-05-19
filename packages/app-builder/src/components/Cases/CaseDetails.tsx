@@ -17,7 +17,6 @@ import { useLoaderData } from '@remix-run/react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
-import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -25,7 +24,7 @@ import { CaseAlerts } from './CaseAlerts';
 import { CaseEvents } from './CaseEvents';
 import { CaseFile } from './CaseFile';
 import { casesI18n } from './cases-i18n';
-import { caseStatusMapping } from './CaseStatus';
+import { CaseStatusBadge } from './CaseStatus';
 
 export const CaseDetails = ({
   currentUser,
@@ -74,27 +73,7 @@ export const CaseDetails = ({
       <div className="border-b-grey-90 flex flex-col gap-2 border-b pb-6">
         <div className="grid grid-cols-[120px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:case.status')}</span>
-          <span className="inline-flex items-center gap-1">
-            {match(detail.status)
-              .with('investigating', () => <Icon icon="status" className="text-blue-58 size-5" />)
-              .with('pending', () => <div className="border-red-47 size-4 rounded-full border-2" />)
-              .with('closed', () => <div className="bg-green-38 size-4 rounded-full" />)
-              .exhaustive()}
-            <span className="text-xs font-medium first-letter:capitalize">
-              {t(caseStatusMapping[detail.status].tKey)}
-            </span>
-            {detail.outcome && detail.outcome !== 'unset' ? (
-              <span
-                className={cn('rounded-full px-2 py-[3px] text-xs font-medium', {
-                  'text-grey-50 bg-grey-95': detail.outcome === 'false_positive',
-                  'bg-yellow-90 text-yellow-50': detail.outcome === 'valuable_alert',
-                  'text-red-47 bg-red-95': detail.outcome === 'confirmed_risk',
-                })}
-              >
-                {t(`cases:case.outcome.${detail.outcome}`)}
-              </span>
-            ) : null}
-          </span>
+          <CaseStatusBadge status={detail.status} outcome={detail.outcome} />
         </div>
         <div className="grid grid-cols-[120px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:creation_date')}</span>

@@ -1,162 +1,92 @@
-import { type CaseOutcome, caseStatuses, type FinalOutcome } from '@app-builder/models/cases';
+import { type CaseOutcome, type CaseStatus } from '@app-builder/models/cases';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type ParseKeys } from 'i18next';
-import { type CaseStatusForCaseEventDto } from 'marble-api';
-import { useMemo } from 'react';
+import { type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tag, Tooltip } from 'ui-design-system';
+import { match } from 'ts-pattern';
+import { cn } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 import { casesI18n } from './cases-i18n';
 
-export const caseStatusVariants = cva('inline-flex items-center justify-center rounded shrink-0', {
+export const caseStatusBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0', {
   variants: {
-    color: {
-      red: 'text-red-47 bg-red-95',
-      blue: 'text-blue-58 bg-blue-96',
-      green: 'text-green-38 bg-green-94',
-      grey: 'text-grey-50 bg-grey-95',
-      yellow: 'text-yellow-50 bg-yellow-90',
-    },
     size: {
-      small: undefined,
-      big: undefined,
-    },
-    type: {
-      'first-letter': 'isolate capitalize text-s font-medium',
-      full: 'px-2 w-fit capitalize text-s font-semibold',
+      large: 'justify-center rounded p-2 gap-2 text-r font-medium',
+      small: 'gap-1 rounded-full px-2 py-1 text-xs font-normal',
     },
   },
-  compoundVariants: [
-    {
-      size: 'small',
-      type: 'full',
-      className: 'h-6',
-    },
-    {
-      size: 'big',
-      type: 'full',
-      className: 'h-10',
-    },
-    {
-      size: 'small',
-      type: 'first-letter',
-      className: 'size-6',
-    },
-    {
-      size: 'big',
-      type: 'first-letter',
-      className: 'size-8',
-    },
-  ],
+  defaultVariants: {
+    size: 'small',
+  },
 });
 
-type CaseStatusMapping = Record<
-  CaseStatusForCaseEventDto | FinalOutcome,
-  {
-    color: VariantProps<typeof caseStatusVariants>['color'];
-    tKey: ParseKeys<['cases']>;
-  }
->;
+type CaseStatusBadgeProps = ComponentProps<'span'> &
+  VariantProps<typeof caseStatusBadgeVariants> & {
+    status: CaseStatus;
+    outcome?: CaseOutcome;
+    showText?: boolean;
+    showBackground?: boolean;
+  };
 
-export const caseStatusMapping: CaseStatusMapping = {
-  investigating: {
-    color: 'blue',
-    tKey: 'cases:case.status.investigating',
-  },
-  pending: {
-    color: 'grey',
-    tKey: 'cases:case.status.pending',
-  },
-  closed: {
-    color: 'green',
-    tKey: 'cases:case.status.closed',
-  },
-  resolved: {
-    color: 'green',
-    tKey: 'cases:case.status.resolved',
-  },
-  discarded: {
-    color: 'grey',
-    tKey: 'cases:case.status.discarded',
-  },
-  open: {
-    color: 'red',
-    tKey: 'cases:case.status.open',
-  },
-  confirmed_risk: {
-    color: 'red',
-    tKey: 'cases:case.outcome.confirmed_risk',
-  },
-  false_positive: {
-    color: 'grey',
-    tKey: 'cases:case.outcome.false_positive',
-  },
-  valuable_alert: {
-    color: 'yellow',
-    tKey: 'cases:case.outcome.valuable_alert',
-  },
-};
-
-export function CaseStatusPreview({
-  status,
-  size,
-  type,
-}: {
-  status: CaseStatusForCaseEventDto;
-  size?: VariantProps<typeof caseStatusVariants>['size'];
-  type?: VariantProps<typeof caseStatusVariants>['type'];
-}) {
-  const { t } = useTranslation(casesI18n);
-  const { color, tKey } = caseStatusMapping[status];
-  const caseStatusLetter = t(tKey);
-
-  if (type === 'full') {
-    return (
-      <div className={caseStatusVariants({ color, size, type: 'full' })}>{caseStatusLetter}</div>
-    );
-  }
-
-  return (
-    <Tooltip.Default
-      content={
-        <div className={caseStatusVariants({ color, size: 'big', type: 'full' })}>
-          {caseStatusLetter}
-        </div>
-      }
-    >
-      <div className={caseStatusVariants({ color, size, type: 'first-letter' })}>
-        {caseStatusLetter[0]}
-      </div>
-    </Tooltip.Default>
-  );
-}
-
-export function CaseStatusTag({
+export const CaseStatusBadge = ({
   status,
   outcome,
-}: {
-  status: CaseStatusForCaseEventDto;
-  outcome: CaseOutcome;
-}) {
-  const { t } = useTranslation(['cases']);
-  const { color, tKey } = caseStatusMapping[outcome === 'unset' ? status : outcome];
-
-  return (
-    <Tag color={color ?? undefined} className="capitalize">
-      {t(tKey)}
-    </Tag>
-  );
-}
-
-export function useCaseStatuses() {
+  showText = true,
+  showBackground = true,
+  size,
+  className,
+  ...rest
+}: CaseStatusBadgeProps) => {
   const { t } = useTranslation(casesI18n);
 
-  return useMemo(
-    () =>
-      caseStatuses.map((status) => ({
-        value: status,
-        label: t(caseStatusMapping[status].tKey),
-      })),
-    [t],
+  return (
+    <span {...rest} className="inline-flex items-center gap-2">
+      <span
+        className={caseStatusBadgeVariants({
+          size,
+          className: cn(className, {
+            'bg-purple-96': (status === 'snoozed' || status === 'closed') && showBackground,
+            'bg-red-95': status === 'waiting_for_action' && showBackground,
+            'bg-grey-95': status === 'pending' && showBackground,
+            'bg-blue-96': status === 'investigating' && showBackground,
+          }),
+        })}
+      >
+        {match(status)
+          .with('snoozed', () => <Icon icon="status_snoozed" className="text-purple-65 size-4" />)
+          .with('waiting_for_action', () => (
+            <Icon icon="waiting_for_action" className="text-red-47 size-4" />
+          ))
+          .with('pending', () => <div className="bg-grey-80 size-4 rounded-full" />)
+          .with('investigating', () => (
+            <Icon icon="investigating" className="text-blue-58 size-4" />
+          ))
+          .with('closed', () => <Icon icon="resolved" className="text-purple-65 size-4" />)
+          .exhaustive()}
+        {showText ? (
+          <span
+            className={cn('text-grey-00', {
+              'text-purple-65': status === 'snoozed' || status === 'closed',
+              'text-red-47': status === 'waiting_for_action',
+              'text-grey-50': status === 'pending',
+              'text-blue-58': status === 'investigating',
+            })}
+          >
+            {t(`cases:case.status.${status}`)}
+          </span>
+        ) : null}
+      </span>
+      {outcome && outcome !== 'unset' ? (
+        <span
+          className={cn('rounded-full border px-2 py-0.5 text-xs', {
+            'border-red-47 text-red-47': outcome === 'confirmed_risk',
+            'border-green-38 text-green-38': outcome === 'valuable_alert',
+            'border-grey-50 text-grey-50': outcome === 'false_positive',
+          })}
+        >
+          {t(`cases:case.outcome.${outcome}`)}
+        </span>
+      ) : null}
+    </span>
   );
-}
+};

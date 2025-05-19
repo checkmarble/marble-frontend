@@ -57,7 +57,13 @@ export function adaptCaseTag(dto: CaseTagDto): CaseTag {
 }
 
 export type CaseStatus = CaseStatusDto;
-export const caseStatuses: UnionToArray<CaseStatus> = ['pending', 'investigating', 'closed'];
+export const caseStatuses: UnionToArray<CaseStatus> = [
+  'pending',
+  'investigating',
+  'closed',
+  'waiting_for_action',
+  'snoozed',
+];
 
 export type CaseOutcome = Outcome;
 export const caseOutcomes: CaseOutcome[] = [

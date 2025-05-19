@@ -1,20 +1,17 @@
+import { caseStatuses } from '@app-builder/models/cases';
 import { matchSorter } from '@app-builder/utils/search';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 
-import { CaseStatusPreview, useCaseStatuses } from '../../CaseStatus';
+import { CaseStatusBadge } from '../../CaseStatus';
 import { useStatusesFilter } from '../CasesFiltersContext';
 
 export function StatusesFilter() {
   const [value, setSearchValue] = useState('');
   const { selectedStatuses, setSelectedStatuses } = useStatusesFilter();
   const deferredValue = useDeferredValue(value);
-  const statuses = useCaseStatuses();
 
-  const matches = useMemo(
-    () => matchSorter(statuses, deferredValue, { keys: ['label'] }),
-    [deferredValue, statuses],
-  );
+  const matches = useMemo(() => matchSorter(caseStatuses, deferredValue), [deferredValue]);
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -29,11 +26,11 @@ export function StatusesFilter() {
           {matches.map((status) => {
             return (
               <SelectWithCombobox.ComboboxItem
-                key={status.value}
-                value={status.value}
+                key={status}
+                value={status}
                 className="align-baseline"
               >
-                <CaseStatusPreview type="full" size="big" status={status.value} />
+                <CaseStatusBadge status={status} size="large" />
               </SelectWithCombobox.ComboboxItem>
             );
           })}

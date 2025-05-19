@@ -14,7 +14,7 @@ import { Table, Tooltip, useVirtualTable } from 'ui-design-system';
 import { CaseAssignedTo } from './CaseAssignedTo';
 import { CaseContributors } from './CaseContributors';
 import { casesI18n } from './cases-i18n';
-import { CaseStatusPreview } from './CaseStatus';
+import { CaseStatusBadge } from './CaseStatus';
 import { CaseTags } from './CaseTags';
 
 const columnHelper = createColumnHelper<Case>();
@@ -39,13 +39,13 @@ export function CasesList({
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor(({ status }) => status, {
+      columnHelper.accessor(({ status }) => ({ status }), {
         id: 'status',
         header: t('cases:case.status'),
-        size: 50,
+        size: 30,
         enableSorting: false,
         cell: ({ getValue }) => (
-          <CaseStatusPreview size="big" type="first-letter" status={getValue()} />
+          <CaseStatusBadge status={getValue().status} size="large" showText={false} />
         ),
       }),
       columnHelper.accessor(({ name }) => name, {
