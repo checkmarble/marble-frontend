@@ -11,6 +11,10 @@ export const casesFilterNames = [
 
 export type CasesFilterName = (typeof casesFilterNames)[number];
 
+export const casesSimpleFilterNames = ['includeSnoozed', 'excludeAssigned', 'statuses'] as const;
+
+export type CasesSimpleFilterName = (typeof casesSimpleFilterNames)[number];
+
 export const getFilterIcon = (filterName: CasesFilterName) =>
   match<CasesFilterName, IconName>(filterName)
     .with('dateRange', () => 'calendar-month')

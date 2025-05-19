@@ -6,11 +6,10 @@ import { CasesExcludeAssignedFilter } from './CasesExcludeAssignedFilter';
 import { CasesSnoozedFilter } from './CasesSnoozedFilter';
 import { ClosedCasesFilter } from './ClosedCasesFilter';
 
-export const FilterDetail = ({ filterName }: { filterName: CasesFilterName }) => {
-  return match(filterName)
+export const FilterDetail = ({ filterName }: { filterName: CasesFilterName }) =>
+  match(filterName)
     .with('dateRange', () => <CasesDateRangeFilter />)
     .with('statuses', () => <ClosedCasesFilter />)
     .with('includeSnoozed', () => <CasesSnoozedFilter />)
     .with('excludeAssigned', () => <CasesExcludeAssignedFilter />)
     .exhaustive();
-};

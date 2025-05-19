@@ -5,6 +5,7 @@ import {
   FilterPopover,
   FiltersButton,
 } from '@app-builder/components/Filters';
+import { SimpleFilter } from '@app-builder/components/Filters/SimpleFilter';
 import { getRoute } from '@app-builder/utils/routes';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +20,7 @@ import {
 } from './CasesFiltersContext';
 import { CasesFiltersMenu } from './CasesFiltersMenu';
 import { FilterDetail } from './FilterDetail';
-import { getFilterIcon, getFilterTKey } from './filters';
+import { casesSimpleFilterNames, getFilterIcon, getFilterTKey } from './filters';
 
 export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonly string[] }) {
   const { t } = useTranslation(casesI18n);
@@ -51,7 +52,19 @@ export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonl
             const icon = getFilterIcon(filterName);
             const tKey = getFilterTKey(filterName);
 
-            return (
+            return casesSimpleFilterNames.includes(
+              filterName as (typeof casesSimpleFilterNames)[number],
+            ) ? (
+              <SimpleFilter key={filterName}>
+                <Icon icon={icon} className="size-5" />
+                <span className="text-s font-semibold first-letter:capitalize">{t(tKey)}</span>
+                <FilterItem.Clear
+                  onClick={() => {
+                    clearFilter(filterName);
+                  }}
+                />
+              </SimpleFilter>
+            ) : (
               <FilterPopover.Root key={filterName} onOpenChange={onOpenChange}>
                 <FilterItem.Root>
                   <FilterItem.Trigger>
