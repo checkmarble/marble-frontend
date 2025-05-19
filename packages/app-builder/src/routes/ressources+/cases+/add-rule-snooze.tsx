@@ -280,11 +280,7 @@ function AddRuleSnoozeContent({
               className="size-5"
               loading={fetcher.state === 'submitting'}
             />
-<<<<<<< HEAD
             {t('cases:decisions.rule.snooze')}
-=======
-            {t('cases:case_detail.add_rule_snooze.confirm')}
->>>>>>> a6730080 (wip: reshuffle translations for cases, esp. snoozes)
           </Button>
         </div>
       </div>

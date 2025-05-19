@@ -42,7 +42,7 @@
   "case_detail.add_rule_snooze.title": "تأجيل القاعدة",
   "case_detail.history.event_detail.reviewed_by": "تمت المراجعة بواسطة: <Avatar/> <User>{{user}}</User>",
   "case_detail.no_files": "<Button>أضف ملفك الأول</Button> إلى الحالة لتتبع تحقيقاتك",
-  "case_detail.pivot_values": "",
+  "case_detail.pivot_values": "القيم المحورية",
   "case_detail.review_decision": "مراجعة",
   "case_detail.review_decision.callout": "ستؤدي مراجعة القرار إلى تغيير حالته وإرسال خطاف ويب لبدء الخطوة التالية في سير عملك (<DocLink>معرفة المزيد</DocLink>)",
   "case_detail.review_decision.comment.label": "تعليق",
