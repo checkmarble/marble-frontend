@@ -1,4 +1,4 @@
-import { CaseStatusBadge, decisionsI18n } from '@app-builder/components';
+import { CaseStatusBadge, decisionsI18n, OutcomeBadge } from '@app-builder/components';
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
@@ -12,7 +12,6 @@ import { useCallback, useImperativeHandle, useMemo, useRef, useState } from 'rea
 import { useTranslation } from 'react-i18next';
 import { Checkbox, Table, Tooltip, useTable } from 'ui-design-system';
 
-import { OutcomeAndReviewStatus } from './OutcomeAndReviewStatus';
 import { Score } from './Score';
 
 type Column =
@@ -220,13 +219,7 @@ export function DecisionsList({
         size: 150,
         cell: ({ getValue }) => {
           const { outcome, reviewStatus } = getValue();
-          return (
-            <OutcomeAndReviewStatus
-              outcome={outcome}
-              className="my-2 w-full"
-              reviewStatus={reviewStatus}
-            />
-          );
+          return <OutcomeBadge outcome={outcome} reviewStatus={reviewStatus} size="md" />;
         },
       }),
     ],

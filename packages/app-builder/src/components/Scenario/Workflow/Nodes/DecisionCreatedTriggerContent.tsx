@@ -1,4 +1,4 @@
-import { OutcomeTag } from '@app-builder/components/Decisions';
+import { OutcomeBadge } from '@app-builder/components/Decisions';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -38,7 +38,7 @@ export function DecisionCreatedTriggerContent({ data }: { data: DecisionCreatedT
       </p>
       <p className="inline-flex flex-row gap-1">
         {data.outcomes.map((outcome) => (
-          <OutcomeTag key={outcome} outcome={outcome} border="square" size="big" />
+          <OutcomeBadge key={outcome} outcome={outcome} size="md" />
         ))}
       </p>
     </div>

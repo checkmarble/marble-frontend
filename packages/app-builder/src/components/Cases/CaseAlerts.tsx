@@ -71,6 +71,7 @@ export const CaseAlerts = ({
                         <OutcomeBadge
                           outcome={decision.outcome}
                           reviewStatus={decision.reviewStatus}
+                          showBackground={false}
                         />
                         <span className="text-grey-50 text-ellipsis text-xs font-normal">
                           {decision.scenario.name}

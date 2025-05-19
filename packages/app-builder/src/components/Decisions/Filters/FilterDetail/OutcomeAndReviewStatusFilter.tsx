@@ -1,20 +1,48 @@
-import { type ReviewStatus } from '@app-builder/models/decision';
-import { type KnownOutcome } from '@app-builder/models/outcome';
+import { type ReviewStatus, reviewStatuses } from '@app-builder/models/decision';
+import { type KnownOutcome, knownOutcomes } from '@app-builder/models/outcome';
 import { matchSorter } from '@app-builder/utils/search';
 import * as Ariakit from '@ariakit/react';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { flat, map, pipe } from 'remeda';
 import { Input, SelectWithCombobox } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { OutcomeAndReviewStatus, useOutcomeAndReviewStatus } from '../../OutcomeAndReviewStatus';
+import { decisionsI18n } from '../../decisions-i18n';
+import { OutcomeBadge } from '../../OutcomeTag';
 import { useOutcomeAndReviewStatusFilter } from '../DecisionFiltersContext';
 
 export function OutcomeAndReviewStatusFilter() {
+  const { t } = useTranslation(decisionsI18n);
   const [value, setSearchValue] = React.useState('');
   const { selectedOutcomeAndReviewStatus, setOutcomeAndReviewStatus } =
     useOutcomeAndReviewStatusFilter();
   const deferredValue = React.useDeferredValue(value);
-  const outcomeAndReviewStatus = useOutcomeAndReviewStatus();
+  const outcomeAndReviewStatus = React.useMemo(
+    () =>
+      pipe(
+        knownOutcomes,
+        map((outcome) => {
+          if (outcome === 'block_and_review') {
+            return reviewStatuses.map((reviewStatus) => ({
+              outcomeValue: 'block_and_review' as const,
+              outcomeLabel: t(`decisions:outcome.${outcome}`),
+              reviewStatusValue: reviewStatus,
+              reviewStatusLabel: t(`decisions:review_status.${reviewStatus}`),
+            }));
+          }
+          return {
+            outcomeValue: outcome,
+            outcomeLabel: t(`decisions:outcome.${outcome}`),
+            reviewStatusValue: undefined,
+            reviewStatusLabel: undefined,
+          };
+        }),
+        flat(),
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   const matches = React.useMemo(
     () =>
@@ -50,11 +78,7 @@ export function OutcomeAndReviewStatusFilter() {
 
             return (
               <SelectWithCombobox.ComboboxItem key={value} value={value}>
-                <OutcomeAndReviewStatus
-                  className="ml-2 w-full"
-                  outcome={outcomeValue}
-                  reviewStatus={reviewStatusValue}
-                />
+                <OutcomeBadge outcome={outcomeValue} reviewStatus={reviewStatusValue} size="md" />
                 <Ariakit.SelectItemCheck className="text-purple-65 shrink-0">
                   <Icon icon="tick" className="size-5" />
                 </Ariakit.SelectItemCheck>

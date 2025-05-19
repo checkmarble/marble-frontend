@@ -1,4 +1,4 @@
-import { OutcomeTag } from '@app-builder/components';
+import { OutcomeBadge } from '@app-builder/components';
 import { FiltersButton } from '@app-builder/components/Filters/FiltersButton';
 import { Highlight } from '@app-builder/components/Highlight';
 import { Ping } from '@app-builder/components/Ping';
@@ -207,7 +207,7 @@ export default function Rules() {
         cell: ({ getValue }) => {
           const outcome = getValue();
           if (!outcome) return '';
-          return <OutcomeTag outcome={outcome} />;
+          return <OutcomeBadge outcome={outcome} size="md" />;
         },
         header: t('decisions:outcome'),
         size: 120,

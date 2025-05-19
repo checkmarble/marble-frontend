@@ -1,4 +1,4 @@
-import { Callout, decisionsI18n, OutcomeTag, scenarioI18n } from '@app-builder/components';
+import { Callout, decisionsI18n, OutcomeBadge, scenarioI18n } from '@app-builder/components';
 import { ScoreOutcomeThresholds } from '@app-builder/components/Decisions/ScoreOutcomeThresholds';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
@@ -262,7 +262,7 @@ function EditScoreThresholds() {
       }}
     >
       <div className="grid grid-cols-[max-content_auto] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
-        <OutcomeTag border="square" size="big" outcome="approve" />
+        <OutcomeBadge size="md" outcome="approve" className="w-full justify-center" />
         <form.Field name="scoreReviewThreshold">
           {(field) => (
             <div className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
@@ -295,7 +295,7 @@ function EditScoreThresholds() {
           )}
         </form.Field>
 
-        <OutcomeTag border="square" size="big" outcome="review" />
+        <OutcomeBadge size="md" outcome="review" className="w-full justify-center" />
         <form.Field name="scoreBlockAndReviewThreshold">
           {(field) => (
             <div className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
@@ -332,7 +332,7 @@ function EditScoreThresholds() {
           )}
         </form.Field>
 
-        <OutcomeTag border="square" size="big" outcome="block_and_review" />
+        <OutcomeBadge size="md" outcome="block_and_review" className="w-full justify-center" />
         <form.Field name="scoreDeclineThreshold">
           {(field) => (
             <div className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
@@ -369,7 +369,7 @@ function EditScoreThresholds() {
           )}
         </form.Field>
 
-        <OutcomeTag border="square" size="big" outcome="decline" />
+        <OutcomeBadge size="md" outcome="decline" className="w-full justify-center" />
         {t('scenarios:decision.score_based.decline_condition', {
           replace: {
             declineThreshold: scoreDeclineThreshold,

@@ -1,4 +1,4 @@
-import { OutcomeTag } from '@app-builder/components/Decisions';
+import { OutcomeBadge } from '@app-builder/components/Decisions';
 import { type SanctionOutcome } from '@app-builder/models/outcome';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useState } from 'react';
@@ -35,7 +35,7 @@ export const FieldOutcomes = ({
       onSelectedValueChange={onChange}
     >
       <SelectWithCombobox.Select name={name} disabled={disabled} onBlur={onBlur} className="w-full">
-        {selectedOutcome ? <OutcomeTag border="square" outcome={selectedOutcome} /> : null}
+        {selectedOutcome ? <OutcomeBadge size="md" outcome={selectedOutcome} /> : null}
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
       <SelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
@@ -43,7 +43,7 @@ export const FieldOutcomes = ({
         <SelectWithCombobox.ComboboxList>
           {matches.map((outcome) => (
             <SelectWithCombobox.ComboboxItem key={outcome} value={outcome}>
-              <OutcomeTag border="square" outcome={outcome} />
+              <OutcomeBadge size="md" outcome={outcome} />
             </SelectWithCombobox.ComboboxItem>
           ))}
         </SelectWithCombobox.ComboboxList>

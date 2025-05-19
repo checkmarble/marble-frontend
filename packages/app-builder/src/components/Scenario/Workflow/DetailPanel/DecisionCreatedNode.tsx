@@ -1,7 +1,7 @@
 import { Callout } from '@app-builder/components/Callout';
-import { OutcomeTag, useOutcomes } from '@app-builder/components/Decisions';
+import { OutcomeBadge } from '@app-builder/components/Decisions';
 import { Highlight } from '@app-builder/components/Highlight';
-import { type Outcome } from '@app-builder/models/outcome';
+import { knownOutcomes, type Outcome } from '@app-builder/models/outcome';
 import { type Scenario } from '@app-builder/models/scenario';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
@@ -108,12 +108,8 @@ function SelectOutcomes({
   const { t } = useTranslation(workflowI18n);
   const [value, setSearchValue] = React.useState('');
   const deferredValue = React.useDeferredValue(value);
-  const outcomes = useOutcomes();
 
-  const matches = React.useMemo(
-    () => matchSorter(outcomes, deferredValue, { keys: ['label'] }),
-    [deferredValue, outcomes],
-  );
+  const matches = React.useMemo(() => matchSorter(knownOutcomes, deferredValue), [deferredValue]);
 
   return (
     <SelectWithCombobox.Root
@@ -128,7 +124,7 @@ function SelectOutcomes({
         {selectedOutcomes.length > 0 ? (
           <div className="flex flex-wrap gap-1">
             {selectedOutcomes.map((outcome) => (
-              <OutcomeTag key={outcome} outcome={outcome} border="square" size="big" />
+              <OutcomeBadge key={outcome} outcome={outcome} size="md" />
             ))}
           </div>
         ) : (
@@ -143,8 +139,8 @@ function SelectOutcomes({
         <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((outcome) => {
             return (
-              <SelectWithCombobox.ComboboxItem key={outcome.value} value={outcome.value}>
-                <OutcomeTag outcome={outcome.value} border="square" size="big" className="w-full" />
+              <SelectWithCombobox.ComboboxItem key={outcome} value={outcome}>
+                <OutcomeBadge outcome={outcome} size="md" className="w-full" />
               </SelectWithCombobox.ComboboxItem>
             );
           })}
