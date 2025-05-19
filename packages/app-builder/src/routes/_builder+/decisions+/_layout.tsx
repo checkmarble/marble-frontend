@@ -10,7 +10,10 @@ export const handle = {
       const { t } = useTranslation(['navigation']);
 
       return (
-        <BreadCrumbLink to={getRoute('/decisions')} isLast={isLast}>
+        <BreadCrumbLink
+          to={`${getRoute('/decisions')}?dateRange%5Btype%5D=dynamic&dateRange%5BfromNow%5D=-P30D`}
+          isLast={isLast}
+        >
           <Icon icon="decision" className="me-2 size-6" />
           {t('navigation:decisions')}
         </BreadCrumbLink>
