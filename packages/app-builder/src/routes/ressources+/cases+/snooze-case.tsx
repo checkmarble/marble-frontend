@@ -1,5 +1,6 @@
 import { casesI18n } from '@app-builder/components/Cases';
 import { initServerServices } from '@app-builder/services/init.server';
+import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -8,11 +9,9 @@ import {
   addDays,
   addHours,
   addMonths,
-  format,
   isBefore,
   isMonday,
   isSameDay,
-  isThisMonth,
   nextMonday,
   startOfHour,
 } from 'date-fns';
@@ -86,11 +85,12 @@ export function SnoozeCase({
   snoozeUntil,
 }: Pick<EditSnoozeForm, 'caseId'> & { snoozeUntil?: string }) {
   const { t } = useTranslation(casesI18n);
+  const language = useFormatLanguage();
   const fetcher = useFetcher<typeof action>();
   const [isOpen, setIsOpen] = useState(false);
 
   const formatDate = (date: Date) =>
-    isThisMonth(date) ? format(date, 'EEE d, h:mm a') : format(date, 'EEE, MMM d, h:mm a');
+    formatDateTime(date, { language, dateStyle: 'medium', timeStyle: 'short' });
 
   const form = useForm({
     onSubmit: ({ value }) => {
