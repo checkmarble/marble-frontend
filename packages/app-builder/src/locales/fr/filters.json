@@ -1,5 +1,6 @@
 {
   "clear_filters": "effacer les filtres",
   "filters": "filtres",
-  "new_filter": "nouveau filtre"
+  "new_filter": "nouveau filtre",
+  "up_to": "jusqu'à {{duration}}"
 }
