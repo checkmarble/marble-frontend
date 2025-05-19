@@ -280,7 +280,7 @@ function AddRuleSnoozeContent({
               className="size-5"
               loading={fetcher.state === 'submitting'}
             />
-            {t('cases:case_detail.add_rule_snooze.snooze_this_value')}
+            {t('cases:decisions.rule.snooze')}
           </Button>
         </div>
       </div>

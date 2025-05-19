@@ -13,7 +13,7 @@ import { Dict } from '@swan-io/boxed';
 import { formatRelative } from 'date-fns';
 import { Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, Tabs, TabsContent, TabsList, TabsTrigger, TooltipV2 } from 'ui-design-system';
+import { Button, cn, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { DrawerContext } from '../Drawer/Drawer';
@@ -99,7 +99,7 @@ export const SnoozePanel = ({
                         />
                       ) : null}
                       <div className="border-grey-90 bg-grey-100 rounded-lg border">
-                        <div className="text-2xs text-grey-50 grid grid-cols-[150px_100px_1fr_1fr_176px_176px] font-normal">
+                        <div className="text-2xs text-grey-50 grid grid-cols-[150px_100px_1fr_1fr_150px_150px_150px] font-normal">
                           <span className="p-2">{t('cases:decisions.rule.snooze')}</span>
                           <span className="p-2">
                             {t('cases:decisions.rule.last_hit_timestamp')}
@@ -108,6 +108,7 @@ export const SnoozePanel = ({
                           <span className="p-2">{t('cases:decisions.rule.description')}</span>
                           <span className="p-2">{t('cases:decisions.rule.rule_group')}</span>
                           <span className="p-2">{t('cases:decisions.outcome')}</span>
+                          <span className="p-2">{t('cases:decisions.rule.snooze_until')}</span>
                         </div>
                         {rules.map((r) => {
                           const formattedHitAt = (
@@ -121,7 +122,7 @@ export const SnoozePanel = ({
                           return (
                             <div
                               key={r.ruleId}
-                              className="border-grey-90 hover:bg-purple-98 grid grid-cols-[150px_100px_1fr_1fr_176px_176px] items-center border-t transition-colors"
+                              className="border-grey-90 hover:bg-purple-98 grid grid-cols-[150px_100px_1fr_1fr_150px_150px_150px] items-center border-t transition-colors"
                             >
                               <div className="flex min-h-full items-center justify-center p-2">
                                 <AddRuleSnooze decisionId={r.decisionId} ruleId={r.ruleId}>
@@ -137,33 +138,13 @@ export const SnoozePanel = ({
                                       aria-hidden
                                     />
                                     <span className="text-xs font-medium">
-                                      {t('cases:snooze.title')}
+                                      {t('cases:decisions.rule.snooze')}
                                     </span>
                                   </Button>
                                 </AddRuleSnooze>
                               </div>
                               <div className="border-grey-90 flex min-h-full items-center justify-center border-x p-2">
-                                {r.isSnoozed ? (
-                                  <TooltipV2.Provider>
-                                    <TooltipV2.Tooltip>
-                                      <TooltipV2.TooltipTrigger>
-                                        {formattedHitAt}
-                                      </TooltipV2.TooltipTrigger>
-                                      <TooltipV2.TooltipContent>
-                                        <span className="text-2xs inline-flex items-center gap-1">
-                                          <span>Snooze until</span>
-                                          <span>
-                                            {formatRelative(r.hitAt, new Date(), {
-                                              locale: getDateFnsLocale(language),
-                                            })}
-                                          </span>
-                                        </span>
-                                      </TooltipV2.TooltipContent>
-                                    </TooltipV2.Tooltip>
-                                  </TooltipV2.Provider>
-                                ) : (
-                                  formattedHitAt
-                                )}
+                                {formattedHitAt}
                               </div>
                               <div className="border-grey-90 flex min-h-full items-center justify-between border-r p-2">
                                 <span
@@ -191,11 +172,20 @@ export const SnoozePanel = ({
                                   />
                                 ) : null}
                               </div>
-                              <div className="flex min-h-full items-center p-2">
+                              <div className="border-grey-90 flex min-h-full items-center border-r p-2">
                                 <OutcomeBadge
                                   className={cn({ 'opacity-30': r.isSnoozed })}
                                   outcome={r.outcome}
                                 />
+                              </div>
+                              <div className="flex min-h-full items-center p-2">
+                                {r.isSnoozed ? (
+                                  <span className="opacity-30">
+                                    {formatRelative(r.end, new Date(), {
+                                      locale: getDateFnsLocale(language),
+                                    })}
+                                  </span>
+                                ) : null}
                               </div>
                             </div>
                           );
