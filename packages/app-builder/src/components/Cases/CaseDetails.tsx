@@ -6,6 +6,7 @@ import { CloseCase } from '@app-builder/routes/ressources+/cases+/close-case';
 import { EditCaseAssignee } from '@app-builder/routes/ressources+/cases+/edit-assignee';
 import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
 import { EditCaseName } from '@app-builder/routes/ressources+/cases+/edit-name';
+import { EditCaseSuspicion } from '@app-builder/routes/ressources+/cases+/edit-suspicion';
 import { EditCaseTags } from '@app-builder/routes/ressources+/cases+/edit-tags';
 import { EscalateCase } from '@app-builder/routes/ressources+/cases+/escalate-case';
 import { OpenCase } from '@app-builder/routes/ressources+/cases+/open-case';
@@ -101,12 +102,10 @@ export const CaseDetails = ({
             id={detail.id}
           />
         </div>
-        {/*
-        TODO: Add this section when SAR is properly spec back & front
         <div className="grid grid-cols-[120px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">Report of suspicion</span>
-          <EditCaseSuspicion id={detail.id} reports={reports} />
-        </div> */}
+          <EditCaseSuspicion id={detail.id} reports={[]} />
+        </div>
       </div>
       <div className="flex flex-col justify-start gap-1.5">
         <span className="text-r text-grey-00 px-1 font-medium">{t('cases:investigation')}</span>
