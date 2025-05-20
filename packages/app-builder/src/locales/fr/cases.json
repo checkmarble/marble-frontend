@@ -195,6 +195,6 @@
   "filter.include_snoozed.label": "Voir les rappels",
   "filter.exclude_assigned.label": "Non assignés",
   "filter.closed_only.label": "Investigations résolues",
-  "case.status.snoozed": "Désactivé",
+  "case.status.snoozed": "En attente",
   "case.status.waiting_for_action": "En attente d'action"
 }

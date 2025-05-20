@@ -66,7 +66,7 @@ export const outcomeBadgeVariants = cva('inline-flex items-center w-fit shrink-0
   variants: {
     size: {
       sm: 'gap-1 rounded-full px-2 py-1 text-xs font-normal',
-      md: 'gap-2 rounded px-2 py-1.5 text-r font-medium',
+      md: 'gap-1.5 rounded px-2 py-1.5 text-r font-medium',
       lg: 'gap-2 rounded px-2 py-2.5 text-r font-medium',
     },
   },
@@ -118,12 +118,12 @@ export const OutcomeBadge = ({
       })}
     >
       {match(outcome)
-        .with('approve', () => <Icon icon="accepted" className="text-green-38 size-5" />)
-        .with('decline', () => <Icon icon="denied" className="text-red-47 size-5" />)
+        .with('approve', () => <Icon icon="accepted" className="text-green-38 size-4" />)
+        .with('decline', () => <Icon icon="denied" className="text-red-47 size-4" />)
         .with('review', () => (
           <div
-            className={cn('size-4 rounded-full', {
-              'bg-yellow-50': showBackground,
+            className={cn('size-3.5 rounded-full', {
+              'bg-orange-50': showBackground,
               'bg-yellow-75': !showBackground,
             })}
           />
@@ -132,10 +132,10 @@ export const OutcomeBadge = ({
         .with('block_and_review', () =>
           match(reviewStatus)
             .with('approve', () => (
-              <Icon icon="manually_accepted" className="text-green-38 size-5" />
+              <Icon icon="manually_accepted" className="text-green-38 size-4" />
             ))
-            .with('decline', () => <Icon icon="manually_denied" className="text-red-47 size-5" />)
-            .otherwise(() => <Icon icon="block_and_review" className="size-5 text-orange-50" />),
+            .with('decline', () => <Icon icon="manually_denied" className="text-red-47 size-4" />)
+            .otherwise(() => <Icon icon="block_and_review" className="size-4 text-orange-50" />),
         )
         .exhaustive()}
       {showText ? (
@@ -146,7 +146,7 @@ export const OutcomeBadge = ({
               match(outcome)
                 .with('approve', () => 'text-green-38')
                 .with('decline', () => 'text-red-47')
-                .with('review', () => 'text-yellow-50')
+                .with('review', () => 'text-orange-50')
                 .with('unknown', () => 'text-grey-50')
                 .with('block_and_review', () =>
                   match(reviewStatus)
