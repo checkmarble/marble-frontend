@@ -271,42 +271,6 @@ function SearchById() {
   );
 }
 
-// Temporary disabled
-// function ToggleLiveUpdate() {
-//   const id = useId();
-//   const { t } = useTranslation(handle.i18n);
-//   const revalidator = useRevalidator();
-//   const [liveUpdate, setLiveUpdate] = useState(false);
-//   const visibilityState = useVisibilityChange();
-
-//   useEffect(() => {
-//     if (!liveUpdate || visibilityState === 'hidden') return;
-
-//     const interval = setInterval(() => {
-//       revalidator.revalidate();
-//     }, 5000);
-
-//     return () => {
-//       clearInterval(interval);
-//     };
-//   }, [liveUpdate, revalidator, visibilityState]);
-
-//   return (
-//     <div className="flex flex-row items-center gap-2">
-//       <Checkbox
-//         id={id}
-//         onCheckedChange={(checked) => {
-//           if (checked === 'indeterminate') return;
-//           setLiveUpdate(checked);
-//         }}
-//       />
-//       <Label htmlFor={id} className="text-s whitespace-nowrap">
-//         {t('decisions:live_update')}
-//       </Label>
-//     </div>
-//   );
-// }
-
 export function ErrorBoundary() {
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);
