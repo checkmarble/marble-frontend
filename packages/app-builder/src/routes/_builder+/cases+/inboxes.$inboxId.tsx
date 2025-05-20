@@ -247,9 +247,7 @@ export default function Cases() {
                 onSortingChange={(state) => {
                   const paginationParams: PaginationParams = {
                     ...omit(initialPagination, ['order']),
-                    ...(state.length > 0 && {
-                      order: state[0]?.desc ? 'DESC' : 'ASC',
-                    }),
+                    order: state[0]?.desc ? 'DESC' : 'ASC',
                   };
 
                   if (hasAlreadyOrdered) navigateCasesList(filters, paginationParams);

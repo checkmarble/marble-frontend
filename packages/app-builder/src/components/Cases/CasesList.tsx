@@ -30,7 +30,7 @@ export function CasesList({
 }) {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'created_at', desc: false }]);
   const { orgTags } = useOrganizationTags();
 
   useEffect(() => {
@@ -144,6 +144,7 @@ export function CasesList({
     getCoreRowModel: getCoreRowModel(),
     state: { sorting },
     manualSorting: true,
+    enableSortingRemoval: false,
     onSortingChange: setSorting,
     rowLink: ({ id }) => <Link to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(id) })} />,
   });
