@@ -299,8 +299,8 @@ importers:
         version: 5.0.3(@types/react@18.3.11)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
     devDependencies:
       '@biomejs/js-api':
-        specifier: ^0.7.1
-        version: 0.7.1(@biomejs/wasm-nodejs@2.0.0-beta.3)
+        specifier: 0.8.0-beta.2
+        version: 0.8.0-beta.2
       '@marble/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -965,12 +965,12 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@biomejs/js-api@0.7.1':
-    resolution: {integrity: sha512-VFdgFFZWcyCQxZcAasyv8Enpexn4CblMdWmr6izLYHTLcbd+z9x/LuKU71qnmClABfnYqZjiY7c8DKTVri3Ajw==}
+  '@biomejs/js-api@0.8.0-beta.2':
+    resolution: {integrity: sha512-jaIkxS9R+Dg+SYhxX2eQPL49i1pubi/Grb4ZluYZ1zRvKr4jMClk964/NKAVcI2bayBZQ4VH9j+r+5poQhS2Iw==}
     peerDependencies:
-      '@biomejs/wasm-bundler': ^1.9.2
-      '@biomejs/wasm-nodejs': ^1.9.2
-      '@biomejs/wasm-web': ^1.9.2
+      '@biomejs/wasm-bundler': ^1.9.4
+      '@biomejs/wasm-nodejs': ^1.9.4
+      '@biomejs/wasm-web': ^1.9.4
     peerDependenciesMeta:
       '@biomejs/wasm-bundler':
         optional: true
@@ -9792,9 +9792,7 @@ snapshots:
   '@biomejs/cli-win32-x64@2.0.0-beta.5':
     optional: true
 
-  '@biomejs/js-api@0.7.1(@biomejs/wasm-nodejs@2.0.0-beta.3)':
-    optionalDependencies:
-      '@biomejs/wasm-nodejs': 2.0.0-beta.3
+  '@biomejs/js-api@0.8.0-beta.2': {}
 
   '@biomejs/wasm-nodejs@2.0.0-beta.3': {}
 

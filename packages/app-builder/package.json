@@ -17,7 +17,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@biomejs/js-api": "^0.7.1",
+    "@biomejs/js-api": "0.8.0-beta.2",
     "@marble/eslint-config": "workspace:*",
     "@remix-run/dev": "^2.16.5",
     "@segment/analytics-next": "^1.78.1",
