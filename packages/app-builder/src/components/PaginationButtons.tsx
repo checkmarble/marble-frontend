@@ -1,5 +1,5 @@
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
-import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTime, formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { type Table } from '@tanstack/react-table';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
@@ -17,11 +17,51 @@ export const paginationSchema = z.object({
 
 type ItemWithId = {
   id: string;
+  createdAt: string;
 };
 
 type CursorPaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
   onPaginationChange: (paginationParams: PaginationParams) => void;
 };
+
+function getStartAndEndFormatted(
+  startTs: string | undefined,
+  endTs: string | undefined,
+  language: string,
+) {
+  if (!startTs || !endTs) {
+    return { startFormatted: '', endFormatted: '' };
+  }
+
+  const startDate = new Date(startTs);
+  const endDate = new Date(endTs);
+
+  // Compare local date parts (year, month, day)
+  const isSameLocalDay =
+    startDate.getFullYear() === endDate.getFullYear() &&
+    startDate.getMonth() === endDate.getMonth() &&
+    startDate.getDate() === endDate.getDate();
+
+  const startFormatted = formatDateTime(startTs, {
+    language,
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+
+  const endFormatted = isSameLocalDay
+    ? formatDateTime(endTs, {
+        language,
+        dateStyle: undefined,
+        timeStyle: 'short',
+      })
+    : formatDateTime(endTs, {
+        language,
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      });
+
+  return { startFormatted, endFormatted };
+}
 
 export function CursorPaginationButtons({
   items,
@@ -31,8 +71,12 @@ export function CursorPaginationButtons({
   onPaginationChange,
 }: CursorPaginationsButtonsProps) {
   const { t } = useTranslation(['common']);
+  const language = useFormatLanguage();
   const start = Math.min(startIndex, endIndex);
   const end = Math.max(startIndex, endIndex);
+
+  const startTs = items[0]?.createdAt;
+  const endTs = items[items.length - 1]?.createdAt;
 
   const fetchPrevious = () => {
     const pagination: PaginationParams = {
@@ -50,16 +94,23 @@ export function CursorPaginationButtons({
     onPaginationChange(pagination);
   };
 
+  const { startFormatted, endFormatted } = getStartAndEndFormatted(startTs, endTs, language);
+
   const previousDisabled = start <= 1;
   const nextDisabled = !hasNextPage;
   return (
     <div className="flex items-center justify-end gap-2">
-      <Trans
-        t={t}
-        i18nKey="common:items_displayed"
-        components={{ StartToEnd: <span style={{ fontWeight: 'bold' }} /> }}
-        values={{ start, end }}
-      />
+      {startFormatted !== '' && endFormatted !== '' ? (
+        <Trans
+          t={t}
+          i18nKey="common:items_displayed"
+          components={{ StartToEnd: <span style={{ fontWeight: '' }} /> }}
+          values={{
+            start: startFormatted,
+            end: endFormatted,
+          }}
+        />
+      ) : null}
 
       <Button onClick={fetchPrevious} variant="secondary" disabled={previousDisabled}>
         <Icon icon="arrow-left" className="size-4" />
