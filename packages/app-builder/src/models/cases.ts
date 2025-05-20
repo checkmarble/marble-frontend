@@ -9,14 +9,11 @@ import {
   type CaseStatusForCaseEventDto,
   type CaseTagDto,
   type CreateCaseBodyDto,
-  type CreateSuspiciousActivityReportBodyDto,
   type Error,
   type Outcome,
   type PivotObjectDto,
   type SuspiciousActivityReportDto,
   type UpdateCaseBodyDto,
-  type UpdateSuspiciousActivityReportBodyDto,
-  type UploadSuspiciousActivityReportBodyDto,
 } from 'marble-api';
 import { match } from 'ts-pattern';
 
