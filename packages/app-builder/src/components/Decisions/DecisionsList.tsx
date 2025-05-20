@@ -1,4 +1,4 @@
-import { CaseStatusPreview, decisionsI18n } from '@app-builder/components';
+import { CaseStatusBadge, decisionsI18n, OutcomeBadge } from '@app-builder/components';
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
@@ -12,7 +12,6 @@ import { useCallback, useImperativeHandle, useMemo, useRef, useState } from 'rea
 import { useTranslation } from 'react-i18next';
 import { Checkbox, Table, Tooltip, useTable } from 'ui-design-system';
 
-import { OutcomeAndReviewStatus } from './OutcomeAndReviewStatus';
 import { Score } from './Score';
 
 type Column =
@@ -174,7 +173,7 @@ export function DecisionsList({
         cell: ({ getValue, row }) =>
           row.original.case ? (
             <div className="flex w-fit flex-row items-center justify-center gap-2 align-baseline">
-              <CaseStatusPreview size="big" type="first-letter" status={row.original.case.status} />
+              <CaseStatusBadge status={row.original.case.status} size="large" showText={false} />
               <Tooltip.Default content={getValue()}>
                 <div className="bg-grey-98 flex h-8 items-center justify-center rounded px-2">
                   <span className="text-grey-00 text-s line-clamp-1 font-normal">{getValue()}</span>
@@ -220,13 +219,7 @@ export function DecisionsList({
         size: 150,
         cell: ({ getValue }) => {
           const { outcome, reviewStatus } = getValue();
-          return (
-            <OutcomeAndReviewStatus
-              outcome={outcome}
-              className="my-2 w-full"
-              reviewStatus={reviewStatus}
-            />
-          );
+          return <OutcomeBadge outcome={outcome} reviewStatus={reviewStatus} size="md" />;
         },
       }),
     ],

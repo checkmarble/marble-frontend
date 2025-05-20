@@ -41,7 +41,7 @@ export type Pagination = {
     start_index: number;
     end_index: number;
 };
-export type CaseStatusDto = "pending" | "investigating" | "closed";
+export type CaseStatusDto = "pending" | "investigating" | "closed" | "waiting_for_action" | "snoozed";
 export type CaseContributorDto = {
     id: string;
     case_id: string;

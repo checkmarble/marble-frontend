@@ -709,7 +709,7 @@ components:
       enum: ['pending', 'approve', 'decline']
     CaseStatusDto:
       type: string
-      enum: ['pending', 'investigating', 'closed']
+      enum: ['pending', 'investigating', 'closed', 'waiting_for_action', 'snoozed']
     CaseStatusForCaseEventDto:
       # Old statuses (open, discarded and resolved) are kept for backward compatibility with existing case events.
       enum: ['pending', 'investigating', 'closed', 'open', 'discarded', 'resolved']

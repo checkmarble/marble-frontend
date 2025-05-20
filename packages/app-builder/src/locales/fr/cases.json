@@ -194,5 +194,7 @@
   "case_detail.history.event_detail.rule_snooze_created": "Règle désactivée par <Actor>{{actor}}</Actor>",
   "filter.include_snoozed.label": "Voir les rappels",
   "filter.exclude_assigned.label": "Non assignés",
-  "filter.closed_only.label": "Investigations résolues"
+  "filter.closed_only.label": "Investigations résolues",
+  "case.status.snoozed": "En attente",
+  "case.status.waiting_for_action": "En attente d'action"
 }
