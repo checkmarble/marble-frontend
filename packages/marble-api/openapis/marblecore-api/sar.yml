@@ -46,9 +46,9 @@
     requestBody:
       description: The suspicious activity report to create
       content:
-        application/json:
+        multipart/form-data:
           schema:
-            $ref: '#/components/schemas/CreateSuspiciousActivityReportBodyDto'
+            $ref: '#/components/schemas/SuspiciousActivityReportBodyDto'
       required: true
     responses:
       '201':
@@ -90,9 +90,9 @@
     requestBody:
       description: The updates to the suspicious activity report
       content:
-        application/json:
+        multipart/form-data:
           schema:
-            $ref: '#/components/schemas/UpdateSuspiciousActivityReportBodyDto'
+            $ref: '#/components/schemas/SuspiciousActivityReportBodyDto'
       required: true
     responses:
       '200':
@@ -133,49 +133,6 @@
     responses:
       '204':
         description: The suspicious activity report was deleted
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '404':
-        $ref: 'components.yml#/responses/404'
-      '403':
-        $ref: 'components.yml#/responses/403'
-
-/cases/{caseId}/sar/{reportId}/file:
-  post:
-    tags:
-      - Suspicious Activity Report
-    summary: Upload a file to a suspicious activity report
-    operationId: sarUpload
-    security:
-      - bearerAuth: []
-    parameters:
-      - name: caseId
-        description: ID of the case
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: reportId
-        description: ID of the report
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    requestBody:
-      description: The file to upload to the suspicious activity report
-      content:
-        multipart/form-data:
-          schema:
-            $ref: '#/components/schemas/UploadSuspiciousActivityReportBodyDto'
-    responses:
-      '200':
-        description: The file was successfully added to the suspicious activity report
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SuspiciousActivityReportDto'
       '401':
         $ref: 'components.yml#/responses/401'
       '404':
@@ -251,25 +208,12 @@ components:
           type: string
           format: uuid
 
-    CreateSuspiciousActivityReportBodyDto:
+    SuspiciousActivityReportBodyDto:
       type: object
       properties:
         status:
           type: string
           enum: ['pending', 'completed']
-
-    UpdateSuspiciousActivityReportBodyDto:
-      type: object
-      required: ['status']
-      properties:
-        status:
-          type: string
-          enum: ['pending', 'completed']
-
-    UploadSuspiciousActivityReportBodyDto:
-      type: object
-      required: ['file']
-      properties:
         file:
           type: string
           format: binary
