@@ -22,6 +22,8 @@ type ItemWithId = {
 
 type CursorPaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
   onPaginationChange: (paginationParams: PaginationParams) => void;
+  hasPreviousPage: boolean;
+  hideBoundaries?: boolean;
 };
 
 function getStartAndEndFormatted(
@@ -65,15 +67,13 @@ function getStartAndEndFormatted(
 
 export function CursorPaginationButtons({
   items,
-  startIndex,
-  endIndex,
   hasNextPage,
+  hasPreviousPage,
   onPaginationChange,
+  hideBoundaries,
 }: CursorPaginationsButtonsProps) {
   const { t } = useTranslation(['common']);
   const language = useFormatLanguage();
-  const start = Math.min(startIndex, endIndex);
-  const end = Math.max(startIndex, endIndex);
 
   const startTs = items[0]?.createdAt;
   const endTs = items[items.length - 1]?.createdAt;
@@ -96,11 +96,11 @@ export function CursorPaginationButtons({
 
   const { startFormatted, endFormatted } = getStartAndEndFormatted(startTs, endTs, language);
 
-  const previousDisabled = start <= 1;
+  const previousDisabled = !hasPreviousPage;
   const nextDisabled = !hasNextPage;
   return (
     <div className="flex items-center justify-end gap-2">
-      {startFormatted !== '' && endFormatted !== '' ? (
+      {!hideBoundaries && startFormatted !== '' && endFormatted !== '' ? (
         <Trans
           t={t}
           i18nKey="common:items_displayed"
