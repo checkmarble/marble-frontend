@@ -10,20 +10,14 @@ import * as z from 'zod';
 import { type CasesFilterName, casesFilterNames } from './filters';
 
 export const casesFiltersSchema = z.object({
-  statuses: z
-    .array(
-      z.union(
-        caseStatuses.map((s) => z.literal(s)) as [
-          z.ZodLiteral<CaseStatus>,
-          z.ZodLiteral<CaseStatus>,
-          ...z.ZodLiteral<CaseStatus>[],
-        ],
-      ),
-    )
-    .optional(),
+  statuses: z.array(z.enum(caseStatuses)).optional(),
   dateRange: dateRangeSchema.optional(),
   name: z.string().optional(),
-  snoozed: z
+  includeSnoozed: z
+    .enum(['true', 'false'])
+    .transform((val) => val === 'true')
+    .optional(),
+  excludeAssigned: z
     .enum(['true', 'false'])
     .transform((val) => val === 'true')
     .optional(),
@@ -43,7 +37,8 @@ export type CasesFiltersForm = {
   statuses: CaseStatus[];
   dateRange: DateRangeFilterForm;
   name?: string;
-  snoozed?: boolean;
+  includeSnoozed?: boolean;
+  excludeAssigned?: boolean;
 };
 
 const emptyCasesFilters: CasesFiltersForm = {
@@ -148,11 +143,11 @@ export function useNameFilter() {
  * - undefinedCasesFilterNames: filter values are undefined
  * - definedCasesFilterNames: filter values are defined
  */
-export function useCasesFiltersPartition() {
+export function useCasesFiltersPartition(excludedFilters?: readonly string[]) {
   const { filterValues } = useCasesFiltersContext();
 
   const [undefinedCasesFilterNames, definedCasesFilterNames] = R.pipe(
-    casesFilterNames,
+    casesFilterNames.filter((filterName) => !excludedFilters?.includes(filterName)),
     R.partition((filterName) => {
       const value = filterValues[filterName];
       if (R.isArray(value)) return value.length === 0;

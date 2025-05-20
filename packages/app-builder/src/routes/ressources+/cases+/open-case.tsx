@@ -55,7 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
     promises.push(
       cases.updateCase({
         caseId: data.caseId,
-        body: { status: 'investigating', outcome: 'unset' },
+        body: { status: 'investigating' },
       }),
     );
 

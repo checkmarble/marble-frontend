@@ -3,7 +3,9 @@ import {
   ClearAllFiltersLink,
   FilterItem,
   FilterPopover,
+  FiltersButton,
 } from '@app-builder/components/Filters';
+import { SimpleFilter } from '@app-builder/components/Filters/SimpleFilter';
 import { getRoute } from '@app-builder/utils/routes';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,12 +20,11 @@ import {
 } from './CasesFiltersContext';
 import { CasesFiltersMenu } from './CasesFiltersMenu';
 import { FilterDetail } from './FilterDetail';
-import { getFilterIcon, getFilterTKey } from './filters';
+import { casesSimpleFilterNames, getFilterIcon, getFilterTKey } from './filters';
 
-export function CasesFiltersBar() {
+export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonly string[] }) {
   const { t } = useTranslation(casesI18n);
   const { onCasesFilterClose } = useCasesFiltersContext();
-
   const onOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
@@ -33,23 +34,37 @@ export function CasesFiltersBar() {
     [onCasesFilterClose],
   );
 
-  const { undefinedCasesFilterNames, definedCasesFilterNames } = useCasesFiltersPartition();
+  const { undefinedCasesFilterNames, definedCasesFilterNames } =
+    useCasesFiltersPartition(excludedFilters);
   const clearFilter = useClearFilter();
-
-  if (definedCasesFilterNames.length === 0) {
-    return null;
-  }
 
   return (
     <>
       <Separator className="bg-grey-90" decorative />
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="flex flex-row flex-wrap gap-2">
+          {undefinedCasesFilterNames.length > 0 && !definedCasesFilterNames.length ? (
+            <CasesFiltersMenu filterNames={undefinedCasesFilterNames}>
+              <FiltersButton />
+            </CasesFiltersMenu>
+          ) : null}
           {definedCasesFilterNames.map((filterName) => {
             const icon = getFilterIcon(filterName);
             const tKey = getFilterTKey(filterName);
 
-            return (
+            return casesSimpleFilterNames.includes(
+              filterName as (typeof casesSimpleFilterNames)[number],
+            ) ? (
+              <SimpleFilter key={filterName}>
+                <Icon icon={icon} className="size-5" />
+                <span className="text-s font-semibold first-letter:capitalize">{t(tKey)}</span>
+                <FilterItem.Clear
+                  onClick={() => {
+                    clearFilter(filterName);
+                  }}
+                />
+              </SimpleFilter>
+            ) : (
               <FilterPopover.Root key={filterName} onOpenChange={onOpenChange}>
                 <FilterItem.Root>
                   <FilterItem.Trigger>
@@ -68,7 +83,8 @@ export function CasesFiltersBar() {
               </FilterPopover.Root>
             );
           })}
-          {undefinedCasesFilterNames.length > 0 ? (
+
+          {definedCasesFilterNames.length > 0 && undefinedCasesFilterNames.length > 0 ? (
             <CasesFiltersMenu filterNames={undefinedCasesFilterNames}>
               <AddNewFilterButton />
             </CasesFiltersMenu>

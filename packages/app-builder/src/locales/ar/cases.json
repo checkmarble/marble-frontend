@@ -192,6 +192,9 @@
   "required_actions.review_screening_hits": "مراجعة عربات الفحص ({{count}})",
   "case_detail.history.event_detail.decision_reviewed": "قرار تمت مراجعته إلى <Status /> بواسطة <Actor>{{Actor}}</Actor>",
   "case_detail.history.event_detail.rule_snooze_created": "القاعدة snoozed بواسطة <Actor>{{Actor}}</Actor>",
+  "filter.include_snoozed.label": "تضمين المؤجّلين",
+  "filter.exclude_assigned.label": "غير المكلّفين فقط",
+  "filter.closed_only.label": "المغلقة فقط",
   "case.status.snoozed": "غفوة",
   "case.status.waiting_for_action": "في انتظار العمل"
 }

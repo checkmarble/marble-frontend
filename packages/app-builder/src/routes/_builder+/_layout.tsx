@@ -118,7 +118,9 @@ export default function Builder() {
                       <li>
                         <SidebarLink
                           labelTKey="navigation:decisions"
-                          to={getRoute('/decisions')}
+                          to={`${getRoute(
+                            '/decisions',
+                          )}?dateRange%5Btype%5D=dynamic&dateRange%5BfromNow%5D=-P30D`}
                           Icon={(props) => <Icon icon="decision" {...props} />}
                         />
                       </li>
