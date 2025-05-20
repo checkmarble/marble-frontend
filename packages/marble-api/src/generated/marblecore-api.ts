@@ -410,14 +410,9 @@ export type SuspiciousActivityReportDto = {
     created_by: string;
     created_at: string;
 };
-export type CreateSuspiciousActivityReportBodyDto = {
+export type SuspiciousActivityReportBodyDto = {
     status?: "pending" | "completed";
-};
-export type UpdateSuspiciousActivityReportBodyDto = {
-    status: "pending" | "completed";
-};
-export type UploadSuspiciousActivityReportBodyDto = {
-    file: Blob;
+    file?: Blob;
 };
 export type Tag = {
     id: string;
@@ -1657,7 +1652,7 @@ export function sarList(caseId: string, opts?: Oazapfts.RequestOpts) {
 /**
  * Create a suspicious activity report
  */
-export function sarCreate(caseId: string, createSuspiciousActivityReportBodyDto: CreateSuspiciousActivityReportBodyDto, opts?: Oazapfts.RequestOpts) {
+export function sarCreate(caseId: string, suspiciousActivityReportBodyDto: SuspiciousActivityReportBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 201;
         data: SuspiciousActivityReportDto;
@@ -1670,16 +1665,16 @@ export function sarCreate(caseId: string, createSuspiciousActivityReportBodyDto:
     } | {
         status: 404;
         data: string;
-    }>(`/cases/${encodeURIComponent(caseId)}/sar`, oazapfts.json({
+    }>(`/cases/${encodeURIComponent(caseId)}/sar`, oazapfts.multipart({
         ...opts,
         method: "POST",
-        body: createSuspiciousActivityReportBodyDto
+        body: suspiciousActivityReportBodyDto
     })));
 }
 /**
  * Update a suspicious activity report
  */
-export function sarUpdate(caseId: string, reportId: string, updateSuspiciousActivityReportBodyDto: UpdateSuspiciousActivityReportBodyDto, opts?: Oazapfts.RequestOpts) {
+export function sarUpdate(caseId: string, reportId: string, suspiciousActivityReportBodyDto: SuspiciousActivityReportBodyDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: SuspiciousActivityReportDto;
@@ -1692,10 +1687,10 @@ export function sarUpdate(caseId: string, reportId: string, updateSuspiciousActi
     } | {
         status: 404;
         data: string;
-    }>(`/cases/${encodeURIComponent(caseId)}/sar/${encodeURIComponent(reportId)}`, oazapfts.json({
+    }>(`/cases/${encodeURIComponent(caseId)}/sar/${encodeURIComponent(reportId)}`, oazapfts.multipart({
         ...opts,
         method: "PATCH",
-        body: updateSuspiciousActivityReportBodyDto
+        body: suspiciousActivityReportBodyDto
     })));
 }
 /**
@@ -1717,28 +1712,6 @@ export function sarDelete(caseId: string, reportId: string, opts?: Oazapfts.Requ
         ...opts,
         method: "DELETE"
     }));
-}
-/**
- * Upload a file to a suspicious activity report
- */
-export function sarUpload(caseId: string, reportId: string, uploadSuspiciousActivityReportBodyDto?: UploadSuspiciousActivityReportBodyDto, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: SuspiciousActivityReportDto;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>(`/cases/${encodeURIComponent(caseId)}/sar/${encodeURIComponent(reportId)}/file`, oazapfts.multipart({
-        ...opts,
-        method: "POST",
-        body: uploadSuspiciousActivityReportBodyDto
-    })));
 }
 /**
  * Download a suspicious activity report file

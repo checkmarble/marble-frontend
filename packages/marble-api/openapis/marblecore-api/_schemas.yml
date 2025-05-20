@@ -124,12 +124,8 @@ PivotObjectDto:
 
 SuspiciousActivityReportDto:
   $ref: sar.yml#/components/schemas/SuspiciousActivityReportDto
-CreateSuspiciousActivityReportBodyDto:
-  $ref: sar.yml#/components/schemas/CreateSuspiciousActivityReportBodyDto
-UpdateSuspiciousActivityReportBodyDto:
-  $ref: sar.yml#/components/schemas/UpdateSuspiciousActivityReportBodyDto
-UploadSuspiciousActivityReportBodyDto:
-  $ref: sar.yml#/components/schemas/UploadSuspiciousActivityReportBodyDto
+SuspiciousActivityReportBodyDto:
+  $ref: sar.yml#/components/schemas/SuspiciousActivityReportBodyDto
 
 # TAGS
 
