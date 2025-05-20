@@ -93,8 +93,6 @@ paths:
     $ref: ./marblecore-api/sar.yml#/~1cases~1{caseId}~1sar
   /cases/{caseId}/sar/{reportId}:
     $ref: ./marblecore-api/sar.yml#/~1cases~1{caseId}~1sar~1{reportId}
-  /cases/{caseId}/sar/{reportId}/file:
-    $ref: ./marblecore-api/sar.yml#/~1cases~1{caseId}~1sar~1{reportId}~1file
   /cases/{caseId}/sar/{reportId}/download:
     $ref: ./marblecore-api/sar.yml#/~1cases~1{caseId}~1sar~1{reportId}~1download
 
