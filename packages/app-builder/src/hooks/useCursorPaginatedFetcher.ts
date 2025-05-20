@@ -76,5 +76,6 @@ export const useCursorPaginatedFetcher = <T, D = T>({
     next,
     previous,
     reset,
+    hasPreviousPage: paginationState.hasPreviousPage,
   };
 };

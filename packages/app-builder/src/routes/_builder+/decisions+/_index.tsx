@@ -113,7 +113,7 @@ export default function Decisions() {
     inboxes,
   } = useLoaderData<typeof loader>();
 
-  const { data, next, previous, reset } = useCursorPaginatedFetcher<
+  const { data, next, previous, reset, hasPreviousPage } = useCursorPaginatedFetcher<
     typeof loader,
     PaginatedResponse<Decision>
   >({
@@ -199,6 +199,7 @@ export default function Decisions() {
                   onPaginationChange={(paginationParams: PaginationParams) =>
                     navigateDecisionList(filters, paginationParams)
                   }
+                  hasPreviousPage={hasPreviousPage}
                   {...pagination}
                 />
               </DecisionFiltersProvider>
