@@ -7,6 +7,7 @@ export type CursorPaginationState = {
   previousCursors: string[];
   lastAction: PaginationAction;
   isPristine: boolean;
+  hasPreviousPage: boolean;
 };
 
 const INITIAL_STATE: CursorPaginationState = {
@@ -14,6 +15,7 @@ const INITIAL_STATE: CursorPaginationState = {
   previousCursors: [],
   lastAction: 'next',
   isPristine: true,
+  hasPreviousPage: false,
 };
 
 export const useCursorPagination = () => {
@@ -28,17 +30,22 @@ export const useCursorPagination = () => {
         : [],
       lastAction: 'next',
       isPristine: false,
+      hasPreviousPage: true,
     }));
   }, []);
 
   const previous = useCallback(() => {
-    setState((currentState) => ({
-      ...currentState,
-      cursor: currentState.previousCursors.pop() ?? null,
-      previousCursors: [...currentState.previousCursors],
-      lastAction: 'previous',
-      isPristine: false,
-    }));
+    setState((currentState) => {
+      const hasPreviousPage = currentState.previousCursors.length > 0;
+      return {
+        ...currentState,
+        cursor: currentState.previousCursors.pop() ?? null,
+        previousCursors: [...currentState.previousCursors],
+        lastAction: 'previous',
+        isPristine: false,
+        hasPreviousPage,
+      };
+    });
   }, []);
 
   const reset = useCallback(() => {

@@ -158,7 +158,7 @@ export default function Cases() {
     pagination: initialPagination,
   } = useLoaderData<typeof loader>();
 
-  const { data, next, previous, reset } = useCursorPaginatedFetcher<
+  const { data, next, previous, reset, hasPreviousPage } = useCursorPaginatedFetcher<
     typeof loader,
     PaginatedResponse<Case>
   >({
@@ -275,6 +275,8 @@ export default function Cases() {
                 onPaginationChange={(paginationParams: PaginationParams) =>
                   navigateCasesList(filters, paginationParams)
                 }
+                hideBoundaries
+                hasPreviousPage={hasPreviousPage}
                 {...pagination}
               />
             </CasesFiltersProvider>
