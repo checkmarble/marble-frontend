@@ -110,7 +110,7 @@ export const EditCaseAssignee = ({
               >
                 <Icon icon="plus" className="text-grey-50 size-4" />
                 <span className="text-grey-50 text-xs">
-                  {t('cases:case_detail.assign-to-me-button.label')}
+                  {t('cases:case_detail.assign_to_myself_button.label')}
                 </span>
               </Button>
             ) : null}
