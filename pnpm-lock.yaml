@@ -300,7 +300,7 @@ importers:
     devDependencies:
       '@biomejs/js-api':
         specifier: 0.8.0-beta.2
-        version: 0.8.0-beta.2
+        version: 0.8.0-beta.2(@biomejs/wasm-nodejs@2.0.0-beta.3)
       '@marble/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -678,7 +678,14 @@ importers:
         version: 6.3.4(@types/node@22.13.10)(jiti@1.21.7)(tsx@4.19.3)(yaml@2.7.0)
 
   packages/ui-icons:
+    dependencies:
+      '@biomejs/wasm-nodejs':
+        specifier: ^2.0.0-beta.3
+        version: 2.0.0-beta.3
     devDependencies:
+      '@biomejs/js-api':
+        specifier: 0.8.0-beta.2
+        version: 0.8.0-beta.2(@biomejs/wasm-nodejs@2.0.0-beta.3)
       '@marble/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -9792,7 +9799,9 @@ snapshots:
   '@biomejs/cli-win32-x64@2.0.0-beta.5':
     optional: true
 
-  '@biomejs/js-api@0.8.0-beta.2': {}
+  '@biomejs/js-api@0.8.0-beta.2(@biomejs/wasm-nodejs@2.0.0-beta.3)':
+    optionalDependencies:
+      '@biomejs/wasm-nodejs': 2.0.0-beta.3
 
   '@biomejs/wasm-nodejs@2.0.0-beta.3': {}
 
