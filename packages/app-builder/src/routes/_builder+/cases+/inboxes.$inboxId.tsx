@@ -201,6 +201,7 @@ export default function Cases() {
         return;
       }
       if (pagination.order) {
+        reset();
         navigate(
           {
             pathname: getRoute('/cases/inboxes/:inboxId', {
