@@ -15,6 +15,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FileEntityAnnotationDto'
+      required:
+        - comments
+        - tags
+        - files
     CommonEntityAnnotationDto:
       type: object
       required:
@@ -41,8 +45,8 @@ components:
         tag_id:
           type: string
           format: uuid
-        required:
-          - tag_id
+      required:
+        - tag_id
     CommentEntityAnnotationPayloadDto:
       type: object
       properties:
@@ -56,15 +60,12 @@ components:
       properties:
         caption:
           type: string
-        bucket:
-          type: string
         files:
           type: array
           items:
             $ref: '#/components/schemas/EntityAnnotationFileDetailDto'
       required:
         - caption
-        - bucket
         - files
     EntityAnnotationFileDetailDto:
       type: object
@@ -72,13 +73,10 @@ components:
         id:
           type: string
           format: uuid
-        key:
-          type: string
         filename:
           type: string
       required:
         - id
-        - key
         - filename
     TagEntityAnnotationDto:
       allOf:
