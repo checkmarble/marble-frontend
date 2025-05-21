@@ -1,18 +1,18 @@
+import { join } from 'node:path';
+
 import { routes } from '@app-builder/utils/routes/routes';
-import { writeFile } from 'fs/promises';
+import { Biome, Distribution } from '@biomejs/js-api';
 import ora from 'ora';
-import { join } from 'path';
-import * as prettier from 'prettier';
+
+const biome = await Biome.create({
+  distribution: Distribution.NODE,
+});
+
+const projectKey = biome.openProject(`${process.cwd()}/../..`);
 
 const outTypesFile = join(process.cwd(), '/src/utils/routes/types.ts');
-
-async function getPrettierOptions() {
-  const options = await prettier.resolveConfig(outTypesFile);
-  return {
-    parser: 'typescript',
-    ...(options ?? {}),
-  };
-}
+console.log(`${process.cwd()}/../..`);
+console.log('outTypesFile', outTypesFile);
 
 type Route = {
   readonly id: string;
@@ -54,16 +54,16 @@ async function buildTypesFile(routes: readonly Route[]) {
       .map((routeId) => `'${routeId}'`)
       .join(' | ')};`;
 
-    await writeFile(
-      outTypesFile,
-      await prettier.format(
-        `
-      ${RoutePath}
-      
-      ${RouteID}
+    biome.formatContent(
+      projectKey,
+      `
+        ${RoutePath}
+
+        ${RouteID}
       `,
-        await getPrettierOptions(),
-      ),
+      {
+        filePath: outTypesFile,
+      },
     );
 
     spinner.succeed('Succesfully generated route based types');
@@ -76,6 +76,7 @@ async function buildTypesFile(routes: readonly Route[]) {
 async function main() {
   try {
     await buildTypesFile(routes);
+    biome.shutdown();
   } catch (error) {
     console.error('\n', error);
     process.exit(1);
