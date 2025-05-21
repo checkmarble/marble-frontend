@@ -343,9 +343,9 @@ export const EditCaseSuspicion = ({
           </div>
           <Modal.Root open={openReportModal} onOpenChange={setOpenReportModal}>
             <Modal.Content>
-              <Modal.Title>Report</Modal.Title>
+              <Modal.Title>{t('cases:sar.action.report')}</Modal.Title>
               <div className="flex flex-col gap-8 p-8">
-                <Callout>Please add the document below.</Callout>
+                <Callout>{t('cases:sar.action.report.callout')}</Callout>
                 <div
                   {...getRootProps()}
                   className={cn(
@@ -355,16 +355,16 @@ export const EditCaseSuspicion = ({
                 >
                   <input {...getInputProps()} />
                   <p className="text-r flex flex-col gap-1 text-center">
-                    <span className="text-grey-00">Drop your suspicious activity report here.</span>
+                    <span className="text-grey-00">{t('cases:sar.action.report.heading')}</span>
                     <span className="text-grey-50 inline-flex flex-col">
-                      <span>The following extensions are supported:</span>
+                      <span>{t('cases:sar.action.report.supported_extensions')}</span>
                       <span>jpg, png, pdf, zip, doc, docx, xls, xIsx</span>
                     </span>
                   </p>
                   <span className="text-grey-50 text-r">or</span>
                   <Button>
                     <Icon icon="plus" className="size-6" />
-                    Pick a file
+                    {t('cases:sar.action.report.cta')}
                   </Button>
                   {reportFile ? (
                     <span className="border-grey-90 flex items-center gap-1 rounded border px-1.5 py-0.5 text-xs font-medium">
@@ -388,7 +388,7 @@ export const EditCaseSuspicion = ({
                       form.handleSubmit();
                     }}
                   >
-                    Report
+                    {t('cases:sar.action.report')}
                   </Button>
                 </div>
               </div>

@@ -168,5 +168,18 @@
   "filter.closed_only.label": "Investigations résolues",
   "case.status.snoozed": "En attente",
   "case.status.waiting_for_action": "En attente d'action",
-  "decisions.rule.snooze_until": "En veille jusqu'au"
+  "decisions.rule.snooze_until": "En veille jusqu'au",
+  "sar.action.download": "Télécharger",
+  "sar.action.remove": "Supprimer",
+  "sar.action.report": "Finaliser le rapport",
+  "sar.action.request": "Demander le rapport",
+  "sar.action.upload": "Ajouter",
+  "sar.status.none": "Aucun",
+  "sar.status.reported": "Signalé",
+  "sar.status.requested": "Demandé",
+  "sar.title": "Rapport d'activité suspecte",
+  "sar.action.report.callout": "Ajoutez un rapport d'activité suspecte pour finaliser un rapport d'activité suspecte.",
+  "sar.action.report.heading": "Déposez votre fichier ici.",
+  "sar.action.report.supported_extensions": "Les extensions suivantes sont prises en charge :",
+  "sar.action.report.cta": "Choisir un fichier"
 }

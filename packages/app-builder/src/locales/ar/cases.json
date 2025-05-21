@@ -168,5 +168,18 @@
   "filter.exclude_assigned.label": "غير المكلّفين فقط",
   "filter.closed_only.label": "المغلقة فقط",
   "case.status.snoozed": "غفوة",
-  "case.status.waiting_for_action": "في انتظار العمل"
+  "case.status.waiting_for_action": "في انتظار العمل",
+  "sar.action.download": "تحميل",
+  "sar.action.remove": "يزيل",
+  "sar.action.report": "تقرير",
+  "sar.action.request": "طلب",
+  "sar.action.upload": "رفع",
+  "sar.status.none": "لا أحد",
+  "sar.status.reported": "ذكرت",
+  "sar.status.requested": "مطلوب",
+  "sar.title": "تقرير actrivity المشبوهة",
+  "sar.action.report.callout": "الرجاء إضافة المستند أدناه.",
+  "sar.action.report.cta": "اختر ملف",
+  "sar.action.report.heading": "إسقاط تقرير النشاط المشبوه هنا.",
+  "sar.action.report.supported_extensions": "تم دعم الامتدادات التالية:"
 }

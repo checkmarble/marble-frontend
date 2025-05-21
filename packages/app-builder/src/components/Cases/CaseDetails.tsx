@@ -72,11 +72,11 @@ export const CaseDetails = ({
       </div>
 
       <div className="border-b-grey-90 flex flex-col gap-2 border-b pb-6">
-        <div className="grid grid-cols-[160px,1fr] items-center">
+        <div className="grid grid-cols-[170px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:case.status')}</span>
           <CaseStatusBadge status={detail.status} outcome={detail.outcome} />
         </div>
-        <div className="grid grid-cols-[160px,1fr] items-center">
+        <div className="grid grid-cols-[170px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:creation_date')}</span>
           <time className="text-xs font-medium" dateTime={detail.createdAt}>
             {formatDateTime(detail.createdAt, {
@@ -85,15 +85,15 @@ export const CaseDetails = ({
             })}
           </time>
         </div>
-        <div className="grid grid-cols-[160px,1fr] items-center">
+        <div className="grid grid-cols-[170px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:case.inbox')}</span>
           <EditCaseInbox id={detail.id} inboxId={detail.inboxId} inboxes={inboxes} />
         </div>
-        <div className="grid grid-cols-[160px,1fr] items-center">
+        <div className="grid grid-cols-[170px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:case.tags')}</span>
           <EditCaseTags id={detail.id} tagIds={detail.tags.map(({ tagId }) => tagId)} />
         </div>
-        <div className="grid grid-cols-[160px,1fr] items-center">
+        <div className="grid grid-cols-[170px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:assigned_to')}</span>
           <EditCaseAssignee
             disabled={detail.status === 'closed'}
@@ -102,8 +102,8 @@ export const CaseDetails = ({
             id={detail.id}
           />
         </div>
-        <div className="grid grid-cols-[160px,1fr] items-center">
-          <span className="text-grey-50 text-xs font-normal">Suspicious Activity Report</span>
+        <div className="grid grid-cols-[170px,1fr] items-center">
+          <span className="text-grey-50 text-xs font-normal">{t('cases:sar.title')}</span>
           <EditCaseSuspicion id={detail.id} reports={reports} />
         </div>
       </div>
