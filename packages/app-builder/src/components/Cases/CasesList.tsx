@@ -21,16 +21,18 @@ const columnHelper = createColumnHelper<Case>();
 
 export function CasesList({
   className,
+  initSorting,
   onSortingChange,
   cases,
 }: {
   cases: Case[];
+  initSorting: SortingState;
   onSortingChange: (state: SortingState) => void;
   className?: string;
 }) {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
-  const [sorting, setSorting] = useState<SortingState>([{ id: 'created_at', desc: false }]);
+  const [sorting, setSorting] = useState<SortingState>(initSorting);
   const { orgTags } = useOrganizationTags();
 
   useEffect(() => {

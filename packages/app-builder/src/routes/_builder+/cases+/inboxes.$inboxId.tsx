@@ -245,6 +245,12 @@ export default function Cases() {
                 key={inboxId}
                 cases={cases}
                 className="max-h-[60dvh]"
+                initSorting={[
+                  {
+                    id: initialPagination.sorting ?? 'created_at',
+                    desc: initialPagination.order === 'DESC',
+                  },
+                ]}
                 onSortingChange={(state) => {
                   const paginationParams: PaginationParams = {
                     ...omit(initialPagination, ['order']),
