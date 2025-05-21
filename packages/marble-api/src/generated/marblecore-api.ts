@@ -334,14 +334,14 @@ export type ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 = {
     created_at: string;
 };
 export type GroupedAnnotations = {
-    comments?: (ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 & {
+    comments: (ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 & {
         "type": "comment";
         payload: {
             /** body of the comment */
             text: string;
         };
     })[];
-    tags?: ({
+    tags: ({
         id: string;
         case_id: string;
         annotated_by: string;
@@ -349,18 +349,15 @@ export type GroupedAnnotations = {
     } & {
         "type": "tag";
         payload: {
-            tag_id?: string;
-            required?: any;
+            tag_id: string;
         };
     })[];
-    files?: (ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 & {
+    files: (ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 & {
         "type": "file";
         payload: {
             caption: string;
-            bucket: string;
             files: {
                 id: string;
-                key: string;
                 filename: string;
             }[];
         };
