@@ -1,27 +1,41 @@
-import { Callout } from '@app-builder/components';
-import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { Callout, casesI18n } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import {
   type SuspiciousActivityReport,
   type SuspiciousActivityReportStatus,
   suspiciousActivityReportStatuses,
 } from '@app-builder/models/cases';
+import {
+  AlreadyDownloadingError,
+  AuthRequestError,
+  useDownloadFile,
+} from '@app-builder/services/DownloadFilesService';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getServerEnv } from '@app-builder/utils/environment';
-import { getCaseSuspiciousActivityReportFileUploadEndpointById } from '@app-builder/utils/files';
-import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, redirect } from '@remix-run/node';
+import {
+  type ActionFunctionArgs,
+  redirect,
+  unstable_createMemoryUploadHandler,
+  unstable_parseMultipartFormData,
+} from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { useForm } from '@tanstack/react-form';
+import { useForm, useStore } from '@tanstack/react-form';
 import { decode } from 'decode-formdata';
 import { serialize } from 'object-to-formdata';
+import { tryit } from 'radash';
 import { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
+import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
+import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
-import { Button, cn, MenuCommand, Modal } from 'ui-design-system';
-import { Icon, type IconName } from 'ui-icons';
+import { Button, cn, Modal } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { z } from 'zod';
+
+const MAX_FILE_SIZE_MB = 20;
+const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const schema = z.object({
   status: z.union([
@@ -47,15 +61,33 @@ export async function action({ request }: ActionFunctionArgs) {
     authSessionService: { getSession: getAuthSession },
   } = initServerServices(request);
 
-  const [t, session, authSession, raw, { cases }] = await Promise.all([
+  const [err, raw] = await tryit(unstable_parseMultipartFormData)(
+    request,
+    unstable_createMemoryUploadHandler({
+      maxPartSize: MAX_FILE_SIZE,
+    }),
+  );
+
+  const [t, session, authSession, { cases }] = await Promise.all([
     getFixedT(request, ['common']),
     getSession(request),
     getAuthSession(request),
-    request.formData(),
     authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     }),
   ]);
+
+  if (err) {
+    setToastMessage(session, {
+      type: 'error',
+      message: t('common:max_size_exceeded', { size: MAX_FILE_SIZE_MB }),
+    });
+
+    return Response.json(
+      { success: false, errors: [] },
+      { headers: { 'Set-Cookie': await commitSession(session) } },
+    );
+  }
 
   const token = authSession.get('authToken')?.access_token;
 
@@ -66,52 +98,33 @@ export async function action({ request }: ActionFunctionArgs) {
   if (!success) return Response.json({ success, errors: error.flatten() });
 
   try {
-    const promises = [];
-
     if (data.status !== 'none') {
-      if (data.reportId) {
-        promises.push(
-          cases.updateSuspiciousActivityReport({
-            caseId: data.caseId,
-            reportId: data.reportId,
-            body: { status: data.status },
-          }),
-        );
-      } else {
-        promises.push(
-          cases.createSuspiciousActivityReport({
-            caseId: data.caseId,
-            body: { status: data.status },
-          }),
-        );
-      }
-    } else if (data.reportId) {
-      promises.push(
-        cases.deleteSuspiciousActivityReport({
-          caseId: data.caseId,
-          reportId: data.reportId,
-        }),
-      );
-    }
-
-    if (data.file && data.reportId) {
-      const path = getCaseSuspiciousActivityReportFileUploadEndpointById(
-        data.caseId,
-        data.reportId,
-      );
       const body = new FormData();
-      body.append('file', data.file);
 
-      promises.push(
-        fetch(new URL(path, getServerEnv('MARBLE_API_URL_SERVER')), {
-          method: 'POST',
+      body.append('caseId', data.caseId);
+      body.append('status', data.status);
+      if (data.file) body.append('file', data.file);
+      if (data.reportId) body.append('reportId', data.reportId);
+
+      await fetch(
+        new URL(
+          data.reportId
+            ? `/cases/${data.caseId}/sar/${data.reportId}`
+            : `/cases/${data.caseId}/sar`,
+          getServerEnv('MARBLE_API_URL_SERVER'),
+        ),
+        {
+          method: data.reportId ? 'PATCH' : 'POST',
           body,
           headers: { Authorization: `Bearer ${token}` },
-        }),
+        },
       );
+    } else if (data.reportId) {
+      await cases.deleteSuspiciousActivityReport({
+        caseId: data.caseId,
+        reportId: data.reportId,
+      });
     }
-
-    await Promise.allSettled(promises);
 
     return Response.json({ success, errors: [] });
   } catch (error) {
@@ -127,29 +140,49 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-const getSuspicionIconAndText = (suspicion: EditSuspicionForm['status']) => (
-  <span className="inline-flex w-full items-center gap-2">
-    <Icon
-      icon={match<EditSuspicionForm['status'], IconName>(suspicion)
-        .with('none', () => 'empty-flag')
-        .with('pending', () => 'half-flag')
-        .with('completed', () => 'full-flag')
-        .exhaustive()}
-      className={cn('size-5', {
-        'text-grey-50': suspicion === 'none',
-        'text-yellow-50': suspicion === 'pending',
-        'text-red-47': suspicion === 'completed',
-      })}
-    />
-    <span className="text-s font-medium">
-      {match(suspicion)
-        .with('none', () => 'None')
-        .with('pending', () => 'Request a Suspicious Activity Report')
-        .with('completed', () => 'Suspicious Activity report submitted')
-        .exhaustive()}
-    </span>
-  </span>
-);
+export const ReportFile = ({
+  name,
+  caseId,
+  reportId,
+}: {
+  name: string;
+  caseId: string;
+  reportId: string;
+}) => {
+  const { t } = useTranslation(casesI18n);
+  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(
+    `/cases/${caseId}/sar/${reportId}/download`,
+    {
+      onError: (e) => {
+        if (e instanceof AlreadyDownloadingError) {
+          // Already downloading, do nothing
+          return;
+        } else if (e instanceof AuthRequestError) {
+          toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
+        } else {
+          toast.error(t('cases:case.file.errors.downloading_link.unknown'));
+        }
+      },
+    },
+  );
+
+  return (
+    <Button
+      variant="secondary"
+      size="xs"
+      onClick={() => {
+        void downloadCaseFile();
+      }}
+      disabled={downloadingCaseFile}
+    >
+      <Icon
+        icon={downloadingCaseFile ? 'spinner' : 'download'}
+        className={cn('size-3.5', { 'animate-spin': downloadingCaseFile })}
+      />
+      {name}
+    </Button>
+  );
+};
 
 export const EditCaseSuspicion = ({
   id,
@@ -158,7 +191,7 @@ export const EditCaseSuspicion = ({
   id: string;
   reports: SuspiciousActivityReport[];
 }) => {
-  const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
   const [openReportModal, setOpenReportModal] = useState(false);
   const { data, submit } = useFetcher<typeof action>();
   const lastData = data as
@@ -167,6 +200,10 @@ export const EditCaseSuspicion = ({
         errors?: z.typeToFlattenedError<EditSuspicionForm>;
       }
     | undefined;
+
+  useEffect(() => {
+    console.log('Reports', reports);
+  }, [reports]);
 
   const form = useForm({
     onSubmit: ({ value }) => {
@@ -178,7 +215,7 @@ export const EditCaseSuspicion = ({
     },
     defaultValues: {
       caseId: id,
-      status: reports[0] ? reports[0].status : 'none',
+      status: reports[0] ? reports[0]?.status : 'none',
       reportId: reports[0]?.id,
     } as EditSuspicionForm,
     validators: {
@@ -194,6 +231,8 @@ export const EditCaseSuspicion = ({
     }
   }, [lastData]);
 
+  const reportFile = useStore(form.store, (state) => state.values.file);
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (file) => form.setFieldValue('file', file[0]),
     accept: {
@@ -206,7 +245,7 @@ export const EditCaseSuspicion = ({
       'text/*': ['.csv', '.txt'],
     },
     multiple: false,
-    maxSize: 1024 * 1024 * 5, // 5MB
+    maxSize: MAX_FILE_SIZE,
   });
 
   return (
@@ -214,55 +253,108 @@ export const EditCaseSuspicion = ({
       {(field) => (
         <div className="flex w-full gap-1">
           <div className="flex items-center gap-2">
-            {getSuspicionIconAndText(field.state.value)}
-            <MenuCommand.Menu open={open} onOpenChange={setOpen}>
-              <MenuCommand.Trigger>
-                <Button className="w-fit p-0.5" variant="secondary" size="icon">
-                  <Icon icon="edit-square" className="text-grey-50 size-4" />
-                </Button>
-              </MenuCommand.Trigger>
-              <MenuCommand.Content className="mt-2 min-w-[400px]">
-                <MenuCommand.List>
-                  {(['none', 'pending', 'completed'] as const).map((status) => (
-                    <MenuCommand.Item
-                      key={status}
-                      className="cursor-pointer"
-                      onSelect={() => {
-                        if (status === 'none' || status === 'pending') {
-                          field.handleChange(status);
-                          form.handleSubmit();
-                        } else {
-                          setOpenReportModal(true);
-                        }
-                      }}
-                    >
-                      <span className="inline-flex w-full justify-between">
-                        {getSuspicionIconAndText(status)}
-                        {status === field.state.value ? (
-                          <Icon icon="tick" className="text-purple-65 size-6" />
-                        ) : null}
-                      </span>
-                    </MenuCommand.Item>
-                  ))}
-                </MenuCommand.List>
-              </MenuCommand.Content>
-            </MenuCommand.Menu>
+            {match(field.state.value)
+              .with('none', () => (
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1">
+                    <Icon icon="empty-flag" className="size-3.5" />
+                    <span className="text-xs font-medium">{t('cases:sar.status.none')}</span>
+                  </span>
+                  <Button
+                    variant="secondary"
+                    size="xs"
+                    onClick={() => {
+                      field.handleChange('pending');
+                      form.handleSubmit();
+                    }}
+                  >
+                    <Icon icon="half-flag" className="size-3.5 text-orange-50" />
+                    {t('cases:sar.action.request')}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="xs"
+                    onClick={() => {
+                      setOpenReportModal(true);
+                    }}
+                  >
+                    <Icon icon="full-flag" className="text-red-47 size-3.5" />
+                    {t('cases:sar.action.report')}
+                  </Button>
+                </div>
+              ))
+              .with('pending', () => (
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1">
+                    <Icon icon="half-flag" className="size-3.5 text-orange-50" />
+                    <span className="text-xs font-medium">{t('cases:sar.status.requested')}</span>
+                  </span>
+                  <Button
+                    variant="secondary"
+                    size="xs"
+                    onClick={() => {
+                      setOpenReportModal(true);
+                    }}
+                  >
+                    <Icon icon="full-flag" className="text-red-47 size-3.5" />
+                    {t('cases:sar.action.report')}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() => {
+                      field.handleChange('none');
+                      form.handleSubmit();
+                    }}
+                  >
+                    <Icon icon="cross" className="text-grey-50 size-4" />
+                  </Button>
+                </div>
+              ))
+              .with('completed', () => (
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1">
+                    <Icon icon="full-flag" className="text-red-47 size-3.5" />
+                    <span className="text-xs font-medium">{t('cases:sar.status.reported')}</span>
+                  </span>
+                  {reports[0]?.hasFile ? (
+                    <ClientOnly>
+                      {() => <ReportFile name="no-name" caseId={id} reportId={reports[0]!.id} />}
+                    </ClientOnly>
+                  ) : (
+                    <Button variant="secondary" size="xs" onClick={() => setOpenReportModal(true)}>
+                      <Icon icon="attachment" className="size-3.5" />
+                      {t('cases:sar.action.upload')}
+                    </Button>
+                  )}
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() => {
+                      field.handleChange('none');
+                      form.handleSubmit();
+                    }}
+                  >
+                    <Icon icon="cross" className="text-grey-50 size-4" />
+                  </Button>
+                </div>
+              ))
+              .exhaustive()}
           </div>
-          <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
           <Modal.Root open={openReportModal} onOpenChange={setOpenReportModal}>
             <Modal.Content>
-              <Modal.Title>Suspicious activity report submitted</Modal.Title>
+              <Modal.Title>Report</Modal.Title>
               <div className="flex flex-col gap-8 p-8">
-                <Callout>Please add the suspicious transaction report document below.</Callout>
+                <Callout>Please add the document below.</Callout>
                 <div
                   {...getRootProps()}
                   className={cn(
-                    'flex flex-col items-center justify-center gap-2 rounded border-2 border-dashed p-6',
+                    'flex flex-col items-center justify-center gap-6 rounded border-2 border-dashed p-6',
                     isDragActive ? 'bg-purple-96 border-purple-82 opacity-90' : 'border-grey-50',
                   )}
                 >
                   <input {...getInputProps()} />
-                  <p className="text-r flex flex-col gap-6 text-center">
+                  <p className="text-r flex flex-col gap-1 text-center">
                     <span className="text-grey-00">Drop your suspicious activity report here.</span>
                     <span className="text-grey-50 inline-flex flex-col">
                       <span>The following extensions are supported:</span>
@@ -274,24 +366,31 @@ export const EditCaseSuspicion = ({
                     <Icon icon="plus" className="size-6" />
                     Pick a file
                   </Button>
+                  {reportFile ? (
+                    <span className="border-grey-90 flex items-center gap-1 rounded border px-1.5 py-0.5 text-xs font-medium">
+                      {reportFile.name}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => form.setFieldValue('file', undefined)}
+                      >
+                        <Icon icon="cross" className="text-grey-00 size-4" />
+                      </Button>
+                    </span>
+                  ) : null}
                 </div>
-                <form className="flex w-full flex-row gap-2" onSubmit={handleSubmit(form)}>
+                <div className="flex flex-row justify-end gap-2">
                   <Button
-                    variant="secondary"
-                    type="button"
-                    className="flex-1 first-letter:capitalize"
+                    type="submit"
+                    className="first-letter:capitalize"
                     onClick={() => {
                       field.handleChange('completed');
                       form.handleSubmit();
                     }}
                   >
-                    I&apos;ll add it later
+                    Report
                   </Button>
-
-                  <Button type="submit" className="flex-1 first-letter:capitalize">
-                    Add a file
-                  </Button>
-                </form>
+                </div>
               </div>
             </Modal.Content>
           </Modal.Root>
