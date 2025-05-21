@@ -38,7 +38,7 @@ export const CaseDetails = ({
   drawerContentMode: 'pivot' | 'decision' | 'snooze';
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
 }) => {
-  const { case: detail, inboxes } = useLoaderData<typeof loader>();
+  const { case: detail, inboxes, reports } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -72,11 +72,11 @@ export const CaseDetails = ({
       </div>
 
       <div className="border-b-grey-90 flex flex-col gap-2 border-b pb-6">
-        <div className="grid grid-cols-[120px,1fr] items-center">
+        <div className="grid grid-cols-[160px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:case.status')}</span>
           <CaseStatusBadge status={detail.status} outcome={detail.outcome} />
         </div>
-        <div className="grid grid-cols-[120px,1fr] items-center">
+        <div className="grid grid-cols-[160px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:creation_date')}</span>
           <time className="text-xs font-medium" dateTime={detail.createdAt}>
             {formatDateTime(detail.createdAt, {
@@ -85,15 +85,15 @@ export const CaseDetails = ({
             })}
           </time>
         </div>
-        <div className="grid grid-cols-[120px,1fr] items-center">
+        <div className="grid grid-cols-[160px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:case.inbox')}</span>
           <EditCaseInbox id={detail.id} inboxId={detail.inboxId} inboxes={inboxes} />
         </div>
-        <div className="grid grid-cols-[120px,1fr] items-center">
+        <div className="grid grid-cols-[160px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:case.tags')}</span>
           <EditCaseTags id={detail.id} tagIds={detail.tags.map(({ tagId }) => tagId)} />
         </div>
-        <div className="grid grid-cols-[120px,1fr] items-center">
+        <div className="grid grid-cols-[160px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:assigned_to')}</span>
           <EditCaseAssignee
             disabled={detail.status === 'closed'}
@@ -102,9 +102,9 @@ export const CaseDetails = ({
             id={detail.id}
           />
         </div>
-        <div className="grid grid-cols-[120px,1fr] items-center">
-          <span className="text-grey-50 text-xs font-normal">Report of suspicion</span>
-          <EditCaseSuspicion id={detail.id} reports={[]} />
+        <div className="grid grid-cols-[160px,1fr] items-center">
+          <span className="text-grey-50 text-xs font-normal">Suspicious Activity Report</span>
+          <EditCaseSuspicion id={detail.id} reports={reports} />
         </div>
       </div>
       <div className="flex flex-col justify-start gap-1.5">
@@ -130,29 +130,29 @@ export const CaseDetails = ({
           drawerContentMode={drawerContentMode}
         />
       </div>
-      <div className="flex flex-col justify-start gap-1.5">
-        <div className="flex items-center justify-between px-1">
-          <span className="text-grey-00 text-r font-medium">{t('common:documents')}</span>
-          <UploadFile uploadFileEndpoint={getCaseFileUploadEndpoint(detail)}>
-            <Button variant="secondary" size="small">
-              <Icon icon="plus" className="size-3.5" />
-              {t('common:add')}
-            </Button>
-          </UploadFile>
-        </div>
+      {detail.files.length > 0 ? (
+        <div className="flex flex-col justify-start gap-1.5">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-grey-00 text-r font-medium">{t('common:documents')}</span>
+            <UploadFile uploadFileEndpoint={getCaseFileUploadEndpoint(detail)}>
+              <Button variant="secondary" size="small">
+                <Icon icon="plus" className="size-3.5" />
+                {t('common:add')}
+              </Button>
+            </UploadFile>
+          </div>
 
-        <ClientOnly>
-          {() =>
-            detail.files.length > 0 ? (
+          <ClientOnly>
+            {() => (
               <div className="border-grey-90 bg-grey-100 flex flex-wrap gap-2 rounded-lg border p-4">
                 {detail.files.map((file) => (
                   <CaseFile key={file.id} file={file} />
                 ))}
               </div>
-            ) : null
-          }
-        </ClientOnly>
-      </div>
+            )}
+          </ClientOnly>
+        </div>
+      ) : null}
     </main>
   );
 };

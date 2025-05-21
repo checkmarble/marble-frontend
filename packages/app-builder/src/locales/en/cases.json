@@ -167,5 +167,13 @@
   "required_actions.decide_final_status": "Decide final status",
   "filter.include_snoozed.label": "Include snoozed",
   "filter.exclude_assigned.label": "Unassigned only",
-  "filter.closed_only.label": "Closed only"
+  "filter.closed_only.label": "Closed only",
+  "sar.status.none": "None",
+  "sar.status.requested": "Requested",
+  "sar.status.reported": "Reported",
+  "sar.action.request": "Request",
+  "sar.action.report": "Report",
+  "sar.action.remove": "Remove",
+  "sar.action.download": "Download",
+  "sar.action.upload": "Upload"
 }

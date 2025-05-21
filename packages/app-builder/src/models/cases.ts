@@ -506,42 +506,6 @@ export function adaptSuspiciousActivityReport(
   };
 }
 
-export interface CreateSuspiciousActivityReportBody {
-  status: SuspiciousActivityReportStatus;
-}
-
-export function adaptCreateSuspiciousActivityReportBody(
-  body: CreateSuspiciousActivityReportBody,
-): CreateSuspiciousActivityReportBodyDto {
-  return {
-    status: body.status,
-  };
-}
-
-export interface UpdateSuspiciousActivityReportBody {
-  status: SuspiciousActivityReportStatus;
-}
-
-export function adaptUpdateSuspiciousActivityReportBody(
-  body: UpdateSuspiciousActivityReportBody,
-): UpdateSuspiciousActivityReportBodyDto {
-  return {
-    status: body.status,
-  };
-}
-
-export interface UploadSuspiciousActivityReportBody {
-  file: File;
-}
-
-export function adaptUploadSuspiciousActivityReportBody(
-  body: UploadSuspiciousActivityReportBody,
-): UploadSuspiciousActivityReportBodyDto {
-  return {
-    file: body.file,
-  };
-}
-
 export type PivotObject = {
   /** The "object_id" field of the pivot object. Can be null if the pivot type is "field" or if the pivot does point to another unique field than "object_id", and the object has not been ingested yet. */
   pivotObjectId?: string;
