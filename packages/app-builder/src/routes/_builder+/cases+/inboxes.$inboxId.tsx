@@ -154,6 +154,7 @@ export default function Cases() {
     typeof loader,
     PaginatedResponse<Case>
   >({
+    resourceId: inboxId ?? MY_INBOX_ID,
     transform: (fetcherData) => fetcherData.casesData,
     initialData: initialCasesData,
     getQueryParams: (cursor) => buildQueryParams(filters, cursor, initialPagination.order ?? null),

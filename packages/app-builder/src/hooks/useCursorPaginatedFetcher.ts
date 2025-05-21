@@ -3,10 +3,12 @@ import { type SerializeFrom } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
+import type shortUUID from 'short-uuid';
 
 import { useCursorPagination } from './useCursorPagination';
 
 type BaseUseCursorPaginatedFetcherOptions<D> = {
+  resourceId: string | shortUUID.UUID;
   initialData: D;
   getQueryParams?: (cursor: string | null) => Record<string, unknown>;
   validateData?: (data: D) => boolean;
@@ -20,11 +22,13 @@ type UseCursorPaginatedFetcherOptions<T, D> = BaseUseCursorPaginatedFetcherOptio
       });
 
 export const useCursorPaginatedFetcher = <T, D = T>({
+  resourceId,
   initialData,
   getQueryParams,
   validateData,
   ...opts
 }: UseCursorPaginatedFetcherOptions<T, D>) => {
+  const [currentResourceId, setCurrentResourceId] = useState(resourceId);
   const [previousFetcherData, setPreviousFetcherData] = useState<SerializeFrom<T> | null>(null);
   const [data, setData] = useState(initialData);
   const getQueryParamsRef = useCallbackRef(getQueryParams);
@@ -57,6 +61,14 @@ export const useCursorPaginatedFetcher = <T, D = T>({
       setData(transformedData);
     }
   }
+
+  useEffect(() => {
+    if (currentResourceId !== resourceId) {
+      setCurrentResourceId(resourceId);
+      reset();
+      setData(initialData);
+    }
+  }, [resourceId, currentResourceId, initialData, reset]);
 
   return {
     data,
