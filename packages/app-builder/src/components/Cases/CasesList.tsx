@@ -144,6 +144,7 @@ export function CasesList({
     getCoreRowModel: getCoreRowModel(),
     state: { sorting },
     manualSorting: true,
+    enableSortingRemoval: false,
     onSortingChange: setSorting,
     rowLink: ({ id }) => <Link to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(id) })} />,
   });
