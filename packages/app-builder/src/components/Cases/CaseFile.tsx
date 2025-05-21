@@ -13,6 +13,7 @@ import { casesI18n } from './cases-i18n';
 
 type CaseFileProps = {
   file: { id: string; fileName: string };
+  endpoint?: string;
 } & ButtonProps;
 
 export const CaseFile = ({ file, className, size }: CaseFileProps) => {
