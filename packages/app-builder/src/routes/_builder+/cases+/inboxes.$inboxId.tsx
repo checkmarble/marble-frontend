@@ -82,6 +82,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       : redirect(getRoute('/cases'));
   }
 
+  // Force the order to be ASC if not provided
+  if (!parsedPaginationQuery.data.order) {
+    parsedPaginationQuery.data.order = 'ASC';
+  }
+
   const filtersForBackend: CaseFilters = {
     ...parsedQuery.data,
     ...parsedPaginationQuery.data,
