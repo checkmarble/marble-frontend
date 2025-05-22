@@ -201,10 +201,6 @@ export const EditCaseSuspicion = ({
       }
     | undefined;
 
-  useEffect(() => {
-    console.log('Reports', reports);
-  }, [reports]);
-
   const form = useForm({
     onSubmit: ({ value }) => {
       submit(serialize(value), {
