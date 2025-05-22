@@ -185,6 +185,8 @@ export const EditCaseSuspicion = ({
 }) => {
   const { t } = useTranslation();
   const [openReportModal, setOpenReportModal] = useState(false);
+  const initialStatus = reports[0] ? reports[0]?.status : 'none';
+  const [isCompleted, setIsCompleted] = useState(initialStatus === 'completed');
   const { data, submit } = useFetcher<typeof action>();
   const lastData = data as
     | {
@@ -201,10 +203,11 @@ export const EditCaseSuspicion = ({
         action: getRoute('/ressources/cases/edit-suspicion'),
         encType: 'multipart/form-data',
       });
+      setIsCompleted(value.status === 'completed');
     },
     defaultValues: {
       caseId: id,
-      status: reports[0] ? reports[0]?.status : 'none',
+      status: initialStatus,
       reportId: lastData?.data?.id ?? reports[0]?.id,
     } as EditSuspicionForm,
     validators: {
@@ -222,7 +225,6 @@ export const EditCaseSuspicion = ({
   }, [form, lastData]);
 
   const reportFile = useStore(form.store, (state) => state.values.file);
-  const reportId = useStore(form.store, (state) => state.values.reportId);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (file) => form.setFieldValue('file', file[0]),
@@ -247,6 +249,7 @@ export const EditCaseSuspicion = ({
             {match(field.state.value)
               .with('none', () => (
                 <div className="flex items-center gap-2">
+                  <span>{t('cases:sar.action.mark_as')}</span>
                   <Button
                     variant="secondary"
                     size="xs"
@@ -256,7 +259,7 @@ export const EditCaseSuspicion = ({
                     }}
                   >
                     <Icon icon="half-flag" className="size-3.5 text-orange-50" />
-                    {t('cases:sar.action.request')}
+                    {t('cases:sar.status.pending')}
                   </Button>
                   <Button
                     variant="secondary"
@@ -266,7 +269,7 @@ export const EditCaseSuspicion = ({
                     }}
                   >
                     <Icon icon="full-flag" className="text-red-47 size-3.5" />
-                    {t('cases:sar.action.report')}
+                    {t('cases:sar.status.completed')}
                   </Button>
                 </div>
               ))
@@ -274,7 +277,7 @@ export const EditCaseSuspicion = ({
                 <div className="flex items-center gap-2">
                   <span className="flex items-center gap-1">
                     <Icon icon="half-flag" className="size-3.5 text-orange-50" />
-                    <span className="text-xs font-medium">{t('cases:sar.status.requested')}</span>
+                    <span className="text-xs font-medium">{t('cases:sar.status.pending')}</span>
                   </span>
                   <Button
                     variant="secondary"
@@ -284,7 +287,7 @@ export const EditCaseSuspicion = ({
                     }}
                   >
                     <Icon icon="full-flag" className="text-red-47 size-3.5" />
-                    {t('cases:sar.action.report')}
+                    {t('cases:sar.action.mark_as_completed')}
                   </Button>
                   <Button
                     variant="secondary"
@@ -303,7 +306,7 @@ export const EditCaseSuspicion = ({
                 <div className="flex items-center gap-2">
                   <span className="flex items-center gap-1">
                     <Icon icon="full-flag" className="text-red-47 size-3.5" />
-                    <span className="text-xs font-medium">{t('cases:sar.status.reported')}</span>
+                    <span className="text-xs font-medium">{t('cases:sar.status.completed')}</span>
                   </span>
                   {reports[0]?.hasFile ? (
                     <ClientOnly>
@@ -328,10 +331,12 @@ export const EditCaseSuspicion = ({
           <Modal.Root open={openReportModal} onOpenChange={setOpenReportModal}>
             <Modal.Content>
               <Modal.Title>
-                {reportId ? t('cases:sar.action.upload') : t('cases:sar.action.report')}
+                {!isCompleted
+                  ? t('cases:sar.modale.title')
+                  : t('cases:sar.modale.title_choose_file')}
               </Modal.Title>
               <div className="flex flex-col gap-8 p-8">
-                <Callout>{t('cases:sar.action.report.callout')}</Callout>
+                {isCompleted ? <Callout>{t('cases:sar.modale.callout')}</Callout> : null}
                 <div
                   {...getRootProps()}
                   className={cn(
@@ -341,16 +346,16 @@ export const EditCaseSuspicion = ({
                 >
                   <input {...getInputProps()} />
                   <p className="text-r flex flex-col gap-1 text-center">
-                    <span className="text-grey-00">{t('cases:sar.action.report.heading')}</span>
+                    <span className="text-grey-00">{t('cases:sar.modale.heading')}</span>
                     <span className="text-grey-50 inline-flex flex-col">
-                      <span>{t('cases:sar.action.report.supported_extensions')}</span>
+                      <span>{t('cases:sar.modale.supported_extensions')}</span>
                       <span>{t('cases:drop_file_accepted_types')}</span>
                     </span>
                   </p>
                   <span className="text-grey-50 text-r">or</span>
                   <Button>
                     <Icon icon="plus" className="size-6" />
-                    {t('cases:sar.action.report.cta')}
+                    {t('cases:sar.modale.cta_choose_file')}
                   </Button>
                   {reportFile ? (
                     <span className="border-grey-90 flex items-center gap-1 rounded border px-1.5 py-0.5 text-xs font-medium">
@@ -365,16 +370,27 @@ export const EditCaseSuspicion = ({
                     </span>
                   ) : null}
                 </div>
-                <div className="flex flex-row justify-end gap-2">
+                <div className="flex flex-row gap-2">
+                  <Modal.Close asChild>
+                    <Button variant="secondary" className="basis-1/2">
+                      {t('common:cancel')}
+                    </Button>
+                  </Modal.Close>
                   <Button
                     type="submit"
-                    className="first-letter:capitalize"
+                    className="basis-1/2 first-letter:capitalize"
+                    disabled={isCompleted ? reportFile === undefined : null}
+                    // I want to do isCompleted && reportFile === undefined ! Now ts complains
                     onClick={() => {
                       field.handleChange('completed');
                       form.handleSubmit();
                     }}
                   >
-                    {reportId ? t('cases:sar.action.upload') : t('cases:sar.action.report')}
+                    {isCompleted
+                      ? t('cases:sar.modale.save')
+                      : reportFile
+                        ? t('cases:sar.modale.confirm_with_file')
+                        : t('cases:sar.modale.confirm_without_file')}
                   </Button>
                 </div>
               </div>
