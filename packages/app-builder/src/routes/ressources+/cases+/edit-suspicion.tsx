@@ -334,7 +334,7 @@ export const EditCaseSuspicion = ({
                     <span className="text-grey-00">{t('cases:sar.action.report.heading')}</span>
                     <span className="text-grey-50 inline-flex flex-col">
                       <span>{t('cases:sar.action.report.supported_extensions')}</span>
-                      <span>jpg, png, pdf, zip, doc, docx, xls, xIsx</span>
+                      <span>{t('cases:drop_file_accepted_types')}</span>
                     </span>
                   </p>
                   <span className="text-grey-50 text-r">or</span>
