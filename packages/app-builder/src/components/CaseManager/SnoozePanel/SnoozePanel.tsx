@@ -54,9 +54,9 @@ export const SnoozePanel = ({
       <Suspense fallback={<div>Loading...</div>}>
         <Await resolve={rulesByPivotPromise}>
           {(rulesByPivot) => (
-            <div className="flex flex-col gap-6 px-2">
+            <div className="flex w-full flex-col gap-6 px-2">
               <span className="text-l font-semibold">Rules</span>
-              <Tabs className="flex flex-col" defaultValue={Object.keys(rulesByPivot)[0]}>
+              <Tabs className="flex w-full flex-col" defaultValue={Object.keys(rulesByPivot)[0]}>
                 <TabsList className="mb-6 w-fit">
                   {Object.keys(rulesByPivot).map((pivotValue) => {
                     const client = findDataFromPivotValue(pivotObjects ?? [], pivotValue);
@@ -87,7 +87,7 @@ export const SnoozePanel = ({
 
                   return (
                     <TabsContent
-                      className="flex flex-col items-start gap-6"
+                      className="flex w-full flex-col items-start gap-6"
                       key={`content-${pivotValue}`}
                       value={pivotValue}
                     >
@@ -98,8 +98,8 @@ export const SnoozePanel = ({
                           data={client.pivotObjectData.data}
                         />
                       ) : null}
-                      <div className="border-grey-90 bg-grey-100 rounded-lg border">
-                        <div className="text-2xs text-grey-50 grid grid-cols-[150px_100px_1fr_1fr_150px_150px_150px] font-normal">
+                      <div className="border-grey-90 bg-grey-100 w-full rounded-lg border">
+                        <div className="text-2xs text-grey-50 grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] font-normal">
                           <span className="p-2">{t('cases:decisions.rule.snooze')}</span>
                           <span className="p-2">
                             {t('cases:decisions.rule.last_hit_timestamp')}
@@ -122,7 +122,7 @@ export const SnoozePanel = ({
                           return (
                             <div
                               key={r.ruleId}
-                              className="border-grey-90 hover:bg-purple-98 grid grid-cols-[150px_100px_1fr_1fr_150px_150px_150px] items-center border-t transition-colors"
+                              className="border-grey-90 hover:bg-purple-98 grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] items-center border-t transition-colors"
                             >
                               <div className="flex min-h-full items-center justify-center p-2">
                                 <AddRuleSnooze decisionId={r.decisionId} ruleId={r.ruleId}>
