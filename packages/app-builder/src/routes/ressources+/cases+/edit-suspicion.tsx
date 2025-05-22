@@ -99,14 +99,20 @@ export async function action({ request }: ActionFunctionArgs) {
       });
     } else if (data.reportId && data.status !== 'none') {
       sar = await cases.updateSuspiciousActivityReport({
-        ...data,
+        caseId: data.caseId,
         reportId: data.reportId,
-        status: data.status,
+        body: {
+          status: data.status,
+          ...(data.file && { file: data.file }),
+        },
       });
     } else if (!data.reportId && data.status !== 'none') {
       sar = await cases.createSuspiciousActivityReport({
-        ...data,
-        status: data.status,
+        caseId: data.caseId,
+        body: {
+          status: data.status,
+          ...(data.file && { file: data.file }),
+        },
       });
     } else {
       throw new Error('Should not happen');
@@ -215,6 +221,7 @@ export const EditCaseSuspicion = ({
   }, [lastData]);
 
   const reportFile = useStore(form.store, (state) => state.values.file);
+  const reportId = useStore(form.store, (state) => state.values.reportId);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (file) => form.setFieldValue('file', file[0]),
@@ -319,7 +326,9 @@ export const EditCaseSuspicion = ({
           </div>
           <Modal.Root open={openReportModal} onOpenChange={setOpenReportModal}>
             <Modal.Content>
-              <Modal.Title>{t('cases:sar.action.report')}</Modal.Title>
+              <Modal.Title>
+                {reportId ? t('cases:sar.action.upload') : t('cases:sar.action.report')}
+              </Modal.Title>
               <div className="flex flex-col gap-8 p-8">
                 <Callout>{t('cases:sar.action.report.callout')}</Callout>
                 <div
@@ -364,7 +373,7 @@ export const EditCaseSuspicion = ({
                       form.handleSubmit();
                     }}
                   >
-                    {t('cases:sar.action.report')}
+                    {reportId ? t('cases:sar.action.upload') : t('cases:sar.action.report')}
                   </Button>
                 </div>
               </div>
