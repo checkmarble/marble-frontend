@@ -121,14 +121,9 @@ export const OutcomeBadge = ({
         .with('approve', () => <Icon icon="accepted" className="text-green-38 size-4" />)
         .with('decline', () => <Icon icon="denied" className="text-red-47 size-4" />)
         .with('review', () => (
-          <div
-            className={cn('size-3.5 rounded-full', {
-              'bg-orange-50': showBackground,
-              'bg-yellow-75': !showBackground,
-            })}
-          />
+          <div className={cn('size-3.5 rounded-full border-2 border-orange-50')} />
         ))
-        .with('unknown', () => <div className="bg-grey-50 size-4 rounded-full" />)
+        .with('unknown', () => <div className="border-grey-50 size-4 rounded-full border-2" />)
         .with('block_and_review', () =>
           match(reviewStatus)
             .with('approve', () => (
