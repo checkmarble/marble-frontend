@@ -168,5 +168,6 @@
   "filter.closed_only.label": "Investigations résolues",
   "case.status.snoozed": "En attente",
   "case.status.waiting_for_action": "En attente d'action",
-  "decisions.rule.snooze_until": "En veille jusqu'au"
+  "decisions.rule.snooze_until": "En veille jusqu'au",
+  "case_detail.add_rule_snooze.nudge": "La mise en veille d'une règle l'empêchera de se déclencher pendant un certain temps"
 }

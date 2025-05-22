@@ -77,7 +77,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted' }: NudgePr
             className={CtaClassName({
               variant: 'primary',
               color: 'purple',
-              className: 'mt-4',
+              className: 'mt-4 text-center',
             })}
             href="https://checkmarble.com/upgrade"
             target="_blank"
