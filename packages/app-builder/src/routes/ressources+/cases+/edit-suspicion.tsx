@@ -217,8 +217,9 @@ export const EditCaseSuspicion = ({
   useEffect(() => {
     if (lastData?.success) {
       setOpenReportModal(false);
+      form.setFieldValue('reportId', lastData.data?.id);
     }
-  }, [lastData]);
+  }, [form, lastData]);
 
   const reportFile = useStore(form.store, (state) => state.values.file);
   const reportId = useStore(form.store, (state) => state.values.reportId);
