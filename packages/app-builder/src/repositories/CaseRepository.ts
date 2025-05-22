@@ -21,6 +21,7 @@ import {
   type PaginatedResponse,
 } from '@app-builder/models/pagination';
 import { add } from 'date-fns/add';
+import { map } from 'remeda';
 import { Temporal } from 'temporal-polyfill';
 
 export type CaseFilters = {
@@ -161,18 +162,14 @@ export function makeGetCaseRepository() {
       });
       return adaptCaseDetail(result.case);
     },
-    listSuspiciousActivityReports: async ({ caseId }) => {
-      const result = await marbleCoreApiClient.sarList(caseId);
-      return result.map(adaptSuspiciousActivityReport);
-    },
-    createSuspiciousActivityReport: async ({ caseId, file, status }) => {
-      const result = await marbleCoreApiClient.sarCreate(caseId, { file, status });
-      return adaptSuspiciousActivityReport(result);
-    },
-    updateSuspiciousActivityReport: async ({ caseId, reportId, status }) => {
-      const result = await marbleCoreApiClient.sarUpdate(caseId, reportId, { status });
-      return adaptSuspiciousActivityReport(result);
-    },
+    listSuspiciousActivityReports: async ({ caseId }) =>
+      map(await marbleCoreApiClient.sarList(caseId), adaptSuspiciousActivityReport),
+    createSuspiciousActivityReport: async ({ caseId, file, status }) =>
+      adaptSuspiciousActivityReport(await marbleCoreApiClient.sarCreate(caseId, { file, status })),
+    updateSuspiciousActivityReport: async ({ caseId, reportId, status }) =>
+      adaptSuspiciousActivityReport(
+        await marbleCoreApiClient.sarUpdate(caseId, reportId, { status }),
+      ),
     deleteSuspiciousActivityReport: async ({ caseId, reportId }) =>
       marbleCoreApiClient.sarDelete(caseId, reportId),
     getNextUnassignedCaseId: async ({ caseId }) =>

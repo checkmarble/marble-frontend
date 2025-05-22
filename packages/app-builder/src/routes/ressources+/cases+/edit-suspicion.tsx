@@ -89,8 +89,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!success) return Response.json({ success, errors: error.flatten() });
 
-  console.log('Data', data);
-
   try {
     let sar: SuspiciousActivityReport | undefined = undefined;
 
