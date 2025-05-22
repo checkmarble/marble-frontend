@@ -11,11 +11,9 @@ import {
   useDownloadFile,
 } from '@app-builder/services/DownloadFilesService';
 import { initServerServices } from '@app-builder/services/init.server';
-import { getServerEnv } from '@app-builder/utils/environment';
 import { getRoute } from '@app-builder/utils/routes';
 import {
   type ActionFunctionArgs,
-  redirect,
   unstable_createMemoryUploadHandler,
   unstable_parseMultipartFormData,
 } from '@remix-run/node';
@@ -58,7 +56,6 @@ export async function action({ request }: ActionFunctionArgs) {
     authService,
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
-    authSessionService: { getSession: getAuthSession },
   } = initServerServices(request);
 
   const [err, raw] = await tryit(unstable_parseMultipartFormData)(
@@ -68,10 +65,9 @@ export async function action({ request }: ActionFunctionArgs) {
     }),
   );
 
-  const [t, session, authSession, { cases }] = await Promise.all([
+  const [t, session, { cases }] = await Promise.all([
     getFixedT(request, ['common']),
     getSession(request),
-    getAuthSession(request),
     authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     }),
@@ -89,44 +85,36 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   }
 
-  const token = authSession.get('authToken')?.access_token;
-
-  if (!token) return redirect(getRoute('/sign-in'));
-
   const { data, success, error } = schema.safeParse(decode(raw));
 
   if (!success) return Response.json({ success, errors: error.flatten() });
 
+  console.log('Data', data);
+
   try {
-    if (data.status !== 'none') {
-      const body = new FormData();
+    let sar: SuspiciousActivityReport | undefined = undefined;
 
-      body.append('caseId', data.caseId);
-      body.append('status', data.status);
-      if (data.file) body.append('file', data.file);
-      if (data.reportId) body.append('reportId', data.reportId);
-
-      await fetch(
-        new URL(
-          data.reportId
-            ? `/cases/${data.caseId}/sar/${data.reportId}`
-            : `/cases/${data.caseId}/sar`,
-          getServerEnv('MARBLE_API_URL_SERVER'),
-        ),
-        {
-          method: data.reportId ? 'PATCH' : 'POST',
-          body,
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-    } else if (data.reportId) {
+    if (data.reportId && data.status === 'none') {
       await cases.deleteSuspiciousActivityReport({
         caseId: data.caseId,
         reportId: data.reportId,
       });
+    } else if (data.reportId && data.status !== 'none') {
+      sar = await cases.updateSuspiciousActivityReport({
+        ...data,
+        reportId: data.reportId,
+        status: data.status,
+      });
+    } else if (!data.reportId && data.status !== 'none') {
+      sar = await cases.createSuspiciousActivityReport({
+        ...data,
+        status: data.status,
+      });
+    } else {
+      throw new Error('Should not happen');
     }
 
-    return Response.json({ success, errors: [] });
+    return Response.json({ success, errors: [], data: sar });
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
@@ -134,7 +122,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
 
     return Response.json(
-      { success: false, errors: [] },
+      { success: false, errors: [(error as Error).message] },
       { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   }
@@ -198,6 +186,7 @@ export const EditCaseSuspicion = ({
     | {
         success: boolean;
         errors?: z.typeToFlattenedError<EditSuspicionForm>;
+        data?: SuspiciousActivityReport;
       }
     | undefined;
 
@@ -212,7 +201,7 @@ export const EditCaseSuspicion = ({
     defaultValues: {
       caseId: id,
       status: reports[0] ? reports[0]?.status : 'none',
-      reportId: reports[0]?.id,
+      reportId: lastData?.data?.id ?? reports[0]?.id,
     } as EditSuspicionForm,
     validators: {
       onChange: schema,
@@ -252,10 +241,6 @@ export const EditCaseSuspicion = ({
             {match(field.state.value)
               .with('none', () => (
                 <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1">
-                    <Icon icon="empty-flag" className="size-3.5" />
-                    <span className="text-xs font-medium">{t('cases:sar.status.none')}</span>
-                  </span>
                   <Button
                     variant="secondary"
                     size="xs"
@@ -300,6 +285,7 @@ export const EditCaseSuspicion = ({
                     size="icon"
                     onClick={() => {
                       field.handleChange('none');
+                      form.setFieldValue('reportId', reports[0]?.id ?? lastData?.data?.id);
                       form.handleSubmit();
                     }}
                   >
@@ -315,7 +301,13 @@ export const EditCaseSuspicion = ({
                   </span>
                   {reports[0]?.hasFile ? (
                     <ClientOnly>
-                      {() => <ReportFile name="no-name" caseId={id} reportId={reports[0]!.id} />}
+                      {() => (
+                        <ReportFile
+                          name={t('cases:sar.action.download')}
+                          caseId={id}
+                          reportId={reports[0]!.id}
+                        />
+                      )}
                     </ClientOnly>
                   ) : (
                     <Button variant="secondary" size="xs" onClick={() => setOpenReportModal(true)}>
@@ -323,16 +315,6 @@ export const EditCaseSuspicion = ({
                       {t('cases:sar.action.upload')}
                     </Button>
                   )}
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    onClick={() => {
-                      field.handleChange('none');
-                      form.handleSubmit();
-                    }}
-                  >
-                    <Icon icon="cross" className="text-grey-50 size-4" />
-                  </Button>
                 </div>
               ))
               .exhaustive()}
