@@ -1,6 +1,7 @@
 import { casesI18n } from '@app-builder/components/Cases';
 import { ClientObjectDataList } from '@app-builder/components/DataModelExplorer/ClientObjectDataList';
 import { OutcomeBadge } from '@app-builder/components/Decisions';
+import { Nudge } from '@app-builder/components/Nudge';
 import { RuleGroup } from '@app-builder/components/Scenario/Rules/RuleGroup';
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
 import { type PivotObject } from '@app-builder/models/cases';
@@ -29,7 +30,7 @@ export const SnoozePanel = ({
 }) => {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
-  const { rulesByPivotPromise, dataModelWithTableOptions, pivotObjects } =
+  const { rulesByPivotPromise, dataModelWithTableOptions, pivotObjects, entitlements } =
     useLoaderData<typeof loader>();
   const { setExpanded } = DrawerContext.useValue();
 
@@ -98,8 +99,30 @@ export const SnoozePanel = ({
                           data={client.pivotObjectData.data}
                         />
                       ) : null}
-                      <div className="border-grey-90 bg-grey-100 w-full rounded-lg border">
-                        <div className="text-2xs text-grey-50 grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] font-normal">
+                      <div
+                        className={cn(
+                          'border-grey-90 bg-grey-100 relative w-full rounded-lg border',
+                          {
+                            'border-2 border-yellow-50':
+                              entitlements.ruleSnoozes === 'missing_configuration',
+                            'border-purple-82 border-2': entitlements.ruleSnoozes === 'restricted',
+                            'border-purple-65 border-2': entitlements.ruleSnoozes === 'test',
+                          },
+                        )}
+                      >
+                        {entitlements.ruleSnoozes !== 'allowed' ? (
+                          <Nudge
+                            className="absolute -left-3 -top-3 size-5"
+                            kind={entitlements.ruleSnoozes}
+                            link="https://docs.checkmarble.com/docs/rule-snoozes"
+                            content={
+                              entitlements.ruleSnoozes === 'missing_configuration'
+                                ? t('common:missing_configuration')
+                                : t('cases:case_detail.add_rule_snooze.nudge')
+                            }
+                          />
+                        ) : null}
+                        <div className="text-2xs text-grey-50 relative grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] font-normal">
                           <span className="p-2">{t('cases:decisions.rule.snooze')}</span>
                           <span className="p-2">
                             {t('cases:decisions.rule.last_hit_timestamp')}
@@ -130,7 +153,11 @@ export const SnoozePanel = ({
                                     variant="secondary"
                                     size="small"
                                     className={cn({ 'bg-purple-96': r.isSnoozed })}
-                                    disabled={r.isSnoozed}
+                                    disabled={
+                                      r.isSnoozed ||
+                                      (entitlements.ruleSnoozes !== 'allowed' &&
+                                        entitlements.ruleSnoozes !== 'test')
+                                    }
                                   >
                                     <Icon
                                       icon={r.isSnoozed ? 'snooze-on' : 'snooze'}

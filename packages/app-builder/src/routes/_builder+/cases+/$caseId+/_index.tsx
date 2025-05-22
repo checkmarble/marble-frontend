@@ -43,10 +43,18 @@ import { Icon } from 'ui-icons';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { authService } = initServerServices(request);
-  const { cases, inbox, user, dataModelRepository, decision, scenario, sanctionCheck } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const {
+    cases,
+    inbox,
+    user,
+    dataModelRepository,
+    decision,
+    scenario,
+    sanctionCheck,
+    entitlements,
+  } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const parsedResult = await parseIdParamSafe(params, 'caseId');
   if (!parsedResult.success) {
@@ -189,6 +197,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     pivots,
     decisionsPromise,
     rulesByPivotPromise,
+    entitlements,
   });
 };
 
