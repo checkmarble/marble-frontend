@@ -26,6 +26,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Handle, type NodeProps, Position } from 'reactflow';
 import * as R from 'remeda';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import {
@@ -116,7 +117,21 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               <span className="text-grey-00 text-[30px]">{data.name}</span>
               <FormatDescription description={data.description || ''} />
             </div>
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row items-start gap-4">
+              {data.pivot ? (
+                <DisplayPivot {...data.pivot} />
+              ) : (
+                <CreatePivot
+                  key="create-pivot"
+                  tableModel={data.original}
+                  dataModel={data.dataModel}
+                >
+                  <Button variant={'secondary'} disabled={displayPivot}>
+                    <Icon icon="plus" className="size-6" />
+                    {t('data:create_pivot.title')}
+                  </Button>
+                </CreatePivot>
+              )}
               <MoreMenu data={data} />
             </div>
           </div>
@@ -385,5 +400,30 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
       </SchemaMenuMenuButton>
       <SchemaMenuMenuPopover>{menuItems}</SchemaMenuMenuPopover>
     </SchemaMenuRoot>
+  );
+}
+
+export function DisplayPivot(pivot: Pivot) {
+  const { displayPivot, setSelectedPivot } = useSelectedPivot();
+  return (
+    <Button
+      disabled={displayPivot}
+      variant="secondary"
+      onClick={() => {
+        setSelectedPivot(pivot);
+      }}
+    >
+      <Icon icon="center-focus" className="size-6" />
+      {pivot.type === 'field' ? (
+        <span className="text-grey-00">{pivot.field}</span>
+      ) : (
+        pivot.pathLinks.map((table) => (
+          <React.Fragment key={`pivot-${pivot.baseTable}-${table}`}>
+            <Icon icon="arrow-up" className="size-4 rotate-90" />
+            <span className="text-grey-00">{table}</span>
+          </React.Fragment>
+        ))
+      )}
+    </Button>
   );
 }
