@@ -82,6 +82,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       : redirect(getRoute('/cases'));
   }
 
+  // Force the order to be ASC if not provided
+  if (!parsedPaginationQuery.data.order) {
+    parsedPaginationQuery.data.order = 'ASC';
+  }
+
   const filtersForBackend: CaseFilters = {
     ...parsedQuery.data,
     ...parsedPaginationQuery.data,
@@ -154,6 +159,7 @@ export default function Cases() {
     typeof loader,
     PaginatedResponse<Case>
   >({
+    resourceId: inboxId ?? MY_INBOX_ID,
     transform: (fetcherData) => fetcherData.casesData,
     initialData: initialCasesData,
     getQueryParams: (cursor) => buildQueryParams(filters, cursor, initialPagination.order ?? null),
@@ -195,6 +201,7 @@ export default function Cases() {
         return;
       }
       if (pagination.order) {
+        reset();
         navigate(
           {
             pathname: getRoute('/cases/inboxes/:inboxId', {
@@ -244,6 +251,12 @@ export default function Cases() {
                 key={inboxId}
                 cases={cases}
                 className="max-h-[60dvh]"
+                initSorting={[
+                  {
+                    id: initialPagination.sorting ?? 'created_at',
+                    desc: initialPagination.order === 'DESC',
+                  },
+                ]}
                 onSortingChange={(state) => {
                   const paginationParams: PaginationParams = {
                     ...omit(initialPagination, ['order']),

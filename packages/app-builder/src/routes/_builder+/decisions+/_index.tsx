@@ -117,6 +117,7 @@ export default function Decisions() {
     typeof loader,
     PaginatedResponse<Decision>
   >({
+    resourceId: 'decisions',
     transform: (fetcherData) => fetcherData.decisionsData,
     initialData: initialDecisionsData,
     getQueryParams: (cursor) => buildQueryParams(filters, cursor),
