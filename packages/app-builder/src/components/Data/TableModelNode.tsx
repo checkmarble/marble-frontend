@@ -152,6 +152,20 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               <FormatDescription description={data.description || ''} />
             </div>
             <div className="flex flex-row items-start gap-2 py-0">
+              {data.pivot ? (
+                <DisplayPivot {...data.pivot} />
+              ) : (
+                <CreatePivot
+                  key="create-pivot"
+                  tableModel={data.original}
+                  dataModel={data.dataModel}
+                >
+                  <Button variant={'secondary'} disabled={displayPivot}>
+                    <Icon icon="plus" className="size-6" />
+                    {t('data:create_pivot.title')}
+                  </Button>
+                </CreatePivot>
+              )}
               <Button
                 variant="secondary"
                 disabled={displayPivot}
@@ -438,5 +452,30 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
       </SchemaMenuMenuButton>
       <SchemaMenuMenuPopover>{menuItems}</SchemaMenuMenuPopover>
     </SchemaMenuRoot>
+  );
+}
+
+export function DisplayPivot(pivot: Pivot) {
+  const { displayPivot, setSelectedPivot } = useSelectedPivot();
+  return (
+    <Button
+      disabled={displayPivot}
+      variant="secondary"
+      onClick={() => {
+        setSelectedPivot(pivot);
+      }}
+    >
+      <Icon icon="center-focus" className="size-6" />
+      {pivot.type === 'field' ? (
+        <span className="text-grey-00">{pivot.field}</span>
+      ) : (
+        pivot.pathLinks.map((table) => (
+          <React.Fragment key={`pivot-${pivot.baseTable}-${table}`}>
+            <Icon icon="arrow-up" className="size-4 rotate-90" />
+            <span className="text-grey-00">{table}</span>
+          </React.Fragment>
+        ))
+      )}
+    </Button>
   );
 }
