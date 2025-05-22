@@ -57,7 +57,7 @@ export const CaseStatusBadge = ({
           .with('waiting_for_action', () => (
             <Icon icon="waiting_for_action" className="text-red-47 size-4" />
           ))
-          .with('pending', () => <div className="bg-grey-80 size-3.5 rounded-full" />)
+          .with('pending', () => <div className="border-grey-80 size-3.5 rounded-full border-2" />)
           .with('investigating', () => (
             <Icon icon="investigating" className="text-blue-58 size-4" />
           ))
