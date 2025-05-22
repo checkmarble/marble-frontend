@@ -12,7 +12,6 @@ import {
   type CaseUpdateBody,
   type PivotObject,
   type SuspiciousActivityReport,
-  type SuspiciousActivityReportStatus,
 } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import {
@@ -21,6 +20,7 @@ import {
   type PaginatedResponse,
 } from '@app-builder/models/pagination';
 import { add } from 'date-fns/add';
+import { type SuspiciousActivityReportBodyDto } from 'marble-api';
 import { map } from 'remeda';
 import { Temporal } from 'temporal-polyfill';
 
@@ -71,14 +71,12 @@ export interface CaseRepository {
   listSuspiciousActivityReports(args: { caseId: string }): Promise<SuspiciousActivityReport[]>;
   createSuspiciousActivityReport(args: {
     caseId: string;
-    file?: File;
-    status: SuspiciousActivityReportStatus;
+    body: SuspiciousActivityReportBodyDto;
   }): Promise<SuspiciousActivityReport>;
   updateSuspiciousActivityReport(args: {
     caseId: string;
     reportId: string;
-    file?: File;
-    status: SuspiciousActivityReportStatus;
+    body: SuspiciousActivityReportBodyDto;
   }): Promise<SuspiciousActivityReport>;
   deleteSuspiciousActivityReport(args: { caseId: string; reportId: string }): Promise<unknown>;
   getNextUnassignedCaseId(args: { caseId: string }): Promise<string | null>;
@@ -164,12 +162,10 @@ export function makeGetCaseRepository() {
     },
     listSuspiciousActivityReports: async ({ caseId }) =>
       map(await marbleCoreApiClient.sarList(caseId), adaptSuspiciousActivityReport),
-    createSuspiciousActivityReport: async ({ caseId, file, status }) =>
-      adaptSuspiciousActivityReport(await marbleCoreApiClient.sarCreate(caseId, { file, status })),
-    updateSuspiciousActivityReport: async ({ caseId, reportId, status }) =>
-      adaptSuspiciousActivityReport(
-        await marbleCoreApiClient.sarUpdate(caseId, reportId, { status }),
-      ),
+    createSuspiciousActivityReport: async ({ caseId, body }) =>
+      adaptSuspiciousActivityReport(await marbleCoreApiClient.sarCreate(caseId, body)),
+    updateSuspiciousActivityReport: async ({ caseId, reportId, body }) =>
+      adaptSuspiciousActivityReport(await marbleCoreApiClient.sarUpdate(caseId, reportId, body)),
     deleteSuspiciousActivityReport: async ({ caseId, reportId }) =>
       marbleCoreApiClient.sarDelete(caseId, reportId),
     getNextUnassignedCaseId: async ({ caseId }) =>
