@@ -9,7 +9,7 @@ import {
 } from '@app-builder/components/Cases/Filters';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
-import { type Case, type CaseStatus } from '@app-builder/models/cases';
+import { type Case, type CaseStatus, caseStatuses } from '@app-builder/models/cases';
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -91,7 +91,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     ...parsedQuery.data,
     ...parsedPaginationQuery.data,
     ...(inboxId && { inboxIds: [inboxId] }),
-    statuses: parsedQuery.data.statuses as CaseStatus[] | undefined,
+    // If no statuses filter is provided, we filter out closed cases
+    statuses:
+      (parsedQuery.data.statuses as CaseStatus[]) ??
+      caseStatuses.filter((status) => status !== 'closed'),
     ...(!inboxId && { assigneeId: user.actorIdentity.userId }),
   };
 
