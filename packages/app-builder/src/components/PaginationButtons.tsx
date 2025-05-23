@@ -43,24 +43,25 @@ function getStartAndEndFormatted(
     startDate.getFullYear() === endDate.getFullYear() &&
     startDate.getMonth() === endDate.getMonth() &&
     startDate.getDate() === endDate.getDate();
+  const isSameMinute =
+    isSameLocalDay &&
+    startDate.getHours() === endDate.getHours() &&
+    startDate.getMinutes() === endDate.getMinutes();
+  const isSameSecond = isSameMinute && startDate.getSeconds() === endDate.getSeconds();
 
   const startFormatted = formatDateTime(startTs, {
     language,
     dateStyle: 'medium',
-    timeStyle: 'short',
+    timeStyle: isSameMinute ? 'medium' : 'short',
   });
 
-  const endFormatted = isSameLocalDay
+  const endFormatted = !isSameSecond
     ? formatDateTime(endTs, {
         language,
-        dateStyle: undefined,
-        timeStyle: 'short',
+        dateStyle: isSameLocalDay ? undefined : 'medium',
+        timeStyle: isSameMinute ? 'medium' : 'short',
       })
-    : formatDateTime(endTs, {
-        language,
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      });
+    : null;
 
   return { startFormatted, endFormatted };
 }
@@ -98,12 +99,17 @@ export function CursorPaginationButtons({
 
   const previousDisabled = !hasPreviousPage;
   const nextDisabled = !hasNextPage;
+  console.log('endFormatted', endFormatted);
   return (
     <div className="flex items-center justify-end gap-2">
-      {!hideBoundaries && startFormatted !== '' && endFormatted !== '' ? (
+      {hideBoundaries ? null : endFormatted === null ? (
+        t('common:items_displayed', {
+          time: startFormatted,
+        })
+      ) : startFormatted !== '' && endFormatted !== '' ? (
         <Trans
           t={t}
-          i18nKey="common:items_displayed"
+          i18nKey="common:items_displayed_datetime"
           components={{ StartToEnd: <span style={{ fontWeight: '' }} /> }}
           values={{
             start: startFormatted,
