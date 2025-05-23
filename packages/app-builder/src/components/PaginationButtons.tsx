@@ -26,13 +26,18 @@ type CursorPaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
   hideBoundaries?: boolean;
 };
 
-function getStartAndEndFormatted(
-  startTs: string | undefined,
-  endTs: string | undefined,
-  language: string,
-) {
+function FormattedDatesRange({
+  startTs,
+  endTs,
+  language,
+}: {
+  startTs: string | undefined;
+  endTs: string | undefined;
+  language: string;
+}) {
+  const { t } = useTranslation(['common']);
   if (!startTs || !endTs) {
-    return { startFormatted: '', endFormatted: '' };
+    return null;
   }
 
   const startDate = new Date(startTs);
@@ -47,23 +52,73 @@ function getStartAndEndFormatted(
     isSameLocalDay &&
     startDate.getHours() === endDate.getHours() &&
     startDate.getMinutes() === endDate.getMinutes();
-  const isSameSecond = isSameMinute && startDate.getSeconds() === endDate.getSeconds();
 
-  const startFormatted = formatDateTime(startTs, {
-    language,
-    dateStyle: 'medium',
-    timeStyle: isSameMinute ? 'medium' : 'short',
-  });
+  if (isSameMinute && startDate.getSeconds() === endDate.getSeconds())
+    return (
+      <Trans
+        t={t}
+        i18nKey="common:items_displayed_same_datetime"
+        components={{ StartToEnd: <span /> }}
+        values={{
+          date: formatDateTime(startDate, {
+            language,
+            dateStyle: 'medium',
+            timeStyle: undefined,
+          }),
+          time: formatDateTime(startDate, {
+            language,
+            dateStyle: undefined,
+            timeStyle: 'short',
+          }),
+        }}
+      />
+    );
 
-  const endFormatted = !isSameSecond
-    ? formatDateTime(endTs, {
-        language,
-        dateStyle: isSameLocalDay ? undefined : 'medium',
-        timeStyle: isSameMinute ? 'medium' : 'short',
-      })
-    : null;
+  if (isSameLocalDay || isSameMinute)
+    return (
+      <Trans
+        t={t}
+        i18nKey="common:items_displayed_same_date"
+        components={{ StartToEnd: <span /> }}
+        values={{
+          date: formatDateTime(startDate, {
+            language,
+            dateStyle: 'medium',
+            timeStyle: undefined,
+          }),
+          start: formatDateTime(startTs, {
+            language,
+            dateStyle: undefined,
+            timeStyle: isSameMinute ? 'medium' : 'short',
+          }),
+          end: formatDateTime(endTs, {
+            language,
+            dateStyle: undefined,
+            timeStyle: isSameMinute ? 'medium' : 'short',
+          }),
+        }}
+      />
+    );
 
-  return { startFormatted, endFormatted };
+  return (
+    <Trans
+      t={t}
+      i18nKey="common:items_displayed_dates"
+      components={{ StartToEnd: <span /> }}
+      values={{
+        start: formatDateTime(startTs, {
+          language,
+          dateStyle: 'medium',
+          timeStyle: 'short',
+        }),
+        end: formatDateTime(endTs, {
+          language,
+          dateStyle: 'medium',
+          timeStyle: 'short',
+        }),
+      }}
+    />
+  );
 }
 
 export function CursorPaginationButtons({
@@ -73,7 +128,6 @@ export function CursorPaginationButtons({
   onPaginationChange,
   hideBoundaries,
 }: CursorPaginationsButtonsProps) {
-  const { t } = useTranslation(['common']);
   const language = useFormatLanguage();
 
   const startTs = items[0]?.createdAt;
@@ -95,38 +149,12 @@ export function CursorPaginationButtons({
     onPaginationChange(pagination);
   };
 
-  const { startFormatted, endFormatted } = getStartAndEndFormatted(startTs, endTs, language);
-
   const previousDisabled = !hasPreviousPage;
   const nextDisabled = !hasNextPage;
 
-  const sameSecondBoundaries = (
-    <span>
-      {t('common:items_displayed', {
-        time: startFormatted,
-      })}
-    </span>
-  );
-  const defaultBoundaries = (
-    <Trans
-      t={t}
-      i18nKey="common:items_displayed_datetime"
-      components={{ StartToEnd: <span /> }}
-      values={{
-        start: startFormatted,
-        end: endFormatted,
-      }}
-    />
-  );
-
   return (
     <div className="flex items-center justify-end gap-2">
-      {hideBoundaries || (startFormatted === '' && endFormatted === '')
-        ? null
-        : endFormatted === null
-          ? sameSecondBoundaries
-          : defaultBoundaries}
-
+      {hideBoundaries ? null : <FormattedDatesRange {...{ startTs, endTs, language }} />}
       <Button onClick={fetchPrevious} variant="secondary" disabled={previousDisabled}>
         <Icon icon="arrow-left" className="size-4" />
       </Button>
