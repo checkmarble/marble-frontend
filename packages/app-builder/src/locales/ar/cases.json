@@ -169,7 +169,7 @@
   "filter.closed_only.label": "المغلقة فقط",
   "case.status.snoozed": "غفوة",
   "case.status.waiting_for_action": "في انتظار العمل",
-  "sar.title": "تقرير actrivity المشبوهة",
+  "sar.title": "تقرير النشاط المشبوه",
   "sar.action.download": "تحميل",
   "sar.action.upload": "رفع",
   "sar.action.mark_as": "علامة كما",

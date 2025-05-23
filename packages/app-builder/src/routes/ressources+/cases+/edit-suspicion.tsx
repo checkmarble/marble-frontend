@@ -379,8 +379,8 @@ export const EditCaseSuspicion = ({
                   <Button
                     type="submit"
                     className="basis-1/2 first-letter:capitalize"
-                    disabled={isCompleted ? reportFile === undefined : null}
-                    // I want to do isCompleted && reportFile === undefined ! Now ts complains
+                    // eslint-disable-next-line react/jsx-no-leaked-render
+                    disabled={isCompleted && reportFile === undefined}
                     onClick={() => {
                       field.handleChange('completed');
                       form.handleSubmit();
