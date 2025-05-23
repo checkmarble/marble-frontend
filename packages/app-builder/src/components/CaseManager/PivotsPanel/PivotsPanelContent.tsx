@@ -8,6 +8,7 @@ import {
 } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
+import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
@@ -131,6 +132,7 @@ function RelatedCases({
 }) {
   const { t } = useTranslation(['common', 'cases']);
   const casesQuery = usePivotRelatedCasesQuery(pivotValue);
+  const language = useFormatLanguage();
 
   return match(casesQuery)
     .with({ isError: true }, () => {
@@ -153,12 +155,20 @@ function RelatedCases({
 
       return (
         <DataCard borderless title={t('cases:case_detail.pivot_panel.case_history')}>
-          <div className="grid w-full grid-cols-[1fr_auto_auto]">
+          <div className="grid w-full grid-cols-[1fr_auto_auto_auto]">
             {cases.map((caseObj, idx) => {
               const isLast = idx === cases.length - 1;
 
               return (
                 <Fragment key={caseObj.id}>
+                  <div
+                    className={cellVariants({
+                      isLast,
+                      className: 'shrink border-r leading-[28px]',
+                    })}
+                  >
+                    {formatDateTime(caseObj.createdAt, { language, timeStyle: undefined })}
+                  </div>
                   <div
                     className={cellVariants({
                       isLast,
