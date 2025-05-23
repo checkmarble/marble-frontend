@@ -5,6 +5,7 @@ import {
 import { casesI18n } from '@app-builder/components/Cases';
 import { CasePivotValues } from '@app-builder/components/Cases/CasePivotValues';
 import { RequiredActions } from '@app-builder/components/Cases/RequiredActions';
+import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
 import { IngestedObjectDetailModal } from '@app-builder/components/Data/IngestedObjectDetailModal';
 import { OutcomeBadge, RuleExecutionDetail } from '@app-builder/components/Decisions';
 import {
@@ -15,6 +16,7 @@ import {
   RulesExecutionsContainer,
 } from '@app-builder/components/Decisions/RulesExecutions/RulesExecutions';
 import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
+import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type Pivot, type TableModel } from '@app-builder/models';
 import { type Decision, type RuleExecution } from '@app-builder/models/decision';
@@ -263,12 +265,18 @@ export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPane
                     <span className="text-l text-grey-00 font-semibold">
                       {decision.scenario.name}
                     </span>
-                    <span className="bg-purple-96 text-purple-65 rounded-full px-2 py-[3px] text-xs font-normal">
-                      +{decision.score}
-                    </span>
+                    <ScoreModifier score={decision.score} />
                   </div>
                   <div className="flex flex-col items-start gap-2">
-                    <div className="flex items-center gap-2">
+                    <div className="grid grid-cols-[60px_1fr] items-center">
+                      <span className="text-grey-50 text-xs">Id</span>
+                      <CopyToClipboardButton size="sm" toCopy={decision.id}>
+                        <span className="line-clamp-1 max-w-40 text-xs font-normal">
+                          {decision.id}
+                        </span>
+                      </CopyToClipboardButton>
+                    </div>
+                    <div className="grid grid-cols-[60px_1fr] items-center">
                       <span className="text-grey-50 text-xs">{t('cases:decisions.outcome')}</span>
                       <OutcomeBadge
                         outcome={decision.outcome}
