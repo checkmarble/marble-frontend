@@ -222,7 +222,8 @@ export const EditCaseSuspicion = ({
       form.setFieldValue('reportId', lastData.data?.id);
       setIsCompleted(lastData.data?.status === 'completed');
     }
-  }, [form, lastData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastData]);
 
   const reportFile = useStore(form.store, (state) => state.values.file);
 

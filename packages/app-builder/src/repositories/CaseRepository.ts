@@ -174,11 +174,6 @@ export function makeGetCaseRepository() {
     createSuspiciousActivityReport: async ({ caseId, body }) =>
       adaptSuspiciousActivityReport(await marbleCoreApiClient.sarCreate(caseId, body)),
     updateSuspiciousActivityReport: async ({ caseId, reportId, body }) => {
-      console.log('updateSuspiciousActivityReport', {
-        caseId,
-        reportId,
-        body,
-      });
       return adaptSuspiciousActivityReport(
         await marbleCoreApiClient.sarUpdate(caseId, reportId, body),
       );
