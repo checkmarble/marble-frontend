@@ -481,10 +481,7 @@ export function adaptUpdateCaseBodyDto(body: CaseUpdateBody): UpdateCaseBodyDto 
 //
 
 export type SuspiciousActivityReportStatus = 'pending' | 'completed';
-export const suspiciousActivityReportStatuses: UnionToArray<SuspiciousActivityReportStatus> = [
-  'pending',
-  'completed',
-];
+export const suspiciousActivityReportStatuses = ['pending', 'completed'];
 
 export interface SuspiciousActivityReport {
   id: string;
