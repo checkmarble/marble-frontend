@@ -41,11 +41,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   const partner = await partnerRepository.getPartner(user.partnerId);
-
+  const cookieMap = Object.fromEntries(
+    request.headers
+      .get('Cookie')
+      ?.split('; ')
+      .map((cookie) => cookie.split('='))
+      .map(([key, value]) => [key, decodeURIComponent(value ?? '')]) ?? [],
+  );
   return {
     user,
     partner,
     versions: await versionRepository.getBackendVersion(),
+    isMenuExpanded:
+      'leftbar_expanded' in cookieMap ? cookieMap.leftbar_expanded === '1' : undefined,
   };
 }
 
@@ -54,9 +62,9 @@ export const handle = {
 };
 
 export default function Builder() {
-  const { user, partner, versions } = useLoaderData<typeof loader>();
+  const { user, partner, versions, isMenuExpanded } = useLoaderData<typeof loader>();
   useSegmentIdentification(user);
-  const leftSidebarSharp = LeftSidebarSharpFactory.createSharp();
+  const leftSidebarSharp = LeftSidebarSharpFactory.createSharp(isMenuExpanded);
 
   // Refresh is done in the JSX because it needs to be done in the browser
   // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)

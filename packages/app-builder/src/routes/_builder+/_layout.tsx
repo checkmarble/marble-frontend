@@ -32,7 +32,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { user, inbox, organization, entitlements } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-
   if (!isMarbleCoreUser(user)) {
     throw forbidden('Only Marble Core users can access this app.');
   }
@@ -46,7 +45,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
   ]);
 
   const firstSettings = getSettings(user, inboxes)[0];
-
+  const cookieMap = Object.fromEntries(
+    request.headers
+      .get('Cookie')
+      ?.split('; ')
+      .map((cookie) => cookie.split('='))
+      .map(([key, value]) => [key, decodeURIComponent(value ?? '')]) ?? [],
+  );
   return {
     user,
     orgUsers,
@@ -61,6 +66,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
       },
     },
     versions,
+    isMenuExpanded:
+      'leftbar_expanded' in cookieMap ? cookieMap.leftbar_expanded === '1' : undefined,
   };
 }
 
@@ -69,11 +76,11 @@ export const handle = {
 };
 
 export default function Builder() {
-  const { user, orgUsers, organization, orgTags, featuresAccess, versions } =
+  const { user, orgUsers, organization, orgTags, featuresAccess, versions, isMenuExpanded } =
     useLoaderData<typeof loader>();
   useSegmentIdentification(user);
   const { t } = useTranslation(handle.i18n);
-  const leftSidebarSharp = LeftSidebarSharpFactory.createSharp();
+  const leftSidebarSharp = LeftSidebarSharpFactory.createSharp(isMenuExpanded);
 
   // Refresh is done in the JSX because it needs to be done in the browser
   // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)
