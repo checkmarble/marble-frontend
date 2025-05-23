@@ -203,7 +203,6 @@ export const EditCaseSuspicion = ({
         action: getRoute('/ressources/cases/edit-suspicion'),
         encType: 'multipart/form-data',
       });
-      setIsCompleted(value.status === 'completed');
     },
     defaultValues: {
       caseId: id,
@@ -221,6 +220,7 @@ export const EditCaseSuspicion = ({
     if (lastData?.success) {
       setOpenReportModal(false);
       form.setFieldValue('reportId', lastData.data?.id);
+      setIsCompleted(lastData.data?.status === 'completed');
     }
   }, [form, lastData]);
 
@@ -294,7 +294,6 @@ export const EditCaseSuspicion = ({
                     size="icon"
                     onClick={() => {
                       field.handleChange('none');
-                      form.setFieldValue('reportId', reports[0]?.id ?? lastData?.data?.id);
                       form.handleSubmit();
                     }}
                   >
