@@ -100,14 +100,18 @@ export function CursorPaginationButtons({
   const previousDisabled = !hasPreviousPage;
   const nextDisabled = !hasNextPage;
 
-  const sameSecondBoundaries = t('common:items_displayed', {
-    time: startFormatted,
-  });
+  const sameSecondBoundaries = (
+    <span>
+      {t('common:items_displayed', {
+        time: startFormatted,
+      })}
+    </span>
+  );
   const defaultBoundaries = (
     <Trans
       t={t}
       i18nKey="common:items_displayed_datetime"
-      components={{ StartToEnd: <span style={{ fontWeight: '' }} /> }}
+      components={{ StartToEnd: <span /> }}
       values={{
         start: startFormatted,
         end: endFormatted,
