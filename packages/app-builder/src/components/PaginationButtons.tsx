@@ -99,24 +99,29 @@ export function CursorPaginationButtons({
 
   const previousDisabled = !hasPreviousPage;
   const nextDisabled = !hasNextPage;
-  console.log('endFormatted', endFormatted);
+
+  const sameSecondBoundaries = t('common:items_displayed', {
+    time: startFormatted,
+  });
+  const defaultBoundaries = (
+    <Trans
+      t={t}
+      i18nKey="common:items_displayed_datetime"
+      components={{ StartToEnd: <span style={{ fontWeight: '' }} /> }}
+      values={{
+        start: startFormatted,
+        end: endFormatted,
+      }}
+    />
+  );
+
   return (
     <div className="flex items-center justify-end gap-2">
-      {hideBoundaries ? null : endFormatted === null ? (
-        t('common:items_displayed', {
-          time: startFormatted,
-        })
-      ) : startFormatted !== '' && endFormatted !== '' ? (
-        <Trans
-          t={t}
-          i18nKey="common:items_displayed_datetime"
-          components={{ StartToEnd: <span style={{ fontWeight: '' }} /> }}
-          values={{
-            start: startFormatted,
-            end: endFormatted,
-          }}
-        />
-      ) : null}
+      {hideBoundaries || (startFormatted === '' && endFormatted === '')
+        ? null
+        : endFormatted === null
+          ? sameSecondBoundaries
+          : defaultBoundaries}
 
       <Button onClick={fetchPrevious} variant="secondary" disabled={previousDisabled}>
         <Icon icon="arrow-left" className="size-4" />
