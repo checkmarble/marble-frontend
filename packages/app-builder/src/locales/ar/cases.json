@@ -170,7 +170,7 @@
   "case.status.snoozed": "غفوة",
   "case.status.waiting_for_action": "في انتظار العمل",
   "case_detail.add_rule_snooze.nudge": "غفوة القاعدة سيمنعها من التشغيل لفترة معينة من الوقت",
-  "sar.title": "تقرير actrivity المشبوهة",
+  "sar.title": "تقرير النشاط المشبوه",
   "sar.action.download": "تحميل",
   "sar.action.upload": "رفع",
   "sar.action.mark_as": "علامة كما",

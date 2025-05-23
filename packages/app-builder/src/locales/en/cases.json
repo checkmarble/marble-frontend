@@ -169,7 +169,7 @@
   "filter.include_snoozed.label": "Include snoozed",
   "filter.exclude_assigned.label": "Unassigned only",
   "filter.closed_only.label": "Closed only",
-  "sar.title": "Suspicious Actrivity Report",
+  "sar.title": "Suspicious Activity Report",
   "sar.action.download": "Download",
   "sar.action.upload": "Upload",
   "sar.action.mark_as": "Mark as",
