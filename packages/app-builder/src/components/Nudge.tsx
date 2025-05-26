@@ -1,5 +1,4 @@
 import { Hovercard, HovercardAnchor, HovercardProvider } from '@ariakit/react/hovercard';
-import clsx from 'clsx';
 import { type FeatureAccessDto } from 'marble-api/generated/license-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -9,18 +8,19 @@ import { Icon, type IconName } from 'ui-icons';
 type NudgeProps = {
   content: string;
   className?: string;
+  iconClass?: string;
   link?: string;
   kind?: Exclude<FeatureAccessDto, 'allowed'>;
 };
 
-export const Nudge = ({ content, link, className, kind = 'restricted' }: NudgeProps) => {
+export const Nudge = ({ content, link, className, kind = 'restricted', iconClass }: NudgeProps) => {
   const { t } = useTranslation(['common']);
 
   return (
     <HovercardProvider showTimeout={0} hideTimeout={0} placement="right">
       <HovercardAnchor
         tabIndex={-1}
-        className={clsx(
+        className={cn(
           'text-grey-100 flex flex-row items-center justify-center rounded',
           { 'bg-purple-65': kind === 'test' },
           { 'bg-purple-82': kind === 'restricted' },
@@ -35,7 +35,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted' }: NudgePr
             .with('test', () => 'unlock-right')
             .with('missing_configuration', () => 'warning')
             .exhaustive()}
-          className="size-3.5"
+          className={cn('size-3.5', iconClass)}
           aria-hidden
         />
       </HovercardAnchor>
