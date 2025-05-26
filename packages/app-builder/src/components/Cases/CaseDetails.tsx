@@ -111,7 +111,7 @@ export const CaseDetails = ({
         <span className="text-r text-grey-00 px-1 font-medium">{t('cases:investigation')}</span>
         <div className="border-grey-90 bg-grey-100 flex flex-col rounded-lg border">
           <div className="p-4">
-            <CaseEvents events={detail.events} inboxes={inboxes} />
+            <CaseEvents events={detail.events} inboxes={inboxes} root={containerRef} />
           </div>
           <AddComment caseId={detail.id} />
         </div>
