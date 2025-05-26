@@ -17,6 +17,7 @@ import { OrganizationTagsContextProvider } from '@app-builder/services/organizat
 import { OrganizationUsersContextProvider } from '@app-builder/services/organization/organization-users';
 import { useSegmentIdentification } from '@app-builder/services/segment';
 import { forbidden } from '@app-builder/utils/http/http-responses';
+import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-write.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
@@ -45,13 +46,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   ]);
 
   const firstSettings = getSettings(user, inboxes)[0];
-  const cookieMap = Object.fromEntries(
-    request.headers
-      .get('Cookie')
-      ?.split('; ')
-      .map((cookie) => cookie.split('='))
-      .map(([key, value]) => [key, decodeURIComponent(value ?? '')]) ?? [],
-  );
   return {
     user,
     orgUsers,
@@ -66,8 +60,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       },
     },
     versions,
-    isMenuExpanded:
-      'leftbar_expanded' in cookieMap ? cookieMap.leftbar_expanded === '1' : undefined,
+    isMenuExpanded: getPreferencesCookie(request, 'menuExpanded'),
   };
 }
 
@@ -81,7 +74,6 @@ export default function Builder() {
   useSegmentIdentification(user);
   const { t } = useTranslation(handle.i18n);
   const leftSidebarSharp = LeftSidebarSharpFactory.createSharp(isMenuExpanded);
-
   // Refresh is done in the JSX because it needs to be done in the browser
   // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)
   useRefreshToken();
