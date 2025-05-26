@@ -34,8 +34,6 @@ export const SnoozePanel = ({
     useLoaderData<typeof loader>();
   const { setExpanded } = DrawerContext.useValue();
 
-  entitlements.ruleSnoozes = 'test';
-
   useEffect(() => {
     setExpanded(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
