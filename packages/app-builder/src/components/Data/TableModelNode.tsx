@@ -150,6 +150,22 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
             <div className="flex flex-col gap-2 text-start">
               <span className="text-grey-00 text-[30px]">{data.name}</span>
               <FormatDescription description={data.description || ''} />
+              <div className="align-items-end">
+                {data.pivot ? (
+                  <DisplayPivot {...data.pivot} />
+                ) : (
+                  <CreatePivot
+                    key="create-pivot"
+                    tableModel={data.original}
+                    dataModel={data.dataModel}
+                  >
+                    <Button variant={'secondary'} disabled={displayPivot}>
+                      <Icon icon="plus" className="size-6" />
+                      {t('data:create_pivot.title')}
+                    </Button>
+                  </CreatePivot>
+                )}
+              </div>
             </div>
             <div className="flex flex-row items-start gap-2 py-0">
               {data.pivot ? (
