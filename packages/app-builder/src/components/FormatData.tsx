@@ -16,15 +16,35 @@ type Data =
       value: unknown;
     };
 
-export function FormatData({ data, language }: { data: Data; language: string }) {
+export function FormatData({
+  data,
+  language,
+  className,
+}: {
+  data?: Data;
+  language: string;
+  className?: string;
+}) {
+  if (!data) {
+    return <span className={className}>-</span>;
+  }
+
   switch (data.type) {
     case 'url':
-      return <ExternalLink href={data.value}>{data.value}</ExternalLink>;
+      return (
+        <ExternalLink href={data.value} className={className}>
+          {data.value}
+        </ExternalLink>
+      );
     case 'datetime':
-      return <time dateTime={data.value}>{formatDateTime(data.value, { language })}</time>;
+      return (
+        <time dateTime={data.value} className={className}>
+          {formatDateTime(data.value, { language })}
+        </time>
+      );
     case 'number':
-      return <span>{formatNumber(data.value, { language })}</span>;
+      return <span className={className}>{formatNumber(data.value, { language })}</span>;
     case 'unknown':
-      return <span>{data.value ? String(data.value) : '-'}</span>;
+      return <span className={className}>{data.value ? String(data.value) : '-'}</span>;
   }
 }

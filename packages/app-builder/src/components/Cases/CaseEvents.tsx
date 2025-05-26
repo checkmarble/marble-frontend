@@ -22,7 +22,7 @@ import { TagsUpdatedDetail } from '@app-builder/components/Cases/Events/TagsUpda
 import { type CaseEvent } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
 import { debounce, unique } from 'radash';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { allPass, filter } from 'remeda';
 import { match } from 'ts-pattern';
@@ -35,7 +35,15 @@ import { SarCreatedDetail } from './Events/SarCreated';
 const MAX_EVENTS_BEFORE_DEBOUNCE = 60;
 const EVENT_DELAY = 100;
 
-export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: Inbox[] }) {
+export function CaseEvents({
+  events,
+  inboxes,
+  root,
+}: {
+  events: CaseEvent[];
+  inboxes: Inbox[];
+  root: RefObject<HTMLDivElement>;
+}) {
   const { t } = useTranslation(casesI18n);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showAll, setShowAll] = useState(false);
@@ -84,9 +92,9 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
       // Check each item's position relative to container
       for (const item of items) {
         const itemRect = item.getBoundingClientRect();
-        if (itemRect.bottom < containerRect.top) {
+        if (itemRect.bottom + (root.current?.scrollTop ?? 0) < containerRect.top) {
           itemsBeforeVisible++;
-        } else if (itemRect.top > containerRect.bottom) {
+        } else if (itemRect.top + (root.current?.scrollTop ?? 0) > containerRect.bottom) {
           itemsAfterVisible++;
         }
       }
@@ -104,6 +112,7 @@ export function CaseEvents({ events, inboxes }: { events: CaseEvent[]; inboxes: 
     container.addEventListener('scroll', callback);
 
     return () => container.removeEventListener('scroll', callback);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredEvents]);
 
   return (
