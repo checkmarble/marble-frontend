@@ -34,6 +34,8 @@ export const SnoozePanel = ({
     useLoaderData<typeof loader>();
   const { setExpanded } = DrawerContext.useValue();
 
+  entitlements.ruleSnoozes = 'test';
+
   useEffect(() => {
     setExpanded(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -99,31 +101,24 @@ export const SnoozePanel = ({
                           data={client.pivotObjectData.data}
                         />
                       ) : null}
-                      <div
-                        className={cn(
-                          'border-grey-90 bg-grey-100 relative w-full rounded-lg border',
-                          {
-                            'border-2 border-yellow-50':
-                              entitlements.ruleSnoozes === 'missing_configuration',
-                            'border-purple-82 border-2': entitlements.ruleSnoozes === 'restricted',
-                            'border-purple-65 border-2': entitlements.ruleSnoozes === 'test',
-                          },
-                        )}
-                      >
-                        {entitlements.ruleSnoozes !== 'allowed' ? (
-                          <Nudge
-                            className="absolute -left-3 -top-3 size-5"
-                            kind={entitlements.ruleSnoozes}
-                            link="https://docs.checkmarble.com/docs/rule-snoozes"
-                            content={
-                              entitlements.ruleSnoozes === 'missing_configuration'
-                                ? t('common:missing_configuration')
-                                : t('cases:case_detail.add_rule_snooze.nudge')
-                            }
-                          />
-                        ) : null}
+                      <div className="border-grey-90 bg-grey-100 relative w-full rounded-lg border">
                         <div className="text-2xs text-grey-50 relative grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] font-normal">
-                          <span className="p-2">{t('cases:decisions.rule.snooze')}</span>
+                          <span className="inline-flex items-center gap-2 p-2">
+                            <span>{t('cases:decisions.rule.snooze')}</span>
+                            {entitlements.ruleSnoozes !== 'allowed' ? (
+                              <Nudge
+                                className="size-4"
+                                iconClass="size-2.5"
+                                kind={entitlements.ruleSnoozes}
+                                link="https://docs.checkmarble.com/docs/rule-snoozes"
+                                content={
+                                  entitlements.ruleSnoozes === 'missing_configuration'
+                                    ? t('common:missing_configuration')
+                                    : t('cases:case_detail.add_rule_snooze.nudge')
+                                }
+                              />
+                            ) : null}
+                          </span>
                           <span className="p-2">
                             {t('cases:decisions.rule.last_hit_timestamp')}
                           </span>

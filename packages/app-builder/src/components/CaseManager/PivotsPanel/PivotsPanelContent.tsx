@@ -155,7 +155,7 @@ function RelatedCases({
 
       return (
         <DataCard borderless title={t('cases:case_detail.pivot_panel.case_history')}>
-          <div className="grid w-full grid-cols-[1fr_auto_auto_auto]">
+          <div className="grid w-full grid-cols-[auto_1fr_auto_auto]">
             {cases.map((caseObj, idx) => {
               const isLast = idx === cases.length - 1;
 
