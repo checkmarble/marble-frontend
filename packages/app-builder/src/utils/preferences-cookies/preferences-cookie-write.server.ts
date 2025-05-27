@@ -13,7 +13,6 @@ export function getPreferencesCookie<K extends PreferencesCookieKey>(
     .map(([key, value]) => [key, decodeURIComponent(value ?? '').replace(/"/g, '')])
     .filter(([key]) => key === 'preferences')[0]?.[1];
 
-  console.log('Raw cookie value:', rawValue);
   if (!rawValue) return undefined;
 
   let parsedObj: Record<string, unknown> = {};
