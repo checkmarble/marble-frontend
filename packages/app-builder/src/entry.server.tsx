@@ -5,6 +5,7 @@ import {
 } from '@remix-run/node';
 import { RemixServer } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
+import * as crypto from 'crypto';
 import { isbot } from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
 import { I18nextProvider } from 'react-i18next';
@@ -12,7 +13,8 @@ import { PassThrough } from 'stream';
 
 import { initServerServices } from './services/init.server';
 import { captureUnexpectedRemixError } from './services/monitoring';
-import { checkEnv, getServerEnv } from './utils/environment';
+import { checkEnv, getClientEnvVars, getServerEnv } from './utils/environment';
+import { NonceProvider } from './utils/nonce';
 
 const ABORT_DELAY = 70000;
 
@@ -25,17 +27,26 @@ export default async function handleRequest(
   const { i18nextService } = initServerServices(request);
   const i18n = await i18nextService.getI18nextServerInstance(request, remixContext);
 
+  const nonce = crypto.randomBytes(16).toString('hex');
+
   const App = (
     <I18nextProvider i18n={i18n}>
-      <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />
+      <NonceProvider value={nonce}>
+        <RemixServer
+          context={remixContext}
+          url={request.url}
+          abortDelay={ABORT_DELAY}
+          nonce={nonce}
+        />
+      </NonceProvider>
     </I18nextProvider>
   );
 
   const prohibitOutOfOrderStreaming = isBotRequest(request) || remixContext.isSpaMode;
 
   return prohibitOutOfOrderStreaming
-    ? handleBotRequest(responseStatusCode, responseHeaders, App)
-    : handleBrowserRequest(responseStatusCode, responseHeaders, App);
+    ? handleBotRequest(responseStatusCode, responseHeaders, App, nonce)
+    : handleBrowserRequest(responseStatusCode, responseHeaders, App, nonce);
 }
 
 function isBotRequest(request: Request) {
@@ -47,10 +58,17 @@ function isBotRequest(request: Request) {
   return isbot(userAgent);
 }
 
-function handleBotRequest(responseStatusCode: number, responseHeaders: Headers, App: JSX.Element) {
+function handleBotRequest(
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  App: JSX.Element,
+  nonce?: string,
+) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
+
     const { pipe, abort } = renderToPipeableStream(App, {
+      nonce,
       onAllReady() {
         shellRendered = true;
         const body = new PassThrough();
@@ -89,16 +107,46 @@ function handleBrowserRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   App: JSX.Element,
+  nonce?: string,
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(App, {
+      nonce,
       onShellReady() {
         shellRendered = true;
         const body = new PassThrough();
         const stream = createReadableStreamFromReadable(body);
 
         responseHeaders.set('Content-Type', 'text/html');
+
+        const clientEnv = getClientEnvVars();
+        const firebaseUrl = clientEnv.FIREBASE_CONFIG.withEmulator
+          ? clientEnv.FIREBASE_CONFIG.authEmulatorUrl
+          : 'https://identitytoolkit.googleapis.com';
+
+        const externalDomains = ['cdn.segment.com', 'api.segment.io', '*.sentry.io'];
+
+        const cspOrigins = [
+          ['base-uri', "'none'"],
+          ['default-src', "'self'"],
+          ['frame-ancestors', "'none'"],
+          ['object-src', "'none'"],
+          ['style-src', "'self' 'unsafe-inline'"], // unsafe-inline seems to trigger a lot of errors, even though it did not seem to break the UI.
+          ['script-src', `'nonce-${nonce}' 'unsafe-eval' 'strict-dynamic'`], // unsafe-eval seems to be required by lottie.js for home page animations.
+          [
+            'connect-src',
+            `'self' ${clientEnv.MARBLE_API_URL} ${firebaseUrl} ${externalDomains.map((d) => `https://${d}`).join(' ')}`,
+          ],
+          ['img-src', "'self' data:"],
+        ];
+
+        if (clientEnv.METABASE_URL) cspOrigins.push(['frame-src', clientEnv.METABASE_URL]);
+
+        responseHeaders.set(
+          'content-security-policy',
+          cspOrigins.flatMap((rule) => rule.join(' ')).join('; '),
+        );
 
         resolve(
           new Response(stream, {
