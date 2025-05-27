@@ -1,4 +1,4 @@
-import { type PreferencesCookie, PreferencesCookieSchema } from './types';
+import { COOKIE_NAME, type PreferencesCookie, PreferencesCookieSchema } from './config';
 
 type PreferencesCookieKey = keyof PreferencesCookie;
 
@@ -11,7 +11,7 @@ export function getPreferencesCookie<K extends PreferencesCookieKey>(
     ?.split('; ')
     .map((cookie) => cookie.split('='))
     .map(([key, value]) => [key, decodeURIComponent(value ?? '').replace(/"/g, '')])
-    .filter(([key]) => key === 'preferences')[0]?.[1];
+    .filter(([key]) => key === COOKIE_NAME)[0]?.[1];
 
   if (!rawValue) return undefined;
 
@@ -21,7 +21,7 @@ export function getPreferencesCookie<K extends PreferencesCookieKey>(
     try {
       parsedObj = JSON.parse(json);
     } catch {
-      // Fix unquoted keys: {menuExpanded:1} -> {"menuExpanded":1}
+      // Fix unquoted keys: {key:1} -> {"key":1}
       json = json.replace(/([{,])\s*([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
       parsedObj = JSON.parse(json);
     }

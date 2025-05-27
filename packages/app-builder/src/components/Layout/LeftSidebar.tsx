@@ -1,4 +1,4 @@
-import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-read';
+import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import clsx from 'clsx';
 import type * as React from 'react';
 import { createSharpFactory } from 'sharpstate';
@@ -37,7 +37,7 @@ export function ToggleSidebar() {
 
   const toggleExpanded = async () => {
     leftSidebarSharp.actions.toggleExpanded();
-    setPreferencesCookie('menuExpanded', leftSidebarSharp.value.expanded);
+    setPreferencesCookie('menuExpd', leftSidebarSharp.value.expanded);
   };
 
   return (

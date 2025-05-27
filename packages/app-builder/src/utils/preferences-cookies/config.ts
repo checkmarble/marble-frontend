@@ -1,10 +1,12 @@
 import { z } from 'zod';
 
+export const COOKIE_NAME = 'u-prefs';
+
 export type PreferencesCookie = {
-  menuExpanded: boolean;
+  menuExpd: boolean;
 };
 export const PreferencesCookieSchema = z.object({
-  menuExpanded: z.preprocess(
+  menuExpd: z.preprocess(
     (val) => val === 'true' || val === true || val === '1' || val === 1 || val === 1n,
     z.boolean(),
   ),

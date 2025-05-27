@@ -17,7 +17,7 @@ import { OrganizationTagsContextProvider } from '@app-builder/services/organizat
 import { OrganizationUsersContextProvider } from '@app-builder/services/organization/organization-users';
 import { useSegmentIdentification } from '@app-builder/services/segment';
 import { forbidden } from '@app-builder/utils/http/http-responses';
-import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-write.server';
+import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
@@ -60,7 +60,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       },
     },
     versions,
-    isMenuExpanded: getPreferencesCookie(request, 'menuExpanded'),
+    isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
   };
 }
 

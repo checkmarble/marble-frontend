@@ -17,7 +17,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { segment, useSegmentIdentification } from '@app-builder/services/segment';
 import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
 import { CONFLICT } from '@app-builder/utils/http/http-status-codes';
-import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-write.server';
+import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Form, isRouteErrorResponse, Outlet, useLoaderData, useRouteError } from '@remix-run/react';
@@ -47,7 +47,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     user,
     partner,
     versions: await versionRepository.getBackendVersion(),
-    isMenuExpanded: getPreferencesCookie(request, 'menuExpanded'),
+    isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
   };
 }
 
