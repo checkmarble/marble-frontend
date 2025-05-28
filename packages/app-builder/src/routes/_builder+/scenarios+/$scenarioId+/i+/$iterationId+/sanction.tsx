@@ -473,22 +473,27 @@ export default function SanctionDetail() {
                         }}
                       </form.Field>
                       <form.Field name="query.label">
-                        {(field) => (
-                          <div className="flex flex-col gap-4">
-                            <FormLabel name={field.name}>
-                              {t('scenarios:sanction_transaction_label')}
-                            </FormLabel>
-                            <FieldNode
-                              value={field.state.value}
-                              onChange={field.handleChange}
-                              onBlur={field.handleBlur}
-                              placeholder={t('scenarios:sanction_transaction_label_placeholder')}
-                            />
-                            <FormErrorOrDescription
-                              errors={getFieldErrors(field.state.meta.errors)}
-                            />
-                          </div>
-                        )}
+                        {(field) => {
+                          const value = sanctionCheckConfig?.query?.label;
+                          return (
+                            <div className="flex flex-col gap-4">
+                              <FormLabel name={field.name}>
+                                {t('scenarios:sanction_transaction_label')}
+                              </FormLabel>
+                              <FieldNodeConcat
+                                viewOnly={editor === 'view'}
+                                value={value && isStringConcatAstNode(value) ? value : undefined}
+                                onChange={field.handleChange}
+                                onBlur={field.handleBlur}
+                                placeholder={t('scenarios:sanction_transaction_label_placeholder')}
+                                limit={5}
+                              />
+                              <FormErrorOrDescription
+                                errors={getFieldErrors(field.state.meta.errors)}
+                              />
+                            </div>
+                          );
+                        }}
                       </form.Field>
                     </div>
                   </div>
