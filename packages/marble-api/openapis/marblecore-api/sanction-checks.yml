@@ -176,6 +176,8 @@ components:
           type: string
         title:
           type: string
+        tag:
+          type: string
     OpenSanctionsCatalogSection:
       type: object
       required:
