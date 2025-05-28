@@ -178,7 +178,6 @@ components:
           type: string
         tag:
           type: string
-          enum: ['sanctions', 'peps', 'third-parties', 'adverse-media']
     OpenSanctionsCatalogSection:
       type: object
       required:
