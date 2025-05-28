@@ -16,16 +16,20 @@ import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model
 import { getRoute } from '@app-builder/utils/routes';
 import { NavLink } from '@remix-run/react';
 import {
+  type ColumnFiltersState,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import clsx from 'clsx';
 import * as React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Handle, type NodeProps, Position } from 'reactflow';
 import * as R from 'remeda';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import {
@@ -56,6 +60,7 @@ export interface TableModelNodeData {
     isEnum: boolean;
     tableId: string;
     unicityConstraint: UnicityConstraintType;
+    hasLink: boolean;
   }[];
 }
 
@@ -64,15 +69,23 @@ export function adaptTableModelNodeData(
   dataModel: DataModel,
   pivots: Pivot[],
 ): TableModelNodeData {
+  const linksToThisTable = dataModel
+    .filter((table) => table.id !== tableModel.id)
+    .flatMap((table) =>
+      table.linksToSingle.filter(({ parentTableId }) => parentTableId === tableModel.id),
+    );
+
+  const linksFromThisTable = dataModel
+    .filter((table) => table.id === tableModel.id)
+    .flatMap((table) =>
+      table.linksToSingle.filter(({ childTableId }) => childTableId === tableModel.id),
+    );
+
   return {
     original: tableModel,
     dataModel,
     pivot: pivots.find((pivot) => pivot.baseTableId === tableModel.id),
-    linksToThisTable: dataModel
-      .filter((table) => table.id !== tableModel.id)
-      .flatMap((table) =>
-        table.linksToSingle.filter((link) => link.parentTableName === tableModel.name),
-      ),
+    linksToThisTable,
     otherTablesWithUnique: dataModel
       .filter((table) => table.id !== tableModel.id)
       .filter((table) =>
@@ -91,6 +104,9 @@ export function adaptTableModelNodeData(
       isEnum: field.isEnum,
       tableId: field.tableId,
       unicityConstraint: field.unicityConstraint,
+      hasLink:
+        linksToThisTable.some(({ parentFieldId }) => parentFieldId === field.id) ||
+        linksFromThisTable.some(({ childFieldId }) => childFieldId === field.id),
     })),
   };
 }
@@ -152,6 +168,9 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               return <FormatDescription description={getValue<string>() || ''} />;
             },
           }),
+          columnHelper.accessor((row) => row.hasLink, {
+            id: 'hasLink',
+          }),
           ...(isEditDataModelFieldAvailable
             ? [
                 columnHelper.display({
@@ -170,12 +189,34 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
         ],
       }),
     ],
-    [isEditDataModelFieldAvailable, data, t],
+    [isEditDataModelFieldAvailable, data, displayPivot, t],
   );
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+    { id: 'hasLink', value: true },
+  ]);
+
+  const hasLinkFilter = columnFilters.find((f) => f.id === 'hasLink')?.value === true;
+
+  const toggleLinkedFilter = () => {
+    setColumnFilters((prev) =>
+      prev.some((filter) => filter.id === 'hasLink')
+        ? prev.filter((filter) => filter.id !== 'hasLink')
+        : [...prev, { id: 'hasLink', value: true }],
+    );
+  };
 
   const table = useReactTable({
     data: data.columns,
     columns,
+    state: {
+      columnFilters,
+      columnVisibility: {
+        hasLink: false,
+      },
+    },
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -245,7 +286,29 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               </tr>
             );
           })}
+
+          {table.getRowModel().rows.length === 0 ? (
+            <tr>
+              <td colSpan={columns.length + 2} className="text-grey-80 p-4 text-center">
+                {t('data:table.no_linked_fields.label')}
+              </td>
+            </tr>
+          ) : null}
         </tbody>
+        <tfoot>
+          <tr>
+            <td className="table-cell p-2 text-right" colSpan={5}>
+              <div className="flex justify-end">
+                <Button variant="secondary" disabled={displayPivot} onClick={toggleLinkedFilter}>
+                  <Icon
+                    icon="arrow-left"
+                    className={clsx('size-6', hasLinkFilter ? '-rotate-90' : 'rotate-90')}
+                  />
+                </Button>
+              </div>
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   );
