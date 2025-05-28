@@ -6,8 +6,5 @@ export type PreferencesCookie = {
   menuExpd: boolean;
 };
 export const PreferencesCookieSchema = z.object({
-  menuExpd: z.preprocess(
-    (val) => val === 'true' || val === true || val === '1' || val === 1 || val === 1n,
-    z.boolean(),
-  ),
+  menuExpd: z.preprocess((val) => val === 1, z.boolean()),
 });
