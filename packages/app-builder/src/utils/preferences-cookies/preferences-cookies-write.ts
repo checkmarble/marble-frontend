@@ -6,8 +6,7 @@ export function setPreferencesCookie<K extends keyof PreferencesCookie>(
   key: K,
   value: PreferencesCookie[K],
 ) {
-  // Read current cookie value
-  let current: Partial<Record<keyof PreferencesCookie, string>> = {};
+  let current: Partial<Record<keyof PreferencesCookie, string | number>> = {};
   try {
     const raw = Cookie.get(COOKIE_NAME);
     if (raw) {
@@ -17,7 +16,6 @@ export function setPreferencesCookie<K extends keyof PreferencesCookie>(
     // ignore parse errors
   }
 
-  // Validate and coerce the input using the schema
   const parsed = PreferencesCookieSchema.partial().safeParse({
     [key]: value,
   } as Partial<PreferencesCookie>);
@@ -25,10 +23,9 @@ export function setPreferencesCookie<K extends keyof PreferencesCookie>(
     throw new Error('Invalid preferences cookie value');
   }
 
-  // Store the value as a string, serializing if necessary
   switch (typeof value) {
     case 'boolean':
-      current[key] = value ? '1' : '0';
+      current[key] = value ? 1 : 0;
       break;
     case 'string':
       current[key] = value;
