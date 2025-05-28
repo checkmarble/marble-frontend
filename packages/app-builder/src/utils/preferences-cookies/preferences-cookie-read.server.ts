@@ -17,14 +17,7 @@ export function getPreferencesCookie<K extends PreferencesCookieKey>(
 
   let parsedObj: Record<string, unknown> = {};
   try {
-    let json = rawValue;
-    try {
-      parsedObj = JSON.parse(json);
-    } catch {
-      // Fix unquoted keys: {key:1} -> {"key":1}
-      json = json.replace(/([{,])\s*([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
-      parsedObj = JSON.parse(json);
-    }
+    parsedObj = JSON.parse(rawValue);
   } catch {
     parsedObj = { [name]: rawValue };
   }
