@@ -39,9 +39,7 @@ export function ClientObjectDataList({
         return data && (field.displayed || isExpanded) ? (
           <Fragment key={field.id}>
             <div className="text-grey-50 truncate">{field.name}</div>
-            <div className="truncate">
-              {data.value === null ? '-' : <FormatData data={data} language={language} />}
-            </div>
+            <FormatData data={data} language={language} className="truncate" />
           </Fragment>
         ) : null;
       })}
