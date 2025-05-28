@@ -17,6 +17,7 @@ import { OrganizationTagsContextProvider } from '@app-builder/services/organizat
 import { OrganizationUsersContextProvider } from '@app-builder/services/organization/organization-users';
 import { useSegmentIdentification } from '@app-builder/services/segment';
 import { forbidden } from '@app-builder/utils/http/http-responses';
+import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
@@ -32,7 +33,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { user, inbox, organization, entitlements } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-
   if (!isMarbleCoreUser(user)) {
     throw forbidden('Only Marble Core users can access this app.');
   }
@@ -46,7 +46,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   ]);
 
   const firstSettings = getSettings(user, inboxes)[0];
-
   return {
     user,
     orgUsers,
@@ -61,6 +60,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       },
     },
     versions,
+    isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
   };
 }
 
@@ -69,12 +69,11 @@ export const handle = {
 };
 
 export default function Builder() {
-  const { user, orgUsers, organization, orgTags, featuresAccess, versions } =
+  const { user, orgUsers, organization, orgTags, featuresAccess, versions, isMenuExpanded } =
     useLoaderData<typeof loader>();
   useSegmentIdentification(user);
   const { t } = useTranslation(handle.i18n);
-  const leftSidebarSharp = LeftSidebarSharpFactory.createSharp();
-
+  const leftSidebarSharp = LeftSidebarSharpFactory.createSharp(isMenuExpanded);
   // Refresh is done in the JSX because it needs to be done in the browser
   // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)
   useRefreshToken();
