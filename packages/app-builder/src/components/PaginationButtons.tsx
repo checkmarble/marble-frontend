@@ -1,5 +1,9 @@
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
-import { formatDateTime, formatNumber, useFormatLanguage } from '@app-builder/utils/format';
+import {
+  formatDateTimeWithoutPresets,
+  formatNumber,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { type Table } from '@tanstack/react-table';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
@@ -40,81 +44,99 @@ function FormattedDatesRange({
     return null;
   }
 
-  const startDate = new Date(startTs);
-  const endDate = new Date(endTs);
+  const start = new Date(startTs);
+  const end = new Date(endTs);
 
-  // Compare local date parts (year, month, day)
   const isSameLocalDay =
-    startDate.getFullYear() === endDate.getFullYear() &&
-    startDate.getMonth() === endDate.getMonth() &&
-    startDate.getDate() === endDate.getDate();
+    start.getFullYear() === end.getFullYear() &&
+    start.getMonth() === end.getMonth() &&
+    start.getDate() === end.getDate();
   const isSameMinute =
     isSameLocalDay &&
-    startDate.getHours() === endDate.getHours() &&
-    startDate.getMinutes() === endDate.getMinutes();
+    start.getHours() === end.getHours() &&
+    start.getMinutes() === end.getMinutes();
+  const isSameSecond = isSameMinute && end.getSeconds() === end.getSeconds();
 
-  if (isSameMinute && startDate.getSeconds() === endDate.getSeconds())
+  if (isSameSecond)
     return (
       <Trans
         t={t}
         i18nKey="common:items_displayed_same_datetime"
-        components={{ StartToEnd: <span /> }}
+        components={{ datetime: <span className="font-bold" /> }}
         values={{
-          date: formatDateTime(startDate, {
+          date: formatDateTimeWithoutPresets(start, {
             language,
-            dateStyle: 'medium',
-            timeStyle: undefined,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
           }),
-          time: formatDateTime(startDate, {
+          time: formatDateTimeWithoutPresets(start, {
             language,
-            dateStyle: undefined,
-            timeStyle: 'short',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
           }),
         }}
       />
     );
 
-  if (isSameLocalDay || isSameMinute)
+  if (isSameLocalDay) {
+    const dateFormatOpts = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    } as Intl.DateTimeFormatOptions;
+    const timeFormatOpts = {
+      hour: '2-digit',
+      minute: '2-digit',
+    } as Intl.DateTimeFormatOptions;
+    if (isSameMinute) {
+      timeFormatOpts.second = '2-digit';
+    }
+
     return (
       <Trans
         t={t}
-        i18nKey="common:items_displayed_same_date"
-        components={{ StartToEnd: <span /> }}
+        i18nKey={'common:items_displayed_same_date'}
+        components={{ datetime: <span className="font-bold" /> }}
         values={{
-          date: formatDateTime(startDate, {
+          date: formatDateTimeWithoutPresets(start, {
             language,
-            dateStyle: 'medium',
-            timeStyle: undefined,
+            ...dateFormatOpts,
           }),
-          start: formatDateTime(startTs, {
+          start: formatDateTimeWithoutPresets(start, {
             language,
-            dateStyle: undefined,
-            timeStyle: isSameMinute ? 'medium' : 'short',
+            ...timeFormatOpts,
           }),
-          end: formatDateTime(endTs, {
+          end: formatDateTimeWithoutPresets(end, {
             language,
-            dateStyle: undefined,
-            timeStyle: isSameMinute ? 'medium' : 'short',
+            ...timeFormatOpts,
           }),
         }}
       />
     );
+  }
 
+  const dtFormatOpts = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  } as Intl.DateTimeFormatOptions;
   return (
     <Trans
       t={t}
-      i18nKey="common:items_displayed_dates"
-      components={{ StartToEnd: <span /> }}
+      i18nKey={'common:items_displayed_dates'}
+      components={{ datetime: <span className="font-bold" /> }}
       values={{
-        start: formatDateTime(startTs, {
+        start: formatDateTimeWithoutPresets(start, {
           language,
-          dateStyle: 'medium',
-          timeStyle: 'short',
+          ...dtFormatOpts,
         }),
-        end: formatDateTime(endTs, {
+        end: formatDateTimeWithoutPresets(end, {
           language,
-          dateStyle: 'medium',
-          timeStyle: 'short',
+          ...dtFormatOpts,
         }),
       }}
     />
