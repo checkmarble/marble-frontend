@@ -38,7 +38,7 @@
   "view_pivot.definition": "Definition",
   "create_pivot.title": "Create a pivot",
   "create_pivot.description": "A key in the data model used to filter or group decisions (<DocLink>learn more</DocLink>)",
-  "create_pivot.select.label": "Select a pivot",
+  "create_pivot.select.label": "Join table {child} to {parent} via the links",
   "create_pivot.select.empty_matches": "No pivot matches your search",
   "create_pivot.button_accept": "Create pivot",
   "create_pivot.errors.data.duplicate_pivot_value": "A pivot value already exist for this table. Contact Marble to change it.",
@@ -72,5 +72,10 @@
   "create_navigation_option.labels.to": "To",
   "create_navigation_option.labels.ordered_by": "Ordered by",
   "create_navigation_option.placeholders.ordered_by": "Chose a field",
-  "create_navigation_option.explanation_text": "Select the field used for sorting the data by default. It can be by date, name... For objects containing a lot of data, like transactions, we recommend using the date the event happened."
+  "create_navigation_option.explanation_text": "Select the field used for sorting the data by default. It can be by date, name... For objects containing a lot of data, like transactions, we recommend using the date the event happened.",
+  "create_pivot.entity_selection.description": "Select the entity you want to use to identify the client.",
+  "create_pivot.select_entity.same_table": "Nothing above. Use field in the {{table}} table",
+  "create_pivot.entity_selection.button_accept": "Next",
+  "create_pivot.path_selection.description": "A pivot will be created along this path",
+  "create_pivot.select_path.description": "Join {{child}} to {{ parent}} via the link"
 }
