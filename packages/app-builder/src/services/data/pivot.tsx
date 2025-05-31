@@ -31,11 +31,15 @@ function adaptFieldPivotOption({
   };
 }
 
-interface LinkPivotOption {
+export interface LinkPivotOption {
   type: 'link';
   baseTableId: string;
+  parentTableId?: string;
+  parentTableName?: string;
+  length?: number;
   pathLinkIds: string[];
   id: string;
+  displayPath?: string;
   displayValue: string;
 }
 
@@ -51,27 +55,28 @@ function adaptLinkPivotOption({
     type: 'link',
     baseTableId,
     pathLinkIds,
+    parentTableId: pathLinks[pathLinks.length - 1]?.parentTableId,
+    parentTableName: pathLinks[pathLinks.length - 1]?.parentTableName,
+    length: pathLinks.length,
     id: pathLinkIds.join('.'),
-    displayValue: pathLinks.map((link) => link.name).join('.'),
+    displayPath: pathLinks.map((link) => link.name).join('.'),
+    displayValue: pathLinks[pathLinks.length - 1]?.parentTableName ?? '',
   };
 }
 
 export type PivotOption = FieldPivotOption | LinkPivotOption;
 
-export function getPivotOptions(tableModel: TableModel, dataModel: DataModel): PivotOption[] {
-  const fieldsPivots = getFieldPivotOptions(tableModel);
-
-  const tablesMap = new Map(dataModel.map((table) => [table.id, table]));
-
-  const linkedPivots = getLinkPivotOptions(tableModel.linksToSingle, {
+export function getLinksPivotOptions(
+  tableModel: TableModel,
+  dataModel: DataModel,
+): LinkPivotOption[] {
+  return getLinkPivotOptions(tableModel.linksToSingle, {
     baseTableId: tableModel.id,
-    tablesMap,
+    tablesMap: new Map(dataModel.map((table) => [table.id, table])),
   });
-
-  return [...fieldsPivots, ...linkedPivots];
 }
 
-function getFieldPivotOptions(tableModel: TableModel): FieldPivotOption[] {
+export function getFieldPivotOptions(tableModel: TableModel): FieldPivotOption[] {
   return R.pipe(
     tableModel.fields,
     // Only allow pivots on string fields

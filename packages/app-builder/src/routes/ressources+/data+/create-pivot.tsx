@@ -1,24 +1,21 @@
-import { Callout } from '@app-builder/components';
-import { PivotType } from '@app-builder/components/Data/PivotDetails';
-import { ExternalLink } from '@app-builder/components/ExternalLink';
-import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { Highlight } from '@app-builder/components/Highlight';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type DataModel, isStatusConflictHttpError, type TableModel } from '@app-builder/models';
-import { getPivotOptions, type PivotOption } from '@app-builder/services/data/pivot';
-import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
+import {
+  getLinksPivotOptions,
+  type LinkPivotOption,
+  type PivotOption,
+} from '@app-builder/services/data/pivot';
 import { initServerServices } from '@app-builder/services/init.server';
-import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { useForm } from '@tanstack/react-form';
-import { matchSorter } from 'match-sorter';
-import { useDeferredValue, useEffect, useMemo, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import { Button, Input, ModalV2, SelectWithCombobox } from 'ui-design-system';
+import { useEffect, useMemo, useState } from 'react';
+import { match } from 'ts-pattern';
+import { ModalV2 } from 'ui-design-system';
 import { z } from 'zod';
+
+import { SelectLinkPath } from './create-pivot/SelectLinkPath';
+import { SelectTargetEntity } from './create-pivot/SelectTargetEntity';
 
 const createPivotFormSchema = z.object({
   pivot: z.discriminatedUnion('type', [
@@ -39,7 +36,17 @@ const createPivotFormSchema = z.object({
   ]),
 });
 
-type CreatePivotForm = z.infer<typeof createPivotFormSchema>;
+// type CreatePivotForm = z.infer<typeof createPivotFormSchema>;
+
+type PivotCreationState =
+  | { step: 'entity'; pivotOption: null }
+  | { step: 'field'; pivotOption: null }
+  | { step: 'link'; pivotOption: LinkPivotOption };
+
+const initialState: PivotCreationState = {
+  step: 'entity',
+  pivotOption: null,
+};
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
@@ -89,159 +96,79 @@ export function CreatePivot({
   dataModel: DataModel;
   children: React.ReactElement;
 }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <ModalV2.Root open={open} setOpen={setOpen}>
-      <ModalV2.Trigger render={children} />
-      <ModalV2.Content>
-        <CreatePivotContent
-          tableModel={tableModel}
-          dataModel={dataModel}
-          closeModal={() => {
-            setOpen(false);
-          }}
-        />
-      </ModalV2.Content>
-    </ModalV2.Root>
-  );
-}
-
-function CreatePivotContent({
-  tableModel,
-  dataModel,
-  closeModal,
-}: {
-  tableModel: TableModel;
-  dataModel: DataModel;
-  closeModal: () => void;
-}) {
-  const { t } = useTranslation(['common', 'data']);
   const fetcher = useFetcher<typeof action>();
-
-  const pivotOptions = useMemo(
-    () => getPivotOptions(tableModel, dataModel),
-    [dataModel, tableModel],
-  );
-
-  const form = useForm({
-    defaultValues: {
-      pivot: pivotOptions[0] as PivotOption,
-    } as CreatePivotForm,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        fetcher.submit(value, {
-          method: 'POST',
-          action: getRoute('/ressources/data/create-pivot'),
-          encType: 'application/json',
-        });
-      }
-    },
-    validators: {
-      onChange: createPivotFormSchema,
-      onBlur: createPivotFormSchema,
-      onSubmit: createPivotFormSchema,
-    },
-  });
 
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data?.success) {
-      closeModal();
+      setOpen(false);
     }
-  }, [closeModal, fetcher.data?.success, fetcher.state]);
+  }, [fetcher.data?.success, fetcher.state]);
 
-  const [searchValue, setSearchValue] = useState('');
-  const deferredSearchValue = useDeferredValue(searchValue);
+  const [open, setOpenState] = useState(false);
 
-  const matches = useMemo(
-    () =>
-      matchSorter(pivotOptions, deferredSearchValue, {
-        keys: ['displayValue'],
-      }),
-    [pivotOptions, deferredSearchValue],
+  const setOpen = (isOpening: boolean) => {
+    if (!isOpening) {
+      setOpenState(false);
+      setStepState(initialState);
+      return;
+    }
+    setOpenState(true);
+  };
+
+  const [stepState, setStepState] = useState<PivotCreationState>(initialState);
+
+  const onEntitySelected = (value: PivotOption) => {
+    if (value.type === 'field') {
+      setStepState(initialState);
+    } else if (value.type === 'link') {
+      setStepState({ step: 'link', pivotOption: value });
+    } else {
+      console.error('Unexpected pivot option type:', value);
+      return;
+    }
+  };
+
+  const pivotOptions = useMemo(
+    () => getLinksPivotOptions(tableModel, dataModel),
+    [dataModel, tableModel],
   );
 
+  const createPivot = (pivot: PivotOption) => {
+    fetcher.submit(JSON.stringify({ pivot }), {
+      method: 'POST',
+      action: getRoute('/ressources/data/create-pivot'),
+      encType: 'application/json',
+    });
+  };
+
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-    >
-      <ModalV2.Title>{t('data:create_pivot.title')}</ModalV2.Title>
-      <div className="bg-grey-100 flex flex-col gap-6 p-6">
-        <Callout variant="outlined">
-          <ModalV2.Description className="whitespace-pre text-wrap">
-            <Trans
-              t={t}
-              i18nKey="data:create_pivot.description"
-              components={{
-                DocLink: <ExternalLink href={pivotValuesDocHref} />,
-              }}
+    <ModalV2.Root {...{ open, setOpen }}>
+      <ModalV2.Trigger render={children} />
+      <ModalV2.Content>
+        {match(stepState)
+          .with({ step: 'entity', pivotOption: null }, () => (
+            <SelectTargetEntity
+              {...{ pivotOptions, tableModel }}
+              onSelected={(e) => onEntitySelected(e)}
             />
-          </ModalV2.Description>
-        </Callout>
-        <form.Field name="pivot">
-          {(field) => (
-            <div className="flex flex-col gap-2">
-              <FormLabel name={field.name}>{t('data:create_pivot.select.label')}</FormLabel>
-              <SelectWithCombobox.Root
-                searchValue={searchValue}
-                onSearchValueChange={setSearchValue}
-                selectedValue={field.state.value.id}
-                onSelectedValueChange={(value): void => {
-                  field.handleChange(
-                    pivotOptions.find((pivot) => pivot.id === value) as PivotOption,
-                  );
-                }}
-              >
-                <SelectWithCombobox.Select className="w-full">
-                  {field.state.value?.displayValue}
-                  <SelectWithCombobox.Arrow />
-                </SelectWithCombobox.Select>
-                <SelectWithCombobox.Popover
-                  className="z-50 flex flex-col gap-2 p-2"
-                  portal
-                  sameWidth
-                >
-                  <SelectWithCombobox.Combobox
-                    render={<Input className="shrink-0" />}
-                    autoSelect
-                    autoFocus
-                  />
-                  <SelectWithCombobox.ComboboxList>
-                    {matches.map((pivot) => (
-                      <SelectWithCombobox.ComboboxItem
-                        key={pivot.id}
-                        value={pivot.id}
-                        className="flex items-center justify-between"
-                      >
-                        <Highlight text={pivot.displayValue} query={deferredSearchValue} />
-                        <PivotType type={pivot.type} />
-                      </SelectWithCombobox.ComboboxItem>
-                    ))}
-                    {matches.length === 0 ? (
-                      <p className="text-grey-50 flex items-center justify-center p-2">
-                        {t('data:create_pivot.select.empty_matches')}
-                      </p>
-                    ) : null}
-                  </SelectWithCombobox.ComboboxList>
-                </SelectWithCombobox.Popover>
-              </SelectWithCombobox.Root>
-              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-            </div>
-          )}
-        </form.Field>
-        <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
-          <Button className="flex-1" variant="primary" type="submit">
-            {t('data:create_pivot.button_accept')}
-          </Button>
-        </div>
-      </div>
-    </form>
+          ))
+          .with({ step: 'link', pivotOption: {} }, ({ pivotOption }) => {
+            console.log('pivotOption', pivotOption);
+            if (!pivotOption) {
+              console.error('No pivot option provided for link step');
+              return null;
+            }
+            return (
+              <SelectLinkPath
+                {...{ pivotOptions, tableModel }}
+                preferedPivotOption={pivotOption}
+                onSelected={(e) => createPivot(e)}
+              />
+            );
+          })
+          .with({ step: 'field', pivotOption: null }, () => <></>)
+          .otherwise(() => null)}
+      </ModalV2.Content>
+    </ModalV2.Root>
   );
 }
