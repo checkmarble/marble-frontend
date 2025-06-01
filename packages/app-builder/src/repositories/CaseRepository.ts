@@ -16,6 +16,7 @@ import {
 import { type ReviewStatus } from '@app-builder/models/decision';
 import {
   adaptPagination,
+  defaultPaginationSize,
   type FiltersWithPagination,
   type PaginatedResponse,
 } from '@app-builder/models/pagination';
@@ -106,12 +107,14 @@ export function makeGetCaseRepository() {
         startDate = add(new Date(), fromNowDuration).toISOString();
       }
 
+      // Nb: the constant value of 25 for limit is used for rank display in PaginationButtons - logic to adapt if we make it more dynamic
       const { items, ...pagination } = await marbleCoreApiClient.listCases({
         startDate,
         endDate,
         inboxId: inboxIds,
         status: statuses,
         includeSnoozed: rest.snoozed,
+        limit: defaultPaginationSize,
         ...rest,
       });
 

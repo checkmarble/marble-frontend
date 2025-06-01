@@ -1,5 +1,7 @@
 import { type Pagination as PaginationDto } from 'marble-api';
 
+export const defaultPaginationSize = 25;
+
 export type Pagination = {
   hasNextPage: boolean;
   startIndex: number;
