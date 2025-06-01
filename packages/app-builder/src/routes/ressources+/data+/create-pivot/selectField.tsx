@@ -4,68 +4,32 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { Highlight } from '@app-builder/components/Highlight';
 import { type TableModel } from '@app-builder/models/data-model';
-import { type CustomPivotOption, type LinkPivotOption } from '@app-builder/services/data/pivot';
+import { type FieldPivotOption, getFieldPivotOptions } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
-import clsx from 'clsx';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input, ModalV2, SelectWithCombobox } from 'ui-design-system';
 
-export function SelectTargetEntity({
-  pivotOptions,
+export function SelectField({
   tableModel,
   onSelected,
 }: {
-  pivotOptions: LinkPivotOption[];
   tableModel: TableModel;
-  onSelected: (value: CustomPivotOption) => void;
+  onSelected: (value: FieldPivotOption) => void;
 }) {
   const { t } = useTranslation(['common', 'data']);
 
-  const options = useMemo(
-    () => [
-      ...pivotOptions
-        .reduce((uniqueLinks, link) => {
-          if (!link.parentTableId) return uniqueLinks;
-
-          const existingLink = uniqueLinks.get(link.parentTableId);
-
-          if (!existingLink) {
-            uniqueLinks.set(link.parentTableId, link);
-            return uniqueLinks;
-          }
-
-          if (
-            typeof link.length === 'number' &&
-            (existingLink.length === undefined || link.length < existingLink.length)
-          ) {
-            uniqueLinks.set(link.parentTableId, link);
-          }
-          return uniqueLinks;
-        }, new Map<string, LinkPivotOption>())
-        .values(),
-
-      {
-        type: 'sameTable' as const,
-        baseTableId: tableModel.id,
-        displayValue: t('data:create_pivot.select_entity.same_table', {
-          table: tableModel.name,
-        }) as string,
-        id: `${tableModel.id}`,
-      },
-    ],
-    [pivotOptions, tableModel.id, tableModel.name, t],
-  );
+  const options = useMemo(() => getFieldPivotOptions(tableModel), [tableModel]);
 
   const form = useForm({
     defaultValues: { pivot: options[0] ?? null },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        if (value.pivot?.type === 'link' || value.pivot?.type === 'sameTable') {
-          onSelected(value.pivot);
+        if (value.pivot?.type === 'field') {
+          onSelected(value.pivot as FieldPivotOption);
         }
       }
     },
@@ -114,7 +78,7 @@ export function SelectTargetEntity({
                 selectedValue={field.state.value?.id}
                 onSelectedValueChange={(value): void => {
                   field.handleChange(
-                    options.find((pivot) => pivot.id === value) as CustomPivotOption,
+                    options.find((pivot) => pivot.id === value) as FieldPivotOption,
                   );
                 }}
               >
@@ -137,12 +101,10 @@ export function SelectTargetEntity({
                       <SelectWithCombobox.ComboboxItem
                         key={pivot.id}
                         value={pivot.id}
-                        className={clsx('flex items-center justify-between', {
-                          italic: pivot.type === 'sameTable',
-                        })}
+                        className="flex items-center justify-between"
                       >
                         <Highlight text={pivot.displayValue} query={deferredSearchValue} />
-                        {pivot.type === 'link' ? <PivotType type={pivot.type} /> : null}
+                        <PivotType type={pivot.type} />
                       </SelectWithCombobox.ComboboxItem>
                     ))}
                     {matches.length === 0 ? (
@@ -164,7 +126,7 @@ export function SelectTargetEntity({
           </ModalV2.Close>
 
           <Button className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
-            {t('data:create_pivot.entity_selection.button_accept')}
+            {t('data:create_pivot.button_accept')}
           </Button>
         </div>
       </div>

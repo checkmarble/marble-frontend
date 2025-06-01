@@ -7,7 +7,7 @@ import {
 } from '@app-builder/models';
 import * as R from 'remeda';
 
-interface FieldPivotOption {
+export interface FieldPivotOption {
   type: 'field';
   baseTableId: string;
   fieldId: string;
@@ -42,6 +42,15 @@ export interface LinkPivotOption {
   displayPath?: string;
   displayValue: string;
 }
+
+export type CustomPivotOption =
+  | LinkPivotOption
+  | {
+      type: 'sameTable';
+      baseTableId: string;
+      displayValue: string;
+      id: string;
+    };
 
 function adaptLinkPivotOption({
   baseTableId,

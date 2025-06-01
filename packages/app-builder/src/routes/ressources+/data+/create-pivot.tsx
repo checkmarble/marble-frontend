@@ -1,6 +1,7 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type DataModel, isStatusConflictHttpError, type TableModel } from '@app-builder/models';
 import {
+  type CustomPivotOption,
   getLinksPivotOptions,
   type LinkPivotOption,
   type PivotOption,
@@ -14,6 +15,7 @@ import { match } from 'ts-pattern';
 import { ModalV2 } from 'ui-design-system';
 import { z } from 'zod';
 
+import { SelectField } from './create-pivot/selectField';
 import { SelectLinkPath } from './create-pivot/SelectLinkPath';
 import { SelectTargetEntity } from './create-pivot/SelectTargetEntity';
 
@@ -66,12 +68,12 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = createPivotFormSchema.safeParse(raw);
 
-  if (!success) return json({ success: 'false', errors: error.flatten() });
+  if (!success) return { success: 'false', errors: error.flatten() };
 
   try {
     await dataModelRepository.createPivot(data.pivot);
 
-    return json({ success: 'true', errors: [] });
+    return { success: 'true', errors: [] };
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
@@ -117,15 +119,16 @@ export function CreatePivot({
 
   const [stepState, setStepState] = useState<PivotCreationState>(initialState);
 
-  const onEntitySelected = (value: PivotOption) => {
-    if (value.type === 'field') {
-      setStepState(initialState);
-    } else if (value.type === 'link') {
-      setStepState({ step: 'link', pivotOption: value });
-    } else {
-      console.error('Unexpected pivot option type:', value);
-      return;
+  const onEntitySelected = (value: CustomPivotOption) => {
+    console.log('onEntitySelected', value);
+    if (value.type === 'sameTable') {
+      return setStepState({ step: 'field', pivotOption: null });
     }
+    if (value.type === 'link') {
+      return setStepState({ step: 'link', pivotOption: value });
+    }
+    console.error('Unexpected pivot option type:', value);
+    return;
   };
 
   const pivotOptions = useMemo(
@@ -166,7 +169,9 @@ export function CreatePivot({
               />
             );
           })
-          .with({ step: 'field', pivotOption: null }, () => <></>)
+          .with({ step: 'field', pivotOption: null }, () => (
+            <SelectField {...{ tableModel, onSelected: createPivot }} />
+          ))
           .otherwise(() => null)}
       </ModalV2.Content>
     </ModalV2.Root>
