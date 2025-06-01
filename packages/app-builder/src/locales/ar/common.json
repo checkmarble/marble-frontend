@@ -80,7 +80,8 @@
   "snooze.oneMonth": "شهر",
   "snooze.nextMonday": "الأسبوع القادم",
   "snooze.custom": "مخصص",
-  "items_displayed_dates": "من <TateTime> {{start}} </dateTime> إلى <dateTime> {{end}} </dateTime>",
-  "items_displayed_same_date": "على <TateTime> {{date}} </tateTime> من <TateTime> {{start}} </tateTime> إلى <dateTime> {{end}} </tateTime>",
-  "items_displayed_same_datetime": "على <TateTime> {{Date}} </tateTime> في <dateTime> {{time}} </tateTime>"
+  "items_displayed_dates": "من <emph> {{start}} </emph> إلى <emph> {{end}} </emph>",
+  "items_displayed_same_date": "على <emph> {{date}} </emph> من <emph> {{start}} </emph> إلى <emph> {{end}} </emph>",
+  "items_displayed_same_datetime": "على <emph> {{Date}} </emph> في <emph> {{time}} </emph>",
+  "items_displayed_ranks": "من <emph> {{start}} </emph> إلى <remphown> {{end}} </emph>"
 }

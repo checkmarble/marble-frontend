@@ -8,6 +8,7 @@ export type CursorPaginationState = {
   lastAction: PaginationAction;
   isPristine: boolean;
   hasPreviousPage: boolean;
+  pageNb: number;
 };
 
 const INITIAL_STATE: CursorPaginationState = {
@@ -16,6 +17,7 @@ const INITIAL_STATE: CursorPaginationState = {
   lastAction: 'next',
   isPristine: true,
   hasPreviousPage: false,
+  pageNb: 0,
 };
 
 export const useCursorPagination = () => {
@@ -31,6 +33,7 @@ export const useCursorPagination = () => {
       lastAction: 'next',
       isPristine: false,
       hasPreviousPage: true,
+      pageNb: currentState.pageNb + 1,
     }));
   }, []);
 
@@ -44,6 +47,7 @@ export const useCursorPagination = () => {
         lastAction: 'previous',
         isPristine: false,
         hasPreviousPage,
+        pageNb: currentState.pageNb - 1,
       };
     });
   }, []);

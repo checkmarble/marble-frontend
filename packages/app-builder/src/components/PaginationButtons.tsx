@@ -1,10 +1,9 @@
-import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import {
-  formatDateTimeWithoutPresets,
-  formatNumber,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
-import { type Table } from '@tanstack/react-table';
+  defaultPaginationSize,
+  type PaginatedResponse,
+  type PaginationParams,
+} from '@app-builder/models/pagination';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -27,7 +26,8 @@ type ItemWithId = {
 type CursorPaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
   onPaginationChange: (paginationParams: PaginationParams) => void;
   hasPreviousPage: boolean;
-  hideBoundaries?: boolean;
+  boundariesDisplay: 'ranks' | 'dates';
+  pageNb: number;
 };
 
 function FormattedDatesRange({
@@ -62,7 +62,7 @@ function FormattedDatesRange({
       <Trans
         t={t}
         i18nKey="common:items_displayed_same_datetime"
-        components={{ datetime: <span className="font-bold" /> }}
+        components={{ emph: <span className="font-bold" /> }}
         values={{
           date: formatDateTimeWithoutPresets(start, {
             language,
@@ -98,7 +98,7 @@ function FormattedDatesRange({
       <Trans
         t={t}
         i18nKey={'common:items_displayed_same_date'}
-        components={{ datetime: <span className="font-bold" /> }}
+        components={{ emph: <span className="font-bold" /> }}
         values={{
           date: formatDateTimeWithoutPresets(start, {
             language,
@@ -128,7 +128,7 @@ function FormattedDatesRange({
     <Trans
       t={t}
       i18nKey={'common:items_displayed_dates'}
-      components={{ datetime: <span className="font-bold" /> }}
+      components={{ emph: <span className="font-bold" /> }}
       values={{
         start: formatDateTimeWithoutPresets(start, {
           language,
@@ -143,12 +143,33 @@ function FormattedDatesRange({
   );
 }
 
+function RankNumberRange({ pageNb, nbInPage }: { pageNb: number; nbInPage: number }) {
+  const { t } = useTranslation(['common']);
+
+  const start = pageNb * defaultPaginationSize + 1;
+  const end = nbInPage > 0 ? pageNb * defaultPaginationSize + nbInPage : 0;
+
+  if (pageNb === 0 && nbInPage === 0) {
+    return null;
+  }
+
+  return (
+    <Trans
+      t={t}
+      i18nKey={'common:items_displayed_ranks'}
+      components={{ emph: <span className="font-bold" /> }}
+      values={{ start, end }}
+    />
+  );
+}
+
 export function CursorPaginationButtons({
   items,
   hasNextPage,
   hasPreviousPage,
   onPaginationChange,
-  hideBoundaries,
+  boundariesDisplay,
+  pageNb,
 }: CursorPaginationsButtonsProps) {
   const language = useFormatLanguage();
 
@@ -176,7 +197,11 @@ export function CursorPaginationButtons({
 
   return (
     <div className="flex items-center justify-end gap-2">
-      {hideBoundaries ? null : <FormattedDatesRange {...{ startTs, endTs, language }} />}
+      {boundariesDisplay === 'ranks' ? (
+        <RankNumberRange pageNb={pageNb} nbInPage={items.length} />
+      ) : (
+        <FormattedDatesRange {...{ startTs, endTs, language }} />
+      )}
       <Button onClick={fetchPrevious} variant="secondary" disabled={previousDisabled}>
         <Icon icon="arrow-left" className="size-4" />
       </Button>
@@ -185,58 +210,4 @@ export function CursorPaginationButtons({
       </Button>
     </div>
   );
-}
-
-interface OffsetPaginationButtonsProps {
-  previousPage: () => void;
-  canPreviousPage: boolean;
-  nextPage: () => void;
-  canNextPage: boolean;
-  currentPage: number;
-  pageCount: number;
-}
-
-export function OffsetPaginationButtons({
-  previousPage,
-  canPreviousPage,
-  nextPage,
-  canNextPage,
-  currentPage,
-  pageCount,
-}: OffsetPaginationButtonsProps) {
-  const { t } = useTranslation(['common']);
-  const language = useFormatLanguage();
-
-  return (
-    <div className="flex items-center justify-end gap-2">
-      <Trans
-        t={t}
-        i18nKey="common:page_displayed_of_total"
-        components={{ PageCount: <span style={{ fontWeight: 'bold' }} /> }}
-        values={{
-          currentPage: formatNumber(currentPage, { language }),
-          pageCount: formatNumber(pageCount, { language }),
-        }}
-      />
-      <Button onClick={previousPage} variant="secondary" disabled={canPreviousPage}>
-        <Icon icon="arrow-left" className="size-4" />
-      </Button>
-      <Button onClick={nextPage} variant="secondary" disabled={canNextPage}>
-        <Icon icon="arrow-right" className="size-4" />
-      </Button>
-    </div>
-  );
-}
-
-export function adaptOffsetPaginationButtonsProps<T>(
-  table: Table<T>,
-): OffsetPaginationButtonsProps {
-  return {
-    previousPage: () => table.previousPage(),
-    canPreviousPage: !table.getCanPreviousPage(),
-    nextPage: () => table.nextPage(),
-    canNextPage: !table.getCanNextPage(),
-    currentPage: table.getState().pagination.pageIndex + 1,
-    pageCount: table.getPageCount(),
-  };
 }
