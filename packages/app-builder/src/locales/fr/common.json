@@ -83,5 +83,7 @@
   "snooze.oneWeek": "Une semaine",
   "snooze.oneMonth": "Un mois",
   "snooze.nextMonday": "Lundi prochain",
-  "snooze.custom": "Personnalisé"
+  "snooze.custom": "Personnalisé",
+  "from": "De {{input}}",
+  "to": "À {{input}}"
 }

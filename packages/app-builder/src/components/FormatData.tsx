@@ -1,4 +1,4 @@
-import { formatDateTime, formatNumber } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, formatNumber } from '@app-builder/utils/format';
 
 import { ExternalLink } from './ExternalLink';
 
@@ -39,7 +39,11 @@ export function FormatData({
     case 'datetime':
       return (
         <time dateTime={data.value} className={className}>
-          {formatDateTime(data.value, { language })}
+          {formatDateTimeWithoutPresets(data.value, {
+            language,
+            dateStyle: 'short',
+            timeStyle: 'short',
+          })}
         </time>
       );
     case 'number':

@@ -30,17 +30,6 @@ export function useFormatLanguage() {
   );
 }
 
-export function formatDateTime(
-  timestamp: string | Date,
-  { language, ...options }: { language: string } & Intl.DateTimeFormatOptions,
-) {
-  return Intl.DateTimeFormat(language, {
-    dateStyle: 'short',
-    timeStyle: 'short',
-    ...options,
-  }).format(typeof timestamp === 'string' ? new Date(timestamp) : timestamp);
-}
-
 export function formatDateTimeWithoutPresets(
   timestamp: string | Date,
   { language, ...options }: { language: string } & Intl.DateTimeFormatOptions,

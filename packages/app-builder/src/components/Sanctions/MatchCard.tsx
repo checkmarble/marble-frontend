@@ -3,7 +3,7 @@ import { SanctionCheckReviewModal } from '@app-builder/routes/ressources+/cases+
 import { EnrichMatchButton } from '@app-builder/routes/ressources+/sanction-check+/enrich-match.$matchId';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, CollapsibleV2, Tag } from 'ui-design-system';
@@ -104,7 +104,11 @@ function CommentLine({ comment }: { comment: SanctionCheckMatch['comments'][numb
         <span className="flex items-baseline gap-1">
           {fullName}
           <time className="text-grey-50 text-xs" dateTime={comment.createdAt}>
-            {formatDateTime(comment.createdAt, { language })}
+            {formatDateTimeWithoutPresets(comment.createdAt, {
+              language,
+              dateStyle: 'short',
+              timeStyle: 'short',
+            })}
           </time>
         </span>
       </div>

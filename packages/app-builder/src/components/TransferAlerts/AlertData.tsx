@@ -1,5 +1,9 @@
 import { type TransferAlertStatus } from '@app-builder/models/transfer-alert';
-import { formatDateRelative, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import {
+  formatDateRelative,
+  formatDateTimeWithoutPresets,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'ui-design-system';
 
@@ -28,8 +32,10 @@ export function AlertData({ alert }: AlertDataProps) {
           <Tooltip.Default
             content={
               <span className="text-grey-00 text-s">
-                {formatDateTime(alert.createdAt, {
+                {formatDateTimeWithoutPresets(alert.createdAt, {
                   language,
+                  dateStyle: 'short',
+                  timeStyle: 'short',
                 })}
               </span>
             }

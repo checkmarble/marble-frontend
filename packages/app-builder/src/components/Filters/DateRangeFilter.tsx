@@ -1,6 +1,10 @@
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { formatDateTime, formatDuration, useFormatLanguage } from '@app-builder/utils/format';
+import {
+  formatDateTimeWithoutPresets,
+  formatDuration,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { clsx } from 'clsx';
 import { add, sub } from 'date-fns';
 import { useCallback } from 'react';
@@ -194,9 +198,9 @@ function FormatStaticDate({ date, className }: { date?: string | Date; className
 
   const dateTime = typeof date === 'string' ? date : date?.toDateString();
   const formattedDate = date
-    ? formatDateTime(date, {
+    ? formatDateTimeWithoutPresets(date, {
         language,
-        timeStyle: undefined,
+        dateStyle: 'short',
       })
     : '--/--/----';
 

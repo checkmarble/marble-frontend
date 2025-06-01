@@ -1,6 +1,6 @@
 import { type CaseEventType, caseEventTypes } from '@app-builder/models/cases';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { endOfDay, startOfDay } from 'date-fns';
 import { diff, toggle } from 'radash';
 import { type ComponentProps, type Dispatch, type SetStateAction, useMemo } from 'react';
@@ -126,10 +126,26 @@ export const CaseEventFilters = ({
               <div className="bg-grey-80 mx-1 h-3 w-px" />
             ) : null}
             {filters.startDate ? (
-              <Badge>From {formatDateTime(filters.startDate, { language })}</Badge>
+              <Badge>
+                {t('common:from', {
+                  input: formatDateTimeWithoutPresets(filters.startDate, {
+                    language,
+                    dateStyle: 'short',
+                    timeStyle: 'short',
+                  }),
+                })}
+              </Badge>
             ) : null}
             {filters.endDate ? (
-              <Badge>To {formatDateTime(filters.endDate, { language })}</Badge>
+              <Badge>
+                {t('common:to', {
+                  input: formatDateTimeWithoutPresets(filters.endDate, {
+                    language,
+                    dateStyle: 'short',
+                    timeStyle: 'short',
+                  }),
+                })}
+              </Badge>
             ) : null}
           </Button>
         </MenuCommand.Trigger>

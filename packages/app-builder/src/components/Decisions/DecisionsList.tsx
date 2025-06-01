@@ -2,7 +2,7 @@ import { CaseStatusBadge, decisionsI18n, OutcomeBadge } from '@app-builder/compo
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
@@ -133,7 +133,7 @@ export function DecisionsList({
           const dateTime = getValue();
           return (
             <time dateTime={dateTime}>
-              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
             </time>
           );
         },
