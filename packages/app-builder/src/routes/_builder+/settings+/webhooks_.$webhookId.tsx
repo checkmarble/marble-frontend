@@ -10,7 +10,7 @@ import {
   isReadWebhookAvailable,
 } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -153,7 +153,7 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
           const dateTime = getValue();
           return (
             <time dateTime={dateTime}>
-              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
             </time>
           );
         },
@@ -169,7 +169,7 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
           }
           return (
             <time dateTime={dateTime}>
-              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
             </time>
           );
         },
@@ -185,7 +185,7 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
           }
           return (
             <time dateTime={dateTime}>
-              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
             </time>
           );
         },

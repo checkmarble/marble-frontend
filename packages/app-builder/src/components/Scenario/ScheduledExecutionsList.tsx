@@ -1,5 +1,9 @@
 import { type ScheduledExecution } from '@app-builder/models/decision';
-import { formatDateTime, formatNumber, useFormatLanguage } from '@app-builder/utils/format';
+import {
+  formatDateTimeWithoutPresets,
+  formatNumber,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
@@ -95,14 +99,22 @@ export function ScheduledExecutionsList({
         header: t('scenarios:scheduled_execution.status'),
         size: 100,
       }),
-      columnHelper.accessor((s) => formatDateTime(s.startedAt, { language }), {
-        id: 'created_at',
-        header: t('scenarios:scheduled_execution.created_at'),
-        size: 100,
-        cell: ({ getValue, cell }) => {
-          return <time dateTime={cell.row.original.startedAt}>{getValue()}</time>;
+      columnHelper.accessor(
+        (s) =>
+          formatDateTimeWithoutPresets(s.startedAt, {
+            language,
+            dateStyle: 'short',
+            timeStyle: 'short',
+          }),
+        {
+          id: 'created_at',
+          header: t('scenarios:scheduled_execution.created_at'),
+          size: 100,
+          cell: ({ getValue, cell }) => {
+            return <time dateTime={cell.row.original.startedAt}>{getValue()}</time>;
+          },
         },
-      }),
+      ),
     ],
     [language, t],
   );

@@ -8,7 +8,7 @@ import { type PivotObject } from '@app-builder/models/cases';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
 import { AddRuleSnooze } from '@app-builder/routes/ressources+/cases+/add-rule-snooze';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { formatRelative } from 'date-fns';
@@ -131,7 +131,10 @@ export const SnoozePanel = ({
                             <span
                               className={cn('text-grey-50 text-xs', { 'opacity-30': r.isSnoozed })}
                             >
-                              {formatDateTime(r.hitAt, { language, timeStyle: undefined })}
+                              {formatDateTimeWithoutPresets(r.hitAt, {
+                                language,
+                                dateStyle: 'short',
+                              })}
                             </span>
                           );
 

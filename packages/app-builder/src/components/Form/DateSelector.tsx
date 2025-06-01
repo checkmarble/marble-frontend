@@ -1,4 +1,4 @@
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { Popover, PopoverDisclosure, PopoverProvider } from '@ariakit/react';
 import clsx from 'clsx';
 import { type ElementRef, forwardRef, useState } from 'react';
@@ -37,9 +37,9 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
               })}
             >
               {selectedDate
-                ? formatDateTime(selectedDate, {
+                ? formatDateTimeWithoutPresets(selectedDate, {
                     language,
-                    timeStyle: undefined,
+                    dateStyle: 'short',
                   })
                 : props.placeholder}
             </span>

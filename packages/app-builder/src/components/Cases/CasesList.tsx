@@ -1,6 +1,10 @@
 import { type Case } from '@app-builder/models/cases';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
-import { formatDateRelative, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import {
+  formatDateRelative,
+  formatDateTimeWithoutPresets,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
@@ -80,7 +84,7 @@ export function CasesList({
           const dateTime = getValue();
           return Math.abs(differenceInDays(new Date(), dateTime)) > 1 ? (
             <time dateTime={dateTime}>
-              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
             </time>
           ) : (
             <Tooltip.Default
@@ -88,9 +92,8 @@ export function CasesList({
               className="border-grey-90 flex items-center border px-1.5 py-1"
               content={
                 <span className="text-2xs font-normal">
-                  {formatDateTime(dateTime, {
+                  {formatDateTimeWithoutPresets(dateTime, {
                     language,
-                    timeStyle: undefined,
                     dateStyle: 'short',
                   })}
                 </span>
