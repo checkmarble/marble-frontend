@@ -48,7 +48,6 @@ export type CustomPivotOption =
   | {
       type: 'sameTable';
       baseTableId: string;
-      displayValue: string;
       id: string;
     };
 

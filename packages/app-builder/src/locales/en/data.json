@@ -73,11 +73,13 @@
   "create_navigation_option.labels.ordered_by": "Ordered by",
   "create_navigation_option.placeholders.ordered_by": "Chose a field",
   "create_navigation_option.explanation_text": "Select the field used for sorting the data by default. It can be by date, name... For objects containing a lot of data, like transactions, we recommend using the date the event happened.",
-  "create_pivot.entity_selection.description": "Select the entity you want to use to identify the client.",
-  "create_pivot.select_entity.same_table": "None of the above. Choose a field from the <strong>{{table}}</strong> entity to group decisions.",
+  "create_pivot.entity_selection.description": "Select the entity you want to use to identify the client. See the <DocLink>documentation</DocLink> for more information.",
+  "create_pivot.select_entity.same_table": "None of the above.<br/>Choose a field from the <strong>{{table}}</strong> entity to group decisions.",
   "create_pivot.entity_selection.button_accept": "Next",
   "create_pivot.path_selection.description": "A pivot will be created along this path",
   "create_pivot.select_path.description": "Join {{child}} to {{ parent}} via the link",
   "create_pivot.select_field.description": "Select the field that will be used to group decisions on entities of the type {{table}}, allowing you to snooze rules and group decisions into cases. Please note that the recommended option is to select an entity that represents the end user corresponding to a decision on a {{table}}.",
-  "menu.create_pivot.label": "Create a pivot"
+  "menu.create_pivot.label": "Create a pivot",
+  "create_pivot.select_entity.button_same_table": "Select a field in {{table}}",
+  "create_pivot.select_entity.search_placeholder": "Search by entity name"
 }
