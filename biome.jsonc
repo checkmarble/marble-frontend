@@ -19,7 +19,8 @@
       "!**/build/**",
       "!**/dist/**",
       "!**/coverage/**",
-      "!**/public/**"
+      "!**/public/**",
+      "!packages/marble-api/src/generated/**"
     ]
   },
   "formatter": {
