@@ -3,7 +3,7 @@ import { PivotType } from '@app-builder/components/Data/PivotDetails';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { Highlight } from '@app-builder/components/Highlight';
-import { type TableModel } from '@app-builder/models/data-model';
+import type { TableModel } from '@app-builder/models/data-model';
 import { type FieldPivotOption, getFieldPivotOptions } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getFieldErrors } from '@app-builder/utils/form';
@@ -61,7 +61,7 @@ export function SelectField({
           <ModalV2.Description className="whitespace-pre text-wrap">
             <Trans
               t={t}
-              i18nKey="data:create_pivot.path_selection.description"
+              i18nKey="data:create_pivot.select_field.description"
               components={{
                 DocLink: <ExternalLink href={pivotValuesDocHref} />,
               }}
