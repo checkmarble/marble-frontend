@@ -8,7 +8,7 @@ import { diff, toggle, unique } from 'radash';
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { concat, intersection, pipe } from 'remeda';
+import { concat, intersection } from 'remeda';
 import { Checkbox, cn, CollapsibleV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -62,15 +62,7 @@ const FieldCategory = memo(function FieldCategory({
       );
     }
 
-    return pipe(
-      result,
-      concat(selectedDatasetIds),
-      (arr) => {
-        console.log(`Nb show ids for ${section.name}: ${arr.length}`);
-        return arr;
-      },
-      unique,
-    );
+    return unique(concat(result, selectedDatasetIds));
   }, [filters, section, selectedDatasetIds, sectionDatasetIds]);
 
   const isAllSelected = useMemo(
