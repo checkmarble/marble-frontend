@@ -46,6 +46,9 @@
       //     }
       //   }
       // },
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      },
       "complexity": {
         "useLiteralKeys": "off",
         "useNumericLiterals": "error"
