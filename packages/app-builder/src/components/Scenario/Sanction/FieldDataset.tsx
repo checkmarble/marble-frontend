@@ -1,48 +1,84 @@
 import { Callout } from '@app-builder/components/Callout';
 import { DatasetTag } from '@app-builder/components/Sanctions/DatasetTag';
-import { DatasetTagSelect } from '@app-builder/components/Sanctions/DatasetTagSelect';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import clsx from 'clsx';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
-import { diff, toggle } from 'radash';
+import { matchSorter } from 'match-sorter';
+import { diff, toggle, unique } from 'radash';
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { filter, flatMap, map, pipe, unique } from 'remeda';
+import { concat, intersection, pipe } from 'remeda';
 import { Checkbox, cn, CollapsibleV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+import { type DatasetFiltersForm, FieldDatasetFilters } from './FieldDatasetFilters';
 
 const FieldCategory = memo(function FieldCategory({
   section,
   selectedIds,
-  selectedTags,
+  filters,
   updateSelectedIds,
 }: {
   section: OpenSanctionsCatalogSection;
   selectedIds: string[];
-  selectedTags: string[];
+  filters: DatasetFiltersForm;
   updateSelectedIds: Dispatch<SetStateAction<string[]>>;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const [open, setOpen] = useState(false);
   const editor = useEditorMode();
 
-  const defaultListIds = useMemo(
+  // This is the list of all section's dataset ids
+  const sectionDatasetIds = useMemo(
     () => section.datasets.map((dataset) => dataset.name),
     [section.datasets],
   );
 
+  // This is the list of all selected section's dataset ids
+  const selectedDatasetIds = useMemo(
+    () => intersection(sectionDatasetIds, selectedIds),
+    [sectionDatasetIds, selectedIds],
+  );
+
+  // This is the list of all section's dataset ids that should be shown
+  const datasetIdsToShow = useMemo(() => {
+    let result: string[] = [];
+
+    if (filters.search === '' && filters.tags.length === 0) {
+      return sectionDatasetIds;
+    }
+
+    if (filters.search !== '') {
+      result = matchSorter(section.datasets, filters.search, {
+        keys: ['title'],
+      }).map((d) => d.name);
+    }
+
+    if (filters.tags.length > 0) {
+      result = concat(
+        result,
+        section.datasets.filter((d) => d.tag && filters.tags.includes(d.tag)).map((d) => d.name),
+      );
+    }
+
+    return pipe(
+      result,
+      concat(selectedDatasetIds),
+      (arr) => {
+        console.log(`Nb show ids for ${section.name}: ${arr.length}`);
+        return arr;
+      },
+      unique,
+    );
+  }, [filters, section, selectedDatasetIds, sectionDatasetIds]);
+
   const isAllSelected = useMemo(
-    () => diff(defaultListIds, selectedIds).length === 0,
-    [selectedIds, defaultListIds],
+    () => selectedDatasetIds.length === sectionDatasetIds.length,
+    [selectedDatasetIds, sectionDatasetIds],
   );
 
-  const nbSelected = useMemo(
-    () => selectedIds.filter((id) => defaultListIds.includes(id)).length,
-    [selectedIds, defaultListIds],
-  );
-
-  return (
+  return datasetIdsToShow.length > 0 ? (
     <CollapsibleV2.Provider defaultOpen={open}>
       <div key={section.name} className="w-full overflow-hidden rounded-lg">
         <div className="bg-grey-98 flex w-full items-center justify-between p-4">
@@ -57,10 +93,10 @@ const FieldCategory = memo(function FieldCategory({
               })}
             />
             <span className="text-s font-semibold">{section.title}</span>
-            {!isAllSelected && nbSelected ? (
-              <span className="text-s text-purple-65 font-semibold">
+            {!isAllSelected && selectedDatasetIds.length > 0 ? (
+              <span className="text-s text-grey-50 font-semibold">
                 {t('scenarios:sanction.lists.nb_selected', {
-                  count: nbSelected,
+                  count: selectedDatasetIds.length,
                 })}
               </span>
             ) : null}
@@ -75,8 +111,8 @@ const FieldCategory = memo(function FieldCategory({
                 updateSelectedIds((prev) => {
                   let result: string[] = [...prev];
                   const idsToToggle = state
-                    ? diff(defaultListIds, result)
-                    : defaultListIds.filter((id) => result.includes(id));
+                    ? diff(sectionDatasetIds, result)
+                    : sectionDatasetIds.filter((id) => result.includes(id));
                   for (const id of idsToToggle) {
                     result = toggle(result, id);
                   }
@@ -92,13 +128,9 @@ const FieldCategory = memo(function FieldCategory({
               'border-grey-90 bg-grey-100 border': section.datasets.length > 0,
             })}
           >
-            {section.datasets.map((dataset) => {
-              const shouldShow =
-                selectedTags.includes(dataset.name) ||
-                selectedTags.length === 0 ||
-                selectedTags.includes(dataset.tag ?? '');
-
-              return shouldShow ? (
+            {section.datasets
+              .filter((d) => datasetIdsToShow.includes(d.name))
+              .map((dataset) => (
                 <label
                   key={dataset.name}
                   className="hover:bg-grey-98 flex cursor-pointer items-center justify-between p-2 transition-colors"
@@ -116,13 +148,12 @@ const FieldCategory = memo(function FieldCategory({
                   </div>
                   {dataset.tag ? <DatasetTag tag={dataset.tag} /> : null}
                 </label>
-              ) : null;
-            })}
+              ))}
           </div>
         </CollapsibleV2.Content>
       </div>
     </CollapsibleV2.Provider>
-  );
+  ) : null;
 });
 
 export const FieldDataset = ({
@@ -137,45 +168,28 @@ export const FieldDataset = ({
   onBlur?: () => void;
 }) => {
   const [selectedIds, updateSelectedIds] = useState<string[]>(defaultValue ?? []);
+  const [filters, setFilters] = useState<DatasetFiltersForm>({ tags: [], search: '' });
   const { t } = useTranslation();
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
-  const tags = useMemo(
-    () =>
-      pipe(
-        sections,
-        flatMap((s) => s.datasets),
-        map((d) => d.tag),
-        filter((t) => t !== undefined),
-        unique(),
-      ),
-    [sections],
-  );
 
   useEffect(() => {
     onChange?.(selectedIds);
-  }, [selectedIds, onChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedIds]);
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between px-1">
-        <span className="text-s font-medium">{t('scenarios:sanction.lists.title')}</span>
-        <DatasetTagSelect
-          tags={tags}
-          selectedTags={selectedTags}
-          setSelectedTags={setSelectedTags}
-        />
-      </div>
-      <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded border p-6">
-        <Callout variant="outlined" className="mb-4 lg:mb-6">
+      <span className="text-s font-medium">{t('scenarios:sanction.lists.title')}</span>
+      <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded border p-6">
+        <Callout variant="outlined">
           <p className="whitespace-pre text-wrap">{t('scenarios:sanction.lists.callout')}</p>
         </Callout>
+        <FieldDatasetFilters sections={sections} filters={filters} setFilters={setFilters} />
         <div onBlur={onBlur} className="flex flex-col gap-4">
           {sections.map((section) => (
             <FieldCategory
               key={section.name}
               section={section}
-              selectedTags={selectedTags}
+              filters={filters}
               selectedIds={selectedIds}
               updateSelectedIds={updateSelectedIds}
             />
