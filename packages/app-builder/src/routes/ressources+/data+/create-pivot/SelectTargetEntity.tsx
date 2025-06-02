@@ -90,7 +90,7 @@ export function SelectTargetEntity({
         form.handleSubmit();
       }}
     >
-      <ModalV2.Title>{t('data:create_pivot.title')}</ModalV2.Title>
+      <ModalV2.Title>{t('data:create_pivot.title', { table: tableModel.name })}</ModalV2.Title>
 
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
         <Callout variant="outlined">
@@ -157,6 +157,27 @@ export function SelectTargetEntity({
             </div>
           )}
         </form.Field>
+
+        <Button
+          variant="tertiary"
+          onClick={() => {
+            onSelected({
+              type: 'sameTable',
+              baseTableId: tableModel.id,
+              displayValue: t('data:create_pivot.select_entity.same_table', {
+                table: tableModel.name,
+              }),
+              id: `${tableModel.id}`,
+            });
+          }}
+          className="inline-block text-balance"
+        >
+          <Trans
+            t={t}
+            i18nKey="data:create_pivot.select_entity.same_table"
+            values={{ table: tableModel.name }}
+          />
+        </Button>
 
         <div className="flex flex-1 flex-row gap-2">
           <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
