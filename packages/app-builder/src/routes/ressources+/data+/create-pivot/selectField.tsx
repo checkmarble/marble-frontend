@@ -1,11 +1,9 @@
 import { Callout } from '@app-builder/components';
 import { PivotType } from '@app-builder/components/Data/PivotDetails';
-import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { Highlight } from '@app-builder/components/Highlight';
 import type { TableModel } from '@app-builder/models/data-model';
 import { type FieldPivotOption, getFieldPivotOptions } from '@app-builder/services/data/pivot';
-import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { matchSorter } from 'match-sorter';
@@ -54,19 +52,23 @@ export function SelectField({
         form.handleSubmit();
       }}
     >
-      <ModalV2.Title>{t('data:create_pivot.title')}</ModalV2.Title>
-
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
-        <Callout variant="outlined">
-          <ModalV2.Description className="whitespace-pre text-wrap">
-            <Trans
-              t={t}
-              i18nKey="data:create_pivot.select_field.description"
-              components={{
-                DocLink: <ExternalLink href={pivotValuesDocHref} />,
-              }}
-            />
-          </ModalV2.Description>
+        <ModalV2.Description className="whitespace-pre text-wrap">
+          <Trans
+            t={t}
+            i18nKey="data:create_pivot.select_field.description"
+            values={{ table: tableModel.name }}
+            components={{ strong: <strong /> }}
+          />
+        </ModalV2.Description>
+        <Callout variant="outlined" color="red">
+          <Trans
+            t={t}
+            i18nKey="data:create_pivot.select_field.callout"
+            values={{ table: tableModel.name }}
+            parent="p"
+            components={{ strong: <strong /> }}
+          />
         </Callout>
 
         <form.Field name="pivot">

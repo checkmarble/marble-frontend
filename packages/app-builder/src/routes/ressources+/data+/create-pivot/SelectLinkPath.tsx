@@ -41,8 +41,6 @@ export function SelectLinkPath({
         form.handleSubmit();
       }}
     >
-      <ModalV2.Title>{t('data:create_pivot.title')}</ModalV2.Title>
-
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
         <form.Field name="id">
           {(field) => (

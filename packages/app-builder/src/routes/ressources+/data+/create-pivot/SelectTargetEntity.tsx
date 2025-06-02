@@ -1,4 +1,3 @@
-import { Callout } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { Highlight } from '@app-builder/components/Highlight';
@@ -76,20 +75,16 @@ export function SelectTargetEntity({
         form.handleSubmit();
       }}
     >
-      <ModalV2.Title>{t('data:create_pivot.title', { table: tableModel.name })}</ModalV2.Title>
-
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
-        <Callout variant="outlined">
-          <ModalV2.Description className="whitespace-pre text-balance">
-            <Trans
-              t={t}
-              i18nKey="data:create_pivot.entity_selection.description"
-              components={{
-                DocLink: <ExternalLink href={pivotValuesDocHref} />,
-              }}
-            />
-          </ModalV2.Description>
-        </Callout>
+        <ModalV2.Description className="whitespace-pre text-balance">
+          <Trans
+            t={t}
+            i18nKey="data:create_pivot.entity_selection.description"
+            components={{
+              DocLink: <ExternalLink href={pivotValuesDocHref} />,
+            }}
+          />
+        </ModalV2.Description>
 
         <form.Field name="pivot">
           {(field) => (
@@ -154,7 +149,7 @@ export function SelectTargetEntity({
           <div className="w-full border-b text-center leading-[0.1em]">
             <span className="text-grey-50 bg-grey-100 px-[10px]">or</span>
           </div>
-          <p className="text-grey-50 text-balance">
+          <p className="text-grey-50">
             <Trans
               t={t}
               i18nKey="data:create_pivot.select_entity.same_table"

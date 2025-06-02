@@ -11,6 +11,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useEffect, useMemo, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ModalV2 } from 'ui-design-system';
 import { z } from 'zod';
@@ -99,6 +100,7 @@ export function CreatePivot({
   children: React.ReactElement;
 }) {
   const fetcher = useFetcher<typeof action>();
+  const { t } = useTranslation(['common', 'data']);
 
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data?.success) {
@@ -148,6 +150,15 @@ export function CreatePivot({
     <ModalV2.Root {...{ open, setOpen }}>
       <ModalV2.Trigger render={children} />
       <ModalV2.Content>
+        <ModalV2.Title>
+          <Trans
+            t={t}
+            i18nKey="data:create_pivot.title"
+            components={{ strong: <strong /> }}
+            values={{ table: tableModel.name }}
+          />
+        </ModalV2.Title>
+
         {match(stepState)
           .with({ step: 'entity', pivotOption: null }, () => (
             <SelectTargetEntity
