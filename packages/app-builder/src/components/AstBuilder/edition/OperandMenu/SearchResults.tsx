@@ -10,7 +10,7 @@ import { MenuCommand } from 'ui-design-system';
 import { coerceToConstantAstNode } from '../coerceToConstantAstNode';
 import { EditionOperandSharpFactory } from '../EditionOperand';
 import { MenuOption } from './MenuOption';
-import { type SmartMenuListProps } from './types';
+import type { SmartMenuListProps } from './types';
 
 export type SearchResultsProps = SmartMenuListProps & {
   search: string;

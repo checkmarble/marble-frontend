@@ -4,7 +4,7 @@ import { TableDetails } from '@app-builder/components/Data/TableDetails';
 import { CreateTable } from '@app-builder/routes/ressources+/data+/createTable';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { getRoute } from '@app-builder/utils/routes';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';

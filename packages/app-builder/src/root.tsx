@@ -18,7 +18,7 @@ import {
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError, withSentry } from '@sentry/remix';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useChangeLanguage } from 'remix-i18next/react';
@@ -32,8 +32,8 @@ import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
 import { initServerServices } from './services/init.server';
 import { useSegmentPageTracking } from './services/segment';
-import { getSegmentScript } from './services/segment/segment.server';
 import { SegmentScript } from './services/segment/SegmentScript';
+import { getSegmentScript } from './services/segment/segment.server';
 import tailwindStyles from './tailwind.css?url';
 import { getClientEnvVars, getServerEnv } from './utils/environment';
 import { getRoute } from './utils/routes';

@@ -5,10 +5,10 @@ import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-ite
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
+import type { LoaderFunctionArgs, SerializeFrom } from '@remix-run/node';
 import { Outlet, useRouteError, useRouteLoaderData } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 
 export const handle = {
   i18n: ['scenarios'] satisfies Namespace,

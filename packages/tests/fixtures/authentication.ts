@@ -1,5 +1,5 @@
 import { getRoute } from '@app-builder/utils/routes';
-import { type Page, test as base } from '@playwright/test';
+import { test as base, type Page } from '@playwright/test';
 import { SignInPage } from 'tests/page-object-models/auth-pages';
 import {
   FirebaseAuthEmulatorPage,

@@ -2,9 +2,9 @@ import { OutcomeBadge } from '@app-builder/components/Decisions';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { type DecisionCreatedTrigger } from '../models/nodes';
-import { workflowI18n } from '../workflow-i18n';
+import type { DecisionCreatedTrigger } from '../models/nodes';
 import { useWorkflowData } from '../WorkflowProvider';
+import { workflowI18n } from '../workflow-i18n';
 
 export function DecisionCreatedTriggerContent({ data }: { data: DecisionCreatedTrigger }) {
   const { t } = useTranslation(workflowI18n);

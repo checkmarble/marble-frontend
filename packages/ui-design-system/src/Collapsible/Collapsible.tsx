@@ -2,8 +2,8 @@ import * as Ariakit from '@ariakit/react';
 import {
   type CollapsibleContentProps,
   type CollapsibleProps,
-  type CollapsibleTriggerProps as RadixCollapsibleProps,
   Content,
+  type CollapsibleTriggerProps as RadixCollapsibleProps,
   Root,
   Trigger,
 } from '@radix-ui/react-collapsible';

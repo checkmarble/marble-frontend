@@ -1,9 +1,9 @@
-import {
-  type WebhookDto,
-  type WebhookRegisterBodyDto,
-  type WebhookSecretDto,
-  type WebhookUpdateBodyDto,
-  type WebhookWithSecretDto,
+import type {
+  WebhookDto,
+  WebhookRegisterBodyDto,
+  WebhookSecretDto,
+  WebhookUpdateBodyDto,
+  WebhookWithSecretDto,
 } from 'marble-api/generated/marblecore-api';
 import invariant from 'tiny-invariant';
 

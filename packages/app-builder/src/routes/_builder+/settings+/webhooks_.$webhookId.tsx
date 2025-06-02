@@ -1,7 +1,7 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { SecretValue } from '@app-builder/components/SecretValue';
 import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
-import { type WebhookSecret } from '@app-builder/models/webhook';
+import type { WebhookSecret } from '@app-builder/models/webhook';
 import { DeleteWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/delete';
 import { UpdateWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/update';
 import {
@@ -15,7 +15,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
@@ -35,7 +35,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!isReadWebhookAvailable(user)) return redirect(getRoute('/'));
 
   const webhookId = params['webhookId'];
-  invariant(webhookId, `webhookId is required`);
+  invariant(webhookId, 'webhookId is required');
   const webhook = await webhookRepository.getWebhook({ webhookId });
 
   return json({

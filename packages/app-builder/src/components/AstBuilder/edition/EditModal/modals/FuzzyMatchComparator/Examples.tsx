@@ -1,6 +1,6 @@
-import {
-  type BaseFuzzyMatchConfig,
-  type FuzzyMatchAlgorithm,
+import type {
+  BaseFuzzyMatchConfig,
+  FuzzyMatchAlgorithm,
 } from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
 import { useTranslation } from 'react-i18next';
 
@@ -44,7 +44,9 @@ export function Examples({
                 {right}
               </td>
               <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
-                {t(`common:${resultsScores[algorithm]! > threshold}`)}
+                {t(
+                  `common:${typeof resultsScores[algorithm] === 'number' && resultsScores[algorithm] > threshold}`
+                )}
               </td>
             </tr>
           );

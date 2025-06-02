@@ -1,4 +1,4 @@
-import { type TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { assertNever } from 'typescript-utils';
 
 export type ComparatorFuzzyMatchAlgorithms =
@@ -62,7 +62,7 @@ export function createBaseFuzzyMatchConfig<T extends FuzzyMatchAlgorithm>(
 
   if (![...config.editablesAlgorithms].every((editable) => config.algorithms.has(editable))) {
     throw new Error(
-      `Invalid configuration: editablesAlgorithms contains values that are not members of algorithms.`,
+      'Invalid configuration: editablesAlgorithms contains values that are not members of algorithms.',
     );
   }
 

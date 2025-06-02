@@ -1,5 +1,5 @@
 import { match } from 'ts-pattern';
-import { type IconName } from 'ui-icons';
+import type { IconName } from 'ui-icons';
 
 export const testRunsFilterNames = [
   'startedAfter',

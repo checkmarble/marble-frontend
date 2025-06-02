@@ -1,10 +1,10 @@
 import { CopyToClipboardButton, ErrorComponent, Page } from '@app-builder/components';
 import { TransferData } from '@app-builder/components/Transfers/TransferData';
-import { transfersI18n } from '@app-builder/components/Transfers/transfers-i18n';
 import {
   TransferStatusAlert,
   TransferStatusRadioButton,
 } from '@app-builder/components/Transfers/TransferStatus';
+import { transfersI18n } from '@app-builder/components/Transfers/transfers-i18n';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { transferStatuses } from '@app-builder/models/transfer';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -17,7 +17,7 @@ import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-r
 import { useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { useForm } from '@tanstack/react-form';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 import { z } from 'zod';
@@ -56,9 +56,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   } catch (error) {
     if (isNotFoundHttpError(error)) {
       return notFound(null);
-    } else {
-      throw error;
     }
+    throw error;
   }
 }
 

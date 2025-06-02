@@ -10,8 +10,8 @@ import {
 } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersContext';
 import { RulesFiltersMenu } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersMenu';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import { type SanctionCheckConfig } from '@app-builder/models/sanction-check-config';
-import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
+import type { SanctionCheckConfig } from '@app-builder/models/sanction-check-config';
+import type { ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { CreateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create';
 import { CreateSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
@@ -25,7 +25,7 @@ import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import type { LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import {
   type ColumnFiltersState,
@@ -34,8 +34,8 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import { type Namespace } from 'i18next';
-import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import type { Namespace } from 'i18next';
+import type { FeatureAccessDto } from 'marble-api/generated/license-api';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';

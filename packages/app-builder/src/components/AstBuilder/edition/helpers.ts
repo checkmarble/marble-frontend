@@ -1,10 +1,4 @@
-import {
-  type AstNode,
-  type DataModel,
-  type EnumValue,
-  type IdLessAstNode,
-  type TableModel,
-} from '@app-builder/models';
+import type { AstNode, DataModel, EnumValue, IdLessAstNode, TableModel } from '@app-builder/models';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { NewCustomListAstNode } from '@app-builder/models/astNode/custom-list';
 import {
@@ -12,19 +6,19 @@ import {
   isDatabaseAccess,
   isPayload,
 } from '@app-builder/models/astNode/data-accessor';
-import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
-import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
-import {
-  type FlatAstValidation,
-  type FlatNodeEvaluation,
+import type { NodeEvaluation } from '@app-builder/models/node-evaluation';
+import type { BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
+import type {
+  FlatAstValidation,
+  FlatNodeEvaluation,
 } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { getAstNodeOperandType } from '@app-builder/services/ast-node/getAstNodeOperandType';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
-import { type PathSegment } from '@app-builder/utils/tree';
-import { type AstNodeStringifierContext } from '@ast-builder/types';
-import { type TFunction } from 'i18next';
+import type { PathSegment } from '@app-builder/utils/tree';
+import type { AstNodeStringifierContext } from '@ast-builder/types';
+import type { TFunction } from 'i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
 
@@ -135,31 +129,29 @@ function createMapOption({
   t,
   ...modelData
 }: EnrichingOperandContext) {
-  return function ({
+  return ({
     astNode,
     operandType,
     displayName,
     dataType,
     ...rest
-  }: OperandMenuOption): EnrichedMenuOption {
-    return {
-      astNode,
-      operandType:
-        operandType ??
-        getAstNodeOperandType(astNode, {
-          enumValues,
-        }),
-      displayName:
-        displayName ??
-        getAstNodeDisplayName(astNode, {
-          customLists,
-          language,
-          t,
-        }),
-      dataType: dataType ?? getAstNodeDataType(astNode, modelData),
-      ...rest,
-    };
-  };
+  }: OperandMenuOption): EnrichedMenuOption => ({
+    astNode,
+    operandType:
+      operandType ??
+      getAstNodeOperandType(astNode, {
+        enumValues,
+      }),
+    displayName:
+      displayName ??
+      getAstNodeDisplayName(astNode, {
+        customLists,
+        language,
+        t,
+      }),
+    dataType: dataType ?? getAstNodeDataType(astNode, modelData),
+    ...rest,
+  });
 }
 
 export function getOptionDisplayName(
@@ -205,7 +197,7 @@ export function getEnumValues(
   pathSegment: PathSegment,
   { parentNode, context }: { parentNode: AstNode; context: DataContext },
 ) {
-  if (pathSegment.type != 'children') return [];
+  if (pathSegment.type !== 'children') return [];
 
   return getEnumValuesFromNeighbour(parentNode, pathSegment.index, context);
 }

@@ -1,10 +1,10 @@
-import { type StringTemplateAstNode } from '@app-builder/models/astNode/strings';
-import { type Outcome } from '@app-builder/models/outcome';
+import type { StringTemplateAstNode } from '@app-builder/models/astNode/strings';
+import type { Outcome } from '@app-builder/models/outcome';
 import { nanoid } from 'nanoid';
 import { useTranslation } from 'react-i18next';
-import { type Node } from 'reactflow';
+import type { Node } from 'reactflow';
 import { assertNever } from 'typescript-utils';
-import { type IconName } from 'ui-icons';
+import type { IconName } from 'ui-icons';
 
 import { workflowI18n } from '../workflow-i18n';
 

@@ -1,11 +1,11 @@
-import { type InboxUser } from '@app-builder/models/inbox';
+import type { InboxUser } from '@app-builder/models/inbox';
 import { initServerServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { Form, useNavigation } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';

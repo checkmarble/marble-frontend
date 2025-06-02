@@ -1,8 +1,8 @@
 import { type CurrentUser, isAdmin } from '@app-builder/models';
-import { type ValidTimestampExtractParts } from '@app-builder/models/astNode/time';
+import type { ValidTimestampExtractParts } from '@app-builder/models/astNode/time';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
-import { type TFunction } from 'i18next';
+import type { TFunction } from 'i18next';
 import { Trans } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
 
@@ -38,15 +38,15 @@ export function returnTimestampExtractInformation(
 ): string {
   switch (part) {
     case 'year':
-      return t(`scenarios:edit_timestamp_extract.explanation.year`);
+      return t('scenarios:edit_timestamp_extract.explanation.year');
     case 'month':
-      return t(`scenarios:edit_timestamp_extract.explanation.month`);
+      return t('scenarios:edit_timestamp_extract.explanation.month');
     case 'day_of_month':
-      return t(`scenarios:edit_timestamp_extract.explanation.day_of_month`);
+      return t('scenarios:edit_timestamp_extract.explanation.day_of_month');
     case 'day_of_week':
-      return t(`scenarios:edit_timestamp_extract.explanation.day_of_week`);
+      return t('scenarios:edit_timestamp_extract.explanation.day_of_week');
     case 'hour':
-      return t(`scenarios:edit_timestamp_extract.explanation.hour`);
+      return t('scenarios:edit_timestamp_extract.explanation.hour');
     default:
       assertNever('Untranslated operator', part);
   }

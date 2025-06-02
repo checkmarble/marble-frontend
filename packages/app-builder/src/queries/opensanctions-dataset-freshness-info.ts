@@ -1,4 +1,4 @@
-import { type OpenSanctionDatasetFreshnessInfoResource } from '@app-builder/routes/ressources+/opensanctions+/dataset-freshness';
+import type { OpenSanctionDatasetFreshnessInfoResource } from '@app-builder/routes/ressources+/opensanctions+/dataset-freshness';
 import { getRoute } from '@app-builder/utils/routes';
 import { useQuery } from '@tanstack/react-query';
 

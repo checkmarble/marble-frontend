@@ -2,15 +2,15 @@ import { OperandEditModalContainer } from '@app-builder/components/AstBuilder/ed
 import { funcNameTKeys } from '@app-builder/components/AstBuilder/edition/EditModal/modals/FuzzyMatchComparator/helpers';
 import { InnerEditFuzzyMatchModal } from '@app-builder/components/AstBuilder/edition/EditModal/modals/FuzzyMatchComparator/InnerFuzzyMatchModal';
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
-import { type FuzzyMatchComparatorAstNode } from '@app-builder/models/astNode/strings';
-import { type BaseFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
+import type { FuzzyMatchComparatorAstNode } from '@app-builder/models/astNode/strings';
+import type { BaseFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
 import { ComparatorFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/comparatorFuzzyMatchConfig';
 import { getAstNodeDataType } from '@app-builder/services/ast-node/getAstNodeDataType';
 import { computed } from '@preact/signals-react';
 import { useTranslation } from 'react-i18next';
 
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
-import { type OperandEditModalProps } from '../../EditModal';
+import type { OperandEditModalProps } from '../../EditModal';
 
 const fuzzyMatchConfig: BaseFuzzyMatchConfig = ComparatorFuzzyMatchConfig;
 

@@ -1,9 +1,9 @@
 import { CollapsiblePaper } from '@app-builder/components';
-import {
-  type DataModel,
-  type DataType,
-  type TableModel,
-  type UnicityConstraintType,
+import type {
+  DataModel,
+  DataType,
+  TableModel,
+  UnicityConstraintType,
 } from '@app-builder/models/data-model';
 import { CreateField } from '@app-builder/routes/ressources+/data+/createField';
 import { CreateLink } from '@app-builder/routes/ressources+/data+/createLink';

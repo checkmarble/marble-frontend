@@ -1,4 +1,4 @@
-import { type CaseContributor } from '@app-builder/models/cases';
+import type { CaseContributor } from '@app-builder/models/cases';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { cx } from 'class-variance-authority';

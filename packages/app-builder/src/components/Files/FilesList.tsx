@@ -120,7 +120,8 @@ function FileLink({ endpoint }: { endpoint: string }) {
       if (e instanceof AlreadyDownloadingError) {
         // Already downloading, do nothing
         return;
-      } else if (e instanceof AuthRequestError) {
+      }
+      if (e instanceof AuthRequestError) {
         toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
       } else {
         toast.error(t('cases:case.file.errors.downloading_link.unknown'));

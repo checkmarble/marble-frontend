@@ -1,4 +1,4 @@
-import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import type { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { adaptCurrentUser, type CurrentUser } from '@app-builder/models/user';
 
 export interface UserRepository {

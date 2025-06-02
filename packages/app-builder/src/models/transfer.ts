@@ -1,6 +1,6 @@
 import { adaptCurrency } from '@app-builder/utils/currencies';
-import { type Currency } from 'dinero.js';
-import { type TransferDataDto, type TransferDto } from 'marble-api/generated/transfercheck-api';
+import type { Currency } from 'dinero.js';
+import type { TransferDataDto, TransferDto } from 'marble-api/generated/transfercheck-api';
 
 export const transferStatuses = ['neutral', 'suspected_fraud', 'confirmed_fraud'] as const;
 export type TransferStatus = (typeof transferStatuses)[number];

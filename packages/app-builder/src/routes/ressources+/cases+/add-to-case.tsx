@@ -11,7 +11,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Select, Switch } from 'ui-design-system';
@@ -75,16 +75,15 @@ export async function action({ request }: ActionFunctionArgs) {
     if (data.newCase) {
       const createdCase = await cases.createCase(data);
       return redirect(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(createdCase.id) }));
-    } else {
-      await cases.addDecisionsToCase(data);
-
-      setToastMessage(session, {
-        type: 'success',
-        messageKey: 'common:success.add_to_case',
-      });
-
-      return json({ success: 'true' }, { headers: { 'Set-Cookie': await commitSession(session) } });
     }
+    await cases.addDecisionsToCase(data);
+
+    setToastMessage(session, {
+      type: 'success',
+      messageKey: 'common:success.add_to_case',
+    });
+
+    return json({ success: 'true' }, { headers: { 'Set-Cookie': await commitSession(session) } });
   } catch (error) {
     setToastMessage(session, {
       type: 'error',

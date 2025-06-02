@@ -1,40 +1,40 @@
-import { type GetLicenseAPIClientWithAuth } from '@app-builder/infra/license-api';
-import {
-  type GetMarbleCoreAPIClientWithAuth,
-  type MarbleCoreApi,
+import type { GetLicenseAPIClientWithAuth } from '@app-builder/infra/license-api';
+import type {
+  GetMarbleCoreAPIClientWithAuth,
+  MarbleCoreApi,
 } from '@app-builder/infra/marblecore-api';
-import {
-  type GetTransfercheckAPIClientWithAuth,
-  type TransfercheckApi,
+import type {
+  GetTransfercheckAPIClientWithAuth,
+  TransfercheckApi,
 } from '@app-builder/infra/transfercheck-api';
 import {
-  adaptAuthErrors,
   type AuthData,
   type AuthFlashData,
+  adaptAuthErrors,
   type CurrentUser,
 } from '@app-builder/models';
-import { type LicenseEntitlements } from '@app-builder/models/license';
-import { type AnalyticsRepository } from '@app-builder/repositories/AnalyticsRepository';
-import { type ApiKeyRepository } from '@app-builder/repositories/ApiKeyRepository';
-import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
-import { type CustomListsRepository } from '@app-builder/repositories/CustomListRepository';
-import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
-import { type DecisionRepository } from '@app-builder/repositories/DecisionRepository';
-import { type EditorRepository } from '@app-builder/repositories/EditorRepository';
-import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
-import { type makeGetLicenseRepository } from '@app-builder/repositories/LicenseRepository';
-import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
-import { type PartnerRepository } from '@app-builder/repositories/PartnerRepository';
-import { type RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
-import { type SanctionCheckRepository } from '@app-builder/repositories/SanctionCheckRepository';
-import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
-import { type ScenarioIterationSanctionRepository } from '@app-builder/repositories/ScenarioIterationSanctionRepository';
-import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
-import { type TestRunRepository } from '@app-builder/repositories/TestRunRepository';
-import { type TransferAlertRepository } from '@app-builder/repositories/TransferAlertRepository';
-import { type TransferRepository } from '@app-builder/repositories/TransferRepository';
-import { type UserRepository } from '@app-builder/repositories/UserRepository';
-import { type WebhookRepository } from '@app-builder/repositories/WebhookRepository';
+import type { LicenseEntitlements } from '@app-builder/models/license';
+import type { AnalyticsRepository } from '@app-builder/repositories/AnalyticsRepository';
+import type { ApiKeyRepository } from '@app-builder/repositories/ApiKeyRepository';
+import type { CaseRepository } from '@app-builder/repositories/CaseRepository';
+import type { CustomListsRepository } from '@app-builder/repositories/CustomListRepository';
+import type { DataModelRepository } from '@app-builder/repositories/DataModelRepository';
+import type { DecisionRepository } from '@app-builder/repositories/DecisionRepository';
+import type { EditorRepository } from '@app-builder/repositories/EditorRepository';
+import type { InboxRepository } from '@app-builder/repositories/InboxRepository';
+import type { makeGetLicenseRepository } from '@app-builder/repositories/LicenseRepository';
+import type { OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
+import type { PartnerRepository } from '@app-builder/repositories/PartnerRepository';
+import type { RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
+import type { SanctionCheckRepository } from '@app-builder/repositories/SanctionCheckRepository';
+import type { ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
+import type { ScenarioIterationSanctionRepository } from '@app-builder/repositories/ScenarioIterationSanctionRepository';
+import type { ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
+import type { TestRunRepository } from '@app-builder/repositories/TestRunRepository';
+import type { TransferAlertRepository } from '@app-builder/repositories/TransferAlertRepository';
+import type { TransferRepository } from '@app-builder/repositories/TransferRepository';
+import type { UserRepository } from '@app-builder/repositories/UserRepository';
+import type { WebhookRepository } from '@app-builder/repositories/WebhookRepository';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { json, redirect } from '@remix-run/node';
@@ -44,7 +44,7 @@ import * as z from 'zod';
 
 import { getRoute } from '../../utils/routes';
 import { captureUnexpectedRemixError } from '../monitoring';
-import { type SessionService } from './session.server';
+import type { SessionService } from './session.server';
 
 interface AuthenticatedInfo {
   /**
@@ -317,7 +317,7 @@ export function makeAuthenticationServerService({
 
     if (!marbleToken || marbleToken.expires_at < new Date().toISOString()) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
-      else return null;
+      return null;
     }
 
     const tokenService = getTokenService(marbleToken.access_token);
@@ -334,7 +334,7 @@ export function makeAuthenticationServerService({
       );
     } catch (err) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
-      else return null;
+      return null;
     }
 
     if (options.successRedirect) throw redirect(options.successRedirect);

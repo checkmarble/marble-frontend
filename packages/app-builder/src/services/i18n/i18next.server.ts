@@ -1,5 +1,5 @@
-import { type LngStorageRepository } from '@app-builder/repositories/SessionStorageRepositories/LngStorageRepository';
-import { type EntryContext } from '@remix-run/node';
+import type { LngStorageRepository } from '@app-builder/repositories/SessionStorageRepositories/LngStorageRepository';
+import type { EntryContext } from '@remix-run/node';
 import { createInstance, type FlatNamespace, type InitOptions } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { RemixI18Next } from 'remix-i18next/server';

@@ -1,9 +1,9 @@
-import {
-  type TransferAlertBeneficiaryDto,
-  type TransferAlertCreateBodyDto,
-  type TransferAlertSenderDto,
-  type TransferAlertUpdateAsBeneficiaryBodyDto,
-  type TransferAlertUpdateAsSenderBodyDto,
+import type {
+  TransferAlertBeneficiaryDto,
+  TransferAlertCreateBodyDto,
+  TransferAlertSenderDto,
+  TransferAlertUpdateAsBeneficiaryBodyDto,
+  TransferAlertUpdateAsSenderBodyDto,
 } from 'marble-api/generated/transfercheck-api';
 import { z } from 'zod';
 

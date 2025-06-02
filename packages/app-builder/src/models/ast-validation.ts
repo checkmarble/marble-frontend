@@ -1,4 +1,4 @@
-import { type AstValidationDto, type ScenarioValidationErrorCodeDto } from 'marble-api';
+import type { AstValidationDto, ScenarioValidationErrorCodeDto } from 'marble-api';
 
 import { adaptNodeEvaluation, type NodeEvaluation, type ReturnValueType } from './node-evaluation';
 

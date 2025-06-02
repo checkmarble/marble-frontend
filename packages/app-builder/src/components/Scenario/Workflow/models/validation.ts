@@ -1,5 +1,5 @@
 import { outcomes } from '@app-builder/models/outcome';
-import { type Scenario, type ScenarioUpdateWorkflowInput } from '@app-builder/models/scenario';
+import type { Scenario, ScenarioUpdateWorkflowInput } from '@app-builder/models/scenario';
 import * as R from 'remeda';
 import { assertNever } from 'typescript-utils';
 import * as z from 'zod';

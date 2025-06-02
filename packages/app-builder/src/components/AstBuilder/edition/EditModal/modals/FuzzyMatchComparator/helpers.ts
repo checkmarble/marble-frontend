@@ -1,8 +1,8 @@
-import {
-  type fuzzyMatchAnyOfAstNodeName,
-  type fuzzyMatchAstNodeName,
+import type {
+  fuzzyMatchAnyOfAstNodeName,
+  fuzzyMatchAstNodeName,
 } from '@app-builder/models/astNode/strings';
-import { type ParseKeys } from 'i18next';
+import type { ParseKeys } from 'i18next';
 
 export const funcNameTKeys = {
   FuzzyMatch: 'scenarios:edit_fuzzy_match.fuzzy_match',

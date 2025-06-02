@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
-import { type IconName } from 'ui-icons';
+import type { IconName } from 'ui-icons';
 
 import { scenarioI18n } from '../../scenario-i18n';
 

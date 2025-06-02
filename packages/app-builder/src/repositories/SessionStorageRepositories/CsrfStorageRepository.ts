@@ -1,6 +1,6 @@
 import { createCookie } from '@remix-run/node';
 
-import { type SessionStorageRepositoryOptions } from './SessionStorageRepository';
+import type { SessionStorageRepositoryOptions } from './SessionStorageRepository';
 
 export function getCsrfCookie({ maxAge, secrets, secure }: SessionStorageRepositoryOptions) {
   return createCookie('csrf', {

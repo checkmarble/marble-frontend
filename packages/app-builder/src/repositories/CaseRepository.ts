@@ -1,4 +1,4 @@
-import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import type { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptCase,
   adaptCaseCreateBody,
@@ -13,7 +13,7 @@ import {
   type PivotObject,
   type SuspiciousActivityReport,
 } from '@app-builder/models/cases';
-import { type ReviewStatus } from '@app-builder/models/decision';
+import type { ReviewStatus } from '@app-builder/models/decision';
 import {
   adaptPagination,
   type FiltersWithPagination,

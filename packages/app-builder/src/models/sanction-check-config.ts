@@ -1,7 +1,7 @@
-import { type SanctionCheckConfigDto } from 'marble-api';
+import type { SanctionCheckConfigDto } from 'marble-api';
 
-import { adaptAstNode, adaptNodeDto, type AstNode } from './astNode/ast-node';
-import { type Outcome } from './outcome';
+import { type AstNode, adaptAstNode, adaptNodeDto } from './astNode/ast-node';
+import type { Outcome } from './outcome';
 
 export type SanctionCheckConfig = Partial<{
   name: string;

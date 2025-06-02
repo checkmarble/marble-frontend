@@ -1,4 +1,4 @@
-import { type Tag } from 'marble-api';
+import type { Tag } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'ui-design-system';
 

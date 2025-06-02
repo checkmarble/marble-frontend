@@ -8,7 +8,7 @@ import { SidebarButton } from '../Navigation';
 
 export const LeftSidebarSharpFactory = createSharpFactory({
   name: 'LeftSidebar',
-  initializer: (expanded: boolean = true) => ({ expanded }),
+  initializer: (expanded = true) => ({ expanded }),
 }).withActions({
   toggleExpanded(api) {
     api.value.expanded = !api.value.expanded;

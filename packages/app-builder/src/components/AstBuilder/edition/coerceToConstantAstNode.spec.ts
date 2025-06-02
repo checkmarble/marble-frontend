@@ -2,8 +2,8 @@ import { NewAstNode, stripIdFromNode } from '@app-builder/models';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 
 import {
-  coerceToConstantAstNode,
   type CoerceToConstantAstNodeOptions,
+  coerceToConstantAstNode,
 } from './coerceToConstantAstNode';
 
 const options: CoerceToConstantAstNodeOptions = {
@@ -105,13 +105,13 @@ function helperConstantOperandOption({
     case 'Int':
       return stripIdFromNode(
         NewAstNode({
-          constant: parseInt(valueToCoerce),
+          constant: Number.parseInt(valueToCoerce),
         }),
       );
     case 'Float':
       return stripIdFromNode(
         NewAstNode({
-          constant: parseFloat(valueToCoerce),
+          constant: Number.parseFloat(valueToCoerce),
         }),
       );
     case 'Bool': {

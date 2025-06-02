@@ -1,5 +1,5 @@
 import { CursorPaginationButtons, Page, paginationSchema } from '@app-builder/components';
-import { casesI18n, CasesList } from '@app-builder/components/Cases';
+import { CasesList, casesI18n } from '@app-builder/components/Cases';
 import { CaseRightPanel } from '@app-builder/components/Cases/CaseRightPanel';
 import {
   type CasesFilters,
@@ -10,8 +10,8 @@ import {
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { type Case, type CaseStatus, caseStatuses } from '@app-builder/models/cases';
-import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
-import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
+import type { PaginatedResponse, PaginationParams } from '@app-builder/models/pagination';
+import type { CaseFilters } from '@app-builder/repositories/CaseRepository';
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseIdParamSafe, parseQuerySafe } from '@app-builder/utils/input-validation';
@@ -19,7 +19,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import qs from 'qs';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -111,9 +111,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     // if inbox is deleted or user no longer have access, the user is redirected
     if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
       return redirect(getRoute('/cases'));
-    } else {
-      throw error;
     }
+    throw error;
   }
 }
 

@@ -1,8 +1,8 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
-import { type AstBuilderNodeStore } from '@app-builder/components/AstBuilder/edition/node-store';
+import type { AstBuilderNodeStore } from '@app-builder/components/AstBuilder/edition/node-store';
 import { type AstNode, isUndefinedAstNode, NewEmptyTriggerAstNode } from '@app-builder/models';
-import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
-import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import type { BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
+import type { FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { useEffect, useRef, useState } from 'react';

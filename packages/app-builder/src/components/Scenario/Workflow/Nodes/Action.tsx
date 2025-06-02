@@ -1,8 +1,8 @@
-import { type NodeProps } from 'reactflow';
+import type { NodeProps } from 'reactflow';
 import { assertNever } from 'typescript-utils';
 import { Separator } from 'ui-design-system';
 
-import { type ActionData } from '../models/nodes';
+import type { ActionData } from '../models/nodes';
 import { AddToCaseIfPossibleActionContent } from './AddToCaseIfPossibleActionContent';
 import { CreateCaseActionContent } from './CreateCaseActionContent';
 import { NodeContainer, NodeTitle } from './shared';

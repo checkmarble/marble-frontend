@@ -1,10 +1,10 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import {
-  transferAlerStatusesWithoutArchived,
   type TransferAlertStatus,
+  transferAlerStatusesWithoutArchived,
 } from '@app-builder/models/transfer-alert';
 import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
-import { type DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
+import type { DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
 import { arrIncludesExactSome, dateRangeFilterFn } from '@app-builder/utils/table-filter-fn';
 import {
   createColumnHelper,
@@ -19,8 +19,8 @@ import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 
 import { FiltersButton } from '../Filters/FiltersButton';
-import { alertsI18n } from './alerts-i18n';
 import { AlertStatus } from './AlertStatus';
+import { alertsI18n } from './alerts-i18n';
 import {
   type AlertsFilters,
   AlertsFiltersBar,

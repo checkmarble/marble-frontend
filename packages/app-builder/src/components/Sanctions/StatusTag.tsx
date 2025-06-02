@@ -1,4 +1,4 @@
-import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
+import type { SanctionCheckMatch } from '@app-builder/models/sanction-check';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Tag, type TagProps } from 'ui-design-system';

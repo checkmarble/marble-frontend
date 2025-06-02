@@ -1,4 +1,4 @@
-import { type FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
+import type { FlatNodeEvaluation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import {
   adaptEvaluationErrorViewModels,
   commonErrorMessages,

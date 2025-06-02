@@ -1,5 +1,5 @@
 import { type ReviewStatus, reviewStatuses } from '@app-builder/models/decision';
-import { type ParseKeys } from 'i18next';
+import type { ParseKeys } from 'i18next';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Tag, type TagProps } from 'ui-design-system';

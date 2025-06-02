@@ -1,4 +1,4 @@
-import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
+import type { SanctionCheckMatch } from '@app-builder/models/sanction-check';
 import { SanctionCheckReviewModal } from '@app-builder/routes/ressources+/cases+/review-sanction-match';
 import { EnrichMatchButton } from '@app-builder/routes/ressources+/sanction-check+/enrich-match.$matchId';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -10,8 +10,8 @@ import { Avatar, CollapsibleV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { MatchDetails } from './MatchDetails';
-import { sanctionsI18n } from './sanctions-i18n';
 import { StatusTag } from './StatusTag';
+import { sanctionsI18n } from './sanctions-i18n';
 
 type MatchCardProps = {
   match: SanctionCheckMatch;

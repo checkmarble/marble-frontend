@@ -1,10 +1,5 @@
-import { type ParseKeys } from 'i18next';
-import {
-  type AddInboxUserBodyDto,
-  type InboxDto,
-  type InboxMetadataDto,
-  type InboxUserDto,
-} from 'marble-api';
+import type { ParseKeys } from 'i18next';
+import type { AddInboxUserBodyDto, InboxDto, InboxMetadataDto, InboxUserDto } from 'marble-api';
 import invariant from 'tiny-invariant';
 
 export interface Inbox {

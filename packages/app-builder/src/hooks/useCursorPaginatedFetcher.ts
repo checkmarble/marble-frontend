@@ -1,5 +1,5 @@
 import { useCallbackRef } from '@app-builder/utils/hooks';
-import { type SerializeFrom } from '@remix-run/node';
+import type { SerializeFrom } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import qs from 'qs';
 import { useEffect, useState } from 'react';

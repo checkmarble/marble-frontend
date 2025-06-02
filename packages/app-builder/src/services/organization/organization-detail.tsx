@@ -1,5 +1,5 @@
-import { type CurrentUser } from '@app-builder/models';
-import { type Organization } from '@app-builder/models/organization';
+import type { CurrentUser } from '@app-builder/models';
+import type { Organization } from '@app-builder/models/organization';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useMemo } from 'react';
 

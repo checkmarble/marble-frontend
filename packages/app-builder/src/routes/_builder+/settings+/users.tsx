@@ -1,5 +1,5 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
-import { type User } from '@app-builder/models';
+import type { User } from '@app-builder/models';
 import { CreateUser } from '@app-builder/routes/ressources+/settings+/users+/create';
 import { DeleteUser } from '@app-builder/routes/ressources+/settings+/users+/delete';
 import { UpdateUser } from '@app-builder/routes/ressources+/settings+/users+/update';

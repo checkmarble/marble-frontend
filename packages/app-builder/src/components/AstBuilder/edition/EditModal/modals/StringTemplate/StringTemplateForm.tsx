@@ -1,6 +1,6 @@
 import { NewUndefinedAstNode } from '@app-builder/models';
 import { isKnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
-import { type StringTemplateAstNode } from '@app-builder/models/astNode/strings';
+import type { StringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { type ChangeEvent, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from 'ui-design-system';

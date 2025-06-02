@@ -1,6 +1,6 @@
-import { type ParseKeys } from 'i18next';
+import type { ParseKeys } from 'i18next';
 import { match } from 'ts-pattern';
-import { type IconName } from 'ui-icons';
+import type { IconName } from 'ui-icons';
 
 export const casesFilterNames = [
   'dateRange',

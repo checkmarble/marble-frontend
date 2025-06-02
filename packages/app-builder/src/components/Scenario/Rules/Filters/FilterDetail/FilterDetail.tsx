@@ -1,6 +1,6 @@
 import { assertNever } from 'typescript-utils';
 
-import { type RulesFilterName } from '../filters';
+import type { RulesFilterName } from '../filters';
 import { RuleGroupFilter } from './RuleGroupFilter';
 
 export function FilterDetail({ filterName }: { filterName: RulesFilterName }) {

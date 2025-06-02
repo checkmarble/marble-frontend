@@ -3,7 +3,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -70,7 +70,7 @@ export function DeleteSanction({
                 fetcher.submit(new FormData(), {
                   method: 'DELETE',
                   action: getRoute(
-                    `/ressources/scenarios/:scenarioId/:iterationId/sanctions/delete`,
+                    '/ressources/scenarios/:scenarioId/:iterationId/sanctions/delete',
                     {
                       scenarioId: fromUUIDtoSUUID(scenarioId),
                       iterationId: fromUUIDtoSUUID(iterationId),

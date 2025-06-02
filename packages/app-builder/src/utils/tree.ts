@@ -37,7 +37,7 @@ export function parsePath(stringPath: string): Path {
 
     switch (type) {
       case 'children': {
-        const index = parseInt(value, 10);
+        const index = Number.parseInt(value, 10);
         if (Number.isNaN(index)) {
           throw new Error('invalid path: index must be a number');
         }

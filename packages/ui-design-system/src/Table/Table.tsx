@@ -79,7 +79,7 @@ function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderG
                   colSpan={header.colSpan}
                   key={header.id}
                   className="bg-grey-100 border-grey-90 w-0 border-b"
-                ></th>
+                />
               );
             }
             return (

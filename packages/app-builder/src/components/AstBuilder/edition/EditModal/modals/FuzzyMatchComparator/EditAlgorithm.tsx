@@ -1,6 +1,6 @@
-import {
-  type BaseFuzzyMatchConfig,
-  type FuzzyMatchAlgorithm,
+import type {
+  BaseFuzzyMatchConfig,
+  FuzzyMatchAlgorithm,
 } from '@app-builder/models/fuzzy-match/baseFuzzyMatchConfig';
 import { useCallbackRef } from '@marble/shared';
 import { useTranslation } from 'react-i18next';

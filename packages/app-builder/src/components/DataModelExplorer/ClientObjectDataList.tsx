@@ -1,4 +1,4 @@
-import { type ClientObjectDetail, type TableModelWithOptions } from '@app-builder/models';
+import type { ClientObjectDetail, TableModelWithOptions } from '@app-builder/models';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { Fragment, useState } from 'react';

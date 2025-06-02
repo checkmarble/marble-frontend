@@ -11,7 +11,7 @@ import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 import { z } from 'zod';
@@ -45,9 +45,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   } catch (error) {
     if (isNotFoundHttpError(error)) {
       return notFound(null);
-    } else {
-      throw error;
     }
+    throw error;
   }
 }
 

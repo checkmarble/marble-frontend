@@ -4,7 +4,7 @@ import {
   type PropertyForSchema,
   type SanctionCheckEntityProperty,
 } from '@app-builder/constants/sanction-check-entity';
-import { type OpenSanctionEntity } from '@app-builder/models/sanction-check';
+import type { OpenSanctionEntity } from '@app-builder/models/sanction-check';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

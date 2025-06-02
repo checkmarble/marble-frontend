@@ -1,6 +1,6 @@
 import { FORBIDDEN, NOT_FOUND } from '@app-builder/utils/http/http-status-codes';
 import { isRouteErrorResponse, useNavigate } from '@remix-run/react';
-import { type Namespace } from 'i18next';
+import type { Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 
@@ -49,13 +49,13 @@ const ErrorDetail = ({ error }: { error: unknown }) => {
         <p>{error.data}</p>
       </div>
     );
-  } else if (error instanceof Error) {
+  }
+  if (error instanceof Error) {
     return (
       <div className="text-xs">
         <pre>{error.stack}</pre>
       </div>
     );
-  } else {
-    return <h1>Unknown Error</h1>;
   }
+  return <h1>Unknown Error</h1>;
 };
