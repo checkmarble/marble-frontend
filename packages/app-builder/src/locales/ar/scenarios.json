@@ -450,5 +450,11 @@
   "validation.decision.formula_incorrect_return_type.int": "يجب أن تعيد الصيغة int",
   "validation.decision.formula_incorrect_return_type.string": "يجب أن تُرجع الصيغة سلسلة",
   "operator.filter_fuzzy-match": "قريب من",
-  "sanction.lists.search": "ابحث عن قائمة محددة ..."
+  "sanction.lists.search": "ابحث عن قائمة محددة ...",
+  "sanction.lists.adverse_media": "وسائل الإعلام السلبية",
+  "sanction.lists.negative_news": "أخبار سلبية",
+  "sanction.lists.other": "آخر",
+  "sanction.lists.peps": "بيب",
+  "sanction.lists.sanctions": "العقوبات",
+  "sanction.lists.third_parties": "أطراف ثالثة"
 }
