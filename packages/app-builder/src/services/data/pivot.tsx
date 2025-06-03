@@ -44,7 +44,7 @@ export interface LinkPivotOption {
 }
 
 export type CustomPivotOption =
-  | LinkPivotOption
+  | PivotOption
   | {
       type: 'sameTable';
       baseTableId: string;
@@ -89,6 +89,8 @@ export function getFieldPivotOptions(tableModel: TableModel): FieldPivotOption[]
     tableModel.fields,
     // Only allow pivots on string fields
     R.filter((field) => field.dataType === 'String'),
+    //Exlude objectId field
+    R.filter((field) => field.name !== 'object_id'),
     // Exclude fields that are already links
     R.filter(
       (field) =>

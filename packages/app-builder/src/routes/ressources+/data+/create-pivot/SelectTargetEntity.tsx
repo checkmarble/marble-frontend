@@ -2,11 +2,13 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { Highlight } from '@app-builder/components/Highlight';
 import { type TableModel } from '@app-builder/models/data-model';
-import { type CustomPivotOption, type LinkPivotOption } from '@app-builder/services/data/pivot';
+import { type LinkPivotOption, type PivotOption } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getFieldErrors } from '@app-builder/utils/form';
+import * as Sentry from '@sentry/remix';
 import { useForm } from '@tanstack/react-form';
 import { matchSorter } from 'match-sorter';
+import Code from 'packages/ui-design-system/src/Code/Code';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input, ModalV2, SelectWithCombobox } from 'ui-design-system';
@@ -18,41 +20,56 @@ export function SelectTargetEntity({
 }: {
   pivotOptions: LinkPivotOption[];
   tableModel: TableModel;
-  onSelected: (value: CustomPivotOption) => void;
+  onSelected: (value: PivotOption) => void;
 }) {
   const { t } = useTranslation(['common', 'data']);
 
-  const options = useMemo(
-    () =>
-      Array.from(
-        pivotOptions
-          .reduce((uniqueLinks, link) => {
-            if (!link.parentTableId) return uniqueLinks;
+  const options = useMemo(() => {
+    const objectIdField = tableModel.fields.find(({ name }) => name === 'object_id');
+    if (!objectIdField) {
+      Sentry.captureException(
+        new Error(`Table ${tableModel.name} (${tableModel.id}) does not have an objectId field.`),
+      );
+      return [];
+    }
 
-            const existingLink = uniqueLinks.get(link.parentTableId);
+    return [
+      ...pivotOptions
+        .reduce((uniqueLinks, link) => {
+          if (!link.parentTableId) return uniqueLinks;
 
-            if (!existingLink) {
-              uniqueLinks.set(link.parentTableId, link);
-              return uniqueLinks;
-            }
+          const existingLink = uniqueLinks.get(link.parentTableId);
 
-            if (
-              typeof link.length === 'number' &&
-              (existingLink.length === undefined || link.length < existingLink.length)
-            ) {
-              uniqueLinks.set(link.parentTableId, link);
-            }
+          if (!existingLink) {
+            uniqueLinks.set(link.parentTableId, link);
             return uniqueLinks;
-          }, new Map<string, LinkPivotOption>())
-          .values(),
-      ),
-    [pivotOptions],
-  );
+          }
+
+          if (
+            typeof link.length === 'number' &&
+            (existingLink.length === undefined || link.length < existingLink.length)
+          ) {
+            uniqueLinks.set(link.parentTableId, link);
+          }
+          return uniqueLinks;
+        }, new Map<string, LinkPivotOption>())
+        .values(),
+      {
+        baseTableId: tableModel.id,
+        displayValue: tableModel.name,
+        fieldId: objectIdField.id,
+        id: objectIdField.id,
+        type: 'field',
+      },
+    ];
+  }, [pivotOptions, tableModel.fields, tableModel.id, tableModel.name]);
+
+  console.log('SelectTargetEntity options', options);
 
   const form = useForm({
     defaultValues: { pivot: options[0] },
     onSubmit: ({ value }) => {
-      onSelected(value.pivot as CustomPivotOption);
+      onSelected(value.pivot as PivotOption);
     },
   });
 
@@ -80,7 +97,9 @@ export function SelectTargetEntity({
           <Trans
             t={t}
             i18nKey="data:create_pivot.entity_selection.description"
+            values={{ table: tableModel.name }}
             components={{
+              Code: <Code />,
               DocLink: <ExternalLink href={pivotValuesDocHref} />,
             }}
           />
@@ -155,7 +174,7 @@ export function SelectTargetEntity({
               i18nKey="data:create_pivot.select_entity.same_table"
               values={{ table: tableModel.name }}
               components={{
-                strong: <strong />,
+                Code: <Code />,
               }}
             />
           </p>
@@ -170,7 +189,14 @@ export function SelectTargetEntity({
             }}
             className="inline-block text-balance"
           >
-            {t('data:create_pivot.select_entity.button_same_table', { table: tableModel.name })}
+            <Trans
+              t={t}
+              i18nKey="data:create_pivot.select_entity.button_same_table"
+              values={{ table: tableModel.name }}
+              components={{
+                Code: <Code />,
+              }}
+            />
           </Button>
         </div>
       </div>

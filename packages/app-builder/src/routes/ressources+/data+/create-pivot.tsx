@@ -2,14 +2,15 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type DataModel, isStatusConflictHttpError, type TableModel } from '@app-builder/models';
 import {
   type CustomPivotOption,
+  type FieldPivotOption,
   getLinksPivotOptions,
-  type LinkPivotOption,
   type PivotOption,
 } from '@app-builder/services/data/pivot';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
+import Code from 'packages/ui-design-system/src/Code/Code';
 import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -19,6 +20,7 @@ import { z } from 'zod';
 import { SelectField } from './create-pivot/selectField';
 import { SelectLinkPath } from './create-pivot/SelectLinkPath';
 import { SelectTargetEntity } from './create-pivot/SelectTargetEntity';
+import { ValidateSelfPivot } from './create-pivot/ValidateSelfPivot';
 
 const createPivotFormSchema = z.object({
   pivot: z.discriminatedUnion('type', [
@@ -43,8 +45,9 @@ const createPivotFormSchema = z.object({
 
 type PivotCreationState =
   | { step: 'entity'; pivotOption: null }
+  | { step: 'self'; pivotOption: FieldPivotOption }
   | { step: 'field'; pivotOption: null }
-  | { step: 'link'; pivotOption: LinkPivotOption };
+  | { step: 'link'; pivotOption: PivotOption };
 
 const initialState: PivotCreationState = {
   step: 'entity',
@@ -123,15 +126,19 @@ export function CreatePivot({
 
   const onEntitySelected = (value: CustomPivotOption) => {
     console.log('onEntitySelected', value);
-    if (value.type === 'sameTable') {
-      return setStepState({ step: 'field', pivotOption: null });
+    switch (value.type) {
+      case 'field':
+        return setStepState({ step: 'self', pivotOption: value });
+      case 'link':
+        return setStepState({ step: 'link', pivotOption: value });
+      case 'sameTable':
+        return setStepState({ step: 'field', pivotOption: null });
+      default:
+        console.error('Unexpected pivot option type:', value);
+        return;
     }
-    if (value.type === 'link') {
-      return setStepState({ step: 'link', pivotOption: value });
-    }
-    console.error('Unexpected pivot option type:', value);
-    return;
   };
+  const onBack = () => setStepState(initialState);
 
   const pivotOptions = useMemo(
     () => getLinksPivotOptions(tableModel, dataModel),
@@ -145,26 +152,25 @@ export function CreatePivot({
       encType: 'application/json',
     });
   };
-
   return (
     <ModalV2.Root {...{ open, setOpen }}>
       <ModalV2.Trigger render={children} />
       <ModalV2.Content>
         <ModalV2.Title>
           <Trans
+            className="inline-block"
             t={t}
             i18nKey="data:create_pivot.title"
-            components={{ strong: <strong /> }}
+            components={{
+              Code: <Code />,
+            }}
             values={{ table: tableModel.name }}
           />
         </ModalV2.Title>
 
         {match(stepState)
           .with({ step: 'entity', pivotOption: null }, () => (
-            <SelectTargetEntity
-              {...{ pivotOptions, tableModel }}
-              onSelected={(e) => onEntitySelected(e)}
-            />
+            <SelectTargetEntity {...{ pivotOptions, tableModel }} onSelected={onEntitySelected} />
           ))
           .with({ step: 'link', pivotOption: {} }, ({ pivotOption }) => {
             console.log('pivotOption', pivotOption);
@@ -174,14 +180,20 @@ export function CreatePivot({
             }
             return (
               <SelectLinkPath
-                {...{ pivotOptions, tableModel }}
+                {...{ pivotOptions, tableModel, onBack }}
                 preferedPivotOption={pivotOption}
                 onSelected={(e) => createPivot(e)}
               />
             );
           })
+          .with({ step: 'self', pivotOption: {} }, ({ pivotOption }) => (
+            <ValidateSelfPivot
+              {...{ pivotOption, tableModel, onBack }}
+              onValidate={onEntitySelected}
+            />
+          ))
           .with({ step: 'field', pivotOption: null }, () => (
-            <SelectField {...{ tableModel, onSelected: createPivot }} />
+            <SelectField {...{ tableModel, onSelected: createPivot, onBack }} />
           ))
           .otherwise(() => null)}
       </ModalV2.Content>

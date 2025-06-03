@@ -7,6 +7,7 @@ import { type FieldPivotOption, getFieldPivotOptions } from '@app-builder/servic
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { matchSorter } from 'match-sorter';
+import Code from 'packages/ui-design-system/src/Code/Code';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input, ModalV2, SelectWithCombobox } from 'ui-design-system';
@@ -14,9 +15,11 @@ import { Button, Input, ModalV2, SelectWithCombobox } from 'ui-design-system';
 export function SelectField({
   tableModel,
   onSelected,
+  onBack,
 }: {
   tableModel: TableModel;
   onSelected: (value: FieldPivotOption) => void;
+  onBack: () => void;
 }) {
   const { t } = useTranslation(['common', 'data']);
 
@@ -58,7 +61,9 @@ export function SelectField({
             t={t}
             i18nKey="data:create_pivot.select_field.description"
             values={{ table: tableModel.name }}
-            components={{ strong: <strong /> }}
+            components={{
+              Code: <Code />,
+            }}
           />
         </ModalV2.Description>
         <Callout variant="outlined" color="red">
@@ -67,7 +72,9 @@ export function SelectField({
             i18nKey="data:create_pivot.select_field.callout"
             values={{ table: tableModel.name }}
             parent="p"
-            components={{ strong: <strong /> }}
+            components={{
+              Code: <Code />,
+            }}
           />
         </Callout>
 
@@ -123,9 +130,9 @@ export function SelectField({
         </form.Field>
 
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
+          <Button className="flex-1" variant="secondary" onClick={onBack}>
+            {t('common:back')}
+          </Button>
 
           <Button className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
             {t('data:create_pivot.button_accept')}
