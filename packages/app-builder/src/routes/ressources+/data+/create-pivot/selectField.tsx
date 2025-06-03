@@ -3,7 +3,7 @@ import { PivotType } from '@app-builder/components/Data/PivotDetails';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { Highlight } from '@app-builder/components/Highlight';
 import type { TableModel } from '@app-builder/models/data-model';
-import { type FieldPivotOption, getFieldPivotOptions } from '@app-builder/services/data/pivot';
+import { type FieldPivotOption } from '@app-builder/services/data/pivot';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { matchSorter } from 'match-sorter';
@@ -13,20 +13,20 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Button, Input, ModalV2, SelectWithCombobox } from 'ui-design-system';
 
 export function SelectField({
+  pivotOptions,
   tableModel,
   onSelected,
   onBack,
 }: {
+  pivotOptions: FieldPivotOption[];
   tableModel: TableModel;
   onSelected: (value: FieldPivotOption) => void;
   onBack: () => void;
 }) {
   const { t } = useTranslation(['common', 'data']);
 
-  const options = useMemo(() => getFieldPivotOptions(tableModel), [tableModel]);
-
   const form = useForm({
-    defaultValues: { pivot: options[0] ?? null },
+    defaultValues: { pivot: pivotOptions[0] ?? null },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         if (value.pivot?.type === 'field') {
@@ -41,10 +41,10 @@ export function SelectField({
 
   const matches = useMemo(
     () =>
-      matchSorter(options, deferredSearchValue, {
+      matchSorter(pivotOptions, deferredSearchValue, {
         keys: ['displayValue'],
       }),
-    [options, deferredSearchValue],
+    [pivotOptions, deferredSearchValue],
   );
 
   return (
@@ -87,7 +87,7 @@ export function SelectField({
                 selectedValue={field.state.value?.id}
                 onSelectedValueChange={(value): void => {
                   field.handleChange(
-                    options.find((pivot) => pivot.id === value) as FieldPivotOption,
+                    pivotOptions.find((pivot) => pivot.id === value) as FieldPivotOption,
                   );
                 }}
               >

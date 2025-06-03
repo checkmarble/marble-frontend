@@ -15,10 +15,12 @@ import { Button, Input, ModalV2, SelectWithCombobox } from 'ui-design-system';
 
 export function SelectTargetEntity({
   pivotOptions,
+  hasFieldOptions,
   tableModel,
   onSelected,
 }: {
   pivotOptions: LinkPivotOption[];
+  hasFieldOptions: boolean;
   tableModel: TableModel;
   onSelected: (value: PivotOption) => void;
 }) {
@@ -164,41 +166,43 @@ export function SelectTargetEntity({
             {t('data:create_pivot.entity_selection.button_accept')}
           </Button>
         </div>
-        <div className="flex flex-col gap-4">
-          <div className="w-full border-b text-center leading-[0.1em]">
-            <span className="text-grey-50 bg-grey-100 px-[10px]">or</span>
+        {hasFieldOptions ? (
+          <div className="flex flex-col gap-4">
+            <div className="w-full border-b text-center leading-[0.1em]">
+              <span className="text-grey-50 bg-grey-100 px-[10px]">or</span>
+            </div>
+            <p className="text-grey-50">
+              <Trans
+                t={t}
+                i18nKey="data:create_pivot.select_entity.same_table"
+                values={{ table: tableModel.name }}
+                components={{
+                  Code: <Code />,
+                }}
+              />
+            </p>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                onSelected({
+                  type: 'sameTable',
+                  baseTableId: tableModel.id,
+                  id: `${tableModel.id}`,
+                });
+              }}
+              className="inline-block text-balance"
+            >
+              <Trans
+                t={t}
+                i18nKey="data:create_pivot.select_entity.button_same_table"
+                values={{ table: tableModel.name }}
+                components={{
+                  Code: <Code />,
+                }}
+              />
+            </Button>
           </div>
-          <p className="text-grey-50">
-            <Trans
-              t={t}
-              i18nKey="data:create_pivot.select_entity.same_table"
-              values={{ table: tableModel.name }}
-              components={{
-                Code: <Code />,
-              }}
-            />
-          </p>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              onSelected({
-                type: 'sameTable',
-                baseTableId: tableModel.id,
-                id: `${tableModel.id}`,
-              });
-            }}
-            className="inline-block text-balance"
-          >
-            <Trans
-              t={t}
-              i18nKey="data:create_pivot.select_entity.button_same_table"
-              values={{ table: tableModel.name }}
-              components={{
-                Code: <Code />,
-              }}
-            />
-          </Button>
-        </div>
+        ) : null}
       </div>
     </form>
   );

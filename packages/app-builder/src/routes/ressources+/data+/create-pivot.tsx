@@ -3,6 +3,7 @@ import { type DataModel, isStatusConflictHttpError, type TableModel } from '@app
 import {
   type CustomPivotOption,
   type FieldPivotOption,
+  getFieldPivotOptions,
   getLinksPivotOptions,
   type PivotOption,
 } from '@app-builder/services/data/pivot';
@@ -140,11 +141,13 @@ export function CreatePivot({
   };
   const onBack = () => setStepState(initialState);
 
-  const pivotOptions = useMemo(
-    () => getLinksPivotOptions(tableModel, dataModel),
+  const [pivotOptions, fieldOptions] = useMemo(
+    () => [getLinksPivotOptions(tableModel, dataModel), getFieldPivotOptions(tableModel)],
     [dataModel, tableModel],
   );
 
+  console.log('pivotOptions', pivotOptions);
+  console.log('fieldOptions', fieldOptions);
   const createPivot = (pivot: PivotOption) => {
     fetcher.submit(JSON.stringify({ pivot }), {
       method: 'POST',
@@ -170,7 +173,11 @@ export function CreatePivot({
 
         {match(stepState)
           .with({ step: 'entity', pivotOption: null }, () => (
-            <SelectTargetEntity {...{ pivotOptions, tableModel }} onSelected={onEntitySelected} />
+            <SelectTargetEntity
+              {...{ pivotOptions, tableModel }}
+              hasFieldOptions={fieldOptions.length}
+              onSelected={onEntitySelected}
+            />
           ))
           .with({ step: 'link', pivotOption: {} }, ({ pivotOption }) => {
             console.log('pivotOption', pivotOption);
