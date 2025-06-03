@@ -8,7 +8,7 @@ import { diff, toggle, unique } from 'radash';
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { concat, intersection } from 'remeda';
+import { concat, intersection, map, pipe } from 'remeda';
 import { Checkbox, cn, CollapsibleV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -42,32 +42,30 @@ const FieldCategory = memo(function FieldCategory({
   );
 
   // This is the list of all section's dataset ids that should be shown
-  const datasetIdsToShow = useMemo(() => {
-    let result: string[] = [];
-
-    if (filters.search === '' && filters.tags.length === 0) {
-      return sectionDatasetIds;
-    }
-
-    if (filters.search !== '') {
-      result = new Fuse(section.datasets, {
-        keys: ['title'],
-        minMatchCharLength: 3,
-        threshold: 0.2,
-      })
-        .search(filters.search)
-        .map((i) => i.item.name);
-    }
-
-    if (filters.tags.length > 0) {
-      result = concat(
-        result,
-        section.datasets.filter((d) => d.tag && filters.tags.includes(d.tag)).map((d) => d.name),
-      );
-    }
-
-    return unique(concat(result, selectedDatasetIds));
-  }, [filters, section, selectedDatasetIds, sectionDatasetIds]);
+  const datasetIdsToShow = useMemo(
+    () =>
+      pipe(
+        section.datasets,
+        (datasets) =>
+          filters.search !== ''
+            ? new Fuse(datasets, {
+                keys: ['title'],
+                minMatchCharLength: 3,
+                threshold: 0.2,
+              })
+                .search(filters.search)
+                .map((i) => i.item)
+            : datasets,
+        (datasets) =>
+          filters.tags.length > 0
+            ? datasets.filter((d) => d.tag && filters.tags.includes(d.tag))
+            : datasets,
+        map((d) => d.name),
+        concat(selectedDatasetIds),
+        unique,
+      ),
+    [filters, section, selectedDatasetIds],
+  );
 
   const isAllSelected = useMemo(
     () => diff(datasetIdsToShow, selectedDatasetIds).length === 0,
