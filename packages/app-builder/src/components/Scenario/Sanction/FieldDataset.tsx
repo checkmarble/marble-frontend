@@ -2,8 +2,8 @@ import { Callout } from '@app-builder/components/Callout';
 import { DatasetTag } from '@app-builder/components/Sanctions/DatasetTag';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import clsx from 'clsx';
+import Fuse from 'fuse.js';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
-import { matchSorter } from 'match-sorter';
 import { diff, toggle, unique } from 'radash';
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { memo } from 'react';
@@ -50,9 +50,13 @@ const FieldCategory = memo(function FieldCategory({
     }
 
     if (filters.search !== '') {
-      result = matchSorter(section.datasets, filters.search, {
+      result = new Fuse(section.datasets, {
         keys: ['title'],
-      }).map((d) => d.name);
+        minMatchCharLength: 3,
+        threshold: 0.2,
+      })
+        .search(filters.search)
+        .map((i) => i.item.name);
     }
 
     if (filters.tags.length > 0) {
@@ -66,8 +70,8 @@ const FieldCategory = memo(function FieldCategory({
   }, [filters, section, selectedDatasetIds, sectionDatasetIds]);
 
   const isAllSelected = useMemo(
-    () => selectedDatasetIds.length === sectionDatasetIds.length,
-    [selectedDatasetIds, sectionDatasetIds],
+    () => diff(datasetIdsToShow, selectedDatasetIds).length === 0,
+    [datasetIdsToShow, selectedDatasetIds],
   );
 
   return datasetIdsToShow.length > 0 ? (
@@ -85,26 +89,27 @@ const FieldCategory = memo(function FieldCategory({
               })}
             />
             <span className="text-s font-semibold">{section.title}</span>
-            {!isAllSelected && selectedDatasetIds.length > 0 ? (
-              <span className="text-s text-grey-50 font-semibold">
-                {t('scenarios:sanction.lists.nb_selected', {
-                  count: selectedDatasetIds.length,
-                })}
-              </span>
-            ) : null}
           </CollapsibleV2.Title>
           <div className="flex items-center gap-4">
-            <span className="text-grey-50 text-xs">{t('common:select_all')}</span>
+            <span className="text-grey-50 text-xs">
+              {!isAllSelected && selectedDatasetIds.length > 0
+                ? t('scenarios:sanction.lists.nb_selected', {
+                    count: selectedDatasetIds.length,
+                  })
+                : t('common:select_all')}
+            </span>
             <Checkbox
               disabled={editor === 'view'}
               size="small"
-              checked={isAllSelected}
+              checked={
+                isAllSelected ? true : selectedDatasetIds.length > 0 ? 'indeterminate' : false
+              }
               onCheckedChange={(state) => {
                 updateSelectedIds((prev) => {
                   let result: string[] = [...prev];
                   const idsToToggle = state
-                    ? diff(sectionDatasetIds, result)
-                    : sectionDatasetIds.filter((id) => result.includes(id));
+                    ? diff(datasetIdsToShow, result)
+                    : datasetIdsToShow.filter((id) => result.includes(id));
                   for (const id of idsToToggle) {
                     result = toggle(result, id);
                   }
