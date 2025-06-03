@@ -2,6 +2,7 @@ export * from './Avatar/Avatar';
 export * from './Button/Button';
 export * from './Calendar/Calendar';
 export * from './Checkbox/Checkbox';
+export * from './Code/Code';
 export * from './Collapsible/Collapsible';
 export * from './Combobox/Combobox';
 export * from './Command/Command';
