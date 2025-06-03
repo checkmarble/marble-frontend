@@ -66,8 +66,6 @@ export function SelectTargetEntity({
     ];
   }, [pivotOptions, tableModel.fields, tableModel.id, tableModel.name]);
 
-  console.log('SelectTargetEntity options', options);
-
   const form = useForm({
     defaultValues: { pivot: options[0] },
     onSubmit: ({ value }) => {

@@ -126,7 +126,6 @@ export function CreatePivot({
   const [stepState, setStepState] = useState<PivotCreationState>(initialState);
 
   const onEntitySelected = (value: CustomPivotOption) => {
-    console.log('onEntitySelected', value);
     switch (value.type) {
       case 'field':
         return setStepState({ step: 'self', pivotOption: value });
@@ -146,8 +145,6 @@ export function CreatePivot({
     [dataModel, tableModel],
   );
 
-  console.log('pivotOptions', pivotOptions);
-  console.log('fieldOptions', fieldOptions);
   const createPivot = (pivot: PivotOption) => {
     fetcher.submit(JSON.stringify({ pivot }), {
       method: 'POST',
@@ -180,7 +177,6 @@ export function CreatePivot({
             />
           ))
           .with({ step: 'link', pivotOption: {} }, ({ pivotOption }) => {
-            console.log('pivotOption', pivotOption);
             if (!pivotOption) {
               console.error('No pivot option provided for link step');
               return null;

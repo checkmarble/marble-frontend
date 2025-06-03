@@ -22,8 +22,6 @@ export function SelectLinkPath({
 }) {
   const { t } = useTranslation(['common', 'data']);
 
-  console.log('====>SelectLinkPath', pivotOptions, preferedPivotOption);
-
   const pathOptions = useMemo(
     () =>
       pivotOptions.filter(
@@ -32,8 +30,6 @@ export function SelectLinkPath({
       ),
     [pivotOptions, preferedPivotOption],
   );
-
-  console.log('pathOptions', pathOptions);
 
   const form = useForm({
     defaultValues: preferedPivotOption,
