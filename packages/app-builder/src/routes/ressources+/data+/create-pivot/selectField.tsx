@@ -1,5 +1,4 @@
 import { Callout } from '@app-builder/components';
-import { PivotType } from '@app-builder/components/Data/PivotDetails';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { Highlight } from '@app-builder/components/Highlight';
 import type { TableModel } from '@app-builder/models/data-model';
@@ -113,7 +112,6 @@ export function SelectField({
                         className="flex items-center justify-between"
                       >
                         <Highlight text={pivot.displayValue} query={deferredSearchValue} />
-                        <PivotType type={pivot.type} />
                       </SelectWithCombobox.ComboboxItem>
                     ))}
                     {matches.length === 0 ? (
