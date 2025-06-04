@@ -24,21 +24,13 @@ paths:
                     type: boolean
                 required:
                   - is_sso_enabled
-  /organizations/{organizationId}/feature_access:
+  /feature_access:
     get:
       summary: Get the entitlements of an organization
       description: Returns the entitlements of an organization
       operationId: getEntitlements
       security:
         - bearerAuth: []
-      parameters:
-        - name: organizationId
-          description: ID of the organization
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
       responses:
         '200':
           description: Feature access response
@@ -77,6 +69,8 @@ components:
           $ref: '#/components/schemas/FeatureAccessLevelDto'
         sanctions:
           $ref: '#/components/schemas/FeatureAccessLevelDto'
+        ai_assist:
+          $ref: '#/components/schemas/FeatureAccessLevelDto'
       required:
         - workflows
         - analytics
@@ -85,6 +79,7 @@ components:
         - rule_snoozes
         - test_run
         - sanctions
+        - ai_assist
   responses:
     '401':
       description: Unauthorized

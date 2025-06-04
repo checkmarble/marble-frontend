@@ -23,6 +23,7 @@ export type FeatureAccessDto = {
     rule_snoozes: FeatureAccessLevelDto;
     test_run: FeatureAccessLevelDto;
     sanctions: FeatureAccessLevelDto;
+    ai_assist: FeatureAccessLevelDto;
 };
 /**
  * Check if SSO is enabled
@@ -40,7 +41,7 @@ export function isSsoEnabled(opts?: Oazapfts.RequestOpts) {
 /**
  * Get the entitlements of an organization
  */
-export function getEntitlements(organizationId: string, opts?: Oazapfts.RequestOpts) {
+export function getEntitlements(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
@@ -52,7 +53,7 @@ export function getEntitlements(organizationId: string, opts?: Oazapfts.RequestO
     } | {
         status: 403;
         data: string;
-    }>(`/organizations/${encodeURIComponent(organizationId)}/feature_access`, {
+    }>("/feature_access", {
         ...opts
     }));
 }
