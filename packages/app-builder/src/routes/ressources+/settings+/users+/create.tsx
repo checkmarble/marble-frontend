@@ -13,7 +13,7 @@ import { useFetcher, useNavigation } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import { type FeatureAccessDto } from 'marble-api/generated/feature-access-api';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';

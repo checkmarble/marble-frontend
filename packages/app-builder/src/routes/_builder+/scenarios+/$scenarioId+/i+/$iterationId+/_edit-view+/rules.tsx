@@ -35,7 +35,7 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
-import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import { type FeatureAccessDto } from 'marble-api/generated/feature-access-api';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';

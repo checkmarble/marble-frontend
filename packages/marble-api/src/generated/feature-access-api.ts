@@ -1,5 +1,5 @@
 /**
- * License API
+ * Feature access API
  * 1.0.0
  * DO NOT MODIFY - This file has been generated using oazapfts.
  * See https://www.npmjs.com/package/oazapfts
@@ -12,7 +12,7 @@ export const defaults: Oazapfts.Defaults<Oazapfts.CustomHeaders> = {
 };
 const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {
-    localDevlopmentServer: "http://localhost:8080"
+    localDevelopmentServer: "http://localhost:8080"
 };
 export type FeatureAccessDto = "allowed" | "restricted" | "test" | "missing_configuration";
 export type LicenseEntitlementsDto = {

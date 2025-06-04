@@ -22,10 +22,10 @@ export const marbleCoreApiConfig: Config = {
   },
 };
 
-export const licenseApiConfig: Config = {
-  apiName: 'License API',
-  apiSpec: join('openapis', 'license-api.yaml'),
-  generatedApi: join(GENERATED_FOLDER, 'license-api.ts'),
+export const featureAccessApiConfig: Config = {
+  apiName: 'Feature access API',
+  apiSpec: join('openapis', 'feature-access-api.yaml'),
+  generatedApi: join(GENERATED_FOLDER, 'feature-access-api.ts'),
   apiOptions: {
     optimistic: true,
     useEnumType: false,

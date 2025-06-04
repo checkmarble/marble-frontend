@@ -1,11 +1,11 @@
 openapi: 3.0.3
 info:
   version: 1.0.0
-  title: 'License API'
-  description: 'API for managing licenses'
+  title: 'Feature access API'
+  description: 'API for retrieving feature access entitlements'
 servers:
   - url: 'http://localhost:8080'
-    description: Local devlopment server
+    description: Local development server
 paths:
   /is-sso-available:
     get:

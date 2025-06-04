@@ -1,4 +1,4 @@
-import { type GetLicenseAPIClientWithAuth } from '@app-builder/infra/license-api';
+import { type GetFeatureAccessAPIClientWithAuth } from '@app-builder/infra/license-api';
 import {
   type GetMarbleCoreAPIClientWithAuth,
   type MarbleCoreApi,
@@ -119,7 +119,7 @@ export type AuthPayload = z.infer<typeof schema>;
 interface MakeAuthenticationServerServiceArgs {
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
   getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
-  getLicenseAPIClientWithAuth: GetLicenseAPIClientWithAuth;
+  getFeatureAccessAPIClientWithAuth: GetFeatureAccessAPIClientWithAuth;
   getUserRepository: (marbleCoreApiClient: MarbleCoreApi) => UserRepository;
   getInboxRepository: (marbleCoreApiClient: MarbleCoreApi) => InboxRepository;
   getEditorRepository: (marbleCoreApiClient: MarbleCoreApi) => EditorRepository;
@@ -162,7 +162,7 @@ function expectedErrors(error: unknown) {
 export function makeAuthenticationServerService({
   getMarbleCoreAPIClientWithAuth,
   getTransfercheckAPIClientWithAuth,
-  getLicenseAPIClientWithAuth,
+  getFeatureAccessAPIClientWithAuth,
   getUserRepository,
   getInboxRepository,
   getEditorRepository,
@@ -322,14 +322,16 @@ export function makeAuthenticationServerService({
 
     const tokenService = getTokenService(marbleToken.access_token);
     const marbleCoreApiClient = getMarbleCoreAPIClientWithAuth(tokenService);
-    const licenseApiClient = getLicenseAPIClientWithAuth(getTokenService(marbleToken.access_token));
+    const featureAccessApiClient = getFeatureAccessAPIClientWithAuth(
+      getTokenService(marbleToken.access_token),
+    );
     const transfercheckAPIClient = getTransfercheckAPIClientWithAuth(tokenService);
 
     let user: CurrentUser;
     let entitlements: LicenseEntitlements;
     try {
       user = await getUserRepository(marbleCoreApiClient).getCurrentUser();
-      entitlements = await getLicenseRepository(licenseApiClient).getEntitlements(
+      entitlements = await getLicenseRepository(featureAccessApiClient).getEntitlements(
         user.organizationId,
       );
     } catch (err) {

@@ -1,7 +1,7 @@
 import {
   type FeatureAccessDto,
   type LicenseEntitlementsDto,
-} from 'marble-api/generated/license-api';
+} from 'marble-api/generated/feature-access-api';
 
 export interface LicenseEntitlements {
   workflows: FeatureAccessDto;

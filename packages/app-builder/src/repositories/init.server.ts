@@ -1,4 +1,7 @@
-import { type GetLicenseAPIClientWithAuth, type LicenseApi } from '@app-builder/infra/license-api';
+import {
+  type FeatureAccessApi,
+  type GetFeatureAccessAPIClientWithAuth,
+} from '@app-builder/infra/license-api';
 import {
   type GetMarbleCoreAPIClientWithAuth,
   type MarbleCoreApi,
@@ -38,15 +41,15 @@ import { makeGetWebhookRepository } from './WebhookRepository';
 
 export function makeServerRepositories({
   sessionStorageRepositoryOptions,
-  getLicenseApiClientWithoutAuth,
-  getLicenseAPIClientWithAuth,
+  getFeatureAccessApiClientWithoutAuth,
+  getFeatureAccessAPIClientWithAuth,
   marbleCoreApiClient,
   getMarbleCoreAPIClientWithAuth,
   getTransfercheckAPIClientWithAuth,
 }: {
   sessionStorageRepositoryOptions: SessionStorageRepositoryOptions;
-  getLicenseApiClientWithoutAuth: () => LicenseApi;
-  getLicenseAPIClientWithAuth: GetLicenseAPIClientWithAuth;
+  getFeatureAccessApiClientWithoutAuth: () => FeatureAccessApi;
+  getFeatureAccessAPIClientWithAuth: GetFeatureAccessAPIClientWithAuth;
   marbleCoreApiClient: MarbleCoreApi;
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
   getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
@@ -56,8 +59,8 @@ export function makeServerRepositories({
     csrfCookie: getCsrfCookie(sessionStorageRepositoryOptions),
     toastStorageRepository: getToastStorageRepository(sessionStorageRepositoryOptions),
     lngStorageRepository: getLngStorageRepository(sessionStorageRepositoryOptions),
-    getLicenseApiClientWithoutAuth,
-    getLicenseAPIClientWithAuth,
+    getFeatureAccessApiClientWithoutAuth,
+    getFeatureAccessAPIClientWithAuth,
     marbleCoreApiClient,
     getMarbleCoreAPIClientWithAuth,
     getTransfercheckAPIClientWithAuth,

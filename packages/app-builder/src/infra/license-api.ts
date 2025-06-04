@@ -1,21 +1,21 @@
 import {
   createBasicFetch,
   createFetchWithAuthMiddleware,
-  licenseApi,
+  featureAccessApi,
   type TokenService,
 } from 'marble-api';
 import * as R from 'remeda';
 import { type FunctionKeys } from 'typescript-utils';
 
-//TODO: To remove
-
-export type LicenseApi = {
-  [P in FunctionKeys<typeof licenseApi>]: (typeof licenseApi)[P];
+export type FeatureAccessApi = {
+  [P in FunctionKeys<typeof featureAccessApi>]: (typeof featureAccessApi)[P];
 };
 
-export type GetLicenseAPIClientWithAuth = (tokenService: TokenService<string>) => LicenseApi;
+export type GetFeatureAccessAPIClientWithAuth = (
+  tokenService: TokenService<string>,
+) => FeatureAccessApi;
 
-function getLicenseAPIClient({
+function getFeatureAccessAPIClient({
   request,
   tokenService,
   baseUrl,
@@ -23,7 +23,7 @@ function getLicenseAPIClient({
   request: Request;
   baseUrl: string;
   tokenService?: TokenService<string>;
-}): LicenseApi {
+}): FeatureAccessApi {
   const fetch = tokenService
     ? createFetchWithAuthMiddleware({
         request,
@@ -35,7 +35,7 @@ function getLicenseAPIClient({
       })
     : createBasicFetch({ request });
 
-  const { defaults, servers, ...api } = licenseApi;
+  const { defaults, servers, ...api } = featureAccessApi;
 
   //@ts-expect-error can't infer args
   return R.mapValues(api, (value) => (...args) => {
@@ -44,17 +44,20 @@ function getLicenseAPIClient({
   });
 }
 
-type LicenseAPIClientParams = {
+type FeatureAccessAPIClientParams = {
   request: Request;
   baseUrl: string;
 };
-export function initializeLicenseAPIClient({ request, baseUrl }: LicenseAPIClientParams): {
-  licenseApi: LicenseApi;
-  getLicenseAPIClientWithAuth: GetLicenseAPIClientWithAuth;
+export function initializeFeatureAccessAPIClient({
+  request,
+  baseUrl,
+}: FeatureAccessAPIClientParams): {
+  featureAccessApi: FeatureAccessApi;
+  getFeatureAccessAPIClientWithAuth: GetFeatureAccessAPIClientWithAuth;
 } {
   return {
-    licenseApi: getLicenseAPIClient({ request, baseUrl }),
-    getLicenseAPIClientWithAuth: (tokenService: TokenService<string>) =>
-      getLicenseAPIClient({ request, tokenService, baseUrl }),
+    featureAccessApi: getFeatureAccessAPIClient({ request, baseUrl }),
+    getFeatureAccessAPIClientWithAuth: (tokenService: TokenService<string>) =>
+      getFeatureAccessAPIClient({ request, tokenService, baseUrl }),
   };
 }
