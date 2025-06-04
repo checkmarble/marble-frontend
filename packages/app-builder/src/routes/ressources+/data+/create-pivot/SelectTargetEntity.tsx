@@ -1,6 +1,6 @@
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type TableModel } from '@app-builder/models/data-model';
-import { type LinkPivotOption, type PivotOption } from '@app-builder/services/data/pivot';
+import { type CustomPivotOption, type LinkPivotOption } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import * as Sentry from '@sentry/remix';
 import { useForm, useStore } from '@tanstack/react-form';
@@ -18,7 +18,7 @@ export function SelectTargetEntity({
   pivotOptions: LinkPivotOption[];
   hasFieldOptions: boolean;
   tableModel: TableModel;
-  onSelected: (value: PivotOption) => void;
+  onSelected: (value: CustomPivotOption) => void;
 }) {
   const { t } = useTranslation(['common', 'data']);
 
@@ -66,7 +66,7 @@ export function SelectTargetEntity({
   const form = useForm({
     defaultValues: { pivot: options[0] },
     onSubmit: ({ value }) => {
-      onSelected(value.pivot as PivotOption);
+      onSelected(value.pivot as CustomPivotOption);
     },
   });
 
