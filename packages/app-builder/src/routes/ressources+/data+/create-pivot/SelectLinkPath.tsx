@@ -1,11 +1,11 @@
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { type TableModel } from '@app-builder/models/data-model';
 import { type LinkPivotOption } from '@app-builder/services/data/pivot';
-import { useForm } from '@tanstack/react-form';
+import { useForm, useStore } from '@tanstack/react-form';
 import Code from 'packages/ui-design-system/src/Code/Code';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Input, Select } from 'ui-design-system';
+import { Button, Input, MenuCommand } from 'ui-design-system';
 
 export function SelectLinkPath({
   pivotOptions,
@@ -32,10 +32,14 @@ export function SelectLinkPath({
   );
 
   const form = useForm({
-    defaultValues: preferedPivotOption,
-    onSubmit: ({ value }) => onSelected(value),
+    defaultValues: { pivot: preferedPivotOption },
+    onSubmit: ({ value: { pivot } }) => {
+      onSelected(pivot);
+    },
   });
 
+  const selectedOption = useStore(form.store, (state) => state.values.pivot);
+  const [open, onOpenChange] = useState(false);
   return (
     <form
       onSubmit={(e) => {
@@ -45,7 +49,7 @@ export function SelectLinkPath({
       }}
     >
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
-        <form.Field name="id">
+        <form.Field name="pivot">
           {(field) => (
             <div className="flex flex-col gap-2">
               <FormLabel name={field.name}>
@@ -59,40 +63,36 @@ export function SelectLinkPath({
                 />
               </FormLabel>
               {pathOptions.length > 1 ? (
-                <Select.Root defaultValue={preferedPivotOption.id}>
-                  <Select.Trigger id="path" disabled={true}>
-                    <span className="text-s text-grey-00 w-full text-center font-medium">
-                      <Select.Value placeholder="..." />
-                    </span>
-                  </Select.Trigger>
-                  <Select.Content className="max-h-60">
-                    <Select.Viewport>
-                      {Array.from(pathOptions).map((option) => {
-                        return (
-                          <Select.Item
-                            className="flex min-w-[110px] flex-col gap-1"
-                            key={option.id}
-                            value={option.id}
-                          >
-                            <Select.ItemText>
-                              <span className="text-s text-grey-00 font-medium">
-                                {option.displayPath ?? option.displayValue}
-                              </span>
-                            </Select.ItemText>
-                          </Select.Item>
-                        );
-                      })}
-                    </Select.Viewport>
-                  </Select.Content>
-                </Select.Root>
+                <MenuCommand.Menu {...{ open, onOpenChange }}>
+                  <MenuCommand.Trigger>
+                    <MenuCommand.SelectButton>
+                      {selectedOption?.displayPath ?? preferedPivotOption?.displayPath}
+                    </MenuCommand.SelectButton>
+                  </MenuCommand.Trigger>
+                  <MenuCommand.Content>
+                    <MenuCommand.List>
+                      {pathOptions.map((option) => (
+                        <MenuCommand.Item
+                          key={option.id}
+                          onSelect={() => {
+                            field.handleChange(option);
+                            onOpenChange(false);
+                          }}
+                        >
+                          <span className="text-s text-grey-00 font-medium">
+                            {option.displayPath ?? option.displayValue}
+                          </span>
+                        </MenuCommand.Item>
+                      ))}
+                    </MenuCommand.List>
+                  </MenuCommand.Content>
+                </MenuCommand.Menu>
               ) : (
                 <Input
                   className="w-1/3"
                   id="field"
                   readOnly={true}
-                  value={
-                    pathOptions[0]?.type === 'field' ? 'object_id' : pathOptions[0]?.displayValue
-                  }
+                  value={pathOptions[0]?.displayValue}
                 ></Input>
               )}
             </div>
