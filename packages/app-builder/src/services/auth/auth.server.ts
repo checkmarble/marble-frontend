@@ -13,7 +13,7 @@ import {
   type AuthFlashData,
   type CurrentUser,
 } from '@app-builder/models';
-import { type FeatureAccesses } from '@app-builder/models/feature-access';
+import { emptyFeatureAccesses, type FeatureAccesses } from '@app-builder/models/feature-access';
 import { type AnalyticsRepository } from '@app-builder/repositories/AnalyticsRepository';
 import { type ApiKeyRepository } from '@app-builder/repositories/ApiKeyRepository';
 import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
@@ -331,9 +331,9 @@ export function makeAuthenticationServerService({
     let entitlements: FeatureAccesses;
     try {
       user = await getUserRepository(marbleCoreApiClient).getCurrentUser();
-      entitlements = await getFeatureAccessRepository(featureAccessApiClient).getEntitlements(
-        user.organizationId,
-      );
+      entitlements = user.organizationId
+        ? await getFeatureAccessRepository(featureAccessApiClient).getEntitlements()
+        : emptyFeatureAccesses();
     } catch (err) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
       else return null;
