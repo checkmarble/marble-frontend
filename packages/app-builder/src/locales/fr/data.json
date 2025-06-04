@@ -70,7 +70,7 @@
   "create_pivot.entity_selection.search.placeholder": "Sélectionner ou rechercher une entité",
   "view_pivot.definition": "Définition",
   "view_pivot.table": "Table",
-  "view_pivot.title": "Détails du regroupement",
+  "view_pivot.title": "Regroupement des décisions",
   "view_pivot.type": "Type",
   "your_data_callout": "Voici la liste de tous les objets que vous pouvez envoyer à Marble, ainsi que leurs propriétés. \nContactez l'équipe Marble si vous souhaitez apporter des modifications à votre modèle de données.",
   "viewer.no_object_found": "Aucun objet trouvé pour l'id {{objectId}} dans {{tableName}}",
