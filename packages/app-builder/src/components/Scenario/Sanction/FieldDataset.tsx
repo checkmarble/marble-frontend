@@ -4,11 +4,11 @@ import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import clsx from 'clsx';
 import Fuse from 'fuse.js';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
-import { diff, toggle, unique } from 'radash';
+import { diff, toggle } from 'radash';
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { concat, intersection, map, pipe } from 'remeda';
+import { concat, intersection, map, pipe, unique } from 'remeda';
 import { Checkbox, cn, CollapsibleV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -29,23 +29,21 @@ const FieldCategory = memo(function FieldCategory({
   const [open, setOpen] = useState(false);
   const editor = useEditorMode();
 
-  // This is the list of all section's dataset ids
   const sectionDatasetIds = useMemo(
     () => section.datasets.map((dataset) => dataset.name),
     [section.datasets],
   );
 
-  // This is the list of all selected section's dataset ids
   const selectedDatasetIds = useMemo(
     () => intersection(sectionDatasetIds, selectedIds),
     [sectionDatasetIds, selectedIds],
   );
 
-  // This is the list of all section's dataset ids that should be shown
   const datasetIdsToShow = useMemo(
     () =>
       pipe(
         section.datasets,
+        // We filter the datasets by user search if any
         (datasets) =>
           filters.search !== ''
             ? new Fuse(datasets, {
@@ -56,13 +54,17 @@ const FieldCategory = memo(function FieldCategory({
                 .search(filters.search)
                 .map((i) => i.item)
             : datasets,
+        // We filter the resulted datasets by selected tags if any
         (datasets) =>
           filters.tags.length > 0
             ? datasets.filter((d) => d.tag && filters.tags.includes(d.tag))
             : datasets,
+        // We get only the ids
         map((d) => d.name),
+        // We don't forget to add the selected dataset ids
         concat(selectedDatasetIds),
-        unique,
+        // Convenience
+        unique(),
       ),
     [filters, section, selectedDatasetIds],
   );
