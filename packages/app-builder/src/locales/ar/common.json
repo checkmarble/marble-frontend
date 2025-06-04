@@ -80,5 +80,7 @@
   "snooze.oneWeek": "أسبوع",
   "snooze.oneMonth": "شهر",
   "snooze.nextMonday": "الأسبوع القادم",
-  "snooze.custom": "مخصص"
+  "snooze.custom": "مخصص",
+  "back": "عودة",
+  "validate": "تأكيد"
 }

@@ -80,5 +80,7 @@
   "snooze.oneWeek": "Une semaine",
   "snooze.oneMonth": "Un mois",
   "snooze.nextMonday": "Lundi prochain",
-  "snooze.custom": "Personnalisé"
+  "snooze.custom": "Personnalisé",
+  "back": "Précédent",
+  "validate": "Valider"
 }
