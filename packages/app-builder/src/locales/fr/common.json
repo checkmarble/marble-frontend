@@ -84,7 +84,7 @@
   "snooze.oneMonth": "Un mois",
   "snooze.nextMonday": "Lundi prochain",
   "snooze.custom": "Personnalisé",
-   "from": "De {{input}}",
+  "from": "De {{input}}",
   "to": "À {{input}}",
   "back": "Précédent",
   "validate": "Valider"
