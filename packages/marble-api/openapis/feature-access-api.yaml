@@ -41,14 +41,14 @@ paths:
             format: uuid
       responses:
         '200':
-          description: License validation response
+          description: Feature access response
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   feature_access:
-                    $ref: '#/components/schemas/LicenseEntitlementsDto'
+                    $ref: '#/components/schemas/FeatureAccessDto'
                 required:
                   - feature_access
         '401':
@@ -57,26 +57,26 @@ paths:
           $ref: '#/components/responses/403'
 components:
   schemas:
-    FeatureAccessDto:
+    FeatureAccessLevelDto:
       type: string
       enum: ['allowed', 'restricted', 'test', 'missing_configuration']
-    LicenseEntitlementsDto:
+    FeatureAccessDto:
       type: object
       properties:
         workflows:
-          $ref: '#/components/schemas/FeatureAccessDto'
+          $ref: '#/components/schemas/FeatureAccessLevelDto'
         analytics:
-          $ref: '#/components/schemas/FeatureAccessDto'
+          $ref: '#/components/schemas/FeatureAccessLevelDto'
         roles:
-          $ref: '#/components/schemas/FeatureAccessDto'
+          $ref: '#/components/schemas/FeatureAccessLevelDto'
         webhooks:
-          $ref: '#/components/schemas/FeatureAccessDto'
+          $ref: '#/components/schemas/FeatureAccessLevelDto'
         rule_snoozes:
-          $ref: '#/components/schemas/FeatureAccessDto'
+          $ref: '#/components/schemas/FeatureAccessLevelDto'
         test_run:
-          $ref: '#/components/schemas/FeatureAccessDto'
+          $ref: '#/components/schemas/FeatureAccessLevelDto'
         sanctions:
-          $ref: '#/components/schemas/FeatureAccessDto'
+          $ref: '#/components/schemas/FeatureAccessLevelDto'
       required:
         - workflows
         - analytics

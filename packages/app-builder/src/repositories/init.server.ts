@@ -1,7 +1,7 @@
 import {
   type FeatureAccessApi,
   type GetFeatureAccessAPIClientWithAuth,
-} from '@app-builder/infra/license-api';
+} from '@app-builder/infra/feature-access-api';
 import {
   type GetMarbleCoreAPIClientWithAuth,
   type MarbleCoreApi,
@@ -15,8 +15,8 @@ import { makeGetCustomListRepository } from './CustomListRepository';
 import { makeGetDataModelRepository } from './DataModelRepository';
 import { makeGetDecisionRepository } from './DecisionRepository';
 import { makeGetEditorRepository } from './EditorRepository';
+import { makeGetFeatureAccessRepository } from './FeatureAccessRepository';
 import { makeGetInboxRepository } from './InboxRepository';
-import { makeGetLicenseRepository } from './LicenseRepository';
 import { makeGetOrganizationRepository } from './OrganizationRepository';
 import { makeGetPartnerRepository } from './PartnerRepository';
 import { makeGetRuleSnoozeRepository } from './RuleSnoozeRepository';
@@ -84,7 +84,7 @@ export function makeServerRepositories({
     getWebhookRepository: makeGetWebhookRepository(),
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     getTestRunRepository: makeGetTestRunRepository(),
-    getLicenseRepository: makeGetLicenseRepository(),
+    getFeatureAccessRepository: makeGetFeatureAccessRepository(),
     getSignupStatusRepository: makeGetSignupStatusRepository(),
     getVersionRepository: makeGetVersionRepository(),
   };

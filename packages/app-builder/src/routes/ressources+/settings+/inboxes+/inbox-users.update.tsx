@@ -13,7 +13,7 @@ import { useFetcher, useNavigation } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { type FeatureAccessDto } from 'marble-api/generated/feature-access-api';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { pick } from 'radash';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -93,7 +93,7 @@ export function UpdateInboxUser({
 }: {
   inboxUser: InboxUser;
   inboxUserRoles: readonly [string, ...string[]];
-  access: FeatureAccessDto;
+  access: FeatureAccessLevelDto;
 }) {
   const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = useState(false);
@@ -132,7 +132,7 @@ export function UpdateInboxUserContent({
 }: {
   currentInboxUser: InboxUser;
   inboxUserRoles: readonly [string, ...string[]];
-  access: FeatureAccessDto;
+  access: FeatureAccessLevelDto;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
