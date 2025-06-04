@@ -37,6 +37,7 @@ export function SelectTargetEntity({
 
     return [
       ...pivotOptions
+        // Filter and reduce to unique links based on parentTableId ordered by shortest path
         .reduce((uniqueLinks, link) => {
           if (!link.parentTableId) return uniqueLinks;
 
