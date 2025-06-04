@@ -135,7 +135,7 @@ export function SelectField({
           </Button>
 
           <Button className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
-            {t('data:create_pivot.button_accept')}
+            {t('common:validate')}
           </Button>
         </div>
       </div>

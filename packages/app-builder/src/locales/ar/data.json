@@ -40,7 +40,6 @@
   "create_pivot.description": "المفتاح في نموذج البيانات يُستخدم لفلترة أو تجميع القرارات (<DocLink>لمعرفة المزيد</DocLink>)",
   "create_pivot.select.label": "اختيار المحور",
   "create_pivot.select.empty_matches": "لا توجد محاور تتوافق مع بحثك",
-  "create_pivot.button_accept": "انشاء محور",
   "create_pivot.errors.data.duplicate_pivot_value": "القيمة المحورية لهذا الجدول موجودة بالفعل. يرجى الاتصال بـ ماربل لإجراء التعديل.",
   "create_field.option_optional": "اختياري",
   "create_field.option_required": "متطلب",

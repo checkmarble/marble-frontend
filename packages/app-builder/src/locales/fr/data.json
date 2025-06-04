@@ -21,7 +21,6 @@
   "create_link.parent_field": "sur le champ",
   "create_link.parent_table": "fait référence à la table",
   "create_link.title": "Créer un nouveau lien",
-  "create_pivot.button_accept": "Créer un pivot",
   "create_pivot.description": "Une clé dans le modèle de données utilisée pour filtrer ou regrouper les décisions (<DocLink>en savoir plus</DocLink>)",
   "create_pivot.errors.data.duplicate_pivot_value": "Un pivot existe déjà pour cette table. \nContactez Marble pour le modifier.",
   "create_pivot.select.empty_matches": "Aucun pivot ne correspond à votre recherche",
