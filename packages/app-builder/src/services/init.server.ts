@@ -1,4 +1,4 @@
-import { initializeLicenseAPIClient } from '@app-builder/infra/license-api';
+import { initializeFeatureAccessAPIClient } from '@app-builder/infra/license-api';
 import { initializeMarbleCoreAPIClient } from '@app-builder/infra/marblecore-api';
 import { initializeTransfercheckAPIClient } from '@app-builder/infra/transfercheck-api';
 import {
@@ -31,7 +31,7 @@ function makeServerServices(repositories: ServerRepositories) {
     signupRepository: repositories.getSignupStatusRepository(repositories.marbleCoreApiClient),
     versionRepository: repositories.getVersionRepository(repositories.marbleCoreApiClient),
     licenseService: repositories.getLicenseRepository(
-      repositories.getLicenseApiClientWithoutAuth(),
+      repositories.getFeatureAccessApiClientWithoutAuth(),
     ),
     authService: makeAuthenticationServerService({
       ...repositories,
@@ -55,14 +55,14 @@ export function initServerServices(request: Request) {
     baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
   });
 
-  const { getLicenseAPIClientWithAuth, licenseApi } = initializeLicenseAPIClient({
+  const { getFeatureAccessAPIClientWithAuth, featureAccessApi } = initializeFeatureAccessAPIClient({
     request,
     baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
   });
 
   const serverRepositories = makeServerRepositories({
-    getLicenseApiClientWithoutAuth: () => licenseApi,
-    getLicenseAPIClientWithAuth,
+    getFeatureAccessApiClientWithoutAuth: () => featureAccessApi,
+    getFeatureAccessAPIClientWithAuth,
     marbleCoreApiClient,
     getMarbleCoreAPIClientWithAuth,
     getTransfercheckAPIClientWithAuth,

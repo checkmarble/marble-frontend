@@ -1,7 +1,7 @@
 import { type CurrentUser, isAdmin } from '@app-builder/models';
 import { type Inbox } from '@app-builder/models/inbox';
 import { type LicenseEntitlements } from '@app-builder/models/license';
-import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import { type FeatureAccessDto } from 'marble-api/generated/feature-access-api';
 
 export const isAccessible = (featureAccess: FeatureAccessDto) =>
   featureAccess !== 'restricted' && featureAccess !== 'missing_configuration';

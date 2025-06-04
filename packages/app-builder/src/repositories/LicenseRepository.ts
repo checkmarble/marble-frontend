@@ -1,4 +1,4 @@
-import { type LicenseApi } from '@app-builder/infra/license-api';
+import { type FeatureAccessApi } from '@app-builder/infra/license-api';
 import {
   adaptLicenseEntitlements,
   emptyLicenseEntitlements,
@@ -12,7 +12,7 @@ export interface LicenseRepository {
 
 export const makeGetLicenseRepository =
   () =>
-  (client: LicenseApi): LicenseRepository => ({
+  (client: FeatureAccessApi): LicenseRepository => ({
     isSsoEnabled: async () => (await client.isSsoEnabled()).is_sso_enabled,
     getEntitlements: async (organizationId) =>
       organizationId
