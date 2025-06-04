@@ -5,6 +5,7 @@ import {
   type FieldPivotOption,
   getFieldPivotOptions,
   getLinksPivotOptions,
+  type LinkPivotOption,
   type PivotOption,
 } from '@app-builder/services/data/pivot';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -172,7 +173,7 @@ export function CreatePivot({
           .with({ step: 'entity', pivotOption: null }, () => (
             <SelectTargetEntity
               {...{ pivotOptions, tableModel }}
-              hasFieldOptions={fieldOptions.length}
+              hasFieldOptions={fieldOptions.length > 0}
               onSelected={onEntitySelected}
             />
           ))
@@ -184,19 +185,19 @@ export function CreatePivot({
             return (
               <SelectLinkPath
                 {...{ pivotOptions, tableModel, onBack }}
-                preferedPivotOption={pivotOption}
+                preferedPivotOption={pivotOption as LinkPivotOption}
                 onSelected={(e) => createPivot(e)}
               />
             );
           })
           .with({ step: 'self', pivotOption: {} }, ({ pivotOption }) => (
-            <ValidateSelfPivot
-              {...{ pivotOption, tableModel, onBack }}
-              onValidate={onEntitySelected}
-            />
+            <ValidateSelfPivot {...{ pivotOption, tableModel, onBack }} onValidate={createPivot} />
           ))
           .with({ step: 'field', pivotOption: null }, () => (
-            <SelectField {...{ tableModel, onSelected: createPivot, onBack }} />
+            <SelectField
+              {...{ tableModel, onSelected: createPivot, onBack }}
+              pivotOptions={fieldOptions}
+            />
           ))
           .otherwise(() => null)}
       </ModalV2.Content>
