@@ -3,7 +3,7 @@ import {
   transferAlerStatusesWithoutArchived,
   type TransferAlertStatus,
 } from '@app-builder/models/transfer-alert';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { type DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
 import { arrIncludesExactSome, dateRangeFilterFn } from '@app-builder/utils/table-filter-fn';
 import {
@@ -162,7 +162,7 @@ function AlertsListTable({
           const dateTime = getValue();
           return (
             <time dateTime={dateTime}>
-              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
             </time>
           );
         },

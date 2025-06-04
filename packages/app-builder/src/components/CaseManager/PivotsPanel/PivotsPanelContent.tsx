@@ -8,7 +8,7 @@ import {
 } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
@@ -167,7 +167,10 @@ function RelatedCases({
                       className: 'shrink border-r leading-[28px]',
                     })}
                   >
-                    {formatDateTime(caseObj.createdAt, { language, timeStyle: undefined })}
+                    {formatDateTimeWithoutPresets(caseObj.createdAt, {
+                      language,
+                      dateStyle: 'short',
+                    })}
                   </div>
                   <div
                     className={cellVariants({

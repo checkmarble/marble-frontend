@@ -30,15 +30,13 @@ export function useFormatLanguage() {
   );
 }
 
-export function formatDateTime(
-  createdAt: string | Date,
+export function formatDateTimeWithoutPresets(
+  timestamp: string | Date,
   { language, ...options }: { language: string } & Intl.DateTimeFormatOptions,
 ) {
-  return Intl.DateTimeFormat(language, {
-    dateStyle: 'short',
-    timeStyle: 'short',
-    ...options,
-  }).format(typeof createdAt === 'string' ? new Date(createdAt) : createdAt);
+  return Intl.DateTimeFormat(language, options).format(
+    typeof timestamp === 'string' ? new Date(timestamp) : timestamp,
+  );
 }
 
 export function formatNumber(

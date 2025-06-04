@@ -3,7 +3,7 @@ import { EventTime } from '@app-builder/components/Cases/Events/Time';
 import { type CaseSnoozedEvent } from '@app-builder/models/cases';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
@@ -29,7 +29,11 @@ export const CaseSnoozedDetail = ({ event }: { event: CaseSnoozedEvent }) => {
           components={{ Style: <span className="font-bold capitalize" /> }}
           values={{
             actor: user ? getFullName(user) : 'Marble',
-            date: formatDateTime(event.snoozeUntil, { language }),
+            date: formatDateTimeWithoutPresets(event.snoozeUntil, {
+              language,
+              dateStyle: 'short',
+              timeStyle: 'short',
+            }),
           }}
         />
       </span>

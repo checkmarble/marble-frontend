@@ -1,6 +1,6 @@
 import { casesI18n } from '@app-builder/components/Cases';
 import { initServerServices } from '@app-builder/services/init.server';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
@@ -90,7 +90,7 @@ export function SnoozeCase({
   const [isOpen, setIsOpen] = useState(false);
 
   const formatDate = (date: Date) =>
-    formatDateTime(date, { language, dateStyle: 'medium', timeStyle: 'short' });
+    formatDateTimeWithoutPresets(date, { language, dateStyle: 'medium', timeStyle: 'short' });
 
   const form = useForm({
     onSubmit: ({ value }) => {

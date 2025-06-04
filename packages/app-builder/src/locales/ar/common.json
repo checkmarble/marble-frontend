@@ -45,7 +45,6 @@
   "loading": "جارٍ التحميل...",
   "understand": "أعي ذلك",
   "global_error": "حدث خطأ ما.",
-  "items_displayed": "<StartToEnd>{{start}} من {{end}}</StartToEnd>",
   "page_displayed_of_total": "صفحة <PageCount>{{currentPage}} من {{pageCount}}</PageCount>",
   "help_center.to_navigate": "للانتقال",
   "help_center.to_switch_tabs": "للتبديل بين التبويبات",
@@ -81,6 +80,12 @@
   "snooze.oneMonth": "شهر",
   "snooze.nextMonday": "الأسبوع القادم",
   "snooze.custom": "مخصص",
+  "items_displayed_dates": "من <emph> {{start}} </emph> إلى <emph> {{end}} </emph>",
+  "items_displayed_same_date": "على <emph> {{date}} </emph> من <emph> {{start}} </emph> إلى <emph> {{end}} </emph>",
+  "items_displayed_same_datetime": "على <emph> {{Date}} </emph> في <emph> {{time}} </emph>",
+  "items_displayed_ranks": "من <emph> {{start}} </emph> إلى <remphown> {{end}} </emph>",
+  "from": "من {{input}}",
+  "to": "إلى {{input}}",
   "back": "عودة",
   "validate": "تأكيد"
 }

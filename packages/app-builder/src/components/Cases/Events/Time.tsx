@@ -1,4 +1,8 @@
-import { formatDateRelative, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import {
+  formatDateRelative,
+  formatDateTimeWithoutPresets,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { differenceInDays } from 'date-fns';
 import { TooltipV2 } from 'ui-design-system';
 
@@ -17,7 +21,7 @@ export const EventTime = ({ time }: { time: string }) => {
         </TooltipV2.TooltipTrigger>
         <TooltipV2.TooltipContent>
           <span className="text-2xs font-normal">
-            {formatDateTime(date, {
+            {formatDateTimeWithoutPresets(date, {
               language,
               timeStyle: is6daysOld ? 'short' : undefined,
               dateStyle: is6daysOld ? undefined : 'short',

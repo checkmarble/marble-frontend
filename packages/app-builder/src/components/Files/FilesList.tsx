@@ -3,7 +3,7 @@ import {
   AuthRequestError,
   useDownloadFile,
 } from '@app-builder/services/DownloadFilesService';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
@@ -77,7 +77,7 @@ export function FilesListTable({ files, downloadEnpoint }: Omit<FilesListProps, 
           const dateTime = getValue();
           return (
             <time dateTime={dateTime}>
-              {formatDateTime(dateTime, { language, timeStyle: undefined })}
+              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
             </time>
           );
         },

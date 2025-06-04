@@ -13,7 +13,7 @@ import { OpenCase } from '@app-builder/routes/ressources+/cases+/open-case';
 import { SnoozeCase } from '@app-builder/routes/ressources+/cases+/snooze-case';
 import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
 import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { useLoaderData } from '@remix-run/react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -79,9 +79,9 @@ export const CaseDetails = ({
         <div className="grid grid-cols-[170px,1fr] items-center">
           <span className="text-grey-50 text-xs font-normal">{t('cases:creation_date')}</span>
           <time className="text-xs font-medium" dateTime={detail.createdAt}>
-            {formatDateTime(detail.createdAt, {
+            {formatDateTimeWithoutPresets(detail.createdAt, {
               language,
-              timeStyle: undefined,
+              dateStyle: 'short',
             })}
           </time>
         </div>

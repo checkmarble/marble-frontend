@@ -1,4 +1,8 @@
-import { formatCurrency, formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import {
+  formatCurrency,
+  formatDateTimeWithoutPresets,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
 import { type Currency } from 'dinero.js';
 import { Trans, useTranslation } from 'react-i18next';
@@ -77,8 +81,10 @@ export function TransferData(props: TransferDataProps) {
           {t('transfercheck:transfer_detail.transfer_data.requested_at')}
         </span>
         <span className="text-grey-00 text-s">
-          {formatDateTime(props.transferRequestedAt, {
+          {formatDateTimeWithoutPresets(props.transferRequestedAt, {
             language,
+            dateStyle: 'short',
+            timeStyle: 'short',
             timeZone: props.timezone,
           })}
         </span>
@@ -87,9 +93,11 @@ export function TransferData(props: TransferDataProps) {
           {t('transfercheck:transfer_detail.transfer_data.created_at')}
         </span>
         <span className="text-grey-00 text-s">
-          {formatDateTime(props.createdAt, {
+          {formatDateTimeWithoutPresets(props.createdAt, {
             language,
             timeZone: props.timezone,
+            dateStyle: 'short',
+            timeStyle: 'short',
           })}
         </span>
 
@@ -97,9 +105,11 @@ export function TransferData(props: TransferDataProps) {
           {t('transfercheck:transfer_detail.transfer_data.updated_at')}
         </span>
         <span className="text-grey-00 text-s">
-          {formatDateTime(props.updatedAt, {
+          {formatDateTimeWithoutPresets(props.updatedAt, {
             language,
             timeZone: props.timezone,
+            dateStyle: 'short',
+            timeStyle: 'short',
           })}
         </span>
       </div>

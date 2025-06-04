@@ -68,7 +68,10 @@
   "loading": "Loading...",
   "understand": "I understand",
   "global_error": "Something went wrong.",
-  "items_displayed": "<StartToEnd>{{start}} to {{end}}</StartToEnd>",
+  "items_displayed_ranks": "From <emph>{{start}}</emph> to <emph>{{end}}</emph>",
+  "items_displayed_dates": "From <emph>{{start}}</emph> to <emph>{{end}}</emph>",
+  "items_displayed_same_date": "On <emph>{{date}}</emph> from <emph>{{start}}</emph> to <emph>{{end}}</emph>",
+  "items_displayed_same_datetime": "On <emph>{{date}}</emph> at <emph>{{time}}</emph>",
   "page_displayed_of_total": "Page <PageCount>{{currentPage}} of {{pageCount}}</PageCount>",
   "help_center.to_navigate": "to navigate",
   "help_center.to_switch_tabs": "to switch tabs",
@@ -81,6 +84,8 @@
   "snooze.oneMonth": "One month",
   "snooze.nextMonday": "Next Monday",
   "snooze.custom": "Custom",
+   "from": "From {{input}}",
+  "to": "To {{input}}",
   "back": "Back",
   "validate": "Validate"
 }

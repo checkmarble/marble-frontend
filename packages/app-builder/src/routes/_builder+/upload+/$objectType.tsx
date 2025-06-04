@@ -6,7 +6,11 @@ import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-h
 import { isIngestDataAvailable } from '@app-builder/services/feature-access';
 import { clientServices } from '@app-builder/services/init.client';
 import { initServerServices } from '@app-builder/services/init.server';
-import { formatDateTime, formatNumber, useFormatLanguage } from '@app-builder/utils/format';
+import {
+  formatDateTimeWithoutPresets,
+  formatNumber,
+  useFormatLanguage,
+} from '@app-builder/utils/format';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -281,7 +285,15 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
         size: 200,
         cell: ({ getValue }) => {
           const dateTime = getValue();
-          return <time dateTime={dateTime}>{formatDateTime(dateTime, { language })}</time>;
+          return (
+            <time dateTime={dateTime}>
+              {formatDateTimeWithoutPresets(dateTime, {
+                language,
+                dateStyle: 'short',
+                timeStyle: 'short',
+              })}
+            </time>
+          );
         },
       }),
       columnHelper.accessor((row) => row.finished_at, {
@@ -291,7 +303,15 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
         cell: ({ getValue }) => {
           const dateTime = getValue();
           if (!dateTime) return '';
-          return <time dateTime={dateTime}>{formatDateTime(dateTime, { language })}</time>;
+          return (
+            <time dateTime={dateTime}>
+              {formatDateTimeWithoutPresets(dateTime, {
+                language,
+                dateStyle: 'short',
+                timeStyle: 'short',
+              })}
+            </time>
+          );
         },
       }),
       columnHelper.accessor((row) => row.lines_processed, {

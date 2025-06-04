@@ -1,6 +1,6 @@
 import { CaseStatusBadge, decisionsI18n } from '@app-builder/components';
 import { type DecisionDetail } from '@app-builder/models/decision';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
@@ -19,7 +19,13 @@ export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
       <Collapsible.Content>
         <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-2">
           <DetailLabel>{t('decisions:created_at')}</DetailLabel>
-          <time dateTime={createdAt}>{formatDateTime(createdAt, { language })}</time>
+          <time dateTime={createdAt}>
+            {formatDateTimeWithoutPresets(createdAt, {
+              language,
+              dateStyle: 'short',
+              timeStyle: 'short',
+            })}
+          </time>
 
           <DetailLabel>{t('decisions:scenario.name')}</DetailLabel>
           <Link
