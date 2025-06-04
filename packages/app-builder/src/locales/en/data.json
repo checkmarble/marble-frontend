@@ -32,7 +32,7 @@
   "create_link.parent_field": "on the field",
   "create_link.must_point_to_unique_field": "A link must point to a unique field in the target table. If you want to point to another field of the table, please mark it as unique first.",
   "view_pivot.button": "View group details",
-  "view_pivot.title": "Group_by details",
+  "view_pivot.title": "Group details",
   "view_pivot.type": "Type",
   "view_pivot.table": "Table",
   "view_pivot.definition": "Definition",
