@@ -39,7 +39,7 @@ export interface LinkPivotOption {
   length?: number;
   pathLinkIds: string[];
   id: string;
-  displayPath?: string;
+  displayPath: string;
   displayValue: string;
 }
 

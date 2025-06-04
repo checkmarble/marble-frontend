@@ -5,7 +5,7 @@ import { useForm, useStore } from '@tanstack/react-form';
 import Code from 'packages/ui-design-system/src/Code/Code';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Input, MenuCommand } from 'ui-design-system';
+import { Button, MenuCommand } from 'ui-design-system';
 
 export function SelectLinkPath({
   pivotOptions,
@@ -21,13 +21,15 @@ export function SelectLinkPath({
   onBack: () => void;
 }) {
   const { t } = useTranslation(['common', 'data']);
-
+  console.log('SelectLinkPath', pivotOptions, preferedPivotOption);
   const pathOptions = useMemo(
     () =>
-      pivotOptions.filter(
-        ({ type, parentTableId }) =>
-          type === 'link' && parentTableId === preferedPivotOption.parentTableId,
-      ),
+      pivotOptions
+        .filter(
+          ({ type, parentTableId }) =>
+            type === 'link' && parentTableId === preferedPivotOption.parentTableId,
+        )
+        .sort((a, b) => (a.length ?? 0) - (b.length ?? 0)),
     [pivotOptions, preferedPivotOption],
   );
 
@@ -52,48 +54,61 @@ export function SelectLinkPath({
         <form.Field name="pivot">
           {(field) => (
             <div className="flex flex-col gap-2">
-              <FormLabel name={field.name}>
-                <Trans
-                  t={t}
-                  i18nKey="data:create_pivot.select_path.description"
-                  values={{ child: tableModel.name, parent: preferedPivotOption.parentTableName }}
-                  components={{
-                    Code: <Code />,
-                  }}
-                />
-              </FormLabel>
               {pathOptions.length > 1 ? (
-                <MenuCommand.Menu {...{ open, onOpenChange }}>
-                  <MenuCommand.Trigger>
-                    <MenuCommand.SelectButton>
-                      {selectedOption?.displayPath ?? preferedPivotOption?.displayPath}
-                    </MenuCommand.SelectButton>
-                  </MenuCommand.Trigger>
-                  <MenuCommand.Content>
-                    <MenuCommand.List>
-                      {pathOptions.map((option) => (
-                        <MenuCommand.Item
-                          key={option.id}
-                          onSelect={() => {
-                            field.handleChange(option);
-                            onOpenChange(false);
-                          }}
-                        >
-                          <span className="text-s text-grey-00 font-medium">
-                            {option.displayPath ?? option.displayValue}
-                          </span>
-                        </MenuCommand.Item>
-                      ))}
-                    </MenuCommand.List>
-                  </MenuCommand.Content>
-                </MenuCommand.Menu>
+                <>
+                  <FormLabel name={field.name}>
+                    <Trans
+                      t={t}
+                      i18nKey="data:create_pivot.select_path.description"
+                      values={{
+                        child: tableModel.name,
+                        parent: preferedPivotOption.parentTableName,
+                      }}
+                      components={{
+                        Code: <Code />,
+                      }}
+                    />
+                  </FormLabel>
+                  <MenuCommand.Menu {...{ open, onOpenChange }}>
+                    <MenuCommand.Trigger>
+                      <MenuCommand.SelectButton>
+                        {selectedOption?.displayPath ?? preferedPivotOption?.displayPath}
+                      </MenuCommand.SelectButton>
+                    </MenuCommand.Trigger>
+                    <MenuCommand.Content align="start" sameWidth sideOffset={4}>
+                      <MenuCommand.List>
+                        {pathOptions.map((option) => (
+                          <MenuCommand.Item
+                            key={option.id}
+                            onSelect={() => {
+                              field.handleChange(option);
+                              onOpenChange(false);
+                            }}
+                          >
+                            <span className="text-s text-grey-00 font-medium">
+                              {option.displayPath ?? option.displayValue}
+                            </span>
+                          </MenuCommand.Item>
+                        ))}
+                      </MenuCommand.List>
+                    </MenuCommand.Content>
+                  </MenuCommand.Menu>
+                </>
               ) : (
-                <Input
-                  className="w-1/3"
-                  id="field"
-                  readOnly={true}
-                  value={pathOptions[0]?.displayValue}
-                ></Input>
+                <FormLabel name={field.name}>
+                  <Trans
+                    t={t}
+                    i18nKey="data:create_pivot.validate_path.description"
+                    values={{
+                      child: tableModel.name,
+                      parent: preferedPivotOption.parentTableName,
+                      link: preferedPivotOption.displayValue,
+                    }}
+                    components={{
+                      Code: <Code />,
+                    }}
+                  />
+                </FormLabel>
               )}
             </div>
           )}

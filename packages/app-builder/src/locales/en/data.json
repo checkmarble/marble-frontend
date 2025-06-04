@@ -78,10 +78,12 @@
   "create_pivot.entity_selection.button_accept": "Next",
   "create_pivot.path_selection.description": "A pivot will be created along this path",
   "create_pivot.select_path.description": "Look up the <Code>{{parent}}</Code> corresponding to a <Code>{{child}}</Code> entity by following the link",
+  "create_pivot.validate_path.description": "Look up the <Code>{{parent}}</Code> corresponding to a <Code>{{child}}</Code> entity by following the link <Code>{{link}}</Code>.",
   "create_pivot.validate_self_link.description": "Decisions will be grouped with decisions on other entities that have been configured to group at the <Code>{{table}}</Code> level",
   "create_pivot.select_field.description": "Select the field that will be used to group decisions on entities of the type <Code>{{table}}</Code>, allowing you to snooze rules and group decisions into cases.",
   "create_pivot.select_field.callout": "Please note that the recommended option is to select an entity that represents the end user corresponding to a decision on <Code>{{table}}</Code>.",
   "menu.create_pivot.label": "Group decisions by...",
   "create_pivot.select_entity.button_same_table": "Select a field in <Code>{{table}}</Code>",
-  "create_pivot.select_entity.search_placeholder": "Search by entity name"
+  "create_pivot.select_entity.search_placeholder": "Search by entity name",
+  "create_pivot.entity_selection.search.placeholder": "Select or search an entity"
 }
