@@ -2,6 +2,7 @@ import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   adaptClientDataListRequestBodyDto,
   adaptClientDataListResponse,
+  adaptCreateAnnotationDto,
   adaptCreateNavigationOptionDto,
   adaptCreatePivotInputDto,
   adaptCreateTableFieldDto,
@@ -13,6 +14,7 @@ import {
   adaptUpdateFieldDto,
   type ClientDataListRequestBody,
   type ClientDataListResponse,
+  type CreateAnnotationBody,
   type CreateFieldInput,
   type CreateNavigationOption,
   type CreatePivotInput,
@@ -40,6 +42,8 @@ export interface DataModelRepository {
   createNavigationOption(tableId: string, options: CreateNavigationOption): Promise<void>;
   getDataModelTableOptions(tableId: string): Promise<DataModelTableOptions>;
   setDataModelTableOptions(tableId: string, body: SetDataModelTableOptionsBody): Promise<void>;
+  createAnnotation(tableName: string, objectId: string, body: CreateAnnotationBody): Promise<void>;
+  deleteAnnotation(annotationId: string): Promise<void>;
 }
 
 export function makeGetDataModelRepository() {
@@ -102,6 +106,16 @@ export function makeGetDataModelRepository() {
         tableId,
         adaptSetDataModelTableOptionBodyDto(body),
       );
+    },
+    createAnnotation: async (tableName, objectId, body) => {
+      await marbleCoreApiClient.createAnnotation(
+        tableName,
+        objectId,
+        adaptCreateAnnotationDto(body),
+      );
+    },
+    deleteAnnotation: async (annotationId) => {
+      await marbleCoreApiClient.deleteAnnotation(annotationId);
     },
   });
 }

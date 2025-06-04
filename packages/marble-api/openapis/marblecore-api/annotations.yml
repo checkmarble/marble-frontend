@@ -78,42 +78,53 @@ components:
       required:
         - id
         - filename
+    BareTagEntityAnnotationDto:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ['tag']
+        payload:
+          $ref: '#/components/schemas/TagEntityAnnotationPayloadDto'
+      required:
+        - type
+        - payload
     TagEntityAnnotationDto:
       allOf:
         - $ref: '#/components/schemas/CommonEntityAnnotationDto'
-        - type: object
-          properties:
-            type:
-              type: string
-              enum: ['tag']
-            payload:
-              $ref: '#/components/schemas/TagEntityAnnotationPayloadDto'
-          required:
-            - type
-            - payload
+        - $ref: '#/components/schemas/BareTagEntityAnnotationDto'
+    BareCommentEntityAnnotationDto:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ['comment']
+        payload:
+          $ref: '#/components/schemas/CommentEntityAnnotationPayloadDto'
+      required:
+        - type
+        - payload
     CommentEntityAnnotationDto:
       allOf:
         - $ref: '#/components/schemas/CommonEntityAnnotationDto'
-        - type: object
-          properties:
-            type:
-              type: string
-              enum: ['comment']
-            payload:
-              $ref: '#/components/schemas/CommentEntityAnnotationPayloadDto'
-          required:
-            - type
-            - payload
+        - $ref: '#/components/schemas/BareCommentEntityAnnotationDto'
+    BareFileEntityAnnotationDto:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ['file']
+        payload:
+          $ref: '#/components/schemas/FileEntityAnnotationPayloadDto'
+      required:
+        - type
+        - payload
     FileEntityAnnotationDto:
       allOf:
         - $ref: '#/components/schemas/CommonEntityAnnotationDto'
-        - type: object
-          properties:
-            type:
-              type: string
-              enum: ['file']
-            payload:
-              $ref: '#/components/schemas/FileEntityAnnotationPayloadDto'
-          required:
-            - type
-            - payload
+        - $ref: '#/components/schemas/BareFileEntityAnnotationDto'
+    CreateAnnotationDto:
+      anyOf:
+        - $ref: '#/components/schemas/BareTagEntityAnnotationDto'
+        - $ref: '#/components/schemas/BareCommentEntityAnnotationDto'
+        # - $ref: '#/components/schemas/BareFileEntityAnnotationDto'

@@ -23,3 +23,11 @@ export function getSanctionCheckFileUploadEndpoint(sanctionCheck: SanctionCheck)
 export function getSanctionCheckFileDownloadEndpoint(sanctionCheck: SanctionCheck) {
   return (id: string) => `/sanction-checks/${sanctionCheck.id}/files/${encodeURIComponent(id)}`;
 }
+
+export function getClientAnnotationFileUploadEndpoint(tableName: string, objectId: string) {
+  return `/client_data/${tableName}/${objectId}/annotations/file`;
+}
+
+export function getClientAnnotationFileDownloadEndpoint(annotationId: string) {
+  return (fileId: string) => `/annotations/file/${annotationId}/${fileId}`;
+}

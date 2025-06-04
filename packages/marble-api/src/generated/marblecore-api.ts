@@ -333,25 +333,27 @@ export type ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 = {
     annotated_by: string;
     created_at: string;
 };
+export type ComponentsSchemasCreateAnnotationDtoAnyOf1 = {
+    "type": "comment";
+    payload: {
+        /** body of the comment */
+        text: string;
+    };
+};
+export type ComponentsSchemasCreateAnnotationDtoAnyOf0 = {
+    "type": "tag";
+    payload: {
+        tag_id: string;
+    };
+};
 export type GroupedAnnotations = {
-    comments: (ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 & {
-        "type": "comment";
-        payload: {
-            /** body of the comment */
-            text: string;
-        };
-    })[];
+    comments: (ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 & ComponentsSchemasCreateAnnotationDtoAnyOf1)[];
     tags: ({
         id: string;
         case_id: string;
         annotated_by: string;
         created_at: string;
-    } & {
-        "type": "tag";
-        payload: {
-            tag_id: string;
-        };
-    })[];
+    } & ComponentsSchemasCreateAnnotationDtoAnyOf0)[];
     files: (ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 & {
         "type": "file";
         payload: {
@@ -474,6 +476,18 @@ export type DataModelObjectDto = {
     };
     metadata: {
         valid_from: string;
+    };
+};
+export type CreateAnnotationDto = {
+    "type": "tag";
+    payload: {
+        tag_id: string;
+    };
+} | {
+    "type": "comment";
+    payload: {
+        /** body of the comment */
+        text: string;
     };
 };
 export type ClientDataListRequestBody = {
@@ -1738,7 +1752,8 @@ export function sarDownload(caseId: string, reportId: string, opts?: Oazapfts.Re
 /**
  * List tags
  */
-export function listTags({ withCaseCount }: {
+export function listTags({ target, withCaseCount }: {
+    target?: "case" | "object";
     withCaseCount?: boolean;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -1753,6 +1768,7 @@ export function listTags({ withCaseCount }: {
         status: 403;
         data: string;
     }>(`/tags${QS.query(QS.explode({
+        target,
         withCaseCount
     }))}`, {
         ...opts
@@ -1975,6 +1991,33 @@ export function getIngestedObject(tableName: string, objectId: string, opts?: Oa
     }));
 }
 /**
+ * Create an annotation on client data
+ */
+export function createAnnotation(tableName: string, objectId: string, createAnnotationDto: CreateAnnotationDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/client_data/${encodeURIComponent(tableName)}/${encodeURIComponent(objectId)}/annotations`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createAnnotationDto
+    })));
+}
+/**
  * Get a list of objects from a table, given a starting object, a set of filters & ordering field matching the exploration options available on the starting object, and optional cursor pagination.
  */
 export function listClientObjects(tableName: string, clientDataListRequestBody: ClientDataListRequestBody, opts?: Oazapfts.RequestOpts) {
@@ -2001,6 +2044,32 @@ export function listClientObjects(tableName: string, clientDataListRequestBody: 
         method: "POST",
         body: clientDataListRequestBody
     })));
+}
+/**
+ * Removes an annotation by ID
+ */
+export function deleteAnnotation(annotationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/annotations/${encodeURIComponent(annotationId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
 }
 /**
  * List custom list

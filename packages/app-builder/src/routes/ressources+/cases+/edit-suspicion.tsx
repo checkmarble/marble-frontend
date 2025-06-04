@@ -1,6 +1,11 @@
 import { Callout, casesI18n } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import {
+  MAX_FILE_SIZE,
+  MAX_FILE_SIZE_MB,
+  useFormDropzone,
+} from '@app-builder/hooks/useFormDropzone';
+import {
   type SuspiciousActivityReport,
   type SuspiciousActivityReportStatus,
   suspiciousActivityReportStatuses,
@@ -23,7 +28,6 @@ import { decode } from 'decode-formdata';
 import { serialize } from 'object-to-formdata';
 import { tryit } from 'radash';
 import { useEffect, useState } from 'react';
-import { useDropzone } from 'react-dropzone-esm';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
@@ -31,9 +35,6 @@ import { match } from 'ts-pattern';
 import { Button, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
-const MAX_FILE_SIZE_MB = 20;
-const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const schema = z.object({
   status: z.union([
@@ -227,19 +228,12 @@ export const EditCaseSuspicion = ({
 
   const reportFile = useStore(form.store, (state) => state.values.file);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: (file) => form.setFieldValue('file', file[0]),
-    accept: {
-      'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
-      'application/pdf': ['.pdf'],
-      'application/zip': ['.zip'],
-      'application/msword': ['.doc', '.docx'],
-      'application/vnd.openxmlformats-officedocument.*': ['.docx', '.xlsx'],
-      'application/vnd.ms-excel': ['.xls'],
-      'text/*': ['.csv', '.txt'],
-    },
+  const { getRootProps, getInputProps, isDragActive } = useFormDropzone({
     multiple: false,
-    maxSize: MAX_FILE_SIZE,
+    onDrop: (acceptedFiles) => {
+      form.setFieldValue('file', acceptedFiles[0]);
+      form.validate('change');
+    },
   });
 
   return (

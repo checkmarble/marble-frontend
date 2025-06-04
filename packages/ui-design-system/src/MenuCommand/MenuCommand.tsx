@@ -213,7 +213,7 @@ function MenuArrow() {
   return <Icon icon="caret-down" className="size-4 shrink-0" />;
 }
 
-const contentClassname = cva('flex z-50', {
+const contentClassname = cva('flex z-50 text-s', {
   variants: {
     hover: {
       true: 'max-h-[min(var(--radix-hover-card-content-available-height),_500px)]',
@@ -227,7 +227,7 @@ const contentClassname = cva('flex z-50', {
 
 const commandClassname = cva(
   [
-    'flex flex-col z-50 w-full flex-1 overflow-hidden text-s',
+    'flex flex-col z-50 w-full flex-1 overflow-hidden',
     'bg-grey-100 border-grey-90 rounded border shadow-md outline-none',
     'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
     'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
@@ -379,7 +379,7 @@ const Separator = React.forwardRef<
   React.ElementRef<typeof Command.Separator>,
   React.ComponentPropsWithoutRef<typeof Command.Separator>
 >(({ className, ...props }, ref) => (
-  <Command.Separator ref={ref} className={cn('bg-border -mx-1 h-px', className)} {...props} />
+  <Command.Separator ref={ref} className={cn('bg-border -mx-2 my-2 h-px', className)} {...props} />
 ));
 Separator.displayName = Command.Separator.displayName;
 
@@ -395,6 +395,7 @@ function List({ className, ...props }: ListProps) {
 
 export const MenuCommand = {
   Arrow: MenuArrow,
+  Anchor: Popover.Anchor,
   Combobox,
   Content,
   Group: Command.Group,
