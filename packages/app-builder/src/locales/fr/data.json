@@ -57,7 +57,7 @@
   "upload_data": "Téléverser des données",
   "view_pivot.button": "Voir les détails du regroupement",
   "create_pivot.entity_selection.description": "Sélectionnez quelle entité dans votre modèle de données correspond à l’utilisateur final pour une décision sur <Code>{{table}}</Code>. Cela vous permettra d'enquêter sur toutes les alertes liées au même client dans un dossier. Voir la <DocLink>documentation</DocLink> pour plus d’informations.",
-  "create_pivot.select_entity.same_table": "Aucun des choix ci-dessus : sélectionnez un champ de l’entité <Code>{{table}}</Code> pour regrouper les décisions, avec un support limité dans l’interface du gestionnaire de cas.",
+  "create_pivot.select_entity.same_table": "Aucun des choix ci-dessus : sélectionnez un champ de l’entité <Code>{{table}}</Code> elle-même pour regrouper les décisions, avec un support limité dans l’interface d'investigation.",
   "create_pivot.entity_selection.button_accept": "Suivant",
   "create_pivot.select_path.description": "Rechercher le <Code>{{parent}}</Code> correspondant à une entité <Code>{{child}}</Code> en suivant le lien",
   "create_pivot.validate_path.description": "Rechercher le <Code>{{parent}}</Code> correspondant à une entité <Code>{{child}}</Code> en suivant le lien <Code>{{link}}</Code>.",
