@@ -5,7 +5,6 @@
  * See https://www.npmjs.com/package/oazapfts
  */
 import * as Oazapfts from "@oazapfts/runtime";
-import * as QS from "@oazapfts/runtime/query";
 export const defaults: Oazapfts.Defaults<Oazapfts.CustomHeaders> = {
     headers: {},
     baseUrl: "http://localhost:8080",
@@ -14,15 +13,15 @@ const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {
     localDevelopmentServer: "http://localhost:8080"
 };
-export type FeatureAccessDto = "allowed" | "restricted" | "test" | "missing_configuration";
-export type LicenseEntitlementsDto = {
-    workflows: FeatureAccessDto;
-    analytics: FeatureAccessDto;
-    roles: FeatureAccessDto;
-    webhooks: FeatureAccessDto;
-    rule_snoozes: FeatureAccessDto;
-    test_run: FeatureAccessDto;
-    sanctions: FeatureAccessDto;
+export type FeatureAccessLevelDto = "allowed" | "restricted" | "test" | "missing_configuration";
+export type FeatureAccessDto = {
+    workflows: FeatureAccessLevelDto;
+    analytics: FeatureAccessLevelDto;
+    roles: FeatureAccessLevelDto;
+    webhooks: FeatureAccessLevelDto;
+    rule_snoozes: FeatureAccessLevelDto;
+    test_run: FeatureAccessLevelDto;
+    sanctions: FeatureAccessLevelDto;
 };
 /**
  * Check if SSO is enabled
@@ -44,7 +43,7 @@ export function getEntitlements(organizationId: string, opts?: Oazapfts.RequestO
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            feature_access: LicenseEntitlementsDto;
+            feature_access: FeatureAccessDto;
         };
     } | {
         status: 401;

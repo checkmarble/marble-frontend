@@ -1,15 +1,13 @@
 import { type CurrentUser, isAdmin } from '@app-builder/models';
+import { type FeatureAccesses } from '@app-builder/models/feature-access';
 import { type Inbox } from '@app-builder/models/inbox';
-import { type LicenseEntitlements } from '@app-builder/models/license';
-import { type FeatureAccessDto } from 'marble-api/generated/feature-access-api';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 
-export const isAccessible = (featureAccess: FeatureAccessDto) =>
+export const isAccessible = (featureAccess: FeatureAccessLevelDto) =>
   featureAccess !== 'restricted' && featureAccess !== 'missing_configuration';
 
-export const isAnalyticsAvailable = (
-  { permissions }: CurrentUser,
-  entitlements: LicenseEntitlements,
-) => isAccessible(entitlements.analytics) && permissions.canReadAnalytics;
+export const isAnalyticsAvailable = ({ permissions }: CurrentUser, entitlements: FeatureAccesses) =>
+  isAccessible(entitlements.analytics) && permissions.canReadAnalytics;
 
 export const isReadUserAvailable = ({ role }: CurrentUser) =>
   role === 'ADMIN' || role === 'MARBLE_ADMIN';
@@ -35,12 +33,12 @@ export const isCreateInboxAvailable = ({ permissions }: CurrentUser) => permissi
 
 export const isReadSnoozeAvailable = (
   { permissions }: CurrentUser,
-  entitlements: LicenseEntitlements,
+  entitlements: FeatureAccesses,
 ) => isAccessible(entitlements.ruleSnoozes) && permissions.canReadSnoozes;
 
 export const isCreateSnoozeAvailable = (
   { permissions }: CurrentUser,
-  entitlements: LicenseEntitlements,
+  entitlements: FeatureAccesses,
 ) => isAccessible(entitlements.ruleSnoozes) && permissions.canCreateSnoozes;
 
 export const isCreateDataModelTableAvailable = ({ permissions }: CurrentUser) =>
@@ -81,10 +79,10 @@ export const isEditScenarioAvailable = ({ permissions }: CurrentUser) =>
 export const isManualTriggerScenarioAvailable = ({ permissions }: CurrentUser) =>
   permissions.canManageDecision;
 
-export const isWorkflowsAvailable = (entitlements: LicenseEntitlements) =>
+export const isWorkflowsAvailable = (entitlements: FeatureAccesses) =>
   isAccessible(entitlements.workflows);
 
-export const isTestRunAvailable = (entitlements: LicenseEntitlements) =>
+export const isTestRunAvailable = (entitlements: FeatureAccesses) =>
   isAccessible(entitlements.testRun);
 
 export const isDeploymentActionsAvailable = ({ permissions }: CurrentUser) =>
@@ -99,7 +97,7 @@ export const isCreateApiKeyAvailable = ({ permissions }: CurrentUser) =>
 export const isDeleteApiKeyAvailable = ({ permissions }: CurrentUser) =>
   permissions.canCreateApiKey;
 
-export const getInboxUserRoles = (entitlements: LicenseEntitlements) =>
+export const getInboxUserRoles = (entitlements: FeatureAccesses) =>
   isAccessible(entitlements.userRoles) ? (['admin', 'member'] as const) : (['admin'] as const);
 
 export const isEditInboxAvailable = (user: CurrentUser, inbox: Inbox) =>
@@ -122,7 +120,7 @@ export const isEditTagAvailable = ({ permissions }: CurrentUser) => permissions.
 
 export const isDeleteTagAvailable = ({ permissions }: CurrentUser) => permissions.canEditInboxes;
 
-export const getUserRoles = (entitlements: LicenseEntitlements) =>
+export const getUserRoles = (entitlements: FeatureAccesses) =>
   isAccessible(entitlements.userRoles)
     ? (['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'] as const)
     : (['ADMIN'] as const);

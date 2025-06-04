@@ -14,7 +14,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
-import { type FeatureAccessDto } from 'marble-api/generated/feature-access-api';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -86,7 +86,7 @@ export function CreateWebhook({
   webhookStatus,
 }: {
   children: React.ReactElement;
-  webhookStatus: FeatureAccessDto;
+  webhookStatus: FeatureAccessLevelDto;
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -100,7 +100,7 @@ export function CreateWebhook({
   );
 }
 
-function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessDto }) {
+function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessLevelDto }) {
   const { t } = useTranslation(['common', 'settings']);
 
   const fetcher = useFetcher<typeof action>();

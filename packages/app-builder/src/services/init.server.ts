@@ -1,4 +1,4 @@
-import { initializeFeatureAccessAPIClient } from '@app-builder/infra/license-api';
+import { initializeFeatureAccessAPIClient } from '@app-builder/infra/feature-access-api';
 import { initializeMarbleCoreAPIClient } from '@app-builder/infra/marblecore-api';
 import { initializeTransfercheckAPIClient } from '@app-builder/infra/transfercheck-api';
 import {
@@ -30,7 +30,7 @@ function makeServerServices(repositories: ServerRepositories) {
     toastSessionService,
     signupRepository: repositories.getSignupStatusRepository(repositories.marbleCoreApiClient),
     versionRepository: repositories.getVersionRepository(repositories.marbleCoreApiClient),
-    licenseService: repositories.getLicenseRepository(
+    featureAccessService: repositories.getFeatureAccessRepository(
       repositories.getFeatureAccessApiClientWithoutAuth(),
     ),
     authService: makeAuthenticationServerService({
