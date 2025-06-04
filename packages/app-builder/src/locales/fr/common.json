@@ -86,6 +86,6 @@
   "snooze.custom": "Personnalisé",
   "from": "De {{input}}",
   "to": "À {{input}}",
-  "back": "Précédent",
+  "back": "Retour",
   "validate": "Valider"
 }
