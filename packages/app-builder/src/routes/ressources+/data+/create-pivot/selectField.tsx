@@ -1,14 +1,12 @@
 import { Callout } from '@app-builder/components';
-import { Highlight } from '@app-builder/components/Highlight';
 import type { TableModel } from '@app-builder/models/data-model';
 import { type FieldPivotOption } from '@app-builder/services/data/pivot';
 import { handleSubmit } from '@app-builder/utils/form';
-import { useForm } from '@tanstack/react-form';
-import { matchSorter } from 'match-sorter';
+import { useForm, useStore } from '@tanstack/react-form';
 import Code from 'packages/ui-design-system/src/Code/Code';
-import { useDeferredValue, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Input, ModalV2, SelectWithCombobox } from 'ui-design-system';
+import { Button, MenuCommand, ModalV2 } from 'ui-design-system';
 
 export function SelectField({
   pivotOptions,
@@ -34,16 +32,8 @@ export function SelectField({
     },
   });
 
-  const [searchValue, setSearchValue] = useState('');
-  const deferredSearchValue = useDeferredValue(searchValue);
-
-  const matches = useMemo(
-    () =>
-      matchSorter(pivotOptions, deferredSearchValue, {
-        keys: ['displayValue'],
-      }),
-    [pivotOptions, deferredSearchValue],
-  );
+  const selectedOption = useStore(form.store, (state) => state.values.pivot);
+  const [open, onOpenChange] = useState(false);
 
   return (
     <form onSubmit={handleSubmit(form)}>
@@ -73,48 +63,33 @@ export function SelectField({
         <form.Field name="pivot">
           {(field) => (
             <div className="flex flex-col gap-2">
-              <SelectWithCombobox.Root
-                searchValue={searchValue}
-                onSearchValueChange={setSearchValue}
-                selectedValue={field.state.value?.id}
-                onSelectedValueChange={(value): void => {
-                  field.handleChange(
-                    pivotOptions.find((pivot) => pivot.id === value) as FieldPivotOption,
-                  );
-                }}
-              >
-                <SelectWithCombobox.Select className="w-full">
-                  {field.state.value?.displayValue}
-                  <SelectWithCombobox.Arrow />
-                </SelectWithCombobox.Select>
-                <SelectWithCombobox.Popover
-                  className="z-50 flex flex-col gap-2 p-2"
-                  portal
-                  sameWidth
-                >
-                  <SelectWithCombobox.Combobox
-                    render={<Input className="shrink-0" />}
-                    autoSelect
-                    autoFocus
+              <MenuCommand.Menu {...{ open, onOpenChange }}>
+                <MenuCommand.Trigger>
+                  <MenuCommand.SelectButton>
+                    {selectedOption?.displayValue}
+                  </MenuCommand.SelectButton>
+                </MenuCommand.Trigger>
+
+                <MenuCommand.Content align="start" sameWidth sideOffset={4}>
+                  <MenuCommand.Combobox
+                    placeholder={t('data:create_pivot.entity_selection.search.placeholder')}
                   />
-                  <SelectWithCombobox.ComboboxList>
-                    {matches.map((pivot) => (
-                      <SelectWithCombobox.ComboboxItem
+
+                  <MenuCommand.List>
+                    {pivotOptions.map((pivot) => (
+                      <MenuCommand.Item
                         key={pivot.id}
-                        value={pivot.id}
-                        className="flex items-center justify-between"
+                        onSelect={() => {
+                          field.handleChange(pivot);
+                          onOpenChange(false);
+                        }}
                       >
-                        <Highlight text={pivot.displayValue} query={deferredSearchValue} />
-                      </SelectWithCombobox.ComboboxItem>
+                        <span className="font-semibold">{pivot.displayValue}</span>
+                      </MenuCommand.Item>
                     ))}
-                    {matches.length === 0 ? (
-                      <p className="text-grey-50 flex items-center justify-center p-2">
-                        {t('data:create_pivot.select.empty_matches')}
-                      </p>
-                    ) : null}
-                  </SelectWithCombobox.ComboboxList>
-                </SelectWithCombobox.Popover>
-              </SelectWithCombobox.Root>
+                  </MenuCommand.List>
+                </MenuCommand.Content>
+              </MenuCommand.Menu>
             </div>
           )}
         </form.Field>
