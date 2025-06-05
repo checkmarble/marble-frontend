@@ -83,5 +83,6 @@
   "create_navigation_option.labels.ordered_by": "Ordonnés par",
   "create_navigation_option.placeholders.ordered_by": "Choisissez un champs",
   "create_navigation_option.explanation_text": "Sélectionnez le champ utilisé pour trier les données par défaut. Cela peut être par date, nom... Pour les objets contenant beaucoup de données, comme les transactions, nous vous recommandons d'utiliser la date à laquelle l'événement s'est produit.",
-  "last_ingestion_at": "Dernière ingestion à {{date}}"
+  "last_ingestion_at": "Dernière ingestion à {{date}}",
+  "create_pivot.button.label": "Créer un groupe de décision"
 }
