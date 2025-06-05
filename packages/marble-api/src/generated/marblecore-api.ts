@@ -950,6 +950,31 @@ export type AnalyticsDto = {
     embedding_type: "global_dashboard" | "unknown_embedding_type";
     signed_embedding_url: string;
 };
+export type AppConfigDto = {
+    version: string;
+    status: {
+        migrations: boolean;
+        has_org: boolean;
+        has_user: boolean;
+    };
+    urls: {
+        marble: string;
+        metabase: string;
+    };
+    auth: {
+        firebase: {
+            is_emulator: boolean;
+            emulator_url: string;
+            project_id: string;
+            api_key: string;
+            auth_domain: string;
+        };
+    };
+    features: {
+        sso: boolean;
+        segment: boolean;
+    };
+};
 export type ApiKeyDto = {
     id: string;
     description: string;
@@ -3169,6 +3194,17 @@ export function listAnalytics(opts?: Oazapfts.RequestOpts) {
         status: 404;
         data: string;
     }>("/analytics", {
+        ...opts
+    }));
+}
+/**
+ * Retrieves the configuration of the frontend app
+ */
+export function getAppConfig(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: AppConfigDto;
+    }>("/config", {
         ...opts
     }));
 }

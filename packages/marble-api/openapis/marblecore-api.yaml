@@ -228,6 +228,8 @@ paths:
 
   /analytics:
     $ref: ./marblecore-api/misc.yml#/~1analytics
+  /config:
+    $ref: ./marblecore-api/misc.yml#/~1config
 
   # ADMINISTRATION
 
