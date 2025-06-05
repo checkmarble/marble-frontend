@@ -1,9 +1,8 @@
 import { Callout } from '@app-builder/components';
-import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { Highlight } from '@app-builder/components/Highlight';
 import type { TableModel } from '@app-builder/models/data-model';
 import { type FieldPivotOption } from '@app-builder/services/data/pivot';
-import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
+import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { matchSorter } from 'match-sorter';
 import Code from 'packages/ui-design-system/src/Code/Code';
@@ -116,7 +115,6 @@ export function SelectField({
                   </SelectWithCombobox.ComboboxList>
                 </SelectWithCombobox.Popover>
               </SelectWithCombobox.Root>
-              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
         </form.Field>
