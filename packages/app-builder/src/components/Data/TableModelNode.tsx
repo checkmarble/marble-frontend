@@ -16,16 +16,20 @@ import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model
 import { getRoute } from '@app-builder/utils/routes';
 import { NavLink } from '@remix-run/react';
 import {
+  type ColumnFiltersState,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import clsx from 'clsx';
 import * as React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Handle, type NodeProps, Position } from 'reactflow';
 import * as R from 'remeda';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import {
@@ -36,6 +40,8 @@ import {
 } from '../Schema/SchemaMenu';
 import { dataI18n } from './data-i18n';
 import { useSelectedPivot } from './SelectedPivot';
+
+const MIN_COLUMNS = 2;
 
 export interface TableModelNodeData {
   original: TableModel;
@@ -56,6 +62,7 @@ export interface TableModelNodeData {
     isEnum: boolean;
     tableId: string;
     unicityConstraint: UnicityConstraintType;
+    hasLink: boolean;
   }[];
 }
 
@@ -64,15 +71,25 @@ export function adaptTableModelNodeData(
   dataModel: DataModel,
   pivots: Pivot[],
 ): TableModelNodeData {
+  const linksToThisTable = dataModel
+    .filter((table) => table.id !== tableModel.id)
+    .flatMap((table) =>
+      table.linksToSingle.filter(({ parentTableId }) => parentTableId === tableModel.id),
+    );
+
+  const linksFromThisTable = dataModel
+    .filter((table) => table.id === tableModel.id)
+    .flatMap((table) =>
+      table.linksToSingle.filter(({ childTableId }) => childTableId === tableModel.id),
+    );
+
+  const tableHasLinks = linksToThisTable.length > 0 || linksFromThisTable.length > 0;
+
   return {
     original: tableModel,
     dataModel,
     pivot: pivots.find((pivot) => pivot.baseTableId === tableModel.id),
-    linksToThisTable: dataModel
-      .filter((table) => table.id !== tableModel.id)
-      .flatMap((table) =>
-        table.linksToSingle.filter((link) => link.parentTableName === tableModel.name),
-      ),
+    linksToThisTable,
     otherTablesWithUnique: dataModel
       .filter((table) => table.id !== tableModel.id)
       .filter((table) =>
@@ -81,7 +98,7 @@ export function adaptTableModelNodeData(
     id: tableModel.id,
     name: tableModel.name,
     description: tableModel.description,
-    columns: tableModel.fields.map((field) => ({
+    columns: tableModel.fields.map((field, index) => ({
       id: field.id,
       name: field.name,
       description: field.description,
@@ -91,6 +108,10 @@ export function adaptTableModelNodeData(
       isEnum: field.isEnum,
       tableId: field.tableId,
       unicityConstraint: field.unicityConstraint,
+      hasLink: tableHasLinks
+        ? linksToThisTable.some(({ parentFieldId }) => parentFieldId === field.id) ||
+          linksFromThisTable.some(({ childFieldId }) => childFieldId === field.id)
+        : index < MIN_COLUMNS, // For the first two columns, we assume they have links for display purposes
     })),
   };
 }
@@ -106,6 +127,20 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   const { displayPivot, isFieldPartOfPivot, isTablePartOfPivot } = useSelectedPivot();
   const { isEditDataModelFieldAvailable } = useDataModelFeatureAccess();
 
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+    { id: 'hasLink', value: true },
+  ]);
+
+  const hasLinkFilter = columnFilters.find((f) => f.id === 'hasLink')?.value === true;
+
+  const toggleLinkedFilter = () => {
+    setColumnFilters((prev) =>
+      prev.some((filter) => filter.id === 'hasLink')
+        ? prev.filter((filter) => filter.id !== 'hasLink')
+        : [...prev, { id: 'hasLink', value: true }],
+    );
+  };
+
   const columns = React.useMemo(
     () => [
       columnHelper.group({
@@ -116,7 +151,15 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               <span className="text-grey-00 text-[30px]">{data.name}</span>
               <FormatDescription description={data.description || ''} />
             </div>
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row items-start gap-2 py-0">
+              <Button
+                variant="secondary"
+                disabled={displayPivot}
+                onClick={toggleLinkedFilter}
+                className="flex items-center justify-center p-2"
+              >
+                <Icon icon={hasLinkFilter ? 'unfold_more' : 'unfold_less'} className="size-6" />
+              </Button>
               <MoreMenu data={data} />
             </div>
           </div>
@@ -152,6 +195,9 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               return <FormatDescription description={getValue<string>() || ''} />;
             },
           }),
+          columnHelper.accessor((row) => row.hasLink, {
+            id: 'hasLink',
+          }),
           ...(isEditDataModelFieldAvailable
             ? [
                 columnHelper.display({
@@ -170,12 +216,19 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
         ],
       }),
     ],
-    [isEditDataModelFieldAvailable, data, t],
+    [isEditDataModelFieldAvailable, data, displayPivot, hasLinkFilter, t],
   );
-
   const table = useReactTable({
     data: data.columns,
     columns,
+    state: {
+      columnFilters,
+      columnVisibility: {
+        hasLink: false,
+      },
+    },
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
     getCoreRowModel: getCoreRowModel(),
   });
 

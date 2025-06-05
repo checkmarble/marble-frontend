@@ -119,6 +119,8 @@ export const iconNames = [
   'tree-schema',
   'trigger',
   'uncheck',
+  'unfold_less',
+  'unfold_more',
   'unlock-right',
   'upload',
   'users',
