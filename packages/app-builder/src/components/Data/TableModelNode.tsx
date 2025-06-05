@@ -41,6 +41,8 @@ import {
 import { dataI18n } from './data-i18n';
 import { useSelectedPivot } from './SelectedPivot';
 
+const MIN_COLUMNS = 2;
+
 export interface TableModelNodeData {
   original: TableModel;
   dataModel: DataModel;
@@ -109,7 +111,7 @@ export function adaptTableModelNodeData(
       hasLink: tableHasLinks
         ? linksToThisTable.some(({ parentFieldId }) => parentFieldId === field.id) ||
           linksFromThisTable.some(({ childFieldId }) => childFieldId === field.id)
-        : index < 2, // For the first two columns, we assume they have links for display purposes
+        : index < MIN_COLUMNS, // For the first two columns, we assume they have links for display purposes
     })),
   };
 }
