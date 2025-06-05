@@ -44,7 +44,10 @@
   "help_center.to_navigate": "naviguer",
   "help_center.to_switch_tabs": "pour changer d'onglet",
   "hide": "Cacher",
-  "items_displayed": "<StartToEnd>{{start}} à {{end}}</StartToEnd>",
+  "items_displayed_ranks": "De <emph> {{start}} </emph> à <emph> {{end}} </emph>",
+  "items_displayed_dates": "Du <emph>{{start}}</emph> au <emph>{{end}}</emph>",
+  "items_displayed_same_date": "Le <emph>{{date}}</emph> de <emph>{{start}}</emph> à <emph>{{end}}</emph>",
+  "items_displayed_same_datetime": "Le <emph>{{date}}</emph> à <emph>{{time}}</emph>",
   "loading": "Chargement...",
   "more_options": "Plus d'options",
   "or": "ou",
@@ -80,5 +83,10 @@
   "snooze.oneWeek": "Une semaine",
   "snooze.oneMonth": "Un mois",
   "snooze.nextMonday": "Lundi prochain",
-  "snooze.custom": "Personnalisé"
+  "snooze.custom": "Personnalisé",
+  "from": "De {{input}}",
+  "to": "À {{input}}",
+  "back": "Retour",
+  "validate": "Valider",
+  "success.deleted": "Supprimé avec succès"
 }

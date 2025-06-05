@@ -10,7 +10,7 @@ import { type Tag } from 'marble-api';
 export interface OrganizationRepository {
   getCurrentOrganization(): Promise<Organization>;
   listUsers(): Promise<User[]>;
-  listTags(args?: { withCaseCount: boolean }): Promise<Tag[]>;
+  listTags(args?: { target?: 'case' | 'object'; withCaseCount?: boolean }): Promise<Tag[]>;
   updateOrganization(args: {
     organizationId: string;
     changes: OrganizationUpdateInput;
@@ -30,7 +30,7 @@ export function makeGetOrganizationRepository() {
     },
     listTags: async (args) => {
       const withCaseCount = args?.withCaseCount ?? false;
-      const { tags } = await marbleCoreApiClient.listTags({ withCaseCount });
+      const { tags } = await marbleCoreApiClient.listTags({ target: args?.target, withCaseCount });
       return tags;
     },
     updateOrganization: async (args) => {

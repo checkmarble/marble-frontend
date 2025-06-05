@@ -122,8 +122,12 @@ paths:
     $ref: ./marblecore-api/ingestion.yml#/~1ingestion~1{objectType}~1upload-logs
   /client_data/{tableName}/{objectId}:
     $ref: ./marblecore-api/ingestion.yml#/~1client_data~1{tableName}~1{objectId}
+  /client_data/{tableName}/{objectId}/annotations:
+    $ref: ./marblecore-api/ingestion.yml#/~1client_data~1{tableName}~1{objectId}~1annotations
   /client_data/{tableName}/list:
     $ref: ./marblecore-api/ingestion.yml#/~1client_data~1{tableName}~1list
+  /annotations/{annotationId}:
+    $ref: ./marblecore-api/ingestion.yml#/~1annotations~1{annotationId}
 
   # CUSTOM LISTS
 

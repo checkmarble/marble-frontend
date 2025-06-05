@@ -1,6 +1,9 @@
+import useIntersection from '@app-builder/hooks/useIntersection';
 import {
   type ClientDataListResponse,
+  type ClientObjectDetail,
   type DataModelWithTableOptions,
+  type NavigationOption,
   type TableModelWithOptions,
 } from '@app-builder/models';
 import { type PivotObject } from '@app-builder/models/cases';
@@ -8,26 +11,21 @@ import { useClientObjectListQuery } from '@app-builder/queries/client-object-lis
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardPortal,
-  HoverCardTrigger,
-} from '@radix-ui/react-hover-card';
-import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, MenuCommand } from 'ui-design-system';
+import { Button, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { FormatData } from '../FormatData';
+import { ClientObjectAnnotationPopover } from './ClientObjectAnnotationPopover';
 import { ClientObjectDataList } from './ClientObjectDataList';
 import { type DataModelExplorerNavigationTab } from './types';
 
@@ -168,6 +166,13 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
       R.filter((fieldName): fieldName is string => !!fieldName),
     );
   }, [table]);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLTableElement>(null);
+  const intersection = useIntersection(sentinelRef, {
+    root: wrapperRef.current,
+    rootMargin: '1px',
+    threshold: 1,
+  });
 
   useEffect(() => {
     setColumnList(getColumnList(table));
@@ -245,19 +250,25 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
           </MenuCommand.Menu>
         ) : null}
       </div>
-      <div className="overflow-x-auto">
+      <div className="flex overflow-x-auto" ref={wrapperRef}>
+        <div ref={sentinelRef} className="w-0" />
         {list.length > 0 ? (
-          <table className="mb-4 min-w-full">
+          <table className="mb-4 min-w-full border-separate border-spacing-0">
             <thead>
               {reactTable.getHeaderGroups().map((headerGroup) => (
-                <tr
-                  key={headerGroup.id}
-                  className="text-grey-50 border-grey-90 h-10 border-y text-left"
-                >
+                <tr key={headerGroup.id} className="text-grey-50 border-grey-90 h-10 text-left">
+                  <th
+                    className={clsx(
+                      'border-grey-90 bg-grey-100 sticky left-0 z-10 h-full border-y border-r p-2 font-normal',
+                      {
+                        'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting,
+                      },
+                    )}
+                  ></th>
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="border-grey-90 px-4 font-normal last:border-l [&:not(:last-child)]:border-r"
+                      className="border-grey-90 border-y px-4 font-normal [&:not(:last-child)]:border-r"
                     >
                       {header.isPlaceholder
                         ? null
@@ -267,71 +278,44 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
                 </tr>
               ))}
             </thead>
+
             <tbody>
               {reactTable.getRowModel().rows.map((row) => {
-                const rowElement = (
-                  <tr key={row.id} className="hover:bg-grey-98 border-grey-90 h-10 border-y">
+                const fullSourceObject = list.find((item) => item.data === row.original);
+                if (!fullSourceObject) {
+                  return null;
+                }
+
+                return (
+                  <tr key={row.id} className="border-grey-90 group z-0 h-10">
+                    <td
+                      className={clsx(
+                        'border-grey-90 bg-grey-100 group-hover:bg-grey-98 sticky left-0 z-10 h-full border-b border-r p-2',
+                        {
+                          'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting,
+                        },
+                      )}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        {row.index + 1}
+                        <DataTableActionsButton
+                          navigationOptions={table.navigationOptions}
+                          pivotObject={pivotObject}
+                          sourceObject={fullSourceObject}
+                          tableName={table.name}
+                          navigateTo={navigateTo}
+                        />
+                      </div>
+                    </td>
                     {row.getVisibleCells().map((cell) => (
                       <td
-                        className="border-grey-90 w-fit min-w-[300px] last:border-l [&:not(:last-child)]:border-r"
+                        className="border-grey-90 group-hover:bg-grey-98 w-fit min-w-[300px] border-b [&:not(:last-child)]:border-r"
                         key={cell.id}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
                   </tr>
-                );
-
-                return table.navigationOptions ? (
-                  <HoverCard key={row.id} openDelay={50} closeDelay={100}>
-                    <HoverCardTrigger asChild aria-disabled={true}>
-                      {rowElement}
-                    </HoverCardTrigger>
-                    <HoverCardPortal>
-                      <HoverCardContent
-                        side="left"
-                        align="start"
-                        sideOffset={34}
-                        className="z-10 mt-1"
-                      >
-                        <MenuCommand.Menu>
-                          <MenuCommand.Trigger>
-                            <Button
-                              variant="secondary"
-                              size="icon"
-                              className="absolute -left-full size-8"
-                            >
-                              <Icon icon="more-menu" className="size-5" />
-                            </Button>
-                          </MenuCommand.Trigger>
-                          <MenuCommand.Content align="start" sideOffset={4}>
-                            <MenuCommand.List>
-                              {table.navigationOptions.map((navigationOption) => (
-                                <MenuCommand.Item
-                                  key={navigationOption.targetTableId}
-                                  onSelect={() => {
-                                    navigateTo({
-                                      pivotObject,
-                                      sourceObject: row.original,
-                                      sourceTableName: table.name,
-                                      sourceFieldName: navigationOption.sourceFieldName,
-                                      filterFieldName: navigationOption.filterFieldName,
-                                      targetTableName: navigationOption.targetTableName,
-                                      orderingFieldName: navigationOption.orderingFieldName,
-                                    });
-                                  }}
-                                >
-                                  Show {navigationOption.targetTableName}
-                                </MenuCommand.Item>
-                              ))}
-                            </MenuCommand.List>
-                          </MenuCommand.Content>
-                        </MenuCommand.Menu>
-                      </HoverCardContent>
-                    </HoverCardPortal>
-                  </HoverCard>
-                ) : (
-                  rowElement
                 );
               })}
             </tbody>
@@ -344,5 +328,136 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
       </div>
       <div className="flex justify-end gap-2">{pagination}</div>
     </div>
+  );
+}
+
+type DataTableActionsButtonProps = {
+  navigationOptions: NavigationOption[] | undefined;
+  pivotObject: PivotObject;
+  sourceObject: ClientObjectDetail;
+  tableName: string;
+  navigateTo: (tab: DataModelExplorerNavigationTab) => void;
+};
+
+function DataTableActionsButton({
+  navigationOptions,
+  pivotObject,
+  sourceObject,
+  tableName,
+  navigateTo,
+}: DataTableActionsButtonProps) {
+  const { t } = useTranslation(['cases', 'common']);
+  const [annotationMenuOpen, setAnnotationMenuOpen] = useState(false);
+  const annotationCount = sourceObject.annotations?.comments.length ?? 0;
+  const showCommentAction = annotationCount > 0 || annotationMenuOpen;
+
+  if (!sourceObject.data.object_id) {
+    return null;
+  }
+
+  return (
+    <Popover.Root open={annotationMenuOpen} onOpenChange={setAnnotationMenuOpen}>
+      <Popover.Anchor asChild>
+        <div className="relative flex">
+          {showCommentAction ? (
+            <Popover.Trigger asChild>
+              <Button
+                variant="secondary"
+                size="small"
+                className="hover:border-purple-65 data-[state=open]:border-purple-65 items-center rounded-r-none hover:z-10 data-[state=open]:z-10"
+              >
+                <Icon icon="comment" className="size-4" />
+                <span className="text-xs font-normal">{annotationCount}</span>
+              </Button>
+            </Popover.Trigger>
+          ) : null}
+          <Popover.Content
+            side="right"
+            align="start"
+            sideOffset={4}
+            collisionPadding={10}
+            className="max-h-none w-[340px]"
+          >
+            <ClientObjectAnnotationPopover
+              tableName={tableName}
+              objectId={sourceObject.data.object_id}
+              annotations={sourceObject.annotations}
+            />
+          </Popover.Content>
+          <MenuCommand.Menu>
+            <MenuCommand.Trigger>
+              <Button
+                variant="secondary"
+                size="small"
+                className={clsx(
+                  'hover:border-purple-65 data-[state=open]:border-purple-65 hover:z-10 data-[state=open]:z-10',
+                  {
+                    '-ml-px rounded-l-none': showCommentAction,
+                  },
+                )}
+              >
+                <Icon icon="more-menu" className="size-4" />
+              </Button>
+            </MenuCommand.Trigger>
+            <MenuCommand.Content
+              side="right"
+              align="start"
+              sideOffset={4}
+              className="text-r min-w-[280px]"
+            >
+              <MenuCommand.List>
+                <MenuCommand.Group>
+                  <MenuCommand.Item forceMount onSelect={() => setAnnotationMenuOpen(true)}>
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
+                        {t('cases:annotations.popover.annotate.title')}{' '}
+                        <span className="text-grey-80 text-xs">{annotationCount}</span>
+                      </div>
+                      <span className="text-grey-50">
+                        {t('cases:annotations.popover.annotate.subtitle')}
+                      </span>
+                    </div>
+                    <Icon icon="comment" className="size-5" />
+                  </MenuCommand.Item>
+                </MenuCommand.Group>
+                {navigationOptions ? (
+                  <>
+                    <MenuCommand.Separator className="bg-grey-90" />
+                    <MenuCommand.Group
+                      heading={
+                        <div className="p-1 py-2 text-xs font-semibold">
+                          {t('cases:case_detail.pivot_panel.explore')}
+                        </div>
+                      }
+                    >
+                      {navigationOptions.map((navigationOption) => (
+                        <MenuCommand.Item
+                          forceMount
+                          key={navigationOption.targetTableId}
+                          onSelect={() => {
+                            navigateTo({
+                              pivotObject,
+                              sourceObject: sourceObject.data,
+                              sourceTableName: tableName,
+                              sourceFieldName: navigationOption.sourceFieldName,
+                              filterFieldName: navigationOption.filterFieldName,
+                              targetTableName: navigationOption.targetTableName,
+                              orderingFieldName: navigationOption.orderingFieldName,
+                            });
+                          }}
+                        >
+                          {navigationOption.targetTableName}
+                          <Icon icon="north-east" className="size-5" />
+                        </MenuCommand.Item>
+                      ))}
+                    </MenuCommand.Group>
+                  </>
+                ) : null}
+              </MenuCommand.List>
+            </MenuCommand.Content>
+          </MenuCommand.Menu>
+        </div>
+      </Popover.Anchor>
+    </Popover.Root>
   );
 }

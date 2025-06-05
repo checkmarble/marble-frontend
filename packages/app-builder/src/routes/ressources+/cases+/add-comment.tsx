@@ -1,5 +1,10 @@
 import { casesI18n } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import {
+  MAX_FILE_SIZE,
+  MAX_FILE_SIZE_MB,
+  useFormDropzone,
+} from '@app-builder/hooks/useFormDropzone';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getCaseFileUploadEndpointById } from '@app-builder/utils/files';
@@ -16,14 +21,10 @@ import { decode } from 'decode-formdata';
 import { serialize } from 'object-to-formdata';
 import { toggle, tryit } from 'radash';
 import { useEffect } from 'react';
-import { useDropzone } from 'react-dropzone-esm';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
-const MAX_FILE_SIZE_MB = 20;
-const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const schema = z
   .object({
@@ -153,22 +154,11 @@ export function AddComment({ caseId }: { caseId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastData]);
 
-  const { getInputProps, getRootProps } = useDropzone({
+  const { getInputProps, getRootProps } = useFormDropzone({
     onDrop: (acceptedFiles) => {
       form.setFieldValue('files', (prev) => [...prev, ...acceptedFiles]);
       form.validate('change');
     },
-    accept: {
-      'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
-      'application/pdf': ['.pdf'],
-      'application/zip': ['.zip'],
-      'application/msword': ['.doc', '.docx'],
-      'application/vnd.openxmlformats-officedocument.*': ['.docx', '.xlsx'],
-      'application/vnd.ms-excel': ['.xls'],
-      'text/*': ['.csv', '.txt'],
-    },
-    multiple: true,
-    maxSize: MAX_FILE_SIZE,
   });
 
   return (

@@ -25,6 +25,7 @@ export const iconNames = [
   'check-indeterminate-small',
   'checked',
   'column',
+  'comment',
   'commit',
   'copy',
   'create-new-folder',

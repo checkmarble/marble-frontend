@@ -12,6 +12,7 @@ import { adaptGoTimeDuration } from '@app-builder/models/duration';
 import { type Outcome } from '@app-builder/models/outcome';
 import {
   adaptPagination,
+  defaultPaginationSize,
   type FiltersWithPagination,
   type PaginatedResponse,
 } from '@app-builder/models/pagination';
@@ -84,6 +85,7 @@ export function makeGetDecisionRepository() {
         startDate = add(new Date(), fromNowDuration).toISOString();
       }
 
+      // Nb: the constant value of 25 for limit is used for rank display in PaginationButtons - logic to adapt if we make it more dynamic
       const { items, ...pagination } = await marbleCoreApiClient.listDecisions({
         caseId,
         endDate,
@@ -96,6 +98,7 @@ export function makeGetDecisionRepository() {
         triggerObject,
         startDate,
         reviewStatus,
+        limit: defaultPaginationSize,
         ...rest,
       });
 

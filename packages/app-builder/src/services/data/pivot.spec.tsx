@@ -5,16 +5,15 @@ import {
   type TableModel,
 } from '@app-builder/models';
 
-import { getPivotOptions, type PivotOption } from './pivot';
+import { getFieldPivotOptions, getLinksPivotOptions, type PivotOption } from './pivot';
 
-describe('getPivotOptions', () => {
+describe('getFieldPivotOptions', () => {
   it('should only keep String field', () => {
     const tableModel: TableModel = helperTable({
       id: '1',
       fields: helperFields(['String', 'Int', 'Float', 'Bool', 'String[]', 'Int[]', 'Float[]']),
       linksToSingle: [],
     });
-    const dataModel: DataModel = [tableModel];
 
     const expected: PivotOption[] = [
       {
@@ -26,10 +25,12 @@ describe('getPivotOptions', () => {
       },
     ];
 
-    const pivotOptions = getPivotOptions(tableModel, dataModel);
+    const pivotOptions = getFieldPivotOptions(tableModel);
     expect(pivotOptions).toMatchObject(expected);
   });
+});
 
+describe('getLinksPivotOptions', () => {
   it('should return link pivot', () => {
     const tableModel: TableModel = helperTable({
       id: '1',
@@ -61,14 +62,18 @@ describe('getPivotOptions', () => {
     const expected: PivotOption[] = [
       {
         baseTableId: '1',
-        displayValue: 'link1',
+        displayValue: 'table2',
         id: '1',
         pathLinkIds: ['1'],
         type: 'link',
+        parentTableId: '2',
+        parentTableName: 'table2',
+        length: 1,
+        displayPath: 'link1',
       },
     ];
 
-    const pivotOptions = getPivotOptions(tableModel, dataModel);
+    const pivotOptions = getLinksPivotOptions(tableModel, dataModel);
     expect(pivotOptions).toMatchObject(expected);
   });
 
@@ -102,7 +107,7 @@ describe('getPivotOptions', () => {
 
     const expected: PivotOption[] = [];
 
-    const pivotOptions = getPivotOptions(tableModel, dataModel);
+    const pivotOptions = getLinksPivotOptions(tableModel, dataModel);
     expect(pivotOptions).toMatchObject(expected);
   });
 
@@ -155,14 +160,18 @@ describe('getPivotOptions', () => {
     const expected: PivotOption[] = [
       {
         baseTableId: '1',
-        displayValue: 'link1.link2',
+        displayValue: 'table3',
         id: '1.2',
         pathLinkIds: ['1', '2'],
         type: 'link',
+        parentTableId: '3',
+        parentTableName: 'table3',
+        length: 2,
+        displayPath: 'link1->link2',
       },
     ];
 
-    const pivotOptions = getPivotOptions(tableModel, dataModel);
+    const pivotOptions = getLinksPivotOptions(tableModel, dataModel);
     expect(pivotOptions).toMatchObject(expected);
   });
 
@@ -227,14 +236,18 @@ describe('getPivotOptions', () => {
     const expected: PivotOption[] = [
       {
         baseTableId: '1',
-        displayValue: 'link1.link2',
+        displayValue: 'table3',
         id: '1.2',
         pathLinkIds: ['1', '2'],
         type: 'link',
+        parentTableId: '3',
+        parentTableName: 'table3',
+        length: 2,
+        displayPath: 'link1->link2',
       },
     ];
 
-    const pivotOptions = getPivotOptions(tableModel, dataModel);
+    const pivotOptions = getLinksPivotOptions(tableModel, dataModel);
     expect(pivotOptions).toMatchObject(expected);
   });
 });

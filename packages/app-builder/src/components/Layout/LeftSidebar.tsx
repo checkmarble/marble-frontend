@@ -1,3 +1,4 @@
+import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import clsx from 'clsx';
 import type * as React from 'react';
 import { createSharpFactory } from 'sharpstate';
@@ -7,7 +8,7 @@ import { SidebarButton } from '../Navigation';
 
 export const LeftSidebarSharpFactory = createSharpFactory({
   name: 'LeftSidebar',
-  initializer: () => ({ expanded: true }),
+  initializer: (expanded: boolean = true) => ({ expanded }),
 }).withActions({
   toggleExpanded(api) {
     api.value.expanded = !api.value.expanded;
@@ -34,9 +35,14 @@ export function ToggleSidebar() {
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
   const isExpanded = leftSidebarSharp.select((s) => s.expanded);
 
+  const toggleExpanded = async () => {
+    leftSidebarSharp.actions.toggleExpanded();
+    setPreferencesCookie('menuExpd', leftSidebarSharp.value.expanded);
+  };
+
   return (
     <SidebarButton
-      onClick={leftSidebarSharp.actions.toggleExpanded}
+      onClick={toggleExpanded}
       labelTKey={isExpanded ? 'navigation:collapse' : 'navigation:expand'}
       Icon={({ className, ...props }) => (
         <Icon

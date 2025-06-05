@@ -1,5 +1,5 @@
 import { useOpenSanctionsDatasetFreshnessInfo } from '@app-builder/queries/opensanctions-dataset-freshness-info';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { Trans, useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
@@ -20,10 +20,13 @@ export function DatasetFreshnessBanner() {
           t={t}
           i18nKey="common:dataset_freshness_banner"
           values={{
-            lastExport: formatDateTime(datasetFreshnessQuery.data.datasetFreshnessInfo.lastExport, {
-              language,
-              timeStyle: undefined,
-            }),
+            lastExport: formatDateTimeWithoutPresets(
+              datasetFreshnessQuery.data.datasetFreshnessInfo.lastExport,
+              {
+                language,
+                dateStyle: 'short',
+              },
+            ),
           }}
         />
       </span>

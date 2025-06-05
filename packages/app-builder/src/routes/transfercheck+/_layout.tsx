@@ -17,6 +17,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { segment, useSegmentIdentification } from '@app-builder/services/segment';
 import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
 import { CONFLICT } from '@app-builder/utils/http/http-status-codes';
+import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Form, isRouteErrorResponse, Outlet, useLoaderData, useRouteError } from '@remix-run/react';
@@ -46,6 +47,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     user,
     partner,
     versions: await versionRepository.getBackendVersion(),
+    isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
   };
 }
 
@@ -54,9 +56,9 @@ export const handle = {
 };
 
 export default function Builder() {
-  const { user, partner, versions } = useLoaderData<typeof loader>();
+  const { user, partner, versions, isMenuExpanded } = useLoaderData<typeof loader>();
   useSegmentIdentification(user);
-  const leftSidebarSharp = LeftSidebarSharpFactory.createSharp();
+  const leftSidebarSharp = LeftSidebarSharpFactory.createSharp(isMenuExpanded);
 
   // Refresh is done in the JSX because it needs to be done in the browser
   // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)

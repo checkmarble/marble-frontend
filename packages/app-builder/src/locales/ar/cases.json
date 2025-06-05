@@ -185,5 +185,18 @@
   "sar.modale.confirm_without_file": "حفظ بدون ملف",
   "sar.modale.title": "الانتهاء من تقرير النشاط المشبوه",
   "sar.modale.title_choose_file": "اختر ملفًا",
-  "sar.modale.save": "يحفظ"
+  "sar.modale.save": "يحفظ",
+  "annotations.delete_files.title": "هل أنت متأكد من أنك تريد حذف <Filenames>{{filenames}}</Filenames>؟ <br /> لا يمكن التراجع عن هذا الإجراء",
+  "case_detail.pivot_panel.annotations": "التعليقات التوضيحية",
+  "annotations.comments.see_others_one": "انظر {{count}} آخر",
+  "annotations.comments.see_others_other": "انظر {{count}} آخرون",
+  "annotations.comments.title": "تعليقات",
+  "annotations.documents.plus_one": "{{count}} آخر",
+  "annotations.documents.plus_other": "{{count}} آخرون",
+  "annotations.documents.title": "وثائق",
+  "annotations.tags.title": "العلامات",
+  "annotations.documents.add_file": "إضافة ملف",
+  "annotations.documents.upload_file": "تحميل ملف",
+  "annotations.popover.annotate.subtitle": "التعليق ، إضافة ملف ، إضافة علامة",
+  "annotations.popover.annotate.title": "علق"
 }

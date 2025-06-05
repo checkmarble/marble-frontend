@@ -1,10 +1,11 @@
 import { type DataModelObject, type TableModel } from '@app-builder/models';
-import { formatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import clsx from 'clsx';
 import { Fragment, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Icon } from 'ui-icons';
 
@@ -41,6 +42,7 @@ export const IngestedObjectDetail = ({
   bordered = true,
   withLinks = true,
 }: IngestedObjectDetailProps) => {
+  const { t } = useTranslation(['data']);
   const parsedTriggerObject = useParsedTriggerObject(object.data) ?? [];
   const language = useFormatLanguage();
 
@@ -64,9 +66,12 @@ export const IngestedObjectDetail = ({
           ID: {objectId}
         </span>
         <span className="bg-grey-100 border-grey-50 text-grey-50 rounded border px-2 py-1">
-          last ingestion at:{' '}
-          {formatDateTime(object.metadata.validFrom, {
-            language,
+          {t('data:last_ingestion_at', {
+            date: formatDateTimeWithoutPresets(object.metadata.validFrom, {
+              language,
+              dateStyle: 'short',
+              timeStyle: 'short',
+            }),
           })}
         </span>
       </div>

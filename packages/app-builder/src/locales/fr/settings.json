@@ -110,7 +110,7 @@
   "scenario_default_timezone.not_set": "Non défini",
   "users.role.nudge": "Attribuez des rôles et rationalisez facilement le flux de travail de votre équipe",
   "webhooks.configuration_error": "Erreur de configuration",
-  "webhooks.convoy_error": "Convoy ne semble pas être correctement configuré sur le backend Marble. \nPour plus d'informations sur les WebHooks, veuillez vous référer à <coclink> la documentation </cocLink>.",
+  "webhooks.convoy_error": "Convoy ne semble pas être correctement configuré sur le backend Marble. \nPour plus d'informations sur les WebHooks, veuillez vous référer à <DocLink> la documentation </DocLink>.",
   "webhooks.nudge": "Mettre à niveau afin d'avoir accès à tous les types d'événements.",
   "scenario_sanction_callout": "La modification de cette valeur aura immédiatement un impact sur toutes les versions de scénario en direct",
   "scenario_sanction_limit": "Limite du coup avant le raffinement",
