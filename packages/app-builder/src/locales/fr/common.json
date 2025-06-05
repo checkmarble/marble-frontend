@@ -87,5 +87,6 @@
   "from": "De {{input}}",
   "to": "À {{input}}",
   "back": "Retour",
-  "validate": "Valider"
+  "validate": "Valider",
+  "success.deleted": "Supprimé avec succès"
 }

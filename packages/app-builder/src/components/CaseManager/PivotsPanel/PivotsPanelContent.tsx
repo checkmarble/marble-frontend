@@ -12,12 +12,14 @@ import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/ut
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { Fragment, type ReactNode, useMemo, useState } from 'react';
+import { cva } from 'class-variance-authority';
+import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { CtaClassName } from 'ui-design-system';
 
+import { DataCard } from './DataCard';
+import { PivotAnnotations } from './PivotAnnotations';
 import { PivotNavigationOptions } from './PivotNavigationOptions';
 
 function pivotUniqKey(pivotObject?: PivotObject) {
@@ -41,7 +43,13 @@ export function PivotsPanelContent({
 }) {
   const { t } = useTranslation(['cases']);
 
-  const [currentPivotObject, setCurrentPivotObject] = useState(pivotObjects[0]);
+  const [currentPivotUniqKey, setCurrentPivotObjectUniqKey] = useState(
+    pivotUniqKey(pivotObjects[0]),
+  );
+  const currentPivotObject = pivotObjects.find(
+    (pivotObject) => pivotUniqKey(pivotObject) === currentPivotUniqKey,
+  );
+
   const currentTable = dataModel.find((t) => t.name === currentPivotObject?.pivotObjectName);
   const decisionsPivotValues = useMemo(
     () => caseObj.decisions.flatMap((d) => d.pivotValues),
@@ -80,7 +88,7 @@ export function PivotsPanelContent({
                 key={uniqKey}
                 className="text-grey-50 aria-[current=true]:bg-purple-96 aria-[current=true]:text-purple-65 rounded p-1 px-4"
                 aria-current={uniqKey === pivotUniqKey(currentPivotObject)}
-                onClick={() => setCurrentPivotObject(pivotObject)}
+                onClick={() => setCurrentPivotObjectUniqKey(pivotUniqKey(pivotObject))}
               >
                 {pivotObject.pivotObjectName} {idx + 1}
               </button>
@@ -105,7 +113,16 @@ export function PivotsPanelContent({
         </>
       ) : null}
       {currentPivotObject ? (
-        <RelatedCases pivotValue={currentPivotObject.pivotValue} currentCase={caseObj} />
+        <>
+          {currentTable && currentPivotObject.pivotObjectId ? (
+            <PivotAnnotations
+              tableName={currentTable.name}
+              objectId={currentPivotObject.pivotObjectId}
+              annotations={currentPivotObject.pivotObjectData.annotations}
+            />
+          ) : null}
+          <RelatedCases pivotValue={currentPivotObject.pivotValue} currentCase={caseObj} />
+        </>
       ) : null}
     </div>
   );
@@ -251,34 +268,5 @@ function PivotObjectDetails({ tableModel, dataModel, pivotObject }: PivotObjectD
         ) : null}
       </div>
     </DataCard>
-  );
-}
-
-const titleVariants = cva('text-s px-2 py-3 font-semibold flex justify-between items-center', {
-  variants: {
-    borderless: {
-      true: null,
-      false: 'border-b border-grey-90',
-    },
-  },
-  defaultVariants: {
-    borderless: false,
-  },
-});
-
-type DataCardProps = {
-  title: string;
-  subtitle?: string;
-  children: ReactNode;
-} & VariantProps<typeof titleVariants>;
-function DataCard({ title, subtitle, children, borderless }: DataCardProps) {
-  return (
-    <div>
-      <h3 className={titleVariants({ borderless })}>
-        <span>{title}</span>
-        {subtitle ? <span className="text-purple-82 text-xs">{subtitle}</span> : null}
-      </h3>
-      {children}
-    </div>
   );
 }

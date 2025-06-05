@@ -87,5 +87,6 @@
   "from": "من {{input}}",
   "to": "إلى {{input}}",
   "back": "عودة",
-  "validate": "تأكيد"
+  "validate": "تأكيد",
+  "success.deleted": "تم حذفه بنجاح"
 }

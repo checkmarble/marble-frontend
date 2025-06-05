@@ -185,5 +185,18 @@
   "sar.modale.confirm_without_file": "Enregistrer sans fichier",
   "sar.modale.title": "Déclaration de soupçons complétée",
   "sar.modale.title_choose_file": "Ajouter un fichier",
-  "sar.modale.save": "Enregistrer"
+  "sar.modale.save": "Enregistrer",
+  "annotations.delete_files.title": "Êtes-vous sûr de vouloir supprimer <Filenames>{{filenames}}</Filenames> ? <br /> Cette action ne peut pas être annulée",
+  "case_detail.pivot_panel.annotations": "Annotations",
+  "annotations.comments.see_others_one": "Voir {{count}} autre",
+  "annotations.comments.see_others_other": "Voir {{count}} autres",
+  "annotations.comments.title": "Commentaires",
+  "annotations.documents.plus_one": "+{{count}} autre",
+  "annotations.documents.plus_other": "+{{count}} autres",
+  "annotations.documents.title": "Documents",
+  "annotations.tags.title": "Balises",
+  "annotations.documents.add_file": "Ajouter un fichier",
+  "annotations.documents.upload_file": "Télécharger un fichier",
+  "annotations.popover.annotate.subtitle": "Commenter, ajouter un fichier, ajouter la balise",
+  "annotations.popover.annotate.title": "Annoter"
 }

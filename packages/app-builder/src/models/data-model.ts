@@ -3,6 +3,7 @@ import {
   type ClientDataListRequestBody as ClientDataListRequestBodyDto,
   type ClientDataListResponseDto,
   type ClientObjectDetailDto,
+  type CreateAnnotationDto,
   type CreateNavigationOptionDto,
   type CreatePivotInputDto,
   type CreateTableFieldDto,
@@ -10,6 +11,7 @@ import {
   type DataModelObjectDto,
   type DataModelTableOptionsDto,
   type FieldDto,
+  type GroupedAnnotations,
   type LinkToSingleDto,
   type NavigationOptionDto,
   type PivotDto,
@@ -18,6 +20,7 @@ import {
   type UpdateTableFieldDto,
 } from 'marble-api';
 import * as R from 'remeda';
+import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
 
 type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
@@ -405,7 +408,10 @@ export type ClientObjectDetail = {
     linkName?: string;
     relatedObjectDetail?: ClientObjectDetail;
   }[];
+  annotations?: GroupedAnnotations | undefined;
 };
+
+export type FileAnnotation = GroupedAnnotations['files'][number];
 
 export function adaptClientObjectDetail(dto: ClientObjectDetailDto): ClientObjectDetail {
   return {
@@ -419,6 +425,7 @@ export function adaptClientObjectDetail(dto: ClientObjectDetailDto): ClientObjec
         ? adaptClientObjectDetail(rel.related_object_detail)
         : undefined,
     })),
+    annotations: dto.annotations,
   };
 }
 
@@ -542,4 +549,41 @@ export function mergeDataModelWithTableOptions(
     }),
     options,
   };
+}
+
+export type CreateAnnotationBody =
+  | {
+      type: 'comment';
+      payload: {
+        text: string;
+      };
+    }
+  | {
+      type: 'tag';
+      payload: {
+        tagId: string;
+      };
+    };
+
+export function adaptCreateAnnotationDto(model: CreateAnnotationBody): CreateAnnotationDto {
+  return match(model)
+    .with(
+      { type: 'comment' },
+      ({ payload: { text } }) =>
+        ({
+          type: 'comment',
+          payload: { text },
+        }) as const,
+    )
+    .with(
+      { type: 'tag' },
+      ({ payload: { tagId } }) =>
+        ({
+          type: 'tag',
+          payload: {
+            tag_id: tagId,
+          },
+        }) as const,
+    )
+    .exhaustive();
 }

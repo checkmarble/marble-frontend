@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import * as React from 'react';
+import { cn } from 'ui-design-system';
 
 interface FormErrorOrDescriptionProps
   extends Omit<React.HTMLAttributes<HTMLParagraphElement>, 'id' | 'children' | 'className'> {
@@ -17,7 +18,7 @@ export const FormErrorOrDescription = React.forwardRef<
     return (
       <p
         ref={ref}
-        className={clsx(
+        className={cn(
           'text-s text-red-47 flex flex-col gap-1 font-medium transition-opacity duration-200 ease-in-out',
           errorClassName,
         )}

@@ -28,6 +28,8 @@ Pagination:
 
 GroupedAnnotations:
   $ref: annotations.yml#/components/schemas/GroupedAnnotations
+CreateAnnotationDto:
+  $ref: annotations.yml#/components/schemas/CreateAnnotationDto
 
 # AUTHORIZATION
 

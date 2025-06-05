@@ -189,7 +189,10 @@ const SelectDefaultItem = forwardRef<HTMLDivElement, SelectItemProps>(function S
     </SelectItem>
   );
 });
-
+/**
+ * @deprecated This Select component is deprecated and will be removed in a future release.
+ * Please migrate to the new MenuCommand component as soon as possible.
+ */
 export const Select = {
   Default: SelectDefault,
   Root,

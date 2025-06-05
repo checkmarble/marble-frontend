@@ -53,6 +53,7 @@
   "clipboard.copy": "Copied in clipboard: <Value>{{value}}</Value>",
   "empty_scenario_iteration_list": "You don't have any rules. Click on create rule to make a new one",
   "success.save": "Saved successfully",
+  "success.deleted": "Deleted successfully",
   "success.add_to_case": "Decision successfully added to case",
   "name": "Name",
   "description": "Description",

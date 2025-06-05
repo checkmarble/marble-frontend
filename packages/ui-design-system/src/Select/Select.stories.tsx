@@ -5,9 +5,12 @@ import { selectBorder, selectBorderColor } from './Select.constants';
 
 type StoryProps = Pick<SelectProps, 'disabled' | 'placeholder' | 'border' | 'borderColor'>;
 
+/**
+ * @deprecated Use `MenuCommand` instead.
+ */
 const Story: Meta<StoryProps> = {
   component: Select.Default,
-  title: 'Select',
+  title: 'Select (Deprecated)',
   args: {
     placeholder: 'Select a value...',
     disabled: false,
@@ -27,6 +30,7 @@ const Story: Meta<StoryProps> = {
     },
   },
 };
+
 export default Story;
 
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple', 'pear'];
