@@ -110,6 +110,9 @@ export function ModalTitleV2(props: Ariakit.DialogHeadingProps) {
   );
 }
 
+/**
+ * @deprecated Use `Modal` instead.
+ */
 export const ModalV2 = {
   Root: Ariakit.DialogProvider,
   Trigger: Ariakit.DialogDisclosure,
