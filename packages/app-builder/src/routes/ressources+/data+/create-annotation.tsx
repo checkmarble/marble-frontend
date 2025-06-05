@@ -477,6 +477,7 @@ export function ClientTagsEditSelect({
   annotations,
   onAnnotateSuccess,
 }: ClientTagsEditSelectProps) {
+  const { t } = useTranslation(['cases', 'common']);
   const { orgObjectTags } = useOrganizationObjectTags();
   const fetcher = useFetcher<typeof action>({ key: 'tags_${tableName}_${objectId}' });
   const tags = annotations.map((annotation) => annotation.payload.tag_id);
@@ -536,7 +537,6 @@ export function ClientTagsEditSelect({
               <MenuCommand.Item
                 key={tag.id}
                 value={tag.id}
-                forceMount
                 onSelect={() => field.handleChange((prev) => toggle(prev, tag.id))}
               >
                 <TagPreview name={tag.name} />
@@ -545,6 +545,9 @@ export function ClientTagsEditSelect({
                 ) : null}
               </MenuCommand.Item>
             ))}
+            <MenuCommand.Empty>
+              <div className="text-center">{t('cases:case_detail.add_a_tag.empty')}</div>
+            </MenuCommand.Empty>
           </MenuCommand.List>
         )}
       </form.Field>
