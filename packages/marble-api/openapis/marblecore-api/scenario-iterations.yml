@@ -299,6 +299,40 @@
       '404':
         $ref: 'components.yml#/responses/404'
 /scenario-iterations/{scenarioIterationId}/sanction-check:
+  post:
+    tags:
+      - Scenario Iterations
+    summary: Create a sanction check for a scenario iteration
+    operationId: createtSanctionCheckConfig
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: sanctionCheckConfigId
+        description: ID of the screening config to update
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: The SanctionCheckConfig to update
+      content:
+        application/json:
+          schema:
+            $ref: 'sanction-checks.yml#/components/schemas/SanctionCheckConfigDto'
+    responses:
+      '200':
+        description: The upserted SanctionCheckConfig
+        content:
+          application/json:
+            schema:
+              $ref: 'sanction-checks.yml#/components/schemas/SanctionCheckConfigDto'
+/scenario-iterations/{scenarioIterationId}/sanction-check/{sanctionCheckConfigId}:
   delete:
     tags:
       - Scenario Iterations
@@ -307,6 +341,13 @@
     parameters:
       - name: scenarioIterationId
         description: ID of the scenario iteration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: sanctionCheckConfigId
+        description: ID of the screening config to update
         in: path
         required: true
         schema:
@@ -324,11 +365,18 @@
   patch:
     tags:
       - Scenario Iterations
-    summary: Upsert a sanction check for a scenario iteration
+    summary: Update a sanction check for a scenario iteration
     operationId: upsertSanctionCheckConfig
     parameters:
       - name: scenarioIterationId
         description: ID of the scenario iteration
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: sanctionCheckConfigId
+        description: ID of the screening config to update
         in: path
         required: true
         schema:
@@ -386,10 +434,10 @@ components:
               required:
                 - rules
               properties:
-                sanction_check_config:
-                  nullable: true
-                  allOf:
-                    - $ref: 'sanction-checks.yml#/components/schemas/SanctionCheckConfigDto'
+                sanction_check_configs:
+                  type: array
+                  items:
+                    $ref: 'sanction-checks.yml#/components/schemas/SanctionCheckConfigDto'
                 trigger_condition_ast_expression:
                   nullable: true
                   allOf:

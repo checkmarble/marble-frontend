@@ -170,6 +170,8 @@ paths:
     $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1commit
   /scenario-iterations/{scenarioIterationId}/sanction-check:
     $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1sanction-check
+  /scenario-iterations/{scenarioIterationId}/sanction-check/{sanctionCheckConfigId}:
+    $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1sanction-check~1{sanctionCheckConfigId}
 
   # SANCTION CHECKS
 
@@ -296,10 +298,12 @@ paths:
     $ref: ./marblecore-api/scenario-testrun.yml#/~1scenario-testruns~1{test_run_id}~1data_by_rule_execution
 
   # VERSION
+
   /version:
     $ref: ./marblecore-api/version.yml#/~1version
 
   # SIGNUP STATUS
+
   /signup-status:
     $ref: ./marblecore-api/signup-status.yml#/~1signup-status
 components:
