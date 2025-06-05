@@ -298,14 +298,6 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               </tr>
             );
           })}
-
-          {table.getRowModel().rows.length === 0 ? (
-            <tr>
-              <td colSpan={columns.length + 2} className="text-grey-80 p-4 text-center">
-                {t('data:table.no_linked_fields.label')}
-              </td>
-            </tr>
-          ) : null}
         </tbody>
       </table>
     </div>
