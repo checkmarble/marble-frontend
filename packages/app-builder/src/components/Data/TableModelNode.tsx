@@ -147,13 +147,18 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
         id: 'name',
         enableResizing: false,
         header: () => (
-          <div className="flex justify-between gap-2 p-4">
-            <div className="flex flex-col gap-2 text-start">
-              <span className="text-grey-00 text-ellipsis text-[30px]">{data.name}</span>
-              <FormatDescription description={data.description || ''} />
+          <div className="flex items-start justify-between gap-6 p-4">
+            <div className="flex min-w-96 max-w-md flex-1 flex-col gap-2 text-start">
+              <span className="text-grey-00 overflow-auto text-ellipsis text-[30px]">
+                {data.name}
+              </span>
+              <div className="flex flex-row flex-wrap items-center">
+                <FormatDescription description={data.description || ''} />
+              </div>
             </div>
-            <div className="flex flex-col items-end gap-2">
-              <div className="flex flex-row items-start gap-2 py-0">
+
+            <div className="flex shrink-0 flex-col items-end gap-2">
+              <div className="flex flex-row flex-wrap justify-end gap-2">
                 <Button
                   variant="secondary"
                   disabled={displayPivot}
@@ -164,7 +169,6 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
                 </Button>
                 <MoreMenu data={data} />
               </div>
-
               {data.pivot ? (
                 <DisplayPivot {...data.pivot} />
               ) : (
@@ -351,7 +355,7 @@ function FormatDescription({ description }: { description: string }) {
   return (
     <span
       className={clsx(
-        'relative line-clamp-2 overscroll-auto font-normal first-letter:capitalize',
+        'relative line-clamp-2 overflow-hidden text-ellipsis font-normal leading-snug first-letter:capitalize',
         description ? 'text-grey-00' : 'text-grey-80',
       )}
     >
