@@ -86,5 +86,7 @@
   "items_displayed_ranks": "من <emph> {{start}} </emph> إلى <remphown> {{end}} </emph>",
   "from": "من {{input}}",
   "to": "إلى {{input}}",
+  "back": "عودة",
+  "validate": "تأكيد",
   "success.deleted": "تم حذفه بنجاح"
 }

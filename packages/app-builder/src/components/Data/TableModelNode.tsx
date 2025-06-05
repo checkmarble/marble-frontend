@@ -368,7 +368,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
       <CreatePivot key="create-pivot" tableModel={data.original} dataModel={data.dataModel}>
         <SchemaMenuMenuItem>
           <Icon icon="plus" className="size-6" />
-          {t('data:create_pivot.title')}
+          {t('data:menu.create_pivot.label')}
         </SchemaMenuMenuItem>
       </CreatePivot>,
     );

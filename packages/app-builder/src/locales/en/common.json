@@ -86,5 +86,7 @@
   "snooze.nextMonday": "Next Monday",
   "snooze.custom": "Custom",
   "from": "From {{input}}",
-  "to": "To {{input}}"
+  "to": "To {{input}}",
+  "back": "Back",
+  "validate": "Validate"
 }

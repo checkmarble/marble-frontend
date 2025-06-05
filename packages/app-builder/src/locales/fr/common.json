@@ -86,5 +86,7 @@
   "snooze.custom": "Personnalisé",
   "from": "De {{input}}",
   "to": "À {{input}}",
+  "back": "Retour",
+  "validate": "Valider",
   "success.deleted": "Supprimé avec succès"
 }
