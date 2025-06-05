@@ -629,13 +629,27 @@ export type SanctionCheckConfigDto = {
     description?: string;
     rule_group?: string;
     datasets?: string[];
+    threshold?: number;
     forced_outcome?: OutcomeDto;
     trigger_rule?: NodeDto;
+    entity_type?: "Thing" | "Person" | "Organization" | "Vehicle";
+    /** Mapping from OpenSanction entity field to AST node. All entity types support the `name` field. Additional field will depend on the selected entity type. */
     query?: {
         name?: NodeDto;
-        label?: NodeDto;
+        [key: string]: NodeDto;
     };
     counterparty_id_expression?: NodeDto;
+    /** Configuration of preprocessing steps for the counterparty name */
+    preprocessing?: {
+        /** Whether the counterparty name should go through Name Entity Recognition */
+        use_ner?: boolean;
+        /** Whether to skip the rule if the counterparty name is under X characters */
+        skip_if_under?: number;
+        /** Whether to strip numbers from the counterparty name */
+        remove_numbers?: boolean;
+        /** Whether to strip items from a custom list from the counterparty name */
+        blacklist_list_id?: string;
+    };
 };
 export type ScenarioIterationRuleDto = {
     id: string;
@@ -650,7 +664,7 @@ export type ScenarioIterationRuleDto = {
 };
 export type ScenarioIterationWithBodyDto = ScenarioIterationDto & {
     body: {
-        sanction_check_config?: (SanctionCheckConfigDto) | null;
+        sanction_check_configs?: SanctionCheckConfigDto[];
         trigger_condition_ast_expression?: (NodeDto) | null;
         score_review_threshold?: number;
         score_block_and_review_threshold?: number;
@@ -2574,9 +2588,22 @@ export function commitScenarioIteration(scenarioIterationId: string, opts?: Oaza
     }));
 }
 /**
+ * Create a sanction check for a scenario iteration
+ */
+export function createtSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigId: string, sanctionCheckConfigDto?: SanctionCheckConfigDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: SanctionCheckConfigDto;
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: sanctionCheckConfigDto
+    })));
+}
+/**
  * Delete a sanction check for a scenario iteration
  */
-export function deleteSanctionCheckConfig(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
+export function deleteSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -2588,19 +2615,19 @@ export function deleteSanctionCheckConfig(scenarioIterationId: string, opts?: Oa
     } | {
         status: 404;
         data: string;
-    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check`, {
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check/${encodeURIComponent(sanctionCheckConfigId)}`, {
         ...opts,
         method: "DELETE"
     }));
 }
 /**
- * Upsert a sanction check for a scenario iteration
+ * Update a sanction check for a scenario iteration
  */
-export function upsertSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigDto?: SanctionCheckConfigDto, opts?: Oazapfts.RequestOpts) {
+export function upsertSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigId: string, sanctionCheckConfigDto?: SanctionCheckConfigDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: SanctionCheckConfigDto;
-    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check`, oazapfts.json({
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check/${encodeURIComponent(sanctionCheckConfigId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
         body: sanctionCheckConfigDto
