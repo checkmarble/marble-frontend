@@ -16,7 +16,7 @@ import Code from 'packages/ui-design-system/src/Code/Code';
 import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { ModalV2 } from 'ui-design-system';
+import { Modal } from 'ui-design-system';
 import { z } from 'zod';
 
 import { SelectField } from './create-pivot/selectField';
@@ -109,13 +109,13 @@ export function CreatePivot({
 
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data?.success) {
-      setOpen(false);
+      onOpenChange(false);
     }
   }, [fetcher.data?.success, fetcher.state]);
 
   const [open, setOpenState] = useState(false);
 
-  const setOpen = (isOpening: boolean) => {
+  const onOpenChange = (isOpening: boolean) => {
     if (!isOpening) {
       setOpenState(false);
       setStepState(initialState);
@@ -154,10 +154,10 @@ export function CreatePivot({
     });
   };
   return (
-    <ModalV2.Root {...{ open, setOpen }}>
-      <ModalV2.Trigger render={children} />
-      <ModalV2.Content>
-        <ModalV2.Title>
+    <Modal.Root {...{ open, onOpenChange }}>
+      <Modal.Trigger>{children}</Modal.Trigger>
+      <Modal.Content>
+        <Modal.Title>
           <Trans
             className="inline-block"
             t={t}
@@ -167,7 +167,7 @@ export function CreatePivot({
             }}
             values={{ table: tableModel.name }}
           />
-        </ModalV2.Title>
+        </Modal.Title>
 
         {match(stepState)
           .with({ step: 'entity', pivotOption: null }, () => (
@@ -200,7 +200,7 @@ export function CreatePivot({
             />
           ))
           .otherwise(() => null)}
-      </ModalV2.Content>
-    </ModalV2.Root>
+      </Modal.Content>
+    </Modal.Root>
   );
 }

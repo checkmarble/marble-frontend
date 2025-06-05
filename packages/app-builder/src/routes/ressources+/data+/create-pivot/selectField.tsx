@@ -6,7 +6,7 @@ import { useForm, useStore } from '@tanstack/react-form';
 import Code from 'packages/ui-design-system/src/Code/Code';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, MenuCommand, ModalV2 } from 'ui-design-system';
+import { Button, MenuCommand, Modal } from 'ui-design-system';
 
 export function SelectField({
   pivotOptions,
@@ -38,7 +38,7 @@ export function SelectField({
   return (
     <form onSubmit={handleSubmit(form)}>
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
-        <ModalV2.Description className="whitespace-pre text-wrap">
+        <Modal.Description className="whitespace-pre text-wrap">
           <Trans
             t={t}
             i18nKey="data:create_pivot.select_field.description"
@@ -47,7 +47,7 @@ export function SelectField({
               Code: <Code />,
             }}
           />
-        </ModalV2.Description>
+        </Modal.Description>
         <Callout variant="outlined" color="red">
           <Trans
             t={t}

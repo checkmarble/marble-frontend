@@ -8,7 +8,7 @@ import { useForm, useStore } from '@tanstack/react-form';
 import Code from 'packages/ui-design-system/src/Code/Code';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, MenuCommand, ModalV2 } from 'ui-design-system';
+import { Button, MenuCommand, Modal } from 'ui-design-system';
 
 export function SelectTargetEntity({
   pivotOptions,
@@ -77,7 +77,7 @@ export function SelectTargetEntity({
   return (
     <form onSubmit={handleSubmit(form)}>
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
-        <ModalV2.Description className="whitespace-pre text-balance">
+        <Modal.Description className="whitespace-pre text-balance">
           <Trans
             t={t}
             i18nKey="data:create_pivot.entity_selection.description"
@@ -87,7 +87,7 @@ export function SelectTargetEntity({
               DocLink: <ExternalLink href={pivotValuesDocHref} />,
             }}
           />
-        </ModalV2.Description>
+        </Modal.Description>
 
         <form.Field name="pivot">
           {(field) => (
@@ -126,9 +126,11 @@ export function SelectTargetEntity({
           )}
         </form.Field>
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
+          <Modal.Close asChild>
+            <Button className="flex-1" variant="secondary">
+              {t('common:cancel')}
+            </Button>
+          </Modal.Close>
 
           <Button className="flex-1" variant="primary" type="submit" disabled={!form.state.isValid}>
             {t('data:create_pivot.entity_selection.button_accept')}
