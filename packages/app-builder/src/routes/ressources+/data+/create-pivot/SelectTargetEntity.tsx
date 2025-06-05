@@ -2,6 +2,7 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type TableModel } from '@app-builder/models/data-model';
 import { type CustomPivotOption, type LinkPivotOption } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
+import { handleSubmit } from '@app-builder/utils/form';
 import * as Sentry from '@sentry/remix';
 import { useForm, useStore } from '@tanstack/react-form';
 import Code from 'packages/ui-design-system/src/Code/Code';
@@ -74,13 +75,7 @@ export function SelectTargetEntity({
   const [open, onOpenChange] = useState(false);
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-    >
+    <form onSubmit={handleSubmit(form)}>
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
         <ModalV2.Description className="whitespace-pre text-balance">
           <Trans

@@ -3,7 +3,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { Highlight } from '@app-builder/components/Highlight';
 import type { TableModel } from '@app-builder/models/data-model';
 import { type FieldPivotOption } from '@app-builder/services/data/pivot';
-import { getFieldErrors } from '@app-builder/utils/form';
+import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { matchSorter } from 'match-sorter';
 import Code from 'packages/ui-design-system/src/Code/Code';
@@ -47,13 +47,7 @@ export function SelectField({
   );
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-    >
+    <form onSubmit={handleSubmit(form)}>
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
         <ModalV2.Description className="whitespace-pre text-wrap">
           <Trans

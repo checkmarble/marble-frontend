@@ -1,6 +1,7 @@
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { type TableModel } from '@app-builder/models/data-model';
 import { type LinkPivotOption } from '@app-builder/services/data/pivot';
+import { handleSubmit } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import Code from 'packages/ui-design-system/src/Code/Code';
 import { useMemo, useState } from 'react';
@@ -43,13 +44,7 @@ export function SelectLinkPath({
   const selectedOption = useStore(form.store, (state) => state.values.pivot);
   const [open, onOpenChange] = useState(false);
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-    >
+    <form onSubmit={handleSubmit(form)}>
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
         <form.Field name="pivot">
           {(field) => (
