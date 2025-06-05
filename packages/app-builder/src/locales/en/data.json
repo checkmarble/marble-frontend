@@ -83,5 +83,6 @@
   "menu.create_pivot.label": "Group decisions by...",
   "create_pivot.select_entity.button_same_table": "Select a field in <Code>{{table}}</Code>",
   "create_pivot.select_entity.search_placeholder": "Search by entity name",
-  "create_pivot.entity_selection.search.placeholder": "Select or search an entity"
+  "create_pivot.entity_selection.search.placeholder": "Select or search an entity",
+  "create_pivot.button.label": "Create a decision group "
 }

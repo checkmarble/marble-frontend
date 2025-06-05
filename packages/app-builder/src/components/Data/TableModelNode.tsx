@@ -145,29 +145,26 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
     () => [
       columnHelper.group({
         id: 'name',
+        enableResizing: false,
         header: () => (
           <div className="flex justify-between gap-2 p-4">
             <div className="flex flex-col gap-2 text-start">
-              <span className="text-grey-00 text-[30px]">{data.name}</span>
+              <span className="text-grey-00 text-ellipsis text-[30px]">{data.name}</span>
               <FormatDescription description={data.description || ''} />
-              <div className="align-items-end">
-                {data.pivot ? (
-                  <DisplayPivot {...data.pivot} />
-                ) : (
-                  <CreatePivot
-                    key="create-pivot"
-                    tableModel={data.original}
-                    dataModel={data.dataModel}
-                  >
-                    <Button variant={'secondary'} disabled={displayPivot}>
-                      <Icon icon="plus" className="size-6" />
-                      {t('data:create_pivot.title')}
-                    </Button>
-                  </CreatePivot>
-                )}
-              </div>
             </div>
-            <div className="flex flex-row items-start gap-2 py-0">
+            <div className="flex flex-col items-end gap-2">
+              <div className="flex flex-row items-start gap-2 py-0">
+                <Button
+                  variant="secondary"
+                  disabled={displayPivot}
+                  onClick={toggleLinkedFilter}
+                  className="flex items-center justify-center p-2"
+                >
+                  <Icon icon={hasLinkFilter ? 'unfold_more' : 'unfold_less'} className="size-6" />
+                </Button>
+                <MoreMenu data={data} />
+              </div>
+
               {data.pivot ? (
                 <DisplayPivot {...data.pivot} />
               ) : (
@@ -178,25 +175,17 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
                 >
                   <Button variant={'secondary'} disabled={displayPivot}>
                     <Icon icon="plus" className="size-6" />
-                    {t('data:create_pivot.title')}
+                    {t('data:create_pivot.button.label')}
                   </Button>
                 </CreatePivot>
               )}
-              <Button
-                variant="secondary"
-                disabled={displayPivot}
-                onClick={toggleLinkedFilter}
-                className="flex items-center justify-center p-2"
-              >
-                <Icon icon={hasLinkFilter ? 'unfold_more' : 'unfold_less'} className="size-6" />
-              </Button>
-              <MoreMenu data={data} />
             </div>
           </div>
         ),
         columns: [
           columnHelper.accessor((row) => row.name, {
             id: 'name',
+            enableResizing: false,
             header: () => (
               <span className="text-grey-00 flex p-2 text-start font-medium">
                 {t('data:field_name')}
@@ -208,6 +197,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
           }),
           columnHelper.accessor((row) => row.displayType, {
             id: 'displayType',
+            enableResizing: false,
             header: () => (
               <span className="text-grey-00 flex p-2 text-start font-medium">
                 {t('data:field_type')}
@@ -216,6 +206,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
           }),
           columnHelper.accessor((row) => row.description, {
             id: 'description',
+            enableResizing: false,
             header: () => (
               <span className="text-grey-00 flex p-2 text-start font-medium">
                 {t('data:description')}
@@ -360,7 +351,7 @@ function FormatDescription({ description }: { description: string }) {
   return (
     <span
       className={clsx(
-        'relative font-normal first-letter:capitalize',
+        'relative line-clamp-2 overscroll-auto font-normal first-letter:capitalize',
         description ? 'text-grey-00' : 'text-grey-80',
       )}
     >
