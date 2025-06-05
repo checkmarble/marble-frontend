@@ -135,7 +135,15 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               <span className="text-grey-00 text-[30px]">{data.name}</span>
               <FormatDescription description={data.description || ''} />
             </div>
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row items-start gap-2 py-0">
+              <Button
+                variant="secondary"
+                disabled={displayPivot}
+                onClick={toggleLinkedFilter}
+                className="flex items-center justify-center p-2"
+              >
+                <Icon icon={hasLinkFilter ? 'unfold_more' : 'unfold_less'} className="size-6" />
+              </Button>
               <MoreMenu data={data} />
             </div>
           </div>
@@ -298,17 +306,6 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
             </tr>
           ) : null}
         </tbody>
-        <tfoot>
-          <tr>
-            <td className="table-cell p-2 text-right" colSpan={5}>
-              <div className="flex justify-end">
-                <Button variant="secondary" disabled={displayPivot} onClick={toggleLinkedFilter}>
-                  <Icon icon={hasLinkFilter ? 'unfold_more' : 'unfold_less'} className="size-6" />
-                </Button>
-              </div>
-            </td>
-          </tr>
-        </tfoot>
       </table>
     </div>
   );
