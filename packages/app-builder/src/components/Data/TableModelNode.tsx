@@ -127,6 +127,20 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   const { displayPivot, isFieldPartOfPivot, isTablePartOfPivot } = useSelectedPivot();
   const { isEditDataModelFieldAvailable } = useDataModelFeatureAccess();
 
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
+    { id: 'hasLink', value: true },
+  ]);
+
+  const hasLinkFilter = columnFilters.find((f) => f.id === 'hasLink')?.value === true;
+
+  const toggleLinkedFilter = () => {
+    setColumnFilters((prev) =>
+      prev.some((filter) => filter.id === 'hasLink')
+        ? prev.filter((filter) => filter.id !== 'hasLink')
+        : [...prev, { id: 'hasLink', value: true }],
+    );
+  };
+
   const columns = React.useMemo(
     () => [
       columnHelper.group({
@@ -202,23 +216,8 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
         ],
       }),
     ],
-    [isEditDataModelFieldAvailable, data, t],
+    [isEditDataModelFieldAvailable, data, displayPivot, hasLinkFilter, t],
   );
-
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
-    { id: 'hasLink', value: true },
-  ]);
-
-  const hasLinkFilter = columnFilters.find((f) => f.id === 'hasLink')?.value === true;
-
-  const toggleLinkedFilter = () => {
-    setColumnFilters((prev) =>
-      prev.some((filter) => filter.id === 'hasLink')
-        ? prev.filter((filter) => filter.id !== 'hasLink')
-        : [...prev, { id: 'hasLink', value: true }],
-    );
-  };
-
   const table = useReactTable({
     data: data.columns,
     columns,
