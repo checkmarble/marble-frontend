@@ -303,10 +303,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
             <td className="table-cell p-2 text-right" colSpan={5}>
               <div className="flex justify-end">
                 <Button variant="secondary" disabled={displayPivot} onClick={toggleLinkedFilter}>
-                  <Icon
-                    icon="arrow-left"
-                    className={clsx('size-6', hasLinkFilter ? '-rotate-90' : 'rotate-90')}
-                  />
+                  <Icon icon={hasLinkFilter ? 'unfold_more' : 'unfold_less'} className="size-6" />
                 </Button>
               </div>
             </td>
