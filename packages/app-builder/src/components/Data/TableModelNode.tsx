@@ -81,6 +81,8 @@ export function adaptTableModelNodeData(
       table.linksToSingle.filter(({ childTableId }) => childTableId === tableModel.id),
     );
 
+  const tableHasLinks = linksToThisTable.length > 0 || linksFromThisTable.length > 0;
+
   return {
     original: tableModel,
     dataModel,
@@ -94,7 +96,7 @@ export function adaptTableModelNodeData(
     id: tableModel.id,
     name: tableModel.name,
     description: tableModel.description,
-    columns: tableModel.fields.map((field) => ({
+    columns: tableModel.fields.map((field, index) => ({
       id: field.id,
       name: field.name,
       description: field.description,
@@ -104,9 +106,10 @@ export function adaptTableModelNodeData(
       isEnum: field.isEnum,
       tableId: field.tableId,
       unicityConstraint: field.unicityConstraint,
-      hasLink:
-        linksToThisTable.some(({ parentFieldId }) => parentFieldId === field.id) ||
-        linksFromThisTable.some(({ childFieldId }) => childFieldId === field.id),
+      hasLink: tableHasLinks
+        ? linksToThisTable.some(({ parentFieldId }) => parentFieldId === field.id) ||
+          linksFromThisTable.some(({ childFieldId }) => childFieldId === field.id)
+        : index < 2, // For the first two columns, we assume they have links for display purposes
     })),
   };
 }
@@ -189,7 +192,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
         ],
       }),
     ],
-    [isEditDataModelFieldAvailable, data, displayPivot, t],
+    [isEditDataModelFieldAvailable, data, t],
   );
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
