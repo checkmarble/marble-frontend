@@ -83,5 +83,6 @@
   "menu.create_pivot.label": "تجميع القرارات حسب...",
   "create_pivot.select_entity.button_same_table": "اختر حقلًا في <Code>{{table}}</Code>",
   "create_pivot.select_entity.search_placeholder": "ابحث حسب اسم الكيان",
-  "create_pivot.entity_selection.search.placeholder": "اختر أو ابحث عن كيان"
+  "create_pivot.entity_selection.search.placeholder": "اختر أو ابحث عن كيان",
+  "create_pivot.button.label": "إنشاء مجموعة قرار"
 }
