@@ -1,7 +1,7 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { eventTypes } from '@app-builder/models/webhook';
 import clsx from 'clsx';
-import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,7 @@ export function SelectEvents({
 }: {
   selectedEventTypes: string[];
   className?: string;
-  webhookStatus: FeatureAccessDto;
+  webhookStatus: FeatureAccessLevelDto;
   disabled?: boolean;
   name?: string;
   onChange?: (value: string[]) => void;

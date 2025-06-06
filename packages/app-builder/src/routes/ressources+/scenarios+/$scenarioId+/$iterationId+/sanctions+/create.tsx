@@ -7,7 +7,7 @@ import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
-import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
@@ -57,7 +57,7 @@ export function CreateSanction({
 }: {
   scenarioId: string;
   iterationId: string;
-  isSanctionAvailable: FeatureAccessDto;
+  isSanctionAvailable: FeatureAccessLevelDto;
   hasAlreadyASanction: boolean;
 }) {
   const { t } = useTranslation(['scenarios']);

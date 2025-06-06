@@ -4,8 +4,8 @@ import ora from 'ora';
 
 import {
   type Config,
+  featureAccessApiConfig,
   GENERATED_FOLDER,
-  licenseApiConfig,
   marbleCoreApiConfig,
   transfercheckApiConfig,
 } from './config';
@@ -30,7 +30,7 @@ async function main() {
     await mkdir(GENERATED_FOLDER);
 
     await openapiGenerator(marbleCoreApiConfig);
-    await openapiGenerator(licenseApiConfig);
+    await openapiGenerator(featureAccessApiConfig);
     await openapiGenerator(transfercheckApiConfig);
   } catch (error) {
     console.error('\n', error);

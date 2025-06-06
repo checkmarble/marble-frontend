@@ -3,7 +3,7 @@
 This package generates Marble API client based on OpenAPI spec provided in `openapis` folder :
 
 - `openapis/marblecore-api.yaml` : Marble Core API spec
-- `openapis/license-api.yaml` : License API spec
+- `openapis/feature-access-api.yaml` : Feature access API spec
 - `openapis/transfercheck-api.yaml` : Transfer Check API spec
 
 > Even if the marble backend is a single monolithic API, it is split into multiple OpenAPI specs to allow for better separation of concerns and to prepare for a possible future split into multiple services.

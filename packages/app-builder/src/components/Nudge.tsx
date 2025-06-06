@@ -1,5 +1,5 @@
 import { Hovercard, HovercardAnchor, HovercardProvider } from '@ariakit/react/hovercard';
-import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { cn, CtaClassName } from 'ui-design-system';
@@ -10,7 +10,7 @@ type NudgeProps = {
   className?: string;
   iconClass?: string;
   link?: string;
-  kind?: Exclude<FeatureAccessDto, 'allowed'>;
+  kind?: Exclude<FeatureAccessLevelDto, 'allowed'>;
 };
 
 export const Nudge = ({ content, link, className, kind = 'restricted', iconClass }: NudgeProps) => {

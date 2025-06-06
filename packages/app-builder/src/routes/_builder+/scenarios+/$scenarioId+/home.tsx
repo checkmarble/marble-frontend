@@ -33,7 +33,7 @@ import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { type Namespace, type ParseKeys } from 'i18next';
-import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
@@ -325,7 +325,13 @@ function QuickVersionAccess({
   );
 }
 
-function TestRunSection({ scenarioId, access }: { scenarioId: string; access: FeatureAccessDto }) {
+function TestRunSection({
+  scenarioId,
+  access,
+}: {
+  scenarioId: string;
+  access: FeatureAccessLevelDto;
+}) {
   const { t } = useTranslation();
   const currentScenario = useCurrentScenario();
   const scenarioIterations = useScenarioIterations();
@@ -585,7 +591,13 @@ function ManualTriggerScenarioExecutionForm({
   );
 }
 
-function WorkflowSection({ scenario, access }: { scenario: Scenario; access: FeatureAccessDto }) {
+function WorkflowSection({
+  scenario,
+  access,
+}: {
+  scenario: Scenario;
+  access: FeatureAccessLevelDto;
+}) {
   const { t } = useTranslation(['common', 'scenarios', 'workflows']);
 
   const isEdit = scenario.decisionToCaseWorkflowType !== 'DISABLED';

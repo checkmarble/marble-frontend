@@ -25,7 +25,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const {
     authService,
     authSessionService,
-    licenseService,
+    featureAccessService,
     signupRepository: { getSignupStatus },
   } = initServerServices(request);
   await authService.isAuthenticated(request, {
@@ -34,7 +34,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const session = await authSessionService.getSession(request);
 
   const [ssoResponse, signInStatusResponse] = await Promise.allSettled([
-    licenseService.isSsoEnabled(),
+    featureAccessService.isSsoEnabled(),
     getSignupStatus(),
   ]);
 

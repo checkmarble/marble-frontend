@@ -763,6 +763,7 @@ export type SanctionCheckDto = SanctionCheckSuccessDto | SanctionCheckErrorDto;
 export type OpenSanctionsCatalogDataset = {
     name: string;
     title: string;
+    tag?: string;
 };
 export type OpenSanctionsCatalogSection = {
     name: string;

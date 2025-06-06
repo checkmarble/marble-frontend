@@ -10,11 +10,11 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
+import { FieldDataset } from '@app-builder/components/Scenario/Sanction/FieldDataset';
 import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
 import { FieldNodeConcat } from '@app-builder/components/Scenario/Sanction/FieldNodeConcat';
 import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
-import { FieldSanction } from '@app-builder/components/Scenario/Sanction/FieldSanction';
 import { FieldToolTip } from '@app-builder/components/Scenario/Sanction/FieldToolTip';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
@@ -265,7 +265,7 @@ export default function SanctionDetail() {
       <Page.Container ref={containerRef}>
         <Page.Content className="pt-0 lg:pt-0">
           <form
-            className="relative flex max-w-3xl flex-col"
+            className="relative flex max-w-[800px] flex-col"
             onSubmit={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -473,51 +473,43 @@ export default function SanctionDetail() {
                         }}
                       </form.Field>
                       <form.Field name="query.label">
-                        {(field) => (
-                          <div className="flex flex-col gap-4">
-                            <FormLabel name={field.name}>
-                              {t('scenarios:sanction_transaction_label')}
-                            </FormLabel>
-                            <FieldNode
-                              value={field.state.value}
-                              onChange={field.handleChange}
-                              onBlur={field.handleBlur}
-                              placeholder={t('scenarios:sanction_transaction_label_placeholder')}
-                            />
-                            <FormErrorOrDescription
-                              errors={getFieldErrors(field.state.meta.errors)}
-                            />
-                          </div>
-                        )}
+                        {(field) => {
+                          const value = sanctionCheckConfig?.query?.label;
+                          return (
+                            <div className="flex flex-col gap-4">
+                              <FormLabel name={field.name}>
+                                {t('scenarios:sanction_transaction_label')}
+                              </FormLabel>
+                              <FieldNodeConcat
+                                viewOnly={editor === 'view'}
+                                value={value && isStringConcatAstNode(value) ? value : undefined}
+                                onChange={field.handleChange}
+                                onBlur={field.handleBlur}
+                                placeholder={t('scenarios:sanction_transaction_label_placeholder')}
+                                limit={5}
+                              />
+                              <FormErrorOrDescription
+                                errors={getFieldErrors(field.state.meta.errors)}
+                              />
+                            </div>
+                          );
+                        }}
                       </form.Field>
                     </div>
                   </div>
                 </div>
               </AstBuilder.Provider>
 
-              <div className="flex flex-col gap-2">
-                <span className="text-s font-medium">{t('scenarios:sanction.lists.title')}</span>
-                <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded border p-6">
-                  <Callout variant="outlined" className="mb-4 lg:mb-6">
-                    <p className="whitespace-pre text-wrap">
-                      {t('scenarios:sanction.lists.callout')}
-                    </p>
-                  </Callout>
-                  <form.Field name="datasets">
-                    {(field) => (
-                      <div className="flex flex-col gap-2">
-                        <FieldSanction
-                          defaultValue={field.state.value}
-                          onChange={field.handleChange}
-                          onBlur={field.handleBlur}
-                          sections={sections}
-                        />
-                        <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-                      </div>
-                    )}
-                  </form.Field>
-                </div>
-              </div>
+              <form.Field name="datasets">
+                {(field) => (
+                  <FieldDataset
+                    defaultValue={field.state.value}
+                    onChange={field.handleChange}
+                    onBlur={field.handleBlur}
+                    sections={sections}
+                  />
+                )}
+              </form.Field>
             </div>
           </form>
         </Page.Content>

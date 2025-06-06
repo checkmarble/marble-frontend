@@ -1,4 +1,7 @@
-import { type GetLicenseAPIClientWithAuth, type LicenseApi } from '@app-builder/infra/license-api';
+import {
+  type FeatureAccessApi,
+  type GetFeatureAccessAPIClientWithAuth,
+} from '@app-builder/infra/feature-access-api';
 import {
   type GetMarbleCoreAPIClientWithAuth,
   type MarbleCoreApi,
@@ -12,8 +15,8 @@ import { makeGetCustomListRepository } from './CustomListRepository';
 import { makeGetDataModelRepository } from './DataModelRepository';
 import { makeGetDecisionRepository } from './DecisionRepository';
 import { makeGetEditorRepository } from './EditorRepository';
+import { makeGetFeatureAccessRepository } from './FeatureAccessRepository';
 import { makeGetInboxRepository } from './InboxRepository';
-import { makeGetLicenseRepository } from './LicenseRepository';
 import { makeGetOrganizationRepository } from './OrganizationRepository';
 import { makeGetPartnerRepository } from './PartnerRepository';
 import { makeGetRuleSnoozeRepository } from './RuleSnoozeRepository';
@@ -38,15 +41,15 @@ import { makeGetWebhookRepository } from './WebhookRepository';
 
 export function makeServerRepositories({
   sessionStorageRepositoryOptions,
-  getLicenseApiClientWithoutAuth,
-  getLicenseAPIClientWithAuth,
+  getFeatureAccessApiClientWithoutAuth,
+  getFeatureAccessAPIClientWithAuth,
   marbleCoreApiClient,
   getMarbleCoreAPIClientWithAuth,
   getTransfercheckAPIClientWithAuth,
 }: {
   sessionStorageRepositoryOptions: SessionStorageRepositoryOptions;
-  getLicenseApiClientWithoutAuth: () => LicenseApi;
-  getLicenseAPIClientWithAuth: GetLicenseAPIClientWithAuth;
+  getFeatureAccessApiClientWithoutAuth: () => FeatureAccessApi;
+  getFeatureAccessAPIClientWithAuth: GetFeatureAccessAPIClientWithAuth;
   marbleCoreApiClient: MarbleCoreApi;
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
   getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
@@ -56,8 +59,8 @@ export function makeServerRepositories({
     csrfCookie: getCsrfCookie(sessionStorageRepositoryOptions),
     toastStorageRepository: getToastStorageRepository(sessionStorageRepositoryOptions),
     lngStorageRepository: getLngStorageRepository(sessionStorageRepositoryOptions),
-    getLicenseApiClientWithoutAuth,
-    getLicenseAPIClientWithAuth,
+    getFeatureAccessApiClientWithoutAuth,
+    getFeatureAccessAPIClientWithAuth,
     marbleCoreApiClient,
     getMarbleCoreAPIClientWithAuth,
     getTransfercheckAPIClientWithAuth,
@@ -81,7 +84,7 @@ export function makeServerRepositories({
     getWebhookRepository: makeGetWebhookRepository(),
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     getTestRunRepository: makeGetTestRunRepository(),
-    getLicenseRepository: makeGetLicenseRepository(),
+    getFeatureAccessRepository: makeGetFeatureAccessRepository(),
     getSignupStatusRepository: makeGetSignupStatusRepository(),
     getVersionRepository: makeGetVersionRepository(),
   };

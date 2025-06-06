@@ -1,5 +1,5 @@
 /**
- * License API
+ * Feature access API
  * 1.0.0
  * DO NOT MODIFY - This file has been generated using oazapfts.
  * See https://www.npmjs.com/package/oazapfts
@@ -12,17 +12,18 @@ export const defaults: Oazapfts.Defaults<Oazapfts.CustomHeaders> = {
 };
 const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {
-    localDevlopmentServer: "http://localhost:8080"
+    localDevelopmentServer: "http://localhost:8080"
 };
-export type FeatureAccessDto = "allowed" | "restricted" | "test" | "missing_configuration";
-export type LicenseEntitlementsDto = {
-    workflows: FeatureAccessDto;
-    analytics: FeatureAccessDto;
-    roles: FeatureAccessDto;
-    webhooks: FeatureAccessDto;
-    rule_snoozes: FeatureAccessDto;
-    test_run: FeatureAccessDto;
-    sanctions: FeatureAccessDto;
+export type FeatureAccessLevelDto = "allowed" | "restricted" | "test" | "missing_configuration";
+export type FeatureAccessDto = {
+    workflows: FeatureAccessLevelDto;
+    analytics: FeatureAccessLevelDto;
+    roles: FeatureAccessLevelDto;
+    webhooks: FeatureAccessLevelDto;
+    rule_snoozes: FeatureAccessLevelDto;
+    test_run: FeatureAccessLevelDto;
+    sanctions: FeatureAccessLevelDto;
+    ai_assist: FeatureAccessLevelDto;
 };
 /**
  * Check if SSO is enabled
@@ -40,11 +41,11 @@ export function isSsoEnabled(opts?: Oazapfts.RequestOpts) {
 /**
  * Get the entitlements of an organization
  */
-export function getEntitlements(organizationId: string, opts?: Oazapfts.RequestOpts) {
+export function getEntitlements(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            feature_access: LicenseEntitlementsDto;
+            feature_access: FeatureAccessDto;
         };
     } | {
         status: 401;
@@ -52,7 +53,7 @@ export function getEntitlements(organizationId: string, opts?: Oazapfts.RequestO
     } | {
         status: 403;
         data: string;
-    }>(`/organizations/${encodeURIComponent(organizationId)}/feature_access`, {
+    }>("/feature_access", {
         ...opts
     }));
 }

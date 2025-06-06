@@ -14,7 +14,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
-import { type FeatureAccessDto } from 'marble-api/generated/license-api';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -90,7 +90,7 @@ export function UpdateWebhook({
 }: {
   defaultValue: UpdateWebhookForm;
   children: React.ReactElement;
-  webhookStatus: FeatureAccessDto;
+  webhookStatus: FeatureAccessLevelDto;
 }) {
   const [open, setOpen] = React.useState(false);
 
@@ -115,7 +115,7 @@ function UpdateWebhookContent({
 }: {
   defaultValue: UpdateWebhookForm;
   setOpen: (open: boolean) => void;
-  webhookStatus: FeatureAccessDto;
+  webhookStatus: FeatureAccessLevelDto;
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const fetcher = useFetcher<typeof action>();
