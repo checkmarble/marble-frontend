@@ -1,4 +1,5 @@
 import { casesI18n, CopyToClipboardButton, ErrorComponent, Page } from '@app-builder/components';
+import { AiAssistContextProvider } from '@app-builder/components/AiAssist';
 import {
   BreadCrumbLink,
   type BreadCrumbProps,
@@ -16,27 +17,24 @@ import {
   mergeDataModelWithTableOptions,
   type TableModelWithOptions,
 } from '@app-builder/models';
+import { useDownloadFile } from '@app-builder/services/DownloadFilesService';
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
-import {
-  defer,
-  isRouteErrorResponse,
-  useLoaderData,
-  useNavigate,
-  useRouteError,
-} from '@remix-run/react';
+import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { Future, Result } from '@swan-io/boxed';
 import { type Namespace } from 'i18next';
 import { pick } from 'radash';
 import { unique } from 'radash';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { filter, flat, groupBy, map, mapValues, omit, pipe, uniqueBy } from 'remeda';
+import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -185,7 +183,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     return redirect(getRoute('/cases/inboxes'));
   }
 
-  return defer({
+  return {
     case: currentCase,
     pivotObjects,
     dataModelWithTableOptions,
@@ -198,7 +196,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     decisionsPromise,
     rulesByPivotPromise,
     entitlements,
-  });
+  };
 };
 
 export const handle = {
@@ -269,24 +267,41 @@ export default function CaseManagerIndexPage() {
     leftSidebarSharp.actions.setExpanded(false);
   }, [leftSidebarSharp]);
 
+  const toggleAiPanel = useRef<((open: boolean) => void) | null>(null);
+  const handleAiAssistClick = () => {
+    console.log('AI Assist button clicked!');
+    if (toggleAiPanel.current) {
+      toggleAiPanel.current(true);
+    }
+  };
+
   return (
     <Page.Main>
       <Page.Header className="justify-between">
         <BreadCrumbs />
-        {nextCaseId ? (
-          <Button
-            variant="secondary"
-            size="medium"
-            onClick={() =>
-              navigate(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(nextCaseId) }))
-            }
-          >
-            <span className="text-xs font-medium">{t('cases:next_unassigned_case')}</span>
-            <Icon icon="arrow-up" className="size-5 rotate-90" />
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" size="medium" onClick={handleAiAssistClick}>
+            <Icon icon="case-manager" className="size-5" />
+            <span className="text-s"> AI assist</span>
           </Button>
-        ) : null}
+          {nextCaseId ? (
+            <Button
+              variant="secondary"
+              size="medium"
+              onClick={() =>
+                navigate(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(nextCaseId) }))
+              }
+            >
+              <span className="text-xs font-medium">{t('cases:next_unassigned_case')}</span>
+              <Icon icon="arrow-up" className="size-5 rotate-90" />
+            </Button>
+          ) : null}
+        </div>
       </Page.Header>
       <Page.Container className="text-r relative h-full flex-row p-0 lg:p-0">
+        <AiAssistContextProvider setOpenedRef={toggleAiPanel}>
+          <FileLink endpoint={`/cases/${details.id}/data_for_investigation`} />
+        </AiAssistContextProvider>
         <CaseDetails
           key={details.id}
           currentUser={currentUser}
@@ -348,4 +363,37 @@ export function ErrorBoundary() {
   }
 
   return <ErrorComponent error={error} />;
+}
+
+function FileLink({ endpoint }: { endpoint: string }) {
+  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(endpoint, {
+    onError: (e) => {
+      if (e instanceof AlreadyDownloadingError) {
+        // Already downloading, do nothing
+        return;
+      } else if (e instanceof AuthRequestError) {
+        toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
+      } else {
+        toast.error(t('cases:case.file.errors.downloading_link.unknown'));
+      }
+    },
+  });
+  const { t } = useTranslation(['cases']);
+
+  return (
+    <ClientOnly>
+      {() => (
+        <Button
+          variant="secondary"
+          onClick={() => {
+            void downloadCaseFile();
+          }}
+          name="download"
+          disabled={downloadingCaseFile}
+        >
+          {downloadingCaseFile ? t('cases:case.file.downloading') : t('cases:case.file.download')}
+        </Button>
+      )}
+    </ClientOnly>
+  );
 }
