@@ -17,7 +17,11 @@ import {
   mergeDataModelWithTableOptions,
   type TableModelWithOptions,
 } from '@app-builder/models';
-import { useDownloadFile } from '@app-builder/services/DownloadFilesService';
+import {
+  AlreadyDownloadingError,
+  AuthRequestError,
+  useDownloadFile,
+} from '@app-builder/services/DownloadFilesService';
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
@@ -299,9 +303,13 @@ export default function CaseManagerIndexPage() {
         </div>
       </Page.Header>
       <Page.Container className="text-r relative h-full flex-row p-0 lg:p-0">
-        <AiAssistContextProvider setOpenedRef={toggleAiPanel}>
-          <FileLink endpoint={`/cases/${details.id}/data_for_investigation`} />
-        </AiAssistContextProvider>
+        <ClientOnly>
+          {() => (
+            <AiAssistContextProvider setOpenedRef={toggleAiPanel}>
+              <FileLink endpoint={`/cases/${details.id}/data_for_investigation`} />
+            </AiAssistContextProvider>
+          )}
+        </ClientOnly>
         <CaseDetails
           key={details.id}
           currentUser={currentUser}
@@ -368,6 +376,7 @@ export function ErrorBoundary() {
 function FileLink({ endpoint }: { endpoint: string }) {
   const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(endpoint, {
     onError: (e) => {
+      console.log('Error downloading file:', e);
       if (e instanceof AlreadyDownloadingError) {
         // Already downloading, do nothing
         return;
