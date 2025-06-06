@@ -11,6 +11,7 @@ export interface FeatureAccesses {
   ruleSnoozes: FeatureAccessLevelDto;
   testRun: FeatureAccessLevelDto;
   sanctions: FeatureAccessLevelDto;
+  AiAssist: FeatureAccessLevelDto;
 }
 
 export function emptyFeatureAccesses(): FeatureAccesses {
@@ -22,6 +23,7 @@ export function emptyFeatureAccesses(): FeatureAccesses {
     ruleSnoozes: 'restricted',
     testRun: 'restricted',
     sanctions: 'restricted',
+    AiAssist: 'restricted',
   };
 }
 
@@ -34,5 +36,6 @@ export function adaptFeatureAccesses(dto: FeatureAccessDto): FeatureAccesses {
     ruleSnoozes: dto.rule_snoozes,
     testRun: dto.test_run,
     sanctions: dto.sanctions,
+    AiAssist: dto.ai_assist,
   };
 }
