@@ -1,8 +1,0 @@
-{
-  "extends": ["../../biome.json"],
-  "linter": {
-    "domains": {
-      "react": "recommended"
-    }
-  }
-}
