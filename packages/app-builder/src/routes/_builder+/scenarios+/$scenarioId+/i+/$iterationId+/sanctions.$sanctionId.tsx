@@ -17,7 +17,7 @@ import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOu
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
 import { FieldToolTip } from '@app-builder/components/Scenario/Sanction/FieldToolTip';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
+import { NewUndefinedAstNode } from '@app-builder/models';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { knownOutcomes, type SanctionOutcome } from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
@@ -66,17 +66,20 @@ export const handle = {
       const { t } = useTranslation(['common']);
       const iteration = useCurrentScenarioIteration();
       const editorMode = useEditorMode();
+      const configId = useParam('sanctionId');
 
       return (
         <div className="flex items-center gap-2">
           <BreadCrumbLink
             isLast={isLast}
-            to={getRoute('/scenarios/:scenarioId/i/:iterationId/sanction', {
+            to={getRoute('/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId', {
               scenarioId: fromUUIDtoSUUID(iteration.scenarioId),
               iterationId: fromUUIDtoSUUID(iteration.id),
+              sanctionId: fromUUIDtoSUUID(configId),
             })}
           >
-            {iteration.sanctionCheckConfig?.name ?? t('common:no_name')}
+            {iteration.sanctionCheckConfigs.find((c) => c.id === configId)?.name ??
+              t('common:no_name')}
           </BreadCrumbLink>
           {editorMode === 'edit' ? (
             <Tag size="big" border="square">
@@ -115,21 +118,25 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 const editSanctionFormSchema = z.object({
+  id: z.string().nonempty(),
   name: z.string().nonempty(),
   description: z.string().optional(),
   ruleGroup: z.string().optional(),
-  forcedOutcome: z.union([
-    z.literal('review'),
-    z.literal('decline'),
-    z.literal('block_and_review'),
-  ]),
-  triggerRule: z.any(),
-  query: z.object({
-    name: z.any().nullish(),
-    label: z.any().nullish(),
-  }),
-  counterPartyId: z.any().nullish(),
   datasets: z.array(z.string()),
+  threshold: z.number().optional(),
+  forcedOutcome: z.enum(['review', 'decline', 'block_and_review']),
+  triggerRule: z.any(),
+  entityType: z.enum(['Person', 'Organization', 'Vehicle', 'Thing']).optional(),
+  query: z.record(z.any().nullish()),
+  counterPartyId: z.any().nullish(),
+  preprocessing: z
+    .object({
+      useNer: z.boolean().optional(),
+      skipIfUnder: z.number().optional(),
+      removeNumbers: z.boolean().optional(),
+      blacklistListId: z.string().optional(),
+    })
+    .optional(),
 });
 
 type EditSanctionForm = z.infer<typeof editSanctionFormSchema>;
@@ -155,19 +162,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (!success) return json({ status: 'error', errors: error.flatten() });
 
   try {
-    const nameQuery = data.query?.name;
-
-    await scenarioIterationSanctionRepository.upsertSanctionCheckConfig({
+    await scenarioIterationSanctionRepository.updateSanctionCheckConfig({
       iterationId: fromParams(params, 'iterationId'),
-      changes: {
-        ...data,
-        counterPartyId: data.counterPartyId as AstNode | undefined,
-        triggerRule: data.triggerRule as AstNode | undefined,
-        query: {
-          name: nameQuery && isStringConcatAstNode(nameQuery) ? nameQuery : undefined,
-          label: data.query?.label as AstNode | undefined,
-        },
-      },
+      sanctionId: fromParams(params, 'sanctionId'),
+      changes: data,
     });
 
     setToastMessage(session, {
@@ -200,9 +198,11 @@ export default function SanctionDetail() {
     | undefined;
   const scenario = useCurrentScenario();
   const ruleGroups = useRuleGroups();
-  const { id: iterationId, sanctionCheckConfig } = useCurrentScenarioIteration();
+  const configId = useParam('sanctionId');
+  const { id: iterationId, sanctionCheckConfigs } = useCurrentScenarioIteration();
   const descriptionRef = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const sanctionCheckConfig = sanctionCheckConfigs.find((c) => c.id === configId);
   const intersection = useIntersection(descriptionRef, {
     root: containerRef.current,
     rootMargin: '-30px',
@@ -221,17 +221,18 @@ export default function SanctionDetail() {
       onSubmit: editSanctionFormSchema,
     },
     defaultValues: {
+      id: sanctionCheckConfig?.id,
       name: sanctionCheckConfig?.name ?? 'Sanction Check',
       description: sanctionCheckConfig?.description ?? '',
       ruleGroup: sanctionCheckConfig?.ruleGroup ?? 'Sanction Check',
       datasets: sanctionCheckConfig?.datasets ?? [],
+      threshold: sanctionCheckConfig?.threshold,
       forcedOutcome: (sanctionCheckConfig?.forcedOutcome as SanctionOutcome) ?? 'block_and_review',
       triggerRule: sanctionCheckConfig?.triggerRule,
-      query: {
-        name: sanctionCheckConfig?.query?.name,
-        label: sanctionCheckConfig?.query?.label,
-      },
+      entityType: sanctionCheckConfig?.entityType,
+      query: sanctionCheckConfig?.query,
       counterPartyId: sanctionCheckConfig?.counterPartyId,
+      preprocessing: sanctionCheckConfig?.preprocessing,
     } as EditSanctionForm,
   });
 
@@ -474,7 +475,7 @@ export default function SanctionDetail() {
                       </form.Field>
                       <form.Field name="query.label">
                         {(field) => {
-                          const value = sanctionCheckConfig?.query?.label;
+                          const value = sanctionCheckConfig?.query?.['label'];
                           return (
                             <div className="flex flex-col gap-4">
                               <FormLabel name={field.name}>

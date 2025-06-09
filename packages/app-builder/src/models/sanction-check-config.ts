@@ -1,54 +1,82 @@
 import { type SanctionCheckConfigDto } from 'marble-api';
+import { mapValues } from 'radash';
 
 import { adaptAstNode, adaptNodeDto, type AstNode } from './astNode/ast-node';
 import { type Outcome } from './outcome';
 
 export type SanctionCheckConfig = Partial<{
+  id: string;
   name: string;
   description: string;
   ruleGroup: string;
   datasets: string[];
+  threshold: number;
   forcedOutcome: Outcome;
   triggerRule: AstNode;
+  entityType: SanctionCheckConfigDto['entity_type'];
   query: Partial<{
     name: AstNode;
-    label: AstNode;
+    [key: string]: AstNode;
   }>;
   counterPartyId: AstNode;
+  preprocessing?: {
+    useNer?: boolean;
+    skipIfUnder?: number;
+    removeNumbers?: boolean;
+    blacklistListId?: string;
+  };
 }>;
 
 export function adaptSanctionCheckConfig(dto: SanctionCheckConfigDto): SanctionCheckConfig {
   return {
+    id: dto.id,
     name: dto.name,
     description: dto.description,
     ruleGroup: dto.rule_group,
     datasets: dto.datasets,
+    threshold: dto.threshold,
     forcedOutcome: dto.forced_outcome,
     triggerRule: dto.trigger_rule ? adaptAstNode(dto.trigger_rule) : undefined,
-    query: {
-      name: dto.query?.name ? adaptAstNode(dto.query.name) : undefined,
-      label: dto.query?.label ? adaptAstNode(dto.query.label) : undefined,
-    },
+    entityType: dto.entity_type,
+    query: mapValues(dto.query ?? {}, (node) => (node ? adaptAstNode(node) : undefined)),
     counterPartyId: dto.counterparty_id_expression
       ? adaptAstNode(dto.counterparty_id_expression)
+      : undefined,
+    preprocessing: dto.preprocessing
+      ? {
+          useNer: dto.preprocessing.use_ner,
+          skipIfUnder: dto.preprocessing.skip_if_under,
+          removeNumbers: dto.preprocessing.remove_numbers,
+          blacklistListId: dto.preprocessing.blacklist_list_id,
+        }
       : undefined,
   };
 }
 
 export function adaptSanctionCheckConfigDto(config: SanctionCheckConfig): SanctionCheckConfigDto {
   return {
+    id: config.id,
     name: config.name,
     description: config.description,
     rule_group: config.ruleGroup,
     datasets: config.datasets,
+    threshold: config.threshold,
     forced_outcome: config.forcedOutcome,
     trigger_rule: config.triggerRule ? adaptNodeDto(config.triggerRule) : undefined,
-    query: {
-      name: config.query?.name ? adaptNodeDto(config.query.name) : undefined,
-      label: config.query?.label ? adaptNodeDto(config.query.label) : undefined,
-    },
+    entity_type: config.entityType,
+    query: mapValues(config.query ?? {}, (node) =>
+      node ? adaptNodeDto(node) : undefined,
+    ) as SanctionCheckConfigDto['query'],
     counterparty_id_expression: config.counterPartyId
       ? adaptNodeDto(config.counterPartyId)
+      : undefined,
+    preprocessing: config.preprocessing
+      ? {
+          use_ner: config.preprocessing.useNer,
+          skip_if_under: config.preprocessing.skipIfUnder,
+          remove_numbers: config.preprocessing.removeNumbers,
+          blacklist_list_id: config.preprocessing.blacklistListId,
+        }
       : undefined,
   };
 }

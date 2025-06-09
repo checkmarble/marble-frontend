@@ -303,17 +303,10 @@
     tags:
       - Scenario Iterations
     summary: Create a sanction check for a scenario iteration
-    operationId: createtSanctionCheckConfig
+    operationId: createSanctionCheckConfig
     parameters:
       - name: scenarioIterationId
         description: ID of the scenario iteration
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: sanctionCheckConfigId
-        description: ID of the screening config to update
         in: path
         required: true
         schema:

@@ -26,7 +26,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const iterationId = fromParams(params, 'iterationId');
 
   try {
-    await scenarioIterationSanctionRepository.upsertSanctionCheckConfig({
+    const config = await scenarioIterationSanctionRepository.createSanctionCheckConfig({
       iterationId,
       changes: {
         name: 'Sanction Check',
@@ -36,9 +36,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return redirect(
-      getRoute('/scenarios/:scenarioId/i/:iterationId/sanction', {
+      getRoute('/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId', {
         scenarioId: fromUUIDtoSUUID(scenarioId),
         iterationId: fromUUIDtoSUUID(iterationId),
+        sanctionId: fromUUIDtoSUUID(config.id as string),
       }),
     );
   } catch (error) {
@@ -53,20 +54,14 @@ export function CreateSanction({
   scenarioId,
   iterationId,
   isSanctionAvailable,
-  hasAlreadyASanction,
 }: {
   scenarioId: string;
   iterationId: string;
   isSanctionAvailable: FeatureAccessLevelDto;
-  hasAlreadyASanction: boolean;
 }) {
   const { t } = useTranslation(['scenarios']);
   const fetcher = useFetcher<typeof action>();
-
-  const disabled = useMemo(
-    () => hasAlreadyASanction || !isAccessible(isSanctionAvailable),
-    [hasAlreadyASanction, isSanctionAvailable],
-  );
+  const disabled = useMemo(() => !isAccessible(isSanctionAvailable), [isSanctionAvailable]);
 
   return (
     <fetcher.Form
@@ -92,9 +87,7 @@ export function CreateSanction({
                 'text-grey-80': disabled,
               })}
             >
-              {hasAlreadyASanction
-                ? t('scenarios:already_one_sanction')
-                : t('scenarios:create_sanction.description')}
+              {t('scenarios:create_sanction.description')}
             </span>
           </div>
         </div>
