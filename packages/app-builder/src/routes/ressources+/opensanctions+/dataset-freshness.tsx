@@ -34,7 +34,7 @@ async function getDatasetFreshnessInfo(
       }),
     ),
     R.flat(),
-    R.filter((iteration) => R.isNonNullish(iteration?.sanctionCheckConfig)),
+    R.filter((iteration) => (iteration?.sanctionCheckConfigs.length ?? 0) > 0),
   ) as ScenarioIteration[];
 
   if (iterationsWithSanctionCheck.length > 0) {

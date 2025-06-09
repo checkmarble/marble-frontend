@@ -263,6 +263,8 @@ components:
         query:
           description: Mapping from OpenSanction entity field to AST node. All entity types support the `name` field. Additional field will depend on the selected entity type.
           type: object
+          required:
+            - name
           additionalProperties:
             $ref: 'ast.yml#/components/schemas/NodeDto'
           properties:
