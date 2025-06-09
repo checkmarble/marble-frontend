@@ -258,6 +258,7 @@ export default function CaseManagerIndexPage() {
     pivotObjects,
     currentUser,
     nextCaseId,
+    entitlements: { AiAssist },
   } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
   const navigate = useNavigate();
@@ -284,10 +285,12 @@ export default function CaseManagerIndexPage() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
         <div className="flex items-center gap-2">
-          <Button variant="secondary" size="medium" onClick={handleAiAssistClick}>
-            <Icon icon="case-manager" className="size-5" />
-            <span className="text-s"> AI assist</span>
-          </Button>
+          {AiAssist === 'allowed' ? (
+            <Button variant="secondary" size="medium" onClick={handleAiAssistClick}>
+              <Icon icon="case-manager" className="size-5" />
+              <span className="text-s"> AI assist</span>
+            </Button>
+          ) : null}
           {nextCaseId ? (
             <Button
               variant="secondary"
