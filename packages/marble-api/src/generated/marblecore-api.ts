@@ -636,7 +636,7 @@ export type SanctionCheckConfigDto = {
     entity_type?: "Thing" | "Person" | "Organization" | "Vehicle";
     /** Mapping from OpenSanction entity field to AST node. All entity types support the `name` field. Additional field will depend on the selected entity type. */
     query?: {
-        name?: NodeDto;
+        name: NodeDto;
         [key: string]: NodeDto;
     };
     counterparty_id_expression?: NodeDto;
