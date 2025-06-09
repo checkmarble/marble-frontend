@@ -84,5 +84,8 @@
   "create_pivot.select_entity.button_same_table": "Select a field in <Code>{{table}}</Code>",
   "create_pivot.select_entity.search_placeholder": "Search by entity name",
   "create_pivot.entity_selection.search.placeholder": "Select or search an entity",
-  "create_pivot.button.label": "Create a decision group "
+  "create_pivot.button.label": "Create a decision group",
+  "view_pivot.link.description": "Look up the <Code>{{parent}}</Code> corresponding to a <Code>{{child}}</Code> entity by following the link <Code>{{link}}</Code>.",
+  "view_pivot.self_link.description": "Decisions are grouped with decisions on other entities that have been configured to group at the <Code>{{table}}</Code> level",
+  "view_pivot.field.description": "Decisions on entities of the type <Code>{{table}}</Code> are grouped by the field <Code>{{field}}</Code>, allowing to snooze rules and group decisions into cases."
 }

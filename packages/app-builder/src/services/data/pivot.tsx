@@ -157,5 +157,5 @@ export function getPivotDisplayValue(pivot: Pivot): string {
   if (pivot.type === 'field') {
     return pivot.field;
   }
-  return pivot.pathLinks.join('->');
+  return `->${pivot.pathLinks.join('->')}`;
 }
