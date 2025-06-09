@@ -4,8 +4,8 @@ import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
 import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
-import { getCoreRowModel } from '@tanstack/react-table';
-import * as React from 'react';
+import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Collapsible, Table, Tooltip, useVirtualTable } from 'ui-design-system';
 
@@ -83,7 +83,9 @@ export function PivotDetail({ pivotValues, existingPivotDefinition }: PivotDetai
 function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
   const { t } = useTranslation(decisionsI18n);
 
-  const columns = React.useMemo(
+  const columnHelper = useMemo(() => createColumnHelper<{ pivot: Pivot; value: string }>(), []);
+
+  const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row.pivot.type, {
         id: 'type',
@@ -119,7 +121,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
         ),
       }),
     ],
-    [t],
+    [t, columnHelper],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
