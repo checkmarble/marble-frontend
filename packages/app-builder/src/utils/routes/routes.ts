@@ -220,9 +220,9 @@ export const routes = [
                         "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/rules.$ruleId.tsx"
                       },
                       {
-                        "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/sanction",
-                        "path": "sanction",
-                        "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/sanction.tsx"
+                        "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/sanctions.$sanctionId",
+                        "path": "sanctions/:sanctionId",
+                        "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/sanctions.$sanctionId.tsx"
                       }
                     ]
                   },
