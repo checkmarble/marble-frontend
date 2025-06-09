@@ -67,7 +67,7 @@ function adaptLinkPivotOption({
     parentTableName: pathLinks[pathLinks.length - 1]?.parentTableName,
     length: pathLinks.length,
     id: pathLinkIds.join('.'),
-    displayPath: pathLinks.map((link) => link.name).join('->'),
+    displayPath: `->${pathLinks.map((link) => link.name).join('->')}`,
     displayValue: pathLinks[pathLinks.length - 1]?.parentTableName ?? '',
   };
 }
