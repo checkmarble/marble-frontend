@@ -478,7 +478,9 @@ export function DisplayPivot(pivot: Pivot) {
     >
       <Icon icon="center-focus" className="size-6" />
       {pivot.type === 'field' ? (
-        <span className="text-grey-00">{pivot.field}</span>
+        <span className="text-grey-00">
+          {pivot.field === 'object_id' ? pivot.baseTable : pivot.field}
+        </span>
       ) : (
         pivot.pathLinks.map((table) => (
           <React.Fragment key={`pivot-${pivot.baseTable}-${table}`}>
