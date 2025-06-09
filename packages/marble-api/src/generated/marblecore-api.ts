@@ -625,6 +625,7 @@ export type ScenarioIterationDto = {
     updated_at: string;
 };
 export type SanctionCheckConfigDto = {
+    id?: string;
     name?: string;
     description?: string;
     rule_group?: string;
@@ -2590,7 +2591,7 @@ export function commitScenarioIteration(scenarioIterationId: string, opts?: Oaza
 /**
  * Create a sanction check for a scenario iteration
  */
-export function createtSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigId: string, sanctionCheckConfigDto?: SanctionCheckConfigDto, opts?: Oazapfts.RequestOpts) {
+export function createSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigDto?: SanctionCheckConfigDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: SanctionCheckConfigDto;

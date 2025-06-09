@@ -6,24 +6,34 @@ import {
 } from '@app-builder/models/sanction-check-config';
 
 export interface ScenarioIterationSanctionRepository {
-  upsertSanctionCheckConfig(args: {
+  createSanctionCheckConfig(args: {
     iterationId: string;
     changes: SanctionCheckConfig;
   }): Promise<SanctionCheckConfig>;
-  deleteSanctioncheckConfig(args: { iterationId: string }): Promise<void>;
+  updateSanctionCheckConfig(args: {
+    iterationId: string;
+    sanctionId: string;
+    changes: SanctionCheckConfig;
+  }): Promise<SanctionCheckConfig>;
+  deleteSanctioncheckConfig(args: { iterationId: string; sanctionId: string }): Promise<void>;
 }
 
 export function makeGetScenarioIterationSanctionRepository() {
   return (client: MarbleCoreApi): ScenarioIterationSanctionRepository => ({
-    deleteSanctioncheckConfig: async ({ iterationId }) => {
-      await client.deleteSanctionCheckConfig(iterationId);
+    deleteSanctioncheckConfig: async ({ iterationId, sanctionId }) => {
+      await client.deleteSanctionCheckConfig(iterationId, sanctionId);
     },
-    upsertSanctionCheckConfig: async ({ iterationId, changes }) => {
-      const config = await client.upsertSanctionCheckConfig(
-        iterationId,
-        adaptSanctionCheckConfigDto(changes),
-      );
-      return adaptSanctionCheckConfig(config);
-    },
+    createSanctionCheckConfig: async ({ iterationId, changes }) =>
+      adaptSanctionCheckConfig(
+        await client.createSanctionCheckConfig(iterationId, adaptSanctionCheckConfigDto(changes)),
+      ),
+    updateSanctionCheckConfig: async ({ iterationId, sanctionId, changes }) =>
+      adaptSanctionCheckConfig(
+        await client.upsertSanctionCheckConfig(
+          iterationId,
+          sanctionId,
+          adaptSanctionCheckConfigDto(changes),
+        ),
+      ),
   });
 }
