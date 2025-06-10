@@ -348,8 +348,11 @@ function DataTableActionsButton({
 }: DataTableActionsButtonProps) {
   const { t } = useTranslation(['cases', 'common']);
   const [annotationMenuOpen, setAnnotationMenuOpen] = useState(false);
-  const annotationCount = sourceObject.annotations?.comments.length ?? 0;
-  const showCommentAction = annotationCount > 0 || annotationMenuOpen;
+  const annotations = sourceObject.annotations ?? { files: [], comments: [], tags: [] };
+
+  const annotationsCount =
+    annotations.comments.length + annotations.files.length + annotations.tags.length;
+  const showCommentAction = annotationsCount > 0 || annotationMenuOpen;
 
   if (!sourceObject.data.object_id) {
     return null;
@@ -367,7 +370,7 @@ function DataTableActionsButton({
                 className="hover:border-purple-65 data-[state=open]:border-purple-65 items-center rounded-r-none hover:z-10 data-[state=open]:z-10"
               >
                 <Icon icon="comment" className="size-4" />
-                <span className="text-xs font-normal">{annotationCount}</span>
+                <span className="text-xs font-normal">{annotationsCount}</span>
               </Button>
             </Popover.Trigger>
           ) : null}
@@ -411,7 +414,7 @@ function DataTableActionsButton({
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
                         {t('cases:annotations.popover.annotate.title')}{' '}
-                        <span className="text-grey-80 text-xs">{annotationCount}</span>
+                        <span className="text-grey-80 text-xs">{annotationsCount}</span>
                       </div>
                       <span className="text-grey-50">
                         {t('cases:annotations.popover.annotate.subtitle')}
