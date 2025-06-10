@@ -28,7 +28,13 @@ import { parseIdParamSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
-import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
+import {
+  defer,
+  isRouteErrorResponse,
+  useLoaderData,
+  useNavigate,
+  useRouteError,
+} from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { Future, Result } from '@swan-io/boxed';
 import { type Namespace } from 'i18next';
@@ -187,7 +193,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     return redirect(getRoute('/cases/inboxes'));
   }
 
-  return {
+  return defer({
     case: currentCase,
     pivotObjects,
     dataModelWithTableOptions,
@@ -200,7 +206,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     decisionsPromise,
     rulesByPivotPromise,
     entitlements,
-  };
+  });
 };
 
 export const handle = {
