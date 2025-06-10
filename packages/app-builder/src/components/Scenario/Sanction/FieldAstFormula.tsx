@@ -91,12 +91,14 @@ export const FieldAstFormula = ({
       ) : editor === 'edit' ? (
         <div className="flex justify-end">
           {isAstNull ? (
-            <Button type="button" variant="secondary" onClick={handleAddTrigger}>
-              {t('scenarios:trigger.trigger_object.add_trigger')}
+            <Button type="button" variant="secondary" size="medium" onClick={handleAddTrigger}>
+              <span className="text-xs">{t('scenarios:trigger.trigger_object.add_trigger')}</span>
             </Button>
           ) : (
-            <Button type="button" variant="secondary" onClick={handleDeleteTrigger}>
-              {t('scenarios:trigger.trigger_object.delete_trigger')}
+            <Button type="button" variant="secondary" size="medium" onClick={handleDeleteTrigger}>
+              <span className="text-xs">
+                {t('scenarios:trigger.trigger_object.delete_trigger')}
+              </span>
             </Button>
           )}
         </div>

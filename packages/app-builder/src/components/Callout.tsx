@@ -44,7 +44,7 @@ export function Callout({
 
   return (
     <div className={callout({ color, variant, className, bordered })} {...otherProps}>
-      <Icon icon="lightbulb" className="size-6 shrink-0" />
+      <Icon icon="lightbulb" className="size-4 shrink-0" />
       {children}
     </div>
   );

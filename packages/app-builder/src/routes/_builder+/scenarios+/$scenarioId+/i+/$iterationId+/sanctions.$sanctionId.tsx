@@ -7,6 +7,7 @@ import {
 } from '@app-builder/components/Breadcrumbs';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
+import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
@@ -24,7 +25,8 @@ import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scen
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
-import { getFieldErrors } from '@app-builder/utils/form';
+import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
+import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -202,6 +204,7 @@ export default function SanctionDetail() {
   const { id: iterationId, sanctionCheckConfigs } = useCurrentScenarioIteration();
   const descriptionRef = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { org } = useOrganizationDetails();
   const sanctionCheckConfig = sanctionCheckConfigs.find((c) => c.id === configId);
   const intersection = useIntersection(descriptionRef, {
     root: containerRef.current,
@@ -265,17 +268,10 @@ export default function SanctionDetail() {
       </Page.Header>
       <Page.Container ref={containerRef}>
         <Page.Content className="pt-0 lg:pt-0">
-          <form
-            className="relative flex max-w-[800px] flex-col"
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              form.handleSubmit();
-            }}
-          >
+          <form className="relative flex max-w-[800px] flex-col" onSubmit={handleSubmit(form)}>
             <div
               className={cn(
-                'bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between gap-4',
+                'bg-purple-99 sticky top-0 z-[60] flex h-[88px] items-center justify-between gap-4',
                 {
                   'border-b-grey-90 border-b': !intersection?.isIntersecting,
                 },
@@ -301,14 +297,14 @@ export default function SanctionDetail() {
               {editor === 'edit' ? (
                 <div className="flex items-center gap-2">
                   <DeleteSanction iterationId={iterationId} scenarioId={scenario.id}>
-                    <Button color="red" className="w-fit">
-                      <Icon icon="delete" className="size-5" aria-hidden />
+                    <Button color="red" className="w-fit" size="small">
+                      <Icon icon="delete" className="size-4" aria-hidden />
                       {t('common:delete')}
                     </Button>
                   </DeleteSanction>
 
-                  <Button type="submit" className="flex-1">
-                    <Icon icon="save" className="size-5" aria-hidden />
+                  <Button type="submit" className="flex-1" size="small">
+                    <Icon icon="save" className="size-4" aria-hidden />
                     {t('common:save')}
                   </Button>
                 </div>
@@ -325,7 +321,7 @@ export default function SanctionDetail() {
                         disabled={editor === 'view'}
                         onChange={(e) => field.handleChange(e.currentTarget.value)}
                         onBlur={field.handleBlur}
-                        className="form-textarea text-grey-50 text-s w-full resize-none border-none bg-transparent font-medium outline-none"
+                        className="form-textarea text-grey-50 text-r w-full resize-none border-none bg-transparent font-medium outline-none"
                         placeholder={t('scenarios:sanction_description_placeholder')}
                       />
                       <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -336,7 +332,7 @@ export default function SanctionDetail() {
                   {(field) => (
                     <div className="flex flex-col gap-2">
                       <FieldRuleGroup
-                        disabled={editor === 'view'}
+                        disabled
                         onChange={field.handleChange}
                         onBlur={field.handleBlur}
                         selectedRuleGroup={field.state.value}
@@ -349,12 +345,12 @@ export default function SanctionDetail() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <span className="text-s font-medium">
+                <span className="text-s font-semibold">
                   {t('scenarios:edit_sanction.global_settings')}
                 </span>
-                <div className="bg-grey-100 border-grey-90 rounded-md border p-6">
-                  <Callout variant="outlined" className="mb-4 lg:mb-6">
-                    <p className="whitespace-pre text-wrap">
+                <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded-md border p-4">
+                  <Callout variant="outlined">
+                    <span>
                       <Trans
                         t={t}
                         i18nKey="scenarios:sanction.trigger_object.callout"
@@ -364,7 +360,7 @@ export default function SanctionDetail() {
                           ),
                         }}
                       />
-                    </p>
+                    </span>
                   </Callout>
                   <form.Field name="triggerRule">
                     {(field) => (
@@ -380,11 +376,40 @@ export default function SanctionDetail() {
                     )}
                   </form.Field>
                 </div>
-                <div className="bg-grey-100 border-grey-90 rounded-md border p-6">
+                <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded-md border p-4">
                   <div className="flex items-center gap-2">
-                    <span className="bg-grey-95 text-grey-50 text-s inline-flex rounded p-2 font-medium">
-                      {t('scenarios:sanction_forced_outcome_heading')}
+                    <span className="text-s">
+                      {t('scenarios:edit_sanction.consideration_matchings')}
                     </span>
+                    <form.Field name="threshold">
+                      {(field) => (
+                        <div className="flex flex-col gap-1">
+                          <FormInput
+                            type="number"
+                            name={field.name}
+                            onBlur={field.handleBlur}
+                            className="z-0 w-14 py-1.5"
+                            defaultValue={field.state.value}
+                            min={org.sanctionThreshold}
+                            onChange={(e) => field.handleChange(+e.currentTarget.value)}
+                            valid={field.state.meta.errors?.length === 0}
+                          />
+                          <FormErrorOrDescription
+                            errors={getFieldErrors(field.state.meta.errors)}
+                          />
+                        </div>
+                      )}
+                    </form.Field>
+                    <span className="text-s">%</span>
+                  </div>
+                  <span className="text-s inline-flex items-center gap-2">
+                    <span>{t('scenarios:edit_sanction.default_value')}</span>
+                    <span className="bg-grey-90 rounded p-1 px-1.5 font-medium">
+                      {org.sanctionThreshold}%
+                    </span>
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-s">{t('scenarios:sanction_forced_outcome_heading')}</span>
                     <form.Field name="forcedOutcome">
                       {(field) => (
                         <div className="flex flex-col gap-1">
@@ -407,13 +432,13 @@ export default function SanctionDetail() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <span className="text-s inline-flex items-center gap-2 font-medium">
+                <span className="text-s inline-flex items-center gap-2 font-semibold">
                   {t('scenarios:sanction_counterparty_id')}
                   <FieldToolTip>{t('scenarios:sanction_counterparty_id.tooltip')}</FieldToolTip>
                 </span>
                 <form.Field name="counterPartyId">
                   {(field) => (
-                    <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded border p-6">
+                    <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded border p-4">
                       <AstBuilder.Provider
                         scenarioId={scenario.id}
                         initialData={options}
@@ -434,7 +459,7 @@ export default function SanctionDetail() {
 
               <AstBuilder.Provider scenarioId={scenario.id} initialData={options} mode={editor}>
                 <div className="flex flex-col gap-2">
-                  <span className="text-s font-medium">
+                  <span className="text-s font-semibold">
                     {t('scenarios:sanction.match_settings.title')}
                   </span>
                   <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded border p-6">

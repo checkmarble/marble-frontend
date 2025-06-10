@@ -34,8 +34,13 @@ export const FieldOutcomes = ({
       onSearchValueChange={setSearchValue}
       onSelectedValueChange={onChange}
     >
-      <SelectWithCombobox.Select name={name} disabled={disabled} onBlur={onBlur} className="w-full">
-        {selectedOutcome ? <OutcomeBadge size="md" outcome={selectedOutcome} /> : null}
+      <SelectWithCombobox.Select
+        name={name}
+        disabled={disabled}
+        onBlur={onBlur}
+        className="hover:bg-grey-98 w-full border-0 transition-colors"
+      >
+        {selectedOutcome ? <OutcomeBadge size="sm" outcome={selectedOutcome} /> : null}
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
       <SelectWithCombobox.Popover className="z-50 flex flex-col gap-2 p-2">
@@ -43,7 +48,7 @@ export const FieldOutcomes = ({
         <SelectWithCombobox.ComboboxList>
           {matches.map((outcome) => (
             <SelectWithCombobox.ComboboxItem key={outcome} value={outcome}>
-              <OutcomeBadge size="md" outcome={outcome} />
+              <OutcomeBadge size="sm" outcome={outcome} />
             </SelectWithCombobox.ComboboxItem>
           ))}
         </SelectWithCombobox.ComboboxList>
