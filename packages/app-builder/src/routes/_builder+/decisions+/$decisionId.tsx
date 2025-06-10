@@ -26,7 +26,7 @@ import { parseParamsSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { defer, type LoaderFunctionArgs } from '@remix-run/node';
+import { type LoaderFunctionArgs } from '@remix-run/node';
 import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
@@ -79,20 +79,22 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   try {
     const currentDecision = await decision.getDecisionById(decisionId);
 
-    const pivotsPromise = dataModelRepository.listPivots({});
+    const [pivots, scenarioRules, sanctionCheckResult] = await Promise.all([
+      dataModelRepository.listPivots({}),
+      scenario
+        .getScenarioIteration({
+          iterationId: currentDecision.scenario.scenarioIterationId,
+        })
+        .then((iteration) => iteration.rules),
+      sanctionCheck.listSanctionChecks({ decisionId }),
+    ]);
 
-    const scenarioRules = await scenario
-      .getScenarioIteration({
-        iterationId: currentDecision.scenario.scenarioIterationId,
-      })
-      .then((iteration) => iteration.rules);
-
-    return defer({
+    return {
       decision: currentDecision,
       scenarioRules,
-      pivots: await pivotsPromise,
-      sanctionCheck: (await sanctionCheck.listSanctionChecks({ decisionId }))?.[0],
-    });
+      pivots,
+      sanctionCheck: sanctionCheckResult?.[0],
+    };
   } catch (error) {
     if (isNotFoundHttpError(error)) {
       return notFound(null);
