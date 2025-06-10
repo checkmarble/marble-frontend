@@ -43,7 +43,7 @@ export function DeleteTag({ tag }: { tag: Tag }) {
     }
   }, [navigation.state]);
 
-  if (tag.cases_count !== 0) {
+  if (tag.cases_count !== 0 && tag.cases_count !== null) {
     return (
       <Icon
         icon="delete"
