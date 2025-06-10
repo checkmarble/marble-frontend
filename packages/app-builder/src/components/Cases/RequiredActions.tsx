@@ -41,9 +41,13 @@ export const RequiredActions = ({
           >
             <Button variant="secondary" size="xs">
               <span>
-                {t('cases:required_actions.review_screening_hits', {
-                  count: pendingSanctionMatches || decision.sanctionChecks.length,
-                })}
+                {pendingSanctionMatches > 0
+                  ? t('cases:required_actions.review_screening_hits', {
+                      count: pendingSanctionMatches,
+                    })
+                  : t('cases:required_actions.see_screening_hits', {
+                      count: decision.sanctionChecks.length,
+                    })}
               </span>
             </Button>
           </Link>

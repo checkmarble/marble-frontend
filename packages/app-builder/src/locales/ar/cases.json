@@ -197,5 +197,6 @@
   "annotations.documents.add_file": "إضافة ملف",
   "annotations.documents.upload_file": "تحميل ملف",
   "annotations.popover.annotate.subtitle": "التعليق ، إضافة ملف ، إضافة علامة",
-  "annotations.popover.annotate.title": "علق"
+  "annotations.popover.annotate.title": "علق",
+  "required_actions.see_screening_hits": "انظر أغاني الفحص ({{count}})"
 }

@@ -197,5 +197,6 @@
   "annotations.documents.add_file": "Ajouter un fichier",
   "annotations.documents.upload_file": "Télécharger un fichier",
   "annotations.popover.annotate.subtitle": "Commenter, ajouter un fichier, ajouter la balise",
-  "annotations.popover.annotate.title": "Annoter"
+  "annotations.popover.annotate.title": "Annoter",
+  "required_actions.see_screening_hits": "Voir les sanctions ({{count}})"
 }

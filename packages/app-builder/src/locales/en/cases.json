@@ -196,5 +196,6 @@
   "annotations.comments.see_others_one": "See {{count}} other",
   "annotations.comments.see_others_other": "See {{count}} others",
   "annotations.popover.annotate.title": "Annotate",
-  "annotations.popover.annotate.subtitle": "Comment, add file, add tag"
+  "annotations.popover.annotate.subtitle": "Comment, add file, add tag",
+  "required_actions.see_screening_hits": "See screening hits ({{count}})"
 }
