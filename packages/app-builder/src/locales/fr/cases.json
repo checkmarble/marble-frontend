@@ -159,7 +159,6 @@
   "escalate-button.label": "Escalader",
   "escalate-case.modal.submit-button.label": "Escalader",
   "required_actions.decide_final_status": "Choisir le statut final",
-  "required_actions.no_more_pending_sanction_checks": "Filtrage de sanction terminé",
   "required_actions.review_screening_hits": "Filtrage de sanctions ({{count}})",
   "case_detail.history.event_detail.decision_reviewed": "Décision examinée à <Statut /> par <Actor>{{actor}}</Actor>",
   "case_detail.history.event_detail.rule_snooze_created": "Règle désactivée par <Actor>{{actor}}</Actor>",

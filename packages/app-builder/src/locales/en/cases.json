@@ -164,7 +164,6 @@
   "decisions.rules": "Rules",
   "next_unassigned_case": "Go to the next unassigned case",
   "required_actions.review_screening_hits": "Review screening hits ({{count}})",
-  "required_actions.no_more_pending_sanction_checks": "No more pending sanction checks",
   "required_actions.decide_final_status": "Decide final status",
   "filter.include_snoozed.label": "Include snoozed",
   "filter.exclude_assigned.label": "Unassigned only",

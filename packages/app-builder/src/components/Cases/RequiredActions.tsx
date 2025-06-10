@@ -33,24 +33,20 @@ export const RequiredActions = ({
       {isThereSanctionChecks ? (
         <div className="flex items-center gap-2.5">
           <Checkbox disabled={true} size="small" checked={pendingSanctionMatches === 0} />
-          {pendingSanctionMatches > 0 ? (
-            <Link
-              to={getRoute('/cases/:caseId/sanctions/:decisionId', {
-                caseId: fromUUIDtoSUUID(caseId),
-                decisionId: fromUUIDtoSUUID(decision.id),
-              })}
-            >
-              <Button variant="secondary" size="xs">
-                <span>
-                  {t('cases:required_actions.review_screening_hits', {
-                    count: pendingSanctionMatches,
-                  })}
-                </span>
-              </Button>
-            </Link>
-          ) : (
-            <span>{t('cases:required_actions.no_more_pending_sanction_checks')}</span>
-          )}
+          <Link
+            to={getRoute('/cases/:caseId/sanctions/:decisionId', {
+              caseId: fromUUIDtoSUUID(caseId),
+              decisionId: fromUUIDtoSUUID(decision.id),
+            })}
+          >
+            <Button variant="secondary" size="xs">
+              <span>
+                {t('cases:required_actions.review_screening_hits', {
+                  count: pendingSanctionMatches || decision.sanctionChecks.length,
+                })}
+              </span>
+            </Button>
+          </Link>
         </div>
       ) : null}
       {isPendingDecision ? (

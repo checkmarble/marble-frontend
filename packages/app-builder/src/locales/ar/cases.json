@@ -162,7 +162,6 @@
   "escalate-case.modal.callout": "عند تصعيد هذه الحالة ، لن يتم تخصيصها لها ، وسوف تفقد الوصول إذا لم تكن عضوًا في صندوق الوارد المستهدف. <br/> سيتم إعادة توجيهك إلى قائمة الحالات في صندوق الوارد الحالي.",
   "escalate-case.modal.submit-button.label": "تصاعد",
   "required_actions.decide_final_status": "تقرر الوضع النهائي",
-  "required_actions.no_more_pending_sanction_checks": "لا مزيد من الشيكات العقوبات المعلقة",
   "required_actions.review_screening_hits": "مراجعة عربات الفحص ({{count}})",
   "filter.include_snoozed.label": "تضمين المؤجّلين",
   "filter.exclude_assigned.label": "غير المكلّفين فقط",
