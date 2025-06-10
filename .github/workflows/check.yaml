@@ -37,5 +37,6 @@ jobs:
 
       - name: Run Biome
         run: biome ci .
+      - run: pnpm run -r type-check
       - run: pnpm run test:all
       - run: pnpm run -r build
