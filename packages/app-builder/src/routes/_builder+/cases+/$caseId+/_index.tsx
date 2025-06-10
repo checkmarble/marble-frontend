@@ -1,5 +1,5 @@
 import { casesI18n, CopyToClipboardButton, ErrorComponent, Page } from '@app-builder/components';
-import { AiAssistContextProvider } from '@app-builder/components/AiAssist';
+import { AiAssist } from '@app-builder/components/AiAssist';
 import {
   BreadCrumbLink,
   type BreadCrumbProps,
@@ -40,7 +40,7 @@ import { Future, Result } from '@swan-io/boxed';
 import { type Namespace } from 'i18next';
 import { pick } from 'radash';
 import { unique } from 'radash';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { filter, flat, groupBy, map, mapValues, omit, pipe, uniqueBy } from 'remeda';
@@ -264,7 +264,7 @@ export default function CaseManagerIndexPage() {
     pivotObjects,
     currentUser,
     nextCaseId,
-    entitlements: { AiAssist },
+    entitlements: { AiAssist: aiAssistEnabled },
   } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
   const navigate = useNavigate();
@@ -278,25 +278,29 @@ export default function CaseManagerIndexPage() {
     leftSidebarSharp.actions.setExpanded(false);
   }, [leftSidebarSharp]);
 
-  const toggleAiPanel = useRef<((open: boolean) => void) | null>(null);
-  const handleAiAssistClick = () => {
-    console.log('AI Assist button clicked!');
-    if (toggleAiPanel.current) {
-      toggleAiPanel.current(true);
-    }
-  };
-
   return (
     <Page.Main>
       <Page.Header className="justify-between">
         <BreadCrumbs />
         <div className="flex items-center gap-2">
-          {AiAssist === 'allowed' ? (
-            <Button variant="secondary" size="medium" onClick={handleAiAssistClick}>
-              <Icon icon="case-manager" className="size-5" />
-              <span className="text-s"> AI assist</span>
-            </Button>
-          ) : null}
+          <AiAssist.Root>
+            {aiAssistEnabled === 'allowed' ? (
+              <AiAssist.Trigger>
+                <Button variant="secondary" size="medium">
+                  <Icon icon="case-manager" className="size-5" />
+                  <span className="text-s">AI assist</span>
+                </Button>
+              </AiAssist.Trigger>
+            ) : null}
+
+            <ClientOnly>
+              {() => (
+                <AiAssist.Content>
+                  <FileLink endpoint={`/cases/${details.id}/data_for_investigation`} />
+                </AiAssist.Content>
+              )}
+            </ClientOnly>
+          </AiAssist.Root>
           {nextCaseId ? (
             <Button
               variant="secondary"
@@ -312,13 +316,6 @@ export default function CaseManagerIndexPage() {
         </div>
       </Page.Header>
       <Page.Container className="text-r relative h-full flex-row p-0 lg:p-0">
-        <ClientOnly>
-          {() => (
-            <AiAssistContextProvider setOpenedRef={toggleAiPanel}>
-              <FileLink endpoint={`/cases/${details.id}/data_for_investigation`} />
-            </AiAssistContextProvider>
-          )}
-        </ClientOnly>
         <CaseDetails
           key={details.id}
           currentUser={currentUser}
@@ -385,7 +382,6 @@ export function ErrorBoundary() {
 function FileLink({ endpoint }: { endpoint: string }) {
   const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(endpoint, {
     onError: (e) => {
-      console.log('Error downloading file:', e);
       if (e instanceof AlreadyDownloadingError) {
         // Already downloading, do nothing
         return;
