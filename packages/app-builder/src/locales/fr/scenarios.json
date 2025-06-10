@@ -455,5 +455,7 @@
   "sanction.lists.other": "autres",
   "sanction.lists.peps": "PPE",
   "sanction.lists.sanctions": "sanctions",
-  "sanction.lists.third_parties": "autres"
+  "sanction.lists.third_parties": "autres",
+  "edit_sanction.consideration_matchings": "Considérant les correspondances au-dessus de",
+  "edit_sanction.default_value": "Valeur par défaut"
 }
