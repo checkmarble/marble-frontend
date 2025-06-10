@@ -30,12 +30,13 @@ import { ClientObjectDataList } from './ClientObjectDataList';
 import { type DataModelExplorerNavigationTab } from './types';
 
 export type DataTableRenderProps = {
+  caseId: string;
   item: DataModelExplorerNavigationTab;
   dataModel: DataModelWithTableOptions;
   navigateTo: (tabItem: DataModelExplorerNavigationTab) => void;
 };
 
-export function DataTableRender({ dataModel, item, navigateTo }: DataTableRenderProps) {
+export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTableRenderProps) {
   const { t } = useTranslation(['common', 'cases']);
   const currentTable = dataModel.find((t) => t.name === item.targetTableName);
   const sourceField = item.sourceObject[item.sourceFieldName];
@@ -98,6 +99,7 @@ export function DataTableRender({ dataModel, item, navigateTo }: DataTableRender
         .otherwise((query) => {
           return (
             <DataTable
+              caseId={caseId}
               pivotObject={item.pivotObject}
               table={currentTable}
               navigateTo={navigateTo}
@@ -143,6 +145,7 @@ function getColumnList(tableModel: TableModelWithOptions) {
 }
 
 type DataTableProps = {
+  caseId: string;
   pivotObject: PivotObject;
   table: TableModelWithOptions;
   list: ClientDataListResponse['data'];
@@ -150,7 +153,7 @@ type DataTableProps = {
   navigateTo: (tab: DataModelExplorerNavigationTab) => void;
 };
 
-function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTableProps) {
+function DataTable({ caseId, pivotObject, table, list, pagination, navigateTo }: DataTableProps) {
   const { t } = useTranslation(['common', 'cases']);
   const language = useFormatLanguage();
 
@@ -299,6 +302,7 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
                       <div className="flex items-center justify-between gap-2">
                         {row.index + 1}
                         <DataTableActionsButton
+                          caseId={caseId}
                           navigationOptions={table.navigationOptions}
                           pivotObject={pivotObject}
                           sourceObject={fullSourceObject}
@@ -332,6 +336,7 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
 }
 
 type DataTableActionsButtonProps = {
+  caseId: string;
   navigationOptions: NavigationOption[] | undefined;
   pivotObject: PivotObject;
   sourceObject: ClientObjectDetail;
@@ -340,6 +345,7 @@ type DataTableActionsButtonProps = {
 };
 
 function DataTableActionsButton({
+  caseId,
   navigationOptions,
   pivotObject,
   sourceObject,
@@ -379,6 +385,7 @@ function DataTableActionsButton({
           >
             {sourceObject.data.object_id ? (
               <ClientObjectAnnotationPopover
+                caseId={caseId}
                 tableName={tableName}
                 objectId={sourceObject.data.object_id}
                 annotations={sourceObject.annotations}

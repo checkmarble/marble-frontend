@@ -198,5 +198,7 @@
   "annotations.documents.upload_file": "Télécharger un fichier",
   "annotations.popover.annotate.subtitle": "Commenter, ajouter un fichier, ajouter la balise",
   "annotations.popover.annotate.title": "Annoter",
-  "required_actions.see_screening_hits": "Voir les sanctions ({{count}})"
+  "required_actions.see_screening_hits": "Voir les sanctions ({{count}})",
+  "case_detail.history.event_detail.entity_annotated": "<Actor>{{actor}}</Actor> a annoté <ObjectType>{{objectType}}</ObjectType> avec un <Type>{{type}}</Type>",
+  "case_detail.history.event_type.entity_annotated": "Annotation"
 }
