@@ -249,11 +249,11 @@ export function ClientCommentForm({
   }, [form]);
 
   useEffect(() => {
-    if (fetcher?.data?.success) {
+    if (fetcher) {
       form.setFieldValue('payload.text', '');
       onAnnotateSuccess?.();
     }
-  }, [onAnnotateSuccess, fetcher?.data?.success, form]);
+  }, [onAnnotateSuccess, fetcher, form]);
 
   return (
     <form
@@ -331,11 +331,11 @@ export function ClientDocumentsPopover({
   }, [form]);
 
   useEffect(() => {
-    if (fetcher?.data?.success) {
+    if (fetcher) {
       form.setFieldValue('payload.files', []);
       onAnnotateSuccess?.();
     }
-  }, [onAnnotateSuccess, fetcher?.data?.success, form]);
+  }, [onAnnotateSuccess, fetcher, form]);
 
   const { getInputProps, getRootProps } = useFormDropzone({
     onDrop: (acceptedFiles) => {
@@ -523,10 +523,10 @@ export function ClientTagsEditSelect({
   });
 
   useEffect(() => {
-    if (fetcher?.data?.success) {
+    if (fetcher.data.success) {
       onAnnotateSuccess?.();
     }
-  }, [onAnnotateSuccess, fetcher?.data?.success, form]);
+  }, [onAnnotateSuccess, fetcher, form]);
 
   return (
     <form onSubmit={handleSubmit(form)}>
