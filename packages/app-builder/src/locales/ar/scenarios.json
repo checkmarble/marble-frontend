@@ -455,5 +455,7 @@
   "sanction.lists.other": "آخر",
   "sanction.lists.peps": "بيب",
   "sanction.lists.sanctions": "العقوبات",
-  "sanction.lists.third_parties": "أطراف ثالثة"
+  "sanction.lists.third_parties": "أطراف ثالثة",
+  "edit_sanction.consideration_matchings": "النظر في المباريات أعلاه",
+  "edit_sanction.default_value": "القيمة الافتراضية"
 }
