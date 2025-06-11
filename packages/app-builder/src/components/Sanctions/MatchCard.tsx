@@ -12,6 +12,7 @@ import { Icon } from 'ui-icons';
 import { MatchDetails } from './MatchDetails';
 import { sanctionsI18n } from './sanctions-i18n';
 import { StatusTag } from './StatusTag';
+import { TopicTag } from './TopicTag';
 
 type MatchCardProps = {
   match: SanctionCheckMatch;
@@ -50,6 +51,9 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                     percent: Math.round(match.payload.score * 100),
                   })}
                 </Tag>
+                {match.payload.properties['topics']?.map((topic) => (
+                  <TopicTag key={`${match.id}-${topic}`} topic={topic} />
+                ))}
               </div>
             </CollapsibleV2.Title>
             {!match.enriched ? (

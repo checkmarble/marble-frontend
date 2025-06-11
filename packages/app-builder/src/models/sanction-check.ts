@@ -210,3 +210,79 @@ export function isSanctionCheckError(
 export function isSanctionCheckReviewCompleted(sanctionCheck: SanctionCheck) {
   return sanctionCheck.status === 'no_hit' || sanctionCheck.status === 'confirmed_hit';
 }
+
+export type SanctionsCheckCategories = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
+
+export const SCREENING_TOPICS_MAP = new Map<string, SanctionsCheckCategories>([
+  // Sanctions
+  ['sanction', 'sanctions'],
+  ['sanction.linked', 'sanctions'],
+  ['sanction.counter', 'sanctions'],
+
+  // PEPs
+  ['role.pep', 'peps'],
+  ['role.pol', 'peps'],
+  ['role.rca', 'peps'],
+  ['role.judge', 'peps'],
+  ['role.civil', 'peps'],
+  ['role.diplo', 'peps'],
+  ['role.spy', 'peps'],
+  ['gov.head', 'peps'],
+
+  // Third-parties
+  ['fin.adivsor', 'third-parties'],
+  ['role.lawyer', 'third-parties'],
+  ['role.acct', 'third-parties'],
+  ['role.journo', 'third-parties'],
+  ['role.act', 'third-parties'],
+  ['role.lobby', 'third-parties'],
+
+  // Adverse media
+  ['crime', 'adverse-media'],
+  ['crime.fraud', 'adverse-media'],
+  ['crime.cyber', 'adverse-media'],
+  ['crime.fin', 'adverse-media'],
+  ['crime.env', 'adverse-media'],
+  ['crime.theft', 'adverse-media'],
+  ['crime.war', 'adverse-media'],
+  ['crime.boss', 'adverse-media'],
+  ['crime.terror', 'adverse-media'],
+  ['crime.traffick', 'adverse-media'],
+  ['crime.traffick.drug', 'adverse-media'],
+  ['crime.traffick.human', 'adverse-media'],
+  ['forced.labor', 'adverse-media'],
+  ['asset.frozen', 'adverse-media'],
+  ['wanted', 'adverse-media'],
+  ['corp.disqual', 'adverse-media'],
+  ['reg.action', 'adverse-media'],
+  ['reg.warn', 'adverse-media'],
+  ['debarment', 'adverse-media'],
+  ['pol.party', 'adverse-media'],
+  ['pol.union', 'adverse-media'],
+  ['mil', 'adverse-media'],
+  ['export.control', 'adverse-media'],
+  ['export.risk', 'adverse-media'],
+  ['poi', 'adverse-media'],
+
+  // Default to adverse-media for ambiguous/government/corporate
+  ['corp.offshore', 'adverse-media'],
+  ['corp.shell', 'adverse-media'],
+  ['corp.public', 'adverse-media'],
+  ['gov', 'adverse-media'],
+  ['gov.national', 'adverse-media'],
+  ['gov.state', 'adverse-media'],
+  ['gov.muni', 'adverse-media'],
+  ['gov.soe', 'adverse-media'],
+  ['gov.igo', 'adverse-media'],
+  ['gov.admin', 'adverse-media'],
+  ['gov.executive', 'adverse-media'],
+  ['gov.legislative', 'adverse-media'],
+  ['gov.judicial', 'adverse-media'],
+  ['gov.security', 'adverse-media'],
+  ['gov.financial', 'adverse-media'],
+  ['fin', 'adverse-media'],
+  ['fin.bank', 'adverse-media'],
+  ['fin.fund', 'adverse-media'],
+  ['role.oligarch', 'adverse-media'],
+  ['rel', 'adverse-media'],
+]);
