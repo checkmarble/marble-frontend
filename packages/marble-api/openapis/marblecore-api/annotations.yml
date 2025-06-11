@@ -26,6 +26,8 @@ components:
         - case_id
         - annotated_by
         - created_at
+        - object_type
+        - object_id
       properties:
         id:
           type: string
@@ -39,6 +41,10 @@ components:
         created_at:
           type: string
           format: date-time
+        object_type:
+          type: string
+        object_id:
+          type: string
     TagEntityAnnotationPayloadDto:
       type: object
       properties:
