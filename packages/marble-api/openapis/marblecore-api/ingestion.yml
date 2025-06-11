@@ -319,6 +319,7 @@ components:
         of nesting and early stop in case of loops may be applied by the backend.
       type: object
       required:
+        - metadata
         - data
         - related_objects
       properties:
