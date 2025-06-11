@@ -326,15 +326,18 @@ components:
           description: Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested.
           type: object
           required:
-            - valid_from
             - object_type
+            - can_be_annotated
           properties:
             valid_from:
               type: string
-              format: date-timeme
+              format: date-time
             object_type:
               type: string
               description: object type in the data model that the data corresponds to
+            can_be_annotated:
+              type: boolean
+              description: Whether the object can be annotated or not. True for all objects that have been ingested, and for pivot objects that have the "object_id" field from a link.
         data:
           type: object
           description: The actual data of the object, as described in the client data model.
