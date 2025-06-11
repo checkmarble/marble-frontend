@@ -16,9 +16,31 @@ type DownloadFileError =
   | UnknownError
   | AuthRequestError;
 
-const fileDownloadUrlSchema = z.object({
-  url: z.string(),
-});
+const handleJsonResponse = async (response: Response): Promise<void> => {
+  const fileDownloadUrlSchema = z.object({
+    url: z.string(),
+  });
+  const json = await response.json();
+  const url = fileDownloadUrlSchema.parse(json).url;
+  return downloadFile(url, 'download');
+};
+
+const handleBlobResponse = async (response: Response): Promise<void> => {
+  const blob = await response.blob();
+  const downloadUrl = window.URL.createObjectURL(blob);
+  return downloadFile(downloadUrl, 'download.zip').then(() => {
+    window.URL.revokeObjectURL(downloadUrl);
+  });
+};
+
+const handleDownloadResponse = async (response: Response): Promise<void> => {
+  const contentType = response.headers.get('content-type')?.toLowerCase() || '';
+
+  if (/application\/json/.test(contentType)) return handleJsonResponse(response);
+  if (/(application\/zip|application\/octet-stream)/.test(contentType))
+    return handleBlobResponse(response);
+  throw new FetchLinkError(`Internal error: Unsupported content type ${contentType}`);
+};
 
 export function useDownloadFile(
   endpoint: string,
@@ -50,8 +72,7 @@ export function useDownloadFile(
       if (!response.ok) {
         throw new FetchLinkError('Internal error: Failed to download file: ' + response.statusText);
       }
-      const { url } = fileDownloadUrlSchema.parse(await response.json());
-      await downloadFile(url, 'download');
+      await handleDownloadResponse(response);
     } catch (error) {
       if (
         error instanceof AlreadyDownloadingError ||

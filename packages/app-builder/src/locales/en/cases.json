@@ -10,7 +10,7 @@
   "case.file.name": "File name",
   "case.file.extension": "Extension",
   "case.file.added_date": "Added on",
-  "case.file.download": "Download",
+  "case.file.download": "Download case data file",
   "case.file.downloading": "Downloading...",
   "case.file.errors.downloading_link.auth_error": "An auth error occurred while generating the download link. You may need to log in again.",
   "case.file.errors.downloading_link.unknown": "An unknown error has occurred while generating the download link. Please try again later.",
