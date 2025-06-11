@@ -332,6 +332,8 @@ export type ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 = {
     case_id: string;
     annotated_by: string;
     created_at: string;
+    object_type: string;
+    object_id: string;
 };
 export type ComponentsSchemasCreateAnnotationDtoAnyOf1 = {
     "type": "comment";
@@ -353,6 +355,8 @@ export type GroupedAnnotations = {
         case_id: string;
         annotated_by: string;
         created_at: string;
+        object_type: string;
+        object_id: string;
     } & ComponentsSchemasCreateAnnotationDtoAnyOf0)[];
     files: (ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 & {
         "type": "file";
