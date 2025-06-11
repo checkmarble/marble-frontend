@@ -1,7 +1,7 @@
 import { type Pivot } from '@app-builder/models/data-model';
 import { getPivotDisplayValue } from '@app-builder/services/data/pivot';
-import Code from 'packages/ui-design-system/src/Code/Code';
 import { Trans, useTranslation } from 'react-i18next';
+import { Code } from 'ui-design-system';
 
 import { dataI18n } from './data-i18n';
 

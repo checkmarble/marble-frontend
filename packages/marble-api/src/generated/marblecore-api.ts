@@ -137,6 +137,44 @@ export type RuleExecutionDto = {
 export type DecisionDetailDto = DecisionDto & {
     rules: RuleExecutionDto[];
 };
+export type ComponentsSchemasTagEntityAnnotationDtoAllOf0 = {
+    id: string;
+    case_id: string;
+    annotated_by: string;
+    created_at: string;
+    object_type: string;
+    object_id: string;
+};
+export type CommentEntityAnnotationDto = ComponentsSchemasTagEntityAnnotationDtoAllOf0 & {
+    "type": "comment";
+    payload: {
+        /** body of the comment */
+        text: string;
+    };
+};
+export type TagEntityAnnotationDto = {
+    id: string;
+    case_id: string;
+    annotated_by: string;
+    created_at: string;
+    object_type: string;
+    object_id: string;
+} & {
+    "type": "tag";
+    payload: {
+        tag_id: string;
+    };
+};
+export type FileEntityAnnotationDto = ComponentsSchemasTagEntityAnnotationDtoAllOf0 & {
+    "type": "file";
+    payload: {
+        caption: string;
+        files: {
+            id: string;
+            filename: string;
+        }[];
+    };
+};
 export type CreateCaseBodyDto = {
     name: string;
     inbox_id: string;
@@ -306,7 +344,20 @@ export type SarFileUploadedEventDto = {
     /** ID of the suspicious activity report the file was uploaded to */
     resource_id: string;
 };
-export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto | CaseAssignedEventDto | SarCreatedEventDto | SarDeletedEventDto | SarStatusChangedEventDto | SarFileUploadedEventDto;
+export type EntityAnnotatedEventDto = {
+    event_type: "entity_annotated";
+} & CaseEventDtoBase & {
+    /** Name of the file that was uploaded */
+    new_value: string;
+    user_id?: string;
+    /** Resource being modified, should be `annotation` */
+    resource_type: string;
+    /** ID of the annotation */
+    resource_id: string;
+    /** The type of annotation */
+    additional_note: string;
+};
+export type CaseEventDto = CaseCreatedEventDto | CaseStatusUpdatedEventDto | CaseOutcomeUpdatedEventDto | DecisionAddedEventDto | CommentAddedEventDto | NameUpdatedEventDto | CaseTagsUpdatedEventDto | FileAddedEventDto | InboxChangedEventDto | RuleSnoozeCreatedDto | DecisionReviewedEventDto | CaseSnoozedDto | CaseUnsnoozedDto | CaseAssignedEventDto | SarCreatedEventDto | SarDeletedEventDto | SarStatusChangedEventDto | SarFileUploadedEventDto | EntityAnnotatedEventDto;
 export type CaseFileDto = {
     id: string;
     case_id: string;
@@ -327,47 +378,10 @@ export type UpdateCaseBodyDto = {
 export type AssignCaseBodyDto = {
     user_id: string;
 };
-export type ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 = {
-    id: string;
-    case_id: string;
-    annotated_by: string;
-    created_at: string;
-    object_type: string;
-    object_id: string;
-};
-export type ComponentsSchemasCreateAnnotationDtoAnyOf1 = {
-    "type": "comment";
-    payload: {
-        /** body of the comment */
-        text: string;
-    };
-};
-export type ComponentsSchemasCreateAnnotationDtoAnyOf0 = {
-    "type": "tag";
-    payload: {
-        tag_id: string;
-    };
-};
 export type GroupedAnnotations = {
-    comments: (ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 & ComponentsSchemasCreateAnnotationDtoAnyOf1)[];
-    tags: ({
-        id: string;
-        case_id: string;
-        annotated_by: string;
-        created_at: string;
-        object_type: string;
-        object_id: string;
-    } & ComponentsSchemasCreateAnnotationDtoAnyOf0)[];
-    files: (ComponentsSchemasGroupedAnnotationsPropertiesTagsItemsAllOf0 & {
-        "type": "file";
-        payload: {
-            caption: string;
-            files: {
-                id: string;
-                filename: string;
-            }[];
-        };
-    })[];
+    comments: CommentEntityAnnotationDto[];
+    tags: TagEntityAnnotationDto[];
+    files: FileEntityAnnotationDto[];
 };
 export type ClientObjectDetailDto = {
     /** Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested. */
@@ -484,17 +498,21 @@ export type DataModelObjectDto = {
         valid_from: string;
     };
 };
-export type CreateAnnotationDto = {
+export type ComponentsSchemasTagEntityAnnotationDtoAllOf1 = {
     "type": "tag";
     payload: {
         tag_id: string;
     };
-} | {
+};
+export type ComponentsSchemasCommentEntityAnnotationDtoAllOf1 = {
     "type": "comment";
     payload: {
         /** body of the comment */
         text: string;
     };
+};
+export type CreateAnnotationDto = (ComponentsSchemasTagEntityAnnotationDtoAllOf1 | ComponentsSchemasCommentEntityAnnotationDtoAllOf1) & {
+    caseId?: string;
 };
 export type ClientDataListRequestBody = {
     exploration_options: {
@@ -1213,6 +1231,17 @@ export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oa
         method: "POST",
         body: createDecisionBody
     })));
+}
+/**
+ * Get an annotation by ID
+ */
+export function getAnnotation(annotationId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CommentEntityAnnotationDto | TagEntityAnnotationDto | FileEntityAnnotationDto;
+    }>(`/client_data/annotations/${encodeURIComponent(annotationId)}`, {
+        ...opts
+    }));
 }
 /**
  * List cases

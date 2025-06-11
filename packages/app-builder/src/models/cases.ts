@@ -1,3 +1,4 @@
+import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { type UnionToArray } from '@app-builder/utils/types';
 import {
   type CaseContributorDto,
@@ -8,11 +9,14 @@ import {
   type CaseStatusDto,
   type CaseStatusForCaseEventDto,
   type CaseTagDto,
+  type CommentEntityAnnotationDto,
   type CreateCaseBodyDto,
   type Error,
+  type FileEntityAnnotationDto,
   type Outcome,
   type PivotObjectDto,
   type SuspiciousActivityReportDto,
+  type TagEntityAnnotationDto,
   type UpdateCaseBodyDto,
 } from 'marble-api';
 import { match } from 'ts-pattern';
@@ -129,6 +133,7 @@ export const caseEventTypes: UnionToArray<CaseEventType> = [
   'sar_deleted',
   'sar_status_changed',
   'sar_file_uploaded',
+  'entity_annotated',
 ];
 
 interface CaseEventBase<T extends CaseEventType> {
@@ -227,6 +232,11 @@ export interface SarFileUploadedEvent extends CaseEventBase<'sar_file_uploaded'>
   filename: string;
 }
 
+export interface EntityAnnotatedEvent extends CaseEventBase<'entity_annotated'> {
+  userId?: string;
+  annotation: TagEntityAnnotationDto | CommentEntityAnnotationDto | FileEntityAnnotationDto;
+}
+
 export type CaseEvent =
   | CaseCreatedEvent
   | CaseStatusUpdatedEvent
@@ -245,9 +255,13 @@ export type CaseEvent =
   | SarCreatedEvent
   | SarDeletedEvent
   | SarStatusChangedEvent
-  | SarFileUploadedEvent;
+  | SarFileUploadedEvent
+  | EntityAnnotatedEvent;
 
-export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
+export async function adaptCaseEventDto(
+  caseEventDto: CaseEventDto,
+  marbleCoreApiClient: MarbleCoreApi,
+): Promise<CaseEvent> {
   const baseEvent = {
     eventType: caseEventDto.event_type,
     id: caseEventDto.id,
@@ -255,60 +269,60 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
     createdAt: caseEventDto.created_at,
   };
 
-  return match<CaseEventDto, CaseEvent>(caseEventDto)
-    .with({ event_type: 'case_created' }, (dto) => ({
+  return match<CaseEventDto, Promise<CaseEvent>>(caseEventDto)
+    .with({ event_type: 'case_created' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
     }))
-    .with({ event_type: 'status_updated' }, (dto) => ({
+    .with({ event_type: 'status_updated' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       newStatus: dto.new_value,
     }))
-    .with({ event_type: 'outcome_updated' }, (dto) => ({
+    .with({ event_type: 'outcome_updated' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       newOutcome: dto.new_value,
     }))
-    .with({ event_type: 'decision_added' }, (dto) => ({
+    .with({ event_type: 'decision_added' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
     }))
-    .with({ event_type: 'comment_added' }, (dto) => ({
+    .with({ event_type: 'comment_added' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       comment: dto.additional_note,
     }))
-    .with({ event_type: 'name_updated' }, (dto) => ({
+    .with({ event_type: 'name_updated' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       newName: dto.new_value,
     }))
-    .with({ event_type: 'tags_updated' }, (dto) => ({
+    .with({ event_type: 'tags_updated' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       tagIds: dto.new_value.split(','),
     }))
-    .with({ event_type: 'file_added' }, (dto) => ({
+    .with({ event_type: 'file_added' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       fileName: dto.additional_note,
     }))
-    .with({ event_type: 'inbox_changed' }, (dto) => ({
+    .with({ event_type: 'inbox_changed' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       newInboxId: dto.new_value,
     }))
-    .with({ event_type: 'rule_snooze_created' }, (dto) => ({
+    .with({ event_type: 'rule_snooze_created' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
@@ -317,7 +331,7 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
       resourceType: dto.resource_type,
       additionalNote: dto.additional_note,
     }))
-    .with({ event_type: 'decision_reviewed' }, (dto) => ({
+    .with({ event_type: 'decision_reviewed' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
@@ -326,49 +340,58 @@ export function adaptCaseEventDto(caseEventDto: CaseEventDto): CaseEvent {
       previous: dto.previous_value,
       decisionId: dto.resource_id,
     }))
-    .with({ event_type: 'case_snoozed' }, (dto) => ({
+    .with({ event_type: 'case_snoozed' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       snoozeUntil: dto.new_value,
     }))
-    .with({ event_type: 'case_unsnoozed' }, (dto) => ({
+    .with({ event_type: 'case_unsnoozed' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
     }))
-    .with({ event_type: 'case_assigned' }, (dto) => ({
+    .with({ event_type: 'case_assigned' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       assignedTo: dto.new_value,
     }))
-    .with({ event_type: 'sar_created' }, (dto) => ({
+    .with({ event_type: 'sar_created' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       sarId: dto.resource_id,
     }))
-    .with({ event_type: 'sar_deleted' }, (dto) => ({
+    .with({ event_type: 'sar_deleted' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       sarId: dto.resource_id,
     }))
-    .with({ event_type: 'sar_status_changed' }, (dto) => ({
+    .with({ event_type: 'sar_status_changed' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       sarId: dto.resource_id,
       status: dto.new_value,
     }))
-    .with({ event_type: 'sar_file_uploaded' }, (dto) => ({
+    .with({ event_type: 'sar_file_uploaded' }, async (dto) => ({
       ...baseEvent,
       eventType: dto.event_type,
       userId: dto.user_id,
       sarId: dto.resource_id,
       filename: dto.new_value,
     }))
+    .with({ event_type: 'entity_annotated' }, async (dto) => {
+      const annotation = await marbleCoreApiClient.getAnnotation(dto.resource_id);
+      return {
+        ...baseEvent,
+        eventType: dto.event_type,
+        userId: dto.user_id,
+        annotation,
+      };
+    })
     .exhaustive();
 }
 
@@ -418,7 +441,10 @@ export interface CaseDetail extends Case {
   files: CaseFile[];
 }
 
-export function adaptCaseDetail(dto: CaseDetailDto): CaseDetail {
+export async function adaptCaseDetail(
+  dto: CaseDetailDto,
+  marbleCoreApiClient: MarbleCoreApi,
+): Promise<CaseDetail> {
   return {
     ...adaptCase(dto),
     decisions: dto.decisions.map((decisionDto) => ({
@@ -441,7 +467,11 @@ export function adaptCaseDetail(dto: CaseDetailDto): CaseDetail {
       },
       score: decisionDto.score,
     })),
-    events: dto.events.filter((e) => caseEventTypes.includes(e.event_type)).map(adaptCaseEventDto),
+    events: await Promise.all(
+      dto.events
+        .filter((e) => caseEventTypes.includes(e.event_type))
+        .map((event) => adaptCaseEventDto(event, marbleCoreApiClient)),
+    ),
     files: dto.files.map(adaptCaseFile),
   };
 }

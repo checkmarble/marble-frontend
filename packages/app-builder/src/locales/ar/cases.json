@@ -8,7 +8,7 @@
   "case.file.name": "اسم الملف ",
   "case.file.extension": "الإمتداد",
   "case.file.added_date": "تمت الإضافة في",
-  "case.file.download": "تنزيل",
+  "case.file.download": "تنزيل ملف بيانات الحالة",
   "case.file.downloading": "جاري التنزيل...",
   "case.file.errors.downloading_link.auth_error": "حدث خطأ في المصادقة أثناء إنشاء رابط التنزيل. قد تحتاج إلى تسجيل الدخول مرة أخرى.",
   "case.file.errors.downloading_link.unknown": "حدث خطأ غير معروف أثناء إنشاء رابط التنزيل. يرجى المحاولة مرة أخرى لاحقًا.",
@@ -198,5 +198,7 @@
   "annotations.documents.upload_file": "تحميل ملف",
   "annotations.popover.annotate.subtitle": "التعليق ، إضافة ملف ، إضافة علامة",
   "annotations.popover.annotate.title": "علق",
-  "required_actions.see_screening_hits": "انظر أغاني الفحص ({{count}})"
+  "required_actions.see_screening_hits": "انظر أغاني الفحص ({{count}})",
+  "case_detail.history.event_type.entity_annotated": "التعليقات التوضيحية",
+  "case_detail.history.event_detail.entity_annotated": "قام <Actor>{{actor}}</Actor> بشرح <ObjectType>{{objectType}}</ObjectType> باستخدام <Type>{{type}}</Type>"
 }

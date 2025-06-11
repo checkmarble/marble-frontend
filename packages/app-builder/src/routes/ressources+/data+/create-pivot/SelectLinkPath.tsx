@@ -3,10 +3,9 @@ import { type TableModel } from '@app-builder/models/data-model';
 import { type LinkPivotOption } from '@app-builder/services/data/pivot';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
-import Code from 'packages/ui-design-system/src/Code/Code';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, MenuCommand } from 'ui-design-system';
+import { Button, Code, MenuCommand } from 'ui-design-system';
 
 export function SelectLinkPath({
   pivotOptions,

@@ -4,7 +4,7 @@
   "case.date": "Date",
   "case.decisions": "Décisions",
   "case.file.added_date": "Ajouté le",
-  "case.file.download": "Télécharger",
+  "case.file.download": "Télécharger le fichier de données de l'investigation",
   "case.file.downloading": "Téléchargement...",
   "case.file.errors.downloading_link.auth_error": "Une erreur d'authentification s'est produite lors de la génération du lien de téléchargement. \nReconnectez vous avant de réessayer.",
   "case.file.errors.downloading_link.unknown": "Une erreur inconnue s'est produite lors de la génération du lien de téléchargement. \nVeuillez réessayer plus tard.",
@@ -198,5 +198,7 @@
   "annotations.documents.upload_file": "Télécharger un fichier",
   "annotations.popover.annotate.subtitle": "Commenter, ajouter un fichier, ajouter la balise",
   "annotations.popover.annotate.title": "Annoter",
-  "required_actions.see_screening_hits": "Voir les sanctions ({{count}})"
+  "required_actions.see_screening_hits": "Voir les sanctions ({{count}})",
+  "case_detail.history.event_detail.entity_annotated": "<Actor>{{actor}}</Actor> a annoté <ObjectType>{{objectType}}</ObjectType> avec un <Type>{{type}}</Type>",
+  "case_detail.history.event_type.entity_annotated": "Annotation"
 }

@@ -30,12 +30,13 @@ import { ClientObjectDataList } from './ClientObjectDataList';
 import { type DataModelExplorerNavigationTab } from './types';
 
 export type DataTableRenderProps = {
+  caseId: string;
   item: DataModelExplorerNavigationTab;
   dataModel: DataModelWithTableOptions;
   navigateTo: (tabItem: DataModelExplorerNavigationTab) => void;
 };
 
-export function DataTableRender({ dataModel, item, navigateTo }: DataTableRenderProps) {
+export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTableRenderProps) {
   const { t } = useTranslation(['common', 'cases']);
   const currentTable = dataModel.find((t) => t.name === item.targetTableName);
   const sourceField = item.sourceObject[item.sourceFieldName];
@@ -98,6 +99,7 @@ export function DataTableRender({ dataModel, item, navigateTo }: DataTableRender
         .otherwise((query) => {
           return (
             <DataTable
+              caseId={caseId}
               pivotObject={item.pivotObject}
               table={currentTable}
               navigateTo={navigateTo}
@@ -143,6 +145,7 @@ function getColumnList(tableModel: TableModelWithOptions) {
 }
 
 type DataTableProps = {
+  caseId: string;
   pivotObject: PivotObject;
   table: TableModelWithOptions;
   list: ClientDataListResponse['data'];
@@ -150,7 +153,7 @@ type DataTableProps = {
   navigateTo: (tab: DataModelExplorerNavigationTab) => void;
 };
 
-function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTableProps) {
+function DataTable({ caseId, pivotObject, table, list, pagination, navigateTo }: DataTableProps) {
   const { t } = useTranslation(['common', 'cases']);
   const language = useFormatLanguage();
 
@@ -299,6 +302,7 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
                       <div className="flex items-center justify-between gap-2">
                         {row.index + 1}
                         <DataTableActionsButton
+                          caseId={caseId}
                           navigationOptions={table.navigationOptions}
                           pivotObject={pivotObject}
                           sourceObject={fullSourceObject}
@@ -332,6 +336,7 @@ function DataTable({ pivotObject, table, list, pagination, navigateTo }: DataTab
 }
 
 type DataTableActionsButtonProps = {
+  caseId: string;
   navigationOptions: NavigationOption[] | undefined;
   pivotObject: PivotObject;
   sourceObject: ClientObjectDetail;
@@ -340,6 +345,7 @@ type DataTableActionsButtonProps = {
 };
 
 function DataTableActionsButton({
+  caseId,
   navigationOptions,
   pivotObject,
   sourceObject,
@@ -353,10 +359,6 @@ function DataTableActionsButton({
   const annotationsCount =
     annotations.comments.length + annotations.files.length + annotations.tags.length;
   const showCommentAction = annotationsCount > 0 || annotationMenuOpen;
-
-  if (!sourceObject.data.object_id) {
-    return null;
-  }
 
   return (
     <Popover.Root open={annotationMenuOpen} onOpenChange={setAnnotationMenuOpen}>
@@ -381,11 +383,14 @@ function DataTableActionsButton({
             collisionPadding={10}
             className="max-h-none w-[340px]"
           >
-            <ClientObjectAnnotationPopover
-              tableName={tableName}
-              objectId={sourceObject.data.object_id}
-              annotations={sourceObject.annotations}
-            />
+            {sourceObject.data.object_id ? (
+              <ClientObjectAnnotationPopover
+                caseId={caseId}
+                tableName={tableName}
+                objectId={sourceObject.data.object_id}
+                annotations={sourceObject.annotations}
+              />
+            ) : null}
           </Popover.Content>
           <MenuCommand.Menu>
             <MenuCommand.Trigger>
@@ -409,20 +414,22 @@ function DataTableActionsButton({
               className="text-r min-w-[280px]"
             >
               <MenuCommand.List>
-                <MenuCommand.Group>
-                  <MenuCommand.Item forceMount onSelect={() => setAnnotationMenuOpen(true)}>
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2">
-                        {t('cases:annotations.popover.annotate.title')}{' '}
-                        <span className="text-grey-80 text-xs">{annotationsCount}</span>
+                {sourceObject.metadata.canBeAnnotated ? (
+                  <MenuCommand.Group>
+                    <MenuCommand.Item forceMount onSelect={() => setAnnotationMenuOpen(true)}>
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          {t('cases:annotations.popover.annotate.title')}{' '}
+                          <span className="text-grey-80 text-xs">{annotationsCount}</span>
+                        </div>
+                        <span className="text-grey-50">
+                          {t('cases:annotations.popover.annotate.subtitle')}
+                        </span>
                       </div>
-                      <span className="text-grey-50">
-                        {t('cases:annotations.popover.annotate.subtitle')}
-                      </span>
-                    </div>
-                    <Icon icon="comment" className="size-5" />
-                  </MenuCommand.Item>
-                </MenuCommand.Group>
+                      <Icon icon="comment" className="size-5" />
+                    </MenuCommand.Item>
+                  </MenuCommand.Group>
+                ) : null}
                 {navigationOptions ? (
                   <>
                     <MenuCommand.Separator className="bg-grey-90" />

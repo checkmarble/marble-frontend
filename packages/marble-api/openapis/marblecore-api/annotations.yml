@@ -1,3 +1,29 @@
+/client_data/annotations/{annotationId}:
+  get:
+    tags:
+      - Annotations
+    summary: Get an annotation by ID
+    operationId: getAnnotation
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: annotationId
+        description: ID of the annotation
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: The annotation
+        content:
+          application/json:
+            schema:
+              anyOf:
+                - $ref: '#/components/schemas/CommentEntityAnnotationDto'
+                - $ref: '#/components/schemas/TagEntityAnnotationDto'
+                - $ref: '#/components/schemas/FileEntityAnnotationDto'
+
 components:
   schemas:
     GroupedAnnotations:
@@ -130,7 +156,13 @@ components:
         - $ref: '#/components/schemas/CommonEntityAnnotationDto'
         - $ref: '#/components/schemas/BareFileEntityAnnotationDto'
     CreateAnnotationDto:
-      anyOf:
-        - $ref: '#/components/schemas/BareTagEntityAnnotationDto'
-        - $ref: '#/components/schemas/BareCommentEntityAnnotationDto'
-        # - $ref: '#/components/schemas/BareFileEntityAnnotationDto'
+      allOf:
+        - anyOf:
+            - $ref: '#/components/schemas/BareTagEntityAnnotationDto'
+            - $ref: '#/components/schemas/BareCommentEntityAnnotationDto'
+        - type: object
+          required:
+            - case_id
+          properties:
+            caseId:
+              type: string

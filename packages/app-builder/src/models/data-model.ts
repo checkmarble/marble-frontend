@@ -554,7 +554,7 @@ export function mergeDataModelWithTableOptions(
   };
 }
 
-export type CreateAnnotationBody =
+export type CreateAnnotationBody = { caseId: string } & (
   | {
       type: 'comment';
       payload: {
@@ -566,22 +566,25 @@ export type CreateAnnotationBody =
       payload: {
         tagId: string;
       };
-    };
+    }
+);
 
 export function adaptCreateAnnotationDto(model: CreateAnnotationBody): CreateAnnotationDto {
   return match(model)
     .with(
       { type: 'comment' },
-      ({ payload: { text } }) =>
+      ({ payload: { text }, caseId }) =>
         ({
+          case_id: caseId,
           type: 'comment',
           payload: { text },
         }) as const,
     )
     .with(
       { type: 'tag' },
-      ({ payload: { tagId } }) =>
+      ({ payload: { tagId }, caseId }) =>
         ({
+          case_id: caseId,
           type: 'tag',
           payload: {
             tag_id: tagId,
