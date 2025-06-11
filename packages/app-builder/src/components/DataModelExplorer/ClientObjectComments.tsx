@@ -24,7 +24,7 @@ function CommentItem({ comment }: { comment: GroupedAnnotations['comments'][numb
         <Avatar firstName={user?.firstName} lastName={user?.lastName} size="xs" color="grey" />
       </div>
       <div className="flex items-start justify-between gap-2 pt-1">
-        <div className="line-clamp-2 text-xs">{comment.payload.text}</div>
+        <div className="text-xs">{comment.payload.text}</div>
         <span className="text-2xs text-grey-50 text-right">
           <EventTime time={comment.created_at} />
         </span>

@@ -1,4 +1,5 @@
 import { casesI18n, CopyToClipboardButton, ErrorComponent, Page } from '@app-builder/components';
+import { AiAssist } from '@app-builder/components/AiAssist';
 import {
   BreadCrumbLink,
   type BreadCrumbProps,
@@ -16,9 +17,16 @@ import {
   mergeDataModelWithTableOptions,
   type TableModelWithOptions,
 } from '@app-builder/models';
+import {
+  AlreadyDownloadingError,
+  AuthRequestError,
+  useDownloadFile,
+} from '@app-builder/services/DownloadFilesService';
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
+import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
+import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
@@ -35,8 +43,10 @@ import { type Namespace } from 'i18next';
 import { pick } from 'radash';
 import { unique } from 'radash';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { filter, flat, groupBy, map, mapValues, omit, pipe, uniqueBy } from 'remeda';
+import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -198,6 +208,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     decisionsPromise,
     rulesByPivotPromise,
     entitlements,
+    isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
   });
 };
 
@@ -256,6 +267,8 @@ export default function CaseManagerIndexPage() {
     pivotObjects,
     currentUser,
     nextCaseId,
+    entitlements: { AiAssist: aiAssistEnabled },
+    isMenuExpanded,
   } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
   const navigate = useNavigate();
@@ -266,25 +279,48 @@ export default function CaseManagerIndexPage() {
   );
 
   useEffect(() => {
-    leftSidebarSharp.actions.setExpanded(false);
-  }, [leftSidebarSharp]);
+    if (isMenuExpanded) {
+      leftSidebarSharp.actions.setExpanded(false);
+      setPreferencesCookie('menuExpd', false);
+    }
+  }, [isMenuExpanded, leftSidebarSharp]);
 
   return (
     <Page.Main>
       <Page.Header className="justify-between">
         <BreadCrumbs />
-        {nextCaseId ? (
-          <Button
-            variant="secondary"
-            size="medium"
-            onClick={() =>
-              navigate(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(nextCaseId) }))
-            }
-          >
-            <span className="text-xs font-medium">{t('cases:next_unassigned_case')}</span>
-            <Icon icon="arrow-up" className="size-5 rotate-90" />
-          </Button>
-        ) : null}
+        <div className="flex items-center gap-2">
+          <AiAssist.Root>
+            {aiAssistEnabled === 'allowed' ? (
+              <AiAssist.Trigger>
+                <Button variant="secondary" size="medium">
+                  <Icon icon="case-manager" className="size-5" />
+                  <span className="text-s">AI assist</span>
+                </Button>
+              </AiAssist.Trigger>
+            ) : null}
+
+            <ClientOnly>
+              {() => (
+                <AiAssist.Content>
+                  <FileLink endpoint={`/cases/${details.id}/data_for_investigation`} />
+                </AiAssist.Content>
+              )}
+            </ClientOnly>
+          </AiAssist.Root>
+          {nextCaseId ? (
+            <Button
+              variant="secondary"
+              size="medium"
+              onClick={() =>
+                navigate(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(nextCaseId) }))
+              }
+            >
+              <span className="text-xs font-medium">{t('cases:next_unassigned_case')}</span>
+              <Icon icon="arrow-up" className="size-5 rotate-90" />
+            </Button>
+          ) : null}
+        </div>
       </Page.Header>
       <Page.Container className="text-r relative h-full flex-row p-0 lg:p-0">
         <CaseDetails
@@ -348,4 +384,42 @@ export function ErrorBoundary() {
   }
 
   return <ErrorComponent error={error} />;
+}
+
+function FileLink({ endpoint }: { endpoint: string }) {
+  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(endpoint, {
+    onError: (e) => {
+      if (e instanceof AlreadyDownloadingError) {
+        // Already downloading, do nothing
+        return;
+      } else if (e instanceof AuthRequestError) {
+        toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
+      } else {
+        toast.error(t('cases:case.file.errors.downloading_link.unknown'));
+      }
+    },
+  });
+  const { t } = useTranslation(['cases']);
+
+  return (
+    <ClientOnly>
+      {() => (
+        <Button
+          variant="secondary"
+          onClick={() => {
+            void downloadCaseFile();
+          }}
+          name="download"
+          disabled={downloadingCaseFile}
+        >
+          {downloadingCaseFile ? (
+            <Icon icon="spinner" className="size-5 animate-spin" />
+          ) : (
+            <Icon icon="download" className="size-5" />
+          )}
+          {t('cases:case.file.download')}
+        </Button>
+      )}
+    </ClientOnly>
+  );
 }

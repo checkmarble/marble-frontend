@@ -138,31 +138,31 @@ export function makeGetCaseRepository() {
       marbleCoreApiClient.snoozeCase(caseId, { until: snoozeUntil }),
     createCase: async (data) => {
       const result = await marbleCoreApiClient.createCase(adaptCaseCreateBody(data));
-      return adaptCaseDetail(result.case);
+      return adaptCaseDetail(result.case, marbleCoreApiClient);
     },
     getCase: async ({ caseId }) => {
       const result = await marbleCoreApiClient.getCase(caseId);
-      return adaptCaseDetail(result);
+      return adaptCaseDetail(result, marbleCoreApiClient);
     },
     updateCase: async ({ caseId, body }) => {
       const result = await marbleCoreApiClient.updateCase(caseId, adaptUpdateCaseBodyDto(body));
-      return adaptCaseDetail(result.case);
+      return adaptCaseDetail(result.case, marbleCoreApiClient);
     },
     addComment: async ({ caseId, body }) => {
       const result = await marbleCoreApiClient.addCommentToCase(caseId, body);
-      return adaptCaseDetail(result.case);
+      return adaptCaseDetail(result.case, marbleCoreApiClient);
     },
     setTags: async ({ caseId, tagIds }) => {
       const result = await marbleCoreApiClient.updateTagsForCase(caseId, {
         tag_ids: tagIds,
       });
-      return adaptCaseDetail(result.case);
+      return adaptCaseDetail(result.case, marbleCoreApiClient);
     },
     addDecisionsToCase: async ({ caseId, decisionIds }) => {
       const result = await marbleCoreApiClient.addDecisionsToCase(caseId, {
         decision_ids: decisionIds,
       });
-      return adaptCaseDetail(result.case);
+      return adaptCaseDetail(result.case, marbleCoreApiClient);
     },
     reviewDecision: async ({ reviewComment, decisionId, reviewStatus }) => {
       const result = await marbleCoreApiClient.reviewDecision({
@@ -170,7 +170,7 @@ export function makeGetCaseRepository() {
         review_comment: reviewComment,
         review_status: reviewStatus,
       });
-      return adaptCaseDetail(result.case);
+      return adaptCaseDetail(result.case, marbleCoreApiClient);
     },
     listSuspiciousActivityReports: async ({ caseId }) =>
       map(await marbleCoreApiClient.sarList(caseId), adaptSuspiciousActivityReport),

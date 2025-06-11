@@ -30,6 +30,7 @@ import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { casesI18n } from './cases-i18n';
+import { EntityAnnotated } from './Events/EntityAnnotated';
 import { SarCreatedDetail } from './Events/SarCreated';
 
 const MAX_EVENTS_BEFORE_DEBOUNCE = 60;
@@ -174,6 +175,7 @@ export function CaseEvents({
             .with({ eventType: 'sar_deleted' }, (e) => <SarDeletedDetail event={e} />)
             .with({ eventType: 'sar_status_changed' }, (e) => <SarStatusChangedDetail event={e} />)
             .with({ eventType: 'sar_file_uploaded' }, (e) => <SarFileUploadedDetail event={e} />)
+            .with({ eventType: 'entity_annotated' }, (e) => <EntityAnnotated event={e} />)
             .exhaustive(),
         )}
       </div>

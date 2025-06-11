@@ -961,6 +961,7 @@ components:
           sar_deleted: '#/components/schemas/SarDeletedEventDto'
           sar_status_changed: '#/components/schemas/SarStatusChangedEventDto'
           sar_file_uploaded: '#/components/schemas/SarFileUploadedEventDto'
+          entity_annotated: '#/components/schemas/EntityAnnotatedEventDto'
       required:
         - id
         - case_id
@@ -1181,6 +1182,32 @@ components:
               description: ID of the suspicious activity report the file was uploaded to
               type: string
               format: uuid
+    EntityAnnotatedEventDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseEventDto'
+        - type: object
+          required:
+            - resource_type
+            - resource_id
+            - new_value
+            - additional_note
+          properties:
+            new_value:
+              description: Name of the file that was uploaded
+              type: string
+            user_id:
+              type: string
+              format: uuid
+            resource_type:
+              description: Resource being modified, should be `annotation`
+              type: string
+            resource_id:
+              description: ID of the annotation
+              type: string
+              format: uuid
+            additional_note:
+              description: The type of annotation
+              type: string
     RuleSnoozeCreatedDto:
       allOf:
         - $ref: '#/components/schemas/CaseEventDto'

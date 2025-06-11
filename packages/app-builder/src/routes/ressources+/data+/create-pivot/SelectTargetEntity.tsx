@@ -5,10 +5,9 @@ import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { handleSubmit } from '@app-builder/utils/form';
 import * as Sentry from '@sentry/remix';
 import { useForm, useStore } from '@tanstack/react-form';
-import Code from 'packages/ui-design-system/src/Code/Code';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, MenuCommand, Modal } from 'ui-design-system';
+import { Button, Code, MenuCommand, Modal } from 'ui-design-system';
 
 export function SelectTargetEntity({
   pivotOptions,

@@ -35,17 +35,26 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   if (!isReadTagAvailable(user)) return redirect(getRoute('/'));
 
-  const tags = await organization.listTags({ withCaseCount: true });
+  const [caseTags, objectTags] = await Promise.all([
+    organization
+      .listTags({ withCaseCount: true })
+      .then((tags) => tags.map((t) => ({ ...t, target: 'case' as const }))),
+    organization
+      .listTags({ target: 'object' })
+      .then((tags) => tags.map((t) => ({ ...t, target: 'object' as const }))),
+  ]);
 
   return json({
-    tags,
+    tags: [...caseTags, ...objectTags],
     isCreateTagAvailable: isCreateTagAvailable(user),
     isEditTagAvailable: isEditTagAvailable(user),
     isDeleteTagAvailable: isDeleteTagAvailable(user),
   });
 }
 
-const columnHelper = createColumnHelper<Tag>();
+const columnHelper = createColumnHelper<
+  (Tag & { target: 'case' }) | (Tag & { target: 'object' })
+>();
 
 export default function Tags() {
   const { t } = useTranslation(['settings']);
@@ -69,6 +78,14 @@ export default function Tags() {
         id: 'cases',
         header: t('settings:tags.cases'),
         size: 200,
+      }),
+      columnHelper.accessor((row) => row.target, {
+        id: 'target',
+        header: t('settings:tags.target'),
+        cell: ({ cell }) => {
+          return t(`settings:tags.target.${cell.getValue()}`);
+        },
+        size: 100,
       }),
       ...(isEditTagAvailable || isDeleteTagAvailable
         ? [

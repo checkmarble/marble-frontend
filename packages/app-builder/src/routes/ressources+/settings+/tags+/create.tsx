@@ -13,7 +13,7 @@ import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { Button, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -24,6 +24,7 @@ export const handle = {
 const createTagFormSchema = z.object({
   name: z.string().min(1),
   color: z.enum(tagColors),
+  target: z.enum(['case', 'object']),
 });
 
 type CreateTagForm = z.infer<typeof createTagFormSchema>;
@@ -105,7 +106,7 @@ const CreateTagContent = () => {
   const fetcher = useFetcher<typeof action>();
 
   const form = useForm({
-    defaultValues: { name: '', color: tagColors[0] } as CreateTagForm,
+    defaultValues: { name: '', color: tagColors[0], target: 'case' } as CreateTagForm,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         fetcher.submit(value, {
@@ -154,6 +155,31 @@ const CreateTagContent = () => {
               <div className="group flex flex-col gap-2">
                 <FormLabel name={field.name}>{t('settings:tags.color')}</FormLabel>
                 <ColorSelect onChange={field.handleChange} value={field.state.value} />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+              </div>
+            )}
+          </form.Field>
+          <form.Field name="target">
+            {(field) => (
+              <div className="group flex flex-col gap-2">
+                <FormLabel name={field.name}>{t('settings:tags.target')}</FormLabel>
+                <MenuCommand.Menu>
+                  <MenuCommand.Trigger>
+                    <MenuCommand.SelectButton>
+                      {t(`settings:tags.target.${field.state.value}`)}
+                    </MenuCommand.SelectButton>
+                  </MenuCommand.Trigger>
+                  <MenuCommand.Content sideOffset={4} align="start">
+                    <MenuCommand.List>
+                      <MenuCommand.Item onSelect={() => field.handleChange('case')}>
+                        {t('settings:tags.target.case')}
+                      </MenuCommand.Item>
+                      <MenuCommand.Item onSelect={() => field.handleChange('object')}>
+                        {t('settings:tags.target.object')}
+                      </MenuCommand.Item>
+                    </MenuCommand.List>
+                  </MenuCommand.Content>
+                </MenuCommand.Menu>
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}

@@ -38,6 +38,7 @@ import { RemoveFileAnnotation } from './delete-annotation.$annotationId';
 const baseCreateAnnotationSchema = z.object({
   tableName: z.string(),
   objectId: z.string(),
+  caseId: z.string().uuid(),
 });
 
 const createTagAnnotationSchema = z.intersection(
@@ -135,40 +136,72 @@ export async function action({ request }: ActionFunctionArgs) {
   );
 
   if (!success) {
-    console.log(error.flatten());
     return Response.json({ success, errors: error.flatten() });
   }
 
-  return match(data)
-    .with({ type: 'comment' }, async ({ payload: { text }, ...data }) => {
-      await dataModelRepository.createAnnotation(data.tableName, data.objectId, {
-        type: 'comment',
-        payload: {
-          text,
-        },
-      });
+  try {
+    return await match(data)
+      .with({ type: 'comment' }, async ({ payload: { text }, ...data }) => {
+        await dataModelRepository.createAnnotation(data.tableName, data.objectId, {
+          type: 'comment',
+          caseId: data.caseId,
+          payload: {
+            text,
+          },
+        });
 
-      return Response.json(
-        { success: true },
-        { headers: { 'Set-Cookie': await commitSession(session) } },
-      );
-    })
-    .with(
-      { type: 'tag' },
-      async ({ payload: { addedTags = [], removedAnnotations = [] }, ...data }) => {
-        const promises: Promise<Response | void>[] = [
-          ...addedTags.map((tagAdded) =>
-            dataModelRepository.createAnnotation(data.tableName, data.objectId, {
-              type: 'tag',
-              payload: {
-                tagId: tagAdded,
-              },
+        return Response.json(
+          { success: true },
+          { headers: { 'Set-Cookie': await commitSession(session) } },
+        );
+      })
+      .with(
+        { type: 'tag' },
+        async ({ payload: { addedTags = [], removedAnnotations = [] }, ...data }) => {
+          const promises: Promise<Response | void>[] = [
+            ...addedTags.map((tagAdded) =>
+              dataModelRepository.createAnnotation(data.tableName, data.objectId, {
+                type: 'tag',
+                caseId: data.caseId,
+                payload: {
+                  tagId: tagAdded,
+                },
+              }),
+            ),
+            ...removedAnnotations.map((annotationId) =>
+              dataModelRepository.deleteAnnotation(annotationId),
+            ),
+          ];
+
+          await Promise.all(promises);
+
+          return Response.json(
+            { success: true },
+            { headers: { 'Set-Cookie': await commitSession(session) } },
+          );
+        },
+      )
+      .with({ type: 'file' }, async ({ payload: { files }, ...data }) => {
+        const promises: Promise<Response>[] = [];
+
+        if (files.length > 0) {
+          const body = new FormData();
+          body.append('caption', 'File annotation');
+          body.append('case_id', data.caseId);
+          files.forEach((file) => {
+            body.append('files[]', file);
+          });
+
+          promises.push(
+            fetch(
+              `${getServerEnv('MARBLE_API_URL_SERVER')}${getClientAnnotationFileUploadEndpoint(data.tableName, data.objectId)}`,
+              { method: 'POST', body, headers: { Authorization: `Bearer ${token}` } },
+            ).then((response) => {
+              if (response.status === 200) return response;
+              throw response;
             }),
-          ),
-          ...removedAnnotations.map((annotationId) =>
-            dataModelRepository.deleteAnnotation(annotationId),
-          ),
-        ];
+          );
+        }
 
         await Promise.all(promises);
 
@@ -176,37 +209,23 @@ export async function action({ request }: ActionFunctionArgs) {
           { success: true },
           { headers: { 'Set-Cookie': await commitSession(session) } },
         );
-      },
-    )
-    .with({ type: 'file' }, async ({ payload: { files }, ...data }) => {
-      const promises: Promise<Response>[] = [];
+      })
+      .exhaustive();
+  } catch (err) {
+    setToastMessage(session, {
+      type: 'error',
+      message: t('common:errors.unknown'),
+    });
 
-      if (files.length > 0) {
-        const body = new FormData();
-        body.append('caption', 'Hello world');
-        files.forEach((file) => {
-          body.append('files[]', file);
-        });
-
-        promises.push(
-          fetch(
-            `${getServerEnv('MARBLE_API_URL_SERVER')}${getClientAnnotationFileUploadEndpoint(data.tableName, data.objectId)}`,
-            { method: 'POST', body, headers: { Authorization: `Bearer ${token}` } },
-          ),
-        );
-      }
-
-      await Promise.all(promises);
-
-      return Response.json(
-        { success: true },
-        { headers: { 'Set-Cookie': await commitSession(session) } },
-      );
-    })
-    .exhaustive();
+    return Response.json(
+      { success: false },
+      { headers: { 'Set-Cookie': await commitSession(session) } },
+    );
+  }
 }
 
 type ClientCommentFormProps = {
+  caseId: string;
   tableName: string;
   objectId: string;
   className?: string;
@@ -214,6 +233,7 @@ type ClientCommentFormProps = {
 };
 
 export function ClientCommentForm({
+  caseId,
   tableName,
   objectId,
   className,
@@ -224,13 +244,14 @@ export function ClientCommentForm({
   const onAnnotateSuccess = useCallbackRef(onAnnotateSuccessProps);
   const form = useForm({
     defaultValues: {
+      caseId,
       tableName,
       objectId,
       type: 'comment' as const,
       payload: {
         text: '',
       },
-    },
+    } as z.infer<typeof createCommentAnnotationSchema>,
     validators: {
       onChange: createCommentAnnotationSchema,
       onSubmit: createCommentAnnotationSchema,
@@ -249,11 +270,11 @@ export function ClientCommentForm({
   }, [form]);
 
   useEffect(() => {
-    if (fetcher?.data?.success) {
+    if (fetcher) {
       form.setFieldValue('payload.text', '');
       onAnnotateSuccess?.();
     }
-  }, [onAnnotateSuccess, fetcher?.data?.success, form]);
+  }, [onAnnotateSuccess, fetcher, form]);
 
   return (
     <form
@@ -275,7 +296,13 @@ export function ClientCommentForm({
       </form.Field>
       <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
         {([canSubmit, isSubmitting]) => (
-          <Button type="submit" size="icon" variant="primary" disabled={!canSubmit || isSubmitting}>
+          <Button
+            type="submit"
+            size="icon"
+            variant="primary"
+            className="shrink-0"
+            disabled={!canSubmit || isSubmitting}
+          >
             <Icon
               icon={isSubmitting ? 'spinner' : 'send'}
               className={clsx('size-4', { 'animate-spin': isSubmitting })}
@@ -288,6 +315,7 @@ export function ClientCommentForm({
 }
 
 type ClientDocumentsPopoverProps = {
+  caseId: string;
   tableName: string;
   objectId: string;
   documents: FileAnnotation[];
@@ -295,6 +323,7 @@ type ClientDocumentsPopoverProps = {
 };
 
 export function ClientDocumentsPopover({
+  caseId,
   tableName,
   objectId,
   documents,
@@ -306,6 +335,7 @@ export function ClientDocumentsPopover({
 
   const form = useForm({
     defaultValues: {
+      caseId,
       tableName,
       objectId,
       type: 'file',
@@ -331,11 +361,11 @@ export function ClientDocumentsPopover({
   }, [form]);
 
   useEffect(() => {
-    if (fetcher?.data?.success) {
+    if (fetcher) {
       form.setFieldValue('payload.files', []);
       onAnnotateSuccess?.();
     }
-  }, [onAnnotateSuccess, fetcher?.data?.success, form]);
+  }, [onAnnotateSuccess, fetcher, form]);
 
   const { getInputProps, getRootProps } = useFormDropzone({
     onDrop: (acceptedFiles) => {
@@ -459,6 +489,7 @@ export function ClientDocumentsPopover({
 }
 
 type ClientTagsEditSelectProps = {
+  caseId: string;
   tableName: string;
   objectId: string;
   annotations: GroupedAnnotations['tags'];
@@ -472,16 +503,19 @@ const TagPreview = ({ name }: { name: string }) => (
 );
 
 export function ClientTagsEditSelect({
+  caseId,
   tableName,
   objectId,
   annotations,
   onAnnotateSuccess,
 }: ClientTagsEditSelectProps) {
+  const { t } = useTranslation(['cases', 'common']);
   const { orgObjectTags } = useOrganizationObjectTags();
   const fetcher = useFetcher<typeof action>({ key: 'tags_${tableName}_${objectId}' });
   const tags = annotations.map((annotation) => annotation.payload.tag_id);
   const form = useForm({
     defaultValues: {
+      caseId,
       tableName,
       objectId,
       type: 'tag',
@@ -504,12 +538,13 @@ export function ClientTagsEditSelect({
           {
             tableName,
             objectId,
+            caseId,
             type: 'tag',
             payload: {
               addedTags,
               removedAnnotations: removedAnnotations.map((annotation) => annotation.id),
             },
-          },
+          } satisfies z.infer<typeof createTagAnnotationSchema>,
           { dotsForObjectNotation: true, indices: true },
         ),
         {
@@ -522,10 +557,10 @@ export function ClientTagsEditSelect({
   });
 
   useEffect(() => {
-    if (fetcher?.data?.success) {
+    if (fetcher.data.success) {
       onAnnotateSuccess?.();
     }
-  }, [onAnnotateSuccess, fetcher?.data?.success, form]);
+  }, [onAnnotateSuccess, fetcher, form]);
 
   return (
     <form onSubmit={handleSubmit(form)}>
@@ -536,7 +571,6 @@ export function ClientTagsEditSelect({
               <MenuCommand.Item
                 key={tag.id}
                 value={tag.id}
-                forceMount
                 onSelect={() => field.handleChange((prev) => toggle(prev, tag.id))}
               >
                 <TagPreview name={tag.name} />
@@ -545,6 +579,9 @@ export function ClientTagsEditSelect({
                 ) : null}
               </MenuCommand.Item>
             ))}
+            <MenuCommand.Empty>
+              <div className="text-center">{t('cases:case_detail.add_a_tag.empty')}</div>
+            </MenuCommand.Empty>
           </MenuCommand.List>
         )}
       </form.Field>

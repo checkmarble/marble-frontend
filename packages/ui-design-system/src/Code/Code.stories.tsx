@@ -2,7 +2,7 @@
 
 import { type Meta, type StoryObj } from '@storybook/react';
 
-import Code from './Code';
+import { Code } from './Code';
 
 const meta: Meta<typeof Code> = {
   title: 'Code',

@@ -12,11 +12,10 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
-import Code from 'packages/ui-design-system/src/Code/Code';
 import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Modal } from 'ui-design-system';
+import { Code, Modal } from 'ui-design-system';
 import { z } from 'zod';
 
 import { SelectField } from './create-pivot/selectField';

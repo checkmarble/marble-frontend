@@ -5,11 +5,11 @@ import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import * as React from 'react';
+import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Collapsible, Table, Tooltip, useVirtualTable } from 'ui-design-system';
 
-import { PivotType } from '../Data/PivotDetails';
+import { PivotType } from '../Data/PivotType';
 import { ExternalLink, linkClasses } from '../ExternalLink';
 
 interface PivotDetailProps {
@@ -80,12 +80,12 @@ export function PivotDetail({ pivotValues, existingPivotDefinition }: PivotDetai
   );
 }
 
-const columnHelper = createColumnHelper<PivotDetailProps['pivotValues'][number]>();
-
 function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
   const { t } = useTranslation(decisionsI18n);
 
-  const columns = React.useMemo(
+  const columnHelper = useMemo(() => createColumnHelper<{ pivot: Pivot; value: string }>(), []);
+
+  const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row.pivot.type, {
         id: 'type',
@@ -93,7 +93,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
         size: 50,
         cell: ({ getValue }) => {
           const type = getValue();
-          return <PivotType type={type} />;
+          return <PivotType {...{ type }} />;
         },
       }),
       columnHelper.accessor((row) => getPivotDisplayValue(row.pivot), {
@@ -121,7 +121,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
         ),
       }),
     ],
-    [t],
+    [t, columnHelper],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({

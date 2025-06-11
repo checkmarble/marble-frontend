@@ -15,12 +15,18 @@ import { Icon } from 'ui-icons';
 import { DataCard } from './DataCard';
 
 type PivotAnnotationsProps = {
+  caseId: string;
   tableName: string;
   objectId: string;
   annotations: GroupedAnnotations | undefined;
 };
 
-export function PivotAnnotations({ tableName, objectId, annotations }: PivotAnnotationsProps) {
+export function PivotAnnotations({
+  caseId,
+  tableName,
+  objectId,
+  annotations,
+}: PivotAnnotationsProps) {
   const { t } = useTranslation(['common', 'cases']);
   const [commentSectionOpen, setCommentSectionOpen] = useState(true);
   const [editTagsOpen, setEditTagsOpen] = useState(false);
@@ -46,6 +52,7 @@ export function PivotAnnotations({ tableName, objectId, annotations }: PivotAnno
             </MenuCommand.Trigger>
             <MenuCommand.Content side="bottom" align="end" sideOffset={4} className="w-[340px]">
               <ClientTagsEditSelect
+                caseId={caseId}
                 tableName={tableName}
                 objectId={objectId}
                 annotations={tagsAnnotations}
@@ -75,6 +82,7 @@ export function PivotAnnotations({ tableName, objectId, annotations }: PivotAnno
               className="w-[340px]"
             >
               <ClientDocumentsPopover
+                caseId={caseId}
                 documents={documents}
                 tableName={tableName}
                 objectId={objectId}
@@ -97,6 +105,7 @@ export function PivotAnnotations({ tableName, objectId, annotations }: PivotAnno
               <ClientObjectComments comments={comments} className="mx-4" />
             ) : null}
             <ClientCommentForm
+              caseId={caseId}
               tableName={tableName}
               objectId={objectId}
               className="border-grey-90 border"

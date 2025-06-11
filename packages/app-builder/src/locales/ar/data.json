@@ -84,5 +84,8 @@
   "create_pivot.select_entity.button_same_table": "اختر حقلًا في <Code>{{table}}</Code>",
   "create_pivot.select_entity.search_placeholder": "ابحث حسب اسم الكيان",
   "create_pivot.entity_selection.search.placeholder": "اختر أو ابحث عن كيان",
-  "create_pivot.button.label": "إنشاء مجموعة قرار"
+  "create_pivot.button.label": "إنشاء مجموعة قرار",
+  "view_pivot.link.description": "ابحث عن <code> {{parent}} </code> المقابلة لـ <code> {{child}} </code> من خلال اتباع الرابط <code> {{link}} </code>.",
+  "view_pivot.self_link.description": "يتم تجميع القرارات بقرارات بشأن كيانات أخرى تم تكوينها إلى المجموعة على مستوى <code> {{table}} </code>",
+  "view_pivot.field.description": "يتم تجميع القرارات المتعلقة بالكيانات من النوع <code> {{table}} </code> بواسطة الحقل <code> {{Field}} </code> ، مما يسمح بالغطس وقرارات المجموعة في الحالات."
 }

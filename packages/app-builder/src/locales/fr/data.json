@@ -59,8 +59,8 @@
   "create_pivot.entity_selection.description": "Sélectionnez quelle entité dans votre modèle de données correspond à l’utilisateur final pour une décision sur <Code>{{table}}</Code>. Cela vous permettra d'enquêter sur toutes les alertes liées au même client dans un dossier. Voir la <DocLink>documentation</DocLink> pour plus d’informations.",
   "create_pivot.select_entity.same_table": "Aucun des choix ci-dessus : sélectionnez un champ de l’entité <Code>{{table}}</Code> elle-même pour regrouper les décisions, avec un support limité dans l’interface d'investigation.",
   "create_pivot.entity_selection.button_accept": "Suivant",
-  "create_pivot.select_path.description": "Rechercher le <Code>{{parent}}</Code> correspondant à une entité <Code>{{child}}</Code> en suivant le lien",
-  "create_pivot.validate_path.description": "Rechercher le <Code>{{parent}}</Code> correspondant à une entité <Code>{{child}}</Code> en suivant le lien <Code>{{link}}</Code>.",
+  "create_pivot.select_path.description": "Rechercher l'entité <Code>{{parent}}</Code> correspondant à une entité <Code>{{child}}</Code> en suivant le lien",
+  "create_pivot.validate_path.description": "Rechercher l'entité <Code>{{parent}}</Code> correspondant à une entité <Code>{{child}}</Code> en suivant le lien <Code>{{link}}</Code>.",
   "create_pivot.validate_self_link.description": "Les décisions seront regroupées avec celles d’autres entités configurées pour être regroupées au niveau de <Code>{{table}}</Code>",
   "create_pivot.select_field.description": "Sélectionnez le champ qui sera utilisé pour regrouper les décisions sur les entités de type <Code>{{table}}</Code>, ce qui permet de mettre en pause des règles et de regrouper les décisions en dossiers.",
   "create_pivot.select_field.callout": "Veuillez noter que l’option recommandée est de sélectionner une entité représentant l’utilisateur final correspondant à une décision sur <Code>{{table}}</Code>.",
@@ -84,5 +84,8 @@
   "create_navigation_option.placeholders.ordered_by": "Choisissez un champs",
   "create_navigation_option.explanation_text": "Sélectionnez le champ utilisé pour trier les données par défaut. Cela peut être par date, nom... Pour les objets contenant beaucoup de données, comme les transactions, nous vous recommandons d'utiliser la date à laquelle l'événement s'est produit.",
   "last_ingestion_at": "Dernière ingestion à {{date}}",
-  "create_pivot.button.label": "Créer un groupe de décision"
+  "create_pivot.button.label": "Créer un groupe de décision",
+  "view_pivot.link.description": "Recherchez l'entité <code> {{parent}} </code> correspondant à une entité <code> {{enfant}} </code> en suivant le lien <code> {{link}} </code>.",
+  "view_pivot.self_link.description": "Les décisions sont regroupées avec celles d'autres entités configurées pour être regrouper au niveau de <code> {{table}} </code>",
+  "view_pivot.field.description": "Les décisions sur les entités du type <code> {{Table}} </code> sont regroupées par le champ <Dode> {{champ}} </code>, ce qui permet de mettre en pause des règles et de regrouper les décisions en dossiers."
 }

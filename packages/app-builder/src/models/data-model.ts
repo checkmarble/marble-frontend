@@ -392,10 +392,11 @@ export function adaptDataModelObject(dto: DataModelObjectDto): DataModelObject {
 }
 
 export type ClientObjectDetail = {
-  /** Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested. */
-  metadata?: {
-    validFrom: string;
+  metadata: {
+    /** The last ingestion timestamp of the object. Null if the object has not been ingested yet (e.g. pivot object in a case, where we may have the object_id but nothing else) */
+    validFrom?: string;
     objectType: string;
+    canBeAnnotated: boolean;
   };
   /** The actual data of the object, as described in the client data model. */
   data: {
@@ -415,9 +416,11 @@ export type FileAnnotation = GroupedAnnotations['files'][number];
 
 export function adaptClientObjectDetail(dto: ClientObjectDetailDto): ClientObjectDetail {
   return {
-    metadata: dto.metadata
-      ? { validFrom: dto.metadata.valid_from, objectType: dto.metadata.object_type }
-      : undefined,
+    metadata: {
+      validFrom: dto.metadata.valid_from,
+      objectType: dto.metadata.object_type,
+      canBeAnnotated: dto.metadata.can_be_annotated,
+    },
     data: dto.data,
     relatedObjects: dto.related_objects.map((rel) => ({
       linkName: rel.link_name,
@@ -551,7 +554,7 @@ export function mergeDataModelWithTableOptions(
   };
 }
 
-export type CreateAnnotationBody =
+export type CreateAnnotationBody = { caseId: string } & (
   | {
       type: 'comment';
       payload: {
@@ -563,22 +566,25 @@ export type CreateAnnotationBody =
       payload: {
         tagId: string;
       };
-    };
+    }
+);
 
 export function adaptCreateAnnotationDto(model: CreateAnnotationBody): CreateAnnotationDto {
   return match(model)
     .with(
       { type: 'comment' },
-      ({ payload: { text } }) =>
+      ({ payload: { text }, caseId }) =>
         ({
+          case_id: caseId,
           type: 'comment',
           payload: { text },
         }) as const,
     )
     .with(
       { type: 'tag' },
-      ({ payload: { tagId } }) =>
+      ({ payload: { tagId }, caseId }) =>
         ({
+          case_id: caseId,
           type: 'tag',
           payload: {
             tag_id: tagId,

@@ -1,8 +1,7 @@
 import { type TableModel } from '@app-builder/models/data-model';
 import { type FieldPivotOption } from '@app-builder/services/data/pivot';
-import Code from 'packages/ui-design-system/src/Code/Code';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { Button, Code } from 'ui-design-system';
 
 export function ValidateSelfPivot({
   pivotOption,

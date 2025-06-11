@@ -15,12 +15,14 @@ import { ClientTagsList } from '../Annotations/ClientTagsList';
 import { ClientObjectComments } from './ClientObjectComments';
 
 type ClientObjectAnnotationPopoverProps = {
+  caseId: string;
   tableName: string;
   objectId: string;
   annotations: GroupedAnnotations | undefined;
 };
 
 export function ClientObjectAnnotationPopover({
+  caseId,
   tableName,
   objectId,
   annotations,
@@ -52,6 +54,7 @@ export function ClientObjectAnnotationPopover({
               </MenuCommand.Trigger>
               <MenuCommand.Content side="right" align="start" sideOffset={4} className="w-[340px]">
                 <ClientTagsEditSelect
+                  caseId={caseId}
                   tableName={tableName}
                   objectId={objectId}
                   annotations={tagsAnnotations}
@@ -86,6 +89,7 @@ export function ClientObjectAnnotationPopover({
                 className="w-[340px]"
               >
                 <ClientDocumentsPopover
+                  caseId={caseId}
                   tableName={tableName}
                   objectId={objectId}
                   documents={documents}
@@ -102,6 +106,7 @@ export function ClientObjectAnnotationPopover({
       </AnnotationSection>
       <div className="bg-grey-90 h-px" />
       <ClientCommentForm
+        caseId={caseId}
         tableName={tableName}
         objectId={objectId}
         onAnnotateSuccess={handleAnnotateSuccess}

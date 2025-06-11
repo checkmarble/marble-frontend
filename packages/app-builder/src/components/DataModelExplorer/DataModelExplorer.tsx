@@ -9,6 +9,7 @@ import { DataModelExplorerContext, type DataModelExplorerState } from './Provide
 import { type DataModelExplorerNavigationTab } from './types';
 
 export type DataModelExplorerProps = {
+  caseId: string;
   dataModel: DataModelWithTableOptions;
 };
 
@@ -160,7 +161,12 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
           />
         </div>
         <div>
-          <DataTableRender item={currentTab} dataModel={props.dataModel} navigateTo={addTab} />
+          <DataTableRender
+            caseId={props.caseId}
+            item={currentTab}
+            dataModel={props.dataModel}
+            navigateTo={addTab}
+          />
         </div>
       </div>
     </div>
