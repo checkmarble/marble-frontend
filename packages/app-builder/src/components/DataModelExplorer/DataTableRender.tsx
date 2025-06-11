@@ -354,10 +354,6 @@ function DataTableActionsButton({
     annotations.comments.length + annotations.files.length + annotations.tags.length;
   const showCommentAction = annotationsCount > 0 || annotationMenuOpen;
 
-  if (!sourceObject.data.object_id) {
-    return null;
-  }
-
   return (
     <Popover.Root open={annotationMenuOpen} onOpenChange={setAnnotationMenuOpen}>
       <Popover.Anchor asChild>
@@ -381,11 +377,13 @@ function DataTableActionsButton({
             collisionPadding={10}
             className="max-h-none w-[340px]"
           >
-            <ClientObjectAnnotationPopover
-              tableName={tableName}
-              objectId={sourceObject.data.object_id}
-              annotations={sourceObject.annotations}
-            />
+            {sourceObject.data.object_id ? (
+              <ClientObjectAnnotationPopover
+                tableName={tableName}
+                objectId={sourceObject.data.object_id}
+                annotations={sourceObject.annotations}
+              />
+            ) : null}
           </Popover.Content>
           <MenuCommand.Menu>
             <MenuCommand.Trigger>
@@ -409,20 +407,22 @@ function DataTableActionsButton({
               className="text-r min-w-[280px]"
             >
               <MenuCommand.List>
-                <MenuCommand.Group>
-                  <MenuCommand.Item forceMount onSelect={() => setAnnotationMenuOpen(true)}>
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2">
-                        {t('cases:annotations.popover.annotate.title')}{' '}
-                        <span className="text-grey-80 text-xs">{annotationsCount}</span>
+                {sourceObject.metadata.canBeAnnotated ? (
+                  <MenuCommand.Group>
+                    <MenuCommand.Item forceMount onSelect={() => setAnnotationMenuOpen(true)}>
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          {t('cases:annotations.popover.annotate.title')}{' '}
+                          <span className="text-grey-80 text-xs">{annotationsCount}</span>
+                        </div>
+                        <span className="text-grey-50">
+                          {t('cases:annotations.popover.annotate.subtitle')}
+                        </span>
                       </div>
-                      <span className="text-grey-50">
-                        {t('cases:annotations.popover.annotate.subtitle')}
-                      </span>
-                    </div>
-                    <Icon icon="comment" className="size-5" />
-                  </MenuCommand.Item>
-                </MenuCommand.Group>
+                      <Icon icon="comment" className="size-5" />
+                    </MenuCommand.Item>
+                  </MenuCommand.Group>
+                ) : null}
                 {navigationOptions ? (
                   <>
                     <MenuCommand.Separator className="bg-grey-90" />
