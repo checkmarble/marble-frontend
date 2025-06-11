@@ -114,7 +114,9 @@ export function PivotsPanelContent({
       ) : null}
       {currentPivotObject ? (
         <>
-          {currentTable && currentPivotObject.pivotObjectId ? (
+          {currentTable &&
+          currentPivotObject.pivotObjectId &&
+          currentPivotObject.pivotObjectData.metadata.canBeAnnotated ? (
             <PivotAnnotations
               tableName={currentTable.name}
               objectId={currentPivotObject.pivotObjectId}
