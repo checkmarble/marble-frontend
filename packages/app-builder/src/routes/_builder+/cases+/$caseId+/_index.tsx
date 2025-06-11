@@ -25,6 +25,8 @@ import {
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
+import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
+import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
@@ -206,6 +208,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     decisionsPromise,
     rulesByPivotPromise,
     entitlements,
+    isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
   });
 };
 
@@ -265,6 +268,7 @@ export default function CaseManagerIndexPage() {
     currentUser,
     nextCaseId,
     entitlements: { AiAssist: aiAssistEnabled },
+    isMenuExpanded,
   } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
   const navigate = useNavigate();
@@ -275,8 +279,11 @@ export default function CaseManagerIndexPage() {
   );
 
   useEffect(() => {
-    leftSidebarSharp.actions.setExpanded(false);
-  }, [leftSidebarSharp]);
+    if (isMenuExpanded) {
+      leftSidebarSharp.actions.setExpanded(false);
+      setPreferencesCookie('menuExpd', false);
+    }
+  }, [isMenuExpanded, leftSidebarSharp]);
 
   return (
     <Page.Main>
