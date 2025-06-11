@@ -17,7 +17,7 @@ export const TopicTag = ({ topic }: { topic: string }) => {
         'bg-grey-95 text-grey-50': category === 'sanctions',
       })}
     >
-      {t(`screeningTopics:${topic}`)}
+      {t(`screeningTopics:${topic}`, { defaultValue: topic })}
     </span>
   );
 };
