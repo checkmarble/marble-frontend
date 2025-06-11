@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from 'react';
+import { createSimpleContext } from '@app-builder/utils/create-context';
+import { useState } from 'react';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -7,13 +8,7 @@ type AiAssistContextType = {
   setOpened: (open: boolean) => void;
 };
 
-const AiAssistContext = createContext<AiAssistContextType | null>(null);
-
-function useAiAssistContext() {
-  const ctx = useContext(AiAssistContext);
-  if (!ctx) throw new Error('AiAssist components must be used within <AiAssist.Root>');
-  return ctx;
-}
+const AiAssistContext = createSimpleContext<AiAssistContextType | null>('aiAssist');
 
 export function Root({ children }: { children: React.ReactNode }) {
   const [isOpened, setOpened] = useState(false);
@@ -24,7 +19,7 @@ export function Root({ children }: { children: React.ReactNode }) {
 }
 
 function Trigger({ children }: { children: React.ReactNode }) {
-  const { setOpened } = useAiAssistContext();
+  const { setOpened } = AiAssistContext.useValue();
 
   return (
     <div
@@ -46,7 +41,7 @@ function Trigger({ children }: { children: React.ReactNode }) {
 }
 
 function Content({ children }: { children: React.ReactNode }) {
-  const { isOpened, setOpened } = useAiAssistContext();
+  const { isOpened, setOpened } = AiAssistContext.useValue();
 
   if (!isOpened) return null;
 
