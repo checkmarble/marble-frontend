@@ -368,9 +368,11 @@ export type GroupedAnnotations = {
 export type ClientObjectDetailDto = {
     /** Metadata of the object, in particular the ingestion date. Only present if the object has actually been ingested. */
     metadata?: {
-        valid_from: string;
+        valid_from?: string;
         /** object type in the data model that the data corresponds to */
         object_type: string;
+        /** Whether the object can be annotated or not. True for all objects that have been ingested, and for pivot objects that have the "object_id" field from a link. */
+        can_be_annotated: boolean;
     };
     /** The actual data of the object, as described in the client data model. */
     data: {
