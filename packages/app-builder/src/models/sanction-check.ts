@@ -211,9 +211,9 @@ export function isSanctionCheckReviewCompleted(sanctionCheck: SanctionCheck) {
   return sanctionCheck.status === 'no_hit' || sanctionCheck.status === 'confirmed_hit';
 }
 
-export type SanctionsCheckCategories = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
+export type ScreeningCategories = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
 
-export const SCREENING_TOPICS_MAP = new Map<string, SanctionsCheckCategories>([
+export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategories>([
   // Sanctions
   ['sanction', 'sanctions'],
   ['sanction.linked', 'sanctions'],
