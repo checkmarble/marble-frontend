@@ -58,6 +58,11 @@ paths:
   /decisions/with-ranks: # For ordering, should go down within decisions
     $ref: ./marblecore-api/decisions.yml#/~1decisions~1with-ranks
 
+  # ANNOTATIONS
+
+  /client_data/annotations/{annotationId}:
+    $ref: ./marblecore-api/annotations.yml#/~1client_data~1annotations~1{annotationId}
+
   # CASES
 
   /cases:

@@ -28,6 +28,12 @@ Pagination:
 
 GroupedAnnotations:
   $ref: annotations.yml#/components/schemas/GroupedAnnotations
+TagEntityAnnotationDto:
+  $ref: annotations.yml#/components/schemas/TagEntityAnnotationDto
+CommentEntityAnnotationDto:
+  $ref: annotations.yml#/components/schemas/CommentEntityAnnotationDto
+FileEntityAnnotationDto:
+  $ref: annotations.yml#/components/schemas/FileEntityAnnotationDto
 CreateAnnotationDto:
   $ref: annotations.yml#/components/schemas/CreateAnnotationDto
 
@@ -107,6 +113,8 @@ SarStatusChangedEventDto:
   $ref: cases.yml#/components/schemas/SarStatusChangedEventDto
 SarFileUploadedEventDto:
   $ref: cases.yml#/components/schemas/SarFileUploadedEventDto
+EntityAnnotatedEventDto:
+  $ref: cases.yml#/components/schemas/EntityAnnotatedEventDto
 CaseSnoozedDto:
   $ref: cases.yml#/components/schemas/CaseSnoozedDto
 CaseUnsnoozedDto:

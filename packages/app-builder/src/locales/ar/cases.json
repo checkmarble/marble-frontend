@@ -198,5 +198,7 @@
   "annotations.documents.upload_file": "تحميل ملف",
   "annotations.popover.annotate.subtitle": "التعليق ، إضافة ملف ، إضافة علامة",
   "annotations.popover.annotate.title": "علق",
-  "required_actions.see_screening_hits": "انظر أغاني الفحص ({{count}})"
+  "required_actions.see_screening_hits": "انظر أغاني الفحص ({{count}})",
+  "case_detail.history.event_type.entity_annotated": "التعليقات التوضيحية",
+  "case_detail.history.event_detail.entity_annotated": "قام <Actor>{{actor}}</Actor> بشرح <ObjectType>{{objectType}}</ObjectType> باستخدام <Type>{{type}}</Type>"
 }

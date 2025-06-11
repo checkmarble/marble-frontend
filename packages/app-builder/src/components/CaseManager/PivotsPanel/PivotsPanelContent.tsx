@@ -118,6 +118,7 @@ export function PivotsPanelContent({
           currentPivotObject.pivotObjectId &&
           currentPivotObject.pivotObjectData.metadata.canBeAnnotated ? (
             <PivotAnnotations
+              caseId={caseObj.id}
               tableName={currentTable.name}
               objectId={currentPivotObject.pivotObjectId}
               annotations={currentPivotObject.pivotObjectData.annotations}
