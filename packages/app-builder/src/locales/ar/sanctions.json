@@ -73,7 +73,7 @@
   "entity.schema.organization": "منظمة",
   "entity.schema.person": "شخص",
   "entity.schema.thing": "شيء",
-  "match.similarity": "التشابه {{٪}} ٪",
+  "match.similarity": "التشابه {{percent}} ٪",
   "match.status.confirmed_hit": "أكد المباراة",
   "match.status.no_hit": "لا تطابق",
   "match.status.pending": "للمراجعة",

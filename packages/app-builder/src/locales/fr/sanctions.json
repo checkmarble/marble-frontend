@@ -73,7 +73,7 @@
   "entity.schema.organization": "Organisation",
   "entity.schema.person": "Personne",
   "entity.schema.thing": "Chose",
-  "match.similarity": "Similitude {{pour cent}}%",
+  "match.similarity": "Similitude {{percent}}%",
   "match.status.confirmed_hit": "Correspondance confirmée",
   "match.status.no_hit": "Pas de correspondance",
   "match.status.pending": "Pour examiner",
