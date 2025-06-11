@@ -412,7 +412,12 @@ function FileLink({ endpoint }: { endpoint: string }) {
           name="download"
           disabled={downloadingCaseFile}
         >
-          {downloadingCaseFile ? t('cases:case.file.downloading') : t('cases:case.file.download')}
+          {downloadingCaseFile ? (
+            <Icon icon="spinner" className="size-5 animate-spin" />
+          ) : (
+            <Icon icon="download" className="size-5" />
+          )}
+          {t('cases:case.file.download')}
         </Button>
       )}
     </ClientOnly>
