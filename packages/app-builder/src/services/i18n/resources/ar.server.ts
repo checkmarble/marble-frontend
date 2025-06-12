@@ -9,6 +9,7 @@ import lists from '@app-builder/locales/ar/lists.json';
 import navigation from '@app-builder/locales/ar/navigation.json';
 import sanctions from '@app-builder/locales/ar/sanctions.json';
 import scenarios from '@app-builder/locales/ar/scenarios.json';
+import screeningTopics from '@app-builder/locales/ar/screening-topics.json';
 import settings from '@app-builder/locales/ar/settings.json';
 import transfercheck from '@app-builder/locales/ar/transfercheck.json';
 import upload from '@app-builder/locales/ar/upload.json';
@@ -26,6 +27,7 @@ export const ar = {
   auth,
   sanctions,
   scenarios,
+  screeningTopics,
   settings,
   transfercheck,
   upload,

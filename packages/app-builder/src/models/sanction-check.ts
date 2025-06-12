@@ -210,3 +210,85 @@ export function isSanctionCheckError(
 export function isSanctionCheckReviewCompleted(sanctionCheck: SanctionCheck) {
   return sanctionCheck.status === 'no_hit' || sanctionCheck.status === 'confirmed_hit';
 }
+
+export type ScreeningCategory = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
+
+export const SCREENING_CATEGORY_COLORS: Record<ScreeningCategory, string> = {
+  sanctions: 'bg-red-95 text-red-50',
+  peps: 'bg-blue-95 text-blue-50',
+  'third-parties': 'bg-grey-95 text-grey-50',
+  'adverse-media': 'bg-yellow-90 text-',
+};
+export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
+  // Sanctions
+  ['sanction', 'sanctions'],
+  ['sanction.linked', 'sanctions'],
+  ['sanction.counter', 'sanctions'],
+  ['asset.frozen', 'sanctions'],
+
+  // PEPs
+  ['role.pep', 'peps'],
+  ['role.pol', 'peps'],
+  ['role.rca', 'peps'],
+  ['role.judge', 'peps'],
+  ['role.civil', 'peps'],
+  ['role.diplo', 'peps'],
+  ['role.spy', 'peps'],
+  ['gov.head', 'peps'],
+
+  // Third-parties
+  ['fin.adivsor', 'third-parties'],
+  ['role.lawyer', 'third-parties'],
+  ['role.acct', 'third-parties'],
+  ['role.journo', 'third-parties'],
+  ['role.act', 'third-parties'],
+  ['role.lobby', 'third-parties'],
+
+  // Adverse media
+  ['crime', 'adverse-media'],
+  ['crime.fraud', 'adverse-media'],
+  ['crime.cyber', 'adverse-media'],
+  ['crime.fin', 'adverse-media'],
+  ['crime.env', 'adverse-media'],
+  ['crime.theft', 'adverse-media'],
+  ['crime.war', 'adverse-media'],
+  ['crime.boss', 'adverse-media'],
+  ['crime.terror', 'adverse-media'],
+  ['crime.traffick', 'adverse-media'],
+  ['crime.traffick.drug', 'adverse-media'],
+  ['crime.traffick.human', 'adverse-media'],
+  ['forced.labor', 'adverse-media'],
+  ['wanted', 'adverse-media'],
+  ['corp.disqual', 'adverse-media'],
+  ['reg.action', 'adverse-media'],
+  ['reg.warn', 'adverse-media'],
+  ['debarment', 'adverse-media'],
+  ['pol.party', 'third-parties'],
+  ['pol.union', 'third-parties'],
+  ['mil', 'adverse-media'],
+  ['export.control', 'adverse-media'],
+  ['export.risk', 'adverse-media'],
+  ['poi', 'third-parties'],
+
+  // Default to adverse-media for ambiguous/government/corporate
+  ['corp.offshore', 'third-parties'],
+  ['corp.shell', 'third-parties'],
+  ['corp.public', 'third-parties'],
+  ['gov', 'third-parties'],
+  ['gov.national', 'third-parties'],
+  ['gov.state', 'third-parties'],
+  ['gov.muni', 'third-parties'],
+  ['gov.soe', 'third-parties'],
+  ['gov.igo', 'third-parties'],
+  ['gov.admin', 'third-parties'],
+  ['gov.executive', 'third-parties'],
+  ['gov.legislative', 'third-parties'],
+  ['gov.judicial', 'third-parties'],
+  ['gov.security', 'third-parties'],
+  ['gov.financial', 'third-parties'],
+  ['fin', 'third-parties'],
+  ['fin.bank', 'third-parties'],
+  ['fin.fund', 'third-parties'],
+  ['role.oligarch', 'third-parties'],
+  ['rel', 'third-parties'],
+]);

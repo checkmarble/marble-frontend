@@ -1,3 +1,4 @@
+import { type ScreeningCategory } from '@app-builder/models/sanction-check';
 import { toggle } from 'radash';
 import { type Dispatch, type SetStateAction, useMemo } from 'react';
 import { Button, Checkbox, MenuCommand } from 'ui-design-system';
@@ -26,7 +27,7 @@ export const DatasetTagSelect = ({
           <span className="text-xs">Type</span>
           {selectedTags.length > 0 ? <div className="bg-grey-80 mx-1 h-3 w-px" /> : null}
           {selectedTags.map((tag) => (
-            <DatasetTag key={tag} tag={tag} />
+            <DatasetTag key={tag} category={tag as ScreeningCategory} />
           ))}
         </Button>
       </MenuCommand.Trigger>
@@ -41,7 +42,7 @@ export const DatasetTagSelect = ({
               value={tag}
             >
               <Checkbox size="small" checked={selectedTags.includes(tag)} />
-              <DatasetTag tag={tag} />
+              <DatasetTag category={tag as ScreeningCategory} />
             </MenuCommand.Item>
           ))}
           <div className="bg-grey-100 sticky bottom-0 flex w-full gap-2">
