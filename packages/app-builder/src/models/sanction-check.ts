@@ -224,6 +224,7 @@ export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   ['sanction', 'sanctions'],
   ['sanction.linked', 'sanctions'],
   ['sanction.counter', 'sanctions'],
+  ['asset.frozen', 'sanctions'],
 
   // PEPs
   ['role.pep', 'peps'],
@@ -257,7 +258,6 @@ export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   ['crime.traffick.drug', 'adverse-media'],
   ['crime.traffick.human', 'adverse-media'],
   ['forced.labor', 'adverse-media'],
-  ['asset.frozen', 'adverse-media'],
   ['wanted', 'adverse-media'],
   ['corp.disqual', 'adverse-media'],
   ['reg.action', 'adverse-media'],
