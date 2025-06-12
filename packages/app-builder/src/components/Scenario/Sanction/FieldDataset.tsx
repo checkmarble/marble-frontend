@@ -1,5 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
 import { DatasetTag } from '@app-builder/components/Sanctions/DatasetTag';
+import { type ScreeningCategory } from '@app-builder/models/sanction-check';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import clsx from 'clsx';
 import Fuse from 'fuse.js';
@@ -143,7 +144,7 @@ const FieldCategory = memo(function FieldCategory({
                     />
                     <span className="text-s">{dataset.title}</span>
                   </div>
-                  {dataset.tag ? <DatasetTag tag={dataset.tag} /> : null}
+                  {dataset.tag ? <DatasetTag category={dataset.tag as ScreeningCategory} /> : null}
                 </label>
               ))}
           </div>

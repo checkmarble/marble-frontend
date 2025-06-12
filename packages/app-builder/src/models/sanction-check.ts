@@ -211,9 +211,15 @@ export function isSanctionCheckReviewCompleted(sanctionCheck: SanctionCheck) {
   return sanctionCheck.status === 'no_hit' || sanctionCheck.status === 'confirmed_hit';
 }
 
-export type ScreeningCategories = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
+export type ScreeningCategory = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';
 
-export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategories>([
+export const SCREENING_CATEGORY_COLORS: Record<ScreeningCategory, string> = {
+  sanctions: 'bg-red-95 text-red-50',
+  peps: 'bg-blue-95 text-blue-50',
+  'third-parties': 'bg-grey-95 text-grey-50',
+  'adverse-media': 'bg-yellow-90 text-',
+};
+export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   // Sanctions
   ['sanction', 'sanctions'],
   ['sanction.linked', 'sanctions'],

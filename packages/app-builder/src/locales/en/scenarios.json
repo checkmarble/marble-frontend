@@ -216,7 +216,6 @@
   "sanction.lists.sanctions": "sanctions",
   "sanction.lists.adverse_media": "adverse media",
   "sanction.lists.third_parties": "third parties",
-  "sanction.lists.negative_news": "negative news",
   "sanction.lists.other": "other",
   "sanction_transaction_label": "Transaction Label",
   "sanction_transaction_label_placeholder": "Select the transaction label",

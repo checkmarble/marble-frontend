@@ -1,4 +1,5 @@
 import { DatasetTag } from '@app-builder/components/Sanctions/DatasetTag';
+import { type ScreeningCategory } from '@app-builder/models/sanction-check';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { toggle } from 'radash';
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
@@ -72,7 +73,7 @@ export const FieldDatasetFilters = ({
             <span className="text-xs">Type</span>
             {filters.tags.length > 0 ? <div className="bg-grey-80 mx-1 h-3 w-px" /> : null}
             {filters.tags.map((tag) => (
-              <DatasetTag key={tag} tag={tag} />
+              <DatasetTag key={tag} category={tag as ScreeningCategory} />
             ))}
           </Button>
         </MenuCommand.Trigger>
@@ -87,7 +88,7 @@ export const FieldDatasetFilters = ({
                 value={tag}
               >
                 <Checkbox size="small" checked={filters.tags.includes(tag)} />
-                <DatasetTag tag={tag} />
+                <DatasetTag category={tag as ScreeningCategory} />
               </MenuCommand.Item>
             ))}
             <div className="bg-grey-100 sticky bottom-0 flex w-full gap-2">
