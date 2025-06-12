@@ -457,5 +457,20 @@
   "sanction.lists.sanctions": "العقوبات",
   "sanction.lists.third_parties": "أطراف ثالثة",
   "edit_sanction.consideration_matchings": "النظر في المباريات أعلاه",
-  "edit_sanction.default_value": "القيمة الافتراضية"
+  "edit_sanction.default_value": "القيمة الافتراضية",
+  "edit_sanction.enable_entity_recognition": "تمكين التعرف على الكيان",
+  "edit_sanction.enable_entity_recognition.tooltip": "اكتشف واستخراج الكيانات المسمى من النص قبل المطابقة",
+  "edit_sanction.entity_type.heading": "ما نوع الكيان الذي تقوم بفحصه؟",
+  "edit_sanction.entity_type.organization": "منظمة",
+  "edit_sanction.entity_type.person": "شخص",
+  "edit_sanction.entity_type.thing": "شيء",
+  "edit_sanction.entity_type.tooltip": "يستخدم هذا لتحديد نوع الكيان الذي تقوم بفحصه.",
+  "edit_sanction.entity_type.vehicle": "عربة",
+  "edit_sanction.ignore_check_if_under": "تجاهل التحقق مما إذا كانت السلسلة الناتجة",
+  "edit_sanction.ignore_check_if_under.characters": "الشخصيات",
+  "edit_sanction.ignore_numbers": "تجاهل الأرقام",
+  "edit_sanction.ignore_numbers.tooltip": "عند التمكين ، ستتم إزالة جميع الأحرف الرقمية من النص قبل المطابقة. \nيمكن أن يساعد ذلك في تقليل الإيجابيات الخاطئة الناجمة عن الأرقام في الأسماء أو العناوين أو المعرفات.",
+  "edit_sanction.remove_terms_from_list": "إزالة المصطلحات من القائمة",
+  "edit_sanction.remove_terms_from_list.tooltip": "إزالة المصطلحات من القائمة",
+  "edit_sanction.select_list": "حدد قائمة"
 }

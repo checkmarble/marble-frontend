@@ -8,7 +8,6 @@ import {
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
 import { FieldDataset } from '@app-builder/components/Scenario/Sanction/FieldDataset';
@@ -32,12 +31,13 @@ import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
-import { useForm } from '@tanstack/react-form';
+import { useForm, useStore } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
-import { Button, cn, Tag } from 'ui-design-system';
+import { match } from 'ts-pattern';
+import { Button, cn, MenuCommand, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -256,6 +256,12 @@ export default function SanctionDetail() {
     );
   }
 
+  const entityType = useStore(form.store, (state) => state.values.entityType);
+  const showList = useStore(
+    form.store,
+    (state) => state.values.preprocessing?.blacklistListId !== undefined,
+  );
+
   return (
     <Page.Main>
       <Page.Header className="justify-between">
@@ -462,65 +468,229 @@ export default function SanctionDetail() {
                   <span className="text-s font-semibold">
                     {t('scenarios:sanction.match_settings.title')}
                   </span>
-                  <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded border p-6">
-                    <Callout variant="outlined" className="mb-4 lg:mb-6">
+                  <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded border p-4">
+                    <Callout variant="outlined">
                       <p className="whitespace-pre text-wrap">
                         {t('scenarios:sanction.match_settings.callout')}
                       </p>
                     </Callout>
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-s inline-flex items-center gap-1">
+                        {t('scenarios:edit_sanction.entity_type.heading')}
+                        <FieldToolTip>
+                          {t('scenarios:edit_sanction.entity_type.tooltip')}
+                        </FieldToolTip>
+                      </span>
+                      <form.Field name="entityType">
+                        {(field) => (
+                          <div className="flex flex-col gap-4">
+                            <MenuCommand.Menu persistOnSelect={false}>
+                              <MenuCommand.Trigger>
+                                <Button
+                                  variant="secondary"
+                                  size="medium"
+                                  className="w-52 justify-between"
+                                >
+                                  <span className="text-grey-00 text-s font-medium">
+                                    {match(entityType)
+                                      .with('Thing', () =>
+                                        t('scenarios:edit_sanction.entity_type.thing'),
+                                      )
+                                      .with('Person', () =>
+                                        t('scenarios:edit_sanction.entity_type.person'),
+                                      )
+                                      .with('Organization', () =>
+                                        t('scenarios:edit_sanction.entity_type.organization'),
+                                      )
+                                      .with('Vehicle', () =>
+                                        t('scenarios:edit_sanction.entity_type.vehicle'),
+                                      )
+                                      .otherwise(() => entityType)}
+                                  </span>
+                                  <Icon icon="caret-down" className="text-grey-50 size-4" />
+                                </Button>
+                              </MenuCommand.Trigger>
+                              <MenuCommand.Content sameWidth className="mt-2">
+                                <MenuCommand.List>
+                                  <MenuCommand.Item onSelect={() => field.handleChange('Thing')}>
+                                    {t('scenarios:edit_sanction.entity_type.thing')}
+                                  </MenuCommand.Item>
+                                  <MenuCommand.Item onSelect={() => field.handleChange('Person')}>
+                                    {t('scenarios:edit_sanction.entity_type.person')}
+                                  </MenuCommand.Item>
+                                  <MenuCommand.Item
+                                    onSelect={() => field.handleChange('Organization')}
+                                  >
+                                    {t('scenarios:edit_sanction.entity_type.organization')}
+                                  </MenuCommand.Item>
+                                  <MenuCommand.Item onSelect={() => field.handleChange('Vehicle')}>
+                                    {t('scenarios:edit_sanction.entity_type.vehicle')}
+                                  </MenuCommand.Item>
+                                </MenuCommand.List>
+                              </MenuCommand.Content>
+                            </MenuCommand.Menu>
+                          </div>
+                        )}
+                      </form.Field>
+                    </div>
+                    <div className="flex flex-col gap-2">
                       <form.Field name="query.name">
                         {(field) => {
                           const value = sanctionCheckConfig?.query?.name;
                           return (
-                            <div className="flex flex-col gap-4">
-                              <FormLabel
-                                className="inline-flex items-center gap-1"
-                                name={field.name}
-                              >
-                                {t('scenarios:sanction_counterparty_name')}
-                                <FieldToolTip>
-                                  {t('scenarios:sanction_counterparty_name.tooltip')}
-                                </FieldToolTip>
-                              </FormLabel>
-                              <FieldNodeConcat
-                                viewOnly={editor === 'view'}
-                                value={value && isStringConcatAstNode(value) ? value : undefined}
-                                onChange={field.handleChange}
-                                onBlur={field.handleBlur}
-                                placeholder={t('scenarios:sanction_counterparty_name_placeholder')}
-                                limit={5}
-                              />
-                              <FormErrorOrDescription
-                                errors={getFieldErrors(field.state.meta.errors)}
-                              />
+                            <div className="flex flex-col gap-1">
+                              <div className="flex flex-col gap-1">
+                                <span className="text-s inline-flex items-center gap-1">
+                                  {t('scenarios:sanction_counterparty_name')}
+                                  <FieldToolTip>
+                                    {t('scenarios:sanction_counterparty_name.tooltip')}
+                                  </FieldToolTip>
+                                </span>
+                                <FieldNodeConcat
+                                  viewOnly={editor === 'view'}
+                                  value={value && isStringConcatAstNode(value) ? value : undefined}
+                                  onChange={field.handleChange}
+                                  onBlur={field.handleBlur}
+                                  placeholder={t(
+                                    'scenarios:sanction_counterparty_name_placeholder',
+                                  )}
+                                  limit={5}
+                                />
+                                <FormErrorOrDescription
+                                  errors={getFieldErrors(field.state.meta.errors)}
+                                />
+                              </div>
                             </div>
                           );
                         }}
                       </form.Field>
-                      <form.Field name="query.label">
-                        {(field) => {
-                          const value = sanctionCheckConfig?.query?.['label'];
-                          return (
-                            <div className="flex flex-col gap-4">
-                              <FormLabel name={field.name}>
-                                {t('scenarios:sanction_transaction_label')}
-                              </FormLabel>
-                              <FieldNodeConcat
-                                viewOnly={editor === 'view'}
-                                value={value && isStringConcatAstNode(value) ? value : undefined}
-                                onChange={field.handleChange}
+                      <form.Field name="preprocessing.blacklistListId">
+                        {(field) => (
+                          <div className="flex flex-col gap-2.5">
+                            <div className="flex items-center gap-2">
+                              <Switch
+                                checked={showList}
                                 onBlur={field.handleBlur}
-                                placeholder={t('scenarios:sanction_transaction_label_placeholder')}
-                                limit={5}
+                                onCheckedChange={(state) => {
+                                  if (state === false) {
+                                    field.handleChange(undefined);
+                                  } else {
+                                    field.handleChange('');
+                                  }
+                                }}
                               />
-                              <FormErrorOrDescription
-                                errors={getFieldErrors(field.state.meta.errors)}
-                              />
+                              <span className="text-s">
+                                {t('scenarios:edit_sanction.remove_terms_from_list')}
+                              </span>
+                              <FieldToolTip>
+                                {t('scenarios:edit_sanction.remove_terms_from_list.tooltip')}
+                              </FieldToolTip>
                             </div>
-                          );
-                        }}
+                            {showList ? (
+                              <div className="flex flex-col gap-1">
+                                <MenuCommand.Menu>
+                                  <MenuCommand.Trigger>
+                                    <Button
+                                      variant="secondary"
+                                      size="medium"
+                                      className="w-52 justify-between"
+                                    >
+                                      <span className="text-grey-00 text-s font-medium">
+                                        {customLists.find((list) => list.id === field.state.value)
+                                          ?.name || t('scenarios:edit_sanction.select_list')}
+                                      </span>
+                                      <Icon icon="caret-down" className="text-grey-50 size-4" />
+                                    </Button>
+                                  </MenuCommand.Trigger>
+                                  <MenuCommand.Content sameWidth className="mt-2">
+                                    <MenuCommand.List>
+                                      {customLists.map((list) => (
+                                        <MenuCommand.Item
+                                          key={list.id}
+                                          onSelect={() => field.handleChange(list.id)}
+                                        >
+                                          {list.name}
+                                        </MenuCommand.Item>
+                                      ))}
+                                    </MenuCommand.List>
+                                  </MenuCommand.Content>
+                                </MenuCommand.Menu>
+                                <FormErrorOrDescription
+                                  errors={getFieldErrors(field.state.meta.errors)}
+                                />
+                              </div>
+                            ) : null}
+                          </div>
+                        )}
                       </form.Field>
+                      <form.Field name="preprocessing.removeNumbers">
+                        {(field) => (
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              checked={field.state.value}
+                              onCheckedChange={(checked) => field.handleChange(checked)}
+                              onBlur={field.handleBlur}
+                              disabled={editor === 'view'}
+                            />
+                            <span className="text-s">
+                              {t('scenarios:edit_sanction.ignore_numbers')}
+                            </span>
+                            <FieldToolTip>
+                              {t('scenarios:edit_sanction.ignore_numbers.tooltip')}
+                            </FieldToolTip>
+                          </div>
+                        )}
+                      </form.Field>
+                      <form.Field name="preprocessing.skipIfUnder">
+                        {(field) => (
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              checked={field.state.value !== undefined}
+                              onCheckedChange={(checked) =>
+                                field.handleChange(checked ? 3 : undefined)
+                              }
+                              onBlur={field.handleBlur}
+                              disabled={editor === 'view'}
+                            />
+                            <span className="text-s">
+                              {t('scenarios:edit_sanction.ignore_check_if_under')}
+                            </span>
+                            <FormInput
+                              type="number"
+                              name={field.name}
+                              className="z-0 h-6 w-14 py-0"
+                              defaultValue={field.state.value}
+                              min={1}
+                              onChange={(e) => field.handleChange(+e.currentTarget.value)}
+                              valid={field.state.meta.errors?.length === 0}
+                              disabled={editor === 'view' || field.state.value === undefined}
+                            />
+                            <span className="text-s">
+                              {t('scenarios:edit_sanction.ignore_check_if_under.characters')}
+                            </span>
+                          </div>
+                        )}
+                      </form.Field>
+                      {entityType === 'Thing' ? (
+                        <form.Field name="preprocessing.useNer">
+                          {(field) => (
+                            <div className="flex items-center gap-2">
+                              <Switch
+                                checked={field.state.value}
+                                onCheckedChange={(checked) => field.handleChange(checked)}
+                                onBlur={field.handleBlur}
+                                disabled={editor === 'view'}
+                              />
+                              <span className="text-s">
+                                {t('scenarios:edit_sanction.enable_entity_recognition')}
+                              </span>
+                              <FieldToolTip>
+                                {t('scenarios:edit_sanction.enable_entity_recognition.tooltip')}
+                              </FieldToolTip>
+                            </div>
+                          )}
+                        </form.Field>
+                      ) : null}
                     </div>
                   </div>
                 </div>
