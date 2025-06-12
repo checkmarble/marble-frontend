@@ -43,7 +43,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                 aria-hidden
                 className="size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180 rtl:-rotate-90 rtl:group-aria-expanded:-rotate-180 rtl:group-data-[initial]:-rotate-180"
               />
-              <div className="text-s flex items-center gap-2">
+              <div className="text-s flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="font-semibold">{entity.caption}</span>
                 <span>{t(`sanctions:entity.schema.${entitySchema}`)}</span>
                 <Tag color="grey">
@@ -61,7 +61,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                 <EnrichMatchButton matchId={match.id} />
               </div>
             ) : null}
-            <div className="inline-flex h-8">
+            <div className="inline-flex h-8 text-nowrap">
               {unreviewable ? (
                 <Tag border="square" color="grey">
                   {t('sanctions:match.not_reviewable')}
