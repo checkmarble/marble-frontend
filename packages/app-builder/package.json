@@ -18,7 +18,7 @@
   "license": "ISC",
   "devDependencies": {
     "@marble/eslint-config": "workspace:*",
-    "@remix-run/dev": "^2.16.5",
+    "@remix-run/dev": "^2.16.8",
     "@segment/analytics-next": "^1.78.1",
     "@sentry/cli": "^2.42.3",
     "@sentry/vite-plugin": "^3.2.2",
