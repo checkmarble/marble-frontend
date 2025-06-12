@@ -557,7 +557,7 @@ export function ClientTagsEditSelect({
   });
 
   useEffect(() => {
-    if (fetcher.data.success) {
+    if (fetcher.data?.success) {
       onAnnotateSuccess?.();
     }
   }, [onAnnotateSuccess, fetcher, form]);
