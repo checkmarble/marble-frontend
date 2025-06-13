@@ -28,7 +28,7 @@ export interface ScenarioIteration {
   rules: ScenarioIterationRule[];
   schedule?: string;
   trigger: AstNode | null;
-  sanctionCheckConfig: SanctionCheckConfig | null;
+  sanctionCheckConfigs: SanctionCheckConfig[];
 }
 
 export interface ScenarioIterationWithType extends ScenarioIteration {
@@ -78,7 +78,7 @@ export function adaptScenarioIteration(
   scenarioIterationWithBody: ScenarioIterationWithBodyDto,
 ): ScenarioIteration {
   const triggerDto = scenarioIterationWithBody.body.trigger_condition_ast_expression;
-  const configDto = scenarioIterationWithBody.body.sanction_check_config;
+  const configsDto = scenarioIterationWithBody.body.sanction_check_configs;
 
   return {
     id: scenarioIterationWithBody.id,
@@ -92,7 +92,7 @@ export function adaptScenarioIteration(
     rules: scenarioIterationWithBody.body.rules.map(adaptScenarioIterationRule),
     schedule: scenarioIterationWithBody.body.schedule,
     trigger: triggerDto ? adaptAstNode(triggerDto) : null,
-    sanctionCheckConfig: configDto ? adaptSanctionCheckConfig(configDto) : null,
+    sanctionCheckConfigs: configsDto?.map(adaptSanctionCheckConfig) ?? [],
   };
 }
 

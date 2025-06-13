@@ -20,7 +20,7 @@ import { Outlet, useLoaderData, useLocation, useRouteLoaderData } from '@remix-r
 import { type Namespace } from 'i18next';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
+import { concat, filter, isEmpty, isNullish, map, pipe, unique } from 'remeda';
 import invariant from 'tiny-invariant';
 import { MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -91,7 +91,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   ]);
 
   const editorMode: EditorMode =
-    isEditScenarioAvailable(user) && R.isNullish(scenarioIteration.version) ? 'edit' : 'view';
+    isEditScenarioAvailable(user) && isNullish(scenarioIteration.version) ? 'edit' : 'view';
 
   return json({
     editorMode,
@@ -133,19 +133,28 @@ export function useCurrentScenarioIterationRule() {
 }
 
 export const useRuleGroups = () => {
-  const { rules, sanctionCheckConfig } = useCurrentScenarioIteration();
+  const { rules, sanctionCheckConfigs } = useCurrentScenarioIteration();
+
+  const configGroups = useMemo(
+    () =>
+      pipe(
+        sanctionCheckConfigs,
+        map((c) => c.ruleGroup),
+        filter((group) => group !== undefined),
+      ),
+    [sanctionCheckConfigs],
+  );
 
   return useMemo(
     () =>
-      R.pipe(
-        [
-          ...rules.map((r) => r.ruleGroup),
-          ...(sanctionCheckConfig?.ruleGroup ? [sanctionCheckConfig.ruleGroup] : []),
-        ],
-        R.filter((val) => !R.isEmpty(val)),
-        R.unique(),
+      pipe(
+        rules,
+        map((r) => r.ruleGroup),
+        concat(configGroups),
+        filter((val) => !isEmpty(val)),
+        unique(),
       ),
-    [rules, sanctionCheckConfig],
+    [rules, configGroups],
   );
 };
 

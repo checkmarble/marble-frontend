@@ -220,9 +220,9 @@ export const routes = [
                         "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/rules.$ruleId.tsx"
                       },
                       {
-                        "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/sanction",
-                        "path": "sanction",
-                        "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/sanction.tsx"
+                        "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/sanctions.$sanctionId",
+                        "path": "sanctions/:sanctionId",
+                        "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/sanctions.$sanctionId.tsx"
                       }
                     ]
                   },
@@ -590,14 +590,14 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/$sanctionId+/delete",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/sanctions/:sanctionId/delete",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/$sanctionId+/delete.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create",
         "path": "ressources/scenarios/:scenarioId/:iterationId/sanctions/create",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create.tsx"
-      },
-      {
-        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete",
-        "path": "ressources/scenarios/:scenarioId/:iterationId/sanctions/delete",
-        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule",

@@ -176,7 +176,7 @@ export const FieldDataset = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-s font-medium">{t('scenarios:sanction.lists.title')}</span>
+      <span className="text-s font-semibold">{t('scenarios:sanction.lists.title')}</span>
       <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded border p-6">
         <Callout variant="outlined">
           <p className="whitespace-pre text-wrap">{t('scenarios:sanction.lists.callout')}</p>

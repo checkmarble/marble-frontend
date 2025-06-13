@@ -64,7 +64,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     }),
   ]);
 
-  const sanctions = iteration.sanctionCheckConfig ? [iteration.sanctionCheckConfig] : [];
+  const sanctions = iteration.sanctionCheckConfigs ?? [];
 
   const items = [
     ...rules.map((r) => ({ ...r, type: 'rule' as const })),
@@ -93,12 +93,10 @@ const AddRuleOrSanction = ({
   scenarioId,
   iterationId,
   isSanctionAvailable,
-  hasAlreadyASanction,
 }: {
   scenarioId: string;
   iterationId: string;
   isSanctionAvailable: FeatureAccessLevelDto;
-  hasAlreadyASanction: boolean;
 }) => {
   const { t } = useTranslation(handle.i18n);
 
@@ -117,7 +115,6 @@ const AddRuleOrSanction = ({
           scenarioId={scenarioId}
           iterationId={iterationId}
           isSanctionAvailable={isSanctionAvailable}
-          hasAlreadyASanction={hasAlreadyASanction}
         />
       </DropdownMenu.Content>
     </DropdownMenu.Root>
@@ -135,7 +132,6 @@ export default function Rules() {
   const { items, ruleGroups, isSanctionAvailable } = useLoaderData<typeof loader>();
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
-  const hasAlreadyASanction = useMemo(() => items.some((i) => i.type === 'sanction'), [items]);
 
   const columns = useMemo(
     () => [
@@ -259,9 +255,10 @@ export default function Rules() {
         <Link to={`./${fromUUIDtoSUUID(row.id)}`} />
       ) : (
         <Link
-          to={getRoute('/scenarios/:scenarioId/i/:iterationId/sanction', {
+          to={getRoute('/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId', {
             scenarioId: fromUUIDtoSUUID(scenarioId),
             iterationId: fromUUIDtoSUUID(iterationId),
+            sanctionId: fromUUIDtoSUUID(row.id as string),
           })}
         />
       ),
@@ -302,7 +299,6 @@ export default function Rules() {
                 scenarioId={scenarioId}
                 iterationId={iterationId}
                 isSanctionAvailable={isSanctionAvailable}
-                hasAlreadyASanction={hasAlreadyASanction}
               />
             ) : null}
           </div>
