@@ -51,9 +51,11 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                     percent: Math.round(match.payload.score * 100),
                   })}
                 </Tag>
-                {match.payload.properties['topics']?.map((topic) => (
-                  <TopicTag key={`${match.id}-${topic}`} topic={topic} />
-                ))}
+                <span className="col-span-full flex w-full flex-wrap gap-1">
+                  {match.payload.properties['topics']?.map((topic) => (
+                    <TopicTag key={`${match.id}-${topic}`} topic={topic} />
+                  ))}
+                </span>
               </div>
             </CollapsibleV2.Title>
             {!match.enriched ? (
