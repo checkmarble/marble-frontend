@@ -20,7 +20,7 @@ import useIntersection from '@app-builder/hooks/useIntersection';
 import { NewUndefinedAstNode } from '@app-builder/models';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { knownOutcomes, type SanctionOutcome } from '@app-builder/models/outcome';
-import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/delete';
+import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/$sanctionId+/delete';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -129,7 +129,7 @@ const editSanctionFormSchema = z.object({
   forcedOutcome: z.enum(['review', 'decline', 'block_and_review']),
   triggerRule: z.any(),
   entityType: z.enum(['Person', 'Organization', 'Vehicle', 'Thing']).optional(),
-  query: z.record(z.any().nullish()),
+  query: z.record(z.any()),
   counterPartyId: z.any().nullish(),
   preprocessing: z
     .object({
@@ -302,7 +302,11 @@ export default function SanctionDetail() {
               </form.Field>
               {editor === 'edit' ? (
                 <div className="flex items-center gap-2">
-                  <DeleteSanction iterationId={iterationId} scenarioId={scenario.id}>
+                  <DeleteSanction
+                    iterationId={iterationId}
+                    scenarioId={scenario.id}
+                    sanctionId={configId}
+                  >
                     <Button color="red" className="w-fit" size="small">
                       <Icon icon="delete" className="size-4" aria-hidden />
                       {t('common:delete')}
@@ -396,7 +400,6 @@ export default function SanctionDetail() {
                             onBlur={field.handleBlur}
                             className="z-0 w-14 py-1.5"
                             defaultValue={field.state.value}
-                            min={org.sanctionThreshold}
                             onChange={(e) => field.handleChange(+e.currentTarget.value)}
                             valid={field.state.meta.errors?.length === 0}
                           />
@@ -588,7 +591,7 @@ export default function SanctionDetail() {
                             </div>
                             {showList ? (
                               <div className="flex flex-col gap-1">
-                                <MenuCommand.Menu>
+                                <MenuCommand.Menu persistOnSelect={false}>
                                   <MenuCommand.Trigger>
                                     <Button
                                       variant="secondary"

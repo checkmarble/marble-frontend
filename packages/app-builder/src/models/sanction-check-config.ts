@@ -47,7 +47,7 @@ export function adaptSanctionCheckConfig(dto: SanctionCheckConfigDto): SanctionC
           useNer: dto.preprocessing.use_ner,
           skipIfUnder: dto.preprocessing.skip_if_under,
           removeNumbers: dto.preprocessing.remove_numbers,
-          blacklistListId: dto.preprocessing.blacklist_list_id,
+          blacklistListId: dto.preprocessing.ignore_list_id,
         }
       : undefined,
   };
@@ -75,7 +75,7 @@ export function adaptSanctionCheckConfigDto(config: SanctionCheckConfig): Sancti
           use_ner: config.preprocessing.useNer,
           skip_if_under: config.preprocessing.skipIfUnder,
           remove_numbers: config.preprocessing.removeNumbers,
-          blacklist_list_id: config.preprocessing.blacklistListId,
+          ignore_list_id: config.preprocessing.blacklistListId,
         }
       : undefined,
   };
