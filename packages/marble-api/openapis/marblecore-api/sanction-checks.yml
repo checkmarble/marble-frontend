@@ -286,7 +286,7 @@ components:
             remove_numbers:
               description: Whether to strip numbers from the counterparty name
               type: boolean
-            blacklist_list_id:
+            ignore_list_id:
               description: Whether to strip items from a custom list from the counterparty name
               type: string
               format: uuid
