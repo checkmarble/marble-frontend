@@ -5,7 +5,7 @@ import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import { Button, ModalV2 } from 'ui-design-system';
+import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -37,19 +37,21 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export function DeleteSanction({
   scenarioId,
   iterationId,
+  sanctionId,
   children,
 }: {
   scenarioId: string;
   iterationId: string;
+  sanctionId: string;
   children: React.ReactElement;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
 
   return (
-    <ModalV2.Root>
-      <ModalV2.Trigger render={children} />
-      <ModalV2.Content>
+    <Modal.Root>
+      <Modal.Trigger asChild>{children}</Modal.Trigger>
+      <Modal.Content>
         <div className="flex flex-col gap-6 p-6">
           <div className="flex flex-1 flex-col items-center justify-center gap-2">
             <div className="bg-red-95 mb-6 box-border rounded-[90px] p-4">
@@ -59,23 +61,26 @@ export function DeleteSanction({
             <p className="text-center">{t('scenarios:delete_sanction.content')}</p>
           </div>
           <div className="flex flex-1 flex-row gap-2">
-            <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
-              {t('common:cancel')}
-            </ModalV2.Close>
+            <Modal.Close asChild>
+              <Button className="flex-1" variant="secondary">
+                {t('common:cancel')}
+              </Button>
+            </Modal.Close>
             <Button
               color="red"
-              className="flex-1"
               variant="primary"
+              className="flex-1"
               type="button"
               name="delete"
               onClick={() =>
                 fetcher.submit(new FormData(), {
                   method: 'DELETE',
                   action: getRoute(
-                    `/ressources/scenarios/:scenarioId/:iterationId/sanctions/delete`,
+                    `/ressources/scenarios/:scenarioId/:iterationId/sanctions/:sanctionId/delete`,
                     {
                       scenarioId: fromUUIDtoSUUID(scenarioId),
                       iterationId: fromUUIDtoSUUID(iterationId),
+                      sanctionId: fromUUIDtoSUUID(sanctionId),
                     },
                   ),
                 })
@@ -86,7 +91,7 @@ export function DeleteSanction({
             </Button>
           </div>
         </div>
-      </ModalV2.Content>
-    </ModalV2.Root>
+      </Modal.Content>
+    </Modal.Root>
   );
 }

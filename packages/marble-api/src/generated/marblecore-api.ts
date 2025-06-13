@@ -649,7 +649,7 @@ export type SanctionCheckConfigDto = {
         /** Whether to strip numbers from the counterparty name */
         remove_numbers?: boolean;
         /** Whether to strip items from a custom list from the counterparty name */
-        blacklist_list_id?: string;
+        ignore_list_id?: string;
     };
 };
 export type ScenarioIterationRuleDto = {
