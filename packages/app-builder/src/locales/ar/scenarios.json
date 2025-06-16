@@ -472,5 +472,17 @@
   "edit_sanction.ignore_numbers.tooltip": "عند التمكين ، ستتم إزالة جميع الأحرف الرقمية من النص قبل المطابقة. \nيمكن أن يساعد ذلك في تقليل الإيجابيات الخاطئة الناجمة عن الأرقام في الأسماء أو العناوين أو المعرفات.",
   "edit_sanction.remove_terms_from_list": "إزالة المصطلحات من القائمة",
   "edit_sanction.remove_terms_from_list.tooltip": "إزالة المصطلحات من القائمة",
-  "edit_sanction.select_list": "حدد قائمة"
+  "edit_sanction.select_list": "حدد قائمة",
+  "edit_sanction.birthdate": "تاريخ الميلاد",
+  "edit_sanction.birthdate_placeholder": "YYYY-MM-DD",
+  "edit_sanction.nationality": "الجنسية",
+  "edit_sanction.nationality_placeholder": "رمز الدولة",
+  "edit_sanction.idnumber": "رقم الهوية",
+  "edit_sanction.idnumber_placeholder": "رقم الهوية",
+  "edit_sanction.address": "العنوان",
+  "edit_sanction.address_placeholder": "العنوان",
+  "edit_sanction.country": "الدولة",
+  "edit_sanction.country_placeholder": "رمز الدولة",
+  "edit_sanction.registrationnumber": "رقم التسجيل",
+  "edit_sanction.registrationnumber_placeholder": "رقم التسجيل"
 }
