@@ -43,17 +43,19 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                 aria-hidden
                 className="size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180 rtl:-rotate-90 rtl:group-aria-expanded:-rotate-180 rtl:group-data-[initial]:-rotate-180"
               />
-              <div className="text-s flex items-center gap-2">
+              <div className="text-s flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="font-semibold">{entity.caption}</span>
                 <span>{t(`sanctions:entity.schema.${entitySchema}`)}</span>
                 <Tag color="grey">
                   {t('sanctions:match.similarity', {
-                    percent: Math.round(match.payload.score * 100),
+                    percent: Math.round(entity.score * 100),
                   })}
                 </Tag>
-                {match.payload.properties['topics']?.map((topic) => (
-                  <TopicTag key={`${match.id}-${topic}`} topic={topic} />
-                ))}
+                <span className="col-span-full flex w-full flex-wrap gap-1">
+                  {entity.properties['topics']?.map((topic) => (
+                    <TopicTag key={`${match.id}-${topic}`} topic={topic} />
+                  ))}
+                </span>
               </div>
             </CollapsibleV2.Title>
             {!match.enriched ? (
@@ -61,7 +63,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                 <EnrichMatchButton matchId={match.id} />
               </div>
             ) : null}
-            <div className="inline-flex h-8">
+            <div className="inline-flex h-8 text-nowrap">
               {unreviewable ? (
                 <Tag border="square" color="grey">
                   {t('sanctions:match.not_reviewable')}

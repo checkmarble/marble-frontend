@@ -37,7 +37,7 @@ import { Icon } from 'ui-icons';
 import * as z from 'zod';
 
 export const handle = {
-  i18n: ['common', 'navigation', ...decisionsI18n] satisfies Namespace,
+  i18n: ['common', 'navigation', 'screeningTopics', ...decisionsI18n] satisfies Namespace,
   BreadCrumbs: [
     ({ isLast }: BreadCrumbProps) => {
       const { t } = useTranslation(['decisions']);
