@@ -48,11 +48,11 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                 <span>{t(`sanctions:entity.schema.${entitySchema}`)}</span>
                 <Tag color="grey">
                   {t('sanctions:match.similarity', {
-                    percent: Math.round(match.payload.score * 100),
+                    percent: Math.round(entity.score * 100),
                   })}
                 </Tag>
                 <span className="col-span-full flex w-full flex-wrap gap-1">
-                  {match.payload.properties['topics']?.map((topic) => (
+                  {entity.properties['topics']?.map((topic) => (
                     <TopicTag key={`${match.id}-${topic}`} topic={topic} />
                   ))}
                 </span>
