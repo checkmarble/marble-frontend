@@ -247,7 +247,7 @@
   "edit_sanction.ignore_numbers": "Ignore numbers",
   "edit_sanction.ignore_numbers.tooltip": "When enabled, all numeric characters will be removed from the text before matching. This can help reduce false positives caused by numbers in names, addresses, or identifiers.",
   "edit_sanction.ignore_check_if_under": "Ignore check if resulting string is",
-  "edit_sanction.ignore_check_if_under.characters": "characters",
+  "edit_sanction.ignore_check_if_under.characters": "characters or less",
   "edit_sanction.enable_entity_recognition": "Enable entity recognition",
   "edit_sanction.enable_entity_recognition.tooltip": "Detect and extract named entities from the text before matching",
   "edit_sanction.similarity_score": "Minimum similarity score (%)",

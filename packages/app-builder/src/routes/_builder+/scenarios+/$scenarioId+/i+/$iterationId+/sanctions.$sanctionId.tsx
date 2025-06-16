@@ -10,11 +10,13 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
+import { FieldBlackListId } from '@app-builder/components/Scenario/Sanction/FieldBlackListId';
 import { FieldDataset } from '@app-builder/components/Scenario/Sanction/FieldDataset';
 import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
 import { FieldNodeConcat } from '@app-builder/components/Scenario/Sanction/FieldNodeConcat';
 import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
+import { FieldSkipIfUnder } from '@app-builder/components/Scenario/Sanction/FieldSkipIfUnder';
 import { FieldToolTip } from '@app-builder/components/Scenario/Sanction/FieldToolTip';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { NewUndefinedAstNode } from '@app-builder/models';
@@ -134,9 +136,9 @@ const editSanctionFormSchema = z.object({
   preprocessing: z
     .object({
       useNer: z.boolean().optional(),
-      skipIfUnder: z.number().optional(),
+      skipIfUnder: z.number().nullish(),
       removeNumbers: z.boolean().optional(),
-      blacklistListId: z.string().optional(),
+      blacklistListId: z.string().nullish(),
     })
     .optional(),
 });
@@ -167,7 +169,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
     await scenarioIterationSanctionRepository.updateSanctionCheckConfig({
       iterationId: fromParams(params, 'iterationId'),
       sanctionId: fromParams(params, 'sanctionId'),
-      changes: data,
+      changes: {
+        ...data,
+        preprocessing: {
+          ...data.preprocessing,
+          skipIfUnder: data.preprocessing?.skipIfUnder ?? undefined,
+          blacklistListId: data.preprocessing?.blacklistListId ?? undefined,
+        },
+      },
     });
 
     setToastMessage(session, {
@@ -257,10 +266,6 @@ export default function SanctionDetail() {
   }
 
   const entityType = useStore(form.store, (state) => state.values.entityType);
-  const showList = useStore(
-    form.store,
-    (state) => state.values.preprocessing?.blacklistListId !== undefined,
-  );
 
   return (
     <Page.Main>
@@ -569,61 +574,13 @@ export default function SanctionDetail() {
                       </form.Field>
                       <form.Field name="preprocessing.blacklistListId">
                         {(field) => (
-                          <div className="flex flex-col gap-2.5">
-                            <div className="flex items-center gap-2">
-                              <Switch
-                                checked={showList}
-                                onBlur={field.handleBlur}
-                                onCheckedChange={(state) => {
-                                  if (state === false) {
-                                    field.handleChange(undefined);
-                                  } else {
-                                    field.handleChange('');
-                                  }
-                                }}
-                              />
-                              <span className="text-s">
-                                {t('scenarios:edit_sanction.remove_terms_from_list')}
-                              </span>
-                              <FieldToolTip>
-                                {t('scenarios:edit_sanction.remove_terms_from_list.tooltip')}
-                              </FieldToolTip>
-                            </div>
-                            {showList ? (
-                              <div className="flex flex-col gap-1">
-                                <MenuCommand.Menu persistOnSelect={false}>
-                                  <MenuCommand.Trigger>
-                                    <Button
-                                      variant="secondary"
-                                      size="medium"
-                                      className="w-52 justify-between"
-                                    >
-                                      <span className="text-grey-00 text-s font-medium">
-                                        {customLists.find((list) => list.id === field.state.value)
-                                          ?.name || t('scenarios:edit_sanction.select_list')}
-                                      </span>
-                                      <Icon icon="caret-down" className="text-grey-50 size-4" />
-                                    </Button>
-                                  </MenuCommand.Trigger>
-                                  <MenuCommand.Content sameWidth className="mt-2">
-                                    <MenuCommand.List>
-                                      {customLists.map((list) => (
-                                        <MenuCommand.Item
-                                          key={list.id}
-                                          onSelect={() => field.handleChange(list.id)}
-                                        >
-                                          {list.name}
-                                        </MenuCommand.Item>
-                                      ))}
-                                    </MenuCommand.List>
-                                  </MenuCommand.Content>
-                                </MenuCommand.Menu>
-                                <FormErrorOrDescription
-                                  errors={getFieldErrors(field.state.meta.errors)}
-                                />
-                              </div>
-                            ) : null}
-                          </div>
+                          <FieldBlackListId
+                            value={field.state.value ?? null}
+                            onBlur={field.handleBlur}
+                            onChange={field.handleChange}
+                            editor={editor}
+                            customLists={customLists}
+                          />
                         )}
                       </form.Field>
                       <form.Field name="preprocessing.removeNumbers">
@@ -631,7 +588,7 @@ export default function SanctionDetail() {
                           <div className="flex items-center gap-2">
                             <Switch
                               checked={field.state.value}
-                              onCheckedChange={(checked) => field.handleChange(checked)}
+                              onCheckedChange={field.handleChange}
                               onBlur={field.handleBlur}
                               disabled={editor === 'view'}
                             />
@@ -646,32 +603,13 @@ export default function SanctionDetail() {
                       </form.Field>
                       <form.Field name="preprocessing.skipIfUnder">
                         {(field) => (
-                          <div className="flex items-center gap-2">
-                            <Switch
-                              checked={field.state.value !== undefined}
-                              onCheckedChange={(checked) =>
-                                field.handleChange(checked ? 3 : undefined)
-                              }
-                              onBlur={field.handleBlur}
-                              disabled={editor === 'view'}
-                            />
-                            <span className="text-s">
-                              {t('scenarios:edit_sanction.ignore_check_if_under')}
-                            </span>
-                            <FormInput
-                              type="number"
-                              name={field.name}
-                              className="z-0 h-6 w-14 py-0"
-                              defaultValue={field.state.value}
-                              min={1}
-                              onChange={(e) => field.handleChange(+e.currentTarget.value)}
-                              valid={field.state.meta.errors?.length === 0}
-                              disabled={editor === 'view' || field.state.value === undefined}
-                            />
-                            <span className="text-s">
-                              {t('scenarios:edit_sanction.ignore_check_if_under.characters')}
-                            </span>
-                          </div>
+                          <FieldSkipIfUnder
+                            value={field.state.value ?? null}
+                            onBlur={field.handleBlur}
+                            onChange={field.handleChange}
+                            editor={editor}
+                            name={field.name}
+                          />
                         )}
                       </form.Field>
                       {entityType === 'Thing' ? (
