@@ -35,7 +35,7 @@ import { useFetcher, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { useForm, useStore } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
 import { match } from 'ts-pattern';
@@ -174,6 +174,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         counterPartyId: data.counterPartyId ?? NewUndefinedAstNode(),
         preprocessing: {
           ...data.preprocessing,
+          useNer: data.entityType === 'Thing' ? data.preprocessing?.useNer : undefined,
           skipIfUnder: data.preprocessing?.skipIfUnder ?? undefined,
           blacklistListId: data.preprocessing?.blacklistListId ?? undefined,
         },
@@ -267,11 +268,6 @@ export default function SanctionDetail() {
   }
 
   const entityType = useStore(form.store, (state) => state.values.entityType);
-  const counterPartyId = useStore(form.store, (state) => state.values.counterPartyId);
-
-  useEffect(() => {
-    console.log('counterPartyId', counterPartyId);
-  }, [counterPartyId]);
 
   return (
     <Page.Main>
@@ -548,96 +544,345 @@ export default function SanctionDetail() {
                       </form.Field>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <form.Field name="query.name">
-                        {(field) => {
-                          const value = sanctionCheckConfig?.query?.name;
-                          return (
-                            <div className="flex flex-col gap-1">
+                      <div className="bg-grey-98 flex flex-col gap-2 rounded p-2">
+                        <form.Field name="query.name">
+                          {(field) => {
+                            const value = sanctionCheckConfig?.query?.name;
+                            return (
                               <div className="flex flex-col gap-1">
-                                <span className="text-s inline-flex items-center gap-1">
-                                  {t('scenarios:sanction_counterparty_name')}
-                                  <FieldToolTip>
-                                    {t('scenarios:sanction_counterparty_name.tooltip')}
-                                  </FieldToolTip>
-                                </span>
-                                <FieldNodeConcat
-                                  viewOnly={editor === 'view'}
-                                  value={value && isStringConcatAstNode(value) ? value : undefined}
-                                  onChange={field.handleChange}
-                                  onBlur={field.handleBlur}
-                                  placeholder={t(
-                                    'scenarios:sanction_counterparty_name_placeholder',
-                                  )}
-                                  limit={5}
-                                />
-                                <FormErrorOrDescription
-                                  errors={getFieldErrors(field.state.meta.errors)}
-                                />
+                                <div className="flex flex-col gap-1">
+                                  <span className="text-s inline-flex items-center gap-1">
+                                    {t('scenarios:sanction_counterparty_name')}
+                                    <FieldToolTip>
+                                      {t('scenarios:sanction_counterparty_name.tooltip')}
+                                    </FieldToolTip>
+                                  </span>
+                                  <FieldNodeConcat
+                                    viewOnly={editor === 'view'}
+                                    value={
+                                      value && isStringConcatAstNode(value) ? value : undefined
+                                    }
+                                    onChange={field.handleChange}
+                                    onBlur={field.handleBlur}
+                                    placeholder={t(
+                                      'scenarios:sanction_counterparty_name_placeholder',
+                                    )}
+                                    limit={5}
+                                  />
+                                  <FormErrorOrDescription
+                                    errors={getFieldErrors(field.state.meta.errors)}
+                                  />
+                                </div>
                               </div>
-                            </div>
-                          );
-                        }}
-                      </form.Field>
-                      <form.Field name="preprocessing.blacklistListId">
-                        {(field) => (
-                          <FieldBlackListId
-                            value={field.state.value ?? null}
-                            onBlur={field.handleBlur}
-                            onChange={field.handleChange}
-                            editor={editor}
-                            customLists={customLists}
-                          />
-                        )}
-                      </form.Field>
-                      <form.Field name="preprocessing.removeNumbers">
-                        {(field) => (
-                          <div className="flex items-center gap-2">
-                            <Switch
-                              checked={field.state.value}
-                              onCheckedChange={field.handleChange}
+                            );
+                          }}
+                        </form.Field>
+                        <form.Field name="preprocessing.blacklistListId">
+                          {(field) => (
+                            <FieldBlackListId
+                              value={field.state.value ?? null}
                               onBlur={field.handleBlur}
-                              disabled={editor === 'view'}
+                              onChange={field.handleChange}
+                              editor={editor}
+                              customLists={customLists}
                             />
-                            <span className="text-s">
-                              {t('scenarios:edit_sanction.ignore_numbers')}
-                            </span>
-                            <FieldToolTip>
-                              {t('scenarios:edit_sanction.ignore_numbers.tooltip')}
-                            </FieldToolTip>
-                          </div>
-                        )}
-                      </form.Field>
-                      <form.Field name="preprocessing.skipIfUnder">
-                        {(field) => (
-                          <FieldSkipIfUnder
-                            value={field.state.value ?? null}
-                            onBlur={field.handleBlur}
-                            onChange={field.handleChange}
-                            editor={editor}
-                            name={field.name}
-                          />
-                        )}
-                      </form.Field>
-                      {entityType === 'Thing' ? (
-                        <form.Field name="preprocessing.useNer">
+                          )}
+                        </form.Field>
+                        <form.Field name="preprocessing.removeNumbers">
                           {(field) => (
                             <div className="flex items-center gap-2">
                               <Switch
                                 checked={field.state.value}
-                                onCheckedChange={(checked) => field.handleChange(checked)}
+                                onCheckedChange={field.handleChange}
                                 onBlur={field.handleBlur}
                                 disabled={editor === 'view'}
                               />
                               <span className="text-s">
-                                {t('scenarios:edit_sanction.enable_entity_recognition')}
+                                {t('scenarios:edit_sanction.ignore_numbers')}
                               </span>
                               <FieldToolTip>
-                                {t('scenarios:edit_sanction.enable_entity_recognition.tooltip')}
+                                {t('scenarios:edit_sanction.ignore_numbers.tooltip')}
                               </FieldToolTip>
                             </div>
                           )}
                         </form.Field>
-                      ) : null}
+                        <form.Field name="preprocessing.skipIfUnder">
+                          {(field) => (
+                            <FieldSkipIfUnder
+                              value={field.state.value ?? null}
+                              onBlur={field.handleBlur}
+                              onChange={field.handleChange}
+                              editor={editor}
+                              name={field.name}
+                            />
+                          )}
+                        </form.Field>
+                        {entityType === 'Thing' ? (
+                          <form.Field name="preprocessing.useNer">
+                            {(field) => (
+                              <div className="flex items-center gap-2">
+                                <Switch
+                                  checked={field.state.value}
+                                  onCheckedChange={(checked) => field.handleChange(checked)}
+                                  onBlur={field.handleBlur}
+                                  disabled={editor === 'view'}
+                                />
+                                <span className="text-s">
+                                  {t('scenarios:edit_sanction.enable_entity_recognition')}
+                                </span>
+                                <FieldToolTip>
+                                  {t('scenarios:edit_sanction.enable_entity_recognition.tooltip')}
+                                </FieldToolTip>
+                              </div>
+                            )}
+                          </form.Field>
+                        ) : null}
+                      </div>
+
+                      {match(entityType)
+                        .with('Person', () => (
+                          <>
+                            <form.Field name="query.birthDate">
+                              {(field) => {
+                                const value = sanctionCheckConfig?.query?.['birthDate'];
+                                return (
+                                  <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1">
+                                      <span className="text-s inline-flex items-center gap-1">
+                                        {t('scenarios:edit_sanction.birthdate')}
+                                      </span>
+                                      <FieldNodeConcat
+                                        viewOnly={editor === 'view'}
+                                        value={
+                                          value && isStringConcatAstNode(value) ? value : undefined
+                                        }
+                                        onChange={field.handleChange}
+                                        onBlur={field.handleBlur}
+                                        placeholder={t(
+                                          'scenarios:edit_sanction.birthdate_placeholder',
+                                        )}
+                                        limit={5}
+                                      />
+                                      <FormErrorOrDescription
+                                        errors={getFieldErrors(field.state.meta.errors)}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              }}
+                            </form.Field>
+                            <form.Field name="query.nationality">
+                              {(field) => {
+                                const value = sanctionCheckConfig?.query?.['nationality'];
+                                return (
+                                  <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1">
+                                      <span className="text-s inline-flex items-center gap-1">
+                                        {t('scenarios:edit_sanction.nationality')}
+                                      </span>
+                                      <FieldNodeConcat
+                                        viewOnly={editor === 'view'}
+                                        value={
+                                          value && isStringConcatAstNode(value) ? value : undefined
+                                        }
+                                        onChange={field.handleChange}
+                                        onBlur={field.handleBlur}
+                                        placeholder={t(
+                                          'scenarios:edit_sanction.nationality_placeholder',
+                                        )}
+                                        limit={5}
+                                      />
+                                      <FormErrorOrDescription
+                                        errors={getFieldErrors(field.state.meta.errors)}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              }}
+                            </form.Field>
+                            <form.Field name="query.idNumber">
+                              {(field) => {
+                                const value = sanctionCheckConfig?.query?.['idNumber'];
+                                return (
+                                  <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1">
+                                      <span className="text-s inline-flex items-center gap-1">
+                                        {t('scenarios:edit_sanction.idnumber')}
+                                      </span>
+                                      <FieldNodeConcat
+                                        viewOnly={editor === 'view'}
+                                        value={
+                                          value && isStringConcatAstNode(value) ? value : undefined
+                                        }
+                                        onChange={field.handleChange}
+                                        onBlur={field.handleBlur}
+                                        placeholder={t(
+                                          'scenarios:edit_sanction.idnumber_placeholder',
+                                        )}
+                                        limit={5}
+                                      />
+                                      <FormErrorOrDescription
+                                        errors={getFieldErrors(field.state.meta.errors)}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              }}
+                            </form.Field>
+                            <form.Field name="query.address">
+                              {(field) => {
+                                const value = sanctionCheckConfig?.query?.['address'];
+                                return (
+                                  <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1">
+                                      <span className="text-s inline-flex items-center gap-1">
+                                        {t('scenarios:edit_sanction.address')}
+                                      </span>
+                                      <FieldNodeConcat
+                                        viewOnly={editor === 'view'}
+                                        value={
+                                          value && isStringConcatAstNode(value) ? value : undefined
+                                        }
+                                        onChange={field.handleChange}
+                                        onBlur={field.handleBlur}
+                                        placeholder={t(
+                                          'scenarios:edit_sanction.address_placeholder',
+                                        )}
+                                        limit={5}
+                                      />
+                                      <FormErrorOrDescription
+                                        errors={getFieldErrors(field.state.meta.errors)}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              }}
+                            </form.Field>
+                          </>
+                        ))
+                        .with('Organization', () => (
+                          <>
+                            <form.Field name="query.country">
+                              {(field) => {
+                                const value = sanctionCheckConfig?.query?.['country'];
+                                return (
+                                  <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1">
+                                      <span className="text-s inline-flex items-center gap-1">
+                                        {t('scenarios:edit_sanction.country')}
+                                      </span>
+                                      <FieldNodeConcat
+                                        viewOnly={editor === 'view'}
+                                        value={
+                                          value && isStringConcatAstNode(value) ? value : undefined
+                                        }
+                                        onChange={field.handleChange}
+                                        onBlur={field.handleBlur}
+                                        placeholder={t(
+                                          'scenarios:edit_sanction.country_placeholder',
+                                        )}
+                                        limit={5}
+                                      />
+                                      <FormErrorOrDescription
+                                        errors={getFieldErrors(field.state.meta.errors)}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              }}
+                            </form.Field>
+                            <form.Field name="query.registrationNumber">
+                              {(field) => {
+                                const value = sanctionCheckConfig?.query?.['registrationNumber'];
+                                return (
+                                  <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1">
+                                      <span className="text-s inline-flex items-center gap-1">
+                                        {t('scenarios:edit_sanction.registrationnumber')}
+                                      </span>
+                                      <FieldNodeConcat
+                                        viewOnly={editor === 'view'}
+                                        value={
+                                          value && isStringConcatAstNode(value) ? value : undefined
+                                        }
+                                        onChange={field.handleChange}
+                                        onBlur={field.handleBlur}
+                                        placeholder={t(
+                                          'scenarios:edit_sanction.registrationnumber_placeholder',
+                                        )}
+                                        limit={5}
+                                      />
+                                      <FormErrorOrDescription
+                                        errors={getFieldErrors(field.state.meta.errors)}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              }}
+                            </form.Field>
+                            <form.Field name="query.address">
+                              {(field) => {
+                                const value = sanctionCheckConfig?.query?.['address'];
+                                return (
+                                  <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1">
+                                      <span className="text-s inline-flex items-center gap-1">
+                                        {t('scenarios:edit_sanction.address')}
+                                      </span>
+                                      <FieldNodeConcat
+                                        viewOnly={editor === 'view'}
+                                        value={
+                                          value && isStringConcatAstNode(value) ? value : undefined
+                                        }
+                                        onChange={field.handleChange}
+                                        onBlur={field.handleBlur}
+                                        placeholder={t(
+                                          'scenarios:edit_sanction.address_placeholder',
+                                        )}
+                                        limit={5}
+                                      />
+                                      <FormErrorOrDescription
+                                        errors={getFieldErrors(field.state.meta.errors)}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              }}
+                            </form.Field>
+                          </>
+                        ))
+                        .with('Vehicle', () => (
+                          <form.Field name="query.registrationNumber">
+                            {(field) => {
+                              const value = sanctionCheckConfig?.query?.['registrationNumber'];
+                              return (
+                                <div className="flex flex-col gap-1">
+                                  <div className="flex flex-col gap-1">
+                                    <span className="text-s inline-flex items-center gap-1">
+                                      {t('scenarios:edit_sanction.registrationnumber')}
+                                    </span>
+                                    <FieldNodeConcat
+                                      viewOnly={editor === 'view'}
+                                      value={
+                                        value && isStringConcatAstNode(value) ? value : undefined
+                                      }
+                                      onChange={field.handleChange}
+                                      onBlur={field.handleBlur}
+                                      placeholder={t(
+                                        'scenarios:edit_sanction.registrationnumber_placeholder',
+                                      )}
+                                      limit={5}
+                                    />
+                                    <FormErrorOrDescription
+                                      errors={getFieldErrors(field.state.meta.errors)}
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            }}
+                          </form.Field>
+                        ))
+                        .otherwise(() => null)}
                     </div>
                   </div>
                 </div>

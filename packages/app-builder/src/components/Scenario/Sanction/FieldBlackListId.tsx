@@ -35,9 +35,11 @@ export const FieldBlackListId = ({
     <div className="flex flex-col gap-2.5">
       <div className="flex items-center gap-2">
         <Switch
-          checked={Boolean(value)}
+          checked={value !== null}
           onBlur={onBlur}
-          onCheckedChange={(checked) => onChange(checked ? selectedListId : null)}
+          onCheckedChange={(checked) =>
+            onChange(checked ? (selectedListId ?? customLists[0]?.id ?? null) : null)
+          }
           disabled={editor === 'view'}
         />
         <span className="text-s">{t('scenarios:edit_sanction.remove_terms_from_list')}</span>
