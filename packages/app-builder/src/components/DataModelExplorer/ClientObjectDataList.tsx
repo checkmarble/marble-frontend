@@ -35,8 +35,9 @@ export function ClientObjectDataList({
         if (!field) return null;
 
         const data = parsedData[field.name];
+        const hasNoValue = data?.type === 'unknown' && !data.value;
 
-        return data && (field.displayed || isExpanded) ? (
+        return data && ((field.displayed && !hasNoValue) || isExpanded) ? (
           <Fragment key={field.id}>
             <div className="text-grey-50 truncate">{field.name}</div>
             <FormatData data={data} language={language} className="truncate" />
