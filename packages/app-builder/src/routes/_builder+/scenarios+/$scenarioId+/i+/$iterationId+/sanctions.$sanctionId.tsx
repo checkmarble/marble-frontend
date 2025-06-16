@@ -35,7 +35,7 @@ import { useFetcher, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { useForm, useStore } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
 import { match } from 'ts-pattern';
@@ -171,6 +171,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       sanctionId: fromParams(params, 'sanctionId'),
       changes: {
         ...data,
+        counterPartyId: data.counterPartyId ?? NewUndefinedAstNode(),
         preprocessing: {
           ...data.preprocessing,
           skipIfUnder: data.preprocessing?.skipIfUnder ?? undefined,
@@ -266,6 +267,11 @@ export default function SanctionDetail() {
   }
 
   const entityType = useStore(form.store, (state) => state.values.entityType);
+  const counterPartyId = useStore(form.store, (state) => state.values.counterPartyId);
+
+  useEffect(() => {
+    console.log('counterPartyId', counterPartyId);
+  }, [counterPartyId]);
 
   return (
     <Page.Main>
