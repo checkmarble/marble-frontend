@@ -37,7 +37,7 @@ function setAdditionalFields(fields: string[], prev: Record<string, string>) {
 
 type SearchableSchema = 'Thing' | 'Person' | 'Organization' | 'Vehicle';
 
-const SEARCH_ENTITIES = {
+export const SEARCH_ENTITIES = {
   Thing: { fields: ['name'] },
   Person: {
     fields: ['name', 'birthDate', 'nationality', 'idNumber', 'address'],
