@@ -53,6 +53,7 @@ export function PivotNavigationOptions({
                       {navigationOptions.length > 1 ? ` (${navOption.orderingFieldName})` : null}
                     </div>
                     <Button
+                      disabled={navOption.status === 'pending'}
                       size="small"
                       variant="secondary"
                       onClick={() => {
@@ -69,8 +70,14 @@ export function PivotNavigationOptions({
                       }}
                       className="flex items-center gap-1"
                     >
-                      {t('cases:case_detail.pivot_panel.explore')}
-                      <Icon icon="arrow-up-right" className="size-4" />
+                      {navOption.status === 'pending'
+                        ? t('cases:case_detail.pivot_panel.explore_waiting_creation')
+                        : t('cases:case_detail.pivot_panel.explore')}
+                      {navOption.status === 'pending' ? (
+                        <Icon icon="spinner" className="size-4 animate-spin" />
+                      ) : (
+                        <Icon icon="arrow-up-right" className="size-4" />
+                      )}
                     </Button>
                   </Fragment>
                 ))}

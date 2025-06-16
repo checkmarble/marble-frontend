@@ -200,5 +200,6 @@
   "annotations.popover.annotate.title": "Annoter",
   "required_actions.see_screening_hits": "Voir les sanctions ({{count}})",
   "case_detail.history.event_detail.entity_annotated": "<Actor>{{actor}}</Actor> a annoté <ObjectType>{{objectType}}</ObjectType> avec un <Type>{{type}}</Type>",
-  "case_detail.history.event_type.entity_annotated": "Annotation"
+  "case_detail.history.event_type.entity_annotated": "Annotation",
+  "case_detail.pivot_panel.explore_waiting_creation": "Donnée en cours d'indexation"
 }
