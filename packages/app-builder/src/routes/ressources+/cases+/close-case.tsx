@@ -69,7 +69,7 @@ export async function action({ request }: ActionFunctionArgs) {
       );
     }
 
-    await Promise.allSettled(promises);
+    await Promise.all(promises);
 
     return Response.json({ success: true, errors: [] });
   } catch (error) {
