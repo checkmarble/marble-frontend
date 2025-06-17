@@ -9,6 +9,7 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { SEARCH_ENTITIES } from '@app-builder/components/Sanctions/RefineSearchModal';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
 import { FieldBlackListId } from '@app-builder/components/Scenario/Sanction/FieldBlackListId';
 import { FieldDataset } from '@app-builder/components/Scenario/Sanction/FieldDataset';
@@ -35,6 +36,7 @@ import { useFetcher, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { useForm, useStore } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
+import { pick } from 'radash';
 import { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
@@ -145,6 +147,10 @@ const editSanctionFormSchema = z.object({
 
 type EditSanctionForm = z.infer<typeof editSanctionFormSchema>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const clearQuery = (entityType: EditSanctionForm['entityType'], query: Record<string, any>) =>
+  entityType ? pick(query, SEARCH_ENTITIES[entityType].fields) : query;
+
 export async function action({ request, params }: ActionFunctionArgs) {
   const {
     authService,
@@ -172,6 +178,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       changes: {
         ...data,
         counterPartyId: data.counterPartyId ?? NewUndefinedAstNode(),
+        query: clearQuery(data.entityType, data.query),
         preprocessing: {
           ...data.preprocessing,
           useNer: data.entityType === 'Thing' ? data.preprocessing?.useNer : undefined,

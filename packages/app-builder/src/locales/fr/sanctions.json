@@ -1,5 +1,5 @@
 {
-  "callout.needs_refine": "Il y a trop de correspondances potentielles (> {{MatchCount}}). \nPour obtenir des résultats plus pertinents, veuillez affiner votre recherche.",
+  "callout.needs_refine": "Il y a trop de correspondances potentielles (> {{matchCount}}). \nPour obtenir des résultats plus pertinents, veuillez affiner votre recherche.",
   "callout.review": "Il existe des correspondances entre les informations sur les bénéficiaires et le filtrage des sanctions. \nVérifiez si c'est le même bénéficiaire ou non.",
   "entity.property.address": "Adresse",
   "entity.property.alias": "Alias",
@@ -130,5 +130,9 @@
   "entity.property.sanctions": "Sanctions",
   "sanction_detail.title": "Détails de sanction",
   "error.match_already_enriched": "Correspondance déjà enrichie",
-  "success.match_enriched": "Correspondance enrichie avec succès"
+  "success.match_enriched": "Correspondance enrichie avec succès",
+  "required_actions.match_to_review": "Correspondances à examiner ({{count}})",
+  "required_actions.review_pending_screening_count": "Signalements à examiner ({{count}})",
+  "required_actions.title": "Actions requises",
+  "required_actions.view_screening": "Voir"
 }

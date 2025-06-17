@@ -130,5 +130,9 @@
   "entity.property.sanctions": "العقوبات",
   "sanction_detail.title": "تفاصيل العقوبات",
   "error.match_already_enriched": "تطابق المخصب بالفعل",
-  "success.match_enriched": "تطابق المباراة بنجاح"
+  "success.match_enriched": "تطابق المباراة بنجاح",
+  "required_actions.match_to_review": "تطابق للمراجعة ({{count}})",
+  "required_actions.review_pending_screening_count": "مراجعة معلق الفحص ({{count}})",
+  "required_actions.title": "الإجراءات المطلوبة",
+  "required_actions.view_screening": "منظر"
 }
