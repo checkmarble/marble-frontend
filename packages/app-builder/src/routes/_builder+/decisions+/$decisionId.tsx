@@ -93,7 +93,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       decision: currentDecision,
       scenarioRules,
       pivots,
-      sanctionCheck: sanctionCheckResult?.[0],
+      sanctionCheck: sanctionCheckResult,
     };
   } catch (error) {
     if (isNotFoundHttpError(error)) {
@@ -146,7 +146,9 @@ export default function DecisionPage() {
                   ruleExecutions={decision.rules}
                   rules={scenarioRules}
                 />
-                {sanctionCheck ? <SanctionCheckDetail sanctionCheck={sanctionCheck} /> : null}
+                {sanctionCheck.map((s) => (
+                  <SanctionCheckDetail key={s.id} sanctionCheck={s} />
+                ))}
               </div>
               <div className="flex flex-col gap-4 lg:gap-8">
                 <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">

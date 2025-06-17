@@ -6,9 +6,17 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { DialogDisclosure, useDialogStore } from '@ariakit/react/dialog';
 import { Link } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox } from 'ui-design-system';
+import { Button, Checkbox, cn } from 'ui-design-system';
 
 import { casesI18n } from './cases-i18n';
+
+const Divider = ({ isLast = false }: { isLast?: boolean }) => (
+  <div className="flex h-7 w-6 flex-col items-start justify-center">
+    <div className="w-px shrink-0 grow basis-0 bg-[#D9D9D9B2]" />
+    <div className="h-px w-4 shrink-0 bg-[#D9D9D9B2]" />
+    <div className={cn('w-px shrink-0 grow basis-0 bg-[#D9D9D9B2]', isLast && 'bg-transparent')} />
+  </div>
+);
 
 export const RequiredActions = ({
   decision,
@@ -21,36 +29,60 @@ export const RequiredActions = ({
 }) => {
   const { t } = useTranslation(casesI18n);
   const reviewDecisionModalStore = useDialogStore();
+
+  console.log('Pending Sanction Matches', decision.sanctionChecks);
+
   const pendingSanctionMatches =
-    decision.sanctionChecks[0]?.matches.filter((m) => m.status === 'pending').length ?? 0;
+    decision.sanctionChecks.flatMap((s) => s.matches).filter((m) => m.status === 'pending')
+      .length ?? 0;
   const isPendingDecision =
     decision.reviewStatus === 'pending' && decision.outcome === 'block_and_review';
   const isThereSanctionChecks = decision.sanctionChecks.length > 0;
 
   return isPendingDecision || isThereSanctionChecks ? (
     <div className="bg-grey-98 group-hover:bg-grey-95 flex flex-col gap-2.5 rounded p-4 transition-colors">
-      <span className="text-grey-50 text-xs">Required actions</span>
+      <span className="text-grey-50 text-xs">{t('sanctions:required_actions.title')}</span>
       {isThereSanctionChecks ? (
-        <div className="flex items-center gap-2.5">
-          <Checkbox disabled={true} size="small" checked={pendingSanctionMatches === 0} />
-          <Link
-            to={getRoute('/cases/:caseId/sanctions/:decisionId', {
-              caseId: fromUUIDtoSUUID(caseId),
-              decisionId: fromUUIDtoSUUID(decision.id),
-            })}
-          >
-            <Button variant="secondary" size="xs">
-              <span>
-                {pendingSanctionMatches > 0
-                  ? t('cases:required_actions.review_screening_hits', {
-                      count: pendingSanctionMatches,
-                    })
-                  : t('cases:required_actions.see_screening_hits', {
-                      count: decision.sanctionChecks.length,
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <Checkbox disabled={true} size="small" checked={pendingSanctionMatches === 0} />
+            <span
+              className={cn('text-xs font-medium', {
+                'line-through': pendingSanctionMatches === 0,
+              })}
+            >
+              {t('sanctions:required_actions.review_pending_screening_count', {
+                count: decision.sanctionChecks.length,
+              })}
+            </span>
+          </div>
+          <div className="flex flex-col">
+            {decision.sanctionChecks.map((s, i) => {
+              return (
+                <div key={s.id} className="flex items-center gap-2 pl-6 text-xs font-medium">
+                  <Divider isLast={i === decision.sanctionChecks.length - 1} />
+                  <span
+                    className={cn('text-xs font-medium', {
+                      'line-through': s.matches.length === 0,
                     })}
-              </span>
-            </Button>
-          </Link>
+                  >
+                    {t('sanctions:required_actions.match_to_review', {
+                      count: s.matches.length,
+                    })}
+                  </span>
+                  <Link
+                    className="underline"
+                    to={getRoute('/cases/:caseId/sanctions/:decisionId', {
+                      caseId: fromUUIDtoSUUID(caseId),
+                      decisionId: fromUUIDtoSUUID(decision.id),
+                    })}
+                  >
+                    {t('sanctions:required_actions.view_screening')}
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
         </div>
       ) : null}
       {isPendingDecision ? (
