@@ -1,4 +1,5 @@
 import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
+import { useLayoutLoaderData } from '@app-builder/routes/_builder+/decisions+/$decisionId';
 import { SanctionCheckReviewModal } from '@app-builder/routes/ressources+/cases+/review-sanction-match';
 import { EnrichMatchButton } from '@app-builder/routes/ressources+/sanction-check+/enrich-match.$matchId';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -31,6 +32,16 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
   const handleMatchReview = () => {
     setIsInReview(true);
   };
+
+  const { datasets } = useLayoutLoaderData();
+
+  const datasetNames = match.payload.datasets
+    ?.map((code) =>
+      [...(datasets as Map<string, Map<string, string>>).values()]
+        .find((innerMap) => innerMap.has(code))
+        ?.get(code),
+    )
+    .filter(Boolean);
 
   return (
     <div className="grid grid-cols-[max-content_1fr_max-content] gap-x-6 gap-y-2">
@@ -80,6 +91,18 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
 
           <CollapsibleV2.Content className="col-span-full">
             <div className="text-s flex flex-col gap-6 p-4">
+              {entitySchema === 'person' ? (
+                <div className="flex flex-col gap-2">
+                  <div className="font-semibold">Appears on</div>
+                  <div>
+                    {datasetNames?.map((name, index) => (
+                      <ul key={`dataset-${index}`} className="flex flex-wrap gap-1">
+                        <li>{name}</li>
+                      </ul>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
               {match.comments.map((comment) => {
                 return <CommentLine key={comment.id} comment={comment} />;
               })}

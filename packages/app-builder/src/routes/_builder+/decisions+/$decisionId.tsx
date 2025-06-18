@@ -27,7 +27,13 @@ import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs } from '@remix-run/node';
-import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
+import {
+  isRouteErrorResponse,
+  useLoaderData,
+  useNavigate,
+  useRouteError,
+  useRouteLoaderData,
+} from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -79,7 +85,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   try {
     const currentDecision = await decision.getDecisionById(decisionId);
 
-    const [pivots, scenarioRules, sanctionCheckResult] = await Promise.all([
+    const [pivots, scenarioRules, sanctionCheckResult, { sections }] = await Promise.all([
       dataModelRepository.listPivots({}),
       scenario
         .getScenarioIteration({
@@ -87,13 +93,25 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         })
         .then((iteration) => iteration.rules),
       sanctionCheck.listSanctionChecks({ decisionId }),
+      sanctionCheck.listDatasets(),
     ]);
+
+    const datasets: Map<string, Map<string, string>> = new Map(
+      sections?.map(
+        (section) =>
+          [
+            section.name,
+            new Map(section.datasets?.map((dataset) => [dataset.name, dataset.title])),
+          ] as const,
+      ),
+    );
 
     return {
       decision: currentDecision,
       scenarioRules,
       pivots,
       sanctionCheck: sanctionCheckResult,
+      datasets,
     };
   } catch (error) {
     if (isNotFoundHttpError(error)) {
@@ -205,4 +223,12 @@ export function ErrorBoundary() {
   }
 
   return <ErrorComponent error={error} />;
+}
+
+export function useLayoutLoaderData(): ReturnType<typeof useLoaderData<typeof loader>> {
+  const data = useRouteLoaderData<typeof loader>('routes/_builder+/decisions+/$decisionId');
+  if (data === undefined) {
+    throw new Error('useLayoutLoaderData must be used within the _layout route or its children');
+  }
+  return data;
 }

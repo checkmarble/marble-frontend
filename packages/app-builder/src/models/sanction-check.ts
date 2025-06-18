@@ -54,6 +54,7 @@ export type SanctionCheckMatchPayload = {
   match: boolean;
   score: number;
   schema: SanctionCheckMatchEntitySchema;
+  datasets?: string[];
   caption: string;
   properties: {
     sanctions?: SanctionCheckSanctionEntity[];
