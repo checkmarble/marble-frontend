@@ -56,24 +56,24 @@ export const routes = [
             "file": "routes/_builder+/cases+/$caseId+/_index.tsx"
           },
           {
-            "id": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_layout",
-            "path": "cases/:caseId/sanctions/:decisionId",
-            "file": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_layout.tsx",
+            "id": "routes/_builder+/cases+/$caseId+/d+/$decisionId+/screenings+/$screeningId+/_layout",
+            "path": "cases/:caseId/d/:decisionId/screenings/:screeningId",
+            "file": "routes/_builder+/cases+/$caseId+/d+/$decisionId+/screenings+/$screeningId+/_layout.tsx",
             "children": [
               {
-                "id": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_index",
+                "id": "routes/_builder+/cases+/$caseId+/d+/$decisionId+/screenings+/$screeningId+/_index",
                 "index": true,
-                "file": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_index.tsx"
+                "file": "routes/_builder+/cases+/$caseId+/d+/$decisionId+/screenings+/$screeningId+/_index.tsx"
               },
               {
-                "id": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/files",
+                "id": "routes/_builder+/cases+/$caseId+/d+/$decisionId+/screenings+/$screeningId+/files",
                 "path": "files",
-                "file": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/files.tsx"
+                "file": "routes/_builder+/cases+/$caseId+/d+/$decisionId+/screenings+/$screeningId+/files.tsx"
               },
               {
-                "id": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/hits",
+                "id": "routes/_builder+/cases+/$caseId+/d+/$decisionId+/screenings+/$screeningId+/hits",
                 "path": "hits",
-                "file": "routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/hits.tsx"
+                "file": "routes/_builder+/cases+/$caseId+/d+/$decisionId+/screenings+/$screeningId+/hits.tsx"
               }
             ]
           },

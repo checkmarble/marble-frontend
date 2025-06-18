@@ -11,7 +11,7 @@ import { Button, Checkbox, cn } from 'ui-design-system';
 import { casesI18n } from './cases-i18n';
 
 const Divider = ({ isLast = false }: { isLast?: boolean }) => (
-  <div className="flex h-7 w-6 flex-col items-start justify-center">
+  <div className="flex size-6 flex-col items-start justify-center">
     <div className="w-px shrink-0 grow basis-0 bg-[#D9D9D9B2]" />
     <div className="h-px w-4 shrink-0 bg-[#D9D9D9B2]" />
     <div className={cn('w-px shrink-0 grow basis-0 bg-[#D9D9D9B2]', isLast && 'bg-transparent')} />
@@ -41,7 +41,7 @@ export const RequiredActions = ({
     <div className="bg-grey-98 group-hover:bg-grey-95 flex flex-col gap-2.5 rounded p-4 transition-colors">
       <span className="text-grey-50 text-xs">{t('sanctions:required_actions.title')}</span>
       {isThereSanctionChecks ? (
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
             <Checkbox disabled={true} size="small" checked={pendingSanctionMatches === 0} />
             <span
@@ -57,24 +57,25 @@ export const RequiredActions = ({
           <div className="flex flex-col">
             {decision.sanctionChecks.map((s, i) => {
               return (
-                <div key={s.id} className="flex items-center gap-2 pl-6 text-xs font-medium">
+                <div key={s.id} className="flex items-center pl-6 text-xs font-medium">
                   <Divider isLast={i === decision.sanctionChecks.length - 1} />
-                  <span
-                    className={cn('text-xs font-medium', {
-                      'line-through': s.matches.length === 0,
-                    })}
-                  >
-                    {`${s.config.name} (${s.matches.length})`}
+                  <span className="inline-flex items-center gap-2 text-xs font-medium">
+                    <span
+                      className={cn({
+                        'line-through': s.matches.length === 0,
+                      })}
+                    >{`${s.config.name} (${s.matches.length})`}</span>
+                    <Link
+                      className="underline"
+                      to={getRoute('/cases/:caseId/d/:decisionId/screenings/:screeningId', {
+                        caseId: fromUUIDtoSUUID(caseId),
+                        decisionId: fromUUIDtoSUUID(decision.id),
+                        screeningId: fromUUIDtoSUUID(s.id),
+                      })}
+                    >
+                      {t('sanctions:required_actions.view_screening')}
+                    </Link>
                   </span>
-                  <Link
-                    className="underline"
-                    to={getRoute('/cases/:caseId/sanctions/:decisionId', {
-                      caseId: fromUUIDtoSUUID(caseId),
-                      decisionId: fromUUIDtoSUUID(decision.id),
-                    })}
-                  >
-                    {t('sanctions:required_actions.view_screening')}
-                  </Link>
                 </div>
               );
             })}

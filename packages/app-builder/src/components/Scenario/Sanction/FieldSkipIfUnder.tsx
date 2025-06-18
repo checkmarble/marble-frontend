@@ -20,7 +20,7 @@ export const FieldSkipIfUnder = ({
   name,
 }: FieldSkipIfUnderProps) => {
   const { t } = useTranslation(scenarioI18n);
-  const [inputValue, setInputValue] = useState<number>(value ?? 0);
+  const [inputValue, setInputValue] = useState<number>(value ?? 5);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = +e.currentTarget.value;
@@ -42,7 +42,7 @@ export const FieldSkipIfUnder = ({
         name={name}
         className="z-0 h-6 w-14 py-0"
         value={inputValue}
-        min={1}
+        min={0}
         onChange={handleInputChange}
         disabled={editor === 'view' || value === null}
       />
