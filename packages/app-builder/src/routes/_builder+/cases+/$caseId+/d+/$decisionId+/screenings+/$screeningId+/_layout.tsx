@@ -72,13 +72,14 @@ export const handle = {
       return (
         <div className="flex items-center gap-2">
           <BreadCrumbLink
-            to={getRoute('/cases/:caseId/sanctions/:decisionId', {
+            to={getRoute('/cases/:caseId/d/:decisionId/screenings/:screeningId', {
               caseId: fromUUIDtoSUUID(caseDetail.id),
               decisionId: fromUUIDtoSUUID(decision.id),
+              screeningId: fromUUIDtoSUUID(sanctionCheck.id),
             })}
             isLast={isLast}
           >
-            <span className="line-clamp-2 text-start">Sanction check</span>
+            <span className="line-clamp-2 text-start">{sanctionCheck.config.name}</span>
           </BreadCrumbLink>
           <SanctionStatusTag status={sanctionCheck.status} />
         </div>
@@ -102,12 +103,14 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const caseId = fromParams(params, 'caseId');
   const decisionId = fromParams(params, 'decisionId');
+  const screeningId = fromParams(params, 'screeningId');
 
   try {
     const caseDetail = await cases.getCase({ caseId });
     const decision = caseDetail.decisions.find((d) => d.id === decisionId);
-    const sanctionCheck = (await sanctionCheckRepository.listSanctionChecks({ decisionId }))[0];
+    const sanctionChecks = await sanctionCheckRepository.listSanctionChecks({ decisionId });
     const currentInbox = await inbox.getInbox(caseDetail.inboxId);
+    const sanctionCheck = sanctionChecks.find((s) => s.id === screeningId);
 
     if (!decision || !sanctionCheck) {
       throw new Response(null, { status: 404, statusText: 'Not Found' });
@@ -135,7 +138,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export function useCurrentCase() {
   return useRouteLoaderData(
-    'routes/_builder+/cases+/$caseId+/sanctions.$decisionId+/_layout' satisfies RouteID,
+    'routes/_builder+/cases+/$caseId+/d+/$decisionId+/screenings+/$screeningId+/_layout' satisfies RouteID,
   ) as SerializeFrom<typeof loader>;
 }
 
@@ -146,12 +149,9 @@ export default function CaseSanctionReviewPage() {
   return (
     <Page.Main>
       <Page.Header className="justify-between gap-8">
-        <div className="flex gap-4">
-          <Page.BackLink
-            to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })}
-          />
-          <BreadCrumbs />
-        </div>
+        <BreadCrumbs
+          back={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })}
+        />
       </Page.Header>
       <div className="flex size-full flex-col overflow-hidden">
         <Page.Container>

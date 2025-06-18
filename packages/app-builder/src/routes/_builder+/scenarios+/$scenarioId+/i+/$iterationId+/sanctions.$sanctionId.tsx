@@ -417,6 +417,7 @@ export default function SanctionDetail() {
                             type="number"
                             name={field.name}
                             onBlur={field.handleBlur}
+                            disabled={editor === 'view'}
                             className="z-0 w-14 py-1.5"
                             defaultValue={field.state.value}
                             onChange={(e) => field.handleChange(+e.currentTarget.value)}

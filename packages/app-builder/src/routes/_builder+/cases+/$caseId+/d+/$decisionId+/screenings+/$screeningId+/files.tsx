@@ -17,7 +17,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   });
 
   const decisionId = fromParams(params, 'decisionId');
-  const sanctionCheck = (await sanctionCheckRepository.listSanctionChecks({ decisionId }))[0];
+  const screeningId = fromParams(params, 'screeningId');
+  const sanctionChecks = await sanctionCheckRepository.listSanctionChecks({ decisionId });
+  const sanctionCheck = sanctionChecks.find((s) => s.id === screeningId);
 
   if (!sanctionCheck) {
     throw new Response(null, { status: 404, statusText: 'Not Found' });
