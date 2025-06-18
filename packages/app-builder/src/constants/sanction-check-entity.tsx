@@ -11,6 +11,21 @@ export type PropertyForSchema<
     ? PropertyForSchema<P, _R | (typeof schemaProperties)[Schema][number]>
     : never;
 
+export type SearchableSchema = 'Thing' | 'Person' | 'Organization' | 'Vehicle';
+
+export const SEARCH_ENTITIES = {
+  Thing: { fields: ['name'] },
+  Person: {
+    fields: ['name', 'birthDate', 'nationality', 'idNumber', 'address'],
+  },
+  Organization: {
+    fields: ['name', 'country', 'registrationNumber', 'address'],
+  },
+  Vehicle: {
+    fields: ['name', 'registrationNumber'],
+  },
+} satisfies { [k in SearchableSchema]: { fields: PropertyForSchema<k>[] } };
+
 export const schemaProperties = {
   Thing: [
     'name',

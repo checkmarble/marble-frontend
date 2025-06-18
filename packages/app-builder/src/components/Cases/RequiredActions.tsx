@@ -30,8 +30,6 @@ export const RequiredActions = ({
   const { t } = useTranslation(casesI18n);
   const reviewDecisionModalStore = useDialogStore();
 
-  console.log('Pending Sanction Matches', decision.sanctionChecks);
-
   const pendingSanctionMatches =
     decision.sanctionChecks.flatMap((s) => s.matches).filter((m) => m.status === 'pending')
       .length ?? 0;
@@ -66,9 +64,7 @@ export const RequiredActions = ({
                       'line-through': s.matches.length === 0,
                     })}
                   >
-                    {t('sanctions:required_actions.match_to_review', {
-                      count: s.matches.length,
-                    })}
+                    {`${s.config.name} (${s.matches.length})`}
                   </span>
                   <Link
                     className="underline"

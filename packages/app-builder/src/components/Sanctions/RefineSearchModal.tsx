@@ -1,5 +1,8 @@
 import { Callout } from '@app-builder/components/Callout';
-import { type PropertyForSchema } from '@app-builder/constants/sanction-check-entity';
+import {
+  SEARCH_ENTITIES,
+  type SearchableSchema,
+} from '@app-builder/constants/sanction-check-entity';
 import {
   type SanctionCheck,
   type SanctionCheckMatchPayload,
@@ -34,21 +37,6 @@ function setAdditionalFields(fields: string[], prev: Record<string, string>) {
   }
   return additionalFields;
 }
-
-type SearchableSchema = 'Thing' | 'Person' | 'Organization' | 'Vehicle';
-
-export const SEARCH_ENTITIES = {
-  Thing: { fields: ['name'] },
-  Person: {
-    fields: ['name', 'birthDate', 'nationality', 'idNumber', 'address'],
-  },
-  Organization: {
-    fields: ['name', 'country', 'registrationNumber', 'address'],
-  },
-  Vehicle: {
-    fields: ['name', 'registrationNumber'],
-  },
-} satisfies { [k in SearchableSchema]: { fields: PropertyForSchema<k>[] } };
 
 export type RefineSearchModalProps = {
   open: boolean;

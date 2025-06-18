@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+import { scenarioI18n } from '../scenario-i18n';
+
 interface CustomList {
   id: string;
   name: string;
@@ -23,7 +25,7 @@ export const FieldBlackListId = ({
   editor,
   customLists,
 }: FieldBlackListIdProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(scenarioI18n);
   const [selectedListId, setSelectedListId] = useState<string | null>(value ?? null);
 
   const handleListSelect = (listId: string) => {

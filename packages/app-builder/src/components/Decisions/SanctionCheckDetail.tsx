@@ -10,14 +10,13 @@ import { SanctionCheckErrors } from '../Sanctions/SanctionCheckErrors';
 import { SanctionStatusTag } from '../Sanctions/SanctionStatusTag';
 
 export function SanctionCheckDetail({ sanctionCheck }: { sanctionCheck: SanctionCheck }) {
-  const { t } = useTranslation(decisionsI18n);
   const hasError = isSanctionCheckError(sanctionCheck);
 
   return (
     <Collapsible.Container className="bg-grey-100">
       <Collapsible.Title>
         <div className="flex grow items-center justify-between">
-          <span>{t('decisions:sanction_check.title')}</span>
+          <span>{sanctionCheck.config.name}</span>
           <SanctionStatusTag status={sanctionCheck.status} border="square" className="h-8" />
         </div>
       </Collapsible.Title>

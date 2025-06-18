@@ -781,6 +781,9 @@ export type SanctionCheckMatchDto = {
 };
 export type SanctionCheckSuccessDto = {
     id: string;
+    config: {
+        name: string;
+    };
     decision_id: string;
     status: "in_review" | "confirmed_hit" | "no_hit";
     request: SanctionCheckRequestDto;
@@ -790,6 +793,9 @@ export type SanctionCheckSuccessDto = {
 };
 export type SanctionCheckErrorDto = {
     id: string;
+    config: {
+        name: string;
+    };
     decision_id: string;
     status: "error";
     request?: SanctionCheckRequestDto;
