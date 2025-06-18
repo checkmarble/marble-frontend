@@ -9,7 +9,6 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { SEARCH_ENTITIES } from '@app-builder/components/Sanctions/RefineSearchModal';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
 import { FieldBlackListId } from '@app-builder/components/Scenario/Sanction/FieldBlackListId';
 import { FieldDataset } from '@app-builder/components/Scenario/Sanction/FieldDataset';
@@ -19,8 +18,9 @@ import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOu
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
 import { FieldSkipIfUnder } from '@app-builder/components/Scenario/Sanction/FieldSkipIfUnder';
 import { FieldToolTip } from '@app-builder/components/Scenario/Sanction/FieldToolTip';
+import { SEARCH_ENTITIES } from '@app-builder/constants/sanction-check-entity';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { NewUndefinedAstNode } from '@app-builder/models';
+import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { knownOutcomes, type SanctionOutcome } from '@app-builder/models/outcome';
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/$sanctionId+/delete';
@@ -147,8 +147,10 @@ const editSanctionFormSchema = z.object({
 
 type EditSanctionForm = z.infer<typeof editSanctionFormSchema>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const clearQuery = (entityType: EditSanctionForm['entityType'], query: Record<string, any>) =>
+const clearQuery = (
+  entityType: EditSanctionForm['entityType'],
+  query: Record<string, unknown>,
+): Record<string, unknown> =>
   entityType ? pick(query, SEARCH_ENTITIES[entityType].fields) : query;
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -178,7 +180,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
       changes: {
         ...data,
         counterPartyId: data.counterPartyId ?? NewUndefinedAstNode(),
-        query: clearQuery(data.entityType, data.query),
+        query: clearQuery(data.entityType, data.query) as Partial<{
+          [key: string]: AstNode;
+          name: AstNode;
+        }>,
         preprocessing: {
           ...data.preprocessing,
           useNer: data.entityType === 'Thing' ? data.preprocessing?.useNer : undefined,
@@ -507,6 +512,7 @@ export default function SanctionDetail() {
                                   variant="secondary"
                                   size="medium"
                                   className="w-52 justify-between"
+                                  disabled={editor === 'view'}
                                 >
                                   <span className="text-grey-00 text-s font-medium">
                                     {match(entityType)

@@ -145,6 +145,9 @@ export function adaptSanctionCheckRequest(dto: SanctionCheckRequestDto): Sanctio
 
 type BaseSanctionCheck = {
   id: string;
+  config: {
+    name: string;
+  };
   decisionId: string;
   partial: boolean;
   isManual: boolean;
@@ -169,6 +172,7 @@ export function adaptSanctionCheck(dto: SanctionCheckDto): SanctionCheck {
     partial: dto.partial,
     isManual: dto.is_manual,
     matches: R.map(dto.matches, adaptSanctionCheckMatch),
+    config: dto.config,
   };
 
   if (dto.status === 'error') {

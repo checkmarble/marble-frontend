@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Switch } from 'ui-design-system';
 
+import { scenarioI18n } from '../scenario-i18n';
+
 interface FieldSkipIfUnderProps {
   value: number | null;
   onBlur: () => void;
@@ -17,7 +19,7 @@ export const FieldSkipIfUnder = ({
   editor,
   name,
 }: FieldSkipIfUnderProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(scenarioI18n);
   const [inputValue, setInputValue] = useState<number>(value ?? 0);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

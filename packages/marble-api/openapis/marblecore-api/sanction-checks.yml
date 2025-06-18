@@ -299,6 +299,7 @@ components:
       type: object
       required:
         - id
+        - config
         - decision_id
         - status
         - request
@@ -309,6 +310,13 @@ components:
         id:
           type: string
           format: uuid
+        config:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
         decision_id:
           type: string
           format: uuid
@@ -329,6 +337,7 @@ components:
       type: object
       required:
         - id
+        - config
         - decision_id
         - status
         - partial
@@ -339,6 +348,13 @@ components:
         id:
           type: string
           format: uuid
+        config:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
         decision_id:
           type: string
           format: uuid
