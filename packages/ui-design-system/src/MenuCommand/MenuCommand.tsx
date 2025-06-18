@@ -213,7 +213,7 @@ function MenuArrow() {
   return <Icon icon="caret-down" className="size-4 shrink-0" />;
 }
 
-const contentClassname = cva('flex z-50 text-s', {
+const contentClassname = cva('flex z-[99] text-s', {
   variants: {
     hover: {
       true: 'max-h-[min(var(--radix-hover-card-content-available-height),_500px)]',
@@ -227,7 +227,7 @@ const contentClassname = cva('flex z-50 text-s', {
 
 const commandClassname = cva(
   [
-    'flex flex-col z-50 w-full flex-1 overflow-hidden',
+    'flex flex-col z-[99] w-full flex-1 overflow-hidden',
     'bg-grey-100 border-grey-90 rounded border shadow-md outline-none',
     'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
     'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
