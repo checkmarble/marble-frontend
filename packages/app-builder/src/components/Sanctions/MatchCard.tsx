@@ -1,4 +1,7 @@
-import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
+import {
+  type FamilyPersonEntity,
+  type SanctionCheckMatch,
+} from '@app-builder/models/sanction-check';
 import { useLayoutLoaderData } from '@app-builder/routes/_builder+/decisions+/$decisionId';
 import { SanctionCheckReviewModal } from '@app-builder/routes/ressources+/cases+/review-sanction-match';
 import { EnrichMatchButton } from '@app-builder/routes/ressources+/sanction-check+/enrich-match.$matchId';
@@ -103,6 +106,9 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                   </div>
                 </div>
               ) : null}
+              {entitySchema === 'person' && entity.properties['familyPerson']?.length ? (
+                <FamilyDetail familyMembers={entity.properties['familyPerson']} />
+              ) : null}
               {match.comments.map((comment) => {
                 return <CommentLine key={comment.id} comment={comment} />;
               })}
@@ -142,6 +148,38 @@ function CommentLine({ comment }: { comment: SanctionCheckMatch['comments'][numb
         </span>
       </div>
       <p>{comment.comment}</p>
+    </div>
+  );
+}
+
+function FamilyDetail({ familyMembers }: { familyMembers: FamilyPersonEntity[] }) {
+  const { t } = useTranslation(sanctionsI18n);
+  return (
+    <div className="flex flex-col items-start gap-1">
+      {/* <Icon icon="person" className="text-grey-90 size-5" /> */}
+      <div className="text-grey-00">{t('sanctions:match.family.label')}</div>
+
+      <div className="grid w-full grid-cols-[max-content_1fr] gap-x-2 gap-y-1">
+        {familyMembers.map(({ properties: { relationship, relative } }) =>
+          relative?.map(({ id, properties }, idx) => {
+            if (!properties.name?.[0]) return null;
+            const rel = relationship?.[0] || t('sanctions:match.family.unknown_relationship');
+            return (
+              <div key={`person-${id}-${idx}`} className="contents">
+                <div className="font-semibold">{rel}:</div>
+                <div className="flex items-center gap-1">
+                  <span>
+                    {properties.firstName} {properties.lastName}
+                  </span>
+                  {properties['topics']?.map((topic) => (
+                    <TopicTag key={`${id}-${topic}`} topic={topic} />
+                  ))}
+                </div>
+              </div>
+            );
+          }),
+        )}
+      </div>
     </div>
   );
 }

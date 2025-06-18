@@ -17,6 +17,7 @@ const matchEntitySchemas = [
   'Vehicle',
   'Airplane',
   'Vessel',
+  'Family',
 ] as const;
 const sanctionEntitySchemas = ['Sanction'] as const;
 export const openSanctionEntitySchemas = [...matchEntitySchemas, ...sanctionEntitySchemas] as const;
@@ -49,6 +50,42 @@ export type SanctionCheckMatchEntitySchema = Extract<
   | 'Vessel'
 >;
 
+export type PersonEntity = OpenSanctionEntity & {
+  schema: 'Person';
+  target: boolean;
+  properties: {
+    caption: string;
+    name?: string[];
+    alias?: string[];
+    notes?: string[];
+    gender?: string[];
+    topics?: string[];
+    lastName?: string[];
+    position?: string[];
+    religion?: string[];
+    birthDate?: string[];
+    education?: string[];
+    firstName?: string[];
+    sourceUrl?: string[];
+    weakAlias?: string[];
+    birthPlace?: string[];
+    wikidataId?: string[];
+    citizenship?: string[];
+  } & Record<string, string[]>;
+};
+
+export type FamilyPersonEntity = OpenSanctionEntity & {
+  schema: 'Family';
+  properties: {
+    person?: string[];
+    endDate?: string[];
+    relative?: PersonEntity[];
+    sourceUrl?: string[];
+    startDate?: string[];
+    relationship?: string[];
+  } & Record<string, string[]>;
+};
+
 export type SanctionCheckMatchPayload = {
   id: string;
   match: boolean;
@@ -58,6 +95,7 @@ export type SanctionCheckMatchPayload = {
   caption: string;
   properties: {
     sanctions?: SanctionCheckSanctionEntity[];
+    familyPerson?: FamilyPersonEntity[];
   } & Record<string, string[]>;
 };
 
