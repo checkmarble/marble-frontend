@@ -296,7 +296,7 @@ export default function SanctionDetail() {
           <form className="relative flex max-w-[800px] flex-col" onSubmit={handleSubmit(form)}>
             <div
               className={cn(
-                'bg-purple-99 sticky top-0 z-[60] flex h-[88px] items-center justify-between gap-4',
+                'bg-purple-99 sticky top-0 z-40 flex h-[88px] items-center justify-between gap-4',
                 {
                   'border-b-grey-90 border-b': !intersection?.isIntersecting,
                 },
