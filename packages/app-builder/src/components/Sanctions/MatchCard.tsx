@@ -59,7 +59,10 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
               />
               <div className="text-s flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="font-semibold">{entity.caption}</span>
-                <span>{t(`sanctions:entity.schema.${entitySchema}`)}</span>
+
+                <span>
+                  {t(`sanctions:entity.schema.${entitySchema}`, { defaultValue: entitySchema })}
+                </span>
                 <Tag color="grey">
                   {t('sanctions:match.similarity', {
                     percent: Math.round(entity.score * 100),
