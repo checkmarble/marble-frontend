@@ -160,7 +160,7 @@ function FamilyDetail({ familyMembers }: { familyMembers: FamilyPersonEntity[] }
   return (
     <div className="flex flex-col items-start gap-1">
       {/* <Icon icon="person" className="text-grey-90 size-5" /> */}
-      <div className="text-grey-00">{t('sanctions:match.family.label')}</div>
+      <div className="text-grey-00">{t('sanctions:match.family-members.title')}</div>
 
       <div className="grid w-full grid-cols-[max-content_1fr] gap-x-2 gap-y-1">
         {familyMembers.map(({ properties: { relationship, relative } }) =>

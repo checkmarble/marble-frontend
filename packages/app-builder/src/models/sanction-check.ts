@@ -48,6 +48,7 @@ export type SanctionCheckMatchEntitySchema = Extract<
   | 'Vehicle'
   | 'Airplane'
   | 'Vessel'
+  | 'Family'
 >;
 
 export type PersonEntity = OpenSanctionEntity & {
