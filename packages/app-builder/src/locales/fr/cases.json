@@ -65,7 +65,7 @@
   "case_detail.trigger_object": "Objet déclencheur",
   "search.placeholder": "Rechercher par nom",
   "case.page_title": "Investigation",
-  "case_detail.review_decision.disabled_approve": "Ce statut ne peut pas être choisi car il y a un contrôle de sanction à examiner pour cette décision.",
+  "case_detail.review_decision.warning_approve": "Attention !! Il reste des contrôles de sanction à examiner pour cette décision.",
   "snooze_case.callout": "Désactivé jusqu'à {{date}}",
   "snooze.modal.heading": "Désactiver jusqu'à...",
   "snooze_case.title": "Me rappeler plus tard",
