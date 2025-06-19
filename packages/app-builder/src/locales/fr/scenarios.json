@@ -458,7 +458,7 @@
   "sanction.trigger_object.callout": "Détermine si la vérification des sanctions est pertinente pour chaque objet déclencheur (<DocLink> en savoir plus </DocLink>)",
   "sanction_counterparty_name_placeholder": "Sélectionnez le prénom ou le nom complet",
   "sanction_description_placeholder": "Ajouter une description ...",
-  "sanction_forced_outcome_heading": "Ensuite, forcer le statut de résultat par",
+  "sanction_forced_outcome_heading": "Forcer le statut de la décision à",
   "sanction_name_placeholder": "Titre de la vérification de sanction ...",
   "sanction_transaction_label_placeholder": "Sélectionnez l'étiquette de transaction",
   "operator.filter_fuzzy-match": "est proche de",
@@ -468,8 +468,8 @@
   "sanction.lists.peps": "PPE",
   "sanction.lists.sanctions": "sanctions",
   "sanction.lists.third_parties": "autres",
-  "edit_sanction.consideration_matchings": "Considérant les correspondances au-dessus de",
-  "edit_sanction.default_value": "Valeur par défaut",
+  "edit_sanction.consideration_matchings": "Considérer les correspondances au-dessus de",
+  "edit_sanction.default_value": "% (<Style>{{threshold}}%</Style> si laissé vide).",
   "edit_sanction.enable_entity_recognition": "Activer la reconnaissance de l'entité",
   "edit_sanction.enable_entity_recognition.tooltip": "Détecter et extraire les entités nommées du texte avant de faire correspondre",
   "edit_sanction.entity_type.heading": "À quoi vous projetez-vous le type d'entité?",
@@ -484,5 +484,6 @@
   "edit_sanction.ignore_numbers.tooltip": "Lorsqu'ils sont activés, tous les caractères numériques seront supprimés du texte avant de correspondre. \nCela peut aider à réduire les faux positifs causés par des nombres dans les noms, les adresses ou les identifiants.",
   "edit_sanction.remove_terms_from_list": "Supprimer les termes de la liste",
   "edit_sanction.remove_terms_from_list.tooltip": "Supprimer les termes de la liste",
-  "edit_sanction.select_list": "Sélectionnez une liste"
+  "edit_sanction.select_list": "Sélectionnez une liste",
+  "sanction_forced_outcome_suffix": "Si une donnée correspond à la liste de sanction"
 }
