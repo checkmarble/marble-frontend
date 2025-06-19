@@ -484,5 +484,6 @@
   "edit_sanction.country": "الدولة",
   "edit_sanction.country_placeholder": "رمز الدولة",
   "edit_sanction.registrationnumber": "رقم التسجيل",
-  "edit_sanction.registrationnumber_placeholder": "رقم التسجيل"
+  "edit_sanction.registrationnumber_placeholder": "رقم التسجيل",
+  "sanction_forced_outcome_suffix": "إذا تم تشغيل فحص العقوبات"
 }

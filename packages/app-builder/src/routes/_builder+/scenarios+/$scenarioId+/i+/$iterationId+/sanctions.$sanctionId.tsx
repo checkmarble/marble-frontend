@@ -406,10 +406,8 @@ export default function SanctionDetail() {
                   </form.Field>
                 </div>
                 <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded-md border p-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-s">
-                      {t('scenarios:edit_sanction.consideration_matchings')}
-                    </span>
+                  <div className="text-s flex items-center">
+                    {t('scenarios:edit_sanction.consideration_matchings')}
                     <form.Field name="threshold">
                       {(field) => (
                         <div className="flex flex-col gap-1">
@@ -417,8 +415,10 @@ export default function SanctionDetail() {
                             type="number"
                             name={field.name}
                             onBlur={field.handleBlur}
+                            min={50}
+                            max={100}
                             disabled={editor === 'view'}
-                            className="z-0 w-14 py-1.5"
+                            className="z-0 ml-2 mr-1 w-14 py-1.5"
                             defaultValue={field.state.value}
                             onChange={(e) => field.handleChange(+e.currentTarget.value)}
                             valid={field.state.meta.errors?.length === 0}
@@ -429,14 +429,13 @@ export default function SanctionDetail() {
                         </div>
                       )}
                     </form.Field>
-                    <span className="text-s">%</span>
+                    <Trans
+                      t={t}
+                      i18nKey="scenarios:edit_sanction.default_value"
+                      components={{ Style: <span className="m-1 font-semibold" /> }}
+                      values={{ threshold: org.sanctionThreshold }}
+                    />
                   </div>
-                  <span className="text-s inline-flex items-center gap-2">
-                    <span>{t('scenarios:edit_sanction.default_value')}</span>
-                    <span className="bg-grey-90 rounded p-1 px-1.5 font-medium">
-                      {org.sanctionThreshold}%
-                    </span>
-                  </span>
                   <div className="flex items-center gap-2">
                     <span className="text-s">{t('scenarios:sanction_forced_outcome_heading')}</span>
                     <form.Field name="forcedOutcome">
@@ -456,6 +455,7 @@ export default function SanctionDetail() {
                         </div>
                       )}
                     </form.Field>
+                    <span className="text-s">{t('scenarios:sanction_forced_outcome_suffix')}</span>
                   </div>
                 </div>
               </div>
