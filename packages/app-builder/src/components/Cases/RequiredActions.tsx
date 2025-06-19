@@ -44,11 +44,7 @@ export const RequiredActions = ({
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
             <Checkbox disabled={true} size="small" checked={pendingSanctionMatches === 0} />
-            <span
-              className={cn('text-xs font-medium', {
-                'line-through': pendingSanctionMatches === 0,
-              })}
-            >
+            <span className="text-xs font-medium">
               {t('sanctions:required_actions.review_pending_screening_count', {
                 count: decision.sanctionChecks.length,
               })}
@@ -59,12 +55,12 @@ export const RequiredActions = ({
               return (
                 <div key={s.id} className="flex items-center pl-6 text-xs font-medium">
                   <Divider isLast={i === decision.sanctionChecks.length - 1} />
-                  <span className="inline-flex items-center gap-2 text-xs font-medium">
-                    <span
-                      className={cn({
-                        'line-through': s.matches.length === 0,
-                      })}
-                    >{`${s.config.name} (${s.matches.length})`}</span>
+                  <span
+                    className={cn('inline-flex items-center gap-2 text-xs font-medium', {
+                      'text-red-43': s.status === 'error',
+                    })}
+                  >
+                    <span>{`${s.config.name} (${s.matches.length})`}</span>
                     <Link
                       className="underline"
                       to={getRoute('/cases/:caseId/d/:decisionId/screenings/:screeningId', {
@@ -73,8 +69,22 @@ export const RequiredActions = ({
                         screeningId: fromUUIDtoSUUID(s.id),
                       })}
                     >
-                      {t('sanctions:required_actions.view_screening')}
+                      {s.status === 'in_review'
+                        ? t('sanctions:required_actions.review')
+                        : s.status === 'error'
+                          ? t('sanctions:required_actions.view_error')
+                          : t('sanctions:required_actions.view')}
                     </Link>
+                    {s.status !== 'error' && s.status !== 'in_review' ? (
+                      <span
+                        className={cn('text-2xs rounded-full px-2 py-0.5', {
+                          'text-red-43 bg-red-95': s.status === 'confirmed_hit',
+                          'text-grey-50 bg-grey-90': s.status === 'no_hit',
+                        })}
+                      >
+                        {t(`sanctions:status.${s.status}`)}
+                      </span>
+                    ) : null}
                   </span>
                 </div>
               );
