@@ -65,7 +65,7 @@
   "case_detail.trigger_object": "كائن الزناد",
   "search.placeholder": "البحث بالاسم",
   "case.page_title": "قضية",
-  "case_detail.review_decision.disabled_approve": "لا يمكن اختيار هذا الوضع لأن هناك شيكًا للعقوبة لمراجعة هذا القرار.",
+  "case_detail.review_decision.warning_approve": "يوجد شيكات للعقوبة لمراجعة هذا القرار.",
   "snooze_case.callout": "غفوة حتى {{date}}",
   "snooze.modal.heading": "إدارة الغفوة",
   "unsnooze_case.callout": "من خلال الاستمرار ، ستحصل على القضية",
