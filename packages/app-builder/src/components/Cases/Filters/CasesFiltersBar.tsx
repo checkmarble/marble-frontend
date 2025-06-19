@@ -6,7 +6,7 @@ import {
   FiltersButton,
 } from '@app-builder/components/Filters';
 import { SimpleFilter } from '@app-builder/components/Filters/SimpleFilter';
-import { getRoute } from '@app-builder/utils/routes';
+import { useLocation } from '@remix-run/react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Separator } from 'ui-design-system';
@@ -38,6 +38,7 @@ export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonl
     useCasesFiltersPartition(excludedFilters);
   const clearFilter = useClearFilter();
 
+  const { pathname } = useLocation();
   return (
     <>
       <Separator className="bg-grey-90" decorative />
@@ -90,7 +91,7 @@ export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonl
             </CasesFiltersMenu>
           ) : null}
         </div>
-        <ClearAllFiltersLink to={getRoute('/cases')} replace />
+        <ClearAllFiltersLink to={pathname} replace />
       </div>
     </>
   );
