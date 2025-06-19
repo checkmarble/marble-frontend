@@ -44,11 +44,7 @@ export const RequiredActions = ({
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
             <Checkbox disabled={true} size="small" checked={pendingSanctionMatches === 0} />
-            <span
-              className={cn('text-xs font-medium', {
-                'line-through': pendingSanctionMatches === 0,
-              })}
-            >
+            <span className="text-xs font-medium">
               {t('sanctions:required_actions.review_pending_screening_count', {
                 count: decision.sanctionChecks.length,
               })}
@@ -64,11 +60,7 @@ export const RequiredActions = ({
                       'text-red-43': s.status === 'error',
                     })}
                   >
-                    <span
-                      className={cn({
-                        'line-through': s.status === 'confirmed_hit' || s.status === 'no_hit',
-                      })}
-                    >{`${s.config.name} (${s.matches.length})`}</span>
+                    <span>{`${s.config.name} (${s.matches.length})`}</span>
                     <Link
                       className="underline"
                       to={getRoute('/cases/:caseId/d/:decisionId/screenings/:screeningId', {
