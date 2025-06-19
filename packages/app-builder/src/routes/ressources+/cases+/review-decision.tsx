@@ -196,7 +196,7 @@ function ReviewDecisionContent({
                         />
                         {disabled && reviewStatus === 'approve' ? (
                           <span className="text-red-43 text-xs">
-                            {t('cases:case_detail.review_decision.disabled_approve')}
+                            {t('cases:case_detail.review_decision.warning_approve')}
                           </span>
                         ) : null}
                       </div>
