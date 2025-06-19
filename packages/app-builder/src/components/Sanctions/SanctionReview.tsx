@@ -27,12 +27,13 @@ export function SanctionReviewSection({ decisionId, sanctionCheck }: SanctionRev
   const matchesToReviewCount = filter(sanctionCheck.matches, (m) => m.status === 'pending').length;
   const hasError = isSanctionCheckError(sanctionCheck);
   const isRefinable = !isSanctionCheckReviewCompleted(sanctionCheck);
+  console.log(sanctionCheck);
 
   return (
     <div className="flex h-fit flex-[2] flex-col gap-6">
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-m font-semibold">Potential matches</span>
+          <span className="text-m font-semibold">{t('sanctions:potential_matches')}</span>
           <span className="text-grey-50 text-s">
             {t('sanctions:callout.needs_review', {
               toReview: matchesToReviewCount,
@@ -48,18 +49,22 @@ export function SanctionReviewSection({ decisionId, sanctionCheck }: SanctionRev
         </div>
         {match(sanctionCheck)
           .when(isSanctionCheckError, (sc) => <SanctionCheckErrors sanctionCheck={sc} />)
-          .otherwise((sc) => {
-            return !sc.partial ? (
-              <Callout bordered>{t('sanctions:callout.review')}</Callout>
-            ) : (
+          .when(
+            (sc) => sc.status === 'in_review' && sc.partial,
+            (sc) => (
               <div className="text-s bg-red-95 text-red-47 flex items-center gap-2 rounded p-2">
                 <Icon icon="error" className="size-5 shrink-0" />
                 {t('sanctions:callout.needs_refine', {
                   matchCount: sc.request.limit,
                 })}
               </div>
-            );
-          })}
+            ),
+          )
+          .when(
+            (sc) => sc.status === 'in_review',
+            () => <Callout bordered>{t('sanctions:callout.review')}</Callout>,
+          )
+          .otherwise(() => null)}
       </div>
       <div className="flex flex-col gap-2">
         {sanctionCheck.matches.map((sanctionMatch) => (

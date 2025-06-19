@@ -566,9 +566,9 @@ export default function SanctionDetail() {
                               <div className="flex flex-col gap-1">
                                 <div className="flex flex-col gap-1">
                                   <span className="text-s inline-flex items-center gap-1">
-                                    {t('scenarios:sanction_counterparty_name')}
+                                    {t('scenarios:screening.filter.name')}
                                     <FieldToolTip>
-                                      {t('scenarios:sanction_counterparty_name.tooltip')}
+                                      {t('scenarios:screening.filter.name.tooltip')}
                                     </FieldToolTip>
                                   </span>
                                   <FieldNodeConcat
@@ -578,9 +578,7 @@ export default function SanctionDetail() {
                                     }
                                     onChange={field.handleChange}
                                     onBlur={field.handleBlur}
-                                    placeholder={t(
-                                      'scenarios:sanction_counterparty_name_placeholder',
-                                    )}
+                                    placeholder={t('scenarios:screening.filter.name_placeholder')}
                                     limit={5}
                                   />
                                   <FormErrorOrDescription
