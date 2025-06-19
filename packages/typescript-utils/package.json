@@ -5,11 +5,10 @@
   "sideEffect": false,
   "type": "module",
   "devDependencies": {
-    "@marble/eslint-config": "workspace:*",
     "@types/node": "22.13.10"
   },
   "scripts": {
-    "lint": "eslint .",
+    "lint": "biome lint",
     "type-check": "pnpm exec tsc --noEmit"
   },
   "author": "",

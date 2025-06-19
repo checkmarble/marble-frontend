@@ -6,14 +6,13 @@
   "sideEffect": false,
   "type": "module",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "biome lint",
     "type-check": "pnpm exec tsc --noEmit",
     "test": "vitest"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@marble/eslint-config": "workspace:*",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "16.2.0",

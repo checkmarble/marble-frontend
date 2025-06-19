@@ -5,12 +5,12 @@
   "sideEffect": false,
   "type": "module",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "biome lint",
     "type-check": "pnpm exec tsc --noEmit",
     "generate-icons": "tsx scripts/generate.ts"
   },
   "devDependencies": {
-    "@marble/eslint-config": "workspace:*",
+    "@biomejs/js-api": "^1.0.0",
     "@types/node": "22.13.10",
     "@types/react": "18.3.11",
     "@types/svg-sprite": "^0.0.39",
@@ -22,6 +22,7 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "react": "18.3.1"
+    "react": "18.3.1",
+    "@biomejs/wasm-nodejs": "^2.0.0"
   }
 }

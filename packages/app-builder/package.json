@@ -7,7 +7,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "biome lint",
     "type-check": "pnpm exec tsc --noEmit",
     "dev": "remix vite:dev",
     "build": "remix vite:build",
@@ -17,7 +17,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@marble/eslint-config": "workspace:*",
+    "@biomejs/js-api": "^1.0.0",
     "@remix-run/dev": "^2.16.8",
     "@segment/analytics-next": "^1.78.1",
     "@sentry/cli": "^2.42.3",
@@ -123,5 +123,8 @@
     "uuid": "^11.1.0",
     "zod": "^3.24.2",
     "zustand": "^5.0.3"
+  },
+  "peerDependencies": {
+    "@biomejs/wasm-nodejs": "^2.0.0"
   }
 }
