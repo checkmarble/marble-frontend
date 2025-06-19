@@ -1,6 +1,6 @@
 {
   "sanction_check": "Sanction check",
-  "callout.review": "There are matches between the beneficiary information and the sanctions check. Check if it is the same beneficiary or not.",
+  "callout.review": "There are unreviewed matches for this screening search. Confirm if any of them is a real match for the input data that was provided.",
   "callout.needs_review": "{{toReview}}/{{totalMatches}} to review",
   "callout.needs_refine": "There are too many potential matches (>{{matchCount}}). To get more relevant results, please refine your search.",
   "error_label_one": "Sanction check is in error for the following reason",
@@ -28,7 +28,7 @@
   "refine_modal.test_search": "Test this search",
   "refine_modal.title": "Refine search",
   "refine_search": "Refine search",
-  "review_modal.callout_confirmed_hit": "By choosing to confirm this match, the status of this sanction check will automatically changed for Confirmed hit",
+  "review_modal.callout_confirmed_hit": "By choosing to confirm this match, the status of this sanction check will automatically changed to 'Confirmed hit'.",
   "review_modal.comment_label": "Add a comment",
   "review_modal.status_label": "Choose a status",
   "review_modal.title": "Change match status",
@@ -136,5 +136,6 @@
   "sanction_detail.title": "Sanction details",
   "enrich_button": "Enrich",
   "success.match_enriched": "Match successfully enriched",
-  "error.match_already_enriched": "Match already enriched"
+  "error.match_already_enriched": "Match already enriched",
+  "potential_matches": "Potential matches"
 }
