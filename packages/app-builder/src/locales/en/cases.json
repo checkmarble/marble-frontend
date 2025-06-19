@@ -100,7 +100,7 @@
   "case_detail.review_decision.comment.placeholder": "Explain why you are choosing this review status",
   "case_detail.review_decision.review_status.label": "Review status",
   "case_detail.review_decision.review_status.placeholder": "Select a review status",
-  "case_detail.review_decision.disabled_approve": "This status cannot be chosen because there is a sanction check to review for this decision.",
+  "case_detail.review_decision.disabled_approve": "There is still screening to be reviewed for this decision.",
   "case_detail.review_decision": "Review",
   "case_detail.pivot_panel.informations": "Informations",
   "case_detail.pivot_panel.related_object": "Related object - {{tableName}}",

@@ -185,22 +185,21 @@ function ReviewDecisionContent({
                 {nonPendingReviewStatuses.map((reviewStatus) => {
                   const disabled = sanctionCheck && sanctionCheck.status !== 'no_hit';
 
-                  return disabled && reviewStatus === 'approve' ? (
-                    <div className="flex flex-col items-start gap-2 p-1">
-                      <ReviewStatusTag
-                        key={reviewStatus}
-                        disabled
-                        border="square"
-                        size="big"
-                        reviewStatus={reviewStatus}
-                      />
-                      <span className="text-grey-50 text-xs">
-                        {t('cases:case_detail.review_decision.disabled_approve')}
-                      </span>
-                    </div>
-                  ) : (
+                  return (
                     <Select.DefaultItem key={reviewStatus} value={reviewStatus}>
-                      <ReviewStatusTag border="square" size="big" reviewStatus={reviewStatus} />
+                      <div className="flex flex-col gap-2">
+                        <ReviewStatusTag
+                          border="square"
+                          size="big"
+                          className="w-fit"
+                          reviewStatus={reviewStatus}
+                        />
+                        {disabled && reviewStatus === 'approve' ? (
+                          <span className="text-red-43 text-xs">
+                            {t('cases:case_detail.review_decision.disabled_approve')}
+                          </span>
+                        ) : null}
+                      </div>
                     </Select.DefaultItem>
                   );
                 })}
