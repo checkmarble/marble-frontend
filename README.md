@@ -106,5 +106,5 @@ When available, you can use VSCode launch configuration to run the package scrip
 #### How to check the code locally like the CI
 
 ```bash
-pnpm run -r type-check && pnpm run -r lint && pnpm run format:check
+pnpm run -r type-check && pnpm biome check
 ```
