@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
 import { useDeferredValue, useMemo, useState } from 'react';
+import { describe, expect, it } from 'vitest';
 
 import { Input } from '../Input/Input';
 import { MenuButton, MenuCombobox, MenuContent, MenuItem, MenuPopover, MenuRoot } from './Menu';

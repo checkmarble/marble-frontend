@@ -1,9 +1,11 @@
 import { NewAstNode, stripIdFromNode } from '@app-builder/models';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 
+import { describe, expect, it } from 'vitest';
+
 import {
-  coerceToConstantAstNode,
   type CoerceToConstantAstNodeOptions,
+  coerceToConstantAstNode,
 } from './coerceToConstantAstNode';
 
 const options: CoerceToConstantAstNodeOptions = {
