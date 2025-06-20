@@ -11,6 +11,7 @@ import {
   type CaseTagDto,
   type CommentEntityAnnotationDto,
   type CreateCaseBodyDto,
+  // biome-ignore lint/suspicious/noShadowRestrictedNames: <TBD>
   type Error,
   type FileEntityAnnotationDto,
   type Outcome,
