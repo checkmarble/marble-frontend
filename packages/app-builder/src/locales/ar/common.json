@@ -88,5 +88,6 @@
   "to": "إلى {{input}}",
   "back": "عودة",
   "validate": "تأكيد",
-  "success.deleted": "تم حذفه بنجاح"
+  "success.deleted": "تم حذفه بنجاح",
+  "all_selected": "كل المحدد"
 }
