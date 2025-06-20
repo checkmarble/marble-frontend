@@ -1,4 +1,4 @@
-import { Callout, Page, scenarioI18n } from '@app-builder/components';
+import { Callout, CalloutV2, Page, scenarioI18n } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import {
   BreadCrumbLink,
@@ -39,7 +39,7 @@ import { Dict } from '@swan-io/boxed';
 import { useForm, useStore } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { pick } from 'radash';
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
 import { match } from 'ts-pattern';
@@ -282,6 +282,21 @@ export default function SanctionDetail() {
   }
 
   const entityType = useStore(form.store, (state) => state.values.entityType);
+  const query = useStore(form.store, (state) => state.values.query);
+
+  const hasRequiredFields = useMemo(
+    () =>
+      match(entityType)
+        .with('Organization', () => Boolean(query['name'] || query['registrationNumber']))
+        .with('Vehicle', () => Boolean(query['name'] || query['registrationNumber']))
+        .with('Person', () => Boolean(query['name'] || query['idNumber']))
+        .otherwise(() => true),
+    [entityType, query],
+  );
+
+  useEffect(() => {
+    console.log('hasRequiredFields', hasRequiredFields);
+  });
 
   return (
     <Page.Main>
@@ -856,6 +871,12 @@ export default function SanctionDetail() {
                         ))
                         .otherwise(() => null)}
                     </div>
+
+                    {!hasRequiredFields && (
+                      <CalloutV2 className="bg-yellow-90 text-orange-50 p-2 text-xs items-center font-semibold">
+                        {t('scenarios:edit_sanction.required_fields_disclaimer')}
+                      </CalloutV2>
+                    )}
                   </div>
                 </div>
               </AstBuilder.Provider>
