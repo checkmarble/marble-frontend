@@ -16,7 +16,7 @@ import {
   isDeleteListValueAvailable,
   isEditListAvailable,
 } from '@app-builder/services/feature-access';
-import { clientServices } from '@app-builder/services/init.client';
+import { useClientServices } from '@app-builder/services/init.client';
 import { initServerServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';
 import useAsync from '@app-builder/utils/hooks/use-async';
@@ -215,6 +215,8 @@ const DownloadAsCSVButton = React.forwardRef<
 
 function ClientDownloadAsCSV({ listId }: { listId: string }) {
   const { t } = useTranslation(handle.i18n);
+  const clientServices = useClientServices();
+
   const { getAccessToken, backendUrl } = useBackendInfo(clientServices.authenticationClientService);
 
   const [downloadCsv, { loading }] = useAsync(async (listId: string) => {
@@ -362,6 +364,7 @@ function modalReducer(state: State, action: Actions): State {
 
 function ClientUploadAsCsv({ listId }: { listId: string }) {
   const { t } = useTranslation(handle.i18n);
+  const clientServices = useClientServices();
   const [modalState, dispatch] = React.useReducer(modalReducer, initialState);
 
   const { getAccessToken, backendUrl } = useBackendInfo(clientServices.authenticationClientService);

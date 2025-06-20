@@ -7,23 +7,6 @@ servers:
   - url: 'http://localhost:8080'
     description: Local development server
 paths:
-  /is-sso-available:
-    get:
-      summary: Check if SSO is enabled
-      description: Returns true if SSO is enabled
-      operationId: isSsoEnabled
-      responses:
-        '200':
-          description: SSO is enabled
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  is_sso_enabled:
-                    type: boolean
-                required:
-                  - is_sso_enabled
   /feature_access:
     get:
       summary: Get the entitlements of an organization

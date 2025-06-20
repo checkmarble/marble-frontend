@@ -6,7 +6,7 @@ import {
   useMicrosoftSignIn,
 } from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
-import { clientServices } from '@app-builder/services/init.client';
+import { useClientServices } from '@app-builder/services/init.client';
 import useAsync from '@app-builder/utils/hooks/use-async';
 import * as Sentry from '@sentry/remix';
 import toast from 'react-hot-toast';
@@ -55,6 +55,8 @@ function ClientSignInWithMicrosoft({
   loading?: boolean;
 }) {
   const { t } = useTranslation(['common', 'auth']);
+  const clientServices = useClientServices();
+
   const microsoftSignIn = useMicrosoftSignIn(clientServices.authenticationClientService);
 
   const [handleMicrosoftSignIn, _state] = useAsync(async () => {

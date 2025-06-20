@@ -10,6 +10,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useNavigate } from '@remix-run/react';
+import { tryit } from 'radash';
 import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 
@@ -21,7 +22,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const {
     authService,
     authSessionService: { getSession },
-    signupRepository: { getSignupStatus },
+    appConfigRepository: { getAppConfig },
   } = initServerServices(request);
   await authService.isAuthenticated(request, {
     successRedirect: getRoute('/app-router'),
@@ -29,27 +30,24 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request);
   const error = session.get('authError');
 
-  try {
-    const { migrationsRun, hasAnOrganization, hasAUser } = await getSignupStatus();
+  const [_err, appConfig] = await tryit(() => getAppConfig())();
 
-    return {
-      isSignupReady: migrationsRun && hasAnOrganization && hasAUser,
-      haveMigrationsRun: migrationsRun,
-      authError: error?.message,
-    };
-  } catch (_err) {
-    console.error('Error fetching signup status API');
-    return {
-      isSignupReady: false,
-      haveMigrationsRun: false,
-      authError: 'BackendUnavailable',
-    };
+  if (!appConfig) {
+    console.error('Error fetching app config API');
   }
+
+  return {
+    isSignupReady: appConfig
+      ? appConfig.status.migrations && appConfig.status.hasOrg && appConfig.status.hasUser
+      : false,
+    didMigrationsRun: appConfig?.status.migrations ?? false,
+    authError: appConfig ? error?.message : 'BackendUnavailable',
+  };
 }
 
 export default function SignUp() {
   const { t } = useTranslation(handle.i18n);
-  const { authError, isSignupReady, haveMigrationsRun } = useLoaderData<typeof loader>();
+  const { authError, isSignupReady, didMigrationsRun } = useLoaderData<typeof loader>();
 
   const navigate = useNavigate();
   const signUp = () => navigate(getRoute('/email-verification'));
@@ -63,7 +61,7 @@ export default function SignUp() {
       ) : (
         <Callout variant="soft" color="red" className="mb-6 text-start">
           <div>
-            {haveMigrationsRun
+            {didMigrationsRun
               ? t('auth:sign_up.warning.instance_not_initialized')
               : t('auth:sign_up.warning.database_not_migrated')}
             <p>

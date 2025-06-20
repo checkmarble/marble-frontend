@@ -10,6 +10,7 @@ import { type GetTransfercheckAPIClientWithAuth } from '@app-builder/infra/trans
 
 import { makeGetAnalyticsRepository } from './AnalyticsRepository';
 import { makeGetApiKeyRepository } from './ApiKeyRepository';
+import { makeGetAppConfigRepository } from './AppConfigRepository';
 import { makeGetCaseRepository } from './CaseRepository';
 import { makeGetCustomListRepository } from './CustomListRepository';
 import { makeGetDataModelRepository } from './DataModelRepository';
@@ -31,12 +32,10 @@ import {
   getToastStorageRepository,
   type SessionStorageRepositoryOptions,
 } from './SessionStorageRepositories';
-import { makeGetSignupStatusRepository } from './SignupStatusRepository';
 import { makeGetTestRunRepository } from './TestRunRepository';
 import { makeGetTransferAlertRepository } from './TransferAlertRepository';
 import { makeGetTransferRepository } from './TransferRepository';
 import { makeGetUserRepository } from './UserRepository';
-import { makeGetVersionRepository } from './VersionRepository';
 import { makeGetWebhookRepository } from './WebhookRepository';
 
 export function makeServerRepositories({
@@ -84,9 +83,8 @@ export function makeServerRepositories({
     getWebhookRepository: makeGetWebhookRepository(),
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     getTestRunRepository: makeGetTestRunRepository(),
+    getAppConfigRepository: makeGetAppConfigRepository(),
     getFeatureAccessRepository: makeGetFeatureAccessRepository(),
-    getSignupStatusRepository: makeGetSignupStatusRepository(),
-    getVersionRepository: makeGetVersionRepository(),
   };
 }
 
