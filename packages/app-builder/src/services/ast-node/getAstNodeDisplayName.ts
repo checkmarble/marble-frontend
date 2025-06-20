@@ -7,7 +7,7 @@ import {
 import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
-import { isIsMultipleOf, type IsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
+import { type IsMultipleOfAstNode, isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
 import {
   type FuzzyMatchComparatorAstNode,
   isFuzzyMatchComparator,

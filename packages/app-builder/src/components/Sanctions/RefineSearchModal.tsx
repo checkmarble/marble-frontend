@@ -9,8 +9,8 @@ import {
 } from '@app-builder/models/sanction-check';
 import { type action as refineAction } from '@app-builder/routes/ressources+/sanction-check+/refine';
 import {
-  type action as searchAction,
   refineSearchSchema,
+  type action as searchAction,
 } from '@app-builder/routes/ressources+/sanction-check+/search';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
@@ -27,8 +27,8 @@ import { Icon } from 'ui-icons';
 import { type z } from 'zod';
 
 import { MatchResult } from './MatchResult';
-import { sanctionsI18n } from './sanctions-i18n';
 import { SanctionStatusTag } from './SanctionStatusTag';
+import { sanctionsI18n } from './sanctions-i18n';
 
 function setAdditionalFields(fields: string[], prev: Record<string, string>) {
   const additionalFields = {} as Record<string, string>;

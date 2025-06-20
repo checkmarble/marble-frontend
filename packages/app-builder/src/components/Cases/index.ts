@@ -1,4 +1,4 @@
 export * from './CaseRightPanel';
-export * from './cases-i18n';
-export * from './CasesList';
 export * from './CaseStatus';
+export * from './CasesList';
+export * from './cases-i18n';

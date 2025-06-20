@@ -17,9 +17,9 @@ import { Table, Tooltip, useVirtualTable } from 'ui-design-system';
 
 import { CaseAssignedTo } from './CaseAssignedTo';
 import { CaseContributors } from './CaseContributors';
-import { casesI18n } from './cases-i18n';
 import { CaseStatusBadge } from './CaseStatus';
 import { CaseTags } from './CaseTags';
+import { casesI18n } from './cases-i18n';
 
 const columnHelper = createColumnHelper<Case>();
 

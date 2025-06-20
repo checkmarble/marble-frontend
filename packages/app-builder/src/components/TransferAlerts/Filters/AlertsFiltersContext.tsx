@@ -1,4 +1,4 @@
-import { transferAlerStatuses, type TransferAlertStatus } from '@app-builder/models/transfer-alert';
+import { type TransferAlertStatus, transferAlerStatuses } from '@app-builder/models/transfer-alert';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { type DateRangeFilterForm, dateRangeSchema } from '@app-builder/utils/schema/filterSchema';

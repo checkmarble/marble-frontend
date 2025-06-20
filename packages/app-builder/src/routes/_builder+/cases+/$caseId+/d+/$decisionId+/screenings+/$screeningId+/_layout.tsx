@@ -4,7 +4,7 @@ import {
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
-import { casesI18n, CaseStatusBadge } from '@app-builder/components/Cases';
+import { CaseStatusBadge, casesI18n } from '@app-builder/components/Cases';
 import { SanctionStatusTag } from '@app-builder/components/Sanctions/SanctionStatusTag';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';

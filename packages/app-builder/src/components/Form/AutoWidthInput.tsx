@@ -1,7 +1,14 @@
 import { mergeRefs } from '@app-builder/utils/form';
 import type React from 'react';
-import { type CSSProperties, type InputHTMLAttributes } from 'react';
-import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import {
+  type CSSProperties,
+  forwardRef,
+  type InputHTMLAttributes,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 interface AutowidthInputProps extends InputHTMLAttributes<HTMLInputElement> {
   extraWidth?: number | string;

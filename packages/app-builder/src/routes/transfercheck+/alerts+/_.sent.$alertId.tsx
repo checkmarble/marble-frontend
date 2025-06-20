@@ -1,10 +1,10 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { AlertData } from '@app-builder/components/TransferAlerts/AlertData';
-import { alertsI18n } from '@app-builder/components/TransferAlerts/alerts-i18n';
 import {
   alertStatusMapping,
   alertStatusVariants,
 } from '@app-builder/components/TransferAlerts/AlertStatus';
+import { alertsI18n } from '@app-builder/components/TransferAlerts/alerts-i18n';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';

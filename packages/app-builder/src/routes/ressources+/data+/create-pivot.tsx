@@ -17,10 +17,9 @@ import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Code, Modal } from 'ui-design-system';
 import { z } from 'zod';
-
-import { SelectField } from './create-pivot/selectField';
 import { SelectLinkPath } from './create-pivot/SelectLinkPath';
 import { SelectTargetEntity } from './create-pivot/SelectTargetEntity';
+import { SelectField } from './create-pivot/selectField';
 import { ValidateSelfPivot } from './create-pivot/ValidateSelfPivot';
 
 const createPivotFormSchema = z.object({

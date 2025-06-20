@@ -4,12 +4,12 @@ import { pivotValuesDocHref } from '@app-builder/services/documentation-href';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { type AddToCaseIfPossibleAction } from '../models/nodes';
-import { workflowI18n } from '../workflow-i18n';
 import {
   useWorkflowActions,
   useWorkflowData,
   useWorkflowDataFeatureAccess,
 } from '../WorkflowProvider';
+import { workflowI18n } from '../workflow-i18n';
 import { CaseNameEditor } from './CaseNameEditor';
 import { SelectInbox } from './SelectInbox';
 

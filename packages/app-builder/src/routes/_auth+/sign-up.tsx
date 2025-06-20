@@ -1,6 +1,6 @@
 import { Callout } from '@app-builder/components';
-import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { AuthError } from '@app-builder/components/Auth/AuthError';
+import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import {
   SignUpWithEmailAndPassword,
   StaticSignUpWithEmailAndPassword,
