@@ -29,8 +29,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const config = await scenarioIterationSanctionRepository.createSanctionCheckConfig({
       iterationId,
       changes: {
-        name: 'Sanction Check',
-        ruleGroup: 'Sanction Check',
+        name: 'Screening',
+        ruleGroup: 'Screening',
         forcedOutcome: 'block_and_review',
       },
     });

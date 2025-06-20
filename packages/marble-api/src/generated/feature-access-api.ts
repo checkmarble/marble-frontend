@@ -23,6 +23,7 @@ export type FeatureAccessDto = {
     rule_snoozes: FeatureAccessLevelDto;
     test_run: FeatureAccessLevelDto;
     sanctions: FeatureAccessLevelDto;
+    name_recognition: FeatureAccessLevelDto;
     ai_assist: FeatureAccessLevelDto;
 };
 /**
