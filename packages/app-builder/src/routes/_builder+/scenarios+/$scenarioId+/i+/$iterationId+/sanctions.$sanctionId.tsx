@@ -12,6 +12,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
 import { FieldBlackListId } from '@app-builder/components/Scenario/Sanction/FieldBlackListId';
 import { FieldDataset } from '@app-builder/components/Scenario/Sanction/FieldDataset';
+import { FieldEntityType } from '@app-builder/components/Scenario/Sanction/FieldEntityType';
 import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
 import { FieldNodeConcat } from '@app-builder/components/Scenario/Sanction/FieldNodeConcat';
 import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
@@ -41,7 +42,7 @@ import { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, cn, MenuCommand, Switch, Tag } from 'ui-design-system';
+import { Button, cn, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -406,10 +407,8 @@ export default function SanctionDetail() {
                   </form.Field>
                 </div>
                 <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded-md border p-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-s">
-                      {t('scenarios:edit_sanction.consideration_matchings')}
-                    </span>
+                  <div className="text-s flex items-center">
+                    {t('scenarios:edit_sanction.consideration_matchings')}
                     <form.Field name="threshold">
                       {(field) => (
                         <div className="flex flex-col gap-1">
@@ -417,8 +416,10 @@ export default function SanctionDetail() {
                             type="number"
                             name={field.name}
                             onBlur={field.handleBlur}
+                            min={50}
+                            max={100}
                             disabled={editor === 'view'}
-                            className="z-0 w-14 py-1.5"
+                            className="z-0 ml-2 mr-1 w-14 py-1.5"
                             defaultValue={field.state.value}
                             onChange={(e) => field.handleChange(+e.currentTarget.value)}
                             valid={field.state.meta.errors?.length === 0}
@@ -429,14 +430,13 @@ export default function SanctionDetail() {
                         </div>
                       )}
                     </form.Field>
-                    <span className="text-s">%</span>
+                    <Trans
+                      t={t}
+                      i18nKey="scenarios:edit_sanction.default_value"
+                      components={{ Style: <span className="m-1 font-semibold" /> }}
+                      values={{ threshold: org.sanctionThreshold }}
+                    />
                   </div>
-                  <span className="text-s inline-flex items-center gap-2">
-                    <span>{t('scenarios:edit_sanction.default_value')}</span>
-                    <span className="bg-grey-90 rounded p-1 px-1.5 font-medium">
-                      {org.sanctionThreshold}%
-                    </span>
-                  </span>
                   <div className="flex items-center gap-2">
                     <span className="text-s">{t('scenarios:sanction_forced_outcome_heading')}</span>
                     <form.Field name="forcedOutcome">
@@ -456,6 +456,7 @@ export default function SanctionDetail() {
                         </div>
                       )}
                     </form.Field>
+                    <span className="text-s">{t('scenarios:sanction_forced_outcome_suffix')}</span>
                   </div>
                 </div>
               </div>
@@ -506,54 +507,7 @@ export default function SanctionDetail() {
                       </span>
                       <form.Field name="entityType">
                         {(field) => (
-                          <div className="flex flex-col gap-4">
-                            <MenuCommand.Menu persistOnSelect={false}>
-                              <MenuCommand.Trigger>
-                                <Button
-                                  variant="secondary"
-                                  size="medium"
-                                  className="w-52 justify-between"
-                                  disabled={editor === 'view'}
-                                >
-                                  <span className="text-grey-00 text-s font-medium">
-                                    {match(entityType)
-                                      .with('Thing', () =>
-                                        t('scenarios:edit_sanction.entity_type.thing'),
-                                      )
-                                      .with('Person', () =>
-                                        t('scenarios:edit_sanction.entity_type.person'),
-                                      )
-                                      .with('Organization', () =>
-                                        t('scenarios:edit_sanction.entity_type.organization'),
-                                      )
-                                      .with('Vehicle', () =>
-                                        t('scenarios:edit_sanction.entity_type.vehicle'),
-                                      )
-                                      .otherwise(() => entityType)}
-                                  </span>
-                                  <Icon icon="caret-down" className="text-grey-50 size-4" />
-                                </Button>
-                              </MenuCommand.Trigger>
-                              <MenuCommand.Content sameWidth className="mt-2">
-                                <MenuCommand.List>
-                                  <MenuCommand.Item onSelect={() => field.handleChange('Thing')}>
-                                    {t('scenarios:edit_sanction.entity_type.thing')}
-                                  </MenuCommand.Item>
-                                  <MenuCommand.Item onSelect={() => field.handleChange('Person')}>
-                                    {t('scenarios:edit_sanction.entity_type.person')}
-                                  </MenuCommand.Item>
-                                  <MenuCommand.Item
-                                    onSelect={() => field.handleChange('Organization')}
-                                  >
-                                    {t('scenarios:edit_sanction.entity_type.organization')}
-                                  </MenuCommand.Item>
-                                  <MenuCommand.Item onSelect={() => field.handleChange('Vehicle')}>
-                                    {t('scenarios:edit_sanction.entity_type.vehicle')}
-                                  </MenuCommand.Item>
-                                </MenuCommand.List>
-                              </MenuCommand.Content>
-                            </MenuCommand.Menu>
-                          </div>
+                          <FieldEntityType entityType={entityType} onChange={field.handleChange} />
                         )}
                       </form.Field>
                     </div>
@@ -566,9 +520,9 @@ export default function SanctionDetail() {
                               <div className="flex flex-col gap-1">
                                 <div className="flex flex-col gap-1">
                                   <span className="text-s inline-flex items-center gap-1">
-                                    {t('scenarios:sanction_counterparty_name')}
+                                    {t('scenarios:screening.filter.name')}
                                     <FieldToolTip>
-                                      {t('scenarios:sanction_counterparty_name.tooltip')}
+                                      {t('scenarios:screening.filter.name.tooltip')}
                                     </FieldToolTip>
                                   </span>
                                   <FieldNodeConcat
@@ -578,9 +532,7 @@ export default function SanctionDetail() {
                                     }
                                     onChange={field.handleChange}
                                     onBlur={field.handleBlur}
-                                    placeholder={t(
-                                      'scenarios:sanction_counterparty_name_placeholder',
-                                    )}
+                                    placeholder={t('scenarios:screening.filter.name_placeholder')}
                                     limit={5}
                                   />
                                   <FormErrorOrDescription

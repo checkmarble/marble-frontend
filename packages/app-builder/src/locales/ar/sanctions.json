@@ -134,5 +134,8 @@
   "required_actions.match_to_review": "تطابق للمراجعة ({{count}})",
   "required_actions.review_pending_screening_count": "مراجعة معلق الفحص ({{count}})",
   "required_actions.title": "الإجراءات المطلوبة",
-  "required_actions.view_screening": "منظر"
+  "required_actions.review": "مراجعة",
+  "required_actions.view": "منظر",
+  "required_actions.view_error": "عرض الخطأ",
+  "potential_matches": "المباريات المحتملة"
 }
