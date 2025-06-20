@@ -19,8 +19,9 @@ export type ComponentState<ID extends any[], S, A> = {
   effect: (fn: EffectFn) => () => void;
 };
 
-export type ComponentStateType<T> =
-  T extends ComponentState<any, infer S, infer A> ? ComponentStateValue<S, A> : never;
+export type ComponentStateType<T> = T extends ComponentState<any, infer S, infer A>
+  ? ComponentStateValue<S, A>
+  : never;
 
 type ActionApi<S> = {
   value: S;
