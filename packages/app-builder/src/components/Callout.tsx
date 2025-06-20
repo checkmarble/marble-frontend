@@ -1,5 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
-import clsx from 'clsx';
+import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const variants = ['info', 'error'] as const;
@@ -59,13 +59,13 @@ export function CalloutV2({
 
   return (
     <aside
-      className={clsx(
+      className={cn(
         'bg-purple-98 text-s text-purple-65 flex flex-row gap-2 rounded-lg p-4 font-normal',
         className,
       )}
       {...otherProps}
     >
-      <Icon icon="tip" className="size-5 shrink-0" />
+      <Icon icon="tip" className="size-4 shrink-0" />
       {children}
     </aside>
   );

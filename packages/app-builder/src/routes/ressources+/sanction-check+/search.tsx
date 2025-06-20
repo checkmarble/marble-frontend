@@ -7,14 +7,14 @@ import { z } from 'zod';
 
 export const refineSearchSchema = z.discriminatedUnion('entityType', [
   z.object({
-    decisionId: z.string().uuid(),
+    sanctionCheckId: z.string().uuid(),
     entityType: z.literal('Thing'),
     fields: z.object({
       name: z.string().optional(),
     }),
   }),
   z.object({
-    decisionId: z.string().uuid(),
+    sanctionCheckId: z.string().uuid(),
     entityType: z.literal('Person'),
     fields: z.object({
       name: z.string().optional(),
@@ -25,7 +25,7 @@ export const refineSearchSchema = z.discriminatedUnion('entityType', [
     }),
   }),
   z.object({
-    decisionId: z.string().uuid(),
+    sanctionCheckId: z.string().uuid(),
     entityType: z.literal('Organization'),
     fields: z.object({
       name: z.string().optional(),
@@ -35,7 +35,7 @@ export const refineSearchSchema = z.discriminatedUnion('entityType', [
     }),
   }),
   z.object({
-    decisionId: z.string().uuid(),
+    sanctionCheckId: z.string().uuid(),
     entityType: z.literal('Vehicle'),
     fields: z.object({
       name: z.string().optional(),

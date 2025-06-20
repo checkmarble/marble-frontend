@@ -40,14 +40,14 @@ function setAdditionalFields(fields: string[], prev: Record<string, string>) {
 
 export type RefineSearchModalProps = {
   open: boolean;
-  decisionId: string;
+  sanctionCheckId: string;
   sanctionCheck: SanctionCheck;
   onClose: () => void;
 };
 
 export function RefineSearchModal({
   open,
-  decisionId,
+  sanctionCheckId,
   sanctionCheck,
   onClose: _onClose,
 }: RefineSearchModalProps) {
@@ -59,7 +59,7 @@ export function RefineSearchModal({
 
   const form = useForm({
     defaultValues: {
-      decisionId: decisionId,
+      sanctionCheckId,
       fields: {},
     } as z.infer<typeof refineSearchSchema>,
     validators: {

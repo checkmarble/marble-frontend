@@ -92,11 +92,13 @@ const FieldCategory = memo(function FieldCategory({
           </CollapsibleV2.Title>
           <div className="flex items-center gap-4">
             <span className="text-grey-50 text-xs">
-              {!isAllSelected && selectedDatasetIds.length > 0
-                ? t('scenarios:sanction.lists.nb_selected', {
-                    count: selectedDatasetIds.length,
-                  })
-                : t('common:select_all')}
+              {isAllSelected
+                ? t('common:all_selected')
+                : selectedDatasetIds.length > 0
+                  ? t('scenarios:sanction.lists.nb_selected', {
+                      count: selectedDatasetIds.length,
+                    })
+                  : t('common:select_all')}
             </span>
             <Checkbox
               disabled={editor === 'view'}

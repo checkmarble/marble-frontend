@@ -1,4 +1,4 @@
-import { Callout, Page, scenarioI18n } from '@app-builder/components';
+import { Callout, CalloutV2, Page, scenarioI18n } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import {
   BreadCrumbLink,
@@ -27,6 +27,7 @@ import { knownOutcomes, type SanctionOutcome } from '@app-builder/models/outcome
 import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/$sanctionId+/delete';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
+import { isAccessible } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
@@ -38,14 +39,13 @@ import { Dict } from '@swan-io/boxed';
 import { useForm, useStore } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { pick } from 'radash';
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, cn, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
 import { useCurrentScenario } from '../../_layout';
 import { useCurrentScenarioIteration, useRuleGroups } from './_layout';
 
@@ -102,7 +102,7 @@ export const handle = {
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
   const { authService } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository, sanctionCheck } =
+  const { customListsRepository, editor, dataModelRepository, sanctionCheck, entitlements } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
@@ -121,6 +121,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     dataModel,
     customLists,
     sections,
+    entitlements,
   };
 }
 
@@ -212,7 +213,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function SanctionDetail() {
   const { t } = useTranslation(handle.i18n);
-  const { databaseAccessors, payloadAccessors, dataModel, customLists, sections } =
+  const { databaseAccessors, payloadAccessors, dataModel, customLists, sections, entitlements } =
     useLoaderData<typeof loader>();
   const editor = useEditorMode();
   const { submit, data } = useFetcher<typeof action>();
@@ -249,9 +250,9 @@ export default function SanctionDetail() {
     },
     defaultValues: {
       id: sanctionCheckConfig?.id,
-      name: sanctionCheckConfig?.name ?? 'Sanction Check',
+      name: sanctionCheckConfig?.name ?? 'Screening',
       description: sanctionCheckConfig?.description ?? '',
-      ruleGroup: sanctionCheckConfig?.ruleGroup ?? 'Sanction Check',
+      ruleGroup: sanctionCheckConfig?.ruleGroup ?? 'Screening',
       datasets: sanctionCheckConfig?.datasets ?? [],
       threshold: sanctionCheckConfig?.threshold,
       forcedOutcome: (sanctionCheckConfig?.forcedOutcome as SanctionOutcome) ?? 'block_and_review',
@@ -281,6 +282,21 @@ export default function SanctionDetail() {
   }
 
   const entityType = useStore(form.store, (state) => state.values.entityType);
+  const query = useStore(form.store, (state) => state.values.query);
+
+  const hasRequiredFields = useMemo(
+    () =>
+      match(entityType)
+        .with('Organization', () => Boolean(query['name'] || query['registrationNumber']))
+        .with('Vehicle', () => Boolean(query['name'] || query['registrationNumber']))
+        .with('Person', () => Boolean(query['name'] || query['idNumber']))
+        .otherwise(() => true),
+    [entityType, query],
+  );
+
+  useEffect(() => {
+    console.log('hasRequiredFields', hasRequiredFields);
+  });
 
   return (
     <Page.Main>
@@ -591,7 +607,9 @@ export default function SanctionDetail() {
                                   checked={field.state.value}
                                   onCheckedChange={(checked) => field.handleChange(checked)}
                                   onBlur={field.handleBlur}
-                                  disabled={editor === 'view'}
+                                  disabled={
+                                    editor === 'view' || !isAccessible(entitlements.nameRecognition)
+                                  }
                                 />
                                 <span className="text-s">
                                   {t('scenarios:edit_sanction.enable_entity_recognition')}
@@ -599,6 +617,9 @@ export default function SanctionDetail() {
                                 <FieldToolTip>
                                   {t('scenarios:edit_sanction.enable_entity_recognition.tooltip')}
                                 </FieldToolTip>
+                                <span className="text-xs rounded-full bg-purple-65 px-2 py-0.5 text-grey-100">
+                                  beta
+                                </span>
                               </div>
                             )}
                           </form.Field>
@@ -850,6 +871,12 @@ export default function SanctionDetail() {
                         ))
                         .otherwise(() => null)}
                     </div>
+
+                    {!hasRequiredFields && (
+                      <CalloutV2 className="bg-yellow-90 text-orange-50 p-2 text-xs items-center font-semibold">
+                        {t('scenarios:edit_sanction.required_fields_disclaimer')}
+                      </CalloutV2>
+                    )}
                   </div>
                 </div>
               </AstBuilder.Provider>
