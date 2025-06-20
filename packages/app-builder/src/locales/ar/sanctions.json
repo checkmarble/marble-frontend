@@ -137,5 +137,8 @@
   "required_actions.review": "مراجعة",
   "required_actions.view": "منظر",
   "required_actions.view_error": "عرض الخطأ",
-  "potential_matches": "المباريات المحتملة"
+  "potential_matches": "المباريات المحتملة",
+  "required_actions.view_screening": "منظر",
+  "match.family-members.title": "أفراد الأسرة",
+  "match.family.unknown_relationship": "مجهول"
 }

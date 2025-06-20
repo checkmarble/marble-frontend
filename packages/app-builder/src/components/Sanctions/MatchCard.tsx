@@ -1,4 +1,8 @@
-import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
+import {
+  type FamilyPersonEntity,
+  type SanctionCheckMatch,
+} from '@app-builder/models/sanction-check';
+import { useLayoutLoaderData } from '@app-builder/routes/_builder+/decisions+/$decisionId';
 import { SanctionCheckReviewModal } from '@app-builder/routes/ressources+/cases+/review-sanction-match';
 import { EnrichMatchButton } from '@app-builder/routes/ressources+/sanction-check+/enrich-match.$matchId';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -32,6 +36,16 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
     setIsInReview(true);
   };
 
+  const { datasets } = useLayoutLoaderData();
+
+  const datasetNames = match.payload.datasets
+    ?.map((code) =>
+      [...(datasets as Map<string, Map<string, string>>).values()]
+        .find((innerMap) => innerMap.has(code))
+        ?.get(code),
+    )
+    .filter(Boolean);
+
   return (
     <div className="grid grid-cols-[max-content_1fr_max-content] gap-x-6 gap-y-2">
       <CollapsibleV2.Provider defaultOpen={defaultOpen}>
@@ -45,7 +59,10 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
               />
               <div className="text-s flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="font-semibold">{entity.caption}</span>
-                <span>{t(`sanctions:entity.schema.${entitySchema}`)}</span>
+
+                <span>
+                  {t(`sanctions:entity.schema.${entitySchema}`, { defaultValue: entitySchema })}
+                </span>
                 <Tag color="grey">
                   {t('sanctions:match.similarity', {
                     percent: Math.round(entity.score * 100),
@@ -80,6 +97,21 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
 
           <CollapsibleV2.Content className="col-span-full">
             <div className="text-s flex flex-col gap-6 p-4">
+              {entitySchema === 'person' ? (
+                <div className="flex flex-col gap-2">
+                  <div className="font-semibold">Appears on</div>
+                  <div>
+                    {datasetNames?.map((name, index) => (
+                      <ul key={`dataset-${index}`} className="flex flex-wrap gap-1">
+                        <li>{name}</li>
+                      </ul>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+              {entitySchema === 'person' && entity.properties['familyPerson']?.length ? (
+                <FamilyDetail familyMembers={entity.properties['familyPerson']} />
+              ) : null}
               {match.comments.map((comment) => {
                 return <CommentLine key={comment.id} comment={comment} />;
               })}
@@ -119,6 +151,38 @@ function CommentLine({ comment }: { comment: SanctionCheckMatch['comments'][numb
         </span>
       </div>
       <p>{comment.comment}</p>
+    </div>
+  );
+}
+
+function FamilyDetail({ familyMembers }: { familyMembers: FamilyPersonEntity[] }) {
+  const { t } = useTranslation(sanctionsI18n);
+  return (
+    <div className="flex flex-col items-start gap-1">
+      {/* <Icon icon="person" className="text-grey-90 size-5" /> */}
+      <div className="text-grey-00">{t('sanctions:match.family-members.title')}</div>
+
+      <div className="grid w-full grid-cols-[max-content_1fr] gap-x-2 gap-y-1">
+        {familyMembers.map(({ properties: { relationship, relative } }) =>
+          relative?.map(({ id, properties }, idx) => {
+            if (!properties.name?.[0]) return null;
+            const rel = relationship?.[0] || t('sanctions:match.family.unknown_relationship');
+            return (
+              <div key={`person-${id}-${idx}`} className="contents">
+                <div className="font-semibold">{rel}:</div>
+                <div className="flex items-center gap-1">
+                  <span>
+                    {properties.firstName} {properties.lastName}
+                  </span>
+                  {properties['topics']?.map((topic) => (
+                    <TopicTag key={`${id}-${topic}`} topic={topic} />
+                  ))}
+                </div>
+              </div>
+            );
+          }),
+        )}
+      </div>
     </div>
   );
 }
