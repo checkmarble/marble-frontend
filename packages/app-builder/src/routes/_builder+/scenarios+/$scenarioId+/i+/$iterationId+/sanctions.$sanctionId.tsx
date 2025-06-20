@@ -12,6 +12,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
 import { FieldBlackListId } from '@app-builder/components/Scenario/Sanction/FieldBlackListId';
 import { FieldDataset } from '@app-builder/components/Scenario/Sanction/FieldDataset';
+import { FieldEntityType } from '@app-builder/components/Scenario/Sanction/FieldEntityType';
 import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
 import { FieldNodeConcat } from '@app-builder/components/Scenario/Sanction/FieldNodeConcat';
 import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
@@ -41,7 +42,7 @@ import { useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, cn, MenuCommand, Switch, Tag } from 'ui-design-system';
+import { Button, cn, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -506,54 +507,7 @@ export default function SanctionDetail() {
                       </span>
                       <form.Field name="entityType">
                         {(field) => (
-                          <div className="flex flex-col gap-4">
-                            <MenuCommand.Menu persistOnSelect={false}>
-                              <MenuCommand.Trigger>
-                                <Button
-                                  variant="secondary"
-                                  size="medium"
-                                  className="w-52 justify-between"
-                                  disabled={editor === 'view'}
-                                >
-                                  <span className="text-grey-00 text-s font-medium">
-                                    {match(entityType)
-                                      .with('Thing', () =>
-                                        t('scenarios:edit_sanction.entity_type.thing'),
-                                      )
-                                      .with('Person', () =>
-                                        t('scenarios:edit_sanction.entity_type.person'),
-                                      )
-                                      .with('Organization', () =>
-                                        t('scenarios:edit_sanction.entity_type.organization'),
-                                      )
-                                      .with('Vehicle', () =>
-                                        t('scenarios:edit_sanction.entity_type.vehicle'),
-                                      )
-                                      .otherwise(() => entityType)}
-                                  </span>
-                                  <Icon icon="caret-down" className="text-grey-50 size-4" />
-                                </Button>
-                              </MenuCommand.Trigger>
-                              <MenuCommand.Content sameWidth className="mt-2">
-                                <MenuCommand.List>
-                                  <MenuCommand.Item onSelect={() => field.handleChange('Thing')}>
-                                    {t('scenarios:edit_sanction.entity_type.thing')}
-                                  </MenuCommand.Item>
-                                  <MenuCommand.Item onSelect={() => field.handleChange('Person')}>
-                                    {t('scenarios:edit_sanction.entity_type.person')}
-                                  </MenuCommand.Item>
-                                  <MenuCommand.Item
-                                    onSelect={() => field.handleChange('Organization')}
-                                  >
-                                    {t('scenarios:edit_sanction.entity_type.organization')}
-                                  </MenuCommand.Item>
-                                  <MenuCommand.Item onSelect={() => field.handleChange('Vehicle')}>
-                                    {t('scenarios:edit_sanction.entity_type.vehicle')}
-                                  </MenuCommand.Item>
-                                </MenuCommand.List>
-                              </MenuCommand.Content>
-                            </MenuCommand.Menu>
-                          </div>
+                          <FieldEntityType entityType={entityType} onChange={field.handleChange} />
                         )}
                       </form.Field>
                     </div>
