@@ -27,6 +27,7 @@ export const FieldBlackListId = ({
 }: FieldBlackListIdProps) => {
   const { t } = useTranslation(scenarioI18n);
   const [selectedListId, setSelectedListId] = useState<string | null>(value ?? null);
+  const [open, setOpen] = useState(false);
 
   const handleListSelect = (listId: string) => {
     setSelectedListId(listId);
@@ -48,7 +49,7 @@ export const FieldBlackListId = ({
       </div>
       {value ? (
         <div className="flex flex-col gap-1">
-          <MenuCommand.Menu persistOnSelect={false}>
+          <MenuCommand.Menu persistOnSelect={false} open={open} onOpenChange={setOpen}>
             <MenuCommand.Trigger>
               <Button
                 variant="secondary"
