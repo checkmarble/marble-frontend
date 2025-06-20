@@ -1,6 +1,7 @@
 import {
   type DecisionDetailDto,
   type DecisionDto,
+  // biome-ignore lint/suspicious/noShadowRestrictedNames: <TBD>
   type Error,
   type RuleExecutionDto,
   type ScheduledExecutionDto,
@@ -146,7 +147,7 @@ export type RuleExecution =
   | RuleExecutionSnoozed
   | RuleExecutionError;
 
-export interface DecisionDetail extends Decision {
+export interface DecisionDetails extends Decision {
   rules: RuleExecution[];
 }
 
@@ -215,7 +216,7 @@ function adaptRuleExecutionDto(dto: RuleExecutionDto): RuleExecution {
   }
 }
 
-export function adaptDecisionDetail(dto: DecisionDetailDto): DecisionDetail {
+export function adaptDecisionDetail(dto: DecisionDetailDto): DecisionDetails {
   return {
     ...adaptDecision(dto),
     rules: dto.rules.map(adaptRuleExecutionDto),

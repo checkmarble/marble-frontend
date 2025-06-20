@@ -4,7 +4,7 @@ import {
   adaptDecisionDetail,
   adaptScheduledExecution,
   type Decision,
-  type DecisionDetail,
+  type DecisionDetails,
   type ReviewStatus,
   type ScheduledExecution,
 } from '@app-builder/models/decision';
@@ -51,7 +51,7 @@ export type DecisionFiltersWithPagination = FiltersWithPagination<DecisionFilter
 export interface DecisionRepository {
   listDecisions(args: DecisionFiltersWithPagination): Promise<PaginatedResponse<Decision>>;
   listScheduledExecutions(args?: { scenarioId?: string }): Promise<ScheduledExecution[]>;
-  getDecisionById(id: string): Promise<DecisionDetail>;
+  getDecisionById(id: string): Promise<DecisionDetails>;
   getDecisionActiveSnoozes(decisionId: string): Promise<SnoozesOfDecision>;
   createSnoozeForDecision(
     decisionId: string,

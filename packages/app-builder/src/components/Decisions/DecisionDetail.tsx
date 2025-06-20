@@ -1,5 +1,5 @@
 import { CaseStatusBadge, decisionsI18n } from '@app-builder/components';
-import { type DecisionDetail } from '@app-builder/models/decision';
+import { type DecisionDetails } from '@app-builder/models/decision';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -7,7 +7,7 @@ import { Link } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
 
-export function DecisionDetail({ decision }: { decision: DecisionDetail }) {
+export function DecisionDetail({ decision }: { decision: DecisionDetails }) {
   const { t } = useTranslation(decisionsI18n);
   const language = useFormatLanguage();
 
