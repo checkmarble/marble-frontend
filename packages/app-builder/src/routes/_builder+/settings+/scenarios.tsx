@@ -82,7 +82,7 @@ export async function action({ request }: LoaderFunctionArgs) {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
     );
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',

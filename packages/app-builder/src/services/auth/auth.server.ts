@@ -8,9 +8,9 @@ import {
   type TransfercheckApi,
 } from '@app-builder/infra/transfercheck-api';
 import {
-  adaptAuthErrors,
   type AuthData,
   type AuthFlashData,
+  adaptAuthErrors,
   type CurrentUser,
 } from '@app-builder/models';
 import { emptyFeatureAccesses, type FeatureAccesses } from '@app-builder/models/feature-access';
@@ -334,7 +334,7 @@ export function makeAuthenticationServerService({
       entitlements = user.organizationId
         ? await getFeatureAccessRepository(featureAccessApiClient).getEntitlements()
         : emptyFeatureAccesses();
-    } catch (err) {
+    } catch (_err) {
       if (options.failureRedirect) throw redirect(options.failureRedirect);
       else return null;
     }

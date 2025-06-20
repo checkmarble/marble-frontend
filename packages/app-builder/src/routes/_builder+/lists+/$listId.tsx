@@ -241,7 +241,7 @@ function ClientDownloadAsCSV({ listId }: { listId: string }) {
 
       const url = URL.createObjectURL(blob);
       await downloadFile(url, filename);
-    } catch (error) {
+    } catch (_error) {
       toast.error(t('common:errors.unknown'));
     }
   });
@@ -402,7 +402,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
             })
             .parse(await response.json());
           errorMessage = errorResponse.message;
-        } catch (error) {
+        } catch (_error) {
           errorMessage = (await response.text()).trim();
         }
 

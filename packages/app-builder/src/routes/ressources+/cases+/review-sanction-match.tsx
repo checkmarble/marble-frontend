@@ -49,7 +49,7 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     await sanctionCheck.updateMatchStatus(data);
     return json({ success: 'true', errors: [] });
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),

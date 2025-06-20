@@ -123,7 +123,7 @@ export async function action({ request }: ActionFunctionArgs) {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
     );
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',
@@ -485,7 +485,7 @@ function BatchSection({
         language,
         throwExceptionOnParseError: true,
       });
-    } catch (e) {
+    } catch (_e) {
       return undefined;
     }
   }, [language, schedule]);

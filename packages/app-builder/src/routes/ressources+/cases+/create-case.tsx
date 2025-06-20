@@ -54,7 +54,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const createdCase = await cases.createCase(data);
 
     return redirect(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(createdCase.id) }));
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',

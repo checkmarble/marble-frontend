@@ -16,7 +16,7 @@ export const ScheduleOptionViewer = ({ schedule }: { schedule: string }) => {
         language,
         throwExceptionOnParseError: true,
       });
-    } catch (e) {
+    } catch (_e) {
       return undefined;
     }
   }, [language, schedule]);

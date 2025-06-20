@@ -28,7 +28,7 @@ export function useGetCopyToClipboard() {
             />
           </span>
         ));
-      } catch (err) {
+      } catch (_err) {
         toast.error(t('errors.unknown'));
       }
     },

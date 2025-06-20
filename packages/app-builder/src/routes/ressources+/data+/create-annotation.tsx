@@ -211,7 +211,7 @@ export async function action({ request }: ActionFunctionArgs) {
         );
       })
       .exhaustive();
-  } catch (err) {
+  } catch (_err) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),

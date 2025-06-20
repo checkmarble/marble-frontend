@@ -170,7 +170,7 @@ function parseFirebaseConfigFromEnv(): FirebaseConfig {
       authEmulatorUrl,
       options,
     };
-  } catch (e) {
+  } catch (_e) {
     throw new Error(`Invalid FIREBASE_AUTH_EMULATOR_HOST: ${firebaseAuthEmulatorHost}`);
   }
 }

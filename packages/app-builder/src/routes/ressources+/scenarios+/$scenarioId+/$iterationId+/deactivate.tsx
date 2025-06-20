@@ -60,7 +60,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         iterationId: fromUUIDtoSUUID(iterationId),
       }),
     });
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),

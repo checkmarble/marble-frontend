@@ -60,7 +60,7 @@ export async function action({ request }: ActionFunctionArgs) {
     await apiClient.createTag(data);
 
     return redirect(getRoute('/settings/tags'));
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),

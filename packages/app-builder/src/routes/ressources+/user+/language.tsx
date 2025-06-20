@@ -29,7 +29,7 @@ export async function action({ request }: ActionFunctionArgs) {
         'Set-Cookie': cookie,
       },
     });
-  } catch (error) {
+  } catch (_error) {
     const toastSession = await toastSessionService.getSession(request);
     setToastMessage(toastSession, {
       type: 'error',
