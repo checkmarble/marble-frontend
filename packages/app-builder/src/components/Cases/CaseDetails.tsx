@@ -24,8 +24,8 @@ import { Icon } from 'ui-icons';
 import { CaseAlerts } from './CaseAlerts';
 import { CaseEvents } from './CaseEvents';
 import { CaseFile } from './CaseFile';
-import { casesI18n } from './cases-i18n';
 import { CaseStatusBadge } from './CaseStatus';
+import { casesI18n } from './cases-i18n';
 
 export const CaseDetails = ({
   currentUser,

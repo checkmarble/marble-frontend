@@ -26,7 +26,7 @@ import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, CtaClassName, Tag } from 'ui-design-system';
+import { Button, CtaClassName, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -157,7 +157,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
     );
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',

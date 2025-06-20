@@ -25,7 +25,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }),
   ]);
 
-  const { createdAt, name, ...rest } = await scenarioIterationRuleRepository.getRule({
+  const {
+    createdAt: _,
+    name,
+    ...rest
+  } = await scenarioIterationRuleRepository.getRule({
     ruleId: data.get('ruleId') as string,
   });
 

@@ -4,15 +4,17 @@
 #   https://lefthook.dev/configuration/
 #
 pre-push:
-  jobs:
-    - run: pnpm run -r type-check
-
-pre-commit:
   parallel: true
   commands:
-    lint:
-      run: pnpm run -r lint --fix
-      stage_fixed: true
-    format:
-      run: pnpm run format:write
+    type-check:
+      run: pnpm run -r type-check
+    check:
+      glob: '*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}'
+      run: pnpm biome check --no-errors-on-unmatched --files-ignore-unknown=true {push_files}
+
+pre-commit:
+  commands:
+    check:
+      glob: '*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}'
+      run: pnpm biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
       stage_fixed: true

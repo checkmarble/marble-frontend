@@ -1,9 +1,9 @@
 import {
-  Popover as PopoverPrimitive,
   PopoverAnchor,
   PopoverContent as PopoverContentPrimitive,
   type PopoverContentProps,
   PopoverPortal,
+  Popover as PopoverPrimitive,
   PopoverTrigger,
 } from '@radix-ui/react-popover';
 

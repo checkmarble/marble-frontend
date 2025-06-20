@@ -1,7 +1,7 @@
 import { Page } from '@app-builder/components';
 import { Spinner } from '@app-builder/components/Spinner';
-import { transfersI18n } from '@app-builder/components/Transfers/transfers-i18n';
 import { TransfersList } from '@app-builder/components/Transfers/TransfersList';
+import { transfersI18n } from '@app-builder/components/Transfers/transfers-i18n';
 import { type Transfer } from '@app-builder/models/transfer';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';

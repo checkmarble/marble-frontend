@@ -60,7 +60,7 @@ export async function action({ request }: ActionFunctionArgs) {
         'Set-Cookie': await commitAuthSession(authSession),
       },
     });
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),

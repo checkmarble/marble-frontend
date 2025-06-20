@@ -91,7 +91,7 @@ export function injectIdToNode<T extends IdLessAstNode>(
 export function stripIdFromNode<T extends AstNode>(
   node: T,
 ): T extends infer N extends AstNode ? IdLessAstNode<N> : never {
-  const { id, ...strippedNode } = node;
+  const { id: _, ...strippedNode } = node;
   return {
     ...strippedNode,
     children: R.map(node.children, (child) => stripIdFromNode(child)),

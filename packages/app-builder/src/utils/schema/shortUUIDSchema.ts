@@ -20,7 +20,7 @@ export function isRawUUIDIssue(issue: z.ZodIssueOptionalMessage): issue is RawUU
 export const shortUUIDSchema = z.string().transform((value, ctx) => {
   try {
     return fromSUUIDtoUUID(value);
-  } catch (e) {
+  } catch (_e) {
     const parsedValue = z.string().uuid().safeParse(value);
     if (parsedValue.success) {
       ctx.addIssue({

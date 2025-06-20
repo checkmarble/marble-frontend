@@ -2,8 +2,8 @@ import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { type AddToCaseIfPossibleAction } from '../models/nodes';
-import { workflowI18n } from '../workflow-i18n';
 import { useWorkflowData } from '../WorkflowProvider';
+import { workflowI18n } from '../workflow-i18n';
 
 export function AddToCaseIfPossibleActionContent({ data }: { data: AddToCaseIfPossibleAction }) {
   const { t } = useTranslation(workflowI18n);

@@ -1,7 +1,7 @@
 import { type Params } from '@remix-run/react';
 import qs, { type IParseOptions } from 'qs';
 import { type UUID } from 'short-uuid';
-import { z, type ZodType, type ZodTypeDef } from 'zod';
+import { type ZodType, type ZodTypeDef, z } from 'zod';
 
 import { shortUUIDSchema } from './schema/shortUUIDSchema';
 

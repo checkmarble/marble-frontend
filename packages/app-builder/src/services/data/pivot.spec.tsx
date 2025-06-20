@@ -5,6 +5,8 @@ import {
   type TableModel,
 } from '@app-builder/models';
 
+import { describe, expect, it } from 'vitest';
+
 import { getFieldPivotOptions, getLinksPivotOptions, type PivotOption } from './pivot';
 
 describe('getFieldPivotOptions', () => {

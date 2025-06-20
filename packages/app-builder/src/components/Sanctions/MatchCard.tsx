@@ -10,8 +10,8 @@ import { Avatar, CollapsibleV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { MatchDetails } from './MatchDetails';
-import { sanctionsI18n } from './sanctions-i18n';
 import { StatusTag } from './StatusTag';
+import { sanctionsI18n } from './sanctions-i18n';
 import { TopicTag } from './TopicTag';
 
 type MatchCardProps = {

@@ -11,12 +11,12 @@ import {
   adaptValidWorkflow,
   type ValidWorkflow,
 } from '@app-builder/components/Scenario/Workflow/models/validation';
-import { workflowI18n } from '@app-builder/components/Scenario/Workflow/workflow-i18n';
 import {
   WorkflowFlow,
   workflowFlowStyles,
 } from '@app-builder/components/Scenario/Workflow/WorkflowFlow';
 import { WorkflowProvider } from '@app-builder/components/Scenario/Workflow/WorkflowProvider';
+import { workflowI18n } from '@app-builder/components/Scenario/Workflow/workflow-i18n';
 import {
   type ScenarioUpdateWorkflowInput,
   scenarioUpdateWorkflowInputSchema,

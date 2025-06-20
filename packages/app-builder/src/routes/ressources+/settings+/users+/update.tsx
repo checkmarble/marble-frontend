@@ -74,7 +74,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
 
     return redirect(getRoute('/settings/users'));
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),

@@ -6,7 +6,7 @@
   "sideEffect": false,
   "type": "module",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "biome lint",
     "type-check": "pnpm exec tsc --noEmit",
     "test": "vitest",
     "storybook": "storybook dev -p 6006",
@@ -16,7 +16,6 @@
   "license": "ISC",
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",
-    "@marble/eslint-config": "workspace:*",
     "@storybook/addon-essentials": "^8.6.7",
     "@storybook/addon-interactions": "^8.6.7",
     "@storybook/addon-links": "^8.6.7",

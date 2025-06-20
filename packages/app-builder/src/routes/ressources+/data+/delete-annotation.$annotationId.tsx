@@ -40,7 +40,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       { success: true },
       { headers: { 'Set-Cookie': await commitSession(session) } },
     );
-  } catch (err) {
+  } catch (_err) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),

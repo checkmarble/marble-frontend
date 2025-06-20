@@ -26,7 +26,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         scenarioId: fromUUIDtoSUUID(scenarioId),
       }),
     );
-  } catch (error) {
+  } catch (_error) {
     const { getSession, commitSession } = initServerServices(request).toastSessionService;
 
     const session = await getSession(request);

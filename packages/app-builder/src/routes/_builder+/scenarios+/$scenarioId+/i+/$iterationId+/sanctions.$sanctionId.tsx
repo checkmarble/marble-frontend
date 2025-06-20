@@ -200,7 +200,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return json({ status: 'success' }, { headers: { 'Set-Cookie': await commitSession(session) } });
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),

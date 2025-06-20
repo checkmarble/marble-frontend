@@ -78,7 +78,7 @@ export default function Api() {
                   });
                   const url = URL.createObjectURL(blob);
                   void downloadFile(url, 'openapi.json');
-                } catch (error) {
+                } catch (_error) {
                   toast.error(t('common:errors.unknown'));
                 }
               }}

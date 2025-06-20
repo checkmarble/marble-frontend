@@ -17,7 +17,7 @@ import {
 import { type ConstantAstNode, isConstant } from './constant';
 import { type CustomListAccessAstNode, isCustomListAccess } from './custom-list';
 import { type DataAccessorAstNode, isDataAccessorAstNode } from './data-accessor';
-import { isIsMultipleOf, type IsMultipleOfAstNode } from './multiple-of';
+import { type IsMultipleOfAstNode, isIsMultipleOf } from './multiple-of';
 import {
   type FuzzyMatchComparatorAstNode,
   isFuzzyMatchComparator,

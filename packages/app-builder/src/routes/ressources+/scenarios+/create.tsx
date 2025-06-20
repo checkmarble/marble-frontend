@@ -79,7 +79,7 @@ export async function action({ request }: ActionFunctionArgs) {
         iterationId: fromUUIDtoSUUID(scenarioIteration.id),
       }),
     );
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',

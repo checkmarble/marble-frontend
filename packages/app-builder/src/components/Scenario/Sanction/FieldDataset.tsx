@@ -6,11 +6,10 @@ import clsx from 'clsx';
 import Fuse from 'fuse.js';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { diff, toggle } from 'radash';
-import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
-import { memo } from 'react';
+import { type Dispatch, memo, type SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { concat, intersection, map, pipe, unique } from 'remeda';
-import { Checkbox, cn, CollapsibleV2 } from 'ui-design-system';
+import { Checkbox, CollapsibleV2, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { type DatasetFiltersForm, FieldDatasetFilters } from './FieldDatasetFilters';

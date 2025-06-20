@@ -5,12 +5,11 @@
   "sideEffect": false,
   "type": "module",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "biome lint",
     "type-check": "pnpm exec tsc --noEmit",
     "generate-api": "swagger-cli validate openapis/marblecore-api.yaml && tsx scripts/generate.ts"
   },
   "devDependencies": {
-    "@marble/eslint-config": "workspace:*",
     "@types/node": "22.13.10",
     "oazapfts": "^6.2.1",
     "ora": "^8.2.0",

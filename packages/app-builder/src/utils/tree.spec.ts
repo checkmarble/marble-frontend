@@ -1,5 +1,5 @@
 import invariant from 'tiny-invariant';
-
+import { describe, expect, it } from 'vitest';
 import { getAtPath, getParentPath, parsePath, removeAtPath, setAtPath } from './tree';
 
 describe('parsePath', () => {

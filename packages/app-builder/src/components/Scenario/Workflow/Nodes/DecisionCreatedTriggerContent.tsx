@@ -3,8 +3,8 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { type DecisionCreatedTrigger } from '../models/nodes';
-import { workflowI18n } from '../workflow-i18n';
 import { useWorkflowData } from '../WorkflowProvider';
+import { workflowI18n } from '../workflow-i18n';
 
 export function DecisionCreatedTriggerContent({ data }: { data: DecisionCreatedTrigger }) {
   const { t } = useTranslation(workflowI18n);

@@ -62,7 +62,7 @@ export async function action({ request }: ActionFunctionArgs) {
     await Promise.allSettled(promises);
 
     return Response.json({ success: true, errors: [] });
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),

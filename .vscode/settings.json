@@ -1,13 +1,7 @@
 {
-  "i18n-ally.localesPaths": [
-    "packages/app-builder/src/locales"
-  ],
+  "i18n-ally.localesPaths": ["packages/app-builder/src/locales"],
   "i18n-ally.keystyle": "flat",
-  "i18n-ally.enabledFrameworks": [
-    "react",
-    "i18next",
-    "react-i18next"
-  ],
+  "i18n-ally.enabledFrameworks": ["react", "i18next", "react-i18next"],
   "i18n-ally.namespace": true,
   "i18n-ally.pathMatcher": "{locale}/{namespaces}.json",
   "editor.codeActionsOnSave": {
@@ -15,31 +9,22 @@
     "source.removeUnusedImports": "explicit"
   },
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "biomejs.biome",
   "files.associations": {
     "*.css": "tailwindcss"
   },
   "editor.quickSuggestions": {
     "strings": "on"
   },
-  "tailwindCSS.classAttributes": [
-    "class",
-    "className",
-    "ngClass",
-    "style",
-    "classNames",
-  ],
+  "tailwindCSS.classAttributes": ["class", "className", "ngClass", "style", "classNames"],
   "tailwindCSS.experimental.classRegex": [
-    [
-      "cva\\(([^)]*)\\)",
-      "[\"'`]([^\"'`]*).*?[\"'`]"
-    ],
-    [
-      "cx\\(([^)]*)\\)",
-      "(?:'|\"|`)([^']*)(?:'|\"|`)"
-    ],
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
   "[jsonc]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "biomejs.biome"
   },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  }
 }

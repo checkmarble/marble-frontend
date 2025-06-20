@@ -1,10 +1,10 @@
 import { CopyToClipboardButton, ErrorComponent, Page } from '@app-builder/components';
 import { TransferData } from '@app-builder/components/Transfers/TransferData';
-import { transfersI18n } from '@app-builder/components/Transfers/transfers-i18n';
 import {
   TransferStatusAlert,
   TransferStatusRadioButton,
 } from '@app-builder/components/Transfers/TransferStatus';
+import { transfersI18n } from '@app-builder/components/Transfers/transfers-i18n';
 import { isNotFoundHttpError } from '@app-builder/models';
 import { transferStatuses } from '@app-builder/models/transfer';
 import { initServerServices } from '@app-builder/services/init.server';

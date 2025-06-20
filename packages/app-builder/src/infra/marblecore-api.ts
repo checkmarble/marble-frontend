@@ -31,7 +31,7 @@ function getMarbleCoreAPIClient({
       })
     : createBasicFetch({ request });
 
-  const { defaults, servers, ...api } = marblecoreApi;
+  const { defaults: _, servers: __, ...api } = marblecoreApi;
 
   //@ts-expect-error can't infer args
   return R.mapValues(api, (value) => (...args) => {

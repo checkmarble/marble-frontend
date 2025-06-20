@@ -107,7 +107,7 @@ export async function action({ request }: ActionFunctionArgs) {
       { success, errors: [] },
       { headers: { 'Set-Cookie': await commitSession(session) } },
     );
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       messageKey: t('common:errors.unknown'),

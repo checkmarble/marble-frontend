@@ -97,6 +97,7 @@ export function groupByOperandType(
   return R.pipe(
     operandMenuOptions,
     R.groupBy((option) => option.operandType),
+    // biome-ignore lint/suspicious/noShadowRestrictedNames: <TBD>
     ({ Enum, CustomList, Function, Field, Modeling }) => {
       const fieldOptions = Field
         ? R.pipe(

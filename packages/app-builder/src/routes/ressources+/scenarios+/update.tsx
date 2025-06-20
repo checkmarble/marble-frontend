@@ -59,7 +59,7 @@ export async function action({ request }: ActionFunctionArgs) {
         scenarioId: fromUUIDtoSUUID(data.scenarioId),
       }),
     });
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),

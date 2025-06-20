@@ -1,4 +1,4 @@
-import { type DecisionDetail } from '@app-builder/models/decision';
+import { type DecisionDetails } from '@app-builder/models/decision';
 import { type SanctionCheck } from '@app-builder/models/sanction-check';
 import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
 import { getRoute } from '@app-builder/utils/routes';
@@ -23,7 +23,7 @@ export const RequiredActions = ({
   caseId,
 }: {
   caseId: string;
-  decision: Pick<DecisionDetail, 'id' | 'outcome' | 'reviewStatus'> & {
+  decision: Pick<DecisionDetails, 'id' | 'outcome' | 'reviewStatus'> & {
     sanctionChecks: SanctionCheck[];
   };
 }) => {

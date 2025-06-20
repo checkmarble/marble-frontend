@@ -21,6 +21,10 @@ jobs:
         with:
           node-version-file: '.tool-versions'
           cache: 'pnpm'
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+      - name: Run Biome
+        run: biome ci .
 
       - run: pnpm install --frozen-lockfile
 
@@ -31,8 +35,6 @@ jobs:
           pnpm --filter marble-api run generate-api
           git diff --exit-code || (echo 'Generated API stubs not up to date with OpenAPI specification.' && exit 1)
 
-      - run: pnpm run format:check
-      - run: pnpm run -r lint
       - run: pnpm run -r type-check
       - run: pnpm run test:all
       - run: pnpm run -r build

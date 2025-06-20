@@ -4,7 +4,7 @@ import {
   type UpdateScenarioIterationBody as UpdateScenarioIterationBodyDto,
 } from 'marble-api';
 
-import { adaptAstNode, adaptNodeDto, type AstNode } from './astNode/ast-node';
+import { type AstNode, adaptAstNode, adaptNodeDto } from './astNode/ast-node';
 import { adaptSanctionCheckConfig, type SanctionCheckConfig } from './sanction-check-config';
 import { adaptScenarioIterationRule, type ScenarioIterationRule } from './scenario-iteration-rule';
 

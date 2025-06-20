@@ -222,7 +222,7 @@ const ResultModal = ({
         const error = JSON.parse(errorString);
 
         if ('message' in error) return error.message;
-      } catch (error) {
+      } catch (_error) {
         return errorString;
       }
     }

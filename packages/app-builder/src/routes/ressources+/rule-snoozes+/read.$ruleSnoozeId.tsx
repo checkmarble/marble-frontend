@@ -40,7 +40,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         },
       } satisfies RuleSnoozeDetail,
     });
-  } catch (error) {
+  } catch (_error) {
     return json({ success: false as const });
   }
 }

@@ -66,7 +66,7 @@ export async function action({ request }: ActionFunctionArgs) {
         webhookId: webhook.id,
       }),
     );
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),

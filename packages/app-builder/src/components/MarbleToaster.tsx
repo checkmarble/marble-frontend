@@ -1,36 +1,34 @@
-import {
-  isNewToastMessage,
-  type ToastMessage,
-  toastMessageSchema,
-  type ToastSession,
-} from '@app-builder/models/toast-session';
+import * as toastSession from '@app-builder/models/toast-session';
 import { getClientEnv } from '@app-builder/utils/environment';
 import { useEffect } from 'react';
-import { toast, ToastBar, Toaster } from 'react-hot-toast';
+import { ToastBar, Toaster, toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
 import { headerHeight } from './Page';
 
-export function setToastMessage(session: ToastSession, toastMessage: ToastMessage) {
+export function setToastMessage(
+  session: toastSession.ToastSession,
+  toastMessage: toastSession.ToastMessage,
+) {
   session.flash('toastMessage', toastMessage);
 }
 
-export function getToastMessage(session: ToastSession) {
+export function getToastMessage(session: toastSession.ToastSession) {
   try {
-    return toastMessageSchema.parse(session.get('toastMessage'));
-  } catch (err) {
+    return toastSession.toastMessageSchema.parse(session.get('toastMessage'));
+  } catch (_err) {
     return undefined;
   }
 }
 
-export function MarbleToaster({ toastMessage }: { toastMessage?: ToastMessage }) {
+export function MarbleToaster({ toastMessage }: { toastMessage?: toastSession.ToastMessage }) {
   const { t } = useTranslation(['common']);
 
   useEffect(() => {
     if (!toastMessage) return;
 
-    if (isNewToastMessage(toastMessage)) {
+    if (toastSession.isNewToastMessage(toastMessage)) {
       const { type, message } = toastMessage;
       toast[type](getMessage(message));
     } else {

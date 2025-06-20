@@ -71,7 +71,7 @@ export async function action({ request }: ActionFunctionArgs) {
         inboxId: fromUUIDtoSUUID(data.inboxId),
       }),
     );
-  } catch (error) {
+  } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),

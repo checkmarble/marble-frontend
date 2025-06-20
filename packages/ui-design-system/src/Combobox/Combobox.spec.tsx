@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { mockResizeObserver } from 'jsdom-testing-mocks';
 import * as React from 'react';
+import { describe, expect, it } from 'vitest';
 
 import { Combobox, ComboboxItem, ComboboxLabel, ComboboxPopover, ComboboxRoot } from './Combobox';
 

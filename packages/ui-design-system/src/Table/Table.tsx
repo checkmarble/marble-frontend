@@ -66,6 +66,7 @@ function TableTH<TData extends RowData, TValue>({
 
 const internalRowLink = '__internal-row-link';
 
+// biome-ignore lint/suspicious/noRedeclare: <TBD>
 function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderGroup<TData>[] }) {
   return (
     <thead className="sticky top-0 z-10">
@@ -233,6 +234,7 @@ function Body({
   );
 }
 
+// biome-ignore lint/suspicious/noRedeclare: <TBD>
 function Row<TData extends RowData>({
   row,
   className,

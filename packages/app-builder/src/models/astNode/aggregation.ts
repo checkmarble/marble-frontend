@@ -89,7 +89,9 @@ export function isFuzzyMatchFilterOptionsAstNode(
 
 export function NewFuzzyMatchFilterOptionsAstNode({
   value,
-}: { value?: KnownOperandAstNode } = {}): FuzzyMatchFilterOptionsAstNode {
+}: {
+  value?: KnownOperandAstNode;
+} = {}): FuzzyMatchFilterOptionsAstNode {
   const config: BaseFuzzyMatchConfig = AggregationFuzzyMatchConfig;
 
   return {

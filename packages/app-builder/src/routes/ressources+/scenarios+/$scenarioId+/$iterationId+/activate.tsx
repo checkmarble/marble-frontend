@@ -42,7 +42,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       success: true as const,
       ruleSnoozes,
     });
-  } catch (error) {
+  } catch (_error) {
     return json({ success: false as const });
   }
 }

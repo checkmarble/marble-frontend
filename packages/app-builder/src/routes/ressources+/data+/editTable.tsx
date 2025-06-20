@@ -45,7 +45,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
 
     return json({ success: 'true', errors: [] });
-  } catch (error) {
+  } catch (_error) {
     return json({ success: 'false', errors: [] });
   }
 }

@@ -4,7 +4,7 @@ import {
   type UpdateScenarioIterationRuleBodyDto,
 } from 'marble-api';
 
-import { adaptAstNode, adaptNodeDto, type AstNode } from './astNode/ast-node';
+import { type AstNode, adaptAstNode, adaptNodeDto } from './astNode/ast-node';
 
 export interface ScenarioIterationRule {
   id: string;
