@@ -35,7 +35,7 @@ function getFeatureAccessAPIClient({
       })
     : createBasicFetch({ request });
 
-  const { defaults, servers, ...api } = featureAccessApi;
+  const { defaults: _, servers: __, ...api } = featureAccessApi;
 
   //@ts-expect-error can't infer args
   return R.mapValues(api, (value) => (...args) => {

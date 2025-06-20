@@ -31,7 +31,7 @@ function getTransfercheckAPIClient({
       })
     : createBasicFetch({ request });
 
-  const { defaults, servers, ...api } = transfercheckApi;
+  const { defaults: _, servers: __, ...api } = transfercheckApi;
 
   //@ts-expect-error can't infer args
   return R.mapValues(api, (value) => (...args) => {
