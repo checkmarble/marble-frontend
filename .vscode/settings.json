@@ -26,11 +26,5 @@
   },
   "[json]": {
     "editor.defaultFormatter": "biomejs.biome"
-  },
-  "debug.javascript.defaultRuntimeExecutable": {
-    "pwa-node": "/Users/pascaldelange/.local/share/mise/shims/node"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
   }
 }
