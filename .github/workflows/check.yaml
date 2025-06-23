@@ -15,26 +15,27 @@ jobs:
       actions: read
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: '.tool-versions'
-          cache: 'pnpm'
+      # - uses: pnpm/action-setup@v4
+      - uses: oven-sh/setup-bun@v2
+      # - name: Set up Node
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version-file: '.tool-versions'
+      #     cache: 'pnpm'
       - name: Setup Biome
         uses: biomejs/setup-biome@v2
       - name: Run Biome
         run: biome ci .
 
-      - run: pnpm install --frozen-lockfile
+      - run: bun install
 
       - run: |
-          pnpm --filter marble-api exec swagger-cli validate openapis/marblecore-api.yaml
-          pnpm --filter marble-api exec swagger-cli validate openapis/feature-access-api.yaml
-          pnpm --filter marble-api exec swagger-cli validate openapis/transfercheck-api.yaml
-          pnpm --filter marble-api run generate-api
+          bun --filter marble-api exec swagger-cli validate openapis/marblecore-api.yaml
+          bun --filter marble-api exec swagger-cli validate openapis/feature-access-api.yaml
+          bun --filter marble-api exec swagger-cli validate openapis/transfercheck-api.yaml
+          bun --filter marble-api run generate-api
           git diff --exit-code || (echo 'Generated API stubs not up to date with OpenAPI specification.' && exit 1)
 
-      - run: pnpm run -r type-check
-      - run: pnpm run test:all
-      - run: pnpm run -r build
+      - run: bun run -r type-check
+      - run: bun run test:all
+      - run: bun run -r build
