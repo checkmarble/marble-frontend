@@ -1,6 +1,7 @@
 {
   "add": "Add",
   "select_all": "Select all",
+  "all_selected": "All selected",
   "no_name": "No name",
   "null": "Null",
   "skipped": "Skipped",

@@ -24,7 +24,7 @@ export default function CaseSanctionsHitsPage() {
   return (
     <div className="bg-grey-100 border-grey-90 grid grid-cols-[max-content_2fr_1fr_repeat(3,_max-content)] gap-x-6 gap-y-2 rounded-md border">
       <div className="col-span-full flex flex-row gap-12 p-4">
-        <SanctionReviewSection decisionId={decision.id} sanctionCheck={sanctionCheck} />
+        <SanctionReviewSection sanctionCheck={sanctionCheck} />
         <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
           {sanctionCheck.request ? (
             <SanctionCheckSearchInput request={sanctionCheck.request} />

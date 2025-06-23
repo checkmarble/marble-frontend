@@ -69,6 +69,8 @@ components:
           $ref: '#/components/schemas/FeatureAccessLevelDto'
         sanctions:
           $ref: '#/components/schemas/FeatureAccessLevelDto'
+        name_recognition:
+          $ref: '#/components/schemas/FeatureAccessLevelDto'
         ai_assist:
           $ref: '#/components/schemas/FeatureAccessLevelDto'
       required:
@@ -79,6 +81,7 @@ components:
         - rule_snoozes
         - test_run
         - sanctions
+        - name_recognition
         - ai_assist
   responses:
     '401':

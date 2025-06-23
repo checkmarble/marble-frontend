@@ -29,12 +29,12 @@ export interface SanctionCheckRepository {
     whitelist?: boolean;
   }): Promise<SanctionCheckMatch>;
   searchSanctionCheckMatches(args: {
-    decisionId: string;
+    sanctionCheckId: string;
     entityType: OpenSanctionEntitySchema;
     fields: Record<string, string>;
   }): Promise<SanctionCheckMatchPayload[]>;
   refineSanctionCheck(args: {
-    decisionId: string;
+    sanctionCheckId: string;
     entityType: OpenSanctionEntitySchema;
     fields: Record<string, string>;
   }): Promise<SanctionCheck>;
@@ -60,7 +60,7 @@ export function makeGetSanctionCheckRepository() {
         }),
       );
     },
-    searchSanctionCheckMatches: async ({ decisionId, entityType, fields }) => {
+    searchSanctionCheckMatches: async ({ sanctionCheckId: decisionId, entityType, fields }) => {
       const dto = {
         decision_id: decisionId,
         query: {
@@ -72,9 +72,9 @@ export function makeGetSanctionCheckRepository() {
         adapatSanctionCheckMatchPayload,
       );
     },
-    refineSanctionCheck: async ({ decisionId, entityType, fields }) => {
+    refineSanctionCheck: async ({ sanctionCheckId, entityType, fields }) => {
       const dto = {
-        decision_id: decisionId,
+        sanction_check_id: sanctionCheckId,
         query: {
           [entityType]: fields,
         },

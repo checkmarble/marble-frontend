@@ -485,5 +485,6 @@
   "edit_sanction.registrationnumber": "رقم التسجيل",
   "edit_sanction.registrationnumber_placeholder": "رقم التسجيل",
   "sanction_forced_outcome_suffix": "إذا تم تشغيل فحص العقوبات",
-  "edit_sanction.remove_terms_from_list.tooltip": "إزالة المصطلحات من القائمة"
+  "edit_sanction.remove_terms_from_list.tooltip": "إزالة المصطلحات من القائمة",
+  "edit_sanction.required_fields_disclaimer": "لتحسين فحص العقوبات ، ينصح بتعبئة الاسم أو رقم التسجيل للمنظمة / السيارة ، أو الاسم أو رقم الهوية للشخص."
 }

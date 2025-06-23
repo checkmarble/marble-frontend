@@ -17,11 +17,10 @@ import { SanctionCheckErrors } from './SanctionCheckErrors';
 import { sanctionsI18n } from './sanctions-i18n';
 
 export type SanctionReviewSectionProps = {
-  decisionId: string;
   sanctionCheck: SanctionCheck;
 };
 
-export function SanctionReviewSection({ decisionId, sanctionCheck }: SanctionReviewSectionProps) {
+export function SanctionReviewSection({ sanctionCheck }: SanctionReviewSectionProps) {
   const { t } = useTranslation(sanctionsI18n);
   const [isRefining, setIsRefining] = useState(false);
   const matchesToReviewCount = filter(sanctionCheck.matches, (m) => m.status === 'pending').length;
@@ -78,7 +77,7 @@ export function SanctionReviewSection({ decisionId, sanctionCheck }: SanctionRev
       </div>
       {isRefining ? (
         <RefineSearchModal
-          decisionId={decisionId}
+          sanctionCheckId={sanctionCheck.id}
           sanctionCheck={sanctionCheck}
           open={isRefining}
           onClose={() => setIsRefining(false)}
