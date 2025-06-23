@@ -8,15 +8,15 @@ export type PropertyForSchema<
 > = (typeof schemaInheritence)[Schema] extends null
   ? _R | (typeof schemaProperties)[Schema][number]
   : (typeof schemaInheritence)[Schema] extends infer P extends OpenSanctionEntitySchema
-    ? PropertyForSchema<P, _R | (typeof schemaProperties)[Schema][number]>
-    : never;
+  ? PropertyForSchema<P, _R | (typeof schemaProperties)[Schema][number]>
+  : never;
 
 export type SearchableSchema = 'Thing' | 'Person' | 'Organization' | 'Vehicle';
 
 export const SEARCH_ENTITIES = {
   Thing: { fields: ['name'] },
   Person: {
-    fields: ['name', 'birthDate', 'nationality', 'idNumber', 'address'],
+    fields: ['name', 'birthDate', 'nationality', 'passportNumber', 'address'],
   },
   Organization: {
     fields: ['name', 'country', 'registrationNumber', 'address'],
