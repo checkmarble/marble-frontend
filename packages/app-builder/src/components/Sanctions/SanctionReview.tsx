@@ -10,7 +10,6 @@ import { filter } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { MatchCard } from './MatchCard';
 import { RefineSearchModal } from './RefineSearchModal';
 import { SanctionCheckErrors } from './SanctionCheckErrors';
@@ -18,15 +17,18 @@ import { sanctionsI18n } from './sanctions-i18n';
 
 export type SanctionReviewSectionProps = {
   sanctionCheck: SanctionCheck;
+  onRefineSuccess: (screeningId: string) => void;
 };
 
-export function SanctionReviewSection({ sanctionCheck }: SanctionReviewSectionProps) {
+export function SanctionReviewSection({
+  sanctionCheck,
+  onRefineSuccess,
+}: SanctionReviewSectionProps) {
   const { t } = useTranslation(sanctionsI18n);
   const [isRefining, setIsRefining] = useState(false);
   const matchesToReviewCount = filter(sanctionCheck.matches, (m) => m.status === 'pending').length;
   const hasError = isSanctionCheckError(sanctionCheck);
   const isRefinable = !isSanctionCheckReviewCompleted(sanctionCheck);
-  console.log(sanctionCheck);
 
   return (
     <div className="flex h-fit flex-[2] flex-col gap-6">
@@ -81,6 +83,7 @@ export function SanctionReviewSection({ sanctionCheck }: SanctionReviewSectionPr
           sanctionCheck={sanctionCheck}
           open={isRefining}
           onClose={() => setIsRefining(false)}
+          onRefineSuccess={onRefineSuccess}
         />
       ) : null}
     </div>

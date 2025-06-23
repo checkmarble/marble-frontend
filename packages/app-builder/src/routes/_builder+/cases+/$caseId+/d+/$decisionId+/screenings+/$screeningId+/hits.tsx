@@ -6,25 +6,39 @@ import { SanctionReviewSection } from '@app-builder/components/Sanctions/Sanctio
 import { SearchInputDisplay } from '@app-builder/components/Sanctions/SearchInput';
 import { usePivotValues } from '@app-builder/hooks/decisions/usePivotValues';
 import { type SanctionCheck } from '@app-builder/models/sanction-check';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { useNavigate } from '@remix-run/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-
 import { useCurrentCase } from './_layout';
 
 export default function CaseSanctionsHitsPage() {
   const { t } = useTranslation(casesI18n);
-  const { sanctionCheck, decision, dataModel, pivots } = useCurrentCase();
+  const { caseDetail, sanctionCheck, decision, dataModel, pivots } = useCurrentCase();
   const pivotValues = usePivotValues(decision.pivotValues, pivots);
   const [objectLink, setObjectLink] = useState<{
     tableName: string;
     objectId: string;
   } | null>(null);
+  const navigate = useNavigate();
 
   return (
     <div className="bg-grey-100 border-grey-90 grid grid-cols-[max-content_2fr_1fr_repeat(3,_max-content)] gap-x-6 gap-y-2 rounded-md border">
       <div className="col-span-full flex flex-row gap-12 p-4">
-        <SanctionReviewSection sanctionCheck={sanctionCheck} />
+        <SanctionReviewSection
+          sanctionCheck={sanctionCheck}
+          onRefineSuccess={(screeningId) => {
+            navigate(
+              getRoute('/cases/:caseId/d/:decisionId/screenings/:screeningId', {
+                caseId: fromUUIDtoSUUID(caseDetail.id),
+                decisionId: fromUUIDtoSUUID(decision.id),
+                screeningId: fromUUIDtoSUUID(screeningId),
+              }),
+            );
+          }}
+        />
         <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
           {sanctionCheck.request ? (
             <SanctionCheckSearchInput request={sanctionCheck.request} />
