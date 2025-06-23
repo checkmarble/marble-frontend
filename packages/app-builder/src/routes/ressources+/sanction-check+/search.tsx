@@ -8,6 +8,7 @@ import { z } from 'zod';
 export const refineSearchSchema = z.discriminatedUnion('entityType', [
   z.object({
     sanctionCheckId: z.string().uuid(),
+    caseId: z.string().uuid(),
     entityType: z.literal('Thing'),
     fields: z.object({
       name: z.string().optional(),
@@ -15,6 +16,7 @@ export const refineSearchSchema = z.discriminatedUnion('entityType', [
   }),
   z.object({
     sanctionCheckId: z.string().uuid(),
+    caseId: z.string().uuid(),
     entityType: z.literal('Person'),
     fields: z.object({
       name: z.string().optional(),
@@ -26,6 +28,7 @@ export const refineSearchSchema = z.discriminatedUnion('entityType', [
   }),
   z.object({
     sanctionCheckId: z.string().uuid(),
+    caseId: z.string().uuid(),
     entityType: z.literal('Organization'),
     fields: z.object({
       name: z.string().optional(),
@@ -36,6 +39,7 @@ export const refineSearchSchema = z.discriminatedUnion('entityType', [
   }),
   z.object({
     sanctionCheckId: z.string().uuid(),
+    caseId: z.string().uuid(),
     entityType: z.literal('Vehicle'),
     fields: z.object({
       name: z.string().optional(),

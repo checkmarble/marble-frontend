@@ -18,15 +18,15 @@ import { sanctionsI18n } from './sanctions-i18n';
 
 export type SanctionReviewSectionProps = {
   sanctionCheck: SanctionCheck;
+  caseId: string;
 };
 
-export function SanctionReviewSection({ sanctionCheck }: SanctionReviewSectionProps) {
+export function SanctionReviewSection({ sanctionCheck, caseId }: SanctionReviewSectionProps) {
   const { t } = useTranslation(sanctionsI18n);
   const [isRefining, setIsRefining] = useState(false);
   const matchesToReviewCount = filter(sanctionCheck.matches, (m) => m.status === 'pending').length;
   const hasError = isSanctionCheckError(sanctionCheck);
   const isRefinable = !isSanctionCheckReviewCompleted(sanctionCheck);
-  console.log(sanctionCheck);
 
   return (
     <div className="flex h-fit flex-[2] flex-col gap-6">
@@ -77,6 +77,7 @@ export function SanctionReviewSection({ sanctionCheck }: SanctionReviewSectionPr
       </div>
       {isRefining ? (
         <RefineSearchModal
+          caseId={caseId}
           sanctionCheckId={sanctionCheck.id}
           sanctionCheck={sanctionCheck}
           open={isRefining}
