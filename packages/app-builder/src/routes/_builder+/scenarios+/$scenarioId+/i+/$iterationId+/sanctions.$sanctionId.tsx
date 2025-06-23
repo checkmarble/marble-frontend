@@ -219,9 +219,9 @@ export default function SanctionDetail() {
   const { submit, data } = useFetcher<typeof action>();
   const lastData = data as
     | {
-      status: 'error' | 'success';
-      errors?: z.typeToFlattenedError<EditSanctionForm>;
-    }
+        status: 'error' | 'success';
+        errors?: z.typeToFlattenedError<EditSanctionForm>;
+      }
     | undefined;
   const scenario = useCurrentScenario();
   const ruleGroups = useRuleGroups();
