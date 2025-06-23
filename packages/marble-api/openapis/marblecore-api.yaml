@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
   version: 1.0.0
-  title: 'Marble Core API'
-  description: 'Consume Marble internal endpoints'
+  title: "Marble Core API"
+  description: "Consume Marble internal endpoints"
 tags:
   - name: Admin
     description: Admin operations.
@@ -44,8 +44,10 @@ tags:
     description: Operations about rule snoozes.
   - name: TestRun
     description: Operations about testrun.
+  - name: Workflows
+    description: Scenario workflow management.
 servers:
-  - url: 'http://localhost:8080'
+  - url: "http://localhost:8080"
     description: Local devlopment server
 paths:
   # AUTHORIZATION
@@ -300,6 +302,25 @@ paths:
     $ref: ./marblecore-api/scenario-testrun.yml#/~1scenario-testruns~1{test_run_id}~1decision_data_by_score
   /scenario-testruns/{test_run_id}/data_by_rule_execution:
     $ref: ./marblecore-api/scenario-testrun.yml#/~1scenario-testruns~1{test_run_id}~1data_by_rule_execution
+
+  # WORKFLOWS
+
+  /workflows/{scenarioId}:
+    $ref: ./marblecore-api/workflow.yml#/~1workflows~1{scenarioId}
+  /workflows/{scenarioId}/reorder:
+    $ref: ./marblecore-api/workflow.yml#/~1workflows~1{scenarioId}~1reorder
+  /workflows/rule:
+    $ref: ./marblecore-api/workflow.yml#/~1workflows~1rule
+  /workflows/rule/{ruleId}:
+    $ref: ./marblecore-api/workflow.yml#/~1workflows~1rule~1{ruleId}
+  /workflows/rule/{ruleId}/condition:
+    $ref: ./marblecore-api/workflow.yml#/~1workflows~1rule~1{ruleId}~1condition
+  /workflows/rule/{ruleId}/condition/{conditionId}:
+    $ref: ./marblecore-api/workflow.yml#/~1workflows~1rule~1{ruleId}~1condition~1{conditionId}
+  /workflows/rule/{ruleId}/action:
+    $ref: ./marblecore-api/workflow.yml#/~1workflows~1rule~1{ruleId}~1action
+  /workflows/rule/{ruleId}/action/{actionId}:
+    $ref: ./marblecore-api/workflow.yml#/~1workflows~1rule~1{ruleId}~1action~1{actionId}
 
 components:
   securitySchemes:

@@ -1221,6 +1221,54 @@ export type TestRunRuleExecutionDataDto = {
     total: number;
     stable_rule_id?: string;
 };
+export type WorkflowRuleDto = {
+    id: string;
+    name: string;
+};
+export type AlwaysMatches = {
+    "function": "always";
+};
+export type NeverMatches = {
+    "function": "never";
+};
+export type IfOutcomeIn = {
+    "function": "if_outcome_in";
+    params: OutcomeDto[];
+};
+export type WorkflowConditionDetailDto = AlwaysMatches | NeverMatches | IfOutcomeIn | {
+    "function": "rule_hit";
+    params: {
+        /** ID of a rule that must match */
+        rule_id: string;
+    };
+} | {
+    "function": "payload_evaluates";
+    params: {
+        expression: NodeDto;
+    };
+};
+export type WorkflowConditionDto = {
+    id: string;
+} & WorkflowConditionDetailDto;
+export type ActionDoNothing = {
+    action: "DISABLED";
+};
+export type ActionCreateOrAddToACase = {
+    action: "CREATE_CASE" | "ADD_TO_CASE_IF_POSSIBLE";
+    params: {
+        inbox_id: string;
+        any_inbox?: boolean;
+        title_template?: NodeDto;
+    };
+};
+export type WorkflowActionDetailDto = ActionDoNothing | ActionCreateOrAddToACase;
+export type WorkflowActionDto = {
+    id: string;
+} & WorkflowActionDetailDto;
+export type CreateWorkflowRuleDto = {
+    scenario_id: string;
+    name: string;
+};
 /**
  * Get an access token
  */
@@ -4184,5 +4232,210 @@ export function getRuleData(testRunId: string, opts?: Oazapfts.RequestOpts) {
         data: string;
     }>(`/scenario-testruns/${encodeURIComponent(testRunId)}/data_by_rule_execution`, {
         ...opts
+    }));
+}
+/**
+ * List workflows for a scenario
+ */
+export function listWorkflows(scenarioId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: (WorkflowRuleDto & {
+            conditions: WorkflowConditionDto[];
+            actions: WorkflowActionDto[];
+        })[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/workflows/${encodeURIComponent(scenarioId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Reorder workflow rules for a scenario
+ */
+export function reorderWorkflows(scenarioId: string, body?: string[], opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/workflows/${encodeURIComponent(scenarioId)}/reorder`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Create a workflow rule
+ */
+export function createWorkflowRule(createWorkflowRuleDto?: CreateWorkflowRuleDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: WorkflowRuleDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/workflows/rule", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createWorkflowRuleDto
+    })));
+}
+/**
+ * Update a workflow rule
+ */
+export function updateWorkflowRule(ruleId: string, body?: {
+    name: string;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: WorkflowRuleDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/workflows/rule/${encodeURIComponent(ruleId)}`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body
+    })));
+}
+/**
+ * Delete a workflow rule
+ */
+export function deleteWorkflowRule(ruleId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/workflows/rule/${encodeURIComponent(ruleId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * Create a workflow condition
+ */
+export function createWorkflowCondition(ruleId: string, workflowConditionDetailDto?: WorkflowConditionDetailDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: WorkflowConditionDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/workflows/rule/${encodeURIComponent(ruleId)}/condition`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: workflowConditionDetailDto
+    })));
+}
+/**
+ * Update a workflow condition
+ */
+export function updateWorkflowCondition(ruleId: string, conditionId: string, workflowConditionDetailDto?: WorkflowConditionDetailDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: WorkflowConditionDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/workflows/rule/${encodeURIComponent(ruleId)}/condition/${encodeURIComponent(conditionId)}`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body: workflowConditionDetailDto
+    })));
+}
+/**
+ * Delete a workflow condition
+ */
+export function deleteWorkflowCondition(ruleId: string, conditionId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/workflows/rule/${encodeURIComponent(ruleId)}/condition/${encodeURIComponent(conditionId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * Create a workflow action
+ */
+export function createWorkflowAction(ruleId: string, workflowActionDetailDto?: WorkflowActionDetailDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: WorkflowActionDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/workflows/rule/${encodeURIComponent(ruleId)}/action`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: workflowActionDetailDto
+    })));
+}
+/**
+ * Update a workflow action
+ */
+export function updateWorkflowAction(ruleId: string, actionId: string, workflowActionDetailDto?: WorkflowActionDetailDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: WorkflowActionDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/workflows/rule/${encodeURIComponent(ruleId)}/action/${encodeURIComponent(actionId)}`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body: workflowActionDetailDto
+    })));
+}
+/**
+ * Delete a workflow action
+ */
+export function deleteWorkflowAction(ruleId: string, actionId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/workflows/rule/${encodeURIComponent(ruleId)}/action/${encodeURIComponent(actionId)}`, {
+        ...opts,
+        method: "DELETE"
     }));
 }
