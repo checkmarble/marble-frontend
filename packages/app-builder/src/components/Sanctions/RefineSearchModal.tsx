@@ -42,6 +42,7 @@ export type RefineSearchModalProps = {
   open: boolean;
   sanctionCheckId: string;
   sanctionCheck: SanctionCheck;
+  onRefineSuccess: (screeningId: string) => void;
   onClose: () => void;
 };
 
@@ -49,6 +50,7 @@ export function RefineSearchModal({
   open,
   sanctionCheckId,
   sanctionCheck,
+  onRefineSuccess: _onRefineSuccess,
   onClose: _onClose,
 }: RefineSearchModalProps) {
   const { t } = useTranslation(sanctionsI18n);
@@ -56,6 +58,7 @@ export function RefineSearchModal({
   const refineFetcher = useFetcher<typeof refineAction>();
   const formDataRef = useRef<FormData | null>(null);
   const onClose = useCallbackRef(_onClose);
+  const onRefineSuccess = useCallbackRef(_onRefineSuccess);
 
   const form = useForm({
     defaultValues: {
@@ -85,6 +88,7 @@ export function RefineSearchModal({
   }, [searchFetcher.data]);
   useEffect(() => {
     if (refineFetcher.data?.success) {
+      onRefineSuccess(refineFetcher.data.data.id);
       onClose();
     }
   }, [refineFetcher.data, onClose]);
