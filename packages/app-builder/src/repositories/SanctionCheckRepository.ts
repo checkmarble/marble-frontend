@@ -60,9 +60,9 @@ export function makeGetSanctionCheckRepository() {
         }),
       );
     },
-    searchSanctionCheckMatches: async ({ sanctionCheckId: decisionId, entityType, fields }) => {
+    searchSanctionCheckMatches: async ({ sanctionCheckId, entityType, fields }) => {
       const dto = {
-        decision_id: decisionId,
+        sanction_check_id: sanctionCheckId,
         query: {
           [entityType]: fields,
         },
