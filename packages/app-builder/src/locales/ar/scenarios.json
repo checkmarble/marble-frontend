@@ -476,8 +476,6 @@
   "edit_sanction.birthdate_placeholder": "YYYY-MM-DD",
   "edit_sanction.nationality": "الجنسية",
   "edit_sanction.nationality_placeholder": "رمز الدولة",
-  "edit_sanction.idnumber": "رقم الهوية",
-  "edit_sanction.idnumber_placeholder": "رقم الهوية",
   "edit_sanction.address": "العنوان",
   "edit_sanction.address_placeholder": "العنوان",
   "edit_sanction.country": "الدولة",

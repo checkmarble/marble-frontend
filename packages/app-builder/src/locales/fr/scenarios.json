@@ -156,7 +156,7 @@
   "edit_fuzzy_match.string_similarity": "Similitude de texte",
   "edit_fuzzy_match.threshold.label": "Seuil de correspondance",
   "edit_fuzzy_match.title": "Créer une correspondance de texte",
-  "edit_operand.clear_operand": "Clair",
+  "edit_operand.clear_operand": "Effacer",
   "edit_operand.constant.use_data_type.boolean": "Booléen",
   "edit_operand.constant.use_data_type.number": "Nombre",
   "edit_operand.constant.use_data_type.string": "Texte",
@@ -192,8 +192,8 @@
   "edit_sanction.birthdate_placeholder": "YYYY-MM-DD",
   "edit_sanction.nationality": "Nationalité",
   "edit_sanction.nationality_placeholder": "Code pays",
-  "edit_sanction.idnumber": "Numéro d'identité",
-  "edit_sanction.idnumber_placeholder": "Numéro d'identité",
+  "edit_sanction.passport_number": "Numéro de passeport",
+  "edit_sanction.passport_number_placeholder": "Numéro de passeport",
   "edit_sanction.address": "Adresse",
   "edit_sanction.address_placeholder": "Adresse",
   "edit_sanction.country": "Pays",
@@ -486,5 +486,5 @@
   "edit_sanction.ignore_numbers.tooltip": "Tous les nombres seront supprimés du texte reçu avant de faire la recherche. Cela peut aider à réduire les faux positifs lors du filtrage, causés par des nombres dans les noms, les adresses ou les identifiants.",
   "edit_sanction.remove_terms_from_list": "Ignorer les termes dans une liste",
   "edit_sanction.select_list": "Sélectionnez une liste",
-  "edit_sanction.required_fields_disclaimer": "Pour un screening efficace, il est recommandé de remplir au moins le nom ou le numéro d'enregistrement pour une organisation/véhicule, ou le nom ou le numéro d'identité pour une personne."
+  "edit_sanction.required_fields_disclaimer": "Pour un filtrage efficace, il est recommandé de remplir au moins le nom ou le numéro d'enregistrement pour une organisation/véhicule, et au moins le nom ou le numéro d'identité pour une personne."
 }
