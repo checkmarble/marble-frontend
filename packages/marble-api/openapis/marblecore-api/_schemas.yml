@@ -406,3 +406,28 @@ TestRunRuleExecutionDataDto:
   $ref: scenario-testrun.yml#/components/schemas/TestRunRuleExecutionDataDto
 TestRunCreateInputDto:
   $ref: scenario-testrun.yml#/components/schemas/TestRunCreateInputDto
+
+# WORKFLOWS
+
+WorkflowRuleDto:
+  $ref: workflow.yml#/components/schemas/WorkflowRuleDto
+CreateWorkflowRuleDto:
+  $ref: workflow.yml#/components/schemas/CreateWorkflowRuleDto
+WorkflowConditionDto:
+  $ref: workflow.yml#/components/schemas/WorkflowConditionDto
+WorkflowConditionDetailDto:
+  $ref: workflow.yml#/components/schemas/WorkflowConditionDetailDto
+WorkflowConditionAlways:
+  $ref: workflow.yml#/components/schemas/WorkflowConditionAlways
+WorkflowConditionNever:
+  $ref: workflow.yml#/components/schemas/WorkflowConditionNever
+WorkflowConditionOutcomeIn:
+  $ref: workflow.yml#/components/schemas/WorkflowConditionOutcomeIn
+WorkflowActionDto:
+  $ref: workflow.yml#/components/schemas/WorkflowActionDto
+WorkflowActionDetailDto:
+  $ref: workflow.yml#/components/schemas/WorkflowActionDetailDto
+WorkflowActionDisabled:
+  $ref: workflow.yml#/components/schemas/WorkflowActionDisabled
+WorkflowActionCase:
+  $ref: workflow.yml#/components/schemas/WorkflowActionCase

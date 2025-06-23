@@ -1,0 +1,550 @@
+/workflows/{scenarioId}:
+  get:
+    tags:
+      - Workflows
+    summary: List workflows for a scenario
+    operationId: listWorkflows
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioId
+        description: Scenario of which to list the workflows
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "200":
+        description: The list of workflow rules
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/WorkflowDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+/workflows/{scenarioId}/reorder:
+  post:
+    tags:
+      - Workflows
+    summary: Reorder workflow rules for a scenario
+    operationId: reorderWorkflows
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioId
+        description: Scenario of which to rereder the workflow rules
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: List of workflow rule IDs in the new order
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+    responses:
+      "204":
+        description: The workflows rules were reordered
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+/workflows/rule:
+  post:
+    tags:
+      - Workflows
+    summary: Create a workflow rule
+    operationId: createWorkflowRule
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: Workflow rule to create
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateWorkflowRuleDto"
+    responses:
+      "200":
+        description: The workflow rule that was created
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowRuleDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+/workflows/rule/{ruleId}:
+  put:
+    tags:
+      - Workflows
+    summary: Update a workflow rule
+    operationId: updateWorkflowRule
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: Workflow rule to update
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Workflow rule to update
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateWorkflowRuleDto"
+    responses:
+      "200":
+        description: The workflow rule that was updated
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowRuleDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+  delete:
+    tags:
+      - Workflows
+    summary: Delete a workflow rule
+    operationId: deleteWorkflowRule
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: Workflow rule to delete
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "204":
+        description: The workflow rule was successfully deleted
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+/workflows/rule/{ruleId}/condition:
+  post:
+    tags:
+      - Workflows
+    summary: Create a workflow condition
+    operationId: createWorkflowCondition
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: Workflow rule to add a condition to
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Workflow condition to create
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/WorkflowConditionDetailDto"
+    responses:
+      "200":
+        description: The workflow condition that was created
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowConditionDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+/workflows/rule/{ruleId}/condition/{conditionId}:
+  put:
+    tags:
+      - Workflows
+    summary: Update a workflow condition
+    operationId: updateWorkflowCondition
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: Workflow rule to update a condition from
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: conditionId
+        description: Workflow condition to update
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Workflow condition to update
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/WorkflowConditionDetailDto"
+    responses:
+      "200":
+        description: The workflow condition that was updated
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowConditionDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+  delete:
+    tags:
+      - Workflows
+    summary: Delete a workflow condition
+    operationId: deleteWorkflowCondition
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: Workflow rule to delete a condition from
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: conditionId
+        description: Workflow condition to delete
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "204":
+        description: The workflow condition was successfully deleted
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+/workflows/rule/{ruleId}/action:
+  post:
+    tags:
+      - Workflows
+    summary: Create a workflow action
+    operationId: createWorkflowAction
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: Workflow rule to add a condition to
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Workflow action to create
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/WorkflowActionDetailDto"
+    responses:
+      "200":
+        description: The workflow action that was created
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowActionDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+/workflows/rule/{ruleId}/action/{actionId}:
+  put:
+    tags:
+      - Workflows
+    summary: Update a workflow action
+    operationId: updateWorkflowAction
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: Workflow rule to update an action from
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: actionId
+        description: Workflow action to update
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Workflow action to update
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/WorkflowActionDetailDto"
+    responses:
+      "200":
+        description: The workflow action that was updated
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowActionDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+  delete:
+    tags:
+      - Workflows
+    summary: Delete a workflow action
+    operationId: deleteWorkflowAction
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: Workflow rule to delete an action from
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: actionId
+        description: Workflow action to delete
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "204":
+        description: The workflow action was successfully deleted
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+components:
+  schemas:
+    WorkflowDto:
+      allOf:
+        - $ref: "#/components/schemas/WorkflowRuleDto"
+        - type: object
+          required: [conditions, actions]
+          properties:
+            conditions:
+              type: array
+              items:
+                $ref: "#/components/schemas/WorkflowConditionDto"
+            actions:
+              type: array
+              items:
+                $ref: "#/components/schemas/WorkflowActionDto"
+
+    WorkflowRuleDto:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    CreateWorkflowRuleDto:
+      type: object
+      required: [scenario_id, name]
+      properties:
+        scenario_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    UpdateWorkflowRuleDto:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+
+    WorkflowConditionType:
+      type: string
+      enum:
+        - always
+        - never
+        - outcome_in
+        - rule_hit
+
+    WorkflowConditionDto:
+      allOf:
+        - type: object
+          required: [id]
+          properties:
+            id:
+              type: string
+              format: uuid
+        - $ref: "#/components/schemas/WorkflowConditionDetailDto"
+
+    WorkflowConditionDetailDto:
+      anyOf:
+        - $ref: "#/components/schemas/WorkflowConditionAlways"
+        - $ref: "#/components/schemas/WorkflowConditionNever"
+        - $ref: "#/components/schemas/WorkflowConditionOutcomeIn"
+        - $ref: "#/components/schemas/WorkflowConditionRuleHit"
+        - $ref: "#/components/schemas/WorkflowConditionPayloadEvaluates"
+      discriminator:
+        propertyName: function
+        mapping:
+          always: "#/components/schemas/WorkflowConditionAlways"
+          never: "#/components/schemas/WorkflowConditionNever"
+          if_outcome_in: "#/components/schemas/WorkflowConditionOutcomeIn"
+
+    WorkflowConditionAlways:
+      title: Always matches
+      type: object
+      required: [function]
+      properties:
+        function:
+          type: string
+          enum: [always]
+
+    WorkflowConditionNever:
+      title: Never matches
+      type: object
+      required: [function]
+      properties:
+        function:
+          type: string
+          enum: [never]
+
+    WorkflowConditionOutcomeIn:
+      title: If outcome in
+      type: object
+      required: [function, params]
+      properties:
+        function:
+          type: string
+          enum: [if_outcome_in]
+        params:
+          type: array
+          items:
+            $ref: decisions.yml#/components/schemas/OutcomeDto
+
+    WorkflowConditionRuleHit:
+      title: If a specific rule hit
+      type: object
+      required: [function, params]
+      properties:
+        function:
+          type: string
+          enum: [rule_hit]
+        params:
+          type: object
+          required: [rule_id]
+          properties:
+            rule_id:
+              description: ID of a rule that must match
+              type: string
+              format: uuid
+
+    WorkflowConditionPayloadEvaluates:
+      title: "If a payload AST matches"
+      type: object
+      required: [function, params]
+      properties:
+        function:
+          type: string
+          enum: [payload_evaluates]
+        params:
+          type: object
+          required: [expression]
+          properties:
+            expression:
+              $ref: "ast.yml#/components/schemas/NodeDto"
+
+    WorkflowActionType:
+      type: string
+      enum:
+        - DISABLED
+        - CREATE_CASE
+        - ADD_TO_CASE_IF_POSSIBLE
+
+    WorkflowActionDto:
+      allOf:
+        - type: object
+          required: [id]
+          properties:
+            id:
+              type: string
+              format: uuid
+        - $ref: "#/components/schemas/WorkflowActionDetailDto"
+
+    WorkflowActionDetailDto:
+      anyOf:
+        - $ref: "#/components/schemas/WorkflowActionDisabled"
+        - $ref: "#/components/schemas/WorkflowActionCase"
+      discriminator:
+        propertyName: action
+        mapping:
+          DISABLED: "#/components/schemas/WorkflowActionDisabled"
+          CREATE_CASE: "#/components/schemas/WorkflowActionCase"
+          ADD_TO_CASE_IF_POSSIBLE: "#/components/schemas/WorkflowActionCase"
+
+    WorkflowActionDisabled:
+      title: "Action: do nothing"
+      type: object
+      required: [action]
+      properties:
+        action:
+          type: string
+          enum: [DISABLED]
+
+    WorkflowActionCase:
+      title: "Action: create or add to a case"
+      type: object
+      required: [action, params]
+      properties:
+        action:
+          type: string
+          enum: [CREATE_CASE, ADD_TO_CASE_IF_POSSIBLE]
+        params:
+          required: [inbox_id]
+          properties:
+            inbox_id:
+              type: string
+              format: uuid
+            any_inbox:
+              type: boolean
+              default: false
+            title_template:
+              $ref: "ast.yml#/components/schemas/NodeDto"
