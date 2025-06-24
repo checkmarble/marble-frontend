@@ -117,8 +117,6 @@ const CreateTagContent = () => {
       }
     },
     validators: {
-      onChange: createTagFormSchema,
-      onBlur: createTagFormSchema,
       onSubmit: createTagFormSchema,
     },
   });
@@ -134,7 +132,13 @@ const CreateTagContent = () => {
       <Modal.Title>{t('settings:tags.new_tag')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <div className="flex gap-2">
-          <form.Field name="name">
+          <form.Field
+            name="name"
+            validators={{
+              onBlur: createTagFormSchema.shape.name,
+              onChange: createTagFormSchema.shape.name,
+            }}
+          >
             {(field) => (
               <div className="group flex w-full flex-col gap-2">
                 <FormLabel name={field.name}>{t('settings:tags.name')}</FormLabel>
@@ -150,7 +154,13 @@ const CreateTagContent = () => {
               </div>
             )}
           </form.Field>
-          <form.Field name="color">
+          <form.Field
+            name="color"
+            validators={{
+              onBlur: createTagFormSchema.shape.color,
+              onChange: createTagFormSchema.shape.color,
+            }}
+          >
             {(field) => (
               <div className="group flex flex-col gap-2">
                 <FormLabel name={field.name}>{t('settings:tags.color')}</FormLabel>
@@ -159,7 +169,13 @@ const CreateTagContent = () => {
               </div>
             )}
           </form.Field>
-          <form.Field name="target">
+          <form.Field
+            name="target"
+            validators={{
+              onBlur: createTagFormSchema.shape.target,
+              onChange: createTagFormSchema.shape.target,
+            }}
+          >
             {(field) => (
               <div className="group flex flex-col gap-2">
                 <FormLabel name={field.name}>{t('settings:tags.target')}</FormLabel>

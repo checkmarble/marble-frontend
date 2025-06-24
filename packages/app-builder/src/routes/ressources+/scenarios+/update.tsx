@@ -117,8 +117,6 @@ function UpdateScenarioContent({ defaultValue }: { defaultValue: UpdateScenarioF
       }
     },
     validators: {
-      onChangeAsync: updateScenarioFormSchema,
-      onBlurAsync: updateScenarioFormSchema,
       onSubmitAsync: updateScenarioFormSchema,
     },
   });
@@ -133,7 +131,13 @@ function UpdateScenarioContent({ defaultValue }: { defaultValue: UpdateScenarioF
     >
       <ModalV2.Title>{t('scenarios:update_scenario.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
-        <form.Field name="name">
+        <form.Field
+          name="name"
+          validators={{
+            onBlur: updateScenarioFormSchema.shape.name,
+            onChange: updateScenarioFormSchema.shape.name,
+          }}
+        >
           {(field) => (
             <div className="group flex w-full flex-col gap-2">
               <FormLabel name={field.name}>{t('scenarios:create_scenario.name')}</FormLabel>
@@ -150,7 +154,13 @@ function UpdateScenarioContent({ defaultValue }: { defaultValue: UpdateScenarioF
             </div>
           )}
         </form.Field>
-        <form.Field name="description">
+        <form.Field
+          name="description"
+          validators={{
+            onBlur: updateScenarioFormSchema.shape.description,
+            onChange: updateScenarioFormSchema.shape.description,
+          }}
+        >
           {(field) => (
             <div className="group flex w-full flex-col gap-2">
               <FormLabel name={field.name}>{t('scenarios:create_scenario.description')}</FormLabel>

@@ -72,8 +72,6 @@ export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) =
       }),
     defaultValues: { caseId: id, tagIds },
     validators: {
-      onChange: schema,
-      onBlur: schema,
       onSubmit: schema,
     },
   });
@@ -81,7 +79,10 @@ export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) =
   const ids = useStore(form.store, (state) => state.values.tagIds);
 
   return (
-    <form.Field name="tagIds">
+    <form.Field
+      name="tagIds"
+      validators={{ onBlur: schema.shape.tagIds, onChange: schema.shape.tagIds }}
+    >
       {(field) => (
         <div className="flex items-center gap-2">
           <MenuCommand.Menu

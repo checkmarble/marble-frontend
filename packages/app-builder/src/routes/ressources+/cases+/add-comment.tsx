@@ -140,8 +140,6 @@ export function AddComment({ caseId }: { caseId: string }) {
       });
     },
     validators: {
-      onChange: schema,
-      onMount: schema,
       onSubmit: schema,
     },
   });

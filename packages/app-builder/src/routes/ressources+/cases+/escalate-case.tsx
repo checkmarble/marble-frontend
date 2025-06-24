@@ -91,8 +91,6 @@ export const EscalateCase = ({ id, inboxId }: { id: string; inboxId: string }) =
     },
     defaultValues: { caseId: id, inboxId },
     validators: {
-      onChange: schema,
-      onBlur: schema,
       onSubmit: schema,
     },
   });

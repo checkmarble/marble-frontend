@@ -167,8 +167,6 @@ function PrepareScenarioVersionContent({
       }
     },
     validators: {
-      onChangeAsync: prepareFormSchema,
-      onBlurAsync: prepareFormSchema,
       onSubmitAsync: prepareFormSchema,
     },
   });
@@ -185,7 +183,13 @@ function PrepareScenarioVersionContent({
       <div className="flex flex-col gap-6 p-6">
         <div className="text-s flex flex-col gap-4 font-medium">
           <p className="font-semibold">{t('scenarios:deployment_modal.prepare.confirm')}</p>
-          <form.Field name="activateToGoInProd">
+          <form.Field
+            name="activateToGoInProd"
+            validators={{
+              onBlur: prepareFormSchema.shape.activateToGoInProd,
+              onChange: prepareFormSchema.shape.activateToGoInProd,
+            }}
+          >
             {(field) => (
               <div className="group flex flex-row items-center gap-2">
                 <Checkbox
@@ -210,7 +214,13 @@ function PrepareScenarioVersionContent({
               </div>
             )}
           </form.Field>
-          <form.Field name="preparationIsAsync">
+          <form.Field
+            name="preparationIsAsync"
+            validators={{
+              onBlur: prepareFormSchema.shape.preparationIsAsync,
+              onChange: prepareFormSchema.shape.preparationIsAsync,
+            }}
+          >
             {(field) => (
               <div className="group flex flex-row items-center gap-2">
                 <Checkbox

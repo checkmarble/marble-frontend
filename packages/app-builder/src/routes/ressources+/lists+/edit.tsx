@@ -75,8 +75,6 @@ export function EditList({
       }
     },
     validators: {
-      onChangeAsync: editListFormSchema,
-      onBlurAsync: editListFormSchema,
       onSubmitAsync: editListFormSchema,
     },
   });
@@ -100,7 +98,13 @@ export function EditList({
           <Modal.Title>{t('lists:edit_list.title')}</Modal.Title>
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-1 flex-col gap-4">
-              <form.Field name="name">
+              <form.Field
+                name="name"
+                validators={{
+                  onChange: editListFormSchema.shape.name,
+                  onBlur: editListFormSchema.shape.name,
+                }}
+              >
                 {(field) => (
                   <div className="flex flex-col gap-2">
                     <FormLabel name={field.name}>{t('lists:name')}</FormLabel>
@@ -117,7 +121,13 @@ export function EditList({
                   </div>
                 )}
               </form.Field>
-              <form.Field name="description">
+              <form.Field
+                name="description"
+                validators={{
+                  onChange: editListFormSchema.shape.description,
+                  onBlur: editListFormSchema.shape.description,
+                }}
+              >
                 {(field) => (
                   <div className="flex flex-col gap-2">
                     <FormLabel name={field.name}>{t('lists:description')}</FormLabel>

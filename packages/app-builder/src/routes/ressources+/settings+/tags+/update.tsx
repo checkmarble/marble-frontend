@@ -117,8 +117,6 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
       }
     },
     validators: {
-      onChange: updateTagFormSchema,
-      onBlur: updateTagFormSchema,
       onSubmit: updateTagFormSchema,
     },
   });
@@ -134,7 +132,13 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
       <Modal.Title>{t('settings:tags.update_tag')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <div className="flex gap-2">
-          <form.Field name="name">
+          <form.Field
+            name="name"
+            validators={{
+              onBlur: updateTagFormSchema.shape.name,
+              onChange: updateTagFormSchema.shape.name,
+            }}
+          >
             {(field) => (
               <div className="group flex w-full flex-col gap-2">
                 <FormLabel name={field.name}>{t('settings:tags.name')}</FormLabel>
@@ -150,7 +154,13 @@ const UpdateTagContent = ({ tag }: { tag: Tag }) => {
               </div>
             )}
           </form.Field>
-          <form.Field name="color">
+          <form.Field
+            name="color"
+            validators={{
+              onBlur: updateTagFormSchema.shape.color,
+              onChange: updateTagFormSchema.shape.color,
+            }}
+          >
             {(field) => (
               <div className="group flex flex-col gap-2">
                 <FormLabel name={field.name}>{t('settings:tags.color')}</FormLabel>

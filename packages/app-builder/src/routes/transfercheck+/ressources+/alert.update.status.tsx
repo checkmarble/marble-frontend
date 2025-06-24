@@ -96,8 +96,6 @@ export function UpdateAlertStatus({ defaultValue }: { defaultValue: UpdateAlertS
       }
     },
     validators: {
-      onChangeAsync: updateAlertStatusFormSchema,
-      onBlurAsync: updateAlertStatusFormSchema,
       onSubmitAsync: updateAlertStatusFormSchema,
     },
   });
@@ -110,7 +108,13 @@ export function UpdateAlertStatus({ defaultValue }: { defaultValue: UpdateAlertS
         form.handleSubmit();
       }}
     >
-      <form.Field name="status">
+      <form.Field
+        name="status"
+        validators={{
+          onChange: updateAlertStatusFormSchema.shape.status,
+          onBlur: updateAlertStatusFormSchema.shape.status,
+        }}
+      >
         {(field) => (
           <div className="group flex flex-row items-center gap-4">
             <FormLabel name={field.name} className="sr-only">

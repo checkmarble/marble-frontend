@@ -95,7 +95,6 @@ export function CreateCase() {
       }
     },
     validators: {
-      onChange: createCaseFormSchema,
       onSubmit: createCaseFormSchema,
     },
   });
@@ -109,7 +108,13 @@ export function CreateCase() {
       }}
     >
       <div className="flex flex-col gap-4">
-        <form.Field name="name">
+        <form.Field
+          name="name"
+          validators={{
+            onBlur: createCaseFormSchema.shape.name,
+            onChange: createCaseFormSchema.shape.name,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col gap-2">
               <FormLabel name={field.name} className="text-xs first-letter:capitalize">
@@ -127,7 +132,13 @@ export function CreateCase() {
             </div>
           )}
         </form.Field>
-        <form.Field name="inboxId">
+        <form.Field
+          name="inboxId"
+          validators={{
+            onBlur: createCaseFormSchema.shape.inboxId,
+            onChange: createCaseFormSchema.shape.inboxId,
+          }}
+        >
           {(field) => (
             <div className="flex flex-1 flex-col gap-2">
               <FormLabel name={field.name} className="text-xs first-letter:capitalize">
