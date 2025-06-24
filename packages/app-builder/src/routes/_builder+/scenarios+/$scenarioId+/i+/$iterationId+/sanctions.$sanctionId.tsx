@@ -244,8 +244,6 @@ export default function SanctionDetail() {
       }
     },
     validators: {
-      onChange: editSanctionFormSchema,
-      onBlur: editSanctionFormSchema,
       onSubmit: editSanctionFormSchema,
     },
     defaultValues: {
@@ -320,7 +318,13 @@ export default function SanctionDetail() {
                 },
               )}
             >
-              <form.Field name="name">
+              <form.Field
+                name="name"
+                validators={{
+                  onChange: editSanctionFormSchema.shape.name,
+                  onBlur: editSanctionFormSchema.shape.name,
+                }}
+              >
                 {(field) => (
                   <div className="flex w-full flex-col gap-1">
                     <input
@@ -359,7 +363,13 @@ export default function SanctionDetail() {
             </div>
             <div className="flex flex-col gap-8">
               <div className="border-grey-90 flex flex-col items-start gap-6 border-b pb-6">
-                <form.Field name="description">
+                <form.Field
+                  name="description"
+                  validators={{
+                    onChange: editSanctionFormSchema.shape.description,
+                    onBlur: editSanctionFormSchema.shape.description,
+                  }}
+                >
                   {(field) => (
                     <div ref={descriptionRef} className="flex w-full flex-col gap-1">
                       <textarea
@@ -375,7 +385,13 @@ export default function SanctionDetail() {
                     </div>
                   )}
                 </form.Field>
-                <form.Field name="ruleGroup">
+                <form.Field
+                  name="ruleGroup"
+                  validators={{
+                    onChange: editSanctionFormSchema.shape.ruleGroup,
+                    onBlur: editSanctionFormSchema.shape.ruleGroup,
+                  }}
+                >
                   {(field) => (
                     <div className="flex flex-col gap-2">
                       <FieldRuleGroup
@@ -409,7 +425,13 @@ export default function SanctionDetail() {
                       />
                     </span>
                   </Callout>
-                  <form.Field name="triggerRule">
+                  <form.Field
+                    name="triggerRule"
+                    validators={{
+                      onChange: editSanctionFormSchema.shape.triggerRule,
+                      onBlur: editSanctionFormSchema.shape.triggerRule,
+                    }}
+                  >
                     {(field) => (
                       <FieldAstFormula
                         type="sanction"
@@ -426,7 +448,13 @@ export default function SanctionDetail() {
                 <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded-md border p-4">
                   <div className="text-s flex items-center">
                     {t('scenarios:edit_sanction.consideration_matchings')}
-                    <form.Field name="threshold">
+                    <form.Field
+                      name="threshold"
+                      validators={{
+                        onChange: editSanctionFormSchema.shape.threshold,
+                        onBlur: editSanctionFormSchema.shape.threshold,
+                      }}
+                    >
                       {(field) => (
                         <div className="flex flex-col gap-1">
                           <FormInput

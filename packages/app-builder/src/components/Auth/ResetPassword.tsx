@@ -58,7 +58,13 @@ export function ResetPassword() {
         form.handleSubmit();
       }}
     >
-      <form.Field name="email">
+      <form.Field
+        name="email"
+        validators={{
+          onBlur: resetPasswordFormSchema.shape.email,
+          onChange: resetPasswordFormSchema.shape.email,
+        }}
+      >
         {(field) => (
           <div className="flex flex-col items-start gap-2">
             <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>

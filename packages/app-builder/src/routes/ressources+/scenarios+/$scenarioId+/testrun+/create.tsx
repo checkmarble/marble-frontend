@@ -178,8 +178,6 @@ function CreateTestRunToContent({
       }
     },
     validators: {
-      onChangeAsync: createTestRunFormSchema,
-      onBlurAsync: createTestRunFormSchema,
       onSubmitAsync: createTestRunFormSchema,
     },
   });
@@ -207,7 +205,13 @@ function CreateTestRunToContent({
         </ModalV2.Description>
         <div className="flex flex-1 flex-col gap-4">
           <div className="flex flex-row items-start gap-2">
-            <form.Field name="refIterationId">
+            <form.Field
+              name="refIterationId"
+              validators={{
+                onBlur: createTestRunFormSchema.shape.refIterationId,
+                onChange: createTestRunFormSchema.shape.refIterationId,
+              }}
+            >
               {(field) => (
                 <div className="group flex w-full flex-col gap-2">
                   <FormLabel name={field.name}>{t('scenarios:create_testrun.ref')}</FormLabel>
@@ -229,7 +233,13 @@ function CreateTestRunToContent({
                 </div>
               )}
             </form.Field>
-            <form.Field name="testIterationId">
+            <form.Field
+              name="testIterationId"
+              validators={{
+                onBlur: createTestRunFormSchema.shape.testIterationId,
+                onChange: createTestRunFormSchema.shape.testIterationId,
+              }}
+            >
               {(field) => (
                 <div className="group flex w-full flex-col gap-2">
                   <FormLabel name={field.name}>{t('scenarios:create_testrun.phantom')}</FormLabel>
@@ -251,7 +261,13 @@ function CreateTestRunToContent({
               )}
             </form.Field>
           </div>
-          <form.Field name="endDate">
+          <form.Field
+            name="endDate"
+            validators={{
+              onBlur: createTestRunFormSchema.shape.endDate,
+              onChange: createTestRunFormSchema.shape.endDate,
+            }}
+          >
             {(field) => (
               <div className="group flex w-full flex-col gap-2">
                 <FormLabel name={field.name} className="flex flex-row items-center gap-1">

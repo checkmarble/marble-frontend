@@ -6,6 +6,7 @@ import { useForm, useStore } from '@tanstack/react-form';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Code, MenuCommand, Modal } from 'ui-design-system';
+import { z } from 'zod';
 
 export function SelectField({
   pivotOptions,
@@ -34,6 +35,8 @@ export function SelectField({
   const selectedOption = useStore(form.store, (state) => state.values.pivot);
   const [open, onOpenChange] = useState(false);
 
+  const pivotFieldShape = z.object({ pivot: z.any() }).shape;
+
   return (
     <form onSubmit={handleSubmit(form)}>
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
@@ -59,7 +62,10 @@ export function SelectField({
           />
         </Callout>
 
-        <form.Field name="pivot">
+        <form.Field
+          name="pivot"
+          validators={{ onChange: pivotFieldShape.pivot, onBlur: pivotFieldShape.pivot }}
+        >
           {(field) => (
             <div className="flex flex-col gap-2">
               <MenuCommand.Menu {...{ open, onOpenChange }}>

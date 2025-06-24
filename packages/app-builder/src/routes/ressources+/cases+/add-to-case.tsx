@@ -129,8 +129,6 @@ export function AddToCase() {
       });
     },
     validators: {
-      onChange: addToCaseFormSchema,
-      onBlur: addToCaseFormSchema,
       onSubmit: addToCaseFormSchema,
     },
   });
@@ -177,7 +175,13 @@ export function AddToCase() {
             <p className="text-s text-grey-00 font-semibold first-letter:capitalize">
               {t('decisions:add_to_case.new_case.informations')}
             </p>
-            <form.Field name="name">
+            <form.Field
+              name="name"
+              validators={{
+                onChange: addToCaseFormSchema.options[0].shape.name,
+                onBlur: addToCaseFormSchema.options[0].shape.name,
+              }}
+            >
               {(field) => (
                 <div className="flex flex-col gap-2">
                   <FormLabel name={field.name} className="text-xs first-letter:capitalize">
@@ -195,7 +199,13 @@ export function AddToCase() {
                 </div>
               )}
             </form.Field>
-            <form.Field name="inboxId">
+            <form.Field
+              name="inboxId"
+              validators={{
+                onChange: addToCaseFormSchema.options[0].shape.inboxId,
+                onBlur: addToCaseFormSchema.options[0].shape.inboxId,
+              }}
+            >
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name} className="text-xs first-letter:capitalize">
@@ -231,7 +241,13 @@ export function AddToCase() {
             <p className="text-s text-grey-00 font-semibold first-letter:capitalize">
               {t('decisions:add_to_case.new_case.attribution')}
             </p>
-            <form.Field name="caseId">
+            <form.Field
+              name="caseId"
+              validators={{
+                onChange: addToCaseFormSchema.options[1].shape.caseId,
+                onBlur: addToCaseFormSchema.options[1].shape.caseId,
+              }}
+            >
               {(field) => (
                 <div className="flex flex-col gap-2">
                   <FormLabel name={field.name} className="text-xs first-letter:capitalize">

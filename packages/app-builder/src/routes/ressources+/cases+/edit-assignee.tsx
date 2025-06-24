@@ -71,8 +71,6 @@ export const EditCaseAssignee = ({
       }),
     defaultValues: { assigneeId, caseId: id } as EditAssigneeIdForm,
     validators: {
-      onChange: schema,
-      onBlur: schema,
       onSubmit: schema,
     },
   });
@@ -85,7 +83,10 @@ export const EditCaseAssignee = ({
   );
 
   return (
-    <form.Field name="assigneeId">
+    <form.Field
+      name="assigneeId"
+      validators={{ onBlur: schema.shape.assigneeId, onChange: schema.shape.assigneeId }}
+    >
       {(field) => (
         <div className="flex w-full gap-1">
           <div className="flex items-center gap-2">

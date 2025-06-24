@@ -58,8 +58,6 @@ export const EditCaseInbox = ({
       }),
     defaultValues: { inboxId, caseId: id } as EditInboxIdForm,
     validators: {
-      onChange: schema,
-      onBlur: schema,
       onSubmit: schema,
     },
   });
@@ -72,7 +70,10 @@ export const EditCaseInbox = ({
   );
 
   return (
-    <form.Field name="inboxId">
+    <form.Field
+      name="inboxId"
+      validators={{ onBlur: schema.shape.inboxId, onChange: schema.shape.inboxId }}
+    >
       {(field) => (
         <div className="flex w-full gap-1">
           <div className="flex items-center gap-2">

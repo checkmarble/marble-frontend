@@ -154,8 +154,6 @@ export function CreateInboxUserContent({
       }
     },
     validators: {
-      onChangeAsync: schema,
-      onBlurAsync: schema,
       onSubmitAsync: schema,
     },
   });
@@ -170,7 +168,10 @@ export function CreateInboxUserContent({
     >
       <Modal.Title>{t('settings:inboxes.inbox_details.add_member')}</Modal.Title>
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
-        <form.Field name="userId">
+        <form.Field
+          name="userId"
+          validators={{ onBlur: schema.shape.userId, onChange: schema.shape.userId }}
+        >
           {(field) => (
             <div className="group flex flex-col gap-2">
               <FormLabel name={field.name}>{t('settings:inboxes.inbox_details.user')}</FormLabel>
@@ -190,7 +191,10 @@ export function CreateInboxUserContent({
             </div>
           )}
         </form.Field>
-        <form.Field name="role">
+        <form.Field
+          name="role"
+          validators={{ onBlur: schema.shape.role, onChange: schema.shape.role }}
+        >
           {(field) => (
             <div className="group flex flex-col gap-2">
               <FormLabel name={field.name} className="flex gap-2">

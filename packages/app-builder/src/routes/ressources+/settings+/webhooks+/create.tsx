@@ -120,8 +120,6 @@ function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessL
       }
     },
     validators: {
-      onChange: createWebhookFormSchema,
-      onBlur: createWebhookFormSchema,
       onSubmit: createWebhookFormSchema,
     },
   });
@@ -136,7 +134,13 @@ function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessL
     >
       <ModalV2.Title>{t('settings:webhooks.new_webhook')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
-        <form.Field name="url">
+        <form.Field
+          name="url"
+          validators={{
+            onBlur: createWebhookFormSchema.shape.url,
+            onChange: createWebhookFormSchema.shape.url,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col items-start gap-2">
               <FormLabel name={field.name}>{t('settings:webhooks.url')}</FormLabel>
@@ -154,7 +158,13 @@ function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessL
           )}
         </form.Field>
 
-        <form.Field name="eventTypes">
+        <form.Field
+          name="eventTypes"
+          validators={{
+            onBlur: createWebhookFormSchema.shape.eventTypes,
+            onChange: createWebhookFormSchema.shape.eventTypes,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col items-start gap-2">
               <FormLabel name={field.name} className="flex items-center gap-2">
@@ -195,7 +205,13 @@ function CreateWebhookContent({ webhookStatus }: { webhookStatus: FeatureAccessL
           )}
         </form.Field>
 
-        <form.Field name="httpTimeout">
+        <form.Field
+          name="httpTimeout"
+          validators={{
+            onBlur: createWebhookFormSchema.shape.httpTimeout,
+            onChange: createWebhookFormSchema.shape.httpTimeout,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col items-start gap-2">
               <FormLabel name={field.name}>{t('settings:webhooks.http_timeout')}</FormLabel>

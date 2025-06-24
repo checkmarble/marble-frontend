@@ -199,8 +199,6 @@ function ActivateScenarioVersionContent({
       }
     },
     validators: {
-      onChangeAsync: activateFormSchema,
-      onBlurAsync: activateFormSchema,
       onSubmitAsync: activateFormSchema,
     },
   });
@@ -217,7 +215,13 @@ function ActivateScenarioVersionContent({
       <div className="flex flex-col gap-6 p-6">
         <div className="text-s flex flex-col gap-4 font-medium">
           <p className="font-semibold">{t('scenarios:deployment_modal.activate.confirm')}</p>
-          <form.Field name="willBeLive">
+          <form.Field
+            name="willBeLive"
+            validators={{
+              onBlur: activateFormSchema.shape.willBeLive,
+              onChange: activateFormSchema.shape.willBeLive,
+            }}
+          >
             {(field) => (
               <div className="group flex flex-row items-center gap-2">
                 <Checkbox
@@ -244,7 +248,13 @@ function ActivateScenarioVersionContent({
               </div>
             )}
           </form.Field>
-          <form.Field name="changeIsImmediate">
+          <form.Field
+            name="changeIsImmediate"
+            validators={{
+              onBlur: activateFormSchema.shape.changeIsImmediate,
+              onChange: activateFormSchema.shape.changeIsImmediate,
+            }}
+          >
             {(field) => (
               <div className="group flex flex-row items-center gap-2">
                 <Checkbox

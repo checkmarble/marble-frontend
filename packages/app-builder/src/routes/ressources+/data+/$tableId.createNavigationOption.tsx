@@ -168,7 +168,13 @@ export function CreateNavigationOptionModal({
             {t('data:create_navigation_option.labels.ordered_by')}
           </span>
           <div>
-            <form.Field name="orderingFieldId">
+            <form.Field
+              name="orderingFieldId"
+              validators={{
+                onChange: createNavigationOptionSchema.shape.orderingFieldId,
+                onBlur: createNavigationOptionSchema.shape.orderingFieldId,
+              }}
+            >
               {(formField) => {
                 const selectedField = targetTable.fields.find(
                   (tableField) => tableField.id === formField.state.value,

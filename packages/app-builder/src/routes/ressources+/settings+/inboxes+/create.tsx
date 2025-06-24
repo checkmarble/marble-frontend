@@ -139,8 +139,6 @@ export function CreateInboxContent({
   const form = useForm({
     defaultValues: { name: '', redirectRoute: redirectRoutePath } as CreateInboxForm,
     validators: {
-      onChange: createInboxFormSchema,
-      onBlur: createInboxFormSchema,
       onSubmit: createInboxFormSchema,
     },
     onSubmit: ({ value, formApi }) => {
@@ -165,7 +163,13 @@ export function CreateInboxContent({
       <ModalV2.Title>{t('settings:inboxes.new_inbox.explain')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <HiddenInputs redirectRoute={redirectRoutePath} />
-        <form.Field name="name">
+        <form.Field
+          name="name"
+          validators={{
+            onBlur: createInboxFormSchema.shape.name,
+            onChange: createInboxFormSchema.shape.name,
+          }}
+        >
           {(field) => (
             <div className="group flex flex-col gap-2">
               <FormLabel name={field.name}>{t('settings:inboxes.new_inbox.name')}</FormLabel>

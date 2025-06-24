@@ -88,6 +88,11 @@ const createAnnotationSchema = z.union([
   createCommentAnnotationSchema,
 ]);
 
+// Add these helper objects at the top for clarity
+const commentPayloadShape = z.object({ text: z.string().nonempty() }).shape;
+const filePayloadShape = z.object({ files: z.array(z.instanceof(File)).min(1) }).shape;
+const tagPayloadShape = z.object({ tags: z.array(z.string()) }).shape;
+
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
@@ -253,7 +258,6 @@ export function ClientCommentForm({
       },
     } as z.infer<typeof createCommentAnnotationSchema>,
     validators: {
-      onChange: createCommentAnnotationSchema,
       onSubmit: createCommentAnnotationSchema,
     },
     onSubmit({ value }) {
@@ -281,7 +285,13 @@ export function ClientCommentForm({
       onSubmit={handleSubmit(form)}
       className={cn('flex justify-between rounded-lg px-4 py-3', className)}
     >
-      <form.Field name="payload.text">
+      <form.Field
+        name="payload.text"
+        validators={{
+          onChange: commentPayloadShape.text,
+          onBlur: commentPayloadShape.text,
+        }}
+      >
         {(field) => (
           <div className="flex grow flex-col gap-1">
             <textarea
@@ -344,7 +354,6 @@ export function ClientDocumentsPopover({
       },
     } as z.infer<typeof createFileAnnotationSchema>,
     validators: {
-      onChange: createFileAnnotationSchema,
       onSubmit: createFileAnnotationSchema,
     },
     onSubmit({ value }) {
@@ -377,7 +386,13 @@ export function ClientDocumentsPopover({
   return (
     <>
       <form onSubmit={handleSubmit(form)}>
-        <form.Field name="payload.files">
+        <form.Field
+          name="payload.files"
+          validators={{
+            onChange: filePayloadShape.files,
+            onBlur: filePayloadShape.files,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col gap-2 px-4 py-3">
               <input {...getInputProps()} />
@@ -524,7 +539,6 @@ export function ClientTagsEditSelect({
       },
     } as z.infer<typeof tagAnnotationFormSchema>,
     validators: {
-      onChange: tagAnnotationFormSchema,
       onSubmit: tagAnnotationFormSchema,
     },
     onSubmit({ value }) {
@@ -564,7 +578,13 @@ export function ClientTagsEditSelect({
 
   return (
     <form onSubmit={handleSubmit(form)}>
-      <form.Field name="payload.tags">
+      <form.Field
+        name="payload.tags"
+        validators={{
+          onChange: tagPayloadShape.tags,
+          onBlur: tagPayloadShape.tags,
+        }}
+      >
         {(field) => (
           <MenuCommand.List>
             {orgObjectTags.map((tag) => (

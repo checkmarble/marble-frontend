@@ -6,7 +6,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { initServerServices } from '@app-builder/services/init.server';
-import { getFieldErrors } from '@app-builder/utils/form';
+import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
@@ -123,31 +123,25 @@ function CreateScenarioContent() {
   const createScenarioFetcher = useFetcher<typeof action>();
 
   const form = useForm({
-    defaultValues: { name: '', description: '', triggerObjectType: '' } as CreateScenarioForm,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        createScenarioFetcher.submit(value, {
-          method: 'PATCH',
-          action: getRoute('/ressources/scenarios/create'),
-          encType: 'application/json',
-        });
-      }
+    defaultValues: {
+      name: '',
+      description: '',
+      triggerObjectType: '',
+    } satisfies CreateScenarioForm,
+    onSubmit: ({ value }) => {
+      createScenarioFetcher.submit(value, {
+        method: 'PATCH',
+        action: getRoute('/ressources/scenarios/create'),
+        encType: 'application/json',
+      });
     },
     validators: {
-      onChange: createScenarioFormSchema,
-      onBlur: createScenarioFormSchema,
       onSubmit: createScenarioFormSchema,
     },
   });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-    >
+    <form onSubmit={handleSubmit(form)}>
       <ModalV2.Title>{t('scenarios:create_scenario.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <ModalV2.Description render={<Callout variant="outlined" />}>
@@ -162,7 +156,13 @@ function CreateScenarioContent() {
           </p>
         </ModalV2.Description>
         <div className="flex flex-1 flex-col gap-4">
-          <form.Field name="name">
+          <form.Field
+            name="name"
+            validators={{
+              onBlur: createScenarioFormSchema.shape.name,
+              onChange: createScenarioFormSchema.shape.name,
+            }}
+          >
             {(field) => (
               <div className="group flex w-full flex-col gap-2">
                 <FormLabel name={field.name}>{t('scenarios:create_scenario.name')}</FormLabel>
@@ -198,7 +198,13 @@ function CreateScenarioContent() {
               </div>
             )}
           </form.Field>
-          <form.Field name="triggerObjectType">
+          <form.Field
+            name="triggerObjectType"
+            validators={{
+              onBlur: createScenarioFormSchema.shape.triggerObjectType,
+              onChange: createScenarioFormSchema.shape.triggerObjectType,
+            }}
+          >
             {(field) => (
               <div className="group flex w-full flex-col gap-2">
                 <FormLabel name={field.name} className="flex flex-row items-center gap-1">

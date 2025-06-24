@@ -175,8 +175,6 @@ function AddRuleSnoozeContent({
       }
     },
     validators: {
-      onChange: addRuleSnoozeFormSchema,
-      onBlur: addRuleSnoozeFormSchema,
       onSubmit: addRuleSnoozeFormSchema,
     },
   });
@@ -203,7 +201,13 @@ function AddRuleSnoozeContent({
           </p>
         </ModalV2.Description>
 
-        <form.Field name="comment">
+        <form.Field
+          name="comment"
+          validators={{
+            onBlur: addRuleSnoozeFormSchema.shape.comment,
+            onChange: addRuleSnoozeFormSchema.shape.comment,
+          }}
+        >
           {(field) => (
             <div className="row-span-full grid grid-rows-subgrid gap-2">
               <FormLabel name={field.name}>
@@ -223,7 +227,13 @@ function AddRuleSnoozeContent({
         </form.Field>
 
         <div className="grid w-full grid-cols-2 grid-rows-[repeat(3,_max-content)] gap-2">
-          <form.Field name="durationValue">
+          <form.Field
+            name="durationValue"
+            validators={{
+              onBlur: addRuleSnoozeFormSchema.shape.durationValue,
+              onChange: addRuleSnoozeFormSchema.shape.durationValue,
+            }}
+          >
             {(field) => (
               <div className="row-span-full grid grid-rows-subgrid gap-2">
                 <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
@@ -243,7 +253,13 @@ function AddRuleSnoozeContent({
             )}
           </form.Field>
 
-          <form.Field name="durationUnit">
+          <form.Field
+            name="durationUnit"
+            validators={{
+              onBlur: addRuleSnoozeFormSchema.shape.durationUnit,
+              onChange: addRuleSnoozeFormSchema.shape.durationUnit,
+            }}
+          >
             {(field) => (
               <div className="row-span-full grid grid-rows-subgrid gap-2">
                 <FormLabel name={field.name}>
