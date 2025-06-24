@@ -2,7 +2,6 @@ import {
   type FamilyPersonEntity,
   type SanctionCheckMatch,
 } from '@app-builder/models/sanction-check';
-import { useLayoutLoaderData } from '@app-builder/routes/_builder+/decisions+/$decisionId';
 import { SanctionCheckReviewModal } from '@app-builder/routes/ressources+/cases+/review-sanction-match';
 import { EnrichMatchButton } from '@app-builder/routes/ressources+/sanction-check+/enrich-match.$matchId';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -12,7 +11,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, CollapsibleV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { MatchDetails } from './MatchDetails';
 import { StatusTag } from './StatusTag';
 import { sanctionsI18n } from './sanctions-i18n';
@@ -36,16 +34,6 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
     setIsInReview(true);
   };
 
-  const { datasets } = useLayoutLoaderData();
-
-  const datasetNames = match.payload.datasets
-    ?.map((code) =>
-      [...(datasets as Map<string, Map<string, string>>).values()]
-        .find((innerMap) => innerMap.has(code))
-        ?.get(code),
-    )
-    .filter(Boolean);
-
   return (
     <div className="grid grid-cols-[max-content_1fr_max-content] gap-x-6 gap-y-2">
       <CollapsibleV2.Provider defaultOpen={defaultOpen}>
@@ -61,7 +49,9 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                 <span className="font-semibold">{entity.caption}</span>
 
                 <span>
-                  {t(`sanctions:entity.schema.${entitySchema}`, { defaultValue: entitySchema })}
+                  {t(`sanctions:entity.schema.${entitySchema}`, {
+                    defaultValue: entitySchema,
+                  })}
                 </span>
                 <Tag color="grey">
                   {t('sanctions:match.similarity', {
@@ -101,7 +91,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                 <div className="flex flex-col gap-2">
                   <div className="font-semibold">Appears on</div>
                   <div>
-                    {datasetNames?.map((name, index) => (
+                    {entity?.datasets?.map((name, index) => (
                       <ul key={`dataset-${index}`} className="flex flex-wrap gap-1">
                         <li>{name}</li>
                       </ul>
