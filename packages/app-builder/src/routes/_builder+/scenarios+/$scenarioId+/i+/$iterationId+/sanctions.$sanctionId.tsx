@@ -289,7 +289,8 @@ export default function SanctionDetail() {
       match(entityType)
         .with('Organization', () => Boolean(query['name'] || query['registrationNumber']))
         .with('Vehicle', () => Boolean(query['name'] || query['registrationNumber']))
-        .with('Person', () => Boolean(query['name'] || query['idNumber']))
+        .with('Person', () => Boolean(query['name'] || query['passportNumber']))
+        .with('Thing', () => query['name'])
         .otherwise(() => true),
     [entityType, query],
   );
@@ -687,14 +688,14 @@ export default function SanctionDetail() {
                                 );
                               }}
                             </form.Field>
-                            <form.Field name="query.idNumber">
+                            <form.Field name="query.passportNumber">
                               {(field) => {
-                                const value = sanctionCheckConfig?.query?.['idNumber'];
+                                const value = sanctionCheckConfig?.query?.['passportNumber'];
                                 return (
                                   <div className="flex flex-col gap-1">
                                     <div className="flex flex-col gap-1">
                                       <span className="text-s inline-flex items-center gap-1">
-                                        {t('scenarios:edit_sanction.idnumber')}
+                                        {t('scenarios:edit_sanction.passport_number')}
                                       </span>
                                       <FieldNodeConcat
                                         viewOnly={editor === 'view'}
@@ -704,7 +705,7 @@ export default function SanctionDetail() {
                                         onChange={field.handleChange}
                                         onBlur={field.handleBlur}
                                         placeholder={t(
-                                          'scenarios:edit_sanction.idnumber_placeholder',
+                                          'scenarios:edit_sanction.passport_number_placeholder',
                                         )}
                                         limit={5}
                                       />

@@ -476,8 +476,6 @@
   "edit_sanction.birthdate_placeholder": "YYYY-MM-DD",
   "edit_sanction.nationality": "الجنسية",
   "edit_sanction.nationality_placeholder": "رمز الدولة",
-  "edit_sanction.idnumber": "رقم الهوية",
-  "edit_sanction.idnumber_placeholder": "رقم الهوية",
   "edit_sanction.address": "العنوان",
   "edit_sanction.address_placeholder": "العنوان",
   "edit_sanction.country": "الدولة",
@@ -486,5 +484,7 @@
   "edit_sanction.registrationnumber_placeholder": "رقم التسجيل",
   "sanction_forced_outcome_suffix": "إذا تم تشغيل فحص العقوبات",
   "edit_sanction.remove_terms_from_list.tooltip": "إزالة المصطلحات من القائمة",
-  "edit_sanction.required_fields_disclaimer": "لتحسين فحص العقوبات ، ينصح بتعبئة الاسم أو رقم التسجيل للمنظمة / السيارة ، أو الاسم أو رقم الهوية للشخص."
+  "edit_sanction.required_fields_disclaimer": "لتحسين فحص العقوبات ، ينصح بتعبئة الاسم أو رقم التسجيل للمنظمة / السيارة ، أو الاسم أو رقم الهوية للشخص.",
+  "edit_sanction.passport_number": "رقم جواز السفر",
+  "edit_sanction.passport_number_placeholder": "رقم جواز السفر"
 }

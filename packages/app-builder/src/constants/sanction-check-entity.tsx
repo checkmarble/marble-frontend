@@ -16,7 +16,7 @@ export type SearchableSchema = 'Thing' | 'Person' | 'Organization' | 'Vehicle';
 export const SEARCH_ENTITIES = {
   Thing: { fields: ['name'] },
   Person: {
-    fields: ['name', 'birthDate', 'nationality', 'idNumber', 'address'],
+    fields: ['name', 'birthDate', 'nationality', 'passportNumber', 'address'],
   },
   Organization: {
     fields: ['name', 'country', 'registrationNumber', 'address'],

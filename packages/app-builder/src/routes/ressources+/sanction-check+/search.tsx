@@ -20,7 +20,7 @@ export const refineSearchSchema = z.discriminatedUnion('entityType', [
       name: z.string().optional(),
       birthDate: z.string().optional(),
       nationality: z.string().optional(),
-      idNumber: z.string().optional(),
+      passportNumber: z.string().optional(),
       address: z.string().optional(),
     }),
   }),
