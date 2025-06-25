@@ -58,11 +58,11 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                     percent: Math.round(entity.score * 100),
                   })}
                 </Tag>
-                <span className="col-span-full flex w-full flex-wrap gap-1">
+                <div className="col-span-full flex w-full flex-wrap gap-1">
                   {entity.properties['topics']?.map((topic) => (
                     <TopicTag key={`${match.id}-${topic}`} topic={topic} />
                   ))}
-                </span>
+                </div>
               </div>
             </CollapsibleV2.Title>
             {!match.enriched ? (
@@ -89,7 +89,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
             <div className="text-s flex flex-col gap-6 p-4">
               {entitySchema === 'person' ? (
                 <div className="grid grid-cols-[168px,_1fr] gap-2">
-                  <div className="font-bold">t('sanctions:match.datasets.title')</div>
+                  <div className="font-bold">{t('sanctions:match.datasets.title')}</div>
                   <div>
                     <ul>
                       {entity?.datasets?.map((name, index) => (
@@ -148,33 +148,61 @@ function CommentLine({ comment }: { comment: SanctionCheckMatch['comments'][numb
 }
 
 function FamilyDetail({ familyMembers }: { familyMembers: FamilyPersonEntity[] }) {
+  const language = useFormatLanguage();
+
   const { t } = useTranslation(sanctionsI18n);
   return (
-    <div className="flex flex-col items-start gap-1">
-      {/* <Icon icon="person" className="text-grey-90 size-5" /> */}
-      <div className="text-grey-00">{t('sanctions:match.family-members.title')}</div>
+    <div className="grid grid-cols-[168px,_1fr] gap-2">
+      <div className="font-bold col-span-2">{t('sanctions:match.family-members.title')}</div>
 
-      <div className="grid w-full grid-cols-[max-content_1fr] gap-x-2 gap-y-1">
-        {familyMembers.map(({ properties: { relationship, relative } }) =>
-          relative?.map(({ id, properties }, idx) => {
-            if (!properties.name?.[0]) return null;
-            const rel = relationship?.[0] || t('sanctions:match.family.unknown_relationship');
-            return (
-              <div key={`person-${id}-${idx}`} className="contents">
-                <div className="font-semibold">{rel}:</div>
-                <div className="flex items-center gap-1">
+      {familyMembers.map(({ properties: { relationship, relative, startDate, endDate } }) => {
+        return relative?.map(({ id, properties }, idx) => {
+          // if (status === 'dead') return null;
+          if (!properties.name?.[0]) return null;
+          const rel = relationship?.join(' · ') ?? t('sanctions:match.family.unknown_relationship');
+          return (
+            <div key={`person-${id}-${idx}`} className="contents">
+              <div className="font-semibold">{rel}:</div>
+              <div className="flex flex-col items-start gap-1">
+                <div className="col-span-full flex w-full flex-wrap gap-1">
                   <span>
-                    {properties.firstName} {properties.lastName}
+                    {properties.firstName?.slice(0, 3).join(' ')} {properties['secondName']?.[0]}
                   </span>
+                  <span className="font-semibold">
+                    {properties.lastName?.slice(0, 3).join(' ') ?? 'unknown'}
+                  </span>
+                </div>
+                <div className="col-span-full flex w-full flex-wrap gap-1">
                   {properties['topics']?.map((topic) => (
                     <TopicTag key={`${id}-${topic}`} topic={topic} />
                   ))}
                 </div>
+                {startDate?.[0] || endDate?.[0] ? (
+                  <div className="col-span-full flex w-full flex-wrap gap-1">
+                    {startDate?.[0] && (
+                      <span>
+                        {formatDateTimeWithoutPresets(startDate[0], {
+                          language,
+                          dateStyle: 'short',
+                        })}
+                      </span>
+                    )}
+                    {startDate?.[0] && endDate?.[0] ? <span> - </span> : null}
+                    {endDate?.[0] && (
+                      <span>
+                        {formatDateTimeWithoutPresets(endDate[0], {
+                          language,
+                          dateStyle: 'short',
+                        })}
+                      </span>
+                    )}
+                  </div>
+                ) : null}
               </div>
-            );
-          }),
-        )}
-      </div>
+            </div>
+          );
+        });
+      })}
     </div>
   );
 }
