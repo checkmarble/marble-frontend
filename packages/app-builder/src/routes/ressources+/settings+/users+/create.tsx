@@ -156,7 +156,6 @@ function CreateUserContent({
     },
     validators: {
       onChange: schema,
-      onBlur: schema,
       onSubmit: schema,
     },
   });
