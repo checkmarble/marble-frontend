@@ -1,20 +1,17 @@
-import {
-  type FamilyPersonEntity,
-  type SanctionCheckMatch,
-} from '@app-builder/models/sanction-check';
+import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
 import { SanctionCheckReviewModal } from '@app-builder/routes/ressources+/cases+/review-sanction-match';
 import { EnrichMatchButton } from '@app-builder/routes/ressources+/sanction-check+/enrich-match.$matchId';
-import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
-import { getFullName } from '@app-builder/services/user';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Avatar, CollapsibleV2, Tag } from 'ui-design-system';
+import { CollapsibleV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { MatchDetails } from './MatchDetails';
-import { StatusTag } from './StatusTag';
-import { sanctionsI18n } from './sanctions-i18n';
-import { TopicTag } from './TopicTag';
+
+import { MatchDetails } from '../MatchDetails';
+import { StatusTag } from '../StatusTag';
+import { sanctionsI18n } from '../sanctions-i18n';
+import { TopicTag } from '../TopicTag';
+import { CommentLine } from './CommentLine';
+import { FamilyDetail } from './FamilyDetail';
 
 type MatchCardProps = {
   match: SanctionCheckMatch;
@@ -101,13 +98,14 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                   </div>
                 </div>
               ) : null}
-              {entitySchema === 'person' && entity.properties['familyPerson']?.length ? (
-                <FamilyDetail familyMembers={entity.properties['familyPerson']} />
-              ) : null}
+
               {match.comments.map((comment) => {
                 return <CommentLine key={comment.id} comment={comment} />;
               })}
               <MatchDetails entity={entity} />
+              {entitySchema === 'person' && entity.properties['familyPerson']?.length ? (
+                <FamilyDetail familyMembers={entity.properties['familyPerson']} />
+              ) : null}
             </div>
           </CollapsibleV2.Content>
         </div>
@@ -120,89 +118,3 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
     </div>
   );
 };
-
-function CommentLine({ comment }: { comment: SanctionCheckMatch['comments'][number] }) {
-  const language = useFormatLanguage();
-  const { getOrgUserById } = useOrganizationUsers();
-  const user = getOrgUserById(comment.authorId);
-  const fullName = getFullName(user);
-
-  return (
-    <div key={comment.id} className="flex flex-col gap-2">
-      <div className="flex items-center gap-1">
-        <Avatar size="xs" firstName={user?.firstName} lastName={user?.lastName} />
-        <span className="flex items-baseline gap-1">
-          {fullName}
-          <time className="text-grey-50 text-xs" dateTime={comment.createdAt}>
-            {formatDateTimeWithoutPresets(comment.createdAt, {
-              language,
-              dateStyle: 'short',
-              timeStyle: 'short',
-            })}
-          </time>
-        </span>
-      </div>
-      <p>{comment.comment}</p>
-    </div>
-  );
-}
-
-function FamilyDetail({ familyMembers }: { familyMembers: FamilyPersonEntity[] }) {
-  const language = useFormatLanguage();
-
-  const { t } = useTranslation(sanctionsI18n);
-  return (
-    <div className="grid grid-cols-[168px,_1fr] gap-2">
-      <div className="font-bold col-span-2">{t('sanctions:match.family-members.title')}</div>
-
-      {familyMembers.map(({ properties: { relationship, relative, startDate, endDate } }) => {
-        return relative?.map(({ id, properties }, idx) => {
-          // if (status === 'dead') return null;
-          if (!properties.name?.[0]) return null;
-          const rel = relationship?.join(' · ') ?? t('sanctions:match.family.unknown_relationship');
-          return (
-            <div key={`person-${id}-${idx}`} className="contents">
-              <div className="font-semibold">{rel}:</div>
-              <div className="flex flex-col items-start gap-1">
-                <div className="col-span-full flex w-full flex-wrap gap-1">
-                  <span>
-                    {properties.firstName?.slice(0, 3).join(' ')} {properties['secondName']?.[0]}
-                  </span>
-                  <span className="font-semibold">
-                    {properties.lastName?.slice(0, 3).join(' ') ?? 'unknown'}
-                  </span>
-                </div>
-                <div className="col-span-full flex w-full flex-wrap gap-1">
-                  {properties['topics']?.map((topic) => (
-                    <TopicTag key={`${id}-${topic}`} topic={topic} />
-                  ))}
-                </div>
-                {startDate?.[0] || endDate?.[0] ? (
-                  <div className="col-span-full flex w-full flex-wrap gap-1">
-                    {startDate?.[0] && (
-                      <span>
-                        {formatDateTimeWithoutPresets(startDate[0], {
-                          language,
-                          dateStyle: 'short',
-                        })}
-                      </span>
-                    )}
-                    {startDate?.[0] && endDate?.[0] ? <span> - </span> : null}
-                    {endDate?.[0] && (
-                      <span>
-                        {formatDateTimeWithoutPresets(endDate[0], {
-                          language,
-                          dateStyle: 'short',
-                        })}
-                      </span>
-                    )}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          );
-        });
-      })}
-    </div>
-  );
-}

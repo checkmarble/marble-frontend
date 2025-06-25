@@ -140,5 +140,6 @@
   "potential_matches": "Potential matches",
   "match.family-members.title": "Family members",
   "match.family.unknown_relationship": "Unknown",
-  "match.datasets.title": "Appears on"
+  "match.datasets.title": "Appears on",
+  "match.family-member.title": "Family member"
 }

@@ -141,5 +141,6 @@
   "required_actions.view_screening": "منظر",
   "match.family-members.title": "أفراد الأسرة",
   "match.family.unknown_relationship": "مجهول",
-  "match.datasets.title": "يظهر على"
+  "match.datasets.title": "يظهر على",
+  "match.family-member.title": "أحد أفراد الأسرة"
 }
