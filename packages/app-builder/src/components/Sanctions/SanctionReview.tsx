@@ -3,6 +3,7 @@ import {
   isSanctionCheckError,
   isSanctionCheckReviewCompleted,
   type SanctionCheck,
+  SanctionCheckSuccess,
 } from '@app-builder/models/sanction-check';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -52,7 +53,7 @@ export function SanctionReviewSection({
           .when(isSanctionCheckError, (sc) => <SanctionCheckErrors sanctionCheck={sc} />)
           .when(
             (sc) => sc.status === 'in_review' && sc.partial,
-            (sc) => (
+            (sc: SanctionCheckSuccess) => (
               <div className="text-s bg-red-95 text-red-47 flex items-center gap-2 rounded p-2">
                 <Icon icon="error" className="size-5 shrink-0" />
                 {t('sanctions:callout.needs_refine', {

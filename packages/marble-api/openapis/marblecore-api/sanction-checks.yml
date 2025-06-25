@@ -294,6 +294,7 @@ components:
       type: object
       anyOf:
         - $ref: '#/components/schemas/SanctionCheckSuccessDto'
+        - $ref: '#/components/schemas/SanctionCheckNoHitDto'
         - $ref: '#/components/schemas/SanctionCheckErrorDto'
     SanctionCheckSuccessDto:
       type: object
@@ -322,7 +323,44 @@ components:
           format: uuid
         status:
           type: string
-          enum: ['in_review', 'confirmed_hit', 'no_hit']
+          enum: ['in_review', 'confirmed_hit']
+        request:
+          $ref: '#/components/schemas/SanctionCheckRequestDto'
+        partial:
+          type: boolean
+        is_manual:
+          type: boolean
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/SanctionCheckMatchDto'
+    SanctionCheckNoHitDto:
+      type: object
+      required:
+        - id
+        - config
+        - decision_id
+        - status
+        - partial
+        - is_manual
+        - matches
+      properties:
+        id:
+          type: string
+          format: uuid
+        config:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+        decision_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: ['no_hit']
         request:
           $ref: '#/components/schemas/SanctionCheckRequestDto'
         partial:
