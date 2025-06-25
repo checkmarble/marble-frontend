@@ -198,12 +198,16 @@ export type SanctionCheckError = BaseSanctionCheck & {
   request: SanctionCheckRequest | null;
   errorCodes: SanctionCheckErrorDto['error_codes'];
 };
+export type SanctionCheckNoHit = BaseSanctionCheck & {
+  status: 'no_hit';
+  request: SanctionCheckRequest | null;
+};
 export type SanctionCheckSuccess = BaseSanctionCheck & {
-  status: Exclude<SanctionCheckStatus, 'error'>;
+  status: Exclude<SanctionCheckStatus, 'error | no_hit'>;
   request: SanctionCheckRequest;
 };
 
-export type SanctionCheck = SanctionCheckError | SanctionCheckSuccess;
+export type SanctionCheck = SanctionCheckError | SanctionCheckSuccess | SanctionCheckNoHit;
 
 export function adaptSanctionCheck(dto: SanctionCheckDto): SanctionCheck {
   const baseSanctionCheck: BaseSanctionCheck = {
@@ -221,6 +225,14 @@ export function adaptSanctionCheck(dto: SanctionCheckDto): SanctionCheck {
       status: dto.status,
       request: dto.request ? adaptSanctionCheckRequest(dto.request) : null,
       errorCodes: dto.error_codes,
+    };
+  }
+
+  if (dto.status === 'no_hit') {
+    return {
+      ...baseSanctionCheck,
+      status: dto.status,
+      request: dto.request ? adaptSanctionCheckRequest(dto.request) : null,
     };
   }
 
