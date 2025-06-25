@@ -88,14 +88,16 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
           <CollapsibleV2.Content className="col-span-full">
             <div className="text-s flex flex-col gap-6 p-4">
               {entitySchema === 'person' ? (
-                <div className="flex flex-col gap-2">
-                  <div className="font-semibold">Appears on</div>
+                <div className="grid grid-cols-[168px,_1fr] gap-2">
+                  <div className="font-bold">t('sanctions:match.datasets.title')</div>
                   <div>
-                    {entity?.datasets?.map((name, index) => (
-                      <ul key={`dataset-${index}`} className="flex flex-wrap gap-1">
-                        <li>{name}</li>
-                      </ul>
-                    ))}
+                    <ul>
+                      {entity?.datasets?.map((name, index) => (
+                        <li className="break-all" key={`dataset-${index}`}>
+                          {name}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               ) : null}
