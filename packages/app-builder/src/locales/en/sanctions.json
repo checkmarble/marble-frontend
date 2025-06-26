@@ -166,12 +166,12 @@
   "relation.godfather.label": "Godfather",
   "relation.godmother.label": "Godmother",
   "relation.relative.label": "Relative",
-  "relative.maleFirstCousin": "Male first cousin",
-  "relative.femaleFirstCousin": "Female first cousin",
-  "relative.maleSecondCousin": "Male second cousin",
-  "relative.femaleSecondCousin": "Female second cousin",
-  "relative.maleThirdCousin": "Male third cousin",
-  "relative.femaleThirdCousin": "Female third cousin",
-  "relative.maleFourthCousin": "Male fourth cousin",
-  "relative.femaleFourthCousin": "Female fourth cousin"
+  "relative.maleFirstCousin.label": "Male first cousin",
+  "relative.femaleFirstCousin.label": "Female first cousin",
+  "relative.maleSecondCousin.label": "Male second cousin",
+  "relative.femaleSecondCousin.label": "Female second cousin",
+  "relative.maleThirdCousin.label": "Male third cousin",
+  "relative.femaleThirdCousin.label": "Female third cousin",
+  "relative.maleFourthCousin.label": "Male fourth cousin",
+  "relative.femaleFourthCousin.label": "Female fourth cousin"
 }

@@ -167,12 +167,12 @@
   "relation.godfather.label": "أب",
   "relation.godmother.label": "أم",
   "relation.relative.label": "عم",
-  "relative.maleFirstCousin": "أخ أول",
-  "relative.femaleFirstCousin": "أخت أول",
-  "relative.maleSecondCousin": "أخ ثاني",
-  "relative.femaleSecondCousin": "أخت ثاني",
-  "relative.maleThirdCousin": "أخ ثالث",
-  "relative.femaleThirdCousin": "أخت ثالث",
-  "relative.maleFourthCousin": "أخ رابع",
-  "relative.femaleFourthCousin": "أخت رابع"
+  "relative.maleFirstCousin.label": "أخ أول",
+  "relative.femaleFirstCousin.label": "أخت أول",
+  "relative.maleSecondCousin.label": "أخ ثاني",
+  "relative.femaleSecondCousin.label": "أخت ثاني",
+  "relative.maleThirdCousin.label": "أخ ثالث",
+  "relative.femaleThirdCousin.label": "أخت ثالث",
+  "relative.maleFourthCousin.label": "أخ رابع",
+  "relative.femaleFourthCousin.label": "أخت رابع"
 }
