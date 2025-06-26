@@ -84,7 +84,6 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
                       />
                     </button>
                   </Modal.Trigger>
-                  {/* </div> */}
                 </div>
               </div>
             );
@@ -103,7 +102,6 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
         <div className="overflow-y-auto p-6">
           <div className="grid grid-cols-[168px,_1fr] gap-4">
             {selectedMember?.properties?.relative?.map((person) => {
-              console.log(person);
               return (
                 <>
                   <div className="col-span-full flex w-full flex-wrap gap-1">
@@ -116,17 +114,6 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
                     </span>
                   </div>
 
-                  {/* <div>
-                    <span>
-                      {t('sanctions:match.family-member.aliases')} :
-                      {person.properties.alias?.join(' ')}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="font-semibold">
-                      {person.properties.lastName?.slice(0, 3).join(' ') ?? 'unknown'}
-                    </span>
-                  </div> */}
                   <div className="col-span-full flex w-full flex-wrap gap-1">
                     {person.properties['topics']?.map((topic) => (
                       <TopicTag key={`${person.id}-${topic}`} topic={topic} />
