@@ -146,6 +146,8 @@
   "match.family-member.aliases": "الأسماء المستعارة",
   "match.family-member.birth-date": "تاريخ الميلاد: {{date}}",
   "match.family.source.label": "المصادر",
+  "match.membership.title": "الأعضاء",
+  "match.membership.no-caption": "لا يوجد عنوان",
   "relation.mother.label": "أم",
   "relation.father.label": "أب",
   "relation.spouse.label": "زوج",

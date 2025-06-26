@@ -143,6 +143,8 @@
   "match.datasets.title": "Appears on",
   "match.family-member.title": "Family member",
   "match.associations.title": "Associations",
+  "match.membership.title": "Memberships",
+  "match.membership.no-caption": "No caption",
   "match.family-member.aliases": "Aliases",
   "match.family-member.birth-date": "Birth date: {{date}}",
   "match.family.source.label": "Sources",

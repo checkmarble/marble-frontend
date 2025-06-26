@@ -144,6 +144,8 @@
   "match.datasets.title": "Apparaît sur",
   "match.family-member.title": "Membre de la famille",
   "match.associations.title": "Associations",
+  "match.membership.title": "Organisations",
+  "match.membership.no-caption": "Aucun titre",
   "match.family-member.aliases": "Alias",
   "match.family-member.birth-date": "Date de naissance: {{date}}",
   "match.family.source.label": "Sources",

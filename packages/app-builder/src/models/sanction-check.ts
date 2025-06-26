@@ -19,6 +19,7 @@ const matchEntitySchemas = [
   'Vessel',
   'Family',
   'Associate',
+  'MembershipMember',
 ] as const;
 const sanctionEntitySchemas = ['Sanction'] as const;
 export const openSanctionEntitySchemas = [...matchEntitySchemas, ...sanctionEntitySchemas] as const;
@@ -51,6 +52,7 @@ export type SanctionCheckMatchEntitySchema = Extract<
   | 'Vessel'
   | 'Family'
   | 'Associate'
+  | 'MembershipMember'
 >;
 
 export type PersonEntity = OpenSanctionEntity & {
@@ -107,6 +109,28 @@ export type AssociationEntity = OpenSanctionEntity & {
   } & Record<string, string[]>;
 };
 
+export type MembershipMemberEntity = OpenSanctionEntity & {
+  schema: 'MembershipMember';
+  target: boolean;
+  caption: string;
+  datasets: string[];
+  last_seen: string;
+  referents: string[];
+  first_seen: string;
+  last_change: string;
+  properties: {
+    person?: PersonEntity[];
+    organization?: PersonEntity[];
+    member?: string[];
+    sourceUrl?: string[];
+    relationship?: string[];
+    topics?: string[];
+    role?: string[];
+    startDate?: string[];
+    endDate?: string[];
+  } & Record<string, string[]>;
+};
+
 export type SanctionCheckMatchPayload = {
   id: string;
   match: boolean;
@@ -118,6 +142,7 @@ export type SanctionCheckMatchPayload = {
     sanctions?: SanctionCheckSanctionEntity[];
     familyPerson?: FamilyPersonEntity[];
     associations?: AssociationEntity[];
+    membershipMember?: MembershipMemberEntity[];
   } & Record<string, string[]>;
 };
 

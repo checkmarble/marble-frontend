@@ -12,6 +12,7 @@ import { TopicTag } from '../TopicTag';
 import { Associations } from './Associations';
 import { CommentLine } from './CommentLine';
 import { FamilyDetail } from './FamilyDetail';
+import { MemberShip } from './MemberShip';
 
 type MatchCardProps = {
   match: SanctionCheckMatch;
@@ -26,7 +27,6 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
 
   const entity = match.payload;
   const entitySchema = entity.schema.toLowerCase() as Lowercase<typeof entity.schema>;
-
   const handleMatchReview = () => {
     setIsInReview(true);
   };
@@ -103,11 +103,19 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                 return <CommentLine key={comment.id} comment={comment} />;
               })}
               <MatchDetails entity={entity} />
-              {entitySchema === 'person' && entity.properties['familyPerson']?.length ? (
-                <FamilyDetail familyMembers={entity.properties['familyPerson']} />
+
+              {entitySchema === 'person' &&
+              entity.properties['membershipMember']?.length &&
+              entity.properties['membershipMember']?.[0]?.caption ? (
+                <MemberShip membershipMember={entity.properties['membershipMember']} />
               ) : null}
+
               {entitySchema === 'person' && entity.properties['associations']?.length ? (
                 <Associations associations={entity.properties['associations']} />
+              ) : null}
+
+              {entitySchema === 'person' && entity.properties['familyPerson']?.length ? (
+                <FamilyDetail familyMembers={entity.properties['familyPerson']} />
               ) : null}
             </div>
           </CollapsibleV2.Content>
