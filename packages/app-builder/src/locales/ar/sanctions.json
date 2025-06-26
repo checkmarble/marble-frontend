@@ -143,6 +143,7 @@
   "match.family.unknown_relationship": "مجهول",
   "match.datasets.title": "يظهر على",
   "match.family-member.title": "أحد أفراد الأسرة",
+  "match.associations.title": "الأعضاء",
   "match.family-member.aliases": "الأسماء المستعارة",
   "match.family-member.birth-date": "تاريخ الميلاد: {{date}}",
   "match.family.source.label": "المصادر",
