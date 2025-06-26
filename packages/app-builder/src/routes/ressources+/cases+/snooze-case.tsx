@@ -106,8 +106,6 @@ export function SnoozeCase({
       });
     },
     validators: {
-      onChangeAsync: editSnoozeSchema,
-      onBlurAsync: editSnoozeSchema,
       onSubmitAsync: editSnoozeSchema,
     },
     defaultValues: {
@@ -125,7 +123,13 @@ export function SnoozeCase({
   }, [selectedDate]);
 
   return (
-    <form.Field name="snoozeUntil">
+    <form.Field
+      name="snoozeUntil"
+      validators={{
+        onBlur: editSnoozeSchema.shape.snoozeUntil,
+        onChange: editSnoozeSchema.shape.snoozeUntil,
+      }}
+    >
       {(field) => (
         <MenuCommand.Menu open={isOpen} onOpenChange={setIsOpen}>
           <MenuCommand.Trigger>

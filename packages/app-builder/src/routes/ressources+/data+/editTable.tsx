@@ -69,8 +69,6 @@ export function EditTable({ table, children }: { table: TableModel; children: Re
       }
     },
     validators: {
-      onChangeAsync: editTableFormSchema,
-      onBlurAsync: editTableFormSchema,
       onSubmitAsync: editTableFormSchema,
     },
   });
@@ -91,7 +89,13 @@ export function EditTable({ table, children }: { table: TableModel; children: Re
           <Modal.Title>{t('data:edit_table.title')}</Modal.Title>
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-1 flex-col gap-4">
-              <form.Field name="description">
+              <form.Field
+                name="description"
+                validators={{
+                  onBlur: editTableFormSchema.shape.description,
+                  onChange: editTableFormSchema.shape.description,
+                }}
+              >
                 {(field) => (
                   <div className="flex flex-col gap-2">
                     <FormLabel name={field.name}>{t('data:description')}</FormLabel>

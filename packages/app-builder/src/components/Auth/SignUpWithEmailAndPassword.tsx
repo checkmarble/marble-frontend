@@ -66,7 +66,13 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
 
   return (
     <form className="flex w-full flex-col gap-4" onSubmit={handleSubmit(form)}>
-      <form.Field name="credentials.email">
+      <form.Field
+        name="credentials.email"
+        validators={{
+          onBlur: emailAndPasswordFormSchema.shape.credentials.shape.email,
+          onChange: emailAndPasswordFormSchema.shape.credentials.shape.email,
+        }}
+      >
         {(field) => (
           <div className="flex flex-col items-start gap-2">
             <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
@@ -85,7 +91,13 @@ export function SignUpWithEmailAndPassword({ signUp }: { signUp: () => void }) {
           </div>
         )}
       </form.Field>
-      <form.Field name="credentials.password">
+      <form.Field
+        name="credentials.password"
+        validators={{
+          onBlur: emailAndPasswordFormSchema.shape.credentials.shape.password,
+          onChange: emailAndPasswordFormSchema.shape.credentials.shape.password,
+        }}
+      >
         {(field) => (
           <div className="flex flex-col items-start gap-2">
             <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>

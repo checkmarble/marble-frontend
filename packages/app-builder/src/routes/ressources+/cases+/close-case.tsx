@@ -107,8 +107,6 @@ export const CloseCase = ({ id }: { id: string }) => {
     },
     defaultValues,
     validators: {
-      onChange: schema,
-      onBlur: schema,
       onSubmit: schema,
     },
   });
@@ -124,7 +122,10 @@ export const CloseCase = ({ id }: { id: string }) => {
       <Modal.Content>
         <Modal.Title>{t('cases:case.close')}</Modal.Title>
         <form onSubmit={handleSubmit(form)} className="flex flex-col gap-8 p-8">
-          <form.Field name="outcome">
+          <form.Field
+            name="outcome"
+            validators={{ onChange: schema.shape.outcome, onBlur: schema.shape.outcome }}
+          >
             {(field) => (
               <div className="flex flex-col gap-2">
                 <FormLabel name={field.name}>Choose a status</FormLabel>
@@ -162,7 +163,10 @@ export const CloseCase = ({ id }: { id: string }) => {
               </div>
             )}
           </form.Field>
-          <form.Field name="comment">
+          <form.Field
+            name="comment"
+            validators={{ onChange: schema.shape.comment, onBlur: schema.shape.comment }}
+          >
             {(field) => (
               <div className="flex flex-col gap-2">
                 <FormLabel name={field.name}>Add a comment</FormLabel>

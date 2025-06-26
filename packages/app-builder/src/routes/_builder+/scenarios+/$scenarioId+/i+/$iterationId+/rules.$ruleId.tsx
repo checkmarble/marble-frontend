@@ -201,8 +201,6 @@ export default function RuleDetail() {
       }
     },
     validators: {
-      onChange: editRuleFormSchema,
-      onBlur: editRuleFormSchema,
       onSubmit: editRuleFormSchema,
     },
     defaultValues: rule as EditRuleForm,
@@ -246,7 +244,13 @@ export default function RuleDetail() {
                 },
               )}
             >
-              <form.Field name="name">
+              <form.Field
+                name="name"
+                validators={{
+                  onChange: editRuleFormSchema.shape.name,
+                  onBlur: editRuleFormSchema.shape.name,
+                }}
+              >
                 {(field) => (
                   <div className="flex w-full flex-col gap-1">
                     <input
@@ -312,7 +316,13 @@ export default function RuleDetail() {
             </div>
             <div className="flex flex-col gap-8">
               <div className="border-grey-90 flex flex-col items-start gap-6 border-b pb-6">
-                <form.Field name="description">
+                <form.Field
+                  name="description"
+                  validators={{
+                    onChange: editRuleFormSchema.shape.description,
+                    onBlur: editRuleFormSchema.shape.description,
+                  }}
+                >
                   {(field) => (
                     <div ref={descriptionRef} className="flex w-full flex-col gap-1">
                       <textarea
@@ -328,7 +338,13 @@ export default function RuleDetail() {
                     </div>
                   )}
                 </form.Field>
-                <form.Field name="ruleGroup">
+                <form.Field
+                  name="ruleGroup"
+                  validators={{
+                    onChange: editRuleFormSchema.shape.ruleGroup,
+                    onBlur: editRuleFormSchema.shape.ruleGroup,
+                  }}
+                >
                   {(field) => (
                     <div className="flex flex-col gap-2">
                       <FieldRuleGroup
@@ -347,7 +363,13 @@ export default function RuleDetail() {
               <div className="flex flex-col gap-2">
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
                 <div className="bg-grey-100 border-grey-90 rounded-md border p-6">
-                  <form.Field name="formula">
+                  <form.Field
+                    name="formula"
+                    validators={{
+                      onChange: editRuleFormSchema.shape.formula,
+                      onBlur: editRuleFormSchema.shape.formula,
+                    }}
+                  >
                     {(field) => (
                       <FieldAstFormula
                         type="rule"
@@ -366,7 +388,13 @@ export default function RuleDetail() {
                     <span className="bg-grey-95 text-grey-50 text-s inline-flex rounded p-2 font-medium">
                       {t('scenarios:edit_rule.score_heading')}
                     </span>
-                    <form.Field name="scoreModifier">
+                    <form.Field
+                      name="scoreModifier"
+                      validators={{
+                        onChange: editRuleFormSchema.shape.scoreModifier,
+                        onBlur: editRuleFormSchema.shape.scoreModifier,
+                      }}
+                    >
                       {(field) => (
                         <div className="flex flex-col gap-1">
                           <FormInput

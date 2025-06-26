@@ -155,8 +155,6 @@ function CommitScenarioDraftContent({
       }
     },
     validators: {
-      onChangeAsync: commitFormSchema,
-      onBlurAsync: commitFormSchema,
       onSubmitAsync: commitFormSchema,
     },
   });
@@ -173,7 +171,13 @@ function CommitScenarioDraftContent({
       <div className="flex flex-col gap-6 p-6">
         <div className="text-s flex flex-col gap-4 font-medium">
           <p className="font-semibold">{t('scenarios:deployment_modal.commit.confirm')}</p>
-          <form.Field name="draftIsReadOnly">
+          <form.Field
+            name="draftIsReadOnly"
+            validators={{
+              onBlur: commitFormSchema.shape.draftIsReadOnly,
+              onChange: commitFormSchema.shape.draftIsReadOnly,
+            }}
+          >
             {(field) => (
               <div className="group flex flex-row items-center gap-2">
                 <Checkbox
@@ -198,7 +202,13 @@ function CommitScenarioDraftContent({
               </div>
             )}
           </form.Field>
-          <form.Field name="activateToGoInProd">
+          <form.Field
+            name="activateToGoInProd"
+            validators={{
+              onBlur: commitFormSchema.shape.activateToGoInProd,
+              onChange: commitFormSchema.shape.activateToGoInProd,
+            }}
+          >
             {(field) => (
               <div className="group flex flex-row items-center gap-2">
                 <Checkbox
@@ -223,7 +233,13 @@ function CommitScenarioDraftContent({
               </div>
             )}
           </form.Field>
-          <form.Field name="changeIsImmediate">
+          <form.Field
+            name="changeIsImmediate"
+            validators={{
+              onBlur: commitFormSchema.shape.changeIsImmediate,
+              onChange: commitFormSchema.shape.changeIsImmediate,
+            }}
+          >
             {(field) => (
               <div className="group flex flex-row items-center gap-2">
                 <Checkbox

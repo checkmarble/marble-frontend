@@ -160,7 +160,20 @@ export default function DataDisplaySettings() {
             <Button type="submit">{t('common:save')}</Button>
           </div>
           {dataModelWithTableOptions.map((tableModelWithOptions) => (
-            <form.Field key={tableModelWithOptions.id} name={tableModelWithOptions.id}>
+            <form.Field
+              key={tableModelWithOptions.id}
+              name={tableModelWithOptions.id}
+              validators={{
+                onChange:
+                  createTableOptionSchema(dataModelWithTableOptions).shape[
+                    tableModelWithOptions.id
+                  ],
+                onBlur:
+                  createTableOptionSchema(dataModelWithTableOptions).shape[
+                    tableModelWithOptions.id
+                  ],
+              }}
+            >
               {(field) => {
                 return (
                   <CollapsiblePaper.Container defaultOpen={false}>

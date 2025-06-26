@@ -66,8 +66,6 @@ export function NewListValue({ listId }: { listId: string }) {
       }
     },
     validators: {
-      onChangeAsync: addValueFormSchema,
-      onBlurAsync: addValueFormSchema,
       onSubmitAsync: addValueFormSchema,
     },
   });
@@ -96,7 +94,13 @@ export function NewListValue({ listId }: { listId: string }) {
         >
           <Modal.Title>{t('lists:create_value.title')}</Modal.Title>
           <div className="flex flex-col gap-6 p-6">
-            <form.Field name="value">
+            <form.Field
+              name="value"
+              validators={{
+                onBlur: addValueFormSchema.shape.value,
+                onChange: addValueFormSchema.shape.value,
+              }}
+            >
               {(field) => (
                 <div className="flex flex-col gap-2">
                   <FormLabel name={field.name}>

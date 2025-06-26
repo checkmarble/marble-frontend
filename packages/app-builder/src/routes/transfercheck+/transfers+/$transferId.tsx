@@ -108,8 +108,6 @@ export default function TransferDetailPage() {
       }
     },
     validators: {
-      onChangeAsync: transferUpdateBodySchema,
-      onBlurAsync: transferUpdateBodySchema,
       onSubmitAsync: transferUpdateBodySchema,
     },
   });
@@ -144,7 +142,13 @@ export default function TransferDetailPage() {
                     form.handleSubmit();
                   }}
                 >
-                  <form.Field name="status">
+                  <form.Field
+                    name="status"
+                    validators={{
+                      onChange: transferUpdateBodySchema.shape.status,
+                      onBlur: transferUpdateBodySchema.shape.status,
+                    }}
+                  >
                     {(field) => (
                       <fieldset name={field.name} className="flex flex-row gap-2">
                         {transferStatuses.map((status) => (

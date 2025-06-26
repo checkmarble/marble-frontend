@@ -138,8 +138,6 @@ function UpdateWebhookContent({
       }
     },
     validators: {
-      onChangeAsync: updateWebhookFormSchema,
-      onBlurAsync: updateWebhookFormSchema,
       onSubmitAsync: updateWebhookFormSchema,
     },
   });
@@ -154,7 +152,13 @@ function UpdateWebhookContent({
     >
       <ModalV2.Title>{t('settings:webhooks.update_webhook')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
-        <form.Field name="eventTypes">
+        <form.Field
+          name="eventTypes"
+          validators={{
+            onChange: updateWebhookFormSchema.shape.eventTypes,
+            onBlur: updateWebhookFormSchema.shape.eventTypes,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col items-start gap-2">
               <FormLabel name={field.name} className="flex items-center gap-2">
@@ -195,16 +199,22 @@ function UpdateWebhookContent({
           )}
         </form.Field>
 
-        <form.Field name="httpTimeout">
+        <form.Field
+          name="httpTimeout"
+          validators={{
+            onChange: updateWebhookFormSchema.shape.httpTimeout,
+            onBlur: updateWebhookFormSchema.shape.httpTimeout,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col items-start gap-2">
               <FormLabel name={field.name}>{t('settings:webhooks.http_timeout')}</FormLabel>
               <FormInput
                 type="number"
                 name={field.name}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(+e.currentTarget.value)}
                 defaultValue={field.state.value}
+                onChange={(e) => field.handleChange(Number(e.currentTarget.value))}
+                onBlur={field.handleBlur}
                 valid={field.state.meta.errors.length === 0}
                 className="w-full"
               />

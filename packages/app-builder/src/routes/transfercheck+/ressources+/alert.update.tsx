@@ -133,8 +133,6 @@ function UpdateAlertContent({
       }
     },
     validators: {
-      onChange: updateAlertFormSchema,
-      onBlur: updateAlertFormSchema,
       onSubmit: updateAlertFormSchema,
     },
   });
@@ -149,7 +147,13 @@ function UpdateAlertContent({
     >
       <ModalV2.Title>{t('transfercheck:alert.update.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
-        <form.Field name="message">
+        <form.Field
+          name="message"
+          validators={{
+            onChange: updateAlertFormSchema.shape.message,
+            onBlur: updateAlertFormSchema.shape.message,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col items-start gap-2">
               <FormLabel name={field.name}>{t('transfercheck:alert.create.message')}</FormLabel>
@@ -165,7 +169,13 @@ function UpdateAlertContent({
             </div>
           )}
         </form.Field>
-        <form.Field name="transferEndToEndId">
+        <form.Field
+          name="transferEndToEndId"
+          validators={{
+            onChange: updateAlertFormSchema.shape.transferEndToEndId,
+            onBlur: updateAlertFormSchema.shape.transferEndToEndId,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col items-start gap-2">
               <FormLabel name={field.name}>
@@ -185,7 +195,13 @@ function UpdateAlertContent({
             </div>
           )}
         </form.Field>
-        <form.Field name="senderIban">
+        <form.Field
+          name="senderIban"
+          validators={{
+            onChange: updateAlertFormSchema.shape.senderIban,
+            onBlur: updateAlertFormSchema.shape.senderIban,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col items-start gap-2">
               <FormLabel name={field.name}>{t('transfercheck:alert.sender_iban')}</FormLabel>
@@ -203,7 +219,13 @@ function UpdateAlertContent({
             </div>
           )}
         </form.Field>
-        <form.Field name="beneficiaryIban">
+        <form.Field
+          name="beneficiaryIban"
+          validators={{
+            onChange: updateAlertFormSchema.shape.beneficiaryIban,
+            onBlur: updateAlertFormSchema.shape.beneficiaryIban,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col items-start gap-2">
               <FormLabel name={field.name}>{t('transfercheck:alert.beneficiary_iban')}</FormLabel>

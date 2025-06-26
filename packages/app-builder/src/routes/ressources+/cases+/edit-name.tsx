@@ -54,15 +54,16 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
     },
     defaultValues: { name: name, caseId: id } as EditNameForm,
     validators: {
-      onChange: schema,
-      onBlur: schema,
       onSubmit: schema,
     },
   });
 
   return (
     <form onSubmit={handleSubmit(form)} className="w-full">
-      <form.Field name="name">
+      <form.Field
+        name="name"
+        validators={{ onBlur: schema.shape.name, onChange: schema.shape.name }}
+      >
         {(field) => (
           <div className="flex w-full flex-col gap-1">
             <div className="flex items-center gap-2">

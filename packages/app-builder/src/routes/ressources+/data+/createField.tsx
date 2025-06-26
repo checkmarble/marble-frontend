@@ -153,8 +153,6 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
       }
     },
     validators: {
-      onChange: createFieldFormSchema,
-      onBlur: createFieldFormSchema,
       onSubmit: createFieldFormSchema,
     },
   });
@@ -180,7 +178,13 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
       <Modal.Title>{t('data:create_field.title')}</Modal.Title>
       <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-1 flex-col gap-4">
-          <form.Field name="name">
+          <form.Field
+            name="name"
+            validators={{
+              onChange: createFieldFormSchema.shape.name,
+              onBlur: createFieldFormSchema.shape.name,
+            }}
+          >
             {(field) => (
               <div className="flex flex-col gap-2">
                 <FormLabel name={field.name}>{t('data:field_name')}</FormLabel>
@@ -197,7 +201,13 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
               </div>
             )}
           </form.Field>
-          <form.Field name="description">
+          <form.Field
+            name="description"
+            validators={{
+              onChange: createFieldFormSchema.shape.description,
+              onBlur: createFieldFormSchema.shape.description,
+            }}
+          >
             {(field) => (
               <div className="flex flex-col gap-2">
                 <FormLabel name={field.name}>{t('data:description')}</FormLabel>
@@ -215,7 +225,13 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             )}
           </form.Field>
           <div className="flex flex-row justify-around gap-2">
-            <form.Field name="required">
+            <form.Field
+              name="required"
+              validators={{
+                onChange: createFieldFormSchema.shape.required,
+                onBlur: createFieldFormSchema.shape.required,
+              }}
+            >
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name}>{t('data:create_field.required')}</FormLabel>
@@ -238,7 +254,13 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                 </div>
               )}
             </form.Field>
-            <form.Field name="type">
+            <form.Field
+              name="type"
+              validators={{
+                onChange: createFieldFormSchema.shape.type,
+                onBlur: createFieldFormSchema.shape.type,
+              }}
+            >
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name}>{t('data:create_field.type')}</FormLabel>
@@ -263,7 +285,13 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             </form.Field>
           </div>
           {EnumDataTypes.includes(selectedType) ? (
-            <form.Field name="isEnum">
+            <form.Field
+              name="isEnum"
+              validators={{
+                onChange: createFieldFormSchema.shape.isEnum,
+                onBlur: createFieldFormSchema.shape.isEnum,
+              }}
+            >
               {(field) => (
                 <div className="flex flex-row items-center gap-4">
                   <Checkbox
@@ -284,7 +312,13 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             </form.Field>
           ) : null}
           {UniqueDataTypes.includes(selectedType) ? (
-            <form.Field name="isUnique">
+            <form.Field
+              name="isUnique"
+              validators={{
+                onChange: createFieldFormSchema.shape.isUnique,
+                onBlur: createFieldFormSchema.shape.isUnique,
+              }}
+            >
               {(field) => (
                 <div className="flex flex-row items-center gap-4">
                   <Checkbox

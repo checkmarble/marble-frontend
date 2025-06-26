@@ -91,8 +91,6 @@ export const OpenCase = ({ id }: { id: string }) => {
     },
     defaultValues: { caseId: id, comment: '' },
     validators: {
-      onChange: schema,
-      onBlur: schema,
       onSubmit: schema,
     },
   });
@@ -109,7 +107,10 @@ export const OpenCase = ({ id }: { id: string }) => {
         <Modal.Title>{t('cases:case.reopen')}</Modal.Title>
         <form onSubmit={handleSubmit(form)} className="flex flex-col gap-8 p-8">
           <Callout>Are you sure you want to re-open the case ?</Callout>
-          <form.Field name="comment">
+          <form.Field
+            name="comment"
+            validators={{ onChange: schema.shape.comment, onBlur: schema.shape.comment }}
+          >
             {(field) => (
               <div className="flex flex-col gap-2">
                 <FormLabel name={field.name}>Add a comment</FormLabel>

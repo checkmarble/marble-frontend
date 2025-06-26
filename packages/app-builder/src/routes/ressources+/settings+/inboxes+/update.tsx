@@ -158,8 +158,6 @@ export function UpdateInboxContent({
       }
     },
     validators: {
-      onChange: updateInboxFormSchema,
-      onBlur: updateInboxFormSchema,
       onSubmit: updateInboxFormSchema,
     },
   });
@@ -174,7 +172,13 @@ export function UpdateInboxContent({
     >
       <Modal.Title>{t('settings:inboxes.update_inbox')}</Modal.Title>
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
-        <form.Field name="name">
+        <form.Field
+          name="name"
+          validators={{
+            onChange: updateInboxFormSchema.shape.name,
+            onBlur: updateInboxFormSchema.shape.name,
+          }}
+        >
           {(field) => (
             <div className="group flex flex-col gap-2">
               <FormLabel name={field.name}>{t('settings:inboxes.name')}</FormLabel>
@@ -190,7 +194,13 @@ export function UpdateInboxContent({
             </div>
           )}
         </form.Field>
-        <form.Field name="escalationInboxId">
+        <form.Field
+          name="escalationInboxId"
+          validators={{
+            onChange: updateInboxFormSchema.shape.escalationInboxId,
+            onBlur: updateInboxFormSchema.shape.escalationInboxId,
+          }}
+        >
           {(field) => {
             const selectedInbox = escalationInboxes.find((inbox) => inbox.id === field.state.value);
 

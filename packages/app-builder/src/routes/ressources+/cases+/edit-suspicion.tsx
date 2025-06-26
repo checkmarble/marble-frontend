@@ -211,8 +211,6 @@ export const EditCaseSuspicion = ({
       reportId: lastData?.data?.id ?? reports[0]?.id,
     } as EditSuspicionForm,
     validators: {
-      onChange: schema,
-      onBlur: schema,
       onSubmit: schema,
     },
   });
@@ -237,7 +235,10 @@ export const EditCaseSuspicion = ({
   });
 
   return (
-    <form.Field name="status">
+    <form.Field
+      name="status"
+      validators={{ onBlur: schema.shape.status, onChange: schema.shape.status }}
+    >
       {(field) => (
         <div className="flex w-full gap-1">
           <div className="flex items-center gap-2">

@@ -228,8 +228,6 @@ function EditScoreThresholds() {
       scoreDeclineThreshold: iteration.scoreDeclineThreshold ?? 0,
     } as z.infer<typeof schema>,
     validators: {
-      onChange: schema,
-      onBlur: schema,
       onSubmit: schema,
     },
     onSubmit: ({ value, formApi }) => {
@@ -263,7 +261,13 @@ function EditScoreThresholds() {
     >
       <div className="grid grid-cols-[max-content_auto] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
         <OutcomeBadge size="md" outcome="approve" className="w-full justify-center" />
-        <form.Field name="scoreReviewThreshold">
+        <form.Field
+          name="scoreReviewThreshold"
+          validators={{
+            onChange: schema._def.schema.shape.scoreReviewThreshold,
+            onBlur: schema._def.schema.shape.scoreReviewThreshold,
+          }}
+        >
           {(field) => (
             <div className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
               <FormLabel name={field.name} className="sr-only">
@@ -296,7 +300,13 @@ function EditScoreThresholds() {
         </form.Field>
 
         <OutcomeBadge size="md" outcome="review" className="w-full justify-center" />
-        <form.Field name="scoreBlockAndReviewThreshold">
+        <form.Field
+          name="scoreBlockAndReviewThreshold"
+          validators={{
+            onChange: schema._def.schema.shape.scoreBlockAndReviewThreshold,
+            onBlur: schema._def.schema.shape.scoreBlockAndReviewThreshold,
+          }}
+        >
           {(field) => (
             <div className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
               <FormLabel name={field.name} className="sr-only">
@@ -333,7 +343,13 @@ function EditScoreThresholds() {
         </form.Field>
 
         <OutcomeBadge size="md" outcome="block_and_review" className="w-full justify-center" />
-        <form.Field name="scoreDeclineThreshold">
+        <form.Field
+          name="scoreDeclineThreshold"
+          validators={{
+            onChange: schema._def.schema.shape.scoreDeclineThreshold,
+            onBlur: schema._def.schema.shape.scoreDeclineThreshold,
+          }}
+        >
           {(field) => (
             <div className="flex flex-row flex-wrap items-center gap-1 lg:gap-2">
               <FormLabel name={field.name} className="sr-only">

@@ -253,7 +253,6 @@ export function ClientCommentForm({
       },
     } as z.infer<typeof createCommentAnnotationSchema>,
     validators: {
-      onChange: createCommentAnnotationSchema,
       onSubmit: createCommentAnnotationSchema,
     },
     onSubmit({ value }) {
@@ -281,7 +280,13 @@ export function ClientCommentForm({
       onSubmit={handleSubmit(form)}
       className={cn('flex justify-between rounded-lg px-4 py-3', className)}
     >
-      <form.Field name="payload.text">
+      <form.Field
+        name="payload.text"
+        validators={{
+          onChange: createCommentAnnotationSchema._def.right.shape.payload.shape.text,
+          onBlur: createCommentAnnotationSchema._def.right.shape.payload.shape.text,
+        }}
+      >
         {(field) => (
           <div className="flex grow flex-col gap-1">
             <textarea
@@ -344,7 +349,6 @@ export function ClientDocumentsPopover({
       },
     } as z.infer<typeof createFileAnnotationSchema>,
     validators: {
-      onChange: createFileAnnotationSchema,
       onSubmit: createFileAnnotationSchema,
     },
     onSubmit({ value }) {
@@ -377,7 +381,13 @@ export function ClientDocumentsPopover({
   return (
     <>
       <form onSubmit={handleSubmit(form)}>
-        <form.Field name="payload.files">
+        <form.Field
+          name="payload.files"
+          validators={{
+            onChange: createFileAnnotationSchema._def.right.shape.payload.shape.files,
+            onBlur: createFileAnnotationSchema._def.right.shape.payload.shape.files,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col gap-2 px-4 py-3">
               <input {...getInputProps()} />
@@ -524,7 +534,6 @@ export function ClientTagsEditSelect({
       },
     } as z.infer<typeof tagAnnotationFormSchema>,
     validators: {
-      onChange: tagAnnotationFormSchema,
       onSubmit: tagAnnotationFormSchema,
     },
     onSubmit({ value }) {
@@ -564,7 +573,13 @@ export function ClientTagsEditSelect({
 
   return (
     <form onSubmit={handleSubmit(form)}>
-      <form.Field name="payload.tags">
+      <form.Field
+        name="payload.tags"
+        validators={{
+          onChange: tagAnnotationFormSchema._def.right.shape.payload.shape.tags,
+          onBlur: tagAnnotationFormSchema._def.right.shape.payload.shape.tags,
+        }}
+      >
         {(field) => (
           <MenuCommand.List>
             {orgObjectTags.map((tag) => (

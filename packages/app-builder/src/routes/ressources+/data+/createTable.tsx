@@ -89,8 +89,6 @@ export function CreateTable({ children }: { children: React.ReactNode }) {
       }
     },
     validators: {
-      onChange: createTableFormSchema,
-      onBlur: createTableFormSchema,
       onSubmit: createTableFormSchema,
     },
   });
@@ -118,7 +116,13 @@ export function CreateTable({ children }: { children: React.ReactNode }) {
           <Modal.Title>{t('data:create_table.title')}</Modal.Title>
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-1 flex-col gap-4">
-              <form.Field name="name">
+              <form.Field
+                name="name"
+                validators={{
+                  onBlur: createTableFormSchema.shape.name,
+                  onChange: createTableFormSchema.shape.name,
+                }}
+              >
                 {(field) => (
                   <div className="flex flex-col gap-2">
                     <FormLabel name={field.name}>{t('data:field_name')}</FormLabel>
@@ -135,7 +139,13 @@ export function CreateTable({ children }: { children: React.ReactNode }) {
                   </div>
                 )}
               </form.Field>
-              <form.Field name="description">
+              <form.Field
+                name="description"
+                validators={{
+                  onBlur: createTableFormSchema.shape.description,
+                  onChange: createTableFormSchema.shape.description,
+                }}
+              >
                 {(field) => (
                   <div className="flex flex-col gap-2">
                     <FormLabel name={field.name}>{t('data:description')}</FormLabel>

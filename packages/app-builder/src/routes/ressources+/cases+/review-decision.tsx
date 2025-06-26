@@ -139,8 +139,6 @@ function ReviewDecisionContent({
       }
     },
     validators: {
-      onChange: reviewDecisionSchema,
-      onBlur: reviewDecisionSchema,
       onSubmit: reviewDecisionSchema,
     },
   });
@@ -167,7 +165,13 @@ function ReviewDecisionContent({
           </p>
         </ModalV2.Description>
 
-        <form.Field name="reviewStatus">
+        <form.Field
+          name="reviewStatus"
+          validators={{
+            onBlur: reviewDecisionSchema.shape.reviewStatus,
+            onChange: reviewDecisionSchema.shape.reviewStatus,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col gap-2">
               <FormLabel name={field.name}>
@@ -209,7 +213,13 @@ function ReviewDecisionContent({
           )}
         </form.Field>
 
-        <form.Field name="reviewComment">
+        <form.Field
+          name="reviewComment"
+          validators={{
+            onBlur: reviewDecisionSchema.shape.reviewComment,
+            onChange: reviewDecisionSchema.shape.reviewComment,
+          }}
+        >
           {(field) => (
             <div className="flex flex-col gap-2">
               <FormLabel name={field.name}>

@@ -568,8 +568,6 @@ function ManualTriggerScenarioExecutionForm({
     },
     defaultValues: { iterationId },
     validators: {
-      onChangeAsync: scenarioExecutionSchema,
-      onBlurAsync: scenarioExecutionSchema,
       onSubmitAsync: scenarioExecutionSchema,
     },
   });

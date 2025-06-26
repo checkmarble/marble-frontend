@@ -85,8 +85,6 @@ export function CreateList() {
       }
     },
     validators: {
-      onChangeAsync: createListFormSchema,
-      onBlurAsync: createListFormSchema,
       onSubmitAsync: createListFormSchema,
     },
   });
@@ -110,7 +108,13 @@ export function CreateList() {
           <Modal.Title>{t('lists:create_list.title')}</Modal.Title>
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-1 flex-col gap-4">
-              <form.Field name="name">
+              <form.Field
+                name="name"
+                validators={{
+                  onBlur: createListFormSchema.shape.name,
+                  onChange: createListFormSchema.shape.name,
+                }}
+              >
                 {(field) => (
                   <div className="flex flex-col gap-2">
                     <FormLabel name={field.name}>{t('lists:name')}</FormLabel>
@@ -127,7 +131,13 @@ export function CreateList() {
                   </div>
                 )}
               </form.Field>
-              <form.Field name="description">
+              <form.Field
+                name="description"
+                validators={{
+                  onBlur: createListFormSchema.shape.description,
+                  onChange: createListFormSchema.shape.description,
+                }}
+              >
                 {(field) => (
                   <div className="flex flex-col gap-2">
                     <FormLabel name={field.name}>{t('lists:description')}</FormLabel>
