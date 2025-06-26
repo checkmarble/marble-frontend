@@ -104,6 +104,8 @@ export const schemaProperties = {
   Airplane: [] as const,
   Vessel: [] as const,
   Family: [] as const,
+  Associate: [] as const,
+  MembershipMember: [] as const,
   Sanction: [
     'country',
     'authority',
@@ -134,6 +136,8 @@ const schemaInheritence = {
   Airplane: 'Vehicle',
   Sanction: null,
   Family: null,
+  Associate: null,
+  MembershipMember: null,
 } satisfies Record<OpenSanctionEntitySchema, OpenSanctionEntitySchema | null>;
 
 const propertyMetadata = {
