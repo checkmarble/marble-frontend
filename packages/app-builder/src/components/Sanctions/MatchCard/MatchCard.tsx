@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CollapsibleV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { MatchDetails } from '../MatchDetails';
 import { StatusTag } from '../StatusTag';
 import { sanctionsI18n } from '../sanctions-i18n';
