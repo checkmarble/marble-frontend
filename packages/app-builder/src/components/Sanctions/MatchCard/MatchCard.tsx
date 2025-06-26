@@ -9,6 +9,7 @@ import { MatchDetails } from '../MatchDetails';
 import { StatusTag } from '../StatusTag';
 import { sanctionsI18n } from '../sanctions-i18n';
 import { TopicTag } from '../TopicTag';
+import { Associations } from './Associations';
 import { CommentLine } from './CommentLine';
 import { FamilyDetail } from './FamilyDetail';
 
@@ -104,6 +105,9 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
               <MatchDetails entity={entity} />
               {entitySchema === 'person' && entity.properties['familyPerson']?.length ? (
                 <FamilyDetail familyMembers={entity.properties['familyPerson']} />
+              ) : null}
+              {entitySchema === 'person' && entity.properties['associations']?.length ? (
+                <Associations associations={entity.properties['associations']} />
               ) : null}
             </div>
           </CollapsibleV2.Content>

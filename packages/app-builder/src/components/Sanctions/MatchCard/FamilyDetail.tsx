@@ -135,10 +135,11 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
                       <div className="col-span-full flex w-full flex-wrap gap-1">
                         {person.properties.birthDate?.[0] && (
                           <span>
-                            {`t('sanctions:match.family-member.birth-date') : `}
-                            {formatDateTimeWithoutPresets(person.properties.birthDate[0], {
-                              language,
-                              dateStyle: 'short',
+                            {t('sanctions:match.family-member.birth-date', {
+                              date: formatDateTimeWithoutPresets(person.properties.birthDate[0], {
+                                language,
+                                dateStyle: 'long',
+                              }),
                             })}
                           </span>
                         )}
