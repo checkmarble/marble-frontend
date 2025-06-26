@@ -88,11 +88,6 @@ const createAnnotationSchema = z.union([
   createCommentAnnotationSchema,
 ]);
 
-// Add these helper objects at the top for clarity
-const commentPayloadShape = z.object({ text: z.string().nonempty() }).shape;
-const filePayloadShape = z.object({ files: z.array(z.instanceof(File)).min(1) }).shape;
-const tagPayloadShape = z.object({ tags: z.array(z.string()) }).shape;
-
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
@@ -288,8 +283,8 @@ export function ClientCommentForm({
       <form.Field
         name="payload.text"
         validators={{
-          onChange: commentPayloadShape.text,
-          onBlur: commentPayloadShape.text,
+          onChange: createCommentAnnotationSchema._def.right.shape.payload.shape.text,
+          onBlur: createCommentAnnotationSchema._def.right.shape.payload.shape.text,
         }}
       >
         {(field) => (
@@ -389,8 +384,8 @@ export function ClientDocumentsPopover({
         <form.Field
           name="payload.files"
           validators={{
-            onChange: filePayloadShape.files,
-            onBlur: filePayloadShape.files,
+            onChange: createFileAnnotationSchema._def.right.shape.payload.shape.files,
+            onBlur: createFileAnnotationSchema._def.right.shape.payload.shape.files,
           }}
         >
           {(field) => (
@@ -581,8 +576,8 @@ export function ClientTagsEditSelect({
       <form.Field
         name="payload.tags"
         validators={{
-          onChange: tagPayloadShape.tags,
-          onBlur: tagPayloadShape.tags,
+          onChange: tagAnnotationFormSchema._def.right.shape.payload.shape.tags,
+          onBlur: tagAnnotationFormSchema._def.right.shape.payload.shape.tags,
         }}
       >
         {(field) => (

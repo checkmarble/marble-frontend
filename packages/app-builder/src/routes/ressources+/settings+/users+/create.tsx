@@ -267,32 +267,10 @@ function CreateUserContent({
               </div>
             )}
           </form.Field>
-          <form.Field
-            name="organizationId"
-            validators={{
-              onBlur: schema.shape.organizationId,
-              onChange: schema.shape.organizationId,
-            }}
-          >
-            {(field) => (
-              <div className="group flex flex-col gap-2">
-                <FormLabel name={field.name}>Organization ID</FormLabel>
-                <FormInput
-                  type="text"
-                  name={field.name}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  defaultValue={field.state.value}
-                  valid={field.state.meta.errors.length === 0}
-                />
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-              </div>
-            )}
-          </form.Field>
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" name="cancel">
+            <Button type="button" className="flex-1" variant="secondary" name="cancel">
               {t('common:cancel')}
             </Button>
           </Modal.Close>
