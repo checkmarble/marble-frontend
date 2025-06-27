@@ -137,5 +137,8 @@
   "required_actions.review": "Examiner",
   "required_actions.view": "Voir",
   "required_actions.view_error": "Afficher l'erreur",
-  "potential_matches": "Correspondances"
+  "potential_matches": "Correspondances",
+  "initial_query": "Requête initiale",
+  "processed_query": "Requête traitée",
+  "query": "Requête"
 }
