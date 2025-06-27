@@ -137,5 +137,8 @@
   "enrich_button": "Enrich",
   "success.match_enriched": "Match successfully enriched",
   "error.match_already_enriched": "Match already enriched",
-  "potential_matches": "Potential matches"
+  "potential_matches": "Potential matches",
+  "initial_query": "Initial query",
+  "processed_query": "Processed query",
+  "query": "Query"
 }

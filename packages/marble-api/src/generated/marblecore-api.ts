@@ -730,17 +730,18 @@ export type SnoozesOfIterationDto = {
     rule_snoozes: RuleSnoozeInformationDto[];
 };
 export type SanctionCheckEntityDto = "Thing" | "Address" | "Airplane" | "Asset" | "Associate" | "Company" | "CryptoWallet" | "Debt" | "Directorship" | "Employment" | "Family" | "Identification" | "LegalEntity" | "Membership" | "Occupancy" | "Organization" | "Ownership" | "Passport" | "Payment" | "Person" | "Position" | "PublicBody" | "Representation" | "Sanction" | "Security" | "Succession" | "UnknownLink" | "Vessel" | "Vehicle";
+export type Items = {
+    schema: SanctionCheckEntityDto;
+    properties: {
+        [key: string]: string[];
+    };
+};
 export type SanctionCheckRequestDto = {
     threshold: number;
     limit: number;
     search_input: {
         queries: {
-            [key: string]: {
-                schema: SanctionCheckEntityDto;
-                properties: {
-                    [key: string]: string[];
-                };
-            };
+            [key: string]: Items;
         };
     };
 };
@@ -787,6 +788,7 @@ export type SanctionCheckSuccessDto = {
     decision_id: string;
     status: "in_review" | "confirmed_hit";
     request: SanctionCheckRequestDto;
+    initial_query?: Items[];
     partial: boolean;
     is_manual: boolean;
     matches: SanctionCheckMatchDto[];
@@ -799,6 +801,12 @@ export type SanctionCheckErrorDto = {
     decision_id: string;
     status: "error";
     request?: SanctionCheckRequestDto;
+    initial_query?: {
+        schema: SanctionCheckEntityDto;
+        properties: {
+            [key: string]: string[];
+        };
+    }[];
     partial: boolean;
     is_manual: boolean;
     matches: SanctionCheckMatchDto[];
@@ -812,6 +820,7 @@ export type SanctionCheckDto = SanctionCheckSuccessDto | {
     decision_id: string;
     status: "no_hit";
     request?: SanctionCheckRequestDto;
+    initial_query?: Items[];
     partial: boolean;
     is_manual: boolean;
     matches: SanctionCheckMatchDto[];
