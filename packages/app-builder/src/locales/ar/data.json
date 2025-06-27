@@ -85,7 +85,7 @@
   "create_pivot.select_entity.search_placeholder": "ابحث حسب اسم الكيان",
   "create_pivot.entity_selection.search.placeholder": "اختر أو ابحث عن كيان",
   "create_pivot.button.label": "إنشاء مجموعة قرار",
-  "view_pivot.link.description": "ابحث عن <code> {{parent}} </code> المقابلة لـ <code> {{child}} </code> من خلال اتباع الرابط <code> {{link}} </code>.",
-  "view_pivot.self_link.description": "يتم تجميع القرارات بقرارات بشأن كيانات أخرى تم تكوينها إلى المجموعة على مستوى <code> {{table}} </code>",
-  "view_pivot.field.description": "يتم تجميع القرارات المتعلقة بالكيانات من النوع <code> {{table}} </code> بواسطة الحقل <code> {{Field}} </code> ، مما يسمح بالغطس وقرارات المجموعة في الحالات."
+  "view_pivot.link.description": "ابحث عن <Code> {{parent}} </Code> المقابلة لـ <Code> {{child}} </Code> من خلال اتباع الرابط <Code> {{link}} </Code>.",
+  "view_pivot.self_link.description": "يتم تجميع القرارات بقرارات بشأن كيانات أخرى تم تكوينها إلى المجموعة على مستوى <Code> {{table}} </Code>",
+  "view_pivot.field.description": "يتم تجميع القرارات المتعلقة بالكيانات من النوع <Code> {{table}} </Code> بواسطة الحقل <Code> {{Field}} </Code> ، مما يسمح بالغطس وقرارات المجموعة في الحالات."
 }

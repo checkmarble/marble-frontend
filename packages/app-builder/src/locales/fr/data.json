@@ -85,7 +85,7 @@
   "create_navigation_option.explanation_text": "Sélectionnez le champ utilisé pour trier les données par défaut. Cela peut être par date, nom... Pour les objets contenant beaucoup de données, comme les transactions, nous vous recommandons d'utiliser la date à laquelle l'événement s'est produit.",
   "last_ingestion_at": "Dernière ingestion à {{date}}",
   "create_pivot.button.label": "Créer un groupe de décision",
-  "view_pivot.link.description": "Recherchez l'entité <code> {{parent}} </code> correspondant à une entité <code> {{enfant}} </code> en suivant le lien <code> {{link}} </code>.",
-  "view_pivot.self_link.description": "Les décisions sont regroupées avec celles d'autres entités configurées pour être regrouper au niveau de <code> {{table}} </code>",
-  "view_pivot.field.description": "Les décisions sur les entités du type <code> {{Table}} </code> sont regroupées par le champ <Dode> {{champ}} </code>, ce qui permet de mettre en pause des règles et de regrouper les décisions en dossiers."
+  "view_pivot.link.description": "Recherchez l'entité <Code> {{parent}} </Code> correspondant à une entité <Code> {{enfant}} </Code> en suivant le lien <Code> {{link}} </Code>.",
+  "view_pivot.self_link.description": "Les décisions sont regroupées avec celles d'autres entités configurées pour être regrouper au niveau de <Code> {{table}} </Code>",
+  "view_pivot.field.description": "Les décisions sur les entités du type <Code> {{Table}} </Code> sont regroupées par le champ <Dode> {{champ}} </Code>, ce qui permet de mettre en pause des règles et de regrouper les décisions en dossiers."
 }
