@@ -3,7 +3,7 @@ import { type OpenSanctionEntitySchema } from '@app-builder/models/sanction-chec
 
 export type PropertyDataType = 'string' | 'country' | 'url' | 'date' | 'wikidataId';
 export type PropertyForSchema<
-  Schema extends OpenSanctionEntitySchema,
+  Schema extends keyof typeof schemaInheritence,
   _R = never,
 > = (typeof schemaInheritence)[Schema] extends null
   ? _R | (typeof schemaProperties)[Schema][number]
@@ -103,6 +103,9 @@ export const schemaProperties = {
   Vehicle: ['registrationNumber'] as const,
   Airplane: [] as const,
   Vessel: [] as const,
+  Family: [] as const,
+  Associate: [] as const,
+  MembershipMember: [] as const,
   Sanction: [
     'country',
     'authority',
@@ -132,6 +135,9 @@ const schemaInheritence = {
   Vessel: 'Vehicle',
   Airplane: 'Vehicle',
   Sanction: null,
+  Family: null,
+  Associate: null,
+  MembershipMember: null,
 } satisfies Record<OpenSanctionEntitySchema, OpenSanctionEntitySchema | null>;
 
 const propertyMetadata = {

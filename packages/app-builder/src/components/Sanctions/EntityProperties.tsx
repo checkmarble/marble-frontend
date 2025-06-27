@@ -62,7 +62,11 @@ export function EntityProperties<T extends OpenSanctionEntity>({
       {entityPropertyList.map(({ property, values, restItemsCount }) => {
         return (
           <Fragment key={property}>
-            <span className="font-bold">{t(`sanctions:entity.property.${property}`)}</span>
+            <span className="font-bold">
+              {t(`sanctions:entity.property.${property}`, {
+                defaultValue: property,
+              })}
+            </span>
             <span className="break-all">
               {values.length > 0 ? (
                 <>
