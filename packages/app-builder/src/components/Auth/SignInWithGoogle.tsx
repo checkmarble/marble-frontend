@@ -6,7 +6,7 @@ import {
   useGoogleSignIn,
 } from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
-import { clientServices } from '@app-builder/services/init.client';
+import { useClientServices } from '@app-builder/services/init.client';
 import useAsync from '@app-builder/utils/hooks/use-async';
 import * as Sentry from '@sentry/remix';
 import toast from 'react-hot-toast';
@@ -47,6 +47,8 @@ function ClientSignInWithGoogle({
   loading?: boolean;
 }) {
   const { t } = useTranslation(['common', 'auth']);
+  const clientServices = useClientServices();
+
   const googleSignIn = useGoogleSignIn(clientServices.authenticationClientService);
 
   const [handleGoogleSignIn, _state] = useAsync(async () => {

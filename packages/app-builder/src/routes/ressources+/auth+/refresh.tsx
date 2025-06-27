@@ -1,4 +1,4 @@
-import { clientServices } from '@app-builder/services/init.client';
+import { useClientServices } from '@app-builder/services/init.client';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useInterval, useVisibilityChange } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
@@ -26,6 +26,7 @@ export function useRefreshToken() {
   const csrf = useAuthenticityToken();
   const visibilityState = useVisibilityChange();
   const navigate = useNavigate();
+  const clientServices = useClientServices();
 
   useInterval(
     () => {

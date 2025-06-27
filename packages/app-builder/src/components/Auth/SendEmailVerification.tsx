@@ -3,7 +3,7 @@ import {
   TooManyRequest,
   useResendEmailVerification,
 } from '@app-builder/services/auth/auth.client';
-import { clientServices } from '@app-builder/services/init.client';
+import { useClientServices } from '@app-builder/services/init.client';
 import { getRoute } from '@app-builder/utils/routes';
 import { useNavigate } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
@@ -36,6 +36,7 @@ function SendEmailVerificationButton({
 
 function ClientSendEmailVerificationButton() {
   const { t } = useTranslation(['common', 'auth']);
+  const clientServices = useClientServices();
 
   const { isFirebaseEmulator } =
     clientServices.authenticationClientService.authenticationClientRepository;
@@ -90,6 +91,7 @@ export function SendEmailVerification() {
 
 function ClientSendEmailVerificationDescription() {
   const { t } = useTranslation(['auth']);
+  const clientServices = useClientServices();
 
   const { isFirebaseEmulator } =
     clientServices.authenticationClientService.authenticationClientRepository;

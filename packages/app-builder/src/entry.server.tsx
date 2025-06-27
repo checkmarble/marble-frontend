@@ -1,3 +1,4 @@
+import { createContentSecurityPolicy, createNonce } from '@mcansh/http-helmet';
 import {
   createReadableStreamFromReadable,
   type EntryContext,
@@ -10,9 +11,11 @@ import { renderToPipeableStream } from 'react-dom/server';
 import { I18nextProvider } from 'react-i18next';
 import { PassThrough } from 'stream';
 
+import { type AppConfig } from './models/app-config';
 import { initServerServices } from './services/init.server';
 import { captureUnexpectedRemixError } from './services/monitoring';
-import { checkEnv, getServerEnv } from './utils/environment';
+import { checkEnv, getClientEnvVars, getServerEnv } from './utils/environment';
+import { NonceProvider } from './utils/nonce';
 
 const ABORT_DELAY = 70000;
 
@@ -22,20 +25,30 @@ export default async function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext,
 ) {
-  const { i18nextService } = initServerServices(request);
+  const { i18nextService, appConfigRepository } = initServerServices(request);
   const i18n = await i18nextService.getI18nextServerInstance(request, remixContext);
+  const nonce = createNonce();
+
+  const appConfig = await appConfigRepository.getAppConfig();
 
   const App = (
     <I18nextProvider i18n={i18n}>
-      <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} />
+      <NonceProvider value={nonce}>
+        <RemixServer
+          context={remixContext}
+          url={request.url}
+          abortDelay={ABORT_DELAY}
+          nonce={nonce}
+        />
+      </NonceProvider>
     </I18nextProvider>
   );
 
   const prohibitOutOfOrderStreaming = isBotRequest(request) || remixContext.isSpaMode;
 
   return prohibitOutOfOrderStreaming
-    ? handleBotRequest(responseStatusCode, responseHeaders, App)
-    : handleBrowserRequest(responseStatusCode, responseHeaders, App);
+    ? handleBotRequest(responseStatusCode, responseHeaders, App, nonce)
+    : handleBrowserRequest(responseStatusCode, responseHeaders, App, nonce, appConfig);
 }
 
 function isBotRequest(request: Request) {
@@ -47,10 +60,17 @@ function isBotRequest(request: Request) {
   return isbot(userAgent);
 }
 
-function handleBotRequest(responseStatusCode: number, responseHeaders: Headers, App: JSX.Element) {
+function handleBotRequest(
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  App: JSX.Element,
+  nonce?: string,
+) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
+
     const { pipe, abort } = renderToPipeableStream(App, {
+      nonce,
       onAllReady() {
         shellRendered = true;
         const body = new PassThrough();
@@ -89,16 +109,55 @@ function handleBrowserRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   App: JSX.Element,
+  nonce: string,
+  appConfig: AppConfig,
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
     const { pipe, abort } = renderToPipeableStream(App, {
+      nonce,
       onShellReady() {
         shellRendered = true;
         const body = new PassThrough();
         const stream = createReadableStreamFromReadable(body);
 
         responseHeaders.set('Content-Type', 'text/html');
+
+        const clientEnv = getClientEnvVars();
+
+        const firebaseUrl = appConfig.auth.firebase.isEmulator
+          ? appConfig.auth.firebase.emulatorUrl
+          : 'https://identitytoolkit.googleapis.com';
+
+        const externalDomains = ['cdn.segment.com', 'api.segment.io', '*.sentry.io'];
+
+        const frames: string[] = [];
+        const metabaseUrl = clientEnv.METABASE_URL ?? appConfig.urls.metabase;
+        const fbAuthDomain = appConfig.auth.firebase.authDomain;
+        const marbleApiUrl = clientEnv.MARBLE_API_URL ?? appConfig.urls.marble;
+
+        if (metabaseUrl) frames.push(metabaseUrl);
+        if (fbAuthDomain) frames.push(fbAuthDomain);
+
+        responseHeaders.set(
+          'content-security-policy',
+          createContentSecurityPolicy({
+            baseUri: ["'none'"],
+            defaultSrc: ["'self'"],
+            frameAncestors: ["'none'"],
+            objectSrc: ["'none'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: [`'nonce-${nonce}'`, "'unsafe-eval'", "'strict-dynamic'"],
+            connectSrc: [
+              "'self'",
+              marbleApiUrl,
+              firebaseUrl,
+              ...externalDomains.map((d) => `https://${d}`),
+            ],
+            imgSrc: ["'self'", 'data:'],
+            frameSrc: frames.length > 0 ? frames : ["'none'"],
+          }),
+        );
 
         resolve(
           new Response(stream, {

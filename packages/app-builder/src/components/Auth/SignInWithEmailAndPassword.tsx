@@ -6,7 +6,7 @@ import {
   WrongPasswordError,
 } from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
-import { clientServices } from '@app-builder/services/init.client';
+import { useClientServices } from '@app-builder/services/init.client';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { sleep } from '@app-builder/utils/sleep';
@@ -41,6 +41,7 @@ export function SignInWithEmailAndPassword({
   loading?: boolean;
 }) {
   const { t } = useTranslation(['auth', 'common']);
+  const clientServices = useClientServices();
   const navigate = useNavigate();
   const hydrated = useHydrated();
 

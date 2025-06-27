@@ -1,9 +1,4 @@
-import {
-  json,
-  type LinksFunction,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from '@remix-run/node';
+import { type LinksFunction, type LoaderFunctionArgs, type MetaFunction } from '@remix-run/node';
 import {
   Link,
   Links,
@@ -30,12 +25,14 @@ import { iconsSVGSpriteHref, Logo, logosSVGSpriteHref } from 'ui-icons';
 
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
+import { AppConfigContext } from './contexts/AppConfigContext';
 import { initServerServices } from './services/init.server';
 import { useSegmentPageTracking } from './services/segment';
 import { SegmentScript } from './services/segment/SegmentScript';
 import { getSegmentScript } from './services/segment/segment.server';
 import tailwindStyles from './tailwind.css?url';
 import { getClientEnvVars, getServerEnv } from './utils/environment';
+import { useNonce } from './utils/nonce';
 import { getRoute } from './utils/routes';
 
 export const links: LinksFunction = () => [
@@ -65,7 +62,8 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { i18nextService, toastSessionService, csrfService } = initServerServices(request);
+  const { i18nextService, toastSessionService, csrfService, appConfigRepository } =
+    initServerServices(request);
   const locale = await i18nextService.getLocale(request);
 
   const [toastSession, [csrfToken, csrfCookieHeader]] = await Promise.all([
@@ -83,14 +81,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const segmentApiKey = getServerEnv('SEGMENT_WRITE_KEY');
   const disableSegment = getServerEnv('DISABLE_SEGMENT') ?? false;
+  const appConfig = await appConfigRepository.getAppConfig();
 
-  return json(
+  return Response.json(
     {
       ENV,
       locale,
       csrf: csrfToken,
       toastMessage,
       segmentScript: !disableSegment && segmentApiKey ? getSegmentScript(segmentApiKey) : undefined,
+      appConfig,
     },
     {
       headers,
@@ -119,6 +119,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const loaderData = useRouteLoaderData<typeof loader>('root');
 
   const { i18n } = useTranslation();
+  const nonce = useNonce();
+
   useSegmentPageTracking();
 
   return (
@@ -127,7 +129,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         {/* <script crossOrigin="anonymous" src="//unpkg.com/react-scan/dist/auto.global.js" /> */}
         <Links />
-        {loaderData?.segmentScript ? <SegmentScript script={loaderData.segmentScript} /> : null}
+        {loaderData?.segmentScript ? (
+          <SegmentScript nonce={nonce} script={loaderData.segmentScript} />
+        ) : null}
         <ExternalScripts />
       </head>
       <body className="selection:text-grey-100 selection:bg-purple-65 h-screen w-full overflow-hidden antialiased">
@@ -135,12 +139,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Tooltip.Provider>{children}</Tooltip.Provider>
         </AuthenticityTokenProvider>
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify(loaderData?.ENV ?? {})}`,
           }}
         />
-        <ScrollRestoration />
-        <Scripts />
+        <ScrollRestoration nonce={nonce} />
+        <Scripts nonce={nonce} />
         <ClientOnly>{() => <MarbleToaster toastMessage={loaderData?.toastMessage} />}</ClientOnly>
       </body>
     </html>
@@ -184,13 +189,15 @@ function App() {
         },
       }),
   );
-  const { locale } = useLoaderData<typeof loader>();
+  const { locale, appConfig } = useLoaderData<typeof loader>();
 
   useChangeLanguage(locale);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <AppConfigContext.Provider value={appConfig}>
+        <Outlet />
+      </AppConfigContext.Provider>
     </QueryClientProvider>
   );
 }
