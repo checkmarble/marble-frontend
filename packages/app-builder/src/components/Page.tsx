@@ -2,11 +2,8 @@ import { Link, useNavigate } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ClientOnly } from 'remix-utils/client-only';
 import { cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-import { GithubBanner } from './GithubBanner';
 
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
   return (
@@ -58,7 +55,6 @@ const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(
         {...props}
       >
         {children}
-        <ClientOnly fallback={null}>{() => <GithubBanner />}</ClientOnly>
       </div>
     );
   },
