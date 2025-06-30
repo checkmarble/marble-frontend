@@ -144,6 +144,9 @@ const CollapsibleV2Content = forwardRef<HTMLDivElement, React.ComponentPropsWith
   },
 );
 
+/**
+ * @deprecated Use `Collapsible` instead.
+ */
 export const CollapsibleV2 = {
   Provider: CollapsibleV2Provider,
   Title: CollapsibleV2Title,
