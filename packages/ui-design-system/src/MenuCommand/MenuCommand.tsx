@@ -379,7 +379,7 @@ const Separator = React.forwardRef<
   React.ElementRef<typeof Command.Separator>,
   React.ComponentPropsWithoutRef<typeof Command.Separator>
 >(({ className, ...props }, ref) => (
-  <Command.Separator ref={ref} className={cn('bg-border -mx-2 my-2 h-px', className)} {...props} />
+  <Command.Separator ref={ref} className={cn('bg-grey-90 -mx-2 my-2 h-px', className)} {...props} />
 ));
 Separator.displayName = Command.Separator.displayName;
 

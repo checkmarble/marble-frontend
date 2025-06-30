@@ -71,6 +71,7 @@
   "add": "Ajouter",
   "no_name": "Pas de nom",
   "select_all": "Sélectionnez tout",
+  "select_none": "Sélectionnez rien",
   "all_selected": "Tous sélectionnés",
   "missing_configuration": "Marble a identifié une mauvaise configuration pour cette fonctionnalité. \nVeuillez vérifier la documentation pour la bonne configuration.",
   "missing_configuration_title": "Configuration manquante",

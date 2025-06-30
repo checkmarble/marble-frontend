@@ -202,5 +202,10 @@
   "required_actions.see_screening_hits": "Voir les sanctions ({{count}})",
   "case_detail.history.event_detail.entity_annotated": "<Actor>{{actor}}</Actor> a annoté <ObjectType>{{objectType}}</ObjectType> avec un <Type>{{type}}</Type>",
   "case_detail.history.event_type.entity_annotated": "Annotation",
-  "case_detail.pivot_panel.explore_waiting_creation": "Donnée en cours d'indexation"
+  "case_detail.pivot_panel.explore_waiting_creation": "Donnée en cours d'indexation",
+  "case_detail.history.event_type_category.case_lifecycle": "Cycle de vie de l'investigation",
+  "case_detail.history.event_type_category.case_assignation": "Affectation de l'investigation",
+  "case_detail.history.event_type_category.case_result": "Résultat de l'investigation",
+  "case_detail.history.event_type_category.sar_related": "Lié à une déclaration de soupçons",
+  "case_detail.history.event_type_category.case_review_action": "Action d'examen de l'investigation"
 }
