@@ -3,6 +3,8 @@ import { cva } from 'class-variance-authority';
 import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 
+export type { CheckedState } from '@radix-ui/react-checkbox';
+
 const checkbox = cva(
   [
     'flex shrink-0 items-center justify-center rounded border outline-none',
