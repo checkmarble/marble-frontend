@@ -326,6 +326,10 @@ components:
           enum: ['in_review', 'confirmed_hit']
         request:
           $ref: '#/components/schemas/SanctionCheckRequestDto'
+        initial_query:
+          type: array
+          items:
+            $ref: '#/components/schemas/SanctionCheckQueryDto'
         partial:
           type: boolean
         is_manual:
@@ -363,6 +367,10 @@ components:
           enum: ['no_hit']
         request:
           $ref: '#/components/schemas/SanctionCheckRequestDto'
+        initial_query:
+          type: array
+          items:
+            $ref: '#/components/schemas/SanctionCheckQueryDto'
         partial:
           type: boolean
         is_manual:
@@ -401,6 +409,10 @@ components:
           enum: ['error']
         request:
           $ref: '#/components/schemas/SanctionCheckRequestDto'
+        initial_query:
+          type: array
+          items:
+            $ref: '#/components/schemas/SanctionCheckQueryDto'
         partial:
           type: boolean
         is_manual:
@@ -567,6 +579,20 @@ components:
           'Vessel',
           'Vehicle',
         ]
+    SanctionCheckQueryDto:
+      type: object
+      required:
+        - schema
+        - properties
+      properties:
+        schema:
+          $ref: '#/components/schemas/SanctionCheckEntityDto'
+        properties:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
     SanctionCheckRequestDto:
       type: object
       required:
@@ -586,19 +612,7 @@ components:
             queries:
               type: object
               additionalProperties:
-                type: object
-                required:
-                  - schema
-                  - properties
-                properties:
-                  schema:
-                    $ref: '#/components/schemas/SanctionCheckEntityDto'
-                  properties:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
+                $ref: '#/components/schemas/SanctionCheckQueryDto'
     SanctionCheckRefineDto:
       type: object
     UpdateSanctionCheckMatchDto:

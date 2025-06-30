@@ -1,5 +1,6 @@
 import {
   type SanctionCheckDto,
+  type SanctionCheckEntityDto,
   type SanctionCheckErrorDto,
   type SanctionCheckFileDto,
   type SanctionCheckMatchDto,
@@ -238,6 +239,10 @@ type BaseSanctionCheck = {
   partial: boolean;
   isManual: boolean;
   matches: SanctionCheckMatch[];
+  initialQuery: {
+    schema: SanctionCheckEntityDto;
+    properties: Record<string, string[]>;
+  }[];
 };
 export type SanctionCheckError = BaseSanctionCheck & {
   status: 'error';
@@ -263,6 +268,7 @@ export function adaptSanctionCheck(dto: SanctionCheckDto): SanctionCheck {
     isManual: dto.is_manual,
     matches: R.map(dto.matches, adaptSanctionCheckMatch),
     config: dto.config,
+    initialQuery: dto.initial_query ?? [],
   };
 
   if (dto.status === 'error') {

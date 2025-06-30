@@ -730,17 +730,18 @@ export type SnoozesOfIterationDto = {
     rule_snoozes: RuleSnoozeInformationDto[];
 };
 export type SanctionCheckEntityDto = "Thing" | "Address" | "Airplane" | "Asset" | "Associate" | "Company" | "CryptoWallet" | "Debt" | "Directorship" | "Employment" | "Family" | "Identification" | "LegalEntity" | "Membership" | "Occupancy" | "Organization" | "Ownership" | "Passport" | "Payment" | "Person" | "Position" | "PublicBody" | "Representation" | "Sanction" | "Security" | "Succession" | "UnknownLink" | "Vessel" | "Vehicle";
+export type Items = {
+    schema: SanctionCheckEntityDto;
+    properties: {
+        [key: string]: string[];
+    };
+};
 export type SanctionCheckRequestDto = {
     threshold: number;
     limit: number;
     search_input: {
         queries: {
-            [key: string]: {
-                schema: SanctionCheckEntityDto;
-                properties: {
-                    [key: string]: string[];
-                };
-            };
+            [key: string]: Items;
         };
     };
 };
@@ -787,6 +788,7 @@ export type SanctionCheckSuccessDto = {
     decision_id: string;
     status: "in_review" | "confirmed_hit";
     request: SanctionCheckRequestDto;
+    initial_query?: Items[];
     partial: boolean;
     is_manual: boolean;
     matches: SanctionCheckMatchDto[];
@@ -799,6 +801,12 @@ export type SanctionCheckErrorDto = {
     decision_id: string;
     status: "error";
     request?: SanctionCheckRequestDto;
+    initial_query?: {
+        schema: SanctionCheckEntityDto;
+        properties: {
+            [key: string]: string[];
+        };
+    }[];
     partial: boolean;
     is_manual: boolean;
     matches: SanctionCheckMatchDto[];
@@ -812,6 +820,7 @@ export type SanctionCheckDto = SanctionCheckSuccessDto | {
     decision_id: string;
     status: "no_hit";
     request?: SanctionCheckRequestDto;
+    initial_query?: Items[];
     partial: boolean;
     is_manual: boolean;
     matches: SanctionCheckMatchDto[];
@@ -1007,6 +1016,31 @@ export type AnalyticsDto = {
     embedding_type: "global_dashboard" | "unknown_embedding_type";
     signed_embedding_url: string;
 };
+export type AppConfigDto = {
+    version: string;
+    status: {
+        migrations: boolean;
+        has_org: boolean;
+        has_user: boolean;
+    };
+    urls: {
+        marble: string;
+        metabase: string;
+    };
+    auth: {
+        firebase: {
+            is_emulator: boolean;
+            emulator_host: string;
+            project_id: string;
+            api_key: string;
+            auth_domain: string;
+        };
+    };
+    features: {
+        sso: boolean;
+        segment: boolean;
+    };
+};
 export type ApiKeyDto = {
     id: string;
     description: string;
@@ -1151,9 +1185,6 @@ export type TestRunRuleExecutionDataDto = {
     status: "hit" | "no_hit" | "error" | "snoozed";
     total: number;
     stable_rule_id?: string;
-};
-export type VersionDto = {
-    version: string;
 };
 /**
  * Get an access token
@@ -3254,6 +3285,17 @@ export function listAnalytics(opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
+ * Retrieves the configuration of the frontend app
+ */
+export function getAppConfig(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: AppConfigDto;
+    }>("/config", {
+        ...opts
+    }));
+}
+/**
  * List api keys associated with the current organization (present in the JWT)
  */
 export function listApiKeys(opts?: Oazapfts.RequestOpts) {
@@ -4094,35 +4136,6 @@ export function getRuleData(testRunId: string, opts?: Oazapfts.RequestOpts) {
         status: 404;
         data: string;
     }>(`/scenario-testruns/${encodeURIComponent(testRunId)}/data_by_rule_execution`, {
-        ...opts
-    }));
-}
-/**
- * Retrieves the backend version
- */
-export function getBackendVersion(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: VersionDto;
-    }>("/version", {
-        ...opts
-    }));
-}
-/**
- * Check Signup Status
- */
-export function getSignupStatus(opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            /** Indicates whether initial migrations have been run. */
-            migrations_run: boolean;
-            /** Indicates if there are at least one organizations in the database. */
-            has_an_organization: boolean;
-            /** Indicates if there are at least one user in the database. */
-            has_a_user: boolean;
-        };
-    }>("/signup-status", {
         ...opts
     }));
 }

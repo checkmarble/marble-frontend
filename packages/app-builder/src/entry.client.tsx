@@ -4,7 +4,7 @@ import { StrictMode, startTransition, useEffect } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 
-import { clientServices } from './services/init.client';
+import { i18nextClientService } from './services/init.client';
 import { getClientEnv } from './utils/environment';
 
 Sentry.init({
@@ -58,7 +58,6 @@ function isBrowserExtensionError(exception: unknown): boolean {
 }
 
 async function hydrate() {
-  const { i18nextClientService } = clientServices;
   const i18next = await i18nextClientService.getI18nextClientInstance();
 
   startTransition(() => {

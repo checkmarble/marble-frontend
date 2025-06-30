@@ -313,6 +313,8 @@ SetDataModelTableOptionsBodyDto:
 
 AnalyticsDto:
   $ref: misc.yml#/components/schemas/AnalyticsDto
+AppConfigDto:
+  $ref: misc.yml#/components/schemas/AppConfigDto
 
 # ADMINISTRATION
 
@@ -388,8 +390,3 @@ TestRunRuleExecutionDataDto:
   $ref: scenario-testrun.yml#/components/schemas/TestRunRuleExecutionDataDto
 TestRunCreateInputDto:
   $ref: scenario-testrun.yml#/components/schemas/TestRunCreateInputDto
-
-# VERSION
-
-VersionDto:
-  $ref: version.yml#/components/schemas/VersionDto

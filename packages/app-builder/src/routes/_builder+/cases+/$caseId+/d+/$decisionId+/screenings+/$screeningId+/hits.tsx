@@ -1,17 +1,21 @@
-import { casesI18n } from '@app-builder/components';
+import { casesI18n, scenarioI18n } from '@app-builder/components';
 import { CasePivotValues } from '@app-builder/components/Cases/CasePivotValues';
 import { IngestedObjectDetailModal } from '@app-builder/components/Data/IngestedObjectDetailModal';
 import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
+import { FormatData } from '@app-builder/components/FormatData';
 import { SanctionReviewSection } from '@app-builder/components/Sanctions/SanctionReview';
-import { SearchInputDisplay } from '@app-builder/components/Sanctions/SearchInput';
+import { sanctionsI18n } from '@app-builder/components/Sanctions/sanctions-i18n';
 import { usePivotValues } from '@app-builder/hooks/decisions/usePivotValues';
-import { type SanctionCheck } from '@app-builder/models/sanction-check';
+import { type SanctionCheck, SanctionCheckQuery } from '@app-builder/models/sanction-check';
+import { useFormatLanguage } from '@app-builder/utils/format';
+import { parseUnknownData } from '@app-builder/utils/parse';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useNavigate } from '@remix-run/react';
-import { useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
+import { match } from 'ts-pattern';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from 'ui-design-system/src/Tabs/Tabs';
 import { useCurrentCase } from './_layout';
 
 export default function CaseSanctionsHitsPage() {
@@ -41,16 +45,21 @@ export default function CaseSanctionsHitsPage() {
         />
         <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
           {sanctionCheck.request ? (
-            <SanctionCheckSearchInput request={sanctionCheck.request} />
+            <SanctionCheckQueryDetail
+              request={sanctionCheck.request}
+              initialQuery={sanctionCheck.initialQuery}
+            />
           ) : null}
-          <div className="flex h-fit flex-col gap-2">
-            <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
-              <span className="text-grey-00 text-xs font-medium first-letter:capitalize">
-                {t('cases:case_detail.pivot_values')}
-              </span>
+          {pivotValues.length > 0 && (
+            <div className="flex h-fit flex-col gap-2">
+              <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
+                <span className="text-grey-00 text-xs font-medium first-letter:capitalize">
+                  {t('cases:case_detail.pivot_values')}
+                </span>
+              </div>
+              <CasePivotValues pivotValues={pivotValues} />
             </div>
-            <CasePivotValues pivotValues={pivotValues} />
-          </div>
+          )}
 
           <div className="flex h-fit flex-col gap-2">
             <div className="flex flex-row items-center justify-between gap-2">
@@ -80,18 +89,68 @@ export default function CaseSanctionsHitsPage() {
   );
 }
 
-function SanctionCheckSearchInput({ request }: { request: NonNullable<SanctionCheck['request']> }) {
-  const { t } = useTranslation(casesI18n);
-  const searchInput = R.values(request.queries);
+const QueryObjectDetail = ({ query }: { query: SanctionCheckQuery }) => {
+  const language = useFormatLanguage();
+  const { t } = useTranslation(scenarioI18n);
+  const parsed = useMemo(
+    () => Object.entries(query.properties).map(([k, v]) => [k, parseUnknownData(v)] as const),
+    [query.properties],
+  );
 
   return (
-    <div className="flex h-fit flex-col gap-2">
-      <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
-        <span className="text-grey-00 text-xs font-medium first-letter:capitalize">
-          {t('sanctions:search_input')}
-        </span>
-      </div>
-      <SearchInputDisplay searchInput={searchInput} />
+    <div className="text-s text-grey-00 bg-grey-98 grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg p-4 mb-2">
+      <span className="font-semibold">type</span>
+      <span>
+        {match(query.schema)
+          .with('Thing', () => t('scenarios:edit_sanction.entity_type.thing'))
+          .with('Person', () => t('scenarios:edit_sanction.entity_type.person'))
+          .with('Organization', () => t('scenarios:edit_sanction.entity_type.organization'))
+          .with('Vehicle', () => t('scenarios:edit_sanction.entity_type.vehicle'))
+          .otherwise(() => '')}
+      </span>
+      {parsed.map(([property, data]) => (
+        <Fragment key={property}>
+          <span className="font-semibold">{property}</span>
+          <FormatData data={data} language={language} />
+        </Fragment>
+      ))}
     </div>
+  );
+};
+
+function SanctionCheckQueryDetail({
+  request,
+  initialQuery,
+}: {
+  request: NonNullable<SanctionCheck['request']>;
+  initialQuery: SanctionCheck['initialQuery'];
+}) {
+  const { t } = useTranslation(sanctionsI18n);
+  const processedQueries = Object.values(request.queries);
+  const hasInitialQuery = Array.isArray(initialQuery) && initialQuery.length > 0;
+
+  return (
+    <Tabs defaultValue="preprocessed">
+      <TabsList className="mb-2">
+        {hasInitialQuery && (
+          <TabsTrigger value="initial">{t('sanctions:initial_query')}</TabsTrigger>
+        )}
+        <TabsTrigger value="preprocessed">
+          {!hasInitialQuery ? t('sanctions:query') : t('sanctions:processed_query')}
+        </TabsTrigger>
+      </TabsList>
+      {hasInitialQuery && (
+        <TabsContent value="initial">
+          {initialQuery.map((q, i) => (
+            <QueryObjectDetail key={i} query={q as SanctionCheckQuery} />
+          ))}
+        </TabsContent>
+      )}
+      <TabsContent value="preprocessed">
+        {processedQueries.map((q, i) => (
+          <QueryObjectDetail key={i} query={q as SanctionCheckQuery} />
+        ))}
+      </TabsContent>
+    </Tabs>
   );
 }

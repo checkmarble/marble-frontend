@@ -4,7 +4,7 @@ import { type TableModel } from '@app-builder/models';
 import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { isIngestDataAvailable } from '@app-builder/services/feature-access';
-import { clientServices } from '@app-builder/services/init.client';
+import { useClientServices } from '@app-builder/services/init.client';
 import { initServerServices } from '@app-builder/services/init.server';
 import {
   formatDateTimeWithoutPresets,
@@ -61,6 +61,7 @@ type ModalContent = {
 
 const UploadForm = ({ objectType }: { objectType: string }) => {
   const { t } = useTranslation(handle.i18n);
+  const clientServices = useClientServices();
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<ModalContent>({

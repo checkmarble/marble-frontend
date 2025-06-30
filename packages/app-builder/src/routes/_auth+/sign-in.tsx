@@ -13,6 +13,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
+import { tryit } from 'radash';
 import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { safeRedirect } from 'remix-utils/safe-redirect';
@@ -22,42 +23,27 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const {
-    authService,
-    authSessionService,
-    featureAccessService,
-    signupRepository: { getSignupStatus },
-  } = initServerServices(request);
+  const { authService, authSessionService, appConfigRepository } = initServerServices(request);
   await authService.isAuthenticated(request, {
     successRedirect: getRoute('/app-router'),
   });
   const session = await authSessionService.getSession(request);
 
-  const [ssoResponse, signInStatusResponse] = await Promise.allSettled([
-    featureAccessService.isSsoEnabled(),
-    getSignupStatus(),
-  ]);
+  const [err, appConfig] = await tryit(() => appConfigRepository.getAppConfig())();
 
-  if (ssoResponse.status === 'rejected') {
-    console.error('Error fetching internal SSO-enabled API');
-  }
-  if (signInStatusResponse.status === 'rejected') {
-    console.error('Error fetching internal signup-status API');
+  if (err) {
+    console.error('Error fetching app config API');
   }
 
   return {
-    isSignupReady:
-      signInStatusResponse.status === 'fulfilled' &&
-      signInStatusResponse.value.migrationsRun &&
-      signInStatusResponse.value.hasAnOrganization &&
-      signInStatusResponse.value.hasAUser,
-    haveMigrationsRun:
-      signInStatusResponse.status === 'fulfilled' && signInStatusResponse.value.migrationsRun,
-    authError:
-      ssoResponse.status === 'rejected'
-        ? 'BackendUnavailable'
-        : (session.get('authError')?.message as AuthErrors),
-    isSsoEnabled: ssoResponse.status === 'fulfilled' && ssoResponse.value,
+    isSignupReady: appConfig
+      ? appConfig.status.migrations && appConfig.status.hasOrg && appConfig.status.hasUser
+      : false,
+    didMigrationsRun: appConfig?.status.migrations ?? false,
+    authError: !appConfig
+      ? 'BackendUnavailable'
+      : (session.get('authError')?.message as AuthErrors),
+    isSsoEnabled: appConfig && appConfig.features.sso,
   };
 }
 
@@ -76,7 +62,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Login() {
   const { t } = useTranslation(handle.i18n);
-  const { authError, isSsoEnabled, isSignupReady, haveMigrationsRun } =
+  const { authError, isSsoEnabled, isSignupReady, didMigrationsRun } =
     useLoaderData<typeof loader>();
 
   const [searchParams] = useSearchParams();
@@ -96,7 +82,7 @@ export default function Login() {
       {!isSignupReady ? (
         <Callout variant="soft" color="red" className="mb-6 text-start">
           <div>
-            {haveMigrationsRun
+            {didMigrationsRun
               ? t('auth:sign_up.warning.instance_not_initialized')
               : t('auth:sign_up.warning.database_not_migrated')}
             <p>

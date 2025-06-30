@@ -38,6 +38,7 @@ import { type WebhookRepository } from '@app-builder/repositories/WebhookReposit
 import { getServerEnv } from '@app-builder/utils/environment';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { json, redirect } from '@remix-run/node';
+import { captureRemixServerException } from '@sentry/remix';
 import { marblecoreApi } from 'marble-api';
 import { type CSRF, CSRFError } from 'remix-utils/csrf/server';
 import * as z from 'zod';
@@ -334,7 +335,8 @@ export function makeAuthenticationServerService({
       entitlements = user.organizationId
         ? await getFeatureAccessRepository(featureAccessApiClient).getEntitlements()
         : emptyFeatureAccesses();
-    } catch (_err) {
+    } catch (err) {
+      captureRemixServerException(err, 'remix.server', request);
       if (options.failureRedirect) throw redirect(options.failureRedirect);
       else return null;
     }

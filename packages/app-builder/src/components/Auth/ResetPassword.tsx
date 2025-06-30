@@ -3,7 +3,7 @@ import {
   TooManyRequest,
   useSendPasswordResetEmail,
 } from '@app-builder/services/auth/auth.client';
-import { clientServices } from '@app-builder/services/init.client';
+import { useClientServices } from '@app-builder/services/init.client';
 import { getFieldErrors } from '@app-builder/utils/form';
 import * as Sentry from '@sentry/remix';
 import { useForm } from '@tanstack/react-form';
@@ -24,6 +24,7 @@ type ResetPasswordForm = z.infer<typeof resetPasswordFormSchema>;
 
 export function ResetPassword() {
   const { t } = useTranslation(['auth', 'common']);
+  const clientServices = useClientServices();
 
   const sendPasswordResetEmail = useSendPasswordResetEmail(
     clientServices.authenticationClientService,
