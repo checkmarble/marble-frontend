@@ -180,5 +180,6 @@
   "relative.maleThirdCousin.label": "Male third cousin",
   "relative.femaleThirdCousin.label": "Female third cousin",
   "relative.maleFourthCousin.label": "Male fourth cousin",
-  "relative.femaleFourthCousin.label": "Female fourth cousin"
+  "relative.femaleFourthCousin.label": "Female fourth cousin",
+  "match.family-member.count": "{{count}} members"
 }

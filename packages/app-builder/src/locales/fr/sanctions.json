@@ -181,5 +181,6 @@
   "relative.maleThirdCousin.label": "Cousin masculin de troisième degré",
   "relative.femaleThirdCousin.label": "Cousine de troisième degré",
   "relative.maleFourthCousin.label": "Cousin masculin de quatrième degré",
-  "relative.femaleFourthCousin.label": "Cousine de quatrième degré"
+  "relative.femaleFourthCousin.label": "Cousine de quatrième degré",
+  "match.family-member.count": "{{count}} membres"
 }

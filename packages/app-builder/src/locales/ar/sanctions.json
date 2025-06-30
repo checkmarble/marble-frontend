@@ -181,5 +181,6 @@
   "relative.maleThirdCousin.label": "أخ ثالث",
   "relative.femaleThirdCousin.label": "أخت ثالث",
   "relative.maleFourthCousin.label": "أخ رابع",
-  "relative.femaleFourthCousin.label": "أخت رابع"
+  "relative.femaleFourthCousin.label": "أخت رابع",
+  "match.family-member.count": "{{count}} أفراد الأسرة"
 }
