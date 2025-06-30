@@ -76,7 +76,7 @@
   "include_snoozed": "Inclure les désactivés",
   "case.outcome.confirmed_risk": "Risque confirmé",
   "case.outcome.false_positive": "Faux positif",
-  "case.outcome.valuable_alert": "Alerte précieuse",
+  "case.outcome.valuable_alert": "Alerte utile",
   "case.status.closed": "résolu",
   "case.status.pending": "en attente",
   "case.status.discarded": "écarté",
@@ -202,5 +202,9 @@
   "required_actions.see_screening_hits": "Voir les sanctions ({{count}})",
   "case_detail.history.event_detail.entity_annotated": "<Actor>{{actor}}</Actor> a annoté <ObjectType>{{objectType}}</ObjectType> avec un <Type>{{type}}</Type>",
   "case_detail.history.event_type.entity_annotated": "Annotation",
-  "case_detail.pivot_panel.explore_waiting_creation": "Donnée en cours d'indexation"
+  "case_detail.pivot_panel.explore_waiting_creation": "Donnée en cours d'indexation",
+  "case_detail.history.event_type_category.others": "Autres",
+  "case_detail.history.event_type_category.case_assignation": "Affectation",
+  "case_detail.history.event_type_category.sar_related": "Décl. de soupçons",
+  "case_detail.history.event_type_category.case_review_action": "Commentaires & fichiers"
 }

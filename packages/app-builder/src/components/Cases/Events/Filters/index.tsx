@@ -1,26 +1,21 @@
-import { DEFAULT_CASE_EVENT_TYPES_FILTER } from '@app-builder/constants/cases';
-import { type CaseEventType, caseEventTypes } from '@app-builder/models/cases';
+import {
+  CASE_EVENT_CATEGORIES,
+  DEFAULT_CASE_EVENT_CATEGORIES_FILTER,
+} from '@app-builder/constants/cases';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { endOfDay, startOfDay } from 'date-fns';
 import { diff, toggle } from 'radash';
 import { type ComponentProps, type Dispatch, type SetStateAction, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Calendar, Checkbox, MenuCommand } from 'ui-design-system';
+import { match } from 'ts-pattern';
+import { Button, Calendar, Checkbox, type CheckedState, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 import { casesI18n } from '../../cases-i18n';
 
 export const caseEventsFilterSchema = z.object({
-  types: z.array(
-    z.union(
-      caseEventTypes.map((t) => z.literal(t)) as [
-        z.ZodLiteral<CaseEventType>,
-        z.ZodLiteral<CaseEventType>,
-        ...z.ZodLiteral<CaseEventType>[],
-      ],
-    ),
-  ),
+  types: z.array(z.enum(CASE_EVENT_CATEGORIES)),
   startDate: z.string().datetime().optional(),
   endDate: z.string().datetime().optional(),
 });
@@ -31,25 +26,26 @@ const Badge = ({ children }: ComponentProps<'span'>) => (
   <span className="bg-purple-65 text-grey-100 text-2xs rounded px-1 py-0.5">{children}</span>
 );
 
-export const CaseEventFilters = ({
-  filters,
-  allowedEventTypes,
-  setFilters,
-}: {
+export type CaseEventFiltersProps = {
   filters: CaseEventFiltersForm;
-  allowedEventTypes?: CaseEventType[];
   setFilters: Dispatch<SetStateAction<CaseEventFiltersForm>>;
-}) => {
+};
+
+export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps) => {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
   const isDirty = useMemo(
     () =>
-      diff(filters.types, DEFAULT_CASE_EVENT_TYPES_FILTER).length !== 0 ||
+      diff(filters.types, DEFAULT_CASE_EVENT_CATEGORIES_FILTER).length !== 0 ||
       filters.types.length === 0 ||
       filters.startDate ||
       filters.endDate,
     [filters],
   );
+  const checked: CheckedState = match(filters.types.length)
+    .with(CASE_EVENT_CATEGORIES.length, () => true)
+    .with(0, () => false)
+    .otherwise(() => 'indeterminate');
 
   return (
     <div className="flex items-center gap-2">
@@ -57,7 +53,7 @@ export const CaseEventFilters = ({
         <Button
           variant="secondary"
           size="xs"
-          onClick={() => setFilters({ types: DEFAULT_CASE_EVENT_TYPES_FILTER })}
+          onClick={() => setFilters({ types: DEFAULT_CASE_EVENT_CATEGORIES_FILTER })}
         >
           <Icon icon="cross" className="size-4" />
           <span className="text-xs">{t('cases:case_detail.history.filter_reset')}</span>
@@ -75,45 +71,42 @@ export const CaseEventFilters = ({
               </Badge>
             ) : (
               filters.types.map((type) => (
-                <Badge key={type}>{t(`cases:case_detail.history.event_type.${type}`)}</Badge>
+                <Badge key={type}>
+                  {t(`cases:case_detail.history.event_type_category.${type}`)}
+                </Badge>
               ))
             )}
           </Button>
         </MenuCommand.Trigger>
-        <MenuCommand.Content className="mt-2 max-h-[400px] max-w-[210px]" align="end">
+        <MenuCommand.Content sideOffset={4} className="max-h-[400px] max-w-[210px]" align="end">
           <MenuCommand.Combobox className="m-1 mb-0 h-8 p-0" iconClasses="size-4" />
           <MenuCommand.List className="p-1">
-            {(allowedEventTypes ?? caseEventTypes).map((type) => (
+            <MenuCommand.Item
+              className="flex min-h-0 cursor-pointer items-center justify-start p-1.5"
+              onSelect={() => {
+                setFilters({ types: checked === true ? [] : [...CASE_EVENT_CATEGORIES] });
+              }}
+            >
+              <Checkbox size="small" checked={checked} />
+              <span className="text-s">
+                {t(`common:${checked === true ? 'select_none' : 'select_all'}`)}
+              </span>
+            </MenuCommand.Item>
+            <MenuCommand.Separator className="-mx-1" />
+            {CASE_EVENT_CATEGORIES.map((type) => (
               <MenuCommand.Item
                 onSelect={() =>
                   setFilters((prev) => ({ ...prev, types: toggle(prev.types, type) }))
                 }
                 className="flex min-h-0 cursor-pointer items-center justify-start p-1.5"
                 key={type}
-                value={type}
               >
                 <Checkbox size="small" checked={filters?.types.includes(type)} />
-                <span className="text-s">{t(`cases:case_detail.history.event_type.${type}`)}</span>
+                <span className="text-s">
+                  {t(`cases:case_detail.history.event_type_category.${type}`)}
+                </span>
               </MenuCommand.Item>
             ))}
-            <div className="bg-grey-100 sticky bottom-0 flex w-full gap-2">
-              <Button
-                variant="secondary"
-                size="small"
-                className="basis-full"
-                onClick={() => setFilters({ types: DEFAULT_CASE_EVENT_TYPES_FILTER })}
-              >
-                <Icon icon="filters-off" className="size-4" />
-              </Button>
-              <Button
-                variant="secondary"
-                size="small"
-                className="basis-full"
-                onClick={() => setFilters({ types: caseEventTypes })}
-              >
-                <Icon icon="checked" className="size-3.5" />
-              </Button>
-            </div>
           </MenuCommand.List>
         </MenuCommand.Content>
       </MenuCommand.Menu>

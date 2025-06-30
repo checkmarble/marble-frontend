@@ -202,5 +202,9 @@
   "required_actions.see_screening_hits": "انظر أغاني الفحص ({{count}})",
   "case_detail.history.event_type.entity_annotated": "التعليقات التوضيحية",
   "case_detail.history.event_detail.entity_annotated": "قام <Actor>{{actor}}</Actor> بشرح <ObjectType>{{objectType}}</ObjectType> باستخدام <Type>{{type}}</Type>",
-  "case_detail.pivot_panel.explore_waiting_creation": "الانتظار الخلق"
+  "case_detail.pivot_panel.explore_waiting_creation": "الانتظار الخلق",
+  "case_detail.history.event_type_category.others": "أخرى",
+  "case_detail.history.event_type_category.case_assignation": "تعيين الحالة",
+  "case_detail.history.event_type_category.sar_related": "مرتبط بتقرير النشاط المشبوه",
+  "case_detail.history.event_type_category.case_review_action": "العمل المرتبط بمراجعة الحالة"
 }

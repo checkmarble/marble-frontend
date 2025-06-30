@@ -19,10 +19,13 @@ import { SarFileUploadedDetail } from '@app-builder/components/Cases/Events/SarF
 import { SarStatusChangedDetail } from '@app-builder/components/Cases/Events/SarStatusChanged';
 import { StatusUpdatedDetail } from '@app-builder/components/Cases/Events/StatusUpdated';
 import { TagsUpdatedDetail } from '@app-builder/components/Cases/Events/TagsUpdated';
-import { DEFAULT_CASE_EVENT_TYPES_FILTER } from '@app-builder/constants/cases';
-import { type CaseEvent } from '@app-builder/models/cases';
+import {
+  CASE_EVENT_CATEGORY_TO_EVENTS_MAPPING,
+  DEFAULT_CASE_EVENT_CATEGORIES_FILTER,
+} from '@app-builder/constants/cases';
+import { type CaseEvent, CaseEventType } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
-import { debounce, unique } from 'radash';
+import { debounce } from 'radash';
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { allPass, filter } from 'remeda';
@@ -51,17 +54,12 @@ export function CaseEvents({
   const [olderEvents, setOlderEventsCount] = useState(0);
   const [newerEvents, setNewerEventsCount] = useState(0);
   const [filters, setFilters] = useState<CaseEventFiltersForm>({
-    types: DEFAULT_CASE_EVENT_TYPES_FILTER,
+    types: DEFAULT_CASE_EVENT_CATEGORIES_FILTER,
   });
 
   const orderedEvents = useMemo(
     () => events.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     [events],
-  );
-
-  const allowedEventTypes = useMemo(
-    () => unique(orderedEvents.map((e) => e.eventType)),
-    [orderedEvents],
   );
 
   const filteredEvents = useMemo(() => {
@@ -71,7 +69,13 @@ export function CaseEvents({
 
     return filter(orderedEvents, (event) =>
       allPass(event, [
-        (e) => !type.length || type.includes(e.eventType),
+        (e) => {
+          if (type.length === 0) return true;
+          const typesAllowed: CaseEventType[] = type.flatMap(
+            (t) => CASE_EVENT_CATEGORY_TO_EVENTS_MAPPING[t],
+          );
+          return typesAllowed.includes(e.eventType);
+        },
         (e) => !startDate || new Date(e.createdAt).getTime() >= new Date(startDate).getTime(),
         (e) => !endDate || new Date(e.createdAt).getTime() <= new Date(endDate).getTime(),
       ]),
@@ -132,11 +136,7 @@ export function CaseEvents({
           {t('cases:investigation.more_recent', { number: newerEvents })}
         </span>
         <div className="flex items-center gap-2">
-          <CaseEventFilters
-            filters={filters}
-            allowedEventTypes={allowedEventTypes}
-            setFilters={setFilters}
-          />
+          <CaseEventFilters filters={filters} setFilters={setFilters} />
           <Button variant="secondary" onClick={() => setShowAll(!showAll)} size="xs">
             <Icon icon={showAll ? 'eye-slash' : 'eye'} className="size-3.5" />
             <span className="text-xs">
