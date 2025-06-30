@@ -70,6 +70,7 @@
   "page_displayed_of_total": "صفحة <PageCount>{{currentPage}} من {{pageCount}}</PageCount>",
   "paste": "لصق",
   "premium": "ميزة متميزة",
+  "rename": "إعادة التسمية",
   "save": "حفظ",
   "search": "بحث",
   "select_all": "حدد كل شيء",

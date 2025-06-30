@@ -70,6 +70,7 @@
   "page_displayed_of_total": "Page <PageCount>{{currentPage}} of {{pageCount}}</PageCount>",
   "paste": "Paste",
   "premium": "Premium Feature",
+  "rename": "Rename",
   "save": "Save",
   "search": "Search",
   "select_all": "Select all",

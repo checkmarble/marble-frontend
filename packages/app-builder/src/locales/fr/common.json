@@ -70,6 +70,7 @@
   "page_displayed_of_total": "Page <PageCount>{{currentPage}} sur {{pageCount}}</PageCount>",
   "paste": "Coller",
   "premium": "Fonctionnalité Premium",
+  "rename": "Renommer",
   "save": "Sauvegarder",
   "search": "Recherche",
   "select_all": "Sélectionner tout",
