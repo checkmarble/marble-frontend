@@ -15,8 +15,6 @@ export const SarDeletedDetail = ({ event }: { event: SarDeletedEvent }) => {
     [event.userId, getOrgUserById],
   );
 
-  console.log('SarDeletedEvent', event);
-
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
       <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">

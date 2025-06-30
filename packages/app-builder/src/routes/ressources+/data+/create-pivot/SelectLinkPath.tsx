@@ -21,7 +21,6 @@ export function SelectLinkPath({
   onBack: () => void;
 }) {
   const { t } = useTranslation(['common', 'data']);
-  console.log('SelectLinkPath', pivotOptions, preferedPivotOption);
   const pathOptions = useMemo(
     () =>
       pivotOptions
