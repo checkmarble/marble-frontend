@@ -1,3 +1,4 @@
+import { DEFAULT_CASE_EVENT_TYPES_FILTER } from '@app-builder/constants/cases';
 import { type CaseEventType, caseEventTypes } from '@app-builder/models/cases';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
@@ -8,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 import { Button, Calendar, Checkbox, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
 import { casesI18n } from '../../cases-i18n';
 
 export const caseEventsFilterSchema = z.object({
@@ -44,7 +44,7 @@ export const CaseEventFilters = ({
   const language = useFormatLanguage();
   const isDirty = useMemo(
     () =>
-      diff(filters.types, ['comment_added', 'file_added']).length !== 0 ||
+      diff(filters.types, DEFAULT_CASE_EVENT_TYPES_FILTER).length !== 0 ||
       filters.types.length === 0 ||
       filters.startDate ||
       filters.endDate,
@@ -57,7 +57,7 @@ export const CaseEventFilters = ({
         <Button
           variant="secondary"
           size="xs"
-          onClick={() => setFilters({ types: ['comment_added', 'file_added'] })}
+          onClick={() => setFilters({ types: DEFAULT_CASE_EVENT_TYPES_FILTER })}
         >
           <Icon icon="cross" className="size-4" />
           <span className="text-xs">{t('cases:case_detail.history.filter_reset')}</span>
@@ -101,7 +101,7 @@ export const CaseEventFilters = ({
                 variant="secondary"
                 size="small"
                 className="basis-full"
-                onClick={() => setFilters({ types: ['file_added', 'comment_added'] })}
+                onClick={() => setFilters({ types: DEFAULT_CASE_EVENT_TYPES_FILTER })}
               >
                 <Icon icon="filters-off" className="size-4" />
               </Button>

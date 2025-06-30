@@ -19,6 +19,7 @@ import { SarFileUploadedDetail } from '@app-builder/components/Cases/Events/SarF
 import { SarStatusChangedDetail } from '@app-builder/components/Cases/Events/SarStatusChanged';
 import { StatusUpdatedDetail } from '@app-builder/components/Cases/Events/StatusUpdated';
 import { TagsUpdatedDetail } from '@app-builder/components/Cases/Events/TagsUpdated';
+import { DEFAULT_CASE_EVENT_TYPES_FILTER } from '@app-builder/constants/cases';
 import { type CaseEvent } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
 import { debounce, unique } from 'radash';
@@ -28,7 +29,6 @@ import { allPass, filter } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { casesI18n } from './cases-i18n';
 import { EntityAnnotated } from './Events/EntityAnnotated';
 import { SarCreatedDetail } from './Events/SarCreated';
@@ -51,7 +51,7 @@ export function CaseEvents({
   const [olderEvents, setOlderEventsCount] = useState(0);
   const [newerEvents, setNewerEventsCount] = useState(0);
   const [filters, setFilters] = useState<CaseEventFiltersForm>({
-    types: ['comment_added', 'file_added'],
+    types: DEFAULT_CASE_EVENT_TYPES_FILTER,
   });
 
   const orderedEvents = useMemo(
