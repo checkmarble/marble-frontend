@@ -1,6 +1,6 @@
 {
+  "clear_filters": "clear filters",
   "filters": "filters",
   "new_filter": "new filter",
-  "clear_filters": "clear filters",
   "up_to": "up to {{duration}}"
 }
