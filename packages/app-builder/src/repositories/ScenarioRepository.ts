@@ -31,7 +31,13 @@ import {
   adaptScenarioValidation,
   type ScenarioValidation,
 } from '@app-builder/models/scenario/validation';
-import { adaptWorkflowRule, type WorkflowRule } from '@app-builder/models/scenario/workflow';
+import {
+  adaptWorkflow,
+  adaptWorkflowRule,
+  type Rule,
+  type WorkflowAction,
+  type WorkflowCondition,
+} from '@app-builder/models/scenario/workflow';
 import { findRuleValidation } from '@app-builder/services/validation/scenario-validation';
 
 export interface ScenarioRepository {
@@ -72,7 +78,27 @@ export interface ScenarioRepository {
   createScenarioPublication(args: CreateScenarioPublicationBody): Promise<void>;
   getScenarioIterationActiveSnoozes(scenarioIterationId: string): Promise<SnoozesOfIteration>;
   scheduleScenarioExecution(args: { iterationId: string }): Promise<void>;
-  listWorkflows(args: { scenarioId: string }): Promise<WorkflowRule[]>;
+  listWorkflowRules(args: { scenarioId: string }): Promise<Rule[]>;
+  createWorkflowRule(args: {
+    scenarioId: string;
+    name: string;
+    fallthrough: boolean;
+  }): Promise<Rule>;
+  updateWorkflowRule(args: { ruleId: string; name: string; fallthrough: boolean }): Promise<Rule>;
+  reorderWorkflows(args: { scenarioId: string; workflowIds: string[] }): Promise<void>;
+  createWorkflowCondition(args: {
+    ruleId: string;
+    condition: WorkflowCondition;
+  }): Promise<WorkflowCondition>;
+  deleteWorkflowCondition(args: { ruleId: string; conditionId: string }): Promise<void>;
+  updateWorkflowCondition(args: {
+    ruleId: string;
+    conditionId: string;
+    condition: WorkflowCondition;
+  }): Promise<WorkflowCondition>;
+  deleteWorkflowRule(args: { ruleId: string }): Promise<void>;
+  createWorkflowAction(args: { ruleId: string; action: WorkflowAction }): Promise<WorkflowAction>;
+  deleteWorkflowAction(args: { ruleId: string; actionId: string }): Promise<void>;
 }
 
 export function makeGetScenarioRepository() {
@@ -206,9 +232,52 @@ export function makeGetScenarioRepository() {
     scheduleScenarioExecution: async ({ iterationId }) => {
       await marbleCoreApiClient.scheduleScenarioExecution(iterationId);
     },
-    listWorkflows: async ({ scenarioId }): Promise<WorkflowRule[]> => {
+    listWorkflowRules: async ({ scenarioId }): Promise<Rule[]> => {
       const workflows = await marbleCoreApiClient.listWorkflows(scenarioId);
-      return workflows.map(adaptWorkflowRule);
+      return adaptWorkflow(workflows);
+    },
+    createWorkflowRule: async ({ scenarioId, name, fallthrough }) => {
+      const rule = await marbleCoreApiClient.createWorkflowRule({
+        scenario_id: scenarioId,
+        name,
+        fallthrough: fallthrough ?? false,
+      });
+      return adaptWorkflowRule({ ...rule, conditions: [], actions: [] });
+    },
+    updateWorkflowRule: async ({ ruleId, name, fallthrough }) => {
+      const rule = await marbleCoreApiClient.updateWorkflowRule(ruleId, {
+        name,
+        fallthrough: fallthrough ?? false,
+      });
+      return adaptWorkflowRule({ ...rule, conditions: [], actions: [] });
+    },
+    reorderWorkflows: async ({ scenarioId, workflowIds }) => {
+      await marbleCoreApiClient.reorderWorkflows(scenarioId, workflowIds);
+    },
+    createWorkflowCondition: async ({ ruleId, condition }) => {
+      const newCondition = await marbleCoreApiClient.createWorkflowCondition(ruleId, condition);
+      return newCondition; // Return WorkflowConditionDto directly
+    },
+    deleteWorkflowCondition: async ({ ruleId, conditionId }) => {
+      await marbleCoreApiClient.deleteWorkflowCondition(ruleId, conditionId);
+    },
+    updateWorkflowCondition: async ({ ruleId, conditionId, condition }) => {
+      const updatedCondition = await marbleCoreApiClient.updateWorkflowCondition(
+        ruleId,
+        conditionId,
+        condition,
+      );
+      return updatedCondition;
+    },
+    deleteWorkflowRule: async ({ ruleId }) => {
+      await marbleCoreApiClient.deleteWorkflowRule(ruleId);
+    },
+    createWorkflowAction: async ({ ruleId, action }) => {
+      const newAction = await marbleCoreApiClient.createWorkflowAction(ruleId, action);
+      return newAction;
+    },
+    deleteWorkflowAction: async ({ ruleId, actionId }) => {
+      await marbleCoreApiClient.deleteWorkflowAction(ruleId, actionId);
     },
   });
 }
