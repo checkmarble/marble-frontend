@@ -1,4 +1,11 @@
 {
+  "alert_detail.alert_data.title": "Données d'alerte",
+  "alert_detail.alert_data.transfer_id": "Voici l'identifiant de bout en bout du transfert associé à cette alerte : <TransferIdValue>{{transferEndToEndId}}</TransferIdValue>",
+  "alert_detail.received.title": "Détails de l'alerte reçue",
+  "alert_detail.sent.title": "Détails de l'alerte envoyée",
+  "alert_status.acknowledged": "Reçu",
+  "alert_status.archived": "Archivé",
+  "alert_status.pending": "En attente",
   "alert.beneficiary_iban": "IBAN du bénéficiaire",
   "alert.create.beneficiary_iban.placeholder": "Saisissez l'IBAN du bénéficiaire",
   "alert.create.message": "Message",
@@ -18,13 +25,6 @@
   "alert.update.success": "L'alerte a été mise à jour",
   "alert.update.title": "Mettre à jour l'alerte",
   "alert.update.transfer_end_to_end_id.placeholder": "Entrez l'identifiant du transfert de bout en bout",
-  "alert_detail.alert_data.title": "Données d'alerte",
-  "alert_detail.alert_data.transfer_id": "Voici l'identifiant de bout en bout du transfert associé à cette alerte : <TransferIdValue>{{transferEndToEndId}}</TransferIdValue>",
-  "alert_detail.received.title": "Détails de l'alerte reçue",
-  "alert_detail.sent.title": "Détails de l'alerte envoyée",
-  "alert_status.acknowledged": "Reçu",
-  "alert_status.archived": "Archivé",
-  "alert_status.pending": "En attente",
   "alerts.created_at": "Créé à",
   "alerts.empty": "Vous n'avez aucune alerte",
   "alerts.filters.date_range.title": "la date de création est :",
@@ -32,8 +32,6 @@
   "alerts.search.empty": "Aucune alerte trouvée",
   "alerts.search.placeholder": "Rechercher une alerte par message",
   "alerts.status": "Statut",
-  "transfer.search.empty": "Aucun transfert trouvé",
-  "transfer.search.placeholder": "Rechercher un transfert par identifiant",
   "transfer_detail.status.confirmed_fraud": "Fraude confirmée",
   "transfer_detail.status.neutral": "Neutre",
   "transfer_detail.status.suspected_fraud": "Fraude présumée",
@@ -59,5 +57,7 @@
   "transfer_detail.transfer_status.alert_not_partner": "Les alertes ne sont pas disponibles pour ce transfert. \nLe bénéficiaire n'est pas un partenaire de Transfercheck.",
   "transfer_detail.transfer_status.create_alert": "<CreateAlert>Cliquez ici</CreateAlert> pour créer une alerte.",
   "transfer_detail.transfer_status.neutral": "Les alertes ne sont pas disponibles pour ce transfert. \nLe transfert est neutre.",
-  "transfer_detail.transfer_status.title": "Statut du transfert"
+  "transfer_detail.transfer_status.title": "Statut du transfert",
+  "transfer.search.empty": "Aucun transfert trouvé",
+  "transfer.search.placeholder": "Rechercher un transfert par identifiant"
 }

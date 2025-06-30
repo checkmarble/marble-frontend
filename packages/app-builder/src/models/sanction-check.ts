@@ -18,6 +18,9 @@ const matchEntitySchemas = [
   'Vehicle',
   'Airplane',
   'Vessel',
+  'Family',
+  'Associate',
+  'MembershipMember',
 ] as const;
 const sanctionEntitySchemas = ['Sanction'] as const;
 export const openSanctionEntitySchemas = [...matchEntitySchemas, ...sanctionEntitySchemas] as const;
@@ -48,16 +51,99 @@ export type SanctionCheckMatchEntitySchema = Extract<
   | 'Vehicle'
   | 'Airplane'
   | 'Vessel'
+  | 'Family'
+  | 'Associate'
+  | 'MembershipMember'
 >;
+
+export type PersonEntity = OpenSanctionEntity & {
+  schema: 'Person';
+  target: boolean;
+  properties: {
+    caption: string;
+    name?: string[];
+    alias?: string[];
+    notes?: string[];
+    gender?: string[];
+    topics?: string[];
+    lastName?: string[];
+    position?: string[];
+    religion?: string[];
+    birthDate?: string[];
+    education?: string[];
+    firstName?: string[];
+    sourceUrl?: string[];
+    weakAlias?: string[];
+    birthPlace?: string[];
+    wikidataId?: string[];
+    citizenship?: string[];
+  } & Record<string, string[]>;
+};
+
+export type FamilyPersonEntity = OpenSanctionEntity & {
+  schema: 'Family';
+  properties: {
+    person?: string[];
+    endDate?: string[];
+    relative?: PersonEntity[];
+    sourceUrl?: string[];
+    startDate?: string[];
+    relationship?: string[];
+  } & Record<string, string[]>;
+};
+
+export type AssociationEntity = OpenSanctionEntity & {
+  schema: 'Associate';
+  target: boolean;
+  caption: string;
+  datasets: string[];
+  last_seen: string;
+  referents: string[];
+  first_seen: string;
+  last_change: string;
+  properties: {
+    person?: PersonEntity[];
+    associate?: string[];
+    sourceUrl?: string[];
+    relationship?: string[];
+    topics?: string[];
+  } & Record<string, string[]>;
+};
+
+export type MembershipMemberEntity = OpenSanctionEntity & {
+  schema: 'MembershipMember';
+  target: boolean;
+  caption: string;
+  datasets: string[];
+  last_seen: string;
+  referents: string[];
+  first_seen: string;
+  last_change: string;
+  properties: {
+    person?: PersonEntity[];
+    organization?: PersonEntity[];
+    member?: string[];
+    sourceUrl?: string[];
+    relationship?: string[];
+    topics?: string[];
+    role?: string[];
+    startDate?: string[];
+    endDate?: string[];
+  } & Record<string, string[]>;
+};
 
 export type SanctionCheckMatchPayload = {
   id: string;
   match: boolean;
   score: number;
   schema: SanctionCheckMatchEntitySchema;
+  datasets?: string[];
   caption: string;
   properties: {
     sanctions?: SanctionCheckSanctionEntity[];
+    familyPerson?: FamilyPersonEntity[];
+    associations?: AssociationEntity[];
+    membershipMember?: MembershipMemberEntity[];
   } & Record<string, string[]>;
 };
 
