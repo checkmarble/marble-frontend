@@ -18,7 +18,10 @@ import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
 import { SanctionCheckDetail } from '@app-builder/components/Decisions/SanctionCheckDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
-import { isNotFoundHttpError } from '@app-builder/models';
+import { isNotFoundHttpError, Pivot } from '@app-builder/models';
+import { DecisionDetails } from '@app-builder/models/decision';
+import { SanctionCheck } from '@app-builder/models/sanction-check';
+import { ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import { initServerServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { notFound } from '@app-builder/utils/http/http-responses';
@@ -35,6 +38,13 @@ import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import * as z from 'zod';
+
+export type LoaderData = {
+  decision: DecisionDetails;
+  scenarioRules: ScenarioIterationRule[];
+  pivots: Pivot[];
+  sanctionCheck: SanctionCheck[];
+};
 
 export const handle = {
   i18n: ['common', 'navigation', 'screeningTopics', ...decisionsI18n] satisfies Namespace,
@@ -64,7 +74,7 @@ export const handle = {
   ],
 };
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs): Promise<LoaderData> {
   const { authService } = initServerServices(request);
   const { decision, scenario, dataModelRepository, sanctionCheck } =
     await authService.isAuthenticated(request, {
@@ -72,28 +82,55 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     });
   const parsedParam = await parseParamsSafe(params, z.object({ decisionId: shortUUIDSchema }));
   if (!parsedParam.success) {
-    return handleParseParamError(request, parsedParam.error);
+    throw handleParseParamError(request, parsedParam.error);
   }
-  const { decisionId } = parsedParam.data;
 
   try {
-    const currentDecision = await decision.getDecisionById(decisionId);
-
-    const [pivots, scenarioRules, sanctionCheckResult] = await Promise.all([
+    const independentOperations = Promise.all([
       dataModelRepository.listPivots({}),
-      scenario
-        .getScenarioIteration({
-          iterationId: currentDecision.scenario.scenarioIterationId,
-        })
-        .then((iteration) => iteration.rules),
-      sanctionCheck.listSanctionChecks({ decisionId }),
+      sanctionCheck.listSanctionChecks({ decisionId: parsedParam.data.decisionId }),
+      sanctionCheck.listDatasets(),
     ]);
+
+    const currentDecision = await decision.getDecisionById(parsedParam.data.decisionId);
+    const scenarioRules = await scenario
+      .getScenarioIteration({
+        iterationId: currentDecision.scenario.scenarioIterationId,
+      })
+      .then((iteration) => iteration.rules);
+
+    const [pivots, sanctionCheckResult, { sections }] = await independentOperations;
+
+    const datasets: Map<string, string> = new Map(
+      sections?.flatMap(
+        ({ datasets }) => datasets?.map(({ name, title }) => [name, title]) ?? [],
+      ) ?? [],
+    );
+
+    const sanctionsDatasets = [
+      ...new Set(
+        sanctionCheckResult.flatMap(({ matches }) =>
+          matches.flatMap(({ payload }) => payload.datasets),
+        ),
+      ),
+    ];
 
     return {
       decision: currentDecision,
       scenarioRules,
       pivots,
-      sanctionCheck: sanctionCheckResult,
+      sanctionCheck: sanctionCheckResult.map(({ matches, ...rest }) => ({
+        ...rest,
+        matches: matches.map(({ payload, ...rest }) => ({
+          ...rest,
+          payload: {
+            ...payload,
+            datasets: payload.datasets
+              ?.filter((dataset) => !sanctionsDatasets.includes(dataset))
+              .map((dataset) => datasets.get(dataset) ?? dataset),
+          },
+        })),
+      })),
     };
   } catch (error) {
     if (isNotFoundHttpError(error)) {

@@ -14,7 +14,7 @@ export function MatchResult({ entity }: { entity: SanctionCheckMatchPayload }) {
     <div className="text-s bg-grey-98 flex items-center rounded">
       <div className="flex items-center gap-2 p-4">
         <span className="max-w-60 truncate font-semibold">{entity.caption}</span>
-        <span>{t(`sanctions:entity.schema.${entitySchema}`)}</span>
+        <span>{t(`sanctions:entity.schema.${entitySchema}`, { defaultValue: entitySchema })}</span>
         <Tag color="grey" className="shrink-0">
           {t('sanctions:match.similarity', {
             percent: Math.round(entity.score * 100),

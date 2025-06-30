@@ -1,18 +1,15 @@
 import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
 import { SanctionCheckReviewModal } from '@app-builder/routes/ressources+/cases+/review-sanction-match';
 import { EnrichMatchButton } from '@app-builder/routes/ressources+/sanction-check+/enrich-match.$matchId';
-import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
-import { getFullName } from '@app-builder/services/user';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Avatar, CollapsibleV2, Tag } from 'ui-design-system';
+import { CollapsibleV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-import { MatchDetails } from './MatchDetails';
-import { StatusTag } from './StatusTag';
-import { sanctionsI18n } from './sanctions-i18n';
-import { TopicTag } from './TopicTag';
+import { MatchDetails } from '../MatchDetails';
+import { StatusTag } from '../StatusTag';
+import { sanctionsI18n } from '../sanctions-i18n';
+import { TopicTag } from '../TopicTag';
+import { CommentLine } from './CommentLine';
 
 type MatchCardProps = {
   match: SanctionCheckMatch;
@@ -27,7 +24,6 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
 
   const entity = match.payload;
   const entitySchema = entity.schema.toLowerCase() as Lowercase<typeof entity.schema>;
-
   const handleMatchReview = () => {
     setIsInReview(true);
   };
@@ -45,17 +41,22 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
               />
               <div className="text-s flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="font-semibold">{entity.caption}</span>
-                <span>{t(`sanctions:entity.schema.${entitySchema}`)}</span>
+
+                <span>
+                  {t(`sanctions:entity.schema.${entitySchema}`, {
+                    defaultValue: entitySchema,
+                  })}
+                </span>
                 <Tag color="grey">
                   {t('sanctions:match.similarity', {
                     percent: Math.round(entity.score * 100),
                   })}
                 </Tag>
-                <span className="col-span-full flex w-full flex-wrap gap-1">
+                <div className="col-span-full flex w-full flex-wrap gap-1">
                   {entity.properties['topics']?.map((topic) => (
                     <TopicTag key={`${match.id}-${topic}`} topic={topic} />
                   ))}
-                </span>
+                </div>
               </div>
             </CollapsibleV2.Title>
             {!match.enriched ? (
@@ -80,6 +81,21 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
 
           <CollapsibleV2.Content className="col-span-full">
             <div className="text-s flex flex-col gap-6 p-4">
+              {entitySchema === 'person' && entity.datasets?.length ? (
+                <div className="grid grid-cols-[168px,_1fr] gap-2">
+                  <div className="font-bold">{t('sanctions:match.datasets.title')}</div>
+                  <div>
+                    <ul>
+                      {entity?.datasets?.map((name, index) => (
+                        <li className="break-all" key={`dataset-${index}`}>
+                          {name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ) : null}
+
               {match.comments.map((comment) => {
                 return <CommentLine key={comment.id} comment={comment} />;
               })}
@@ -96,29 +112,3 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
     </div>
   );
 };
-
-function CommentLine({ comment }: { comment: SanctionCheckMatch['comments'][number] }) {
-  const language = useFormatLanguage();
-  const { getOrgUserById } = useOrganizationUsers();
-  const user = getOrgUserById(comment.authorId);
-  const fullName = getFullName(user);
-
-  return (
-    <div key={comment.id} className="flex flex-col gap-2">
-      <div className="flex items-center gap-1">
-        <Avatar size="xs" firstName={user?.firstName} lastName={user?.lastName} />
-        <span className="flex items-baseline gap-1">
-          {fullName}
-          <time className="text-grey-50 text-xs" dateTime={comment.createdAt}>
-            {formatDateTimeWithoutPresets(comment.createdAt, {
-              language,
-              dateStyle: 'short',
-              timeStyle: 'short',
-            })}
-          </time>
-        </span>
-      </div>
-      <p>{comment.comment}</p>
-    </div>
-  );
-}
