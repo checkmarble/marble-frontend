@@ -107,6 +107,14 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
       ) ?? [],
     );
 
+    const sanctionsDatasets = [
+      ...new Set(
+        sanctionCheckResult.flatMap(({ matches }) =>
+          matches.flatMap(({ payload }) => payload.datasets),
+        ),
+      ),
+    ];
+
     return {
       decision: currentDecision,
       scenarioRules,
@@ -117,7 +125,9 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
           ...rest,
           payload: {
             ...payload,
-            datasets: payload.datasets?.map((dataset) => datasets.get(dataset) ?? dataset),
+            datasets: payload.datasets
+              ?.filter((dataset) => !sanctionsDatasets.includes(dataset))
+              .map((dataset) => datasets.get(dataset) ?? dataset),
           },
         })),
       })),
