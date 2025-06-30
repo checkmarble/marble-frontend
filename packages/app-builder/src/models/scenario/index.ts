@@ -5,9 +5,9 @@ import {
 } from 'marble-api';
 import * as z from 'zod';
 
-import { adaptAstNode, adaptNodeDto } from './astNode/ast-node';
-import { isStringTemplateAstNode, type StringTemplateAstNode } from './astNode/strings';
-import { type Outcome, outcomes } from './outcome';
+import { adaptAstNode, adaptNodeDto } from '../astNode/ast-node';
+import { isStringTemplateAstNode, type StringTemplateAstNode } from '../astNode/strings';
+import { type Outcome, outcomes } from '../outcome';
 
 type DecisionToCaseWorkflowType = 'DISABLED' | 'CREATE_CASE' | 'ADD_TO_CASE_IF_POSSIBLE';
 

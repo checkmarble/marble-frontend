@@ -2,11 +2,9 @@ import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
   type AstNode,
   adaptNodeDto,
-  adaptScenarioValidation,
   isMarbleError,
   isStatusBadRequestHttpError,
   isStatusConflictHttpError,
-  type ScenarioValidation,
 } from '@app-builder/models';
 import { type AstValidation, adaptAstValidation } from '@app-builder/models/ast-validation';
 import { type ReturnValueType } from '@app-builder/models/node-evaluation';
@@ -14,23 +12,26 @@ import { adaptSnoozesOfIteration, type SnoozesOfIteration } from '@app-builder/m
 import {
   adaptScenario,
   adaptScenarioCreateInputDto,
-  adaptScenarioUpdateInputDto,
   type Scenario,
   type ScenarioCreateInput,
-  type ScenarioUpdateWorkflowInput,
 } from '@app-builder/models/scenario';
 import {
   adaptScenarioIteration,
   adaptUpdateScenarioIterationBody,
   type ScenarioIteration,
   type UpdateScenarioIterationBody,
-} from '@app-builder/models/scenario-iteration';
+} from '@app-builder/models/scenario/iteration';
 import {
   adaptCreateScenarioPublicationBodyDto,
   adaptScenarioPublicationStatus,
   type CreateScenarioPublicationBody,
   type ScenarioPublicationStatus,
-} from '@app-builder/models/scenario-publication';
+} from '@app-builder/models/scenario/publication';
+import {
+  adaptScenarioValidation,
+  type ScenarioValidation,
+} from '@app-builder/models/scenario/validation';
+import { adaptWorkflowRule, type WorkflowRule } from '@app-builder/models/scenario/workflow';
 import { findRuleValidation } from '@app-builder/services/validation/scenario-validation';
 
 export interface ScenarioRepository {
@@ -42,7 +43,6 @@ export interface ScenarioRepository {
     name: string;
     description: string | null;
   }): Promise<Scenario>;
-  updateScenarioWorkflow(scenarioId: string, args: ScenarioUpdateWorkflowInput): Promise<Scenario>;
   createScenarioIteration(args: { scenarioId: string }): Promise<ScenarioIteration>;
   updateScenarioIteration(
     iterationId: string,
@@ -72,6 +72,7 @@ export interface ScenarioRepository {
   createScenarioPublication(args: CreateScenarioPublicationBody): Promise<void>;
   getScenarioIterationActiveSnoozes(scenarioIterationId: string): Promise<SnoozesOfIteration>;
   scheduleScenarioExecution(args: { iterationId: string }): Promise<void>;
+  listWorkflows(args: { scenarioId: string }): Promise<WorkflowRule[]>;
 }
 
 export function makeGetScenarioRepository() {
@@ -93,13 +94,6 @@ export function makeGetScenarioRepository() {
         name,
         description: description ?? '',
       });
-      return adaptScenario(scenario);
-    },
-    updateScenarioWorkflow: async (scenarioId, args) => {
-      const scenario = await marbleCoreApiClient.updateScenario(
-        scenarioId,
-        adaptScenarioUpdateInputDto(args),
-      );
       return adaptScenario(scenario);
     },
     createScenarioIteration: async ({ scenarioId }) => {
@@ -211,6 +205,10 @@ export function makeGetScenarioRepository() {
     },
     scheduleScenarioExecution: async ({ iterationId }) => {
       await marbleCoreApiClient.scheduleScenarioExecution(iterationId);
+    },
+    listWorkflows: async ({ scenarioId }): Promise<WorkflowRule[]> => {
+      const workflows = await marbleCoreApiClient.listWorkflows(scenarioId);
+      return workflows.map(adaptWorkflowRule);
     },
   });
 }

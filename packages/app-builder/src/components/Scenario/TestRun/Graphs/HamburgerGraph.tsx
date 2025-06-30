@@ -1,4 +1,4 @@
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import clsx from 'clsx';
 import { toggle } from 'radash';
