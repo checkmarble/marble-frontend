@@ -6,6 +6,7 @@
     "useIgnoreFile": true,
     "defaultBranch": "main"
   },
+  "root": true,
   "files": {
     "ignoreUnknown": false,
     "includes": [
