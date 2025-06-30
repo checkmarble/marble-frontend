@@ -39,7 +39,7 @@ import { Dict } from '@swan-io/boxed';
 import { useForm, useStore } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { pick } from 'radash';
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { difference } from 'remeda';
 import { match } from 'ts-pattern';
@@ -292,10 +292,6 @@ export default function SanctionDetail() {
         .otherwise(() => true),
     [entityType, query],
   );
-
-  useEffect(() => {
-    console.log('hasRequiredFields', hasRequiredFields);
-  });
 
   return (
     <Page.Main>
