@@ -21,7 +21,7 @@ import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/T
 import { isNotFoundHttpError, Pivot } from '@app-builder/models';
 import { DecisionDetails } from '@app-builder/models/decision';
 import { SanctionCheck } from '@app-builder/models/sanction-check';
-import { ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
+import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
 import { initServerServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { notFound } from '@app-builder/utils/http/http-responses';

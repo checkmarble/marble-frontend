@@ -15,7 +15,7 @@ import { WorkflowNudge } from '@app-builder/components/Scenario/Workflow/Workflo
 import { Spinner } from '@app-builder/components/Spinner';
 import { type ScheduledExecution } from '@app-builder/models/decision';
 import { type Scenario } from '@app-builder/models/scenario';
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';

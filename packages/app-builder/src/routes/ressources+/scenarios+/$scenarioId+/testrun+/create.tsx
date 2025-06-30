@@ -6,7 +6,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { type Scenario } from '@app-builder/models/scenario';
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';

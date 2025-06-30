@@ -11,7 +11,7 @@ import {
 import { RulesFiltersMenu } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersMenu';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { type SanctionCheckConfig } from '@app-builder/models/sanction-check-config';
-import { type ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
+import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
 import { CreateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create';
 import { CreateSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
