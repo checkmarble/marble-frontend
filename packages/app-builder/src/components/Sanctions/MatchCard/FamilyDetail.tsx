@@ -12,7 +12,7 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
 
   return (
     <div className="grid grid-cols-[168px,_1fr] gap-y-2">
-      <div className="font-bold">{t('sanctions:match.family-members.title')}</div>
+      <div className="font-bold py-6">{t('sanctions:match.family-members.title')}</div>
       <Collapsible.Container defaultOpen={familyMembers.length <= 3}>
         <Collapsible.Title>
           {t('sanctions:match.family-member.count', { count: familyMembers.length })}

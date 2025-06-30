@@ -9,6 +9,9 @@ import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { EntityProperties } from './EntityProperties';
+import { Associations } from './MatchCard/Associations';
+import { FamilyDetail } from './MatchCard/FamilyDetail';
+import { MemberShip } from './MatchCard/MemberShip';
 import { sanctionsI18n } from './sanctions-i18n';
 
 export type MatchDetailsProps = {
@@ -83,6 +86,19 @@ export function MatchDetails({ entity }: MatchDetailsProps) {
           ) : null
         }
       />
+      {entity.schema === 'Person' &&
+      entity.properties['membershipMember']?.length &&
+      entity.properties['membershipMember']?.[0]?.caption ? (
+        <MemberShip membershipMember={entity.properties['membershipMember']} />
+      ) : null}
+
+      {entity.schema === 'Person' && entity.properties['associations']?.length ? (
+        <Associations associations={entity.properties['associations']} />
+      ) : null}
+
+      {entity.schema === 'Person' && entity.properties['familyPerson']?.length ? (
+        <FamilyDetail familyMembers={entity.properties['familyPerson']} />
+      ) : null}
     </div>
   );
 }
