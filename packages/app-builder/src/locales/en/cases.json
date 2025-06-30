@@ -80,6 +80,7 @@
   "case_detail.history.event_detail.entity_annotated": "<Actor>{{actor}}</Actor> annotated a <ObjectType>{{objectType}}</ObjectType> with a <Type>{{type}}</Type>",
   "case_detail.history.event_detail.reviewed_by": "Reviewed by: <Avatar/> <User>{{user}}</User>",
   "case_detail.history.event_detail.decision_reviewed": "Decision reviewed to <Status /> by <Actor>{{actor}}</Actor>",
+  "case_detail.history.event_detail.decision_reviewed_with_comment": "Decision reviewed with a comment to <Status /> by <Actor>{{actor}}</Actor>",
   "case_detail.history.event_detail.rule_snooze_created": "Rule snoozed by <Actor>{{actor}}</Actor>",
   "case_detail.history.nb_selected": "{{count}} selected",
   "case_detail.history.filter_reset": "Reset",
