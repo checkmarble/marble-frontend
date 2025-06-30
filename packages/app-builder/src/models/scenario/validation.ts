@@ -1,7 +1,7 @@
 import { type ScenarioValidationDto, type ScenarioValidationErrorCodeDto } from 'marble-api';
 import * as R from 'remeda';
 
-import { adaptNodeEvaluation, type NodeEvaluation } from './node-evaluation';
+import { adaptNodeEvaluation, type NodeEvaluation } from '../node-evaluation';
 
 export interface ScenarioIterationRuleValidation {
   errors: ScenarioValidationErrorCodeDto[];

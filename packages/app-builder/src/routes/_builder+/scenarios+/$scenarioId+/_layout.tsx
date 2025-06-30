@@ -1,7 +1,7 @@
 import { ErrorComponent } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
-import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import { adaptScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';

@@ -1,37 +1,17 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
-import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { DetailPanel } from '@app-builder/components/Scenario/Workflow/DetailPanel/DetailPanel';
-import {
-  adaptScenarioUpdateWorkflowInput,
-  adaptValidWorkflow,
-  type ValidWorkflow,
-} from '@app-builder/components/Scenario/Workflow/models/validation';
-import {
-  WorkflowFlow,
-  workflowFlowStyles,
-} from '@app-builder/components/Scenario/Workflow/WorkflowFlow';
-import { WorkflowProvider } from '@app-builder/components/Scenario/Workflow/WorkflowProvider';
+import { BreadCrumbLink, BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { workflowI18n } from '@app-builder/components/Scenario/Workflow/workflow-i18n';
-import {
-  type ScenarioUpdateWorkflowInput,
-  scenarioUpdateWorkflowInputSchema,
-} from '@app-builder/models/scenario';
-import { isCreateInboxAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
+import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type LinksFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
+import { LoaderFunctionArgs } from '@remix-run/node';
+import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { type Namespace } from 'i18next';
+import { Namespace } from 'i18next';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useCurrentScenario } from './_layout';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: workflowI18n satisfies Namespace,

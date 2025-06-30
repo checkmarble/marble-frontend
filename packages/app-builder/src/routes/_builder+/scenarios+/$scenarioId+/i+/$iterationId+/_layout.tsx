@@ -4,7 +4,7 @@ import {
   getFormattedVersion,
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import {
   type EditorMode,
   EditorModeContextProvider,
