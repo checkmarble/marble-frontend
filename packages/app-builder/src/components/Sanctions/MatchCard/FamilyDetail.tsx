@@ -18,9 +18,7 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
   return (
     <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
       <div className="grid grid-cols-[168px,_1fr] gap-2">
-        <div className="font-bold col-span-2">{t('sanctions:match.family-members.title')}</div>
-
-        {familyMembers.map((member) => {
+        {familyMembers.map((member, memberIndex) => {
           return member.properties.relative?.map(({ id, properties }, idx) => {
             if (!properties.name?.[0]) return null;
             const rel =
@@ -31,9 +29,18 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
                   }),
                 )
                 .join(' · ') ?? t('sanctions:match.family.unknown_relationship');
+
+            const isFirstElement = memberIndex === 0 && idx === 0;
+
             return (
               <div key={`person-${id}-${idx}`} className="contents">
-                <div className="font-semibold">{rel}:</div>
+                <div className="font-semibold">
+                  {isFirstElement && (
+                    <div className="font-bold mb-2">
+                      {t('sanctions:match.family-members.title')}
+                    </div>
+                  )}
+                </div>
                 <div className="flex flex-row items-start  gap-2 rounded p-2 bg-grey-100">
                   <div className="flex flex-col  gap-2">
                     <div className="col-span-full flex w-full flex-wrap gap-1">
@@ -45,35 +52,34 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
                         {properties.lastName?.slice(0, 3).join(' ') ?? 'unknown'}
                       </span>
                     </div>
+                    <div className="text-sm text-grey-70 font-medium">
+                      {rel}
+                      {member.properties.startDate?.[0] && (
+                        <span>
+                          {' '}
+                          (
+                          {formatDateTimeWithoutPresets(member.properties.startDate[0], {
+                            language,
+                            dateStyle: 'medium',
+                          })}
+                          {member.properties.endDate?.[0] && (
+                            <>
+                              {' - '}
+                              {formatDateTimeWithoutPresets(member.properties.endDate[0], {
+                                language,
+                                dateStyle: 'medium',
+                              })}
+                            </>
+                          )}
+                          )
+                        </span>
+                      )}
+                    </div>
                     <div className="col-span-full flex w-full flex-wrap gap-1">
                       {properties['topics']?.map((topic) => (
                         <TopicTag key={`${id}-${topic}`} topic={topic} />
                       ))}
                     </div>
-                    {member.properties.startDate?.[0] ? (
-                      <div className="col-span-full flex w-full flex-wrap gap-1">
-                        {member.properties.startDate?.[0] && (
-                          <>
-                            <span>
-                              {formatDateTimeWithoutPresets(member.properties.startDate[0], {
-                                language,
-                                dateStyle: 'short',
-                              })}
-                            </span>
-                            <span> - </span>
-                          </>
-                        )}
-
-                        {member.properties.endDate?.[0] && (
-                          <span>
-                            {formatDateTimeWithoutPresets(member.properties.endDate[0], {
-                              language,
-                              dateStyle: 'short',
-                            })}
-                          </span>
-                        )}
-                      </div>
-                    ) : null}
                   </div>
 
                   <Modal.Trigger asChild className="ml-auto">

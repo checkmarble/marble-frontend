@@ -9,10 +9,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
   return (
     <>
       <div className="grid grid-cols-[168px,_1fr] gap-2">
-        <div className="font-bold col-span-2">{t('sanctions:match.associations.title')}</div>
-
-        {associations?.map((association) => {
-          console.log(association);
+        {associations?.map((association, associationIndex) => {
           return association.properties.person?.map((person: any, idx: number) => {
             const { id, properties } = person;
             if (!properties.name?.[0]) return null;
@@ -24,9 +21,16 @@ export const Associations = ({ associations }: { associations: AssociationEntity
                   }),
                 )
                 .join(' · ') ?? t('sanctions:match.family.unknown_relationship');
+
+            const isFirstElement = associationIndex === 0 && idx === 0;
+
             return (
               <div key={`person-${id}-${idx}`} className="contents">
-                <div className="font-semibold">{rel}:</div>
+                <div className="font-semibold">
+                  {isFirstElement && (
+                    <div className="font-bold mb-2">{t('sanctions:match.associations.title')}</div>
+                  )}
+                </div>
                 <div className="flex flex-row items-start gap-2 rounded p-2 bg-grey-100">
                   <div className="flex flex-col gap-2">
                     <div className="col-span-full flex w-full flex-wrap gap-1">
@@ -38,6 +42,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
                         {properties.lastName?.slice(0, 3).join(' ') ?? 'unknown'}
                       </span>
                     </div>
+                    <div className="text-sm text-grey-70 font-medium">{rel}</div>
                     <div className="col-span-full flex w-full flex-wrap gap-1">
                       {properties.topics?.map((topic: string) => (
                         <TopicTag key={`${id}-${topic}`} topic={topic} />

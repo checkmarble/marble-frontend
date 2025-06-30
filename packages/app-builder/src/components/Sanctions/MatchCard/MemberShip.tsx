@@ -11,12 +11,14 @@ export const MemberShip = ({
   return (
     <>
       <div className="grid grid-cols-[168px,_1fr] gap-2">
-        <div className="font-bold col-span-2">{t('sanctions:match.membership.title')}</div>
-
         {membershipMember?.map((membership, idx) => {
           return (
             <div key={`membership-${membership.id}-${idx}`} className="contents">
-              <div className="font-semibold"></div>
+              {idx === 0 ? (
+                <div className="font-bold">{t('sanctions:match.membership.title')}</div>
+              ) : (
+                <div className="font-semibold"></div>
+              )}
               <div className="flex flex-row items-start gap-2 rounded p-2 bg-grey-100">
                 <div className="flex flex-col gap-2">
                   <div className="col-span-full flex w-full flex-wrap gap-1">
