@@ -404,6 +404,7 @@ components:
         - never
         - outcome_in
         - rule_hit
+        - payload_evaluates
 
     WorkflowConditionDto:
       allOf:
@@ -427,7 +428,9 @@ components:
         mapping:
           always: "#/components/schemas/WorkflowConditionAlways"
           never: "#/components/schemas/WorkflowConditionNever"
-          if_outcome_in: "#/components/schemas/WorkflowConditionOutcomeIn"
+          outcome_in: "#/components/schemas/WorkflowConditionOutcomeIn"
+          rule_hit: "#/components/schemas/WorkflowConditionRuleHit"
+          payload_evaluates: "#/components/schemas/WorkflowConditionPayloadEvaluates"
 
     WorkflowConditionAlways:
       title: Always matches
@@ -454,7 +457,7 @@ components:
       properties:
         function:
           type: string
-          enum: [if_outcome_in]
+          enum: [outcome_in]
         params:
           type: array
           items:
