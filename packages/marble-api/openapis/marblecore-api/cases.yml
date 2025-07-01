@@ -701,6 +701,29 @@
               type: array
               items:
                 $ref: '#/components/schemas/CaseDto'
+/cases/{caseId}/review:
+  post:
+    tags:
+      - Cases
+    summary: Ask a review for a case powered by AI
+    operationId: askReviewForCase
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case that needs to be reviewed
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The review output for a case
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseReviewDto'
 
 components:
   schemas:
@@ -1335,3 +1358,19 @@ components:
         - pivot_field_name
         - pivot_object_data
         - number_of_decisions
+    CaseReviewDto:
+      type: object
+      required:
+        - ok
+        - output
+        - sanity_check
+        - thought
+      properties:
+        ok:
+          type: boolean
+        output:
+          type: string
+        sanity_check:
+          type: string
+        thought:
+          type: string

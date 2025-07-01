@@ -3,11 +3,13 @@ import {
   adaptCase,
   adaptCaseCreateBody,
   adaptCaseDetail,
+  adaptCaseReview,
   adaptPivotObject,
   adaptSuspiciousActivityReport,
   adaptUpdateCaseBodyDto,
   type Case,
   type CaseDetail,
+  CaseReview,
   type CaseStatus,
   type CaseUpdateBody,
   type PivotObject,
@@ -91,6 +93,7 @@ export interface CaseRepository {
   deleteSuspiciousActivityReport(args: { caseId: string; reportId: string }): Promise<unknown>;
   getNextUnassignedCaseId(args: { caseId: string }): Promise<string | null>;
   escalateCase(args: { caseId: string }): Promise<unknown>;
+  askReviewForCase(args: { caseId: string }): Promise<CaseReview>;
 }
 
 export function makeGetCaseRepository() {
@@ -189,5 +192,8 @@ export function makeGetCaseRepository() {
         .then(({ id }) => id)
         .catch(() => null),
     escalateCase: ({ caseId }) => marbleCoreApiClient.escalateCase(caseId),
+    askReviewForCase: async ({ caseId }) => {
+      return adaptCaseReview(await marbleCoreApiClient.askReviewForCase(caseId));
+    },
   });
 }

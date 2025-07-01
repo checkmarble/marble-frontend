@@ -91,6 +91,8 @@ paths:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1next
   /cases/{caseId}/escalate:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1escalate
+  /cases/{caseId}/review:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1review
 
   # SUSPICIOUS ACTIVITY REPORTS
 

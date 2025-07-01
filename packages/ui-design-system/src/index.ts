@@ -9,6 +9,7 @@ export * from './Command/Command';
 export * from './HiddenInputs/HiddenInputs';
 export * from './Input/Input';
 export * from './Kbd/Kbd';
+export * from './Markdown/Markdown';
 export * from './Menu/Menu';
 export * from './MenuCommand/MenuCommand';
 export * from './Modal/Modal';
