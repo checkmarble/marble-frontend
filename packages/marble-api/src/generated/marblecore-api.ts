@@ -1232,7 +1232,7 @@ export type NeverMatches = {
     "function": "never";
 };
 export type IfOutcomeIn = {
-    "function": "if_outcome_in";
+    "function": "outcome_in";
     params: OutcomeDto[];
 };
 export type WorkflowConditionDetailDto = AlwaysMatches | NeverMatches | IfOutcomeIn | {
