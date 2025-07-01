@@ -6,6 +6,7 @@ import {
   type CaseDto,
   type CaseEventDto,
   type CaseFileDto,
+  CaseReviewDto,
   type CaseStatusDto,
   type CaseStatusForCaseEventDto,
   type CaseTagDto,
@@ -568,5 +569,21 @@ export function adaptPivotObject(dto: PivotObjectDto): PivotObject {
     isIngested: dto.is_ingested,
     pivotObjectData: adaptClientObjectDetail(dto.pivot_object_data),
     numberOfDecisions: dto.number_of_decisions,
+  };
+}
+
+export type CaseReview = {
+  output: string;
+  sanityCheck: string;
+  thought: string;
+  ok: boolean;
+};
+
+export function adaptCaseReview(dto: CaseReviewDto): CaseReview {
+  return {
+    output: dto.output,
+    sanityCheck: dto.sanity_check,
+    thought: dto.thought,
+    ok: dto.ok,
   };
 }

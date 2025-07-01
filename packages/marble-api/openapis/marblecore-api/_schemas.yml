@@ -129,6 +129,8 @@ CreateCaseBodyDto:
   $ref: cases.yml#/components/schemas/CreateCaseBodyDto
 PivotObjectDto:
   $ref: cases.yml#/components/schemas/PivotObjectDto
+CaseReviewDto:
+  $ref: cases.yml#/components/schemas/CaseReviewDto
 
 # SUSPICIOUS ACTIVITY REPORTS
 

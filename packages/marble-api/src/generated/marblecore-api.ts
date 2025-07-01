@@ -425,6 +425,12 @@ export type PivotObjectDto = {
 export type NextCaseIdDto = {
     id: string;
 };
+export type CaseReviewDto = {
+    ok: boolean;
+    output: string;
+    sanity_check: string;
+    thought: string;
+};
 export type SuspiciousActivityReportDto = {
     id: string;
     status: "pending" | "completed";
@@ -1741,6 +1747,18 @@ export function escalateCase(caseId: string, opts?: Oazapfts.RequestOpts) {
         status: 404;
         data: string;
     }>(`/cases/${encodeURIComponent(caseId)}/escalate`, {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
+ * Ask a review for a case powered by AI
+ */
+export function askReviewForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CaseReviewDto;
+    }>(`/cases/${encodeURIComponent(caseId)}/review`, {
         ...opts,
         method: "POST"
     }));
