@@ -574,16 +574,14 @@ export function adaptPivotObject(dto: PivotObjectDto): PivotObject {
 
 export type CaseReview = {
   output: string;
-  sanityCheck: string;
-  thought: string;
-  ok: boolean;
-};
+  thought?: string;
+} & ({ ok: true; sanityCheck?: undefined } | { ok: false; sanityCheck: string });
 
 export function adaptCaseReview(dto: CaseReviewDto): CaseReview {
-  return {
-    output: dto.output,
-    sanityCheck: dto.sanity_check,
-    thought: dto.thought,
-    ok: dto.ok,
-  };
+  const baseCaseReview = { output: dto.output, thought: dto.thought } as const;
+
+  if (!dto.ok) {
+    return { ...baseCaseReview, ok: false, sanityCheck: dto.sanity_check };
+  }
+  return { ...baseCaseReview, ok: true };
 }
