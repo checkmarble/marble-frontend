@@ -126,8 +126,8 @@ function handleBrowserRequest(
         const clientEnv = getClientEnvVars();
 
         const firebaseUrl = appConfig.auth.firebase.isEmulator
-          ? appConfig.auth.firebase.emulatorUrl
-          : 'https://identitytoolkit.googleapis.com';
+          ? [appConfig.auth.firebase.emulatorUrl]
+          : ['https://identitytoolkit.googleapis.com', 'https://securetoken.googleapis.com'];
 
         const externalDomains = ['cdn.segment.com', 'api.segment.io', '*.sentry.io'];
 
@@ -151,7 +151,7 @@ function handleBrowserRequest(
             connectSrc: [
               "'self'",
               marbleApiUrl,
-              firebaseUrl,
+              ...firebaseUrl,
               ...externalDomains.map((d) => `https://${d}`),
             ],
             imgSrc: ["'self'", 'data:'],
