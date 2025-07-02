@@ -131,6 +131,10 @@ PivotObjectDto:
   $ref: cases.yml#/components/schemas/PivotObjectDto
 CaseReviewDto:
   $ref: cases.yml#/components/schemas/CaseReviewDto
+CaseReviewOkDto:
+  $ref: cases.yml#/components/schemas/CaseReviewOkDto
+CaseReviewNotOkDto:
+  $ref: cases.yml#/components/schemas/CaseReviewNotOkDto
 
 # SUSPICIOUS ACTIVITY REPORTS
 

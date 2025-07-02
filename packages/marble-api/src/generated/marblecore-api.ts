@@ -425,12 +425,17 @@ export type PivotObjectDto = {
 export type NextCaseIdDto = {
     id: string;
 };
-export type CaseReviewDto = {
-    ok: boolean;
-    output: string;
-    sanity_check: string;
-    thought: string;
+export type CaseReviewOkDto = {
+    ok: true;
 };
+export type CaseReviewNotOkDto = {
+    ok: false;
+    sanity_check: string;
+};
+export type CaseReviewDto = {
+    output: string;
+    thought?: string;
+} & (CaseReviewOkDto | CaseReviewNotOkDto);
 export type SuspiciousActivityReportDto = {
     id: string;
     status: "pending" | "completed";

@@ -1359,18 +1359,35 @@ components:
         - pivot_object_data
         - number_of_decisions
     CaseReviewDto:
+      allOf:
+        - type: object
+          required:
+            - output
+          properties:
+            output:
+              type: string
+            thought:
+              type: string
+        - anyOf:
+          - $ref: '#/components/schemas/CaseReviewOkDto'
+          - $ref: '#/components/schemas/CaseReviewNotOkDto'
+
+    CaseReviewOkDto:
       type: object
       required:
         - ok
-        - output
-        - sanity_check
-        - thought
       properties:
         ok:
           type: boolean
-        output:
-          type: string
+          enum: [true]
+    CaseReviewNotOkDto:
+      type: object
+      required:
+        - ok
+        - sanity_check
+      properties:
+        ok:
+          type: boolean
+          enum: [false]
         sanity_check:
-          type: string
-        thought:
           type: string
