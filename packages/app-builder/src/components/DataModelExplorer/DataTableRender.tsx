@@ -253,13 +253,16 @@ function DataTable({ caseId, pivotObject, table, list, pagination, navigateTo }:
           </MenuCommand.Menu>
         ) : null}
       </div>
-      <div className="flex overflow-x-auto" ref={wrapperRef}>
+      <div className="flex max-h-[480px] overflow-auto" ref={wrapperRef}>
         <div ref={sentinelRef} className="w-0" />
         {list.length > 0 ? (
           <table className="mb-4 min-w-full border-separate border-spacing-0">
             <thead>
               {reactTable.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="text-grey-50 border-grey-90 h-10 text-left">
+                <tr
+                  key={headerGroup.id}
+                  className="text-grey-50 border-grey-90 bg-grey-100 sticky top-0 z-20 h-10 text-left"
+                >
                   <th
                     className={clsx(
                       'border-grey-90 bg-grey-100 sticky left-0 z-10 h-full border-y border-r p-2 font-normal',
