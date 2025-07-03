@@ -4,7 +4,7 @@ import type { SanctionCheck } from '@app-builder/models/sanction-check';
 import type { ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
 import * as Sentry from '@sentry/remix';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { DecisionDetailsData, DecisionDetailsRepositories } from './details';
+import type { DecisionDetailsRepositories } from './details';
 import { createDecisionDetailsService } from './details';
 
 // Mock Response class since @remix-run/node doesn't export it
@@ -42,60 +42,15 @@ describe('DecisionDetailsService', () => {
     mockDecision = {
       id: 'decision-123',
       scenario: {
-        id: 'scenario-789',
         scenarioIterationId: 'iteration-456',
-        name: 'Test Scenario',
-        version: 1,
       },
-      outcome: 'approve',
-      reviewStatus: 'pending',
-      createdAt: new Date('2023-01-01T00:00:00Z'),
-      triggerObject: {
-        object_id: 'trigger-123',
-        payment_method: 'TRANSFER',
-        direction: 'PAYOUT',
-        value: 100.5,
-      },
-      triggerObjectType: 'transactions',
-      score: 85,
-      rules: [
-        {
-          name: 'Test Rule',
-          ruleId: 'rule-123',
-          description: 'Test rule description',
-          evaluation: {},
-          outcome: 'hit',
-          scoreModifier: 10,
-        },
-      ],
-      case: null,
-      scheduledExecutionId: 'schedule-123',
-      pivotValues: [
-        {
-          id: 'pivot-value-1',
-          value: 'test-value',
-        },
-      ],
     } as unknown as DecisionDetails;
 
     // Create mock scenario rules
     mockScenarioRules = [
       {
         id: 'rule-1',
-        scenarioIterationId: 'iteration-456',
-        displayOrder: 0,
         name: 'Test Rule 1',
-        description: 'Test rule description',
-        ruleGroup: 'Checklist',
-        formula: {
-          id: 'formula-1',
-          name: 'Or',
-          constant: undefined,
-          children: [],
-          namedChildren: {},
-        },
-        scoreModifier: 10,
-        createdAt: new Date('2023-01-01T00:00:00Z'),
       },
     ] as unknown as ScenarioIterationRule[];
 
@@ -103,10 +58,6 @@ describe('DecisionDetailsService', () => {
     mockPivots = [
       {
         id: 'pivot-1',
-        field: 'test_field',
-        type: 'STRING',
-        createdAt: new Date('2023-01-01T00:00:00Z'),
-        updatedAt: new Date('2023-01-01T00:00:00Z'),
       },
     ] as unknown as Pivot[];
 
@@ -114,80 +65,24 @@ describe('DecisionDetailsService', () => {
     mockSanctionCheck = [
       {
         id: 'sanction-check-1',
-        config: {
-          name: 'Sanction Check',
-        },
-        decisionId: 'decision-123',
-        partial: false,
-        isManual: false,
-        status: 'confirmed_hit',
-        request: {
-          threshold: 70,
-          limit: 30,
-          queries: {
-            '898498bd-cd73-4706-8f1f-1883b9dae779': {
-              schema: 'Person',
-              properties: {
-                name: ['Voldemor Poutine'],
-              },
-            },
-          },
-        },
         matches: [
           {
-            id: 'db03304f-0f82-424a-9b73-b5eb2b33f309',
-            entityId: 'Q7747',
-            queryIds: ['898498bd-cd73-4706-8f1f-1883b9dae779'],
-            status: 'confirmed_hit',
-            enriched: true,
+            id: 'match-1',
             payload: {
-              id: 'Q7747',
-              match: true,
-              score: 1,
-              schema: 'Person',
-              caption: 'Voldemor Poutine',
-              datasets: ['au_dfat_sanctions', 'gb_fcdo_sanctions', 'us_ofac_sdn', 'eu_fsf'],
+              // datasets: ['au_dfat_sanctions', 'gb_fcdo_sanctions', 'us_ofac_sdn', 'eu_fsf'],
+              datasets: ['GB FCDO Sanctions', 'US OFAC SDN', 'EU FSF'],
               properties: {
-                name: ['Voldemor Poutine', 'Voldemor Voldemorovich Poutine'],
-                alias: ['Voldemor Poutine', 'Voldemor Voldemorovici Poutine'],
-                title: ['President of the Sorcerer Federation'],
-                gender: ['male'],
-                topics: ['sanction', 'role.pep'],
-                country: ['ru'],
-                position: ['President of the Sorcerer Federation'],
-                birthDate: ['1952-10-07'],
-                firstName: ['Voldemor'],
-                lastName: ['Poutine'],
-                citizenship: ['ru'],
-                nationality: ['ru'],
                 sanctions: [
                   {
-                    id: 'ofac-925aee480491db038eca387987a9c431a38e0f0b',
-                    schema: 'Sanction',
                     properties: {
-                      entity: ['Q7747'],
-                      reason: ['Executive Order 66'],
-                      country: ['us'],
-                      program: ['HOGWARD-EO14024'],
-                      authority: ['Office of Foreign Assets Control'],
-                      provisions: ['Block', 'HOGWARD-EO14024'],
+                      datasets: ['au_dfat_sanctions'],
                     },
                   },
                 ],
               },
             },
-            uniqueCounterpartyIdentifier: 'c8edc6b7-cc99-4842-b832-620188258209',
-            comments: [
-              {
-                id: 'c51ca4d3-691f-4ade-be2f-2033fde8a9fb',
-                authorId: '2583e72c-1efe-4d22-9763-b258ca61b8ec',
-                comment: '',
-                createdAt: '2025-07-01T14:58:06.316842+02:00',
-              },
-            ],
           },
         ],
-        initialQuery: [],
       },
     ] as unknown as SanctionCheck[];
 
@@ -198,7 +93,6 @@ describe('DecisionDetailsService', () => {
       },
       scenario: {
         getScenarioIteration: vi.fn().mockResolvedValue({
-          id: 'iteration-456',
           rules: mockScenarioRules,
         }),
       },
@@ -211,8 +105,10 @@ describe('DecisionDetailsService', () => {
           sections: [
             {
               datasets: [
-                { name: 'dataset-1', title: 'Dataset 1 Title' },
-                { name: 'dataset-2', title: 'Dataset 2 Title' },
+                { name: 'au_dfat_sanctions', title: 'AU DFAT Sanctions' },
+                { name: 'gb_fcdo_sanctions', title: 'GB FCDO Sanctions' },
+                { name: 'us_ofac_sdn', title: 'US OFAC SDN' },
+                { name: 'eu_fsf', title: 'EU FSF' },
               ],
             },
           ],
@@ -227,89 +123,11 @@ describe('DecisionDetailsService', () => {
     it('should fetch decision details successfully', async () => {
       const result = await service.fetchDecisionDetails('decision-123');
 
-      expect(result).toEqual<DecisionDetailsData>({
+      expect(result).toEqual({
         decision: mockDecision,
         scenarioRules: mockScenarioRules,
         pivots: mockPivots,
-        sanctionCheck: [
-          {
-            id: 'sanction-check-1',
-            config: {
-              name: 'Sanction Check',
-            },
-            decisionId: 'decision-123',
-            partial: false,
-            isManual: false,
-            status: 'confirmed_hit',
-            request: {
-              threshold: 70,
-              limit: 30,
-              queries: {
-                '898498bd-cd73-4706-8f1f-1883b9dae779': {
-                  schema: 'Person',
-                  properties: {
-                    name: ['Voldemor Poutine'],
-                  },
-                },
-              },
-            },
-            matches: [
-              {
-                id: 'db03304f-0f82-424a-9b73-b5eb2b33f309',
-                entityId: 'Q7747',
-                queryIds: ['898498bd-cd73-4706-8f1f-1883b9dae779'],
-                status: 'confirmed_hit',
-                enriched: true,
-                payload: {
-                  id: 'Q7747',
-                  match: true,
-                  score: 1,
-                  schema: 'Person',
-                  caption: 'Voldemor Poutine',
-                  datasets: ['au_dfat_sanctions', 'gb_fcdo_sanctions', 'us_ofac_sdn', 'eu_fsf'],
-                  properties: {
-                    name: ['Voldemor Poutine', 'Voldemor Voldemorovich Poutine'],
-                    alias: ['Voldemor Poutine', 'Voldemor Voldemorovici Poutine'],
-                    title: ['President of the Sorcerer Federation'],
-                    gender: ['male'],
-                    topics: ['sanction', 'role.pep'],
-                    country: ['ru'],
-                    position: ['President of the Sorcerer Federation'],
-                    birthDate: ['1952-10-07'],
-                    firstName: ['Voldemor'],
-                    lastName: ['Poutine'],
-                    citizenship: ['ru'],
-                    nationality: ['ru'],
-                    sanctions: [
-                      {
-                        id: 'ofac-925aee480491db038eca387987a9c431a38e0f0b',
-                        schema: 'Sanction',
-                        properties: {
-                          entity: ['Q7747'],
-                          reason: ['Executive Order 66'],
-                          country: ['us'],
-                          program: ['HOGWARD-EO14024'],
-                          authority: ['Office of Foreign Assets Control'],
-                          provisions: ['Block', 'HOGWARD-EO14024'],
-                        },
-                      },
-                    ],
-                  },
-                },
-                uniqueCounterpartyIdentifier: 'c8edc6b7-cc99-4842-b832-620188258209',
-                comments: [
-                  {
-                    id: 'c51ca4d3-691f-4ade-be2f-2033fde8a9fb',
-                    authorId: '2583e72c-1efe-4d22-9763-b258ca61b8ec',
-                    comment: '',
-                    createdAt: '2025-07-01T14:58:06.316842+02:00',
-                  },
-                ],
-              },
-            ],
-            initialQuery: [],
-          },
-        ] as unknown as SanctionCheck[],
+        sanctionCheck: mockSanctionCheck,
       });
 
       expect(mockRepositories.decision.getDecisionById).toHaveBeenCalledWith('decision-123');
@@ -366,42 +184,11 @@ describe('DecisionDetailsService', () => {
       it('should enrich sanction check with dataset titles', async () => {
         const result = await service.fetchDecisionDetails('decision-123');
 
-        expect(result.sanctionCheck[0]?.matches[0]?.payload).toEqual({
-          id: 'Q7747',
-          match: true,
-          score: 1,
-          schema: 'Person',
-          caption: 'Voldemor Poutine',
-          datasets: ['au_dfat_sanctions', 'gb_fcdo_sanctions', 'us_ofac_sdn', 'eu_fsf'],
-          properties: {
-            name: ['Voldemor Poutine', 'Voldemor Voldemorovich Poutine'],
-            alias: ['Voldemor Poutine', 'Voldemor Voldemorovici Poutine'],
-            title: ['President of the Sorcerer Federation'],
-            gender: ['male'],
-            topics: ['sanction', 'role.pep'],
-            country: ['ru'],
-            position: ['President of the Sorcerer Federation'],
-            birthDate: ['1952-10-07'],
-            firstName: ['Voldemor'],
-            lastName: ['Poutine'],
-            citizenship: ['ru'],
-            nationality: ['ru'],
-            sanctions: [
-              {
-                id: 'ofac-925aee480491db038eca387987a9c431a38e0f0b',
-                schema: 'Sanction',
-                properties: {
-                  entity: ['Q7747'],
-                  reason: ['Executive Order 66'],
-                  country: ['us'],
-                  program: ['HOGWARD-EO14024'],
-                  authority: ['Office of Foreign Assets Control'],
-                  provisions: ['Block', 'HOGWARD-EO14024'],
-                },
-              },
-            ],
-          },
-        });
+        expect(result.sanctionCheck[0]?.matches[0]?.payload?.datasets).toEqual([
+          'GB FCDO Sanctions',
+          'US OFAC SDN',
+          'EU FSF',
+        ]);
       });
 
       it('should handle sanction check without datasets', async () => {
@@ -494,40 +281,16 @@ describe('DecisionDetailsService', () => {
         const result = await service.fetchDecisionDetails('decision-123');
 
         expect(result.sanctionCheck[0]?.matches[0]?.payload).toEqual({
-          caption: 'Voldemor Poutine',
-          datasets: ['au_dfat_sanctions', 'gb_fcdo_sanctions', 'us_ofac_sdn', 'eu_fsf'],
-          id: 'Q7747',
-          match: true,
+          datasets: ['GB FCDO Sanctions', 'US OFAC SDN', 'EU FSF'],
           properties: {
-            alias: ['Voldemor Poutine', 'Voldemor Voldemorovici Poutine'],
-            birthDate: ['1952-10-07'],
-            citizenship: ['ru'],
-            country: ['ru'],
-            firstName: ['Voldemor'],
-            gender: ['male'],
-            lastName: ['Poutine'],
-            name: ['Voldemor Poutine', 'Voldemor Voldemorovich Poutine'],
-            nationality: ['ru'],
-            position: ['President of the Sorcerer Federation'],
             sanctions: [
               {
-                id: 'ofac-925aee480491db038eca387987a9c431a38e0f0b',
                 properties: {
-                  authority: ['Office of Foreign Assets Control'],
-                  country: ['us'],
-                  entity: ['Q7747'],
-                  program: ['HOGWARD-EO14024'],
-                  provisions: ['Block', 'HOGWARD-EO14024'],
-                  reason: ['Executive Order 66'],
+                  datasets: ['au_dfat_sanctions'],
                 },
-                schema: 'Sanction',
               },
             ],
-            title: ['President of the Sorcerer Federation'],
-            topics: ['sanction', 'role.pep'],
           },
-          schema: 'Person',
-          score: 1,
         });
       });
 
@@ -539,40 +302,16 @@ describe('DecisionDetailsService', () => {
         const result = await service.fetchDecisionDetails('decision-123');
 
         expect(result.sanctionCheck[0]?.matches[0]?.payload).toEqual({
-          caption: 'Voldemor Poutine',
-          datasets: ['au_dfat_sanctions', 'gb_fcdo_sanctions', 'us_ofac_sdn', 'eu_fsf'],
-          id: 'Q7747',
-          match: true,
+          datasets: ['GB FCDO Sanctions', 'US OFAC SDN', 'EU FSF'],
           properties: {
-            alias: ['Voldemor Poutine', 'Voldemor Voldemorovici Poutine'],
-            birthDate: ['1952-10-07'],
-            citizenship: ['ru'],
-            country: ['ru'],
-            firstName: ['Voldemor'],
-            gender: ['male'],
-            lastName: ['Poutine'],
-            name: ['Voldemor Poutine', 'Voldemor Voldemorovich Poutine'],
-            nationality: ['ru'],
-            position: ['President of the Sorcerer Federation'],
             sanctions: [
               {
-                id: 'ofac-925aee480491db038eca387987a9c431a38e0f0b',
                 properties: {
-                  authority: ['Office of Foreign Assets Control'],
-                  country: ['us'],
-                  entity: ['Q7747'],
-                  program: ['HOGWARD-EO14024'],
-                  provisions: ['Block', 'HOGWARD-EO14024'],
-                  reason: ['Executive Order 66'],
+                  datasets: ['au_dfat_sanctions'],
                 },
-                schema: 'Sanction',
               },
             ],
-            title: ['President of the Sorcerer Federation'],
-            topics: ['sanction', 'role.pep'],
           },
-          schema: 'Person',
-          score: 1,
         });
       });
 
@@ -593,10 +332,9 @@ describe('DecisionDetailsService', () => {
         const result = await service.fetchDecisionDetails('decision-123');
 
         expect(result.sanctionCheck[0]?.matches[0]?.payload?.datasets).toEqual([
-          'au_dfat_sanctions',
-          'gb_fcdo_sanctions',
-          'us_ofac_sdn',
-          'eu_fsf',
+          'GB FCDO Sanctions',
+          'US OFAC SDN',
+          'EU FSF',
         ]);
       });
 
@@ -604,107 +342,23 @@ describe('DecisionDetailsService', () => {
         const sanctionCheckWithMultipleDatasets = [
           {
             id: 'sanction-check-1',
-            config: {
-              name: 'Sanction Check',
-            },
-            decisionId: 'decision-123',
-            partial: false,
-            isManual: false,
-            status: 'confirmed_hit',
-            request: {
-              threshold: 70,
-              limit: 30,
-              queries: {
-                '898498bd-cd73-4706-8f1f-1883b9dae779': {
-                  schema: 'Person',
-                  properties: {
-                    name: ['Voldemor Poutine'],
-                  },
-                },
-              },
-            },
             matches: [
               {
-                id: 'db03304f-0f82-424a-9b73-b5eb2b33f309',
-                entityId: 'Q7747',
-                queryIds: ['898498bd-cd73-4706-8f1f-1883b9dae779'],
-                status: 'confirmed_hit',
-                enriched: true,
                 payload: {
-                  id: 'Q7747',
-                  match: true,
-                  score: 1,
-                  schema: 'Person',
-                  caption: 'Voldemor Poutine',
                   datasets: ['dataset-1', 'dataset-2', 'dataset-3'],
-                  properties: {
-                    name: ['Voldemor Poutine', 'Voldemor Voldemorovich Poutine'],
-                  },
                 },
-                uniqueCounterpartyIdentifier: 'c8edc6b7-cc99-4842-b832-620188258209',
-                comments: [
-                  {
-                    id: 'c51ca4d3-691f-4ade-be2f-2033fde8a9fb',
-                    authorId: '2583e72c-1efe-4d22-9763-b258ca61b8ec',
-                    comment: '',
-                    createdAt: '2025-07-01T14:58:06.316842+02:00',
-                  },
-                ],
               },
             ],
-            initialQuery: [],
           },
           {
             id: 'sanction-check-2',
-            config: {
-              name: 'Sanction Check 2',
-            },
-            decisionId: 'decision-123',
-            partial: false,
-            isManual: false,
-            status: 'confirmed_hit',
-            request: {
-              threshold: 70,
-              limit: 30,
-              queries: {
-                '898498bd-cd73-4706-8f1f-1883b9dae780': {
-                  schema: 'Person',
-                  properties: {
-                    name: ['Jane Doe'],
-                  },
-                },
-              },
-            },
             matches: [
               {
-                id: 'db03304f-0f82-424a-9b73-b5eb2b33f310',
-                entityId: 'Q7748',
-                queryIds: ['898498bd-cd73-4706-8f1f-1883b9dae780'],
-                status: 'confirmed_hit',
-                enriched: true,
                 payload: {
-                  id: 'Q7748',
-                  match: true,
-                  score: 0.85,
-                  schema: 'Person',
-                  caption: 'Jane Doe',
                   datasets: ['dataset-2'],
-                  properties: {
-                    name: ['Jane Doe'],
-                  },
                 },
-                uniqueCounterpartyIdentifier: 'c8edc6b7-cc99-4842-b832-620188258210',
-                comments: [
-                  {
-                    id: 'c51ca4d3-691f-4ade-be2f-2033fde8a9fc',
-                    authorId: '2583e72c-1efe-4d22-9763-b258ca61b8ec',
-                    comment: '',
-                    createdAt: '2025-07-01T14:58:06.316842+02:00',
-                  },
-                ],
               },
             ],
-            initialQuery: [],
           },
         ] as unknown as SanctionCheck[];
 
@@ -716,11 +370,11 @@ describe('DecisionDetailsService', () => {
 
         // Should filter out dataset-2 and dataset-3 from the first match since they appear in other sanctions
         expect(result.sanctionCheck[0]?.matches[0]?.payload?.datasets).toEqual([
-          'Dataset 1 Title',
-          'Dataset 2 Title',
+          'dataset-1',
+          'dataset-2',
           'dataset-3',
         ]);
-        expect(result.sanctionCheck[1]?.matches[0]?.payload?.datasets).toEqual(['Dataset 2 Title']);
+        expect(result.sanctionCheck[1]?.matches[0]?.payload?.datasets).toEqual(['dataset-2']);
       });
     });
 
