@@ -153,7 +153,7 @@ function RuleFormula({
     [formula, evaluation],
   );
   return (
-    <Paper.Container className="bg-grey-100">
+    <Paper.Container className="bg-grey-100 @container">
       <AstBuilder.Provider scenarioId={scenarioId} mode="view" showValues={showValues}>
         <AstBuilder.Root node={formula} validation={validation} />
       </AstBuilder.Provider>

@@ -11,7 +11,8 @@
   "devDependencies": {
     "tailwindcss": "3.4.14",
     "tailwindcss-animate": "^1.0.7",
-    "tailwindcss-radix": "^4.0.2"
+    "tailwindcss-radix": "^4.0.2",
+    "@tailwindcss/container-queries": "^0.1.1"
   },
   "license": "ISC"
 }

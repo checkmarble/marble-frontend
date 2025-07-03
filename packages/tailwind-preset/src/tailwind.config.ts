@@ -1,3 +1,4 @@
+import tailwindcssContainerQueries from '@tailwindcss/container-queries';
 import type { Config } from 'tailwindcss';
 import defaultTheme from 'tailwindcss/defaultTheme';
 import { type PluginAPI } from 'tailwindcss/types/config';
@@ -230,6 +231,7 @@ export default {
   plugins: [
     tailwindcssRadix,
     tailwindcssAnimate,
+    tailwindcssContainerQueries,
     function ({ addVariant }: PluginAPI) {
       addVariant('not-last', '&>*:not(:last-child)');
     },

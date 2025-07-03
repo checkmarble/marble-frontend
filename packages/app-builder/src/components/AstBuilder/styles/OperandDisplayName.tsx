@@ -13,7 +13,7 @@ import { OperandTypeInfos, type OperandTypeVariantProps } from '../OperandTypeIn
 import { AstBuilderDataSharpFactory } from '../Provider';
 
 export const operandDisplayNameClassnames = cva(
-  'text-s font-medium group-aria-expanded:text-purple-65 break-all max-w-[300px] truncate',
+  'text-s font-medium group-aria-expanded:text-purple-65 break-all max-w-[200px] @xl:max-w-[300px] truncate',
   {
     variants: {
       type: {
