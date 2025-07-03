@@ -61,21 +61,22 @@ export const createDecisionDetailsService = (repositories: DecisionDetailsReposi
           ({ datasets }) => datasets?.map(({ name, title }) => [name, title]) ?? [],
         ) ?? [],
       );
-      const sanctionsDatasets = [
-        ...new Set(
-          sanctionCheck.flatMap(({ matches }) =>
-            matches.flatMap(({ payload }) => payload.datasets),
-          ),
-        ),
-      ];
+
       return sanctionCheck.map(({ matches, ...rest }) => ({
         ...rest,
         matches: matches.map(({ payload, ...rest }) => ({
           ...rest,
           payload: {
             ...payload,
+            // remove datasets that are already in a sanction
             datasets: payload.datasets
-              ?.filter((dataset) => !sanctionsDatasets.includes(dataset))
+              ?.filter(
+                (dataset) =>
+                  !payload.properties.sanctions?.some((sanction) =>
+                    sanction.properties?.['datasets']?.includes(dataset),
+                  ),
+              )
+              // replace dataset name with title
               .map((dataset) => datasets.get(dataset) ?? dataset),
           },
         })),
@@ -97,7 +98,11 @@ export const createDecisionDetailsService = (repositories: DecisionDetailsReposi
       const decision = await fetchDecision(decisionId, repositories.decision);
 
       try {
-        const [scenarioRules, pivots, sanctionCheck] = await Promise.all([
+        const [scenarioRules, pivots, sanctionCheck]: [
+          ScenarioIterationRule[],
+          Pivot[],
+          SanctionCheck[],
+        ] = await Promise.all([
           repositories.scenario
             .getScenarioIteration({
               iterationId: decision.scenario.scenarioIterationId,
