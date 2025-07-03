@@ -5,7 +5,7 @@ import type { ScenarioIterationRule } from '@app-builder/models/scenario-iterati
 import * as Sentry from '@sentry/remix';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DecisionDetailsData, DecisionDetailsRepositories } from './details';
-import { createDecisionDetailsService, DecisionDetailsService } from './details';
+import { createDecisionDetailsService } from './details';
 
 // Mock Response class since @remix-run/node doesn't export it
 class MockResponse extends Error {
@@ -27,7 +27,7 @@ vi.mock('@sentry/remix', () => ({
 global.Response = MockResponse as any;
 
 describe('DecisionDetailsService', () => {
-  let service: DecisionDetailsService;
+  let service: ReturnType<typeof createDecisionDetailsService>;
   let mockRepositories: DecisionDetailsRepositories;
   let mockDecision: DecisionDetails;
   let mockScenarioRules: ScenarioIterationRule[];
@@ -137,7 +137,7 @@ describe('DecisionDetailsService', () => {
       },
     } as any;
 
-    service = new DecisionDetailsService(mockRepositories);
+    service = createDecisionDetailsService(mockRepositories);
   });
 
   describe('fetchDecisionDetails', () => {
@@ -371,7 +371,7 @@ describe('DecisionDetailsService', () => {
     it('should create a new service instance', () => {
       const service = createDecisionDetailsService(mockRepositories);
 
-      expect(service).toBeInstanceOf(DecisionDetailsService);
+      expect(service).toBeDefined();
     });
 
     it('should create service with the same repositories', async () => {

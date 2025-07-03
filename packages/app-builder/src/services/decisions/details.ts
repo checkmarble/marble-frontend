@@ -22,13 +22,11 @@ export interface DecisionDetailsRepositories {
   sanctionCheck: SanctionCheckRepository;
 }
 
-export class DecisionDetailsService {
-  constructor(private repositories: DecisionDetailsRepositories) {}
-
-  private async _fetchDecision(
+export const createDecisionDetailsService = (repositories: DecisionDetailsRepositories) => {
+  const fetchDecision = async (
     decisionId: string,
     decisionRepository: DecisionDetailsRepositories['decision'],
-  ): Promise<DecisionDetails> {
+  ): Promise<DecisionDetails> => {
     try {
       return await decisionRepository.getDecisionById(decisionId);
     } catch (error: unknown) {
@@ -44,11 +42,12 @@ export class DecisionDetailsService {
       });
       throw new Response(null, { status: 500, statusText: 'Internal Server Error' });
     }
-  }
-  private async _enrichSanctionCheck(
+  };
+
+  const enrichSanctionCheck = async (
     sanctionCheck: SanctionCheck[],
     sanctionCheckRepository: DecisionDetailsRepositories['sanctionCheck'],
-  ): Promise<SanctionCheck[]> {
+  ): Promise<SanctionCheck[]> => {
     //test if sanction check has datasets
     if (!sanctionCheck.some(({ matches }) => matches.some(({ payload }) => payload.datasets))) {
       return sanctionCheck;
@@ -91,54 +90,43 @@ export class DecisionDetailsService {
       });
       return sanctionCheck;
     }
-  }
+  };
 
-  async fetchDecisionDetails(decisionId: string): Promise<DecisionDetailsData> {
-    const {
-      decision: decisionRepository,
-      scenario: scenarioRepository,
-      dataModel: dataModelRepository,
-      sanctionCheck: sanctionCheckRepository,
-    } = this.repositories;
+  return {
+    fetchDecisionDetails: async (decisionId: string) => {
+      const decision = await fetchDecision(decisionId, repositories.decision);
 
-    const decision = await this._fetchDecision(decisionId, decisionRepository);
+      try {
+        const [scenarioRules, pivots, sanctionCheck] = await Promise.all([
+          repositories.scenario
+            .getScenarioIteration({
+              iterationId: decision.scenario.scenarioIterationId,
+            })
+            .then((iteration) => iteration.rules),
 
-    try {
-      const [scenarioRules, pivots, sanctionCheck] = await Promise.all([
-        scenarioRepository
-          .getScenarioIteration({
-            iterationId: decision.scenario.scenarioIterationId,
-          })
-          .then((iteration) => iteration.rules),
-
-        dataModelRepository.listPivots({}),
-        sanctionCheckRepository
-          .listSanctionChecks({ decisionId })
-          .then((sanctionCheck) =>
-            this._enrichSanctionCheck(sanctionCheck, sanctionCheckRepository),
-          ),
-      ]);
-      return {
-        decision,
-        scenarioRules,
-        pivots,
-        sanctionCheck,
-      };
-    } catch (error) {
-      Sentry.captureException(error, {
-        tags: {
-          component: 'DecisionDetailsService',
-          operation: 'fetchDecisionDetails',
-          errorType: 'internal',
-        },
-      });
-      throw new Response(null, { status: 500, statusText: 'Internal Server Error' });
-    }
-  }
-}
-
-export function createDecisionDetailsService(
-  repositories: DecisionDetailsRepositories,
-): DecisionDetailsService {
-  return new DecisionDetailsService(repositories);
-}
+          repositories.dataModel.listPivots({}),
+          repositories.sanctionCheck
+            .listSanctionChecks({ decisionId })
+            .then((sanctionCheck) =>
+              enrichSanctionCheck(sanctionCheck, repositories.sanctionCheck),
+            ),
+        ]);
+        return {
+          decision,
+          scenarioRules,
+          pivots,
+          sanctionCheck,
+        };
+      } catch (error) {
+        Sentry.captureException(error, {
+          tags: {
+            component: 'DecisionDetailsService',
+            operation: 'fetchDecisionDetails',
+            errorType: 'internal',
+          },
+        });
+        throw new Response(null, { status: 500, statusText: 'Internal Server Error' });
+      }
+    },
+  };
+};
