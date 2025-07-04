@@ -1,3 +1,4 @@
+import { AnyFieldApi } from '@tanstack/react-form';
 import { select } from 'radash';
 import type { FormEvent, LegacyRef, MutableRefObject, RefCallback } from 'react';
 
@@ -46,4 +47,9 @@ export const mergeRefs = <T>(
       }
     });
   };
+};
+
+export const handleBlur = (field: AnyFieldApi) => () => {
+  if (field.state.meta.isPristine) return;
+  field.handleBlur();
 };

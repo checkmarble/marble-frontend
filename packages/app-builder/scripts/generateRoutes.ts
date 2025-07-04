@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { join } from 'node:path';
 
 import { routes } from '@app-builder/utils/routes/routes';
@@ -54,17 +55,11 @@ async function buildTypesFile(routes: readonly Route[]) {
       .map((routeId) => `'${routeId}'`)
       .join(' | ')};`;
 
-    biome.formatContent(
-      projectKey,
-      `
-        ${RoutePath}
+    fs.writeFileSync(outTypesFile, `${RoutePath}\n\n${RouteID}`);
 
-        ${RouteID}
-      `,
-      {
-        filePath: outTypesFile,
-      },
-    );
+    biome.formatContent(projectKey, `${RoutePath}\n\n${RouteID}`, {
+      filePath: outTypesFile,
+    });
 
     spinner.succeed('Succesfully generated route based types');
   } catch (error) {

@@ -62,7 +62,7 @@
     "react-day-picker": "^9.6.2",
     "react-markdown": "^10.1.0",
     "sharpstate": "^0.0.13",
-    "tailwind-merge": "^3.0.2",
+    "tailwind-merge": "^2.6.0",
     "ui-icons": "workspace:*"
   },
   "peerDependencies": {

@@ -72,7 +72,7 @@ export function adaptAppConfig(
       } as AppConfig['auth']['firebase'],
     },
     features: {
-      sso: dto.features.sso,
+      sso: true,
       segment: dto.features.segment,
     },
   };

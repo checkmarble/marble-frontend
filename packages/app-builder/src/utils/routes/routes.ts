@@ -24,6 +24,11 @@ export const routes = [
             "file": "routes/_auth+/forgot-password.tsx"
           },
           {
+            "id": "routes/_auth+/sign-in-email",
+            "path": "sign-in-email",
+            "file": "routes/_auth+/sign-in-email.tsx"
+          },
+          {
             "id": "routes/_auth+/sign-in",
             "path": "sign-in",
             "file": "routes/_auth+/sign-in.tsx"
@@ -352,6 +357,11 @@ export const routes = [
         "id": "routes/ressources+/auth+/refresh",
         "path": "ressources/auth/refresh",
         "file": "routes/ressources+/auth+/refresh.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/$caseId.ask-review",
+        "path": "ressources/cases/:caseId/ask-review",
+        "file": "routes/ressources+/cases+/$caseId.ask-review.tsx"
       },
       {
         "id": "routes/ressources+/cases+/add-comment",
