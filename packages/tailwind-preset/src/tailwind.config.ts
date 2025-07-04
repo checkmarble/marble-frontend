@@ -59,6 +59,7 @@ export default {
       },
     },
     fontSize: {
+      '2xl': ['28px', '32px'],
       l: ['20px', '30px'],
       m: ['16px', '24px'],
       s: ['14px', '21px'],

@@ -1,8 +1,10 @@
 import { type FirebaseClientWrapper } from '@app-builder/infra/firebase';
 import { getClientEnv } from '@app-builder/utils/environment';
 import { getRoute } from '@app-builder/utils/routes';
+import { User } from 'firebase/auth';
 
 export interface AuthenticationClientRepository {
+  getCurrentUser: () => User | null;
   googleSignIn: (locale: string) => Promise<string>;
   microsoftSignIn: (locale: string) => Promise<string>;
   emailAndPasswordSignIn: (
@@ -120,7 +122,12 @@ export function getAuthenticationClientRepository(
     });
   };
 
+  const getCurrentUser = () => {
+    return firebaseClient.clientAuth.currentUser;
+  };
+
   return {
+    getCurrentUser,
     googleSignIn,
     microsoftSignIn,
     emailAndPasswordSignIn,

@@ -24,7 +24,7 @@ function SendEmailVerificationButton({
 
   return (
     <Button
-      variant="primary"
+      variant="secondary"
       className="w-full capitalize"
       onClick={onClick}
       disabled={!isHydrated}
