@@ -1224,6 +1224,7 @@ export type TestRunRuleExecutionDataDto = {
 export type WorkflowRuleDto = {
     id: string;
     name: string;
+    fallthrough: boolean;
 };
 export type AlwaysMatches = {
     "function": "always";
@@ -1268,6 +1269,7 @@ export type WorkflowActionDto = {
 export type CreateWorkflowRuleDto = {
     scenario_id: string;
     name: string;
+    fallthrough: boolean;
 };
 /**
  * Get an access token
@@ -4277,7 +4279,7 @@ export function reorderWorkflows(scenarioId: string, body?: string[], opts?: Oaz
  */
 export function createWorkflowRule(createWorkflowRuleDto?: CreateWorkflowRuleDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
+        status: 201;
         data: WorkflowRuleDto;
     } | {
         status: 401;
@@ -4296,6 +4298,7 @@ export function createWorkflowRule(createWorkflowRuleDto?: CreateWorkflowRuleDto
  */
 export function updateWorkflowRule(ruleId: string, body?: {
     name: string;
+    fallthrough: boolean;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -4334,7 +4337,7 @@ export function deleteWorkflowRule(ruleId: string, opts?: Oazapfts.RequestOpts) 
  */
 export function createWorkflowCondition(ruleId: string, workflowConditionDetailDto?: WorkflowConditionDetailDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
+        status: 201;
         data: WorkflowConditionDto;
     } | {
         status: 401;
@@ -4389,7 +4392,7 @@ export function deleteWorkflowCondition(ruleId: string, conditionId: string, opt
  */
 export function createWorkflowAction(ruleId: string, workflowActionDetailDto?: WorkflowActionDetailDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
+        status: 201;
         data: WorkflowActionDto;
     } | {
         status: 401;
