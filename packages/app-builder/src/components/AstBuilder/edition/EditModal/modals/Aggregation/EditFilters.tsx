@@ -2,7 +2,12 @@ import { Callout } from '@app-builder/components';
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { RemoveButton } from '@app-builder/components/AstBuilder/styles/RemoveButton';
 import { scenarioI18n } from '@app-builder/components/Scenario';
-import { type DataModel, isUndefinedAstNode, NewUndefinedAstNode } from '@app-builder/models';
+import {
+  type DataModel,
+  getEnumValues,
+  isUndefinedAstNode,
+  NewUndefinedAstNode,
+} from '@app-builder/models';
 import {
   type AggregationAstNode,
   aggregationFilterOperators,
@@ -101,6 +106,15 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                     customLists,
                   })
                 : '...';
+
+            const enumValues =
+              filter.namedChildren.tableName.constant && filter.namedChildren.fieldName.constant
+                ? getEnumValues(
+                    dataModel,
+                    filter.namedChildren.tableName.constant,
+                    filter.namedChildren.fieldName.constant,
+                  )
+                : [];
 
             return (
               <Fragment key={filterIndex}>
@@ -211,6 +225,11 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                             }}
                             optionsDataType={(opt) => opt.operandType !== 'Modeling'}
                             validationStatus={valueErrors.length > 0 ? 'error' : 'valid'}
+                            enumValues={
+                              ['=', '!='].includes(filter.namedChildren.operator.constant)
+                                ? enumValues
+                                : undefined
+                            }
                           />
                         </>
                       ) : null}
