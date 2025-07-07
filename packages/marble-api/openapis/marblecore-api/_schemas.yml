@@ -230,7 +230,7 @@ ScenarioIterationRuleDto:
 ScenarioValidationDto:
   $ref: scenario-iterations.yml#/components/schemas/ScenarioValidationDto
 
-# SANCTION CHECKS
+# SCREENINGS
 
 OpenSanctionsCatalogDataset:
   $ref: sanction-checks.yml#/components/schemas/OpenSanctionsCatalogDataset

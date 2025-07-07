@@ -175,14 +175,14 @@ paths:
   /scenario-iterations/{scenarioIterationId}/sanction-check/{sanctionCheckConfigId}:
     $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1sanction-check~1{sanctionCheckConfigId}
 
-  # SANCTION CHECKS
+  # SCREENINGS
 
   /sanction-checks:
     $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks
   /sanction-checks/datasets:
     $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1datasets
-  /sanction-checks/{sanctionCheckId}/files:
-    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1{sanctionCheckId}~1files
+  /sanction-checks/{screeningId}/files:
+    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1{screeningId}~1files
   /sanction-checks/matches/{matchId}:
     $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1matches~1{matchId}
   /sanction-checks/matches/{matchId}/enrich:

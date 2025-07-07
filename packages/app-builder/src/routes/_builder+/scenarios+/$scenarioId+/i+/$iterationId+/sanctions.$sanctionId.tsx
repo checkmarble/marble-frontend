@@ -10,7 +10,6 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
-import { ScreeningTermIgnoreList } from '@app-builder/components/Scenario/Sanction/ScreeningTermIgnoreList';
 import { FieldDataset } from '@app-builder/components/Scenario/Sanction/FieldDataset';
 import { FieldEntityType } from '@app-builder/components/Scenario/Sanction/FieldEntityType';
 import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
@@ -19,6 +18,7 @@ import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOu
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
 import { FieldSkipIfUnder } from '@app-builder/components/Scenario/Sanction/FieldSkipIfUnder';
 import { FieldToolTip } from '@app-builder/components/Scenario/Sanction/FieldToolTip';
+import { ScreeningTermIgnoreList } from '@app-builder/components/Scenario/Sanction/ScreeningTermIgnoreList';
 import { SEARCH_ENTITIES } from '@app-builder/constants/sanction-check-entity';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
@@ -219,9 +219,9 @@ export default function SanctionDetail() {
   const { submit, data } = useFetcher<typeof action>();
   const lastData = data as
     | {
-      status: 'error' | 'success';
-      errors?: z.typeToFlattenedError<EditSanctionForm>;
-    }
+        status: 'error' | 'success';
+        errors?: z.typeToFlattenedError<EditSanctionForm>;
+      }
     | undefined;
   const scenario = useCurrentScenario();
   const ruleGroups = useRuleGroups();
