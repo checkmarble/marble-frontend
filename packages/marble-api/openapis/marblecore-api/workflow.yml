@@ -76,7 +76,7 @@
           schema:
             $ref: "#/components/schemas/CreateWorkflowRuleDto"
     responses:
-      "200":
+      "201":
         description: The workflow rule that was created
         content:
           application/json:
@@ -166,7 +166,7 @@
           schema:
             $ref: "#/components/schemas/WorkflowConditionDetailDto"
     responses:
-      "200":
+      "201":
         description: The workflow condition that was created
         content:
           application/json:
@@ -270,7 +270,7 @@
           schema:
             $ref: "#/components/schemas/WorkflowActionDetailDto"
     responses:
-      "200":
+      "201":
         description: The workflow action that was created
         content:
           application/json:
@@ -373,29 +373,36 @@ components:
       required:
         - id
         - name
+        - fallthrough
       properties:
         id:
           type: string
           format: uuid
         name:
           type: string
+        fallthrough:
+          type: boolean
 
     CreateWorkflowRuleDto:
       type: object
-      required: [scenario_id, name]
+      required: [scenario_id, name, fallthrough]
       properties:
         scenario_id:
           type: string
           format: uuid
         name:
           type: string
+        fallthrough:
+          type: boolean
 
     UpdateWorkflowRuleDto:
       type: object
-      required: [name]
+      required: [name, fallthrough]
       properties:
         name:
           type: string
+        fallthrough:
+          type: boolean
 
     WorkflowConditionType:
       type: string
