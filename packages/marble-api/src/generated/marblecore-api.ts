@@ -1095,9 +1095,9 @@ export type OrganizationDto = {
     name: string;
     /** Timezone (IANA format) used by default for scenarios of this organization, when interpreting timestamps as datetimes. */
     default_scenario_timezone?: string;
-    /** Threshold for sanction checks */
+    /** Threshold for screenings */
     sanctions_threshold?: number;
-    /** Limit for sanction checks */
+    /** Limit for screenings */
     sanctions_limit?: number;
 };
 export type CreateOrganizationBodyDto = {
@@ -2660,7 +2660,7 @@ export function commitScenarioIteration(scenarioIterationId: string, opts?: Oaza
     }));
 }
 /**
- * Create a sanction check for a scenario iteration
+ * Create a screening for a scenario iteration
  */
 export function createSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigDto?: SanctionCheckConfigDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -2673,7 +2673,7 @@ export function createSanctionCheckConfig(scenarioIterationId: string, sanctionC
     })));
 }
 /**
- * Delete a sanction check for a scenario iteration
+ * Delete a screening for a scenario iteration
  */
 export function deleteSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -2693,7 +2693,7 @@ export function deleteSanctionCheckConfig(scenarioIterationId: string, sanctionC
     }));
 }
 /**
- * Update a sanction check for a scenario iteration
+ * Update a screening for a scenario iteration
  */
 export function upsertSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigId: string, sanctionCheckConfigDto?: SanctionCheckConfigDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -2706,7 +2706,7 @@ export function upsertSanctionCheckConfig(scenarioIterationId: string, sanctionC
     })));
 }
 /**
- * List sanction checks for a decision
+ * List screenings for a decision
  */
 export function listSanctionChecks(decisionId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -2730,18 +2730,18 @@ export function listOpenSanctionDatasets(opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
- * List files for sanction check
+ * List files for screening
  */
-export function listSanctionCheckFiles(sanctionCheckId: string, opts?: Oazapfts.RequestOpts) {
+export function listSanctionCheckFiles(screeningId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: SanctionCheckFileDto[];
-    }>(`/sanction-checks/${encodeURIComponent(sanctionCheckId)}/files`, {
+    }>(`/sanction-checks/${encodeURIComponent(screeningId)}/files`, {
         ...opts
     }));
 }
 /**
- * Update the status of a sanction check match
+ * Update the status of a screening match
  */
 export function updateSanctionCheckMatch(matchId: string, updateSanctionCheckMatchDto: UpdateSanctionCheckMatchDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{

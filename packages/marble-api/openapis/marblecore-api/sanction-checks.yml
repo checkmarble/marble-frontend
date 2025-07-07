@@ -1,7 +1,7 @@
 /sanction-checks:
   get:
     tags:
-      - Sanction Check
+      - Screening
     summary: List screenings for a decision
     operationId: listSanctionChecks
     parameters:
@@ -24,7 +24,7 @@
 /sanction-checks/datasets:
   get:
     tags:
-      - Sanction Check
+      - Screening
     summary: List Open Sanction Dataset
     operationId: listOpenSanctionDatasets
     responses:
@@ -37,7 +37,7 @@
 /sanction-checks/freshness:
   get:
     tags:
-      - Sanction Check
+      - Screening
     summary: Retrieve the freshness of sanction datasets
     operationId: getDatasetsFreshness
     responses:
@@ -50,7 +50,7 @@
 /sanction-checks/{screeningId}/files:
   get:
     tags:
-      - Sanction Check
+      - Screening
     summary: List files for screening
     operationId: listSanctionCheckFiles
     parameters:
@@ -73,7 +73,7 @@
 /sanction-checks/matches/{matchId}:
   patch:
     tags:
-      - Sanction Check
+      - Screening
     summary: Update the status of a screening match
     operationId: updateSanctionCheckMatch
     parameters:
@@ -101,7 +101,7 @@
 /sanction-checks/matches/{matchId}/enrich:
   post:
     tags:
-      - Sanction Check
+      - Screening
     summary: Enrich the match payload with complete data
     operationId: enrichSanctionCheckMatch
     parameters:
@@ -126,7 +126,7 @@
 /sanction-checks/search:
   post:
     tags:
-      - Sanction Check
+      - Screening
     summary: Search possible matches
     operationId: searchSanctionCheckMatches
     requestBody:
@@ -147,7 +147,7 @@
 /sanction-checks/refine:
   post:
     tags:
-      - Sanction Check
+      - Screening
     summary: Try refine the search
     operationId: refineSanctionCheck
     requestBody:

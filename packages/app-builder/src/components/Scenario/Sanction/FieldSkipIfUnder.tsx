@@ -40,15 +40,17 @@ export const FieldSkipIfUnder = ({
         t={t}
         i18nKey="scenarios:edit_sanction.ignore_check_if_under"
         components={{
-          NbNumbers: <Input
-            type="number"
-            name={name}
-            className="z-0 h-6 w-14 py-0"
-            value={inputValue}
-            min={0}
-            onChange={handleInputChange}
-            disabled={editor === 'view' || value === null}
-          />
+          NbNumbers: (
+            <Input
+              type="number"
+              name={name}
+              className="z-0 h-6 w-14 py-0"
+              value={inputValue}
+              min={0}
+              onChange={handleInputChange}
+              disabled={editor === 'view' || value === null}
+            />
+          ),
         }}
       />
     </div>

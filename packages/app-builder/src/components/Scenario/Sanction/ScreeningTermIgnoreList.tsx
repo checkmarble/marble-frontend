@@ -47,9 +47,7 @@ export const ScreeningTermIgnoreList = ({
           disabled={editor === 'view'}
         />
         <span className="text-s">{t('scenarios:edit_sanction.remove_terms_from_list')}</span>
-        <FieldToolTip>
-          {t('scenarios:edit_sanction.remove_terms_from_list.tooltip')}
-        </FieldToolTip>
+        <FieldToolTip>{t('scenarios:edit_sanction.remove_terms_from_list.tooltip')}</FieldToolTip>
       </div>
       {value ? (
         <div className="flex flex-col gap-1">
