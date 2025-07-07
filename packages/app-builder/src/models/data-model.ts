@@ -310,6 +310,16 @@ export function findDataModelField({
   return field;
 }
 
+export function getEnumValues(
+  dataModel: DataModel,
+  tableName: string,
+  fieldName: string,
+): EnumValue[] {
+  const table = findDataModelTableByName({ dataModel, tableName });
+  const field = findDataModelField({ table, fieldName });
+  return field.values ?? [];
+}
+
 export function getDataTypeIcon(dataType?: DataType): IconName | undefined {
   switch (dataType) {
     case 'Timestamp':
