@@ -4,13 +4,14 @@ import { Button, MenuCommand, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { scenarioI18n } from '../scenario-i18n';
+import { FieldToolTip } from './FieldToolTip';
 
 interface CustomList {
   id: string;
   name: string;
 }
 
-interface FieldBlackListIdProps {
+interface ScreeningTermIgnoreListProps {
   value?: string | null;
   onBlur: () => void;
   onChange: (value: string | null) => void;
@@ -18,13 +19,13 @@ interface FieldBlackListIdProps {
   customLists: CustomList[];
 }
 
-export const FieldBlackListId = ({
+export const ScreeningTermIgnoreList = ({
   value,
   onBlur,
   onChange,
   editor,
   customLists,
-}: FieldBlackListIdProps) => {
+}: ScreeningTermIgnoreListProps) => {
   const { t } = useTranslation(scenarioI18n);
   const [selectedListId, setSelectedListId] = useState<string | null>(value ?? null);
   const [open, setOpen] = useState(false);
@@ -46,6 +47,9 @@ export const FieldBlackListId = ({
           disabled={editor === 'view'}
         />
         <span className="text-s">{t('scenarios:edit_sanction.remove_terms_from_list')}</span>
+        <FieldToolTip>
+          {t('scenarios:edit_sanction.remove_terms_from_list.tooltip')}
+        </FieldToolTip>
       </div>
       {value ? (
         <div className="flex flex-col gap-1">

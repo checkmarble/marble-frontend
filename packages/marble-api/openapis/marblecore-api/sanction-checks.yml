@@ -2,7 +2,7 @@
   get:
     tags:
       - Sanction Check
-    summary: List sanction checks for a decision
+    summary: List screenings for a decision
     operationId: listSanctionChecks
     parameters:
       - name: decision_id
@@ -14,7 +14,7 @@
           format: uuid
     responses:
       '200':
-        description: The list of sanction checks
+        description: The list of screenings
         content:
           application/json:
             schema:
@@ -47,15 +47,15 @@
           application/json:
             schema:
               $ref: '#/components/schemas/OpenSanctionsDatasetFreshnessDto'
-/sanction-checks/{sanctionCheckId}/files:
+/sanction-checks/{screeningId}/files:
   get:
     tags:
       - Sanction Check
-    summary: List files for sanction check
+    summary: List files for screening
     operationId: listSanctionCheckFiles
     parameters:
-      - name: sanctionCheckId
-        description: ID of the sanction check
+      - name: screeningId
+        description: ID of the screening
         in: path
         required: true
         schema:
@@ -74,7 +74,7 @@
   patch:
     tags:
       - Sanction Check
-    summary: Update the status of a sanction check match
+    summary: Update the status of a screening match
     operationId: updateSanctionCheckMatch
     parameters:
       - name: matchId
@@ -158,7 +158,7 @@
             $ref: '#/components/schemas/SanctionCheckRefineDto'
     responses:
       '200':
-        description: The sanction check created
+        description: The screening created
         content:
           application/json:
             schema:

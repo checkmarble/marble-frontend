@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { Input, Switch } from 'ui-design-system';
 
 import { scenarioI18n } from '../scenario-i18n';
@@ -36,19 +36,21 @@ export const FieldSkipIfUnder = ({
         onBlur={onBlur}
         disabled={editor === 'view'}
       />
-      <span className="text-s">{t('scenarios:edit_sanction.ignore_check_if_under')}</span>
-      <Input
-        type="number"
-        name={name}
-        className="z-0 h-6 w-14 py-0"
-        value={inputValue}
-        min={0}
-        onChange={handleInputChange}
-        disabled={editor === 'view' || value === null}
+      <Trans
+        t={t}
+        i18nKey="scenarios:edit_sanction.ignore_check_if_under"
+        components={{
+          NbNumbers: <Input
+            type="number"
+            name={name}
+            className="z-0 h-6 w-14 py-0"
+            value={inputValue}
+            min={0}
+            onChange={handleInputChange}
+            disabled={editor === 'view' || value === null}
+          />
+        }}
       />
-      <span className="text-s">
-        {t('scenarios:edit_sanction.ignore_check_if_under.characters')}
-      </span>
     </div>
   );
 };
