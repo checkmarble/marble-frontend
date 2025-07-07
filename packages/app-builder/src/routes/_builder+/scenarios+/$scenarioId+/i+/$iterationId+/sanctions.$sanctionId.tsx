@@ -10,7 +10,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
-import { FieldBlackListId } from '@app-builder/components/Scenario/Sanction/FieldBlackListId';
+import { ScreeningTermIgnoreList } from '@app-builder/components/Scenario/Sanction/ScreeningTermIgnoreList';
 import { FieldDataset } from '@app-builder/components/Scenario/Sanction/FieldDataset';
 import { FieldEntityType } from '@app-builder/components/Scenario/Sanction/FieldEntityType';
 import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
@@ -219,9 +219,9 @@ export default function SanctionDetail() {
   const { submit, data } = useFetcher<typeof action>();
   const lastData = data as
     | {
-        status: 'error' | 'success';
-        errors?: z.typeToFlattenedError<EditSanctionForm>;
-      }
+      status: 'error' | 'success';
+      errors?: z.typeToFlattenedError<EditSanctionForm>;
+    }
     | undefined;
   const scenario = useCurrentScenario();
   const ruleGroups = useRuleGroups();
@@ -586,7 +586,7 @@ export default function SanctionDetail() {
                         </form.Field>
                         <form.Field name="preprocessing.blacklistListId">
                           {(field) => (
-                            <FieldBlackListId
+                            <ScreeningTermIgnoreList
                               value={field.state.value ?? null}
                               onBlur={field.handleBlur}
                               onChange={field.handleChange}
@@ -605,10 +605,10 @@ export default function SanctionDetail() {
                                 disabled={editor === 'view'}
                               />
                               <span className="text-s">
-                                {t('scenarios:edit_sanction.ignore_numbers')}
+                                {t('scenarios:edit_sanction.exclude_numbers')}
                               </span>
                               <FieldToolTip>
-                                {t('scenarios:edit_sanction.ignore_numbers.tooltip')}
+                                {t('scenarios:edit_sanction.exclude_numbers.tooltip')}
                               </FieldToolTip>
                             </div>
                           )}

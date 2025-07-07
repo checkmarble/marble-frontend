@@ -74,10 +74,10 @@ export function CreateRule({
       >
         <Icon icon="plus" className="text-grey-00 size-5" />
         <div className="flex w-full flex-col items-start">
-          <span className="text-grey-00 text-s font-normal">
+          <span className="text-grey-00 font-normal">
             {t('scenarios:create_rule.title')}
           </span>
-          <span className="text-grey-50 font-normal">{t('scenarios:create_rule.description')}</span>
+          <span className="text-s text-grey-50 font-normal">{t('scenarios:create_rule.description')}</span>
         </div>
       </Button>
     </fetcher.Form>

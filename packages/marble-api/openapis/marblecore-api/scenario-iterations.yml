@@ -302,7 +302,7 @@
   post:
     tags:
       - Scenario Iterations
-    summary: Create a sanction check for a scenario iteration
+    summary: Create a screening for a scenario iteration
     operationId: createSanctionCheckConfig
     parameters:
       - name: scenarioIterationId
@@ -329,7 +329,7 @@
   delete:
     tags:
       - Scenario Iterations
-    summary: Delete a sanction check for a scenario iteration
+    summary: Delete a screening for a scenario iteration
     operationId: deleteSanctionCheckConfig
     parameters:
       - name: scenarioIterationId
@@ -348,7 +348,7 @@
           format: uuid
     responses:
       '204':
-        description: The sanction check has been deleted
+        description: The screening has been deleted
       '401':
         $ref: 'components.yml#/responses/401'
       '403':
@@ -358,7 +358,7 @@
   patch:
     tags:
       - Scenario Iterations
-    summary: Update a sanction check for a scenario iteration
+    summary: Update a screening for a scenario iteration
     operationId: upsertSanctionCheckConfig
     parameters:
       - name: scenarioIterationId

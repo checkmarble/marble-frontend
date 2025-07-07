@@ -18,10 +18,11 @@ export const handle = {
 };
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { authService } = initServerServices(request);
+  const { authService, i18nextService } = initServerServices(request);
   const { scenarioIterationSanctionRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
+  const t = await i18nextService.getFixedT(request, 'scenarios');
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
 
@@ -29,7 +30,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const config = await scenarioIterationSanctionRepository.createSanctionCheckConfig({
       iterationId,
       changes: {
-        name: 'Screening',
+        name: t('create_sanction.default_name'),
         ruleGroup: 'Screening',
         forcedOutcome: 'block_and_review',
       },
@@ -81,9 +82,9 @@ export function CreateSanction({
         <div className="flex items-center gap-4">
           <Icon icon="plus" className="size-5" />
           <div className="flex w-full flex-col items-start">
-            <span className="text-s font-normal">{t('scenarios:create_sanction.title')}</span>
+            <span className="font-normal">{t('scenarios:create_sanction.title')}</span>
             <span
-              className={clsx('text-grey-50 font-normal', {
+              className={clsx('text-s text-grey-50 font-normal', {
                 'text-grey-80': disabled,
               })}
             >
