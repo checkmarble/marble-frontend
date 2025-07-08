@@ -3,6 +3,7 @@ import {
   type ClientDataListResponse,
   type ClientObjectDetail,
   type DataModelWithTableOptions,
+  FieldStatistics,
   type NavigationOption,
   type TableModelWithOptions,
 } from '@app-builder/models';
@@ -20,14 +21,15 @@ import clsx from 'clsx';
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { match } from 'ts-pattern';
+import { match, P } from 'ts-pattern';
 import { Button, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { FormatData } from '../FormatData';
 import { ClientObjectAnnotationPopover } from './ClientObjectAnnotationPopover';
 import { ClientObjectDataList } from './ClientObjectDataList';
 import { type DataModelExplorerNavigationTab } from './types';
+
+const CHARACTER_WIDTH = 8;
 
 export type DataTableRenderProps = {
   caseId: string;
@@ -104,6 +106,18 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
               table={currentTable}
               navigateTo={navigateTo}
               list={query.data.pages.flatMap((page) => page.clientDataListResponse.data)}
+              metadata={query.data.pages.reduce(
+                (mergedMetadata, page) => {
+                  if (!page.clientDataListResponse.metadata) return mergedMetadata;
+                  if (!mergedMetadata) return page.clientDataListResponse.metadata;
+
+                  return {
+                    ...mergedMetadata,
+                    ...page.clientDataListResponse.metadata,
+                  };
+                },
+                undefined as ClientDataListResponse['metadata'] | undefined,
+              )}
               pagination={
                 <DataTablePagination
                   hasNext={query.hasNextPage}
@@ -144,16 +158,38 @@ function getColumnList(tableModel: TableModelWithOptions) {
   return tableModel.fields.filter((f) => f.displayed).map((f) => f.name);
 }
 
+function getHeaderStyle(fieldStatistic: FieldStatistics | undefined) {
+  if (!fieldStatistic) return undefined;
+
+  return match(fieldStatistic)
+    .with({ type: 'Timestamp' }, () => ({ minWidth: '160px' }))
+    .with({ type: 'Bool' }, () => ({ minWidth: '50px' }))
+    .with({ type: 'String', format: 'uuid' }, () => ({ minWidth: '100px' }))
+    .with({ type: P.union('String', 'Float') }, ({ maxLength }) => ({
+      minWidth: CHARACTER_WIDTH * maxLength + 'px',
+    }))
+    .exhaustive();
+}
+
 type DataTableProps = {
   caseId: string;
   pivotObject: PivotObject;
   table: TableModelWithOptions;
   list: ClientDataListResponse['data'];
   pagination: ReactElement;
+  metadata: ClientDataListResponse['metadata'] | undefined;
   navigateTo: (tab: DataModelExplorerNavigationTab) => void;
 };
 
-function DataTable({ caseId, pivotObject, table, list, pagination, navigateTo }: DataTableProps) {
+function DataTable({
+  caseId,
+  pivotObject,
+  table,
+  list,
+  metadata,
+  pagination,
+  navigateTo,
+}: DataTableProps) {
   const { t } = useTranslation(['common', 'cases']);
   const language = useFormatLanguage();
 
@@ -256,7 +292,7 @@ function DataTable({ caseId, pivotObject, table, list, pagination, navigateTo }:
       <div className="flex max-h-[480px] overflow-auto" ref={wrapperRef}>
         <div ref={sentinelRef} className="w-0" />
         {list.length > 0 ? (
-          <table className="mb-4 min-w-full border-separate border-spacing-0">
+          <table className="mb-4 border-separate border-spacing-0">
             <thead>
               {reactTable.getHeaderGroups().map((headerGroup) => (
                 <tr
@@ -271,16 +307,21 @@ function DataTable({ caseId, pivotObject, table, list, pagination, navigateTo }:
                       },
                     )}
                   ></th>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="border-grey-90 border-y px-4 font-normal [&:not(:last-child)]:border-r"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </th>
-                  ))}
+                  {headerGroup.headers.map((header) => {
+                    const fieldStatistic = metadata?.fieldStatistics[header.getContext().column.id];
+
+                    return (
+                      <th
+                        key={header.id}
+                        className="border-grey-90 border-y px-2 font-normal [&:not(:last-child)]:border-r box-border"
+                        style={getHeaderStyle(fieldStatistic)}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      </th>
+                    );
+                  })}
                 </tr>
               ))}
             </thead>
@@ -316,7 +357,7 @@ function DataTable({ caseId, pivotObject, table, list, pagination, navigateTo }:
                     </td>
                     {row.getVisibleCells().map((cell) => (
                       <td
-                        className="border-grey-90 group-hover:bg-grey-98 w-fit min-w-[300px] border-b [&:not(:last-child)]:border-r"
+                        className="border-grey-90 group-hover:bg-grey-98 border-b [&:not(:last-child)]:border-r"
                         key={cell.id}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

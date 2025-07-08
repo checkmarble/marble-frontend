@@ -11,6 +11,7 @@ import {
   type DataModelObjectDto,
   type DataModelTableOptionsDto,
   type FieldDto,
+  FieldStatisticsDto,
   type GroupedAnnotations,
   type LinkToSingleDto,
   type NavigationOptionDto,
@@ -468,19 +469,57 @@ export function adaptClientDataListRequestBodyDto(
   };
 }
 
+export type FieldStatistics =
+  | { type: 'String'; maxLength: number; format?: string }
+  | { type: 'Float'; maxLength: number }
+  | {
+      type: 'Bool' | 'Timestamp';
+    };
+
 export type ClientDataListResponse = {
   data: ClientObjectDetail[];
+  metadata: {
+    fieldStatistics: Record<string, FieldStatistics>;
+  };
   pagination: {
     nextCursorId?: string | number;
     hasNextPage: boolean;
   };
 };
 
+export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics {
+  return match(dto)
+    .with({ type: 'String' }, ({ max_length, format }) => ({
+      type: 'String' as const,
+      maxLength: max_length,
+      format: format,
+    }))
+    .with({ type: 'Float' }, ({ max_length }) => ({
+      type: 'Float' as const,
+      maxLength: max_length,
+    }))
+    .with({ type: 'Bool' }, () => ({
+      type: 'Bool' as const,
+    }))
+    .with({ type: 'Timestamp' }, () => ({
+      type: 'Timestamp' as const,
+    }))
+    .exhaustive();
+}
+
 export function adaptClientDataListResponse(
   dto: ClientDataListResponseDto,
 ): ClientDataListResponse {
   return {
     data: dto.data.map(adaptClientObjectDetail),
+    metadata: {
+      fieldStatistics: R.pipe(
+        dto.metadata.field_statistics,
+        R.entries(),
+        R.map(([key, value]) => [key, adaptFieldStatistics(value)] as const),
+        R.fromEntries(),
+      ),
+    },
     pagination: {
       hasNextPage: dto.pagination.has_next_page,
       nextCursorId: dto.pagination.next_cursor_id,
