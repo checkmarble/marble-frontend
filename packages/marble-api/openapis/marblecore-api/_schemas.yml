@@ -135,6 +135,16 @@ CaseReviewOkDto:
   $ref: cases.yml#/components/schemas/CaseReviewOkDto
 CaseReviewNotOkDto:
   $ref: cases.yml#/components/schemas/CaseReviewNotOkDto
+FieldStatisticsDto:
+  $ref: ingestion.yml#/components/schemas/FieldStatisticsDto
+StringFieldStatisticsDto:
+  $ref: ingestion.yml#/components/schemas/StringFieldStatisticsDto
+BoolFieldStatisticsDto:
+  $ref: ingestion.yml#/components/schemas/BoolFieldStatisticsDto
+FloatFieldStatisticsDto:
+  $ref: ingestion.yml#/components/schemas/FloatFieldStatisticsDto
+TimestampFieldStatisticsDto:
+  $ref: ingestion.yml#/components/schemas/TimestampFieldStatisticsDto
 
 # SUSPICIOUS ACTIVITY REPORTS
 

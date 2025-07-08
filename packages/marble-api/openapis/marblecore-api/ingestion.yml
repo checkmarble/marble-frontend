@@ -293,12 +293,22 @@ components:
       type: object
       required:
         - data
+        - metadata
         - pagination
       properties:
         data:
           type: array
           items:
             $ref: '#/components/schemas/ClientObjectDetailDto'
+        metadata:
+          type: object
+          required:
+            - field_statistics
+          properties:
+            field_statistics:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/FieldStatisticsDto'
         pagination:
           type: object
           required:
@@ -312,6 +322,43 @@ components:
             has_next_page:
               type: boolean
               description: Whether there are more objects to paginate
+    FieldStatisticsDto:
+      type: object
+      required:
+        - type
+      discriminator:
+        propertyName: type
+        mapping:
+          String: '#/components/schemas/StringFieldStatisticsDto'
+          Bool: '#/components/schemas/BoolFieldStatisticsDto'
+          Float: '#/components/schemas/FloatFieldStatisticsDto'
+          Timestamp: '#/components/schemas/TimestampFieldStatisticsDto'
+    StringFieldStatisticsDto:
+      allOf:
+        - $ref: '#/components/schemas/FieldStatisticsDto'
+        - type: object
+          required:
+            - max_length
+          properties:
+            max_length:
+              type: number
+            format:
+              type: string
+    BoolFieldStatisticsDto:
+      allOf:
+        - $ref: '#/components/schemas/FieldStatisticsDto'
+    FloatFieldStatisticsDto:
+      allOf:
+        - $ref: '#/components/schemas/FieldStatisticsDto'
+        - type: object
+          required:
+            - max_length
+          properties:
+            max_length:
+              type: number
+    TimestampFieldStatisticsDto:
+      allOf:
+        - $ref: '#/components/schemas/FieldStatisticsDto'
     ClientObjectDetailDto:
       description: ->
         Nested object containing the details of an ingested client object. "data" holds the data of the object as described in the client data model.

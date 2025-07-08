@@ -541,8 +541,32 @@ export type ClientDataListRequestBody = {
     /** The maximum number of objects to return */
     limit?: number;
 };
+export type FieldStatisticsDtoBase = object;
+export type StringFieldStatisticsDto = {
+    "type": "String";
+} & FieldStatisticsDtoBase & {
+    max_length: number;
+    format?: string;
+};
+export type BoolFieldStatisticsDto = {
+    "type": "Bool";
+} & FieldStatisticsDtoBase;
+export type FloatFieldStatisticsDto = {
+    "type": "Float";
+} & FieldStatisticsDtoBase & {
+    max_length: number;
+};
+export type TimestampFieldStatisticsDto = {
+    "type": "Timestamp";
+} & FieldStatisticsDtoBase;
+export type FieldStatisticsDto = StringFieldStatisticsDto | BoolFieldStatisticsDto | FloatFieldStatisticsDto | TimestampFieldStatisticsDto;
 export type ClientDataListResponseDto = {
     data: ClientObjectDetailDto[];
+    metadata: {
+        field_statistics: {
+            [key: string]: FieldStatisticsDto;
+        };
+    };
     pagination: {
         /** The id of the object after which to paginate, using ordering by the specified field in 'exploration_options' */
         next_cursor_id?: string | number;
