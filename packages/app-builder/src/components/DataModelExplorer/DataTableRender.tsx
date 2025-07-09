@@ -30,6 +30,7 @@ import { ClientObjectDataList } from './ClientObjectDataList';
 import { type DataModelExplorerNavigationTab } from './types';
 
 const CHARACTER_WIDTH = 8;
+const DEFAULT_CELL_WIDTH = 300;
 
 export type DataTableRenderProps = {
   caseId: string;
@@ -166,7 +167,7 @@ function getHeaderStyle(fieldStatistic: FieldStatistics | undefined) {
     .with({ type: 'Bool' }, () => ({ minWidth: '50px' }))
     .with({ type: 'String', format: 'uuid' }, () => ({ minWidth: '100px' }))
     .with({ type: P.union('String', 'Float') }, ({ maxLength }) => ({
-      minWidth: CHARACTER_WIDTH * maxLength + 'px',
+      minWidth: (maxLength !== undefined ? CHARACTER_WIDTH * maxLength : DEFAULT_CELL_WIDTH) + 'px',
     }))
     .exhaustive();
 }

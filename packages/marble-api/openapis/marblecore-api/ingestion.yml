@@ -337,8 +337,6 @@ components:
       allOf:
         - $ref: '#/components/schemas/FieldStatisticsDto'
         - type: object
-          required:
-            - max_length
           properties:
             max_length:
               type: number
@@ -351,8 +349,6 @@ components:
       allOf:
         - $ref: '#/components/schemas/FieldStatisticsDto'
         - type: object
-          required:
-            - max_length
           properties:
             max_length:
               type: number
