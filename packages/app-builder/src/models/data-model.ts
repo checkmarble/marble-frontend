@@ -470,8 +470,8 @@ export function adaptClientDataListRequestBodyDto(
 }
 
 export type FieldStatistics =
-  | { type: 'String'; maxLength: number; format?: string }
-  | { type: 'Float'; maxLength: number }
+  | { type: 'String'; maxLength?: number; format?: string }
+  | { type: 'Float'; maxLength?: number }
   | {
       type: 'Bool' | 'Timestamp';
     };

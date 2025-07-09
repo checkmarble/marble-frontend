@@ -545,7 +545,7 @@ export type FieldStatisticsDtoBase = object;
 export type StringFieldStatisticsDto = {
     "type": "String";
 } & FieldStatisticsDtoBase & {
-    max_length: number;
+    max_length?: number;
     format?: string;
 };
 export type BoolFieldStatisticsDto = {
@@ -554,7 +554,7 @@ export type BoolFieldStatisticsDto = {
 export type FloatFieldStatisticsDto = {
     "type": "Float";
 } & FieldStatisticsDtoBase & {
-    max_length: number;
+    max_length?: number;
 };
 export type TimestampFieldStatisticsDto = {
     "type": "Timestamp";
