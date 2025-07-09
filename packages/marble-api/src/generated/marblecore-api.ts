@@ -1115,6 +1115,8 @@ export type UpdateUser = {
 };
 export type OrganizationDto = {
     id: string;
+    /** ID to use in external systems to not referencing the id of the organization */
+    public_id: string;
     /** (Immutable) name of the organization */
     name: string;
     /** Timezone (IANA format) used by default for scenarios of this organization, when interpreting timestamps as datetimes. */

@@ -449,6 +449,7 @@ components:
       type: object
       required:
         - id
+        - public_id
         - name
         - sanction_threshold
         - sanction_limit
@@ -456,6 +457,10 @@ components:
         id:
           type: string
           format: uuid
+        public_id:
+          type: string
+          format: uuid
+          description: ID to use in external systems to not referencing the id of the organization
         name:
           type: string
           description: (Immutable) name of the organization
