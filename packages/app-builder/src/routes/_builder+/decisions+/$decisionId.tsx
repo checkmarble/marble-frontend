@@ -22,6 +22,7 @@ import { isNotFoundHttpError, Pivot } from '@app-builder/models';
 import { DecisionDetails } from '@app-builder/models/decision';
 import { SanctionCheck } from '@app-builder/models/sanction-check';
 import { ScenarioIterationRule } from '@app-builder/models/scenario-iteration-rule';
+import { createDecisionDetailsService } from '@app-builder/services/decisions/details';
 import { initServerServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { notFound } from '@app-builder/utils/http/http-responses';
@@ -86,52 +87,14 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
   }
 
   try {
-    const independentOperations = Promise.all([
-      dataModelRepository.listPivots({}),
-      sanctionCheck.listSanctionChecks({ decisionId: parsedParam.data.decisionId }),
-      sanctionCheck.listDatasets(),
-    ]);
+    const decisionDetailsService = createDecisionDetailsService({
+      decision,
+      scenario,
+      dataModel: dataModelRepository,
+      sanctionCheck,
+    });
 
-    const currentDecision = await decision.getDecisionById(parsedParam.data.decisionId);
-    const scenarioRules = await scenario
-      .getScenarioIteration({
-        iterationId: currentDecision.scenario.scenarioIterationId,
-      })
-      .then((iteration) => iteration.rules);
-
-    const [pivots, sanctionCheckResult, { sections }] = await independentOperations;
-
-    const datasets: Map<string, string> = new Map(
-      sections?.flatMap(
-        ({ datasets }) => datasets?.map(({ name, title }) => [name, title]) ?? [],
-      ) ?? [],
-    );
-
-    const sanctionsDatasets = [
-      ...new Set(
-        sanctionCheckResult.flatMap(({ matches }) =>
-          matches.flatMap(({ payload }) => payload.datasets),
-        ),
-      ),
-    ];
-
-    return {
-      decision: currentDecision,
-      scenarioRules,
-      pivots,
-      sanctionCheck: sanctionCheckResult.map(({ matches, ...rest }) => ({
-        ...rest,
-        matches: matches.map(({ payload, ...rest }) => ({
-          ...rest,
-          payload: {
-            ...payload,
-            datasets: payload.datasets
-              ?.filter((dataset) => !sanctionsDatasets.includes(dataset))
-              .map((dataset) => datasets.get(dataset) ?? dataset),
-          },
-        })),
-      })),
-    };
+    return await decisionDetailsService.fetchDecisionDetails(parsedParam.data.decisionId);
   } catch (error) {
     if (isNotFoundHttpError(error)) {
       return notFound(null);
