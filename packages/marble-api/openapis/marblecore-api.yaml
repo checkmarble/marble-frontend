@@ -157,6 +157,8 @@ paths:
     $ref: ./marblecore-api/scenarios.yml#/~1scenarios~1{scenarioId}
   /scenarios/{scenarioId}/validate-ast:
     $ref: ./marblecore-api/scenarios.yml#/~1scenarios~1{scenarioId}~1validate-ast
+  /scenarios/{scenarioId}/rules/latest:
+    $ref: ./marblecore-api/scenarios.yml#/~1scenarios~1{scenarioId}~1rules~1latest
 
   # SCENARIO ITERATIONS
 

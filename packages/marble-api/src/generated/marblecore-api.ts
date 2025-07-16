@@ -652,6 +652,12 @@ export type AstValidationDto = {
     errors: ScenarioValidationErrorDto[];
     evaluation: NodeEvaluationDto;
 };
+export type ScenarioRuleLatestVersion = {
+    "type": "rule" | "screening";
+    stable_id: string;
+    name: string;
+    latest_version: string;
+};
 export type ScenarioIterationDto = {
     id: string;
     scenario_id: string;
@@ -2529,6 +2535,26 @@ export function validateAstNode(scenarioId: string, scenarioAstValidateInputDto?
         method: "POST",
         body: scenarioAstValidateInputDto
     })));
+}
+/**
+ * Get latest rules references for a scenario
+ */
+export function scenarioRuleLatestVersions(scenarioId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioRuleLatestVersion[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenarios/${encodeURIComponent(scenarioId)}/rules/latest`, {
+        ...opts
+    }));
 }
 /**
  * List iterations
