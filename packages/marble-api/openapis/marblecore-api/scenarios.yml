@@ -7,18 +7,18 @@
     security:
       - bearerAuth: []
     responses:
-      '200':
+      "200":
         description: List of corresponding scenario
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: 'components.yml#/schemas/ScenarioDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
+                $ref: "components.yml#/schemas/ScenarioDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
   post:
     tags:
       - Scenarios
@@ -27,25 +27,25 @@
     security:
       - bearerAuth: []
     requestBody:
-      description: 'Scenario object that needs to be added to the database'
+      description: "Scenario object that needs to be added to the database"
       content:
         application/json:
           schema:
-            $ref: 'components.yml#/schemas/ScenarioCreateInputDto'
+            $ref: "components.yml#/schemas/ScenarioCreateInputDto"
       required: true
     responses:
-      '200':
+      "200":
         description: Created scenario
         content:
           application/json:
             schema:
-              $ref: 'components.yml#/schemas/ScenarioDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '422':
-        $ref: 'components.yml#/responses/422'
+              $ref: "components.yml#/schemas/ScenarioDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "422":
+        $ref: "components.yml#/responses/422"
 /scenarios/{scenarioId}:
   get:
     tags:
@@ -63,18 +63,18 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: The scenario corresponding to the provided `scenarioId`
         content:
           application/json:
             schema:
-              $ref: 'components.yml#/schemas/ScenarioDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+              $ref: "components.yml#/schemas/ScenarioDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
   patch:
     tags:
       - Scenarios
@@ -91,25 +91,25 @@
           type: string
           format: uuid
     requestBody:
-      description: 'Updated scenario object'
+      description: "Updated scenario object"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ScenarioUpdateInputDto'
+            $ref: "#/components/schemas/ScenarioUpdateInputDto"
       required: true
     responses:
-      '200':
+      "200":
         description: The updated scenario corresponding to the provided `scenarioId`
         content:
           application/json:
             schema:
-              $ref: 'components.yml#/schemas/ScenarioDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+              $ref: "components.yml#/schemas/ScenarioDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /scenarios/{scenarioId}/validate-ast:
   post:
     tags:
@@ -131,9 +131,9 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ScenarioAstValidateInputDto'
+            $ref: "#/components/schemas/ScenarioAstValidateInputDto"
     responses:
-      '200':
+      "200":
         description: The evaluation corresponding to the specified node
         content:
           application/json:
@@ -143,13 +143,44 @@
                 - ast_validation
               properties:
                 ast_validation:
-                  $ref: '#/components/schemas/AstValidationDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                  $ref: "#/components/schemas/AstValidationDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
+/scenarios/{scenarioId}/rules/latest:
+  get:
+    tags:
+      - Scenarios
+    summary: Get latest rules references for a scenario
+    operationId: scenarioRuleLatestVersions
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioId
+        description: ID of the scenario for which to list rules
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uiud
+    responses:
+      "200":
+        description: List of rules references in their latest iterations
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ScenarioRuleLatestVersion"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 
 components:
   schemas:
@@ -168,15 +199,15 @@ components:
         decision_to_case_outcomes:
           type: array
           items:
-            $ref: 'decisions.yml#/components/schemas/OutcomeDto'
+            $ref: "decisions.yml#/components/schemas/OutcomeDto"
         decision_to_case_workflow_type:
           type: string
-          enum: ['DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE']
+          enum: ["DISABLED", "CREATE_CASE", "ADD_TO_CASE_IF_POSSIBLE"]
         decision_to_case_name_template:
           type: object
           nullable: true
           allOf:
-            - $ref: 'ast.yml#/components/schemas/NodeDto'
+            - $ref: "ast.yml#/components/schemas/NodeDto"
         description:
           type: string
         live_version_id:
@@ -217,10 +248,10 @@ components:
         node:
           type: object
           allOf:
-            - $ref: 'ast.yml#/components/schemas/NodeDto'
+            - $ref: "ast.yml#/components/schemas/NodeDto"
         expected_return_type:
           type: string
-          enum: ['string', 'int', 'float', 'bool']
+          enum: ["string", "int", "float", "bool"]
     AstValidationDto:
       type: object
       required:
@@ -230,9 +261,9 @@ components:
         errors:
           type: array
           items:
-            $ref: '#/components/schemas/ScenarioValidationErrorDto'
+            $ref: "#/components/schemas/ScenarioValidationErrorDto"
         evaluation:
-          $ref: 'ast.yml#/components/schemas/NodeEvaluationDto'
+          $ref: "ast.yml#/components/schemas/NodeEvaluationDto"
     ScenarioUpdateInputDto:
       type: object
       properties:
@@ -242,14 +273,14 @@ components:
         decision_to_case_outcomes:
           type: array
           items:
-            $ref: 'decisions.yml#/components/schemas/OutcomeDto'
+            $ref: "decisions.yml#/components/schemas/OutcomeDto"
         decision_to_case_workflow_type:
           type: string
-          enum: ['DISABLED', 'CREATE_CASE', 'ADD_TO_CASE_IF_POSSIBLE']
+          enum: ["DISABLED", "CREATE_CASE", "ADD_TO_CASE_IF_POSSIBLE"]
         decision_to_case_name_template:
           type: object
           allOf:
-            - $ref: 'ast.yml#/components/schemas/NodeDto'
+            - $ref: "ast.yml#/components/schemas/NodeDto"
         description:
           type: string
         name:
@@ -261,7 +292,7 @@ components:
         - message
       properties:
         error:
-          $ref: '#/components/schemas/ScenarioValidationErrorCodeDto'
+          $ref: "#/components/schemas/ScenarioValidationErrorCodeDto"
         message:
           type: string
     ScenarioValidationErrorCodeDto:
@@ -275,3 +306,17 @@ components:
         - FORMULA_INCORRECT_RETURN_TYPE
         - SCORE_THRESHOLD_MISSING
         - SCORE_THRESHOLDS_MISMATCH
+    ScenarioRuleLatestVersion:
+      type: object
+      required: [type, stable_id, name, latest_version]
+      properties:
+        type:
+          type: string
+          enum: [rule, screening]
+        stable_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        latest_version:
+          type: string
