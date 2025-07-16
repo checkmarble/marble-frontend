@@ -13,6 +13,7 @@ import {
 import { TestRunNudge } from '@app-builder/components/Scenario/TestRun/TestRunNudge';
 import { WorkflowNudge } from '@app-builder/components/Scenario/Workflow/WorkflowNudge';
 import { Spinner } from '@app-builder/components/Spinner';
+import { useTranslationObject } from '@app-builder/hooks/useTranslationObject';
 import { type ScheduledExecution } from '@app-builder/models/decision';
 import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
@@ -24,6 +25,7 @@ import {
   isManualTriggerScenarioAvailable,
 } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
+import { TranslationObject } from '@app-builder/types/i18n';
 import { formatDateRelative, formatSchedule, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -41,11 +43,10 @@ import { match } from 'ts-pattern';
 import { Button, CtaClassName, HiddenInputs, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
 import { useCurrentScenario, useScenarioIterations } from './_layout';
 
 export const handle = {
-  i18n: ['common', 'scenarios'] satisfies Namespace,
+  i18n: ['common', 'scenarios', 'workflows'] as const satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -139,7 +140,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function ScenarioHome() {
-  const { t } = useTranslation(handle.i18n);
+  const { tWorkflows, tScenarios } = useTranslationObject(handle.i18n);
   const hydrated = useHydrated();
   const { featureAccess, scheduledExecutions } = useLoaderData<typeof loader>();
 
@@ -166,7 +167,7 @@ export default function ScenarioHome() {
             >
               <Button variant="secondary" className="isolate h-10 w-fit" disabled={!hydrated}>
                 <Icon icon="edit-square" className="size-6" />
-                <p>{t('scenarios:update_scenario.title')}</p>
+                <p>{tScenarios('update_scenario.title')}</p>
               </Button>
             </UpdateScenario>
           </div>
@@ -177,15 +178,20 @@ export default function ScenarioHome() {
           <Page.Description>{currentScenario.description}</Page.Description>
         ) : null}
         <Page.Content>
-          <VersionSection scenarioIterations={scenarioIterations} />
+          <VersionSection
+            translationObject={{ tScenarios }}
+            scenarioIterations={scenarioIterations}
+          />
           <section className="flex flex-col gap-4">
-            <h2 className="text-grey-00 text-m font-semibold">{t('scenarios:home.execution')}</h2>
+            <h2 className="text-grey-00 text-m font-semibold">{tScenarios('home.execution')}</h2>
             <div className="grid max-w-[1000px] grid-cols-2 gap-8">
               <RealTimeSection
+                translationObject={{ tScenarios }}
                 scenarioId={currentScenario.id}
                 liveScenarioIteration={liveScenarioIteration}
               />
               <BatchSection
+                translationObject={{ tScenarios }}
                 scenarioId={currentScenario.id}
                 isManualTriggerScenarioAvailable={featureAccess.isManualTriggerScenarioAvailable}
                 scheduledExecutions={scheduledExecutions}
@@ -196,6 +202,7 @@ export default function ScenarioHome() {
                 .with('restricted', (status) => <TestRunNudge kind={status} />)
                 .otherwise(() => (
                   <TestRunSection
+                    translationObject={{ tScenarios }}
                     scenarioId={currentScenario.id}
                     access={featureAccess.isTestRunAvailable}
                   />
@@ -205,13 +212,14 @@ export default function ScenarioHome() {
                 .with('restricted', (status) => <WorkflowNudge kind={status} />)
                 .otherwise(() => (
                   <WorkflowSection
+                    translationObject={{ tScenarios, tWorkflows }}
                     scenario={currentScenario}
                     access={featureAccess.isWorkflowsAvailable}
                   />
                 ))}
             </div>
           </section>
-          <ResourcesSection />
+          <ResourcesSection translationObject={{ tScenarios }} />
         </Page.Content>
       </Page.Container>
     </Page.Main>
@@ -220,10 +228,12 @@ export default function ScenarioHome() {
 
 function VersionSection({
   scenarioIterations,
+  translationObject,
 }: {
   scenarioIterations: ScenarioIterationWithType[];
+  translationObject: TranslationObject<['scenarios']>;
 }) {
-  const { t } = useTranslation(['scenarios']);
+  const { tScenarios } = translationObject;
   const language = useFormatLanguage();
 
   const { quickDraft, quickVersion, otherVersions } = React.useMemo(() => {
@@ -262,19 +272,19 @@ function VersionSection({
           scenarioId: fromUUIDtoSUUID(si.scenarioId),
           iterationId: fromUUIDtoSUUID(si.id),
         }),
-        formattedVersion: getFormattedVersion(si, t),
-        formattedLive: getFormattedLive(si, t),
+        formattedVersion: getFormattedVersion(si, tScenarios),
+        formattedLive: getFormattedLive(si, tScenarios),
         formattedUpdatedAt: formatDateRelative(si.updatedAt, {
           language,
         }),
       })),
-    [language, otherVersions, t],
+    [language, otherVersions, tScenarios],
   );
 
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-grey-00 text-m font-semibold">
-        {t('scenarios:home.versions', {
+        {tScenarios('home.versions', {
           count: scenarioIterations.length,
         })}
       </h2>
@@ -284,7 +294,7 @@ function VersionSection({
         {labelledOtherVersions.length > 0 ? (
           <ScenarioIterationMenu labelledScenarioIteration={labelledOtherVersions}>
             <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 font-semibold outline-none transition-colors">
-              {t('scenarios:home.other_versions', {
+              {tScenarios('home.other_versions', {
                 count: otherVersions.length,
               })}
             </MenuButton>
@@ -327,12 +337,14 @@ function QuickVersionAccess({
 
 function TestRunSection({
   scenarioId,
+  translationObject,
   access,
 }: {
   scenarioId: string;
+  translationObject: TranslationObject<['scenarios']>;
   access: FeatureAccessLevelDto;
 }) {
-  const { t } = useTranslation();
+  const { tScenarios } = translationObject;
   const currentScenario = useCurrentScenario();
   const scenarioIterations = useScenarioIterations();
   const { testRuns } = useLoaderData<typeof loader>();
@@ -348,12 +360,12 @@ function TestRunSection({
         isExecutionOngoing && 'border-purple-65',
       )}
     >
-      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.testrun')}</h3>
+      <h3 className="text-grey-00 text-l font-bold">{tScenarios('home.testrun')}</h3>
 
       {access === 'test' ? (
         <Nudge
           className="absolute -right-3 -top-3 size-6"
-          content={t('scenarios:testrun.nudge')}
+          content={tScenarios('testrun.nudge')}
           kind="test"
         />
       ) : null}
@@ -361,11 +373,11 @@ function TestRunSection({
       {isExecutionOngoing ? (
         <div className="text-grey-100 text-s bg-purple-65 absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t px-2 font-semibold">
           <Spinner className="size-3" />
-          {t('scenarios:home.execution.batch.ongoing')}
+          {tScenarios('home.execution.batch.ongoing')}
         </div>
       ) : null}
 
-      <CalloutV2>{t('scenarios:testrun.description')}</CalloutV2>
+      <CalloutV2>{tScenarios('testrun.description')}</CalloutV2>
 
       <div className="flex flex-row gap-4">
         <CreateTestRun
@@ -375,7 +387,7 @@ function TestRunSection({
         >
           <Button variant="primary" className="isolate h-10 w-fit">
             <Icon icon="plus" className="size-6" aria-hidden />
-            {t('scenarios:create_testrun.title')}
+            {tScenarios('create_testrun.title')}
           </Button>
         </CreateTestRun>
         {currentTestRun.length > 0 ? (
@@ -389,7 +401,7 @@ function TestRunSection({
               testRunId: fromUUIDtoSUUID(currentTestRun[0]!.id),
             })}
           >
-            {t('scenarios:testrun.current_run')}
+            {tScenarios('testrun.current_run')}
           </Link>
         ) : null}
 
@@ -400,7 +412,7 @@ function TestRunSection({
               scenarioId: fromUUIDtoSUUID(scenarioId),
             })}
           >
-            {t('scenarios:testrun.archived')}
+            {tScenarios('testrun.archived')}
           </Link>
         ) : null}
       </div>
@@ -409,24 +421,26 @@ function TestRunSection({
 }
 
 function RealTimeSection({
+  translationObject,
   scenarioId,
   liveScenarioIteration,
 }: {
+  translationObject: TranslationObject<['scenarios']>;
   scenarioId: string;
   liveScenarioIteration?: ScenarioIterationWithType;
 }) {
-  const { t } = useTranslation(['scenarios']);
+  const { tScenarios } = translationObject;
   const isLive = liveScenarioIteration !== undefined;
 
   return (
     <div className="bg-grey-100 border-grey-90 flex h-fit flex-1 flex-col gap-4 rounded-lg border p-8">
-      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.execution.real_time')}</h3>
+      <h3 className="text-grey-00 text-l font-bold">{tScenarios('home.execution.real_time')}</h3>
       <CalloutV2>
         <div className="flex flex-col gap-4">
           <span>
             <Trans
-              t={t}
-              i18nKey="scenarios:home.execution.real_time.callout"
+              t={tScenarios}
+              i18nKey="home.execution.real_time.callout"
               components={{
                 DocLink: <ExternalLink href={createDecisionDocHref} />,
               }}
@@ -439,8 +453,8 @@ function RealTimeSection({
           >
             {isLive ? (
               <Trans
-                t={t}
-                i18nKey="scenarios:home.execution.real_time.callout.scenario_id"
+                t={tScenarios}
+                i18nKey="home.execution.real_time.callout.scenario_id"
                 components={{
                   CopyScenarioId: (
                     <CopyToClipboardButton toCopy={scenarioId} className="ml-1">
@@ -450,7 +464,7 @@ function RealTimeSection({
                 }}
               />
             ) : (
-              t('scenarios:home.execution.real_time.callout.no_live_version')
+              tScenarios('home.execution.real_time.callout.no_live_version')
             )}
           </span>
         </div>
@@ -460,20 +474,22 @@ function RealTimeSection({
 }
 
 function BatchSection({
+  translationObject,
   scenarioId,
   scheduledExecutions,
   liveScenarioIteration,
   isManualTriggerScenarioAvailable,
 }: {
+  translationObject: TranslationObject<['scenarios']>;
   scenarioId: string;
   scheduledExecutions: ScheduledExecution[];
   isManualTriggerScenarioAvailable: boolean;
   liveScenarioIteration?: ScenarioIterationWithType;
 }) {
   const {
-    t,
     i18n: { language },
-  } = useTranslation(['scenarios']);
+  } = useTranslation();
+  const { tScenarios } = translationObject;
 
   const isLive = liveScenarioIteration !== undefined;
   const schedule = liveScenarioIteration?.schedule;
@@ -504,18 +520,18 @@ function BatchSection({
       {isExecutionOngoing ? (
         <div className="text-grey-100 text-s bg-purple-65 absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t px-2 font-semibold">
           <Spinner className="size-3" />
-          {t('scenarios:home.execution.batch.ongoing')}
+          {tScenarios('home.execution.batch.ongoing')}
         </div>
       ) : null}
-      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.execution.batch')}</h3>
+      <h3 className="text-grey-00 text-l font-bold">{tScenarios('home.execution.batch')}</h3>
       <CalloutV2>
         <div className="flex flex-col gap-4">
-          <span>{t('scenarios:home.execution.batch.callout')}</span>
+          <span>{tScenarios('home.execution.batch.callout')}</span>
           {formattedSchedule ? (
             <span className="text-grey-00 text-s text-balance font-semibold">
               <Trans
-                t={t}
-                i18nKey="scenarios:scheduled"
+                t={tScenarios}
+                i18nKey="scheduled"
                 components={{
                   ScheduleLocale: <span className="text-purple-65" />,
                 }}
@@ -531,6 +547,7 @@ function BatchSection({
       <div className="flex flex-row gap-4">
         {isManualTriggerScenarioAvailable && isLive ? (
           <ManualTriggerScenarioExecutionForm
+            translationObject={{ tScenarios }}
             iterationId={liveScenarioIteration.id}
             disabled={isExecutionOngoing}
           />
@@ -541,7 +558,7 @@ function BatchSection({
             scenarioId: fromUUIDtoSUUID(scenarioId),
           })}
         >
-          {t('scenarios:home.execution.batch.scheduled_execution', {
+          {tScenarios('home.execution.batch.scheduled_execution', {
             count: scheduledExecutions.length,
           })}
         </Link>
@@ -551,13 +568,15 @@ function BatchSection({
 }
 
 function ManualTriggerScenarioExecutionForm({
+  translationObject,
   iterationId,
   disabled,
 }: {
+  translationObject: TranslationObject<['scenarios']>;
   iterationId: string;
   disabled: boolean;
 }) {
-  const { t } = useTranslation(['scenarios']);
+  const { tScenarios } = translationObject;
   const fetcher = useFetcher<typeof action>();
 
   const form = useForm({
@@ -583,47 +602,49 @@ function ManualTriggerScenarioExecutionForm({
       <HiddenInputs iterationId={iterationId} />
       <Button type="submit" disabled={disabled}>
         <Icon icon="play" className="size-6 shrink-0" aria-hidden />
-        {t('scenarios:home.execution.batch.trigger_manual_execution')}
+        {tScenarios('home.execution.batch.trigger_manual_execution')}
       </Button>
     </form>
   );
 }
 
 function WorkflowSection({
+  translationObject,
   scenario,
   access,
 }: {
+  translationObject: TranslationObject<['scenarios', 'workflows']>;
   scenario: Scenario;
   access: FeatureAccessLevelDto;
 }) {
-  const { t } = useTranslation(['common', 'scenarios', 'workflows']);
+  const { tScenarios, tWorkflows } = translationObject;
 
   const isEdit = scenario.decisionToCaseWorkflowType !== 'DISABLED';
 
   let tag: string | undefined;
   let tooltip: string | undefined;
   if (scenario.decisionToCaseWorkflowType === 'CREATE_CASE') {
-    tag = t('scenarios:home.workflow_type.create_case');
-    tooltip = t('scenarios:home.workflow_type.create_case.tooltip');
+    tag = tScenarios('home.workflow_type.create_case');
+    tooltip = tScenarios('home.workflow_type.create_case.tooltip');
   } else if (scenario.decisionToCaseWorkflowType === 'ADD_TO_CASE_IF_POSSIBLE') {
-    tag = t('scenarios:home.workflow_type.add_to_case_if_possible');
-    tooltip = t('scenarios:home.workflow_type.add_to_case_if_possible.tooltip');
+    tag = tScenarios('home.workflow_type.add_to_case_if_possible');
+    tooltip = tScenarios('home.workflow_type.add_to_case_if_possible.tooltip');
   }
 
   return (
     <section className="bg-grey-100 border-grey-90 relative flex h-fit max-w-[500px] flex-col gap-4 rounded-lg border p-8">
-      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.workflow')}</h3>
+      <h3 className="text-grey-00 text-l font-bold">{tScenarios('home.workflow')}</h3>
 
       {access === 'test' ? (
         <Nudge
           className="absolute -right-3 -top-3 size-6"
-          content={t('workflows:nudge')}
+          content={tWorkflows('nudge')}
           link="https://docs.checkmarble.com/docs/introduction-5"
           kind="test"
         />
       ) : null}
 
-      <CalloutV2>{t('scenarios:home.workflow_description')}</CalloutV2>
+      <CalloutV2>{tScenarios('home.workflow_description')}</CalloutV2>
 
       <div className="flex flex-row gap-4">
         {tag ? (
@@ -659,7 +680,7 @@ function WorkflowSection({
           })}
         >
           <Icon icon={isEdit ? 'edit-square' : 'plus'} className="size-6" />
-          <p>{t(isEdit ? 'scenarios:home.workflow.edit' : 'scenarios:home.workflow.create')}</p>
+          <p>{tScenarios(isEdit ? 'home.workflow.edit' : 'home.workflow.create')}</p>
         </Link>
       </div>
     </section>
@@ -668,12 +689,12 @@ function WorkflowSection({
 
 const resources = [
   {
-    tKey: 'scenarios:home.resources.scenario_guide',
+    tKey: 'home.resources.scenario_guide',
     href: 'https://docs.checkmarble.com/docs/executing-a-scenario',
     src: '/img/home/scenario-guide.png',
   },
   {
-    tKey: 'scenarios:home.resources.api',
+    tKey: 'home.resources.api',
     href: 'https://docs.checkmarble.com/reference/intro-getting-started',
     src: '/img/home/api.png',
   },
@@ -684,7 +705,7 @@ const resources = [
   //   src: '/img/home/testrun.png',
   // },
   {
-    tKey: 'scenarios:home.workflow',
+    tKey: 'home.workflow',
     href: 'https://docs.checkmarble.com/docs/introduction-5',
     src: '/img/home/workflow.png',
   },
@@ -694,11 +715,16 @@ const resources = [
   src: string;
 }>;
 
-function ResourcesSection() {
-  const { t } = useTranslation(handle.i18n);
+function ResourcesSection({
+  translationObject,
+}: {
+  translationObject: TranslationObject<['scenarios']>;
+}) {
+  const { tScenarios } = translationObject;
+
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-grey-00 text-m font-semibold">{t('scenarios:home.resources')}</h2>
+      <h2 className="text-grey-00 text-m font-semibold">{tScenarios('home.resources')}</h2>
       <div className="flex flex-row gap-4">
         {resources.map(({ tKey, href, src }) => (
           <a
@@ -710,7 +736,7 @@ function ResourcesSection() {
           >
             <img src={src} alt="" />
             <span className="border-grey-90 bg-grey-100 text-s group-hover:border-purple-65 group-focus:border-purple-65 flex flex-row items-center justify-between border-t p-4 font-semibold transition-colors">
-              {t(tKey)}
+              {tScenarios(tKey)}
               <Icon aria-hidden icon="arrow-right" className="size-6" />
             </span>
           </a>
