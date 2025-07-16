@@ -10,7 +10,7 @@ import { useClientServices } from '@app-builder/services/init.client';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { sleep } from '@app-builder/utils/sleep';
-import { useNavigate } from '@remix-run/react';
+import { Link, useNavigate } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
@@ -36,9 +36,11 @@ type EmailAndPasswordForm = z.infer<typeof emailAndPasswordFormSchema>;
 export function SignInWithEmailAndPassword({
   signIn,
   loading,
+  additionalContent,
 }: {
   signIn: (authPayload: AuthPayload) => void;
   loading?: boolean;
+  additionalContent?: React.ReactNode;
 }) {
   const { t } = useTranslation(['auth', 'common']);
   const clientServices = useClientServices();
@@ -83,103 +85,119 @@ export function SignInWithEmailAndPassword({
 
   return (
     <form
-      className="flex w-full flex-col gap-4"
+      className="contents"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
         form.handleSubmit();
       }}
     >
-      <form.Field
-        name="credentials.email"
-        validators={{
-          onBlur: emailAndPasswordFormSchema.shape.credentials.shape.email,
-          onChange: emailAndPasswordFormSchema.shape.credentials.shape.email,
-        }}
-      >
-        {(field) => (
-          <div className="flex flex-col items-start gap-2">
-            <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
-              {t('auth:sign_in.email')}
-            </FormLabel>
-            <FormInput
-              type="email"
-              name={field.name}
-              disabled={!hydrated}
-              className="w-full"
-              valid={field.state.meta.errors.length === 0}
-              defaultValue={field.state.value}
-              onChange={(e) => field.handleChange(e.currentTarget.value)}
-              onBlur={field.handleBlur}
-            />
-            <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-          </div>
-        )}
-      </form.Field>
-      <form.Field
-        name="credentials.password"
-        validators={{
-          onBlur: emailAndPasswordFormSchema.shape.credentials.shape.password,
-          onChange: emailAndPasswordFormSchema.shape.credentials.shape.password,
-        }}
-      >
-        {(field) => (
-          <div className="flex flex-col items-start gap-2">
-            <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
-              {t('auth:sign_in.password')}
-            </FormLabel>
-            <FormInput
-              className="w-full"
-              name={field.name}
-              type="password"
-              autoComplete="current-password"
-              disabled={!hydrated}
-              valid={field.state.meta.errors.length === 0}
-              defaultValue={field.state.value}
-              onChange={(e) => field.handleChange(e.currentTarget.value)}
-              onBlur={field.handleBlur}
-            />
-            <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-          </div>
-        )}
-      </form.Field>
-      <Button type="submit" disabled={!hydrated}>
-        {loading || form.state.isSubmitting ? <Spinner className="size-4" /> : t('auth:sign_in')}
-      </Button>
+      <div className="flex w-full flex-col gap-4">
+        <form.Field
+          name="credentials.email"
+          validators={{
+            onChange: emailAndPasswordFormSchema.shape.credentials.shape.email,
+          }}
+        >
+          {(field) => (
+            <div className="flex flex-col items-start gap-2">
+              <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
+                {t('auth:sign_in.email')}
+              </FormLabel>
+              <FormInput
+                type="email"
+                name={field.name}
+                disabled={!hydrated}
+                className="w-full"
+                valid={field.state.meta.errors.length === 0}
+                defaultValue={field.state.value}
+                onChange={(e) => field.handleChange(e.currentTarget.value)}
+              />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+            </div>
+          )}
+        </form.Field>
+        <form.Field
+          name="credentials.password"
+          validators={{
+            onChange: emailAndPasswordFormSchema.shape.credentials.shape.password,
+          }}
+        >
+          {(field) => (
+            <div className="flex flex-col items-start gap-2">
+              <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
+                {t('auth:sign_in.password')}
+              </FormLabel>
+              <FormInput
+                className="w-full"
+                name={field.name}
+                type="password"
+                autoComplete="current-password"
+                disabled={!hydrated}
+                valid={field.state.meta.errors.length === 0}
+                defaultValue={field.state.value}
+                onChange={(e) => field.handleChange(e.currentTarget.value)}
+              />
+              <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+            </div>
+          )}
+        </form.Field>
+        <Link className="text-s text-purple-65 underline" to="/forgot-password">
+          Forgot password?
+        </Link>
+      </div>
+      <div className="flex flex-col gap-2">
+        <Button type="submit" disabled={!hydrated}>
+          {loading || form.state.isSubmitting ? <Spinner className="size-4" /> : t('auth:sign_in')}
+        </Button>
+        {additionalContent}
+      </div>
     </form>
   );
 }
 
-export const StaticSignInWithEmailAndPassword = () => {
+export const StaticSignInWithEmailAndPassword = ({
+  additionalContent,
+}: {
+  additionalContent?: React.ReactNode;
+}) => {
   const hydrated = useHydrated();
   const { t } = useTranslation(['auth', 'common']);
 
   return (
-    <form className="flex w-full flex-col gap-4">
-      <div className="flex flex-col items-start gap-2">
-        <FormLabel name="credentials.email">{t('auth:sign_in.email')}</FormLabel>
-        <FormInput
-          type="email"
-          name="credentials.email"
-          disabled={!hydrated}
-          className="w-full"
-          valid
-        />
+    <form className="contents">
+      <div className="flex w-full flex-col gap-4">
+        <div className="flex flex-col items-start gap-2">
+          <FormLabel name="credentials.email">{t('auth:sign_in.email')}</FormLabel>
+          <FormInput
+            type="email"
+            name="credentials.email"
+            disabled={!hydrated}
+            className="w-full"
+            valid
+          />
+        </div>
+        <div className="flex flex-col items-start gap-2">
+          <FormLabel name="credentials.password">{t('auth:sign_in.password')}</FormLabel>
+          <FormInput
+            type="password"
+            name="credentials.password"
+            autoComplete="current-password"
+            disabled={!hydrated}
+            className="w-full"
+            valid
+          />
+        </div>
+        <Link className="text-s text-purple-65 underline" to={getRoute('/forgot-password')}>
+          {t('auth:sign_in.forgot_password')}
+        </Link>
       </div>
-      <div className="flex flex-col items-start gap-2">
-        <FormLabel name="credentials.password">{t('auth:sign_in.password')}</FormLabel>
-        <FormInput
-          type="password"
-          name="credentials.password"
-          autoComplete="current-password"
-          disabled={!hydrated}
-          className="w-full"
-          valid
-        />
+      <div className="flex flex-col gap-2">
+        <Button type="submit" disabled={!hydrated}>
+          {t('auth:sign_in')}
+        </Button>
+        {additionalContent}
       </div>
-      <Button type="submit" disabled={!hydrated}>
-        {t('auth:sign_in')}
-      </Button>
     </form>
   );
 };

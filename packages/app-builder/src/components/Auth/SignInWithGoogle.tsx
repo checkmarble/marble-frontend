@@ -22,14 +22,12 @@ function SignInWithGoogleButton({ onClick, loading }: { onClick?: () => void; lo
 
   return (
     <button
-      className="relative flex h-10 w-full items-center rounded border-2 border-[#1a73e8] bg-[#1a73e8] transition hover:bg-[rgb(69,128,233)] disabled:cursor-wait"
+      className="relative flex h-10 w-full items-center justify-center rounded border border-grey-90 disabled:cursor-wait gap-2"
       onClick={onClick}
       disabled={loading}
     >
-      <div className="bg-grey-100 flex h-full w-10 shrink-0 items-center justify-center rounded-s-[3px]">
-        <Logo logo="google-logo" className="size-6" />
-      </div>
-      <span className="text-s text-grey-100 w-full whitespace-nowrap text-center align-middle font-medium">
+      <Logo logo="google-logo" className="size-6" />
+      <span className="text-s whitespace-nowrap text-center font-medium">
         {t('auth:sign_in.google')}
       </span>
       <span className="absolute end-0 mx-2 size-4">
