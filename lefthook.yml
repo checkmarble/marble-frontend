@@ -14,6 +14,33 @@ pre-push:
 
 pre-commit:
   commands:
+    protect-main:
+      run: |
+        branch=$(git rev-parse --abbrev-ref HEAD)
+        if [ "$branch" = "main" ]; then
+          echo "⚠️  WARNING: You are about to commit directly to the main branch!"
+          echo ""
+          echo "This is generally not recommended as it bypasses code review processes."
+          echo "Consider creating a feature branch instead:"
+          echo "  git checkout -b feature/your-feature-name"
+          echo ""
+          echo -n "Are you sure you want to proceed? (y/N): "
+          read -r response
+          echo ""
+          
+          case "$response" in
+            [yY]|[yY][eE][sS]|[oO]|[oO][uU][iI])
+              echo "✅ Proceeding with commit to main branch..."
+              ;;
+            *)
+              echo "❌ Commit cancelled. Use 'git checkout -b <branch-name>' to create a new branch."
+              exit 1
+              ;;
+          esac
+        else
+          echo "✅ Commit allowed on branch: $branch"
+        fi
+      fail_text: "Commit cancelled by user"
     check:
       glob: '*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}'
       run: pnpm biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
