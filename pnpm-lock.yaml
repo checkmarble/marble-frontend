@@ -46,8 +46,8 @@ importers:
         specifier: ^0.4.15
         version: 0.4.15(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@biomejs/wasm-nodejs':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^2.1.1
+        version: 2.1.1
       '@dagrejs/dagre':
         specifier: ^1.1.4
         version: 1.1.4
@@ -305,8 +305,8 @@ importers:
         version: 5.0.3(@types/react@18.3.11)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
     devDependencies:
       '@biomejs/js-api':
-        specifier: ^1.0.0
-        version: 1.0.0(@biomejs/wasm-nodejs@2.0.0)
+        specifier: ^2.0.3
+        version: 2.0.3(@biomejs/wasm-nodejs@2.1.1)
       '@remix-run/dev':
         specifier: ^2.16.8
         version: 2.16.8(@remix-run/react@2.16.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.2))(@remix-run/serve@2.16.5(typescript@5.8.2))(@types/node@22.13.10)(babel-plugin-macros@3.1.0)(jiti@1.21.7)(tsx@4.19.3)(typescript@5.8.2)(vite@6.3.4(@types/node@22.13.10)(jiti@1.21.7)(tsx@4.19.3)(yaml@2.7.0))(yaml@2.7.0)
@@ -620,12 +620,12 @@ importers:
   packages/ui-icons:
     dependencies:
       '@biomejs/wasm-nodejs':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^2.1.1
+        version: 2.1.1
     devDependencies:
       '@biomejs/js-api':
-        specifier: ^1.0.0
-        version: 1.0.0(@biomejs/wasm-nodejs@2.0.0)
+        specifier: ^2.0.3
+        version: 2.0.3(@biomejs/wasm-nodejs@2.1.1)
       '@types/node':
         specifier: 22.13.10
         version: 22.13.10
@@ -909,12 +909,12 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@biomejs/js-api@1.0.0':
-    resolution: {integrity: sha512-69OfQ7+09AtiCIg+k+aU3rEsGit5o/SJWCS3BeBH/2nJYdJGi0cIx+ybka8i1EK69aNcZxYO1y1iAAEmYMq1HA==}
+  '@biomejs/js-api@2.0.3':
+    resolution: {integrity: sha512-fg4hGhg1LtohDqLdG9uggROlVsydcuFwZhPoUOTi9+bkvGMULDKL9dEP5iN6++CIA/AN0T20U82rLYuaxc+VDQ==}
     peerDependencies:
-      '@biomejs/wasm-bundler': ^2.0.0
-      '@biomejs/wasm-nodejs': ^2.0.0
-      '@biomejs/wasm-web': ^2.0.0
+      '@biomejs/wasm-bundler': ^2.1.1
+      '@biomejs/wasm-nodejs': ^2.1.1
+      '@biomejs/wasm-web': ^2.1.1
     peerDependenciesMeta:
       '@biomejs/wasm-bundler':
         optional: true
@@ -923,8 +923,8 @@ packages:
       '@biomejs/wasm-web':
         optional: true
 
-  '@biomejs/wasm-nodejs@2.0.0':
-    resolution: {integrity: sha512-jcMpFDXura5J9MfL2DB8Qw5Cyg5zJXkzI8Ro/VYEC3R4oPnrqEvnPj5hEu70IVtlUPj1DZjrMRi+o2vqZurXEQ==}
+  '@biomejs/wasm-nodejs@2.1.1':
+    resolution: {integrity: sha512-b/1ZTcHBuX/5yBdOfl9WmwJmlkK/GSQlFUPYshY0oBtg8E3zzh+5DMtjCYP7LPjJuHHRrfMkgsez8Mf9Ol/xUg==}
 
   '@bkrem/react-transition-group@1.3.5':
     resolution: {integrity: sha512-lbBYhC42sxAeFEopxzd9oWdkkV0zirO5E9WyeOBxOrpXsf7m30Aj8vnbayZxFOwD9pvUQ2Pheb1gO79s0Qap3Q==}
@@ -8933,11 +8933,11 @@ snapshots:
   '@biomejs/cli-win32-x64@2.1.1':
     optional: true
 
-  '@biomejs/js-api@1.0.0(@biomejs/wasm-nodejs@2.0.0)':
+  '@biomejs/js-api@2.0.3(@biomejs/wasm-nodejs@2.1.1)':
     optionalDependencies:
-      '@biomejs/wasm-nodejs': 2.0.0
+      '@biomejs/wasm-nodejs': 2.1.1
 
-  '@biomejs/wasm-nodejs@2.0.0': {}
+  '@biomejs/wasm-nodejs@2.1.1': {}
 
   '@bkrem/react-transition-group@1.3.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
