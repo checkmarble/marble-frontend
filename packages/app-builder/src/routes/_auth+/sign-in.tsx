@@ -6,7 +6,6 @@ import { UnreadyCallout } from '@app-builder/components/Auth/UnreadyCallout';
 import { type AuthErrors } from '@app-builder/models/auth-errors';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { initServerServices } from '@app-builder/services/init.server';
-import { getServerEnv } from '@app-builder/utils/environment';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
@@ -45,7 +44,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     authError: !appConfig
       ? 'BackendUnavailable'
       : (session.get('authError')?.message as AuthErrors),
-    isMarbleSaaS: getServerEnv('MARBLE_APP_URL') === 'https://app.checkmarble.com',
+    isManagedMarble: appConfig?.isManagedMarble ?? false,
   };
 }
 
@@ -64,7 +63,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Login() {
   const { t } = useTranslation(['auth', 'common']);
-  const { isSignupReady, didMigrationsRun, isMarbleSaaS } = useLoaderData<typeof loader>();
+  const { isSignupReady, didMigrationsRun, isManagedMarble } = useLoaderData<typeof loader>();
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
@@ -110,7 +109,7 @@ export default function Login() {
       <div className="flex flex-col gap-8">
         <h2 className="text-2xl text-center">{t('auth:sign_in.first_connection')}</h2>
         <div className="flex flex-col gap-2">
-          <SignInFirstConnection showAskDemoButton={isMarbleSaaS} />
+          <SignInFirstConnection showAskDemoButton={isManagedMarble} />
         </div>
       </div>
     </div>

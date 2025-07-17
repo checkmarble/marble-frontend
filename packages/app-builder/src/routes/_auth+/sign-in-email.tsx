@@ -9,7 +9,6 @@ import { UnreadyCallout } from '@app-builder/components/Auth/UnreadyCallout';
 import { type AuthErrors } from '@app-builder/models/auth-errors';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { initServerServices } from '@app-builder/services/init.server';
-import { getServerEnv } from '@app-builder/utils/environment';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
@@ -48,7 +47,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       didMigrationsRun: appConfig?.status.migrations ?? false,
       authError,
       isSsoEnabled: appConfig && appConfig.features.sso,
-      isMarbleSaaS: getServerEnv('MARBLE_APP_URL') === 'https://app.checkmarble.com',
+      isManagedMarble: appConfig?.isManagedMarble ?? false,
     },
     {
       headers: {
@@ -73,7 +72,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function LoginWithEmail() {
   const { t } = useTranslation(['common', 'auth']);
-  const { authError, isSsoEnabled, isSignupReady, didMigrationsRun, isMarbleSaaS } =
+  const { authError, isSsoEnabled, isSignupReady, didMigrationsRun, isManagedMarble } =
     useLoaderData<typeof loader>();
 
   const [searchParams] = useSearchParams();
@@ -128,7 +127,7 @@ export default function LoginWithEmail() {
             <div className="flex flex-col gap-8">
               <h2 className="text-2xl text-center">{t('auth:sign_in.first_connection')}</h2>
               <div className="flex flex-col gap-2">
-                <SignInFirstConnection showAskDemoButton={!isSsoEnabled && isMarbleSaaS} />
+                <SignInFirstConnection showAskDemoButton={!isSsoEnabled && isManagedMarble} />
               </div>
             </div>
           </>
