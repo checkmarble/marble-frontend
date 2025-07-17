@@ -3,5 +3,6 @@
     "actions": { "source": { "organizeImports": "on", "useSortedKeys": "on" } },
     "enabled": true
   },
-  "extends": "//"
+  "extends": "//",
+  "root": false
 }
