@@ -101,6 +101,7 @@ components:
         - urls
         - auth
         - features
+        - is_managed_marble
       properties:
         version:
           type: string
@@ -161,3 +162,5 @@ components:
               type: boolean
             segment:
               type: boolean
+        is_managed_marble:
+          type: boolean

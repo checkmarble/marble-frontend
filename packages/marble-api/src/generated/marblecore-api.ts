@@ -1081,6 +1081,7 @@ export type AppConfigDto = {
         sso: boolean;
         segment: boolean;
     };
+    is_managed_marble: boolean;
 };
 export type ApiKeyDto = {
     id: string;

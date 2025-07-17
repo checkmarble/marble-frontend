@@ -35,6 +35,7 @@ export type AppConfig = {
     sso: boolean;
     segment: boolean;
   };
+  isManagedMarble: boolean;
 };
 
 export function adaptAppConfig(
@@ -75,5 +76,6 @@ export function adaptAppConfig(
       sso: dto.features.sso,
       segment: dto.features.segment,
     },
+    isManagedMarble: dto.is_managed_marble,
   };
 }
