@@ -43,11 +43,7 @@ export function WorkflowList() {
               {rules.map((rule, index) => (
                 <Draggable key={rule.id} draggableId={rule.id} index={index} isDragDisabled={false}>
                   {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
+                    <div ref={provided.innerRef} {...provided.draggableProps}>
                       <WorkflowRule rule={rule} provided={provided} snapshot={snapshot} />
                       {/* Else arrow - appears after each rule except the last one */}
                       {index < rules.length - 1 && (
