@@ -1,15 +1,21 @@
-import { casesI18n } from '@app-builder/components';
 import { EventTime } from '@app-builder/components/Cases/Events/Time';
 import { type CaseCreatedEvent } from '@app-builder/models/cases';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
+import { TranslationObject } from '@app-builder/types/i18n';
 import { useMemo } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-export const CaseCreatedDetail = ({ event }: { event: CaseCreatedEvent }) => {
+export const CaseCreatedDetail = ({
+  event,
+  translationObject,
+}: {
+  event: CaseCreatedEvent;
+  translationObject: TranslationObject<['cases']>;
+}) => {
   const { getOrgUserById } = useOrganizationUsers();
-  const { t } = useTranslation(casesI18n);
+  const { tCases } = translationObject;
   const user = useMemo(
     () => (event.userId ? getOrgUserById(event.userId) : undefined),
     [event.userId, getOrgUserById],
@@ -22,8 +28,8 @@ export const CaseCreatedDetail = ({ event }: { event: CaseCreatedEvent }) => {
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
         <Trans
-          t={t}
-          i18nKey="cases:case_detail.history.event_detail.created_by"
+          t={tCases}
+          i18nKey="case_detail.history.event_detail.created_by"
           components={{ Actor: <span className="font-bold capitalize" /> }}
           values={{ actor: user ? getFullName(user) : 'Workflow' }}
         />

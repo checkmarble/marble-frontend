@@ -1,15 +1,20 @@
+import { TranslationObject } from '@app-builder/types/i18n';
 import { getCurrentBrowser } from '@app-builder/utils/browser';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 
 import { ExternalLink } from '../ExternalLink';
 
-export function PopupBlockedError() {
-  const { t } = useTranslation(['common']);
+export function PopupBlockedError({
+  translationObject,
+}: {
+  translationObject: TranslationObject<['common']>;
+}) {
+  const { tCommon } = translationObject;
   return (
     <div>
       <Trans
-        t={t}
-        i18nKey="common:errors.popup_blocked_by_client"
+        t={tCommon}
+        i18nKey="errors.popup_blocked_by_client"
         components={{
           EnablePopup: <EnablePopup />,
         }}
@@ -17,7 +22,6 @@ export function PopupBlockedError() {
     </div>
   );
 }
-
 const hrefMap = {
   Safari: 'https://support.apple.com/guide/safari/sfri40696/mac',
   Firefox: 'https://support.mozilla.org/en-US/kb/pop-blocker-settings-exceptions-troubleshooting',

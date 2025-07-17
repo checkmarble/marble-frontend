@@ -1,12 +1,10 @@
 import { type CaseOutcome, type CaseStatus } from '@app-builder/models/cases';
+import { TranslationObject } from '@app-builder/types/i18n';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { type ComponentProps } from 'react';
-import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-import { casesI18n } from './cases-i18n';
 
 export const caseStatusBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0', {
   variants: {
@@ -26,6 +24,7 @@ type CaseStatusBadgeProps = ComponentProps<'span'> &
     outcome?: CaseOutcome;
     showText?: boolean;
     showBackground?: boolean;
+    translationObject: TranslationObject<['cases']>;
   };
 
 export const CaseStatusBadge = ({
@@ -35,9 +34,10 @@ export const CaseStatusBadge = ({
   showBackground = true,
   size,
   className,
+  translationObject,
   ...rest
 }: CaseStatusBadgeProps) => {
-  const { t } = useTranslation(casesI18n);
+  const { tCases } = translationObject;
 
   return (
     <span {...rest} className="inline-flex items-center gap-2">
@@ -72,7 +72,7 @@ export const CaseStatusBadge = ({
               'text-blue-58': status === 'investigating',
             })}
           >
-            {t(`cases:case.status.${status}`)}
+            {tCases(`case.status.${status}`)}
           </span>
         ) : null}
       </span>
@@ -84,7 +84,7 @@ export const CaseStatusBadge = ({
             'border-grey-50 text-grey-50': outcome === 'false_positive',
           })}
         >
-          {t(`cases:case.outcome.${outcome}`)}
+          {tCases(`case.outcome.${outcome}`)}
         </span>
       ) : null}
     </span>

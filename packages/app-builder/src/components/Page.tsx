@@ -1,7 +1,7 @@
+import { TranslationObject } from '@app-builder/types/i18n';
 import { Link, useNavigate } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
 import { forwardRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import { cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -91,14 +91,18 @@ const pageBack = cva(
   'border-grey-90 hover:bg-grey-98 flex items-center justify-center rounded-md border p-2',
 );
 
-function PageBackButton({ className, ...props }: React.ComponentProps<'button'>) {
+function PageBackButton({
+  className,
+  translationObject,
+  ...props
+}: React.ComponentProps<'button'> & { translationObject: TranslationObject<['common']> }) {
   const navigate = useNavigate();
-  const { t } = useTranslation(['common']);
+  const { tCommon } = translationObject;
   return (
-    <Tooltip.Default content={t('common:go_back')}>
+    <Tooltip.Default content={tCommon('go_back')}>
       <button className={pageBack({ className })} onClick={() => navigate(-1)} {...props}>
         <Icon icon="arrow-left" className="size-5 rtl:rotate-180" aria-hidden />
-        <span className="sr-only">{t('common:go_back')}</span>
+        <span className="sr-only">{tCommon('go_back')}</span>
       </button>
     </Tooltip.Default>
   );

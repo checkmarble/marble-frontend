@@ -7,6 +7,7 @@ import {
 } from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { useClientServices } from '@app-builder/services/init.client';
+import { TranslationObject } from '@app-builder/types/i18n';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { sleep } from '@app-builder/utils/sleep';
@@ -14,7 +15,6 @@ import { useNavigate } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button } from 'ui-design-system';
 import * as z from 'zod';
@@ -36,11 +36,13 @@ type EmailAndPasswordForm = z.infer<typeof emailAndPasswordFormSchema>;
 export function SignInWithEmailAndPassword({
   signIn,
   loading,
+  translationObject,
 }: {
   signIn: (authPayload: AuthPayload) => void;
   loading?: boolean;
+  translationObject: TranslationObject<['auth', 'common']>;
 }) {
-  const { t } = useTranslation(['auth', 'common']);
+  const { tAuth, tCommon } = translationObject;
   const clientServices = useClientServices();
   const navigate = useNavigate();
   const hydrated = useHydrated();
@@ -70,12 +72,12 @@ export function SignInWithEmailAndPassword({
         ) {
           formApi
             .getFieldMeta('credentials.password')
-            ?.errors.push({ message: t('auth:sign_in.errors.invalid_login_credentials') });
+            ?.errors.push({ message: tAuth('sign_in.errors.invalid_login_credentials') });
         } else if (error instanceof NetworkRequestFailed) {
-          toast.error(t('common:errors.firebase_network_error'));
+          toast.error(tCommon('errors.firebase_network_error'));
         } else {
           Sentry.captureException(error);
-          toast.error(t('common:errors.unknown'));
+          toast.error(tCommon('errors.unknown'));
         }
       }
     },
@@ -100,7 +102,7 @@ export function SignInWithEmailAndPassword({
         {(field) => (
           <div className="flex flex-col items-start gap-2">
             <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
-              {t('auth:sign_in.email')}
+              {tAuth('sign_in.email')}
             </FormLabel>
             <FormInput
               type="email"
@@ -126,7 +128,7 @@ export function SignInWithEmailAndPassword({
         {(field) => (
           <div className="flex flex-col items-start gap-2">
             <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
-              {t('auth:sign_in.password')}
+              {tAuth('sign_in.password')}
             </FormLabel>
             <FormInput
               className="w-full"
@@ -144,20 +146,28 @@ export function SignInWithEmailAndPassword({
         )}
       </form.Field>
       <Button type="submit" disabled={!hydrated}>
-        {loading || form.state.isSubmitting ? <Spinner className="size-4" /> : t('auth:sign_in')}
+        {loading || form.state.isSubmitting ? (
+          <Spinner className="size-4" translationObject={translationObject} />
+        ) : (
+          tAuth('sign_in')
+        )}
       </Button>
     </form>
   );
 }
 
-export const StaticSignInWithEmailAndPassword = () => {
+export const StaticSignInWithEmailAndPassword = ({
+  translationObject,
+}: {
+  translationObject: TranslationObject<['auth', 'common']>;
+}) => {
   const hydrated = useHydrated();
-  const { t } = useTranslation(['auth', 'common']);
+  const { tAuth } = translationObject;
 
   return (
     <form className="flex w-full flex-col gap-4">
       <div className="flex flex-col items-start gap-2">
-        <FormLabel name="credentials.email">{t('auth:sign_in.email')}</FormLabel>
+        <FormLabel name="credentials.email">{tAuth('sign_in.email')}</FormLabel>
         <FormInput
           type="email"
           name="credentials.email"
@@ -167,7 +177,7 @@ export const StaticSignInWithEmailAndPassword = () => {
         />
       </div>
       <div className="flex flex-col items-start gap-2">
-        <FormLabel name="credentials.password">{t('auth:sign_in.password')}</FormLabel>
+        <FormLabel name="credentials.password">{tAuth('sign_in.password')}</FormLabel>
         <FormInput
           type="password"
           name="credentials.password"
@@ -178,7 +188,7 @@ export const StaticSignInWithEmailAndPassword = () => {
         />
       </div>
       <Button type="submit" disabled={!hydrated}>
-        {t('auth:sign_in')}
+        {tAuth('sign_in')}
       </Button>
     </form>
   );

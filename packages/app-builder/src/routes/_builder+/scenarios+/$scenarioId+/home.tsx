@@ -140,7 +140,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function ScenarioHome() {
-  const { tWorkflows, tScenarios } = useTranslationObject(handle.i18n);
+  const { tCommon, tWorkflows, tScenarios } = useTranslationObject(handle.i18n);
   const hydrated = useHydrated();
   const { featureAccess, scheduledExecutions } = useLoaderData<typeof loader>();
 
@@ -191,7 +191,7 @@ export default function ScenarioHome() {
                 liveScenarioIteration={liveScenarioIteration}
               />
               <BatchSection
-                translationObject={{ tScenarios }}
+                translationObject={{ tScenarios, tCommon }}
                 scenarioId={currentScenario.id}
                 isManualTriggerScenarioAvailable={featureAccess.isManualTriggerScenarioAvailable}
                 scheduledExecutions={scheduledExecutions}
@@ -202,7 +202,7 @@ export default function ScenarioHome() {
                 .with('restricted', (status) => <TestRunNudge kind={status} />)
                 .otherwise(() => (
                   <TestRunSection
-                    translationObject={{ tScenarios }}
+                    translationObject={{ tScenarios, tCommon }}
                     scenarioId={currentScenario.id}
                     access={featureAccess.isTestRunAvailable}
                   />
@@ -289,8 +289,12 @@ function VersionSection({
         })}
       </h2>
       <div className="flex flex-row gap-3">
-        {quickVersion ? <QuickVersionAccess scenarioIteration={quickVersion} /> : null}
-        {quickDraft ? <QuickVersionAccess scenarioIteration={quickDraft} /> : null}
+        {quickVersion ? (
+          <QuickVersionAccess translationObject={{ tScenarios }} scenarioIteration={quickVersion} />
+        ) : null}
+        {quickDraft ? (
+          <QuickVersionAccess translationObject={{ tScenarios }} scenarioIteration={quickDraft} />
+        ) : null}
         {labelledOtherVersions.length > 0 ? (
           <ScenarioIterationMenu labelledScenarioIteration={labelledOtherVersions}>
             <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 font-semibold outline-none transition-colors">
@@ -306,14 +310,16 @@ function VersionSection({
 }
 
 function QuickVersionAccess({
+  translationObject,
   scenarioIteration,
 }: {
+  translationObject: TranslationObject<['scenarios']>;
   scenarioIteration: ScenarioIterationWithType;
 }) {
-  const { t } = useTranslation(['scenarios']);
+  const { tScenarios } = translationObject;
 
-  const currentFormattedVersion = getFormattedVersion(scenarioIteration, t);
-  const currentFormattedLive = getFormattedLive(scenarioIteration, t);
+  const currentFormattedVersion = getFormattedVersion(scenarioIteration, tScenarios);
+  const currentFormattedLive = getFormattedLive(scenarioIteration, tScenarios);
 
   return (
     <Link
@@ -341,7 +347,7 @@ function TestRunSection({
   access,
 }: {
   scenarioId: string;
-  translationObject: TranslationObject<['scenarios']>;
+  translationObject: TranslationObject<['scenarios', 'common']>;
   access: FeatureAccessLevelDto;
 }) {
   const { tScenarios } = translationObject;
@@ -372,7 +378,7 @@ function TestRunSection({
 
       {isExecutionOngoing ? (
         <div className="text-grey-100 text-s bg-purple-65 absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t px-2 font-semibold">
-          <Spinner className="size-3" />
+          <Spinner className="size-3" translationObject={translationObject} />
           {tScenarios('home.execution.batch.ongoing')}
         </div>
       ) : null}
@@ -480,7 +486,7 @@ function BatchSection({
   liveScenarioIteration,
   isManualTriggerScenarioAvailable,
 }: {
-  translationObject: TranslationObject<['scenarios']>;
+  translationObject: TranslationObject<['scenarios', 'common']>;
   scenarioId: string;
   scheduledExecutions: ScheduledExecution[];
   isManualTriggerScenarioAvailable: boolean;
@@ -519,7 +525,7 @@ function BatchSection({
     >
       {isExecutionOngoing ? (
         <div className="text-grey-100 text-s bg-purple-65 absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t px-2 font-semibold">
-          <Spinner className="size-3" />
+          <Spinner className="size-3" translationObject={translationObject} />
           {tScenarios('home.execution.batch.ongoing')}
         </div>
       ) : null}

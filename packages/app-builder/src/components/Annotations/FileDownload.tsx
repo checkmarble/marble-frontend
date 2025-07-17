@@ -3,19 +3,24 @@ import {
   AuthRequestError,
   useDownloadFile,
 } from '@app-builder/services/DownloadFilesService';
+import { TranslationObject } from '@app-builder/types/i18n';
 import { getClientAnnotationFileDownloadEndpoint } from '@app-builder/utils/files';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
 import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type AnnotationFileDownloadProps = {
   annotationId: string;
   fileId: string;
+  translationObject: TranslationObject<['cases']>;
 };
 
-export function AnnotationFileDownload({ annotationId, fileId }: AnnotationFileDownloadProps) {
-  const { t } = useTranslation(['cases', 'common']);
+export function AnnotationFileDownload({
+  annotationId,
+  fileId,
+  translationObject,
+}: AnnotationFileDownloadProps) {
+  const { tCases } = translationObject;
 
   const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(
     getClientAnnotationFileDownloadEndpoint(annotationId)(fileId),
@@ -25,9 +30,9 @@ export function AnnotationFileDownload({ annotationId, fileId }: AnnotationFileD
           // Already downloading, do nothing
           return;
         } else if (e instanceof AuthRequestError) {
-          toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
+          toast.error(tCases('case.file.errors.downloading_link.auth_error'));
         } else {
-          toast.error(t('cases:case.file.errors.downloading_link.unknown'));
+          toast.error(tCases('case.file.errors.downloading_link.unknown'));
         }
       },
     },

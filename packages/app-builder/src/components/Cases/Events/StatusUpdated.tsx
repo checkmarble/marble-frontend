@@ -1,11 +1,17 @@
-import { casesI18n } from '@app-builder/components';
 import { EventTime } from '@app-builder/components/Cases/Events/Time';
 import { type CaseStatusUpdatedEvent } from '@app-builder/models/cases';
-import { Trans, useTranslation } from 'react-i18next';
+import { TranslationObject } from '@app-builder/types/i18n';
+import { Trans } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-export const StatusUpdatedDetail = ({ event }: { event: CaseStatusUpdatedEvent }) => {
-  const { t } = useTranslation(casesI18n);
+export const StatusUpdatedDetail = ({
+  event,
+  translationObject,
+}: {
+  event: CaseStatusUpdatedEvent;
+  translationObject: TranslationObject<['cases']>;
+}) => {
+  const { tCases } = translationObject;
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
@@ -14,10 +20,10 @@ export const StatusUpdatedDetail = ({ event }: { event: CaseStatusUpdatedEvent }
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">
         <Trans
-          t={t}
-          i18nKey="cases:case_detail.history.event_detail.status_updated"
+          t={tCases}
+          i18nKey="case_detail.history.event_detail.status_updated"
           components={{ Style: <span className="font-bold capitalize" /> }}
-          values={{ status: t(`cases:case.status.${event.newStatus}`) }}
+          values={{ status: tCases(`case.status.${event.newStatus}`) }}
         />
       </span>
       <EventTime time={event.createdAt} />

@@ -4,14 +4,13 @@ import {
   useSendPasswordResetEmail,
 } from '@app-builder/services/auth/auth.client';
 import { useClientServices } from '@app-builder/services/init.client';
+import { TranslationObject } from '@app-builder/types/i18n';
 import { getFieldErrors } from '@app-builder/utils/form';
 import * as Sentry from '@sentry/remix';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import * as z from 'zod';
-
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '../Form/Tanstack/FormInput';
 import { FormLabel } from '../Form/Tanstack/FormLabel';
@@ -22,8 +21,12 @@ const resetPasswordFormSchema = z.object({
 
 type ResetPasswordForm = z.infer<typeof resetPasswordFormSchema>;
 
-export function ResetPassword() {
-  const { t } = useTranslation(['auth', 'common']);
+export function ResetPassword({
+  translationObject,
+}: {
+  translationObject: TranslationObject<['auth', 'common']>;
+}) {
+  const { tAuth, tCommon } = translationObject;
   const clientServices = useClientServices();
 
   const sendPasswordResetEmail = useSendPasswordResetEmail(
@@ -36,15 +39,15 @@ export function ResetPassword() {
     onSubmit: async ({ value: { email } }) => {
       try {
         await sendPasswordResetEmail(email);
-        toast.success(t('auth:reset-password.email_sent'));
+        toast.success(tAuth('reset-password.email_sent'));
       } catch (error) {
         if (error instanceof NetworkRequestFailed) {
-          toast.error(t('common:errors.firebase_network_error'));
+          toast.error(tCommon('errors.firebase_network_error'));
         } else if (error instanceof TooManyRequest) {
-          toast.error(t('common:errors.too_many_requests'));
+          toast.error(tCommon('errors.too_many_requests'));
         } else {
           Sentry.captureException(error);
-          toast.error(t('common:errors.unknown'));
+          toast.error(tCommon('errors.unknown'));
         }
       }
     },
@@ -69,7 +72,7 @@ export function ResetPassword() {
         {(field) => (
           <div className="flex flex-col items-start gap-2">
             <FormLabel name={field.name} valid={field.state.meta.errors.length === 0}>
-              {t('auth:sign_in.email')}
+              {tAuth('sign_in.email')}
             </FormLabel>
             <FormInput
               type="email"
@@ -83,21 +86,25 @@ export function ResetPassword() {
           </div>
         )}
       </form.Field>
-      <Button type="submit">{t('auth:reset-password.send')}</Button>
+      <Button type="submit">{tAuth('reset-password.send')}</Button>
     </form>
   );
 }
 
-export const StaticResetPassword = () => {
-  const { t } = useTranslation(['auth', 'common']);
+export const StaticResetPassword = ({
+  translationObject,
+}: {
+  translationObject: TranslationObject<['auth']>;
+}) => {
+  const { tAuth } = translationObject;
 
   return (
     <form className="flex w-full flex-col gap-4">
       <div className="flex flex-col items-start gap-2">
-        <FormLabel name="email">{t('auth:sign_in.email')}</FormLabel>
+        <FormLabel name="email">{tAuth('sign_in.email')}</FormLabel>
         <FormInput type="email" className="w-full" />
       </div>
-      <Button>{t('auth:reset-password.send')}</Button>
+      <Button>{tAuth('reset-password.send')}</Button>
     </form>
   );
 };

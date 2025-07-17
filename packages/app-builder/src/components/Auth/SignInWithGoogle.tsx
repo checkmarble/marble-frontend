@@ -7,18 +7,26 @@ import {
 } from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { useClientServices } from '@app-builder/services/init.client';
+import { TranslationObject } from '@app-builder/types/i18n';
 import useAsync from '@app-builder/utils/hooks/use-async';
 import * as Sentry from '@sentry/remix';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Logo } from 'ui-icons';
 
 import { Spinner } from '../Spinner';
 import { PopupBlockedError } from './PopupBlockedError';
 
-function SignInWithGoogleButton({ onClick, loading }: { onClick?: () => void; loading?: boolean }) {
-  const { t } = useTranslation(['auth']);
+function SignInWithGoogleButton({
+  onClick,
+  loading,
+  translationObject,
+}: {
+  onClick?: () => void;
+  loading?: boolean;
+  translationObject: TranslationObject<['auth', 'common']>;
+}) {
+  const { tAuth } = translationObject;
 
   return (
     <button
@@ -30,10 +38,10 @@ function SignInWithGoogleButton({ onClick, loading }: { onClick?: () => void; lo
         <Logo logo="google-logo" className="size-6" />
       </div>
       <span className="text-s text-grey-100 w-full whitespace-nowrap text-center align-middle font-medium">
-        {t('auth:sign_in.google')}
+        {tAuth('sign_in.google')}
       </span>
       <span className="absolute end-0 mx-2 size-4">
-        {loading ? <Spinner className="size-4" /> : null}
+        {loading ? <Spinner className="size-4" translationObject={translationObject} /> : null}
       </span>
     </button>
   );
@@ -42,11 +50,13 @@ function SignInWithGoogleButton({ onClick, loading }: { onClick?: () => void; lo
 function ClientSignInWithGoogle({
   signIn,
   loading,
+  translationObject,
 }: {
   signIn: (authPayload: AuthPayload) => void;
   loading?: boolean;
+  translationObject: TranslationObject<['auth', 'common']>;
 }) {
-  const { t } = useTranslation(['common', 'auth']);
+  const { tAuth, tCommon } = translationObject;
   const clientServices = useClientServices();
 
   const googleSignIn = useGoogleSignIn(clientServices.authenticationClientService);
@@ -60,16 +70,16 @@ function ClientSignInWithGoogle({
       signIn({ type: 'google', idToken, csrf });
     } catch (error) {
       if (error instanceof AccountExistsWithDifferentCredential) {
-        toast.error(t('common:errors.account_exists_with_different_credential'));
+        toast.error(tCommon('errors.account_exists_with_different_credential'));
       } else if (error instanceof PopupBlockedByClient) {
-        toast.error(<PopupBlockedError />);
+        toast.error(<PopupBlockedError translationObject={translationObject} />);
       } else if (error instanceof NetworkRequestFailed) {
-        toast.error(t('common:errors.firebase_network_error'));
+        toast.error(tCommon('errors.firebase_network_error'));
       } else if (error instanceof InvalidLoginCredentials) {
-        toast.error(t('auth:sign_in.errors.invalid_login_credentials'));
+        toast.error(tAuth('sign_in.errors.invalid_login_credentials'));
       } else {
         Sentry.captureException(error);
-        toast.error(t('common:errors.unknown'));
+        toast.error(tCommon('errors.unknown'));
       }
     }
   });
@@ -82,6 +92,7 @@ function ClientSignInWithGoogle({
       // We can't rely on state.loading if the user closes the popup without signing in
       // Related Firebase issue: https://github.com/firebase/firebase-js-sdk/issues/8061
       loading={loading}
+      translationObject={translationObject}
       // loading={loading || state.loading} when the issue is resolved
     />
   );
@@ -90,13 +101,23 @@ function ClientSignInWithGoogle({
 export function SignInWithGoogle({
   signIn,
   loading,
+  translationObject,
 }: {
   signIn: (authPayload: AuthPayload) => void;
   loading?: boolean;
+  translationObject: TranslationObject<['auth', 'common']>;
 }) {
   return (
-    <ClientOnly fallback={<SignInWithGoogleButton loading={loading} />}>
-      {() => <ClientSignInWithGoogle signIn={signIn} loading={loading} />}
+    <ClientOnly
+      fallback={<SignInWithGoogleButton loading={loading} translationObject={translationObject} />}
+    >
+      {() => (
+        <ClientSignInWithGoogle
+          signIn={signIn}
+          loading={loading}
+          translationObject={translationObject}
+        />
+      )}
     </ClientOnly>
   );
 }

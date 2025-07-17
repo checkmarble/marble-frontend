@@ -7,10 +7,10 @@ import {
 } from '@app-builder/services/auth/auth.client';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { useClientServices } from '@app-builder/services/init.client';
+import { TranslationObject } from '@app-builder/types/i18n';
 import useAsync from '@app-builder/utils/hooks/use-async';
 import * as Sentry from '@sentry/remix';
 import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Logo } from 'ui-icons';
 
@@ -20,11 +20,13 @@ import { PopupBlockedError } from './PopupBlockedError';
 function SignInWithMicrosoftButton({
   onClick,
   loading,
+  translationObject,
 }: {
   onClick?: () => void;
   loading?: boolean;
+  translationObject: TranslationObject<['auth', 'common']>;
 }) {
-  const { t } = useTranslation(['auth']);
+  const { tAuth } = translationObject;
 
   return (
     <button
@@ -38,10 +40,10 @@ function SignInWithMicrosoftButton({
         <Logo logo="microsoft-logo" className="size-6" />
       </div>
       <span className="text-s w-full whitespace-nowrap text-center align-middle font-semibold text-[#5E5E5E]">
-        {t('auth:sign_in.microsoft')}
+        {tAuth('sign_in.microsoft')}
       </span>
       <span className="absolute end-0 mx-2 size-4">
-        {loading ? <Spinner className="size-4" /> : null}
+        {loading ? <Spinner className="size-4" translationObject={translationObject} /> : null}
       </span>
     </button>
   );
@@ -50,11 +52,13 @@ function SignInWithMicrosoftButton({
 function ClientSignInWithMicrosoft({
   signIn,
   loading,
+  translationObject,
 }: {
   signIn: (authPayload: AuthPayload) => void;
   loading?: boolean;
+  translationObject: TranslationObject<['auth', 'common']>;
 }) {
-  const { t } = useTranslation(['common', 'auth']);
+  const { tAuth, tCommon } = translationObject;
   const clientServices = useClientServices();
 
   const microsoftSignIn = useMicrosoftSignIn(clientServices.authenticationClientService);
@@ -68,16 +72,16 @@ function ClientSignInWithMicrosoft({
       signIn({ type: 'microsoft', idToken, csrf });
     } catch (error) {
       if (error instanceof AccountExistsWithDifferentCredential) {
-        toast.error(t('common:errors.account_exists_with_different_credential'));
+        toast.error(tCommon('errors.account_exists_with_different_credential'));
       } else if (error instanceof PopupBlockedByClient) {
-        toast.error(<PopupBlockedError />);
+        toast.error(<PopupBlockedError translationObject={translationObject} />);
       } else if (error instanceof NetworkRequestFailed) {
-        toast.error(t('common:errors.firebase_network_error'));
+        toast.error(tCommon('errors.firebase_network_error'));
       } else if (error instanceof InvalidLoginCredentials) {
-        toast.error(t('auth:sign_in.errors.invalid_login_credentials'));
+        toast.error(tAuth('sign_in.errors.invalid_login_credentials'));
       } else {
         Sentry.captureException(error);
-        toast.error(t('common:errors.unknown'));
+        toast.error(tCommon('errors.unknown'));
       }
     }
   });
@@ -90,6 +94,7 @@ function ClientSignInWithMicrosoft({
       // We can't rely on state.loading if the user closes the popup without signing in
       // Related Firebase issue: https://github.com/firebase/firebase-js-sdk/issues/8061
       loading={loading}
+      translationObject={translationObject}
       // loading={loading || state.loading} when the issue is resolved
     />
   );
@@ -98,13 +103,25 @@ function ClientSignInWithMicrosoft({
 export function SignInWithMicrosoft({
   signIn,
   loading,
+  translationObject,
 }: {
   signIn: (authPayload: AuthPayload) => void;
   loading?: boolean;
+  translationObject: TranslationObject<['auth', 'common']>;
 }) {
   return (
-    <ClientOnly fallback={<SignInWithMicrosoftButton loading={loading} />}>
-      {() => <ClientSignInWithMicrosoft signIn={signIn} loading={loading} />}
+    <ClientOnly
+      fallback={
+        <SignInWithMicrosoftButton loading={loading} translationObject={translationObject} />
+      }
+    >
+      {() => (
+        <ClientSignInWithMicrosoft
+          signIn={signIn}
+          loading={loading}
+          translationObject={translationObject}
+        />
+      )}
     </ClientOnly>
   );
 }

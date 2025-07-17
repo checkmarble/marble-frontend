@@ -1,10 +1,10 @@
 import { LanguagePicker } from '@app-builder/routes/ressources+/user+/language';
 import { segment } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
+import { TranslationObject } from '@app-builder/types/i18n';
 import { getRoute } from '@app-builder/utils/routes';
 import * as Popover from '@radix-ui/react-popover';
 import { Form } from '@remix-run/react';
-import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Tag } from 'ui-design-system';
 import { Icon, Logo } from 'ui-icons';
 
@@ -14,10 +14,18 @@ interface UserInfoProps {
   lastName?: string;
   role: string;
   orgOrPartnerName: string;
+  translationObject: TranslationObject<['common']>;
 }
 
-export function UserInfo({ email, firstName, lastName, role, orgOrPartnerName }: UserInfoProps) {
-  const { t } = useTranslation(['common']);
+export function UserInfo({
+  email,
+  firstName,
+  lastName,
+  role,
+  orgOrPartnerName,
+  translationObject,
+}: UserInfoProps) {
+  const { tCommon } = translationObject;
   const fullName = getFullName({ firstName, lastName });
   return (
     <Popover.Root>
@@ -74,7 +82,7 @@ export function UserInfo({ email, firstName, lastName, role, orgOrPartnerName }:
                 }}
               >
                 <Icon icon="logout" className="size-5" />
-                {t('common:auth.logout')}
+                {tCommon('auth.logout')}
               </Button>
             </Form>
           </div>

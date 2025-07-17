@@ -1,15 +1,19 @@
 import { type CaseContributor } from '@app-builder/models/cases';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
+import { TranslationObject } from '@app-builder/types/i18n';
 import { cx } from 'class-variance-authority';
-import { useTranslation } from 'react-i18next';
 import { Avatar, Tooltip } from 'ui-design-system';
 
-import { casesI18n } from '.';
-
-export function CaseContributors({ contributors }: { contributors: CaseContributor[] }) {
+export function CaseContributors({
+  contributors,
+  translationObject,
+}: {
+  contributors: CaseContributor[];
+  translationObject: TranslationObject<['cases']>;
+}) {
   const { getOrgUserById } = useOrganizationUsers();
-  const { t } = useTranslation(casesI18n);
+  const { tCases } = translationObject;
 
   return (
     <Tooltip.Default
@@ -26,7 +30,7 @@ export function CaseContributors({ contributors }: { contributors: CaseContribut
                   lastName={user?.lastName}
                 />
                 <div className="text-grey-00 text-xs font-normal capitalize">
-                  {getFullName(user) || t('cases:case_detail.unknown_user')}
+                  {getFullName(user) || tCases('case_detail.unknown_user')}
                 </div>
               </div>
             );
