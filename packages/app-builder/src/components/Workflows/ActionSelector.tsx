@@ -1,4 +1,5 @@
 import { type AstNode, type DataModel } from '@app-builder/models';
+// TODO : REMOVE ADAPTS
 import { adaptAstNode, adaptNodeDto } from '@app-builder/models/astNode/ast-node';
 import {
   isStringTemplateAstNode,
