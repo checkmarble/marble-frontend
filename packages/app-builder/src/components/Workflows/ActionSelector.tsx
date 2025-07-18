@@ -1,6 +1,10 @@
 import { type AstNode, type DataModel } from '@app-builder/models';
 import { adaptAstNode, adaptNodeDto } from '@app-builder/models/astNode/ast-node';
-import { NewStringTemplateAstNode } from '@app-builder/models/astNode/strings';
+import {
+  isStringTemplateAstNode,
+  NewStringTemplateAstNode,
+  type StringTemplateAstNode,
+} from '@app-builder/models/astNode/strings';
 import { WorkflowAction } from '@app-builder/models/scenario/workflow';
 import { useListInboxesQuery } from '@app-builder/queries/Workflows/list-inboxes';
 import { useRef, useState } from 'react';
@@ -8,9 +12,8 @@ import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { workflowI18n } from '../Scenario/Workflow/workflow-i18n';
+import { CaseNameEditor } from './CaseNameEditor';
 import { InboxSelector } from './InboxSelector';
-import { WorkflowAstProvider } from './WorkflowAstProvider';
-import { WorkflowPayloadEvaluationNode } from './WorkflowPayloadEvaluationNode';
 import { useWorkflowDataFeatureAccess } from './WorkflowProvider';
 
 interface ActionSelectorProps {
@@ -27,7 +30,8 @@ export function ActionSelector({
   dataModel = [],
 }: ActionSelectorProps) {
   const { t } = useTranslation(workflowI18n);
-  const { isCreateInboxAvailable } = useWorkflowDataFeatureAccess();
+  const workflowFeatureAccess = useWorkflowDataFeatureAccess();
+  const isCreateInboxAvailable = workflowFeatureAccess.isCreateInboxAvailable;
 
   const inboxesQuery = useListInboxesQuery();
   const [open, setOpen] = useState(false);
@@ -66,9 +70,17 @@ export function ActionSelector({
   ] as const;
 
   // Helper function to create a proper default title template
-  const createDefaultTitleTemplate = () => {
-    // Create a simple string template with a basic template
+  const createDefaultTitleTemplate = (): StringTemplateAstNode => {
     return NewStringTemplateAstNode('Case {{object_id}}', {});
+  };
+
+  // Helper function to ensure AST node has proper structure
+  const ensureValidAstNode = (node: AstNode): AstNode => {
+    return {
+      ...node,
+      children: node.children || [],
+      namedChildren: node.namedChildren || {},
+    };
   };
 
   const handleActionSelect = (actionType: (typeof actionOptions)[number]['value']) => {
@@ -92,7 +104,7 @@ export function ActionSelector({
             tempIdRef.current ||
             `temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
           params: {
-            inbox_id: inboxesQuery.data?.[0]?.id || 'default-inbox', // Use first inbox or fallback
+            inbox_id: inboxesQuery.data?.[0]?.id ?? '',
             any_inbox: false,
             title_template: adaptNodeDto(createDefaultTitleTemplate()),
           },
@@ -106,7 +118,7 @@ export function ActionSelector({
             tempIdRef.current ||
             `temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
           params: {
-            inbox_id: inboxesQuery.data?.[0]?.id || 'default-inbox', // Use first inbox or fallback
+            inbox_id: inboxesQuery.data?.[0]?.id ?? '',
             any_inbox: false,
             title_template: adaptNodeDto(createDefaultTitleTemplate()),
           },
@@ -126,36 +138,25 @@ export function ActionSelector({
       ...action,
       params: {
         ...action.params,
-        inbox_id: inboxId,
-        any_inbox: false, // When selecting a specific inbox, turn off any_inbox
+        inbox_id: inboxId === 'any_inbox' ? '' : inboxId,
+        any_inbox: inboxId === 'any_inbox',
       },
     };
 
     onChange?.(newAction);
   };
 
-  const handleTitleTemplateChange = (titleTemplate: AstNode) => {
+  const handleTitleTemplateChange = (titleTemplate: StringTemplateAstNode | null) => {
     if (!action || action.action === 'DISABLED' || !('params' in action)) return;
+
+    const templateToUse = titleTemplate || createDefaultTitleTemplate();
+    const safeTemplate = ensureValidAstNode(templateToUse);
 
     const newAction: WorkflowAction = {
       ...action,
       params: {
         ...action.params,
-        title_template: adaptNodeDto(titleTemplate),
-      },
-    };
-
-    onChange?.(newAction);
-  };
-
-  const handleInitializeTitleTemplate = () => {
-    if (!action || action.action === 'DISABLED' || !('params' in action)) return;
-
-    const newAction: WorkflowAction = {
-      ...action,
-      params: {
-        ...action.params,
-        title_template: adaptNodeDto(createDefaultTitleTemplate()),
+        title_template: adaptNodeDto(safeTemplate),
       },
     };
 
@@ -166,21 +167,33 @@ export function ActionSelector({
     action?.action === 'CREATE_CASE' || action?.action === 'ADD_TO_CASE_IF_POSSIBLE';
   const selectedAction = action?.action;
 
-  const getTitleTemplate = (): AstNode | undefined => {
+  const getTitleTemplateAsStringTemplate = (): StringTemplateAstNode => {
     if (!action || !('params' in action) || !action.params?.title_template) {
-      return undefined;
+      return createDefaultTitleTemplate();
     }
 
-    // If it's already an AstNode, return it directly
-    if (
-      'id' in action.params.title_template &&
-      typeof action.params.title_template.id === 'string'
-    ) {
-      return action.params.title_template as AstNode;
-    }
+    try {
+      let astNode: AstNode;
+      // If it's already an AstNode, use it directly
+      if (
+        'id' in action.params.title_template &&
+        typeof action.params.title_template.id === 'string'
+      ) {
+        astNode = action.params.title_template as AstNode;
+      } else {
+        // Otherwise, adapt from NodeDto
+        astNode = adaptAstNode(action.params.title_template);
+      }
 
-    // Otherwise, adapt from NodeDto
-    return adaptAstNode(action.params.title_template);
+      // Ensure the node has proper structure
+      const safeNode = ensureValidAstNode(astNode);
+
+      // Check if it's a StringTemplateAstNode and return it, otherwise return default
+      return isStringTemplateAstNode(safeNode) ? safeNode : createDefaultTitleTemplate();
+    } catch (error) {
+      console.warn('Error processing title template, using default:', error);
+      return createDefaultTitleTemplate();
+    }
   };
 
   return (
@@ -250,24 +263,11 @@ export function ActionSelector({
               </span>
             </div>
             <div className="flex-1 border border-grey-20 rounded-md p-2 bg-grey-98">
-              {getTitleTemplate() ? (
-                <WorkflowAstProvider
-                  triggerObjectType={triggerObjectType}
-                  dataModel={dataModel}
-                  node={getTitleTemplate()!}
-                  onChange={handleTitleTemplateChange}
-                >
-                  <WorkflowPayloadEvaluationNode root path="root" />
-                </WorkflowAstProvider>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleInitializeTitleTemplate}
-                  className="w-full text-left text-grey-50 text-sm hover:text-grey-25 transition-colors cursor-pointer"
-                >
-                  {t('workflows:action.inbox.add_title_template')}
-                </button>
-              )}
+              <CaseNameEditor
+                label=""
+                value={getTitleTemplateAsStringTemplate()}
+                onChange={handleTitleTemplateChange}
+              />
             </div>
           </div>
         </div>
