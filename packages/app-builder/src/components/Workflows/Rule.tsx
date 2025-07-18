@@ -77,7 +77,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
       <div
         className={`w-full max-w-7xl mx-auto relative transition-all duration-200 ${
           snapshot.isDragging ? 'rotate-1 scale-105 z-50' : ''
-        }`}
+        } ${isModified ? 'drop-shadow-2xl' : ''}`}
       >
         {/* Conditions and Actions Boxes */}
         <div className="flex items-center w-full">
@@ -85,7 +85,11 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
             {/* Rule title bar */}
             <div
               className={` text-grey-00 font-semibold px-4 py-2 rounded-t-lg border-2 border-b-0 w-auto bg-grey-90 flex items-center justify-between ${
-                snapshot.isDragging ? 'border-purple-60' : 'border-grey-90'
+                snapshot.isDragging
+                  ? 'border-purple-60'
+                  : isModified
+                    ? 'border-purple-60 shadow-lg ring-2 ring-blue-200'
+                    : 'border-grey-90'
               }`}
               style={{ marginBottom: 0 }}
             >
@@ -138,7 +142,11 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
             </div>
             <div
               className={`rounded-b-lg border-2 border-t-0 border-grey-90 bg-white p-4 transition-all duration-200 relative ${
-                snapshot.isDragging ? 'border-purple-60 shadow-xl' : 'border-grey-20'
+                snapshot.isDragging
+                  ? 'border-purple-60 shadow-xl'
+                  : isModified
+                    ? 'border-purple-60 shadow-xl'
+                    : 'border-grey-20'
               }`}
             >
               {/* Drag Handle */}
@@ -252,7 +260,11 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
           {/* Actions Box */}
           <div
             className={`flex-[3] rounded-lg border-2 border-grey-90 bg-white p-4 transition-all duration-200 min-w-[400px] bg-grey-100 ${
-              snapshot.isDragging ? 'border-purple-60 shadow-xl' : 'border-grey-20'
+              snapshot.isDragging
+                ? 'border-purple-60 shadow-xl'
+                : isModified
+                  ? 'border-purple-60 shadow-xl ring-2 ring-blue-200'
+                  : 'border-grey-20'
             }`}
           >
             <div className="bg-grey-05 rounded-md">
