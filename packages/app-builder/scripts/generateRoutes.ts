@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { join } from 'node:path';
 
 import { routes } from '@app-builder/utils/routes/routes';
@@ -53,6 +54,15 @@ async function buildTypesFile(routes: readonly Route[]) {
     const RouteID = `export type RouteID = ${getRoutesIds(routes)
       .map((routeId) => `'${routeId}'`)
       .join(' | ')};`;
+
+    fs.writeFileSync(
+      outTypesFile,
+      `
+        ${RoutePath}
+
+        ${RouteID}
+      `,
+    );
 
     biome.formatContent(
       projectKey,

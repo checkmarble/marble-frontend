@@ -94,6 +94,7 @@ export interface CaseRepository {
   getNextUnassignedCaseId(args: { caseId: string }): Promise<string | null>;
   escalateCase(args: { caseId: string }): Promise<unknown>;
   askReviewForCase(args: { caseId: string }): Promise<CaseReview>;
+  getCaseFileDownloadLink(fileId: string): Promise<{ url: string }>;
 }
 
 export function makeGetCaseRepository() {
@@ -194,6 +195,10 @@ export function makeGetCaseRepository() {
     escalateCase: ({ caseId }) => marbleCoreApiClient.escalateCase(caseId),
     askReviewForCase: async ({ caseId }) => {
       return adaptCaseReview(await marbleCoreApiClient.askReviewForCase(caseId));
+    },
+    getCaseFileDownloadLink: async (fileId) => {
+      console.log('getCaseFileDownloadLink', fileId);
+      return marbleCoreApiClient.downloadCaseFile(fileId);
     },
   });
 }
