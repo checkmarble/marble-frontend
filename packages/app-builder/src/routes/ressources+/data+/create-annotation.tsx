@@ -9,7 +9,6 @@ import { type FileAnnotation } from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { getServerEnv } from '@app-builder/utils/environment';
-import { getClientAnnotationFileUploadEndpoint } from '@app-builder/utils/files';
 import { handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { useCallbackRef } from '@marble/shared';
@@ -192,11 +191,13 @@ export async function action({ request }: ActionFunctionArgs) {
             body.append('files[]', file);
           });
 
+          const endpoint = `/client_data/${data.tableName}/${data.objectId}/annotations/file`;
           promises.push(
-            fetch(
-              `${getServerEnv('MARBLE_API_URL_SERVER')}${getClientAnnotationFileUploadEndpoint(data.tableName, data.objectId)}`,
-              { method: 'POST', body, headers: { Authorization: `Bearer ${token}` } },
-            ).then((response) => {
+            fetch(`${getServerEnv('MARBLE_API_URL_SERVER')}${endpoint}`, {
+              method: 'POST',
+              body,
+              headers: { Authorization: `Bearer ${token}` },
+            }).then((response) => {
               if (response.status === 200) return response;
               throw response;
             }),

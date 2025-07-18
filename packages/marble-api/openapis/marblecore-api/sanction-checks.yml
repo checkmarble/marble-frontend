@@ -70,6 +70,73 @@
               type: array
               items:
                 $ref: '#/components/schemas/SanctionCheckFileDto'
+  post:
+    tags:
+      - Screening
+    summary: Upload a file to a screening
+    operationId: uploadScreeningFile
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: screeningId
+        description: ID of the screening
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: 'The file to upload'
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              file:
+                type: string
+                format: binary
+    responses:
+      '200':
+        description: The file uploaded
+/sanction-checks/{screeningId}/files/{fileId}:
+  get:
+    tags:
+      - CustomList
+    summary: Download a custom list values as a CSV file
+    operationId: downloadScreeningFile
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: screeningId
+        description: ID of the custom list that need to be downloaded
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: fileId
+        description: ID of the file to download
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Signed url to download the case file's content
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: Signed url to download the case file's content
+      '401':
+        $ref: 'components.yml#/responses/401'
 /sanction-checks/matches/{matchId}:
   patch:
     tags:

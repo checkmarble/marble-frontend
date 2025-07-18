@@ -1,11 +1,14 @@
-import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
+import {
+  UploadFile,
+  UploadFileContentProps,
+} from '@app-builder/routes/ressources+/files+/upload-file';
 
 export function AddYourFirstFile({
   children,
   uploadFileEndpoint,
 }: {
   children?: React.ReactNode;
-  uploadFileEndpoint: string;
+  uploadFileEndpoint: UploadFileContentProps['uploadFileEndpoint'];
 }) {
   return (
     <UploadFile uploadFileEndpoint={uploadFileEndpoint}>

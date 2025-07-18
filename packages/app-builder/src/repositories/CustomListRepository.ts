@@ -22,6 +22,7 @@ export interface CustomListsRepository {
     body: CreateCustomListValueBody,
   ): Promise<CustomListValue>;
   deleteCustomListValue(customListId: string, valueId: string): Promise<void>;
+  downloadValues(customListId: string): Promise<string>;
 }
 
 export function makeGetCustomListRepository() {
@@ -54,6 +55,9 @@ export function makeGetCustomListRepository() {
     },
     deleteCustomListValue: async (customListId, valueId) => {
       await marbleCoreApiClient.deleteCustomListValue(customListId, valueId);
+    },
+    downloadValues: async (customListId) => {
+      return marbleCoreApiClient.downloadListValuesAsCsvFile(customListId);
     },
   });
 }

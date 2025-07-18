@@ -40,7 +40,7 @@ Sentry.init({
   tracesSampleRate: 0.2,
 
   // Set `tracePropagationTargets` to control for which URLs distributed tracing should be enabled
-  tracePropagationTargets: [getClientEnv('MARBLE_APP_URL'), getClientEnv('MARBLE_API_URL')],
+  tracePropagationTargets: [getClientEnv('MARBLE_APP_URL')],
 
   // Capture Replay for 10% of all sessions,
   // plus for 100% of sessions with an error
