@@ -46,9 +46,6 @@ export function InboxSelector({
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-grey-00 text-s first-letter:capitalize">
-        {t('workflows:detail_panel.inbox.label')}*
-      </label>
       <MenuCommand.Menu open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
           <MenuCommand.SelectButton>
