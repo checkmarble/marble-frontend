@@ -62,7 +62,6 @@
   "detail_panel.decision_created.outcomes.placeholder": "Sélectionnez au moins un résultat",
   "detail_panel.decision_created.scenario.label": "Scénario",
   "detail_panel.decision_created.scenario.placeholder": "Sélectionnez un scénario",
-  "detail_panel.inbox.label": "Boîte de réception",
   "detail_panel.inbox.need_inbox_contact_admin": "Veuillez contacter votre administrateur pour créer une boîte de réception",
   "detail_panel.inbox.placeholder": "Sélectionnez une boîte de réception",
   "detail_panel.multiple_selected_nodes.clear_selection": "Effacer la sélection",

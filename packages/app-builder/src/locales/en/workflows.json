@@ -62,7 +62,6 @@
   "detail_panel.decision_created.outcomes.placeholder": "Select at least one outcome",
   "detail_panel.decision_created.scenario.label": "Scenario",
   "detail_panel.decision_created.scenario.placeholder": "Select a scenario",
-  "detail_panel.inbox.label": "Inbox",
   "detail_panel.inbox.need_inbox_contact_admin": "Please contact your admin to create an inbox",
   "detail_panel.inbox.placeholder": "Select an inbox",
   "detail_panel.multiple_selected_nodes.clear_selection": "Clear selection",
