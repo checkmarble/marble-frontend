@@ -48,6 +48,7 @@ interface WorkflowContextValue {
   confirmDeleteRule: () => Promise<void>;
   cancelDeleteRule: () => void;
   renameRule: (ruleId: string, newName: string, fallthrough: boolean) => void;
+  updateRuleName: (ruleId: string, newName: string) => void;
   reorderRules: (sourceIndex: number, destinationIndex: number) => Promise<void>;
 
   addCondition: (ruleId: string, condition: WorkflowCondition) => void;
@@ -249,6 +250,22 @@ export function WorkflowProvider({
     });
   };
 
+  const updateRuleName = (ruleId: string, newName: string) => {
+    storeOriginalRule(ruleId);
+    setModifiedRules((prev) => new Set(prev).add(ruleId));
+
+    setLocalWorkflowRules((prev) => {
+      const newMap = new Map(prev);
+      const rule = newMap.get(ruleId);
+      if (rule) {
+        const updatedRule = { ...rule };
+        updatedRule.name = newName;
+        newMap.set(ruleId, updatedRule);
+      }
+      return newMap;
+    });
+  };
+
   const reorderRules = async (sourceIndex: number, destinationIndex: number) => {
     const newOrder = Array.from(ruleOrder);
     const [reorderedItem] = newOrder.splice(sourceIndex, 1);
@@ -426,7 +443,7 @@ export function WorkflowProvider({
       // remove the conditions from the rule
       rule.conditions = rule.conditions.filter((c) => !isConditionMarkedForDeletion(ruleId, c.id));
 
-      // compare the rule with the original rule for other changes on remaining conditions and actions
+      // compare the rule with the original rule for other changes on remaining conditions, actions, and name
       const originalRule = originalRules.get(ruleId);
       if (originalRule) {
         const originalConditionsFiltered =
@@ -435,12 +452,40 @@ export function WorkflowProvider({
         const originalActions = originalRule.actions || [];
         const updatedActions = rule.actions || [];
 
-        // Deep compare conditions and actions to see if there are other changes beyond deletions
+        // Deep compare conditions, actions, and name to see if there are other changes beyond deletions
         const conditionsChanged =
           JSON.stringify(originalConditionsFiltered) !== JSON.stringify(updatedConditions);
         const actionsChanged = JSON.stringify(originalActions) !== JSON.stringify(updatedActions);
+        const nameChanged = originalRule.name !== rule.name;
 
-        if (!conditionsChanged && !actionsChanged) {
+        // Handle name change first if it's the only change
+        if (nameChanged && !conditionsChanged && !actionsChanged) {
+          await renameRuleMutation.mutateAsync({
+            scenarioId,
+            ruleId,
+            name: rule.name,
+            fallthrough: rule.fallthrough,
+          });
+
+          setModifiedRules((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(ruleId);
+            return newSet;
+          });
+          setOriginalRules((prev) => {
+            const newMap = new Map(prev);
+            newMap.delete(ruleId);
+            return newMap;
+          });
+          setPendingDeletedConditions((prev) => {
+            const newMap = new Map(prev);
+            newMap.delete(ruleId);
+            return newMap;
+          });
+          return;
+        }
+
+        if (!conditionsChanged && !actionsChanged && !nameChanged) {
           // Only condition deletions, no other changes - skip rule update
           setModifiedRules((prev) => {
             const newSet = new Set(prev);
@@ -545,6 +590,7 @@ export function WorkflowProvider({
     confirmDeleteRule,
     cancelDeleteRule,
     renameRule,
+    updateRuleName,
     reorderRules,
     addCondition,
     updateCondition,
