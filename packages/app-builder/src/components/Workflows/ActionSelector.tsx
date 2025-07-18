@@ -8,8 +8,10 @@ import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { workflowI18n } from '../Scenario/Workflow/workflow-i18n';
+import { InboxSelector } from './InboxSelector';
 import { WorkflowAstProvider } from './WorkflowAstProvider';
 import { WorkflowPayloadEvaluationNode } from './WorkflowPayloadEvaluationNode';
+import { useWorkflowDataFeatureAccess } from './WorkflowProvider';
 
 interface ActionSelectorProps {
   action?: WorkflowAction;
@@ -25,10 +27,10 @@ export function ActionSelector({
   dataModel = [],
 }: ActionSelectorProps) {
   const { t } = useTranslation(workflowI18n);
+  const { isCreateInboxAvailable } = useWorkflowDataFeatureAccess();
 
   const inboxesQuery = useListInboxesQuery();
   const [open, setOpen] = useState(false);
-  const [inboxOpen, setInboxOpen] = useState(false);
   // Generate a stable temporary ID for new actions being built
   const tempIdRef = useRef<string | null>(null);
 
@@ -125,20 +127,7 @@ export function ActionSelector({
       params: {
         ...action.params,
         inbox_id: inboxId,
-      },
-    };
-
-    onChange?.(newAction);
-  };
-
-  const handleAnyInboxChange = (checked: boolean) => {
-    if (!action || action.action === 'DISABLED' || !('params' in action)) return;
-
-    const newAction: WorkflowAction = {
-      ...action,
-      params: {
-        ...action.params,
-        any_inbox: checked,
+        any_inbox: false, // When selecting a specific inbox, turn off any_inbox
       },
     };
 
@@ -176,7 +165,6 @@ export function ActionSelector({
   const needsInbox =
     action?.action === 'CREATE_CASE' || action?.action === 'ADD_TO_CASE_IF_POSSIBLE';
   const selectedAction = action?.action;
-  const isAnyInbox = action && 'params' in action ? action.params?.any_inbox || false : false;
 
   const getTitleTemplate = (): AstNode | undefined => {
     if (!action || !('params' in action) || !action.params?.title_template) {
@@ -245,61 +233,15 @@ export function ActionSelector({
             <div className="bg-grey-20 px-2 py-1 rounded">
               <span className="text-grey-60 font-bold text-sm">in</span>
             </div>
-            <MenuCommand.Menu open={inboxOpen} onOpenChange={setInboxOpen}>
-              <MenuCommand.Trigger>
-                <Button variant="secondary">
-                  <Icon icon="inbox" className="size-4" />
-                  {isAnyInbox ? (
-                    <span>{t('workflows:action.inbox.any_available')}</span>
-                  ) : action && 'params' in action && action.params?.inbox_id ? (
-                    <span>
-                      {inboxesQuery.data?.find((inbox) => inbox.id === action.params.inbox_id)
-                        ?.name || action.params.inbox_id}
-                    </span>
-                  ) : (
-                    <span>{t('workflows:action.inbox.select_inbox')}</span>
-                  )}
-                </Button>
-              </MenuCommand.Trigger>
-              <MenuCommand.Content>
-                <MenuCommand.List>
-                  {inboxesQuery.isLoading ? (
-                    <div className="p-3 text-center text-grey-50">
-                      {t('workflows:action.inbox.loading')}
-                    </div>
-                  ) : inboxesQuery.isError ? (
-                    <div className="p-3 text-center text-red-60">
-                      {t('workflows:action.inbox.failed_to_load')}
-                    </div>
-                  ) : (
-                    <>
-                      <MenuCommand.Item
-                        key="any-inbox"
-                        value="any-inbox"
-                        onSelect={() => handleAnyInboxChange(true)}
-                        className="flex items-center gap-2 p-3 hover:bg-grey-05 rounded-md cursor-pointer"
-                      >
-                        <Icon icon="inbox" className="size-4 text-grey-50" />
-                        <span className="font-medium text-grey-00">
-                          {t('workflows:action.inbox.any_available')}
-                        </span>
-                      </MenuCommand.Item>
-                      {inboxesQuery.data?.map((inbox) => (
-                        <MenuCommand.Item
-                          key={inbox.id}
-                          value={inbox.id}
-                          onSelect={() => handleInboxSelect(inbox.id)}
-                          className="flex items-center gap-2 p-3 hover:bg-grey-05 rounded-md cursor-pointer"
-                        >
-                          <Icon icon="inbox" className="size-4 text-grey-50" />
-                          <span className="font-medium text-grey-00">{inbox.name}</span>
-                        </MenuCommand.Item>
-                      ))}
-                    </>
-                  )}
-                </MenuCommand.List>
-              </MenuCommand.Content>
-            </MenuCommand.Menu>
+            <div className="flex items-center gap-2">
+              <InboxSelector
+                selectedInboxId={action && 'params' in action ? action.params?.inbox_id : undefined}
+                onSelectedInboxIdChange={handleInboxSelect}
+                inboxes={inboxesQuery.data || []}
+                isCreateInboxAvailable={isCreateInboxAvailable}
+                withAnyInboxAvailable={true}
+              />
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <div className="bg-grey-20 px-2 py-1 rounded">
