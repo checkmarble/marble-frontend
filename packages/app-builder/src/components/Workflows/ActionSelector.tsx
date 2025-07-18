@@ -138,7 +138,7 @@ export function ActionSelector({
       ...action,
       params: {
         ...action.params,
-        inbox_id: inboxId === 'any_inbox' ? '' : inboxId,
+        inbox_id: inboxId === 'any_inbox' ? (inboxesQuery.data?.[0]?.id ?? '') : inboxId,
         any_inbox: inboxId === 'any_inbox',
       },
     };
@@ -253,6 +253,7 @@ export function ActionSelector({
                 inboxes={inboxesQuery.data || []}
                 isCreateInboxAvailable={isCreateInboxAvailable}
                 withAnyInboxAvailable={true}
+                isAnyInboxSelected={action && 'params' in action ? action.params?.any_inbox : false}
               />
             </div>
           </div>
