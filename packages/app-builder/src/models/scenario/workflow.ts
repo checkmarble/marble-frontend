@@ -1,23 +1,45 @@
 import {
+  type AlwaysMatches,
+  type IfOutcomeIn,
+  type NeverMatches,
   WorkflowActionDto,
   WorkflowConditionDetailDto,
   WorkflowConditionDto,
   type WorkflowRuleDto,
 } from 'marble-api';
+import { AstNode, adaptAstNode } from '../astNode/ast-node';
 
 export type WorkflowAction = WorkflowActionDto;
 
+export type RuleDto = WorkflowRuleDto & {
+  conditions: WorkflowConditionDto[];
+  actions: WorkflowActionDto[];
+};
+
 export type WorkflowConditionDetail = WorkflowConditionDetailDto;
 
-export type RuleDto = WorkflowRuleDto & {
+export type Rule = WorkflowRuleDto & {
   conditions: WorkflowCondition[];
   actions: WorkflowAction[];
 };
 
-// export type Rule = Omit<RuleDto, 'id'> & { id?: string };
-export type Rule = RuleDto;
-
-export type WorkflowCondition = WorkflowConditionDto;
+export type WorkflowCondition =
+  | AlwaysMatches
+  | NeverMatches
+  | IfOutcomeIn
+  | {
+      function: 'rule_hit';
+      params: {
+        /** ID of a rule that must match */
+        rule_id: string;
+      };
+    }
+  | {
+      function: 'payload_evaluates';
+      params: {
+        expression: AstNode;
+      };
+    };
 
 export function adaptWorkflow(dtos: RuleDto[]): Rule[] {
   return dtos.map((dto) => ({
@@ -40,6 +62,14 @@ export function adaptWorkflowRule(dto: RuleDto): Rule {
 }
 
 function adaptWorkflowCondition(dto: WorkflowConditionDto): WorkflowCondition {
+  if (dto.function === 'payload_evaluates') {
+    return {
+      function: 'payload_evaluates',
+      params: {
+        expression: adaptAstNode(dto.params.expression),
+      },
+    };
+  }
   return dto;
 }
 

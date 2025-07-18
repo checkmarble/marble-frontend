@@ -1,4 +1,5 @@
 import { type DataModel } from '@app-builder/models';
+import { NewAstNode, NewUndefinedAstNode } from '@app-builder/models/astNode/ast-node';
 import { type WorkflowCondition } from '@app-builder/models/scenario/workflow';
 import { type OutcomeDto } from 'marble-api';
 import { useState } from 'react';
@@ -83,7 +84,12 @@ export function ConditionSelector({
         params = { rule_id: paramValue };
         break;
       case 'payload_evaluates':
-        params = { expression: paramValue };
+        params = {
+          expression: NewAstNode({
+            name: '=',
+            children: [NewUndefinedAstNode(), NewUndefinedAstNode()],
+          }),
+        };
         break;
       default:
         params = {};

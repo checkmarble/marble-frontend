@@ -91,18 +91,11 @@ export function injectIdToNode<T extends IdLessAstNode>(
 export function stripIdFromNode<T extends AstNode>(
   node: T,
 ): T extends infer N extends AstNode ? IdLessAstNode<N> : never {
-  // Handle null/undefined nodes
-  if (!node) {
-    return null as any;
-  }
-
   const { id: _, ...strippedNode } = node;
   return {
     ...strippedNode,
-    children: R.map(node.children || [], (child) => stripIdFromNode(child)),
-    namedChildren: R.mapValues(node.namedChildren || {}, (child) =>
-      child ? stripIdFromNode(child) : null,
-    ),
+    children: R.map(node.children, (child) => stripIdFromNode(child)),
+    namedChildren: R.mapValues(node.namedChildren, (child) => stripIdFromNode(child)),
   } as unknown as ReturnType<typeof stripIdFromNode<T>>;
 }
 
@@ -140,19 +133,12 @@ export function NewEmptyRuleAstNode(): OrWithAndAstNode {
 
 // DTO adapter functions
 export function adaptAstNode(nodeDto: NodeDto): AstNode {
-  // Handle null/undefined nodeDto
-  if (!nodeDto) {
-    return NewUndefinedAstNode();
-  }
-
   return {
     id: nodeDto.id ?? uuidv7(),
     name: nodeDto.name,
     constant: nodeDto.constant,
     children: (nodeDto.children ?? []).map(adaptAstNode),
-    namedChildren: R.mapValues(nodeDto.named_children ?? {}, (child) =>
-      child ? adaptAstNode(child) : NewUndefinedAstNode(),
-    ),
+    namedChildren: R.mapValues(nodeDto.named_children ?? {}, adaptAstNode),
   };
 }
 
