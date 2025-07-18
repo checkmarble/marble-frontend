@@ -143,21 +143,22 @@ export const ReportFile = ({
   reportId: string;
 }) => {
   const { t } = useTranslation(casesI18n);
-  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(
-    `/cases/${caseId}/sar/${reportId}/download`,
-    {
-      onError: (e) => {
-        if (e instanceof AlreadyDownloadingError) {
-          // Already downloading, do nothing
-          return;
-        } else if (e instanceof AuthRequestError) {
-          toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
-        } else {
-          toast.error(t('cases:case.file.errors.downloading_link.unknown'));
-        }
-      },
+  const downloadEndpoint = getRoute('/ressources/cases/sar/download/:caseId/:reportId', {
+    caseId,
+    reportId,
+  });
+  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(downloadEndpoint, {
+    onError: (e) => {
+      if (e instanceof AlreadyDownloadingError) {
+        // Already downloading, do nothing
+        return;
+      } else if (e instanceof AuthRequestError) {
+        toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
+      } else {
+        toast.error(t('cases:case.file.errors.downloading_link.unknown'));
+      }
     },
-  );
+  });
 
   return (
     <Button

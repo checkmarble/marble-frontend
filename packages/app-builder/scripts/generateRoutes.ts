@@ -45,6 +45,7 @@ async function buildTypesFile(routes: readonly Route[]) {
     const RouteID = `export type RouteID = ${getRoutesIds(routes)
       .map((routeId) => `'${routeId}'`)
       .join(' | ')};`;
+
     await writeFile(
       outTypesFile,
       `

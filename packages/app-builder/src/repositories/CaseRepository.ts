@@ -95,6 +95,7 @@ export interface CaseRepository {
   escalateCase(args: { caseId: string }): Promise<unknown>;
   enqueueReviewForCase(args: { caseId: string }): Promise<unknown>;
   getMostRecentCaseReview(args: { caseId: string }): Promise<CaseReview[]>;
+  getCaseFileDownloadLink(fileId: string): Promise<{ url: string }>;
 }
 
 export function makeGetCaseRepository() {
@@ -199,6 +200,9 @@ export function makeGetCaseRepository() {
     getMostRecentCaseReview: async ({ caseId }) => {
       const reviews = await marbleCoreApiClient.getMostRecentCaseReview(caseId);
       return reviews.map(adaptCaseReview);
+    },
+    getCaseFileDownloadLink: async (fileId) => {
+      return marbleCoreApiClient.downloadCaseFile(fileId);
     },
   });
 }

@@ -18,11 +18,6 @@ import {
   type TableModelWithOptions,
 } from '@app-builder/models';
 import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
-import {
-  AlreadyDownloadingError,
-  AuthRequestError,
-  useDownloadFile,
-} from '@app-builder/services/DownloadFilesService';
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
@@ -34,6 +29,7 @@ import { type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-ru
 import {
   defer,
   isRouteErrorResponse,
+  Link,
   useLoaderData,
   useNavigate,
   useRouteError,
@@ -43,12 +39,20 @@ import { Future, Result } from '@swan-io/boxed';
 import { type Namespace } from 'i18next';
 import { pick, unique } from 'radash';
 import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { filter, flat, groupBy, map, mapValues, omit, pipe, uniqueBy } from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
-import { Button, cn, Markdown, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui-design-system';
+import {
+  Button,
+  CtaClassName,
+  cn,
+  Markdown,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -375,7 +379,16 @@ export default function CaseManagerIndexPage() {
                           ? 'Review will be ready in a few minutes, refresh to see it'
                           : 'Generate Review'}
                       </Button>
-                      <FileLink endpoint={`/cases/${details.id}/data_for_investigation`} />
+                      <Link
+                        className={CtaClassName({ variant: 'secondary' })}
+                        reloadDocument
+                        to={getRoute('/ressources/cases/download-data/:caseId', {
+                          caseId: details.id,
+                        })}
+                      >
+                        <Icon icon="download" className="size-5" />
+                        {t('cases:case.file.download')}
+                      </Link>
                     </div>
                   </div>
                 </AiAssist.Content>
@@ -458,42 +471,4 @@ export function ErrorBoundary() {
   }
 
   return <ErrorComponent error={error} />;
-}
-
-function FileLink({ endpoint }: { endpoint: string }) {
-  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(endpoint, {
-    onError: (e) => {
-      if (e instanceof AlreadyDownloadingError) {
-        // Already downloading, do nothing
-        return;
-      } else if (e instanceof AuthRequestError) {
-        toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
-      } else {
-        toast.error(t('cases:case.file.errors.downloading_link.unknown'));
-      }
-    },
-  });
-  const { t } = useTranslation(['cases']);
-
-  return (
-    <ClientOnly>
-      {() => (
-        <Button
-          variant="secondary"
-          onClick={() => {
-            void downloadCaseFile();
-          }}
-          name="download"
-          disabled={downloadingCaseFile}
-        >
-          {downloadingCaseFile ? (
-            <Icon icon="spinner" className="size-5 animate-spin" />
-          ) : (
-            <Icon icon="download" className="size-5" />
-          )}
-          {t('cases:case.file.download')}
-        </Button>
-      )}
-    </ClientOnly>
-  );
 }

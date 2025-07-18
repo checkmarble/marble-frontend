@@ -1,8 +1,6 @@
 import { type AuthenticationClientRepository } from '@app-builder/repositories/AuthenticationRepository';
-import { getClientEnv } from '@app-builder/utils/environment';
 import { FirebaseError } from 'firebase/app';
 import { AuthErrorCodes } from 'firebase/auth';
-import { marblecoreApi } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { useAuthenticityToken } from 'remix-utils/csrf/react';
 
@@ -209,32 +207,5 @@ export function useSendPasswordResetEmail({
       }
       throw error;
     }
-  };
-}
-
-export function useBackendInfo({ authenticationClientRepository }: AuthenticationClientService) {
-  const backendUrl = getClientEnv('MARBLE_API_URL');
-
-  const getAccessToken = async () => {
-    try {
-      const firebaseIdToken = await authenticationClientRepository.firebaseIdToken();
-      const token = await marblecoreApi.postToken(
-        {
-          authorization: `Bearer ${firebaseIdToken}`,
-        },
-        {
-          baseUrl: backendUrl,
-        },
-      );
-
-      return { accessToken: token.access_token, success: true as const };
-    } catch (error) {
-      return { error, success: false as const };
-    }
-  };
-
-  return {
-    getAccessToken,
-    backendUrl,
   };
 }

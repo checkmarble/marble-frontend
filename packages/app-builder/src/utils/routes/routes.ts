@@ -344,6 +344,11 @@ export const routes = [
         "file": "routes/healthcheck.ts"
       },
       {
+        "id": "routes/ressources+/annotations+/download-file.$annotationId.$fileId",
+        "path": "ressources/annotations/download-file/:annotationId/:fileId",
+        "file": "routes/ressources+/annotations+/download-file.$annotationId.$fileId.tsx"
+      },
+      {
         "id": "routes/ressources+/auth+/logout",
         "path": "ressources/auth/logout",
         "file": "routes/ressources+/auth+/logout.tsx"
@@ -382,6 +387,16 @@ export const routes = [
         "id": "routes/ressources+/cases+/create-case",
         "path": "ressources/cases/create-case",
         "file": "routes/ressources+/cases+/create-case.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/download-data.$caseId",
+        "path": "ressources/cases/download-data/:caseId",
+        "file": "routes/ressources+/cases+/download-data.$caseId.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/download-file.$fileId",
+        "path": "ressources/cases/download-file/:fileId",
+        "file": "routes/ressources+/cases+/download-file.$fileId.tsx"
       },
       {
         "id": "routes/ressources+/cases+/edit-assignee",
@@ -433,6 +448,11 @@ export const routes = [
         "id": "routes/ressources+/cases+/review-sanction-match",
         "path": "ressources/cases/review-sanction-match",
         "file": "routes/ressources+/cases+/review-sanction-match.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/sar+/download.$caseId.$reportId",
+        "path": "ressources/cases/sar/download/:caseId/:reportId",
+        "file": "routes/ressources+/cases+/sar+/download.$caseId.$reportId.tsx"
       },
       {
         "id": "routes/ressources+/cases+/snooze-case",
@@ -500,6 +520,11 @@ export const routes = [
         "file": "routes/ressources+/files+/upload-file.tsx"
       },
       {
+        "id": "routes/ressources+/ingestion+/upload.$objectType",
+        "path": "ressources/ingestion/upload/:objectType",
+        "file": "routes/ressources+/ingestion+/upload.$objectType.tsx"
+      },
+      {
         "id": "routes/ressources+/lists+/create",
         "path": "ressources/lists/create",
         "file": "routes/ressources+/lists+/create.tsx"
@@ -510,9 +535,19 @@ export const routes = [
         "file": "routes/ressources+/lists+/delete.tsx"
       },
       {
+        "id": "routes/ressources+/lists+/download-csv-file.$listId",
+        "path": "ressources/lists/download-csv-file/:listId",
+        "file": "routes/ressources+/lists+/download-csv-file.$listId.tsx"
+      },
+      {
         "id": "routes/ressources+/lists+/edit",
         "path": "ressources/lists/edit",
         "file": "routes/ressources+/lists+/edit.tsx"
+      },
+      {
+        "id": "routes/ressources+/lists+/upload.$listId",
+        "path": "ressources/lists/upload/:listId",
+        "file": "routes/ressources+/lists+/upload.$listId.tsx"
       },
       {
         "id": "routes/ressources+/lists+/value_create",
@@ -638,6 +673,16 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/update",
         "path": "ressources/scenarios/update",
         "file": "routes/ressources+/scenarios+/update.tsx"
+      },
+      {
+        "id": "routes/ressources+/screenings+/download.$screeningId.$fileId",
+        "path": "ressources/screenings/download/:screeningId/:fileId",
+        "file": "routes/ressources+/screenings+/download.$screeningId.$fileId.tsx"
+      },
+      {
+        "id": "routes/ressources+/screenings+/upload.$screeningId",
+        "path": "ressources/screenings/upload/:screeningId",
+        "file": "routes/ressources+/screenings+/upload.$screeningId.tsx"
       },
       {
         "id": "routes/ressources+/settings+/api-keys+/create",

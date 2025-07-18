@@ -134,7 +134,6 @@ function handleBrowserRequest(
         const frames: string[] = [];
         const metabaseUrl = clientEnv.METABASE_URL ?? appConfig.urls.metabase;
         const fbAuthDomain = appConfig.auth.firebase.authDomain;
-        const marbleApiUrl = clientEnv.MARBLE_API_URL ?? appConfig.urls.marble;
 
         if (metabaseUrl) frames.push(metabaseUrl);
         if (fbAuthDomain) frames.push(fbAuthDomain);
@@ -148,12 +147,7 @@ function handleBrowserRequest(
             objectSrc: ["'none'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             scriptSrc: [`'nonce-${nonce}'`, "'unsafe-eval'", "'strict-dynamic'"],
-            connectSrc: [
-              "'self'",
-              marbleApiUrl,
-              ...firebaseUrl,
-              ...externalDomains.map((d) => `https://${d}`),
-            ],
+            connectSrc: ["'self'", ...firebaseUrl, ...externalDomains.map((d) => `https://${d}`)],
             imgSrc: ["'self'", 'data:'],
             frameSrc: frames.length > 0 ? frames : ["'none'"],
           }),

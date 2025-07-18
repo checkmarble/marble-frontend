@@ -39,7 +39,7 @@ import { getServerEnv } from '@app-builder/utils/environment';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { json, redirect } from '@remix-run/node';
 import { captureRemixServerException } from '@sentry/remix';
-import { marblecoreApi } from 'marble-api';
+import { marblecoreApi, TokenService } from 'marble-api';
 import { type CSRF, CSRFError } from 'remix-utils/csrf/server';
 import * as z from 'zod';
 
@@ -52,6 +52,7 @@ interface AuthenticatedInfo {
    * @deprecated Use repositories directly
    */
   apiClient: MarbleCoreApi;
+  tokenService: TokenService<string>;
   editor: EditorRepository;
   decision: DecisionRepository;
   cases: CaseRepository;
@@ -344,6 +345,7 @@ export function makeAuthenticationServerService({
     if (options.successRedirect) throw redirect(options.successRedirect);
 
     return {
+      tokenService,
       apiClient: marbleCoreApiClient,
       editor: getEditorRepository(marbleCoreApiClient),
       decision: getDecisionRepository(marbleCoreApiClient),

@@ -7,7 +7,7 @@ import {
 } from '@app-builder/hooks/useFormDropzone';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getServerEnv } from '@app-builder/utils/environment';
-import { getCaseFileUploadEndpointById } from '@app-builder/utils/files';
+import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
 import { handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import {
@@ -94,10 +94,11 @@ export async function action({ request }: ActionFunctionArgs) {
       });
 
       promises.push(
-        fetch(
-          `${getServerEnv('MARBLE_API_URL_SERVER')}${getCaseFileUploadEndpointById(data.caseId)}`,
-          { method: 'POST', body, headers: { Authorization: `Bearer ${token}` } },
-        ),
+        fetch(`${getServerEnv('MARBLE_API_URL_SERVER')}${getCaseFileUploadEndpoint(data.caseId)}`, {
+          method: 'POST',
+          body,
+          headers: { Authorization: `Bearer ${token}` },
+        }),
       );
     }
 
