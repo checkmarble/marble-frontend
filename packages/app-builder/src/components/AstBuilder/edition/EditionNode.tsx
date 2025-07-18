@@ -22,7 +22,7 @@ import invariant from 'tiny-invariant';
 import { match } from 'ts-pattern';
 import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
+import { AstBuilderOperandProps } from '../Operand';
 import { EditionAstBuilderOperand } from './EditionOperand';
 import { getErrorsForNode } from './helpers';
 import { AstBuilderNodeSharpFactory } from './node-store';
@@ -76,7 +76,13 @@ const allMainAstOperatorFunctionsOptions: OperatorSelectOptions<
 export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: {
   root?: boolean;
   path: string;
+  coerceDataType?: AstBuilderOperandProps['coerceDataType'];
+  optionsDataType?: AstBuilderOperandProps['optionsDataType'];
 }) {
+  const operandProps = {
+    coerceDataType: props.coerceDataType,
+    optionsDataType: props.optionsDataType,
+  };
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
   const data = dataSharp.value.$data!.value;
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
@@ -136,7 +142,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
 
       const children = (
         <>
-          <EditionAstBuilderNode path={`${props.path}.children.0`} />
+          <EditionAstBuilderNode path={`${props.path}.children.0`} {...operandProps} />
           <OperatorSelect
             hideArrow
             options={allMainAstOperatorFunctionsOptions}
@@ -144,7 +150,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
             operator={node.name}
             onOperatorChange={setOperator}
           />
-          <EditionAstBuilderNode path={`${props.path}.children.1`} />
+          <EditionAstBuilderNode path={`${props.path}.children.1`} {...operandProps} />
         </>
       );
 
@@ -185,7 +191,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
 
       const children = (
         <>
-          <EditionAstBuilderNode path={`${props.path}.children.0`} />
+          <EditionAstBuilderNode path={`${props.path}.children.0`} {...operandProps} />
           <OperatorSelect
             hideArrow
             options={allMainAstOperatorFunctionsOptions}
@@ -221,13 +227,13 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
     })
     .when(isKnownOperandAstNode, (node) => {
       const hasDirectError = getErrorsForNode(nodeSharp.value.validation, node.id, true).length > 0;
-
       return (
         <EditionAstBuilderOperand
           node={node}
           onChange={setNode}
           enumValues={enumValues.value}
           validationStatus={hasDirectError ? 'error' : 'valid'}
+          {...operandProps}
         />
       );
     })

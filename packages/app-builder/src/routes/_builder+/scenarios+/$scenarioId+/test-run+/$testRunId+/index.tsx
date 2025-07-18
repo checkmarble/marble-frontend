@@ -10,7 +10,7 @@ import { type Versions } from '@app-builder/components/Scenario/TestRun/Graphs/H
 import { DistributionOfDecisionChartSkeleton } from '@app-builder/components/Scenario/TestRun/Skeletons/DistributionOfDecicionSkeleton';
 import { FilterTransactionByDecisionSkeleton } from '@app-builder/components/Scenario/TestRun/Skeletons/FilterTransactionByDecicionSkeleton';
 import { TestRunDetails } from '@app-builder/components/Scenario/TestRun/TestRunDetails';
-import { adaptScenarioIterationWithType } from '@app-builder/models/scenario-iteration';
+import { adaptScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import { CancelTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/$testRunId+/cancel';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
