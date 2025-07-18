@@ -242,11 +242,11 @@ export function ActionSelector({
 
       {needsInbox && (
         <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            <div className="bg-grey-20 px-2 py-1 rounded">
+          <div className="flex items-start gap-2">
+            <div className="bg-grey-20 px-3 py-1 rounded min-w-20 flex justify-center h-10 items-center">
               <span className="text-grey-60 font-bold text-sm">in</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex-1">
               <InboxSelector
                 selectedInboxId={action && 'params' in action ? action.params?.inbox_id : undefined}
                 onSelectedInboxIdChange={handleInboxSelect}
@@ -257,13 +257,13 @@ export function ActionSelector({
               />
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="bg-grey-20 px-2 py-1 rounded">
+          <div className="flex items-start gap-2">
+            <div className="bg-grey-20 px-3 py-1 rounded min-w-20 flex justify-center h-10 items-center">
               <span className="text-grey-60 font-bold text-sm text-nowrap">
                 {t('workflows:action.inbox.with_title')}
               </span>
             </div>
-            <div className="flex-1 border border-grey-20 rounded-md p-2 bg-grey-98">
+            <div className="flex-1">
               <CaseNameEditor
                 label=""
                 value={getTitleTemplateAsStringTemplate()}
