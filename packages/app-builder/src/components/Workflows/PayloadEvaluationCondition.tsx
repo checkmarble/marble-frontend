@@ -1,13 +1,11 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
-import { type AstBuilderNodeSharpFactory } from '@app-builder/components/AstBuilder/edition/node-store';
-import { type DataModel, NewUndefinedAstNode } from '@app-builder/models';
+import { NewUndefinedAstNode } from '@app-builder/models';
 import { isAggregation } from '@app-builder/models/astNode/aggregation';
 import { type AstNode } from '@app-builder/models/astNode/ast-node';
 import { isDatabaseAccess } from '@app-builder/models/astNode/data-accessor';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
-import { useEffect, useMemo } from 'react';
-import { type InferSharpApi } from 'sharpstate';
+import { useEffect, useMemo, useRef } from 'react';
 import { v7 as uuidv7 } from 'uuid';
 
 interface PayloadEvaluationConditionProps {
@@ -18,8 +16,6 @@ interface PayloadEvaluationConditionProps {
       expression?: AstNode;
     };
   };
-  triggerObjectType: string;
-  dataModel: DataModel;
   onChange: (condition: any) => void;
 }
 
@@ -37,11 +33,10 @@ function createDefaultSimpleExpression(): AstNode {
 
 export function PayloadEvaluationCondition({
   condition,
-  triggerObjectType,
-  dataModel,
   onChange,
 }: PayloadEvaluationConditionProps) {
   const currentScenario = useCurrentScenario();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Add debugging for when condition prop changes
   useEffect(() => {
@@ -78,7 +73,7 @@ export function PayloadEvaluationCondition({
             !isDatabaseAccess(option.astNode) &&
             !isAggregation(option.astNode)
           }
-          onStoreChange={(nodeStore: InferSharpApi<typeof AstBuilderNodeSharpFactory> | null) => {
+          onStoreChange={(nodeStore) => {
             if (nodeStore) {
               // Use a ref-based approach to track changes
               let lastValue = JSON.stringify(currentExpression);
@@ -92,9 +87,12 @@ export function PayloadEvaluationCondition({
               };
 
               // Set up polling to check for changes
-              const interval = setInterval(checkForChanges, 100);
-
-              return () => clearInterval(interval);
+              intervalRef.current = setInterval(checkForChanges, 100);
+            } else {
+              if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+              }
             }
           }}
           onValidationUpdate={(validation: FlatAstValidation) => {

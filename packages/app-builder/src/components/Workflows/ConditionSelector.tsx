@@ -116,12 +116,7 @@ export function ConditionSelector({
           <span className="text-grey-60 font-bold text-sm">{isFirst ? 'IF' : 'AND'}</span>
         </div>
 
-        <PayloadEvaluationCondition
-          condition={condition as any}
-          triggerObjectType={triggerObjectType}
-          dataModel={dataModel}
-          onChange={onChange!}
-        />
+        <PayloadEvaluationCondition condition={condition as any} onChange={onChange!} />
       </div>
     );
   }
