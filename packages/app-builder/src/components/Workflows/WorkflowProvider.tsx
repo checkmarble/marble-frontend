@@ -3,6 +3,7 @@ import {
   type Rule,
   type WorkflowAction,
   type WorkflowCondition,
+  type WorkflowFeatureAccess,
 } from '@app-builder/models/scenario/workflow';
 import { validateRuleEnhanced } from '@app-builder/models/scenario/workflow-validation';
 import {
@@ -22,6 +23,7 @@ interface WorkflowContextValue {
   // Data
   rules: Rule[];
   dataModel?: DataModel;
+  workflowDataFeatureAccess: WorkflowFeatureAccess;
   triggerObjectType?: string;
   isLoading: boolean;
   isError: boolean;
@@ -78,9 +80,15 @@ interface WorkflowProviderProps {
   children: ReactNode;
   scenarioId: string;
   dataModel?: DataModel;
+  workflowDataFeatureAccess: WorkflowFeatureAccess;
 }
 
-export function WorkflowProvider({ children, scenarioId, dataModel }: WorkflowProviderProps) {
+export function WorkflowProvider({
+  children,
+  scenarioId,
+  dataModel,
+  workflowDataFeatureAccess,
+}: WorkflowProviderProps) {
   const { t } = useTranslation(['workflows']);
 
   // Queries and mutations
@@ -512,6 +520,7 @@ export function WorkflowProvider({ children, scenarioId, dataModel }: WorkflowPr
     // Data
     rules: ruleOrder.map((id) => localWorkflowRules.get(id)).filter(Boolean) as Rule[],
     dataModel,
+    workflowDataFeatureAccess,
     triggerObjectType: rulesQuery.data?.triggerObjectType,
     isLoading: rulesQuery.isLoading,
     isError: rulesQuery.isError,
@@ -566,4 +575,12 @@ export function useWorkflow() {
     throw new Error('useWorkflow must be used within a WorkflowProvider');
   }
   return context;
+}
+
+export function useWorkflowDataFeatureAccess() {
+  const context = useContext(WorkflowContext);
+  if (!context) {
+    throw new Error('useWorkflowDataFeatureAccess must be used within a WorkflowProvider');
+  }
+  return context.workflowDataFeatureAccess;
 }

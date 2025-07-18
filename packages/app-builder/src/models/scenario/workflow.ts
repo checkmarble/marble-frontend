@@ -46,3 +46,7 @@ function adaptWorkflowCondition(dto: WorkflowConditionDto): WorkflowCondition {
 function adaptWorkflowAction(dto: WorkflowActionDto): WorkflowAction {
   return dto;
 }
+
+export type WorkflowFeatureAccess = {
+  isCreateInboxAvailable: boolean;
+};

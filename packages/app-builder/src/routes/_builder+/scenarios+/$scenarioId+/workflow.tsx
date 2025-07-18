@@ -5,10 +5,11 @@ import { WorkflowList } from '@app-builder/components/Workflows/WorkflowList';
 import { useWorkflow, WorkflowProvider } from '@app-builder/components/Workflows/WorkflowProvider';
 import { WorkflowScrollHandler } from '@app-builder/components/Workflows/WorkflowScrollHandler.client';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
+import { isCreateInboxAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { LoaderFunctionArgs } from '@remix-run/node';
+import { LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { Namespace } from 'i18next';
@@ -41,13 +42,27 @@ export const handle = {
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { authService } = initServerServices(request);
-  const { dataModelRepository } = await authService.isAuthenticated(request, {
+  const { dataModelRepository, entitlements, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
+  if (!isWorkflowsAvailable(entitlements)) {
+    return redirect(
+      getRoute('/scenarios/:scenarioId/home', {
+        scenarioId: fromUUIDtoSUUID(fromParams(params, 'scenarioId')),
+      }),
+    );
+  }
+
   const [dataModel] = await Promise.all([dataModelRepository.getDataModel()]);
 
-  return { scenarioId: fromParams(params, 'scenarioId'), dataModel };
+  return {
+    scenarioId: fromParams(params, 'scenarioId'),
+    dataModel,
+    workflowFeatureAccess: {
+      isCreateInboxAvailable: isCreateInboxAvailable(user),
+    },
+  };
 };
 
 function WorkflowContent() {
@@ -121,10 +136,14 @@ function WorkflowContent() {
 }
 
 export default function WorkflowPage() {
-  const { scenarioId, dataModel } = useLoaderData<typeof loader>();
+  const { scenarioId, dataModel, workflowFeatureAccess } = useLoaderData<typeof loader>();
 
   return (
-    <WorkflowProvider scenarioId={scenarioId} dataModel={dataModel}>
+    <WorkflowProvider
+      scenarioId={scenarioId}
+      dataModel={dataModel}
+      workflowDataFeatureAccess={workflowFeatureAccess}
+    >
       <WorkflowContent />
     </WorkflowProvider>
   );
