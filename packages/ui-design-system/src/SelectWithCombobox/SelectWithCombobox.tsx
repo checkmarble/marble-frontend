@@ -165,7 +165,9 @@ const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
     );
   },
 );
-
+/**
+ * @deprecated Use MenuCommand instead
+ */
 export const SelectWithCombobox = {
   Root,
   Label: Ariakit.SelectLabel,
