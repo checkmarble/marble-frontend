@@ -29,7 +29,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
     updateCondition,
     updateAction,
     deleteCondition,
-    renameRule,
+    updateRuleName,
     deleteRule,
     cancelRuleChanges,
     confirmRule,
@@ -44,12 +44,10 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
     setEditingRuleName(currentName);
   };
 
-  const handleSaveRename = (ruleId: string, fallthrough: boolean) => {
-    if (editingRuleName.trim() && editingRuleName.trim() !== rule.name) {
-      renameRule(ruleId, editingRuleName.trim(), fallthrough);
+  const handleNameChange = (newName: string) => {
+    if (newName.trim() !== rule.name) {
+      updateRuleName(rule.id, newName.trim());
     }
-    setEditingRuleId(null);
-    setEditingRuleName('');
   };
 
   const handleCancelRenaming = () => {
@@ -57,14 +55,10 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
     setEditingRuleName('');
   };
 
-  const handleRenameKeyDown = (
-    event: React.KeyboardEvent,
-    ruleId: string,
-    fallthrough: boolean,
-  ) => {
+  const handleRenameKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      handleSaveRename(ruleId, fallthrough);
+      handleCancelRenaming();
     } else if (event.key === 'Escape') {
       event.preventDefault();
       handleCancelRenaming();
@@ -84,7 +78,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
           <div className="flex-[5] flex flex-col items-stretch relative w-[800px] bg-grey-100">
             {/* Rule title bar */}
             <div
-              className={` text-grey-00 font-semibold px-4 py-2 rounded-t-lg border-2 border-b-0 w-auto bg-grey-90 flex items-center justify-between ${
+              className={` text-grey-00 font-semibold px-4 py-2 rounded-t-lg border-2 border-b-0 w-auto bg-purple-98 flex items-center justify-between ${
                 snapshot.isDragging
                   ? 'border-purple-60'
                   : isModified
@@ -97,17 +91,24 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                 <input
                   type="text"
                   value={editingRuleName}
-                  onChange={(e) => setEditingRuleName(e.target.value)}
-                  onBlur={(e) => {
-                    // Only save on blur if not clicking on buttons or other interactive elements
-                    const relatedTarget = e.relatedTarget as HTMLElement;
-                    if (!relatedTarget || !relatedTarget.closest('button')) {
-                      handleSaveRename(rule.id, rule.fallthrough);
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    setEditingRuleName(newValue);
+                    // Trigger modification state on first keystroke
+                    if (newValue.trim() !== rule.name) {
+                      handleNameChange(newValue.trim());
                     }
                   }}
-                  onKeyDown={(e) => handleRenameKeyDown(e, rule.id, rule.fallthrough)}
+                  onBlur={(e) => {
+                    // Only cancel editing if not clicking on buttons or other interactive elements
+                    const relatedTarget = e.relatedTarget as HTMLElement;
+                    if (!relatedTarget || !relatedTarget.closest('button')) {
+                      handleCancelRenaming();
+                    }
+                  }}
+                  onKeyDown={(e) => handleRenameKeyDown(e)}
                   autoFocus
-                  className="bg-transparent border-none outline-none text-grey-00 font-semibold text-base w-full min-w-0 focus:bg-white focus:text-purple-60 focus:px-2 focus:py-1 focus:rounded transition-all"
+                  className="bg-white font-semibold text-base w-2/3 min-w-0 px-2 py-1 rounded border-2 border-purple-60 outline-none focus:ring-2 focus:ring-purple-30 transition-all"
                   style={{
                     fontSize: 'inherit',
                     fontFamily: 'inherit',
@@ -115,7 +116,10 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   }}
                 />
               ) : (
-                <span className="cursor-text hover:bg-white hover:bg-opacity-20 px-1 py-0.5 rounded transition-colors">
+                <span
+                  className="cursor-text hover:bg-white hover:bg-opacity-20 px-1 py-0.5 rounded transition-colors"
+                  onClick={(event) => handleRenameClick(event, rule.id, rule.name)}
+                >
                   {rule.name}
                 </span>
               )}
@@ -124,6 +128,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   variant="secondary"
                   size="small"
                   onClick={(event) => handleRenameClick(event, rule.id, rule.name)}
+                  disabled={editingRuleId === rule.id}
                 >
                   <Icon icon="edit" className="size-5" />
                   {t('common:rename')}
