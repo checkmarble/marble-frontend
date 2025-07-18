@@ -23,7 +23,9 @@ export type Rule = WorkflowRuleDto & {
   actions: WorkflowAction[];
 };
 
-export type WorkflowCondition =
+export type WorkflowCondition = {
+  id: string;
+} & (
   | AlwaysMatches
   | NeverMatches
   | IfOutcomeIn
@@ -39,7 +41,8 @@ export type WorkflowCondition =
       params: {
         expression: AstNode;
       };
-    };
+    }
+);
 
 export function adaptWorkflow(dtos: RuleDto[]): Rule[] {
   return dtos.map((dto) => ({
@@ -64,6 +67,7 @@ export function adaptWorkflowRule(dto: RuleDto): Rule {
 function adaptWorkflowCondition(dto: WorkflowConditionDto): WorkflowCondition {
   if (dto.function === 'payload_evaluates') {
     return {
+      id: dto.id,
       function: 'payload_evaluates',
       params: {
         expression: adaptAstNode(dto.params.expression),
