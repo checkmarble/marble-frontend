@@ -62,7 +62,6 @@
   "detail_panel.decision_created.outcomes.placeholder": "حدد نتيجة واحدة على الأقل ",
   "detail_panel.decision_created.scenario.label": "سيناريو",
   "detail_panel.decision_created.scenario.placeholder": "حدد السيناريو",
-  "detail_panel.inbox.label": "الصندوق الوارد",
   "detail_panel.inbox.need_inbox_contact_admin": "يرجى التواصل مع المسؤول لإنشاء صندوق وارد",
   "detail_panel.inbox.placeholder": "اختيار الصندوق الوارد",
   "detail_panel.multiple_selected_nodes.clear_selection": "مسح التحديد",
