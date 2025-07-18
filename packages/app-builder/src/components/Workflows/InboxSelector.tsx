@@ -12,12 +12,14 @@ export function InboxSelector({
   inboxes,
   isCreateInboxAvailable,
   withAnyInboxAvailable,
+  isAnyInboxSelected,
 }: {
   selectedInboxId?: string;
   onSelectedInboxIdChange: (outcomes: string) => void;
   inboxes: InboxMetadata[];
   isCreateInboxAvailable: boolean;
   withAnyInboxAvailable: boolean;
+  isAnyInboxSelected?: boolean;
 }) {
   const { t } = useTranslation(['workflows']);
   const [open, setOpen] = useState(false);
@@ -49,7 +51,9 @@ export function InboxSelector({
       <MenuCommand.Menu open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
           <MenuCommand.SelectButton>
-            {selectedInbox ? (
+            {isAnyInboxSelected ? (
+              <span className="text-grey-00">{t('workflows:action.inbox.any_available')}</span>
+            ) : selectedInbox ? (
               <span className="text-grey-00">{selectedInbox.name}</span>
             ) : (
               <span className="text-grey-80">{t('workflows:detail_panel.inbox.placeholder')}</span>
