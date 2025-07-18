@@ -25,7 +25,12 @@ export const AstBuilderNodeSharpFactory = createSharpFactory({
     initialValidation: FlatAstValidation;
     validationFn: AstBuilderValidationFn;
   }): AstBuilderNodeStoreValue {
-    return { node: initialNode, validation: initialValidation, copiedNode: null, validationFn };
+    return {
+      node: clone(initialNode),
+      validation: initialValidation,
+      copiedNode: null,
+      validationFn,
+    };
   },
 }).withActions({
   setNodeAtPath(api, path: string, newNode: AstNode) {
