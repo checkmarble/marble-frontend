@@ -76,30 +76,20 @@ export function WorkflowList() {
                         {/* Else arrow - appears after each rule except the last one */}
                         {index < rules.length - 1 && (
                           <div
-                            className={`flex items-center w-full -mb-4 transition-all duration-300 ${
+                            className={`items-center w-[800px] justify-center -mb-4 transition-all duration-300 ${
                               isDragging ? 'opacity-0' : 'opacity-100'
                             } ${hasModifiedRules && !isCurrentRuleModified ? 'opacity-20' : ''}`}
                           >
-                            <div className="flex-[6] flex justify-center">
-                              <div className="flex flex-col items-center relative">
-                                <div className="w-0.5 h-16 bg-grey-90 relative">
-                                  <div className="absolute -bottom-0 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-8 border-transparent border-t-grey-50"></div>
-                                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-grey-90 px-3 py-1 rounded z-10">
-                                    <span className="text-sm font-bold text-white uppercase tracking-wide">
-                                      Else
-                                    </span>
-                                  </div>
+                            <div className="w-[800px] flex justify-center items-center relative">
+                              <div className="w-0.5 h-16 bg-grey-90 relative">
+                                <div className="absolute -bottom-0 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-8 border-transparent border-t-grey-50"></div>
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-grey-90 px-3 py-1 rounded z-10">
+                                  <span className="text-sm font-bold text-white uppercase tracking-wide">
+                                    {t('workflows:else_arrow.label')}
+                                  </span>
                                 </div>
                               </div>
                             </div>
-
-                            {/* Center spacer - aligned with "Then" arrow */}
-                            <div className="flex items-center justify-center">
-                              <div className="w-24 h-0"></div>
-                            </div>
-
-                            {/* Right side - aligned with actions box */}
-                            <div className="flex-[2]"></div>
                           </div>
                         )}
                       </div>
