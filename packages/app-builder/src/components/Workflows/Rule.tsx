@@ -74,7 +74,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
       >
         {/* Conditions and Actions Boxes */}
         <div className="flex items-center w-full">
-          <div className="flex-[5] flex flex-col items-stretch relative w-[800px] bg-grey-100">
+          <div className="flex-none items-stretch relative w-[800px] bg-grey-100">
             {/* Rule title bar */}
             <div
               className={` text-grey-00 font-semibold px-4 py-2 rounded-t-lg border-2 border-b-0 w-auto bg-purple-98 flex items-center justify-between ${
@@ -263,7 +263,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
 
           {/* Actions Box */}
           <div
-            className={`flex-[3] rounded-lg border-2 border-grey-90 bg-white p-4 transition-all duration-200 min-w-[400px] bg-grey-100 ${
+            className={`flex-none rounded-lg border-2 border-grey-90 bg-white p-4 transition-all duration-200 w-[400px] bg-grey-100 ${
               snapshot.isDragging
                 ? 'border-purple-60 shadow-xl'
                 : isModified
