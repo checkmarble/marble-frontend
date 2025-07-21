@@ -10,17 +10,19 @@ import {
   type WorkflowRuleDto,
 } from 'marble-api';
 
-export type WorkflowAction =
+export type WorkflowAction = {
+  id: string;
+} & (
   | ActionDoNothing
   | {
       action: 'CREATE_CASE' | 'ADD_TO_CASE_IF_POSSIBLE';
-      id: string;
       params: {
         inboxId: string;
         anyInbox?: boolean;
         titleTemplate?: AstNode;
       };
-    };
+    }
+);
 
 export type RuleDto = WorkflowRuleDto & {
   conditions: WorkflowConditionDto[];

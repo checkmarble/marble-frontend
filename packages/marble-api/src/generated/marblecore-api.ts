@@ -1259,7 +1259,6 @@ export type WorkflowConditionDto = {
     id: string;
 } & WorkflowConditionDetailDto;
 export type ActionDoNothing = {
-    id: string;
     action: "DISABLED";
 };
 export type ActionCreateOrAddToACase = {
