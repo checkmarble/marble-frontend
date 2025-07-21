@@ -14,6 +14,7 @@
   "action.create_case.label": "إنشاء حالة",
   "action.disabled.description": "لن يتم اتخاذ أي إجراء",
   "action.disabled.label": "لا تفعل شيئا",
+  "action.in_inbox": "في",
   "action.inbox.add_title_template": "انقر لإضافة قالب العنوان",
   "action.inbox.any_available": "أي صندوق الوارد المتاح",
   "action.inbox.failed_to_load": "فشل في تحميل صندوق الوارد",

@@ -232,7 +232,9 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
         <div className="flex flex-col gap-3">
           <div className="flex items-start gap-2">
             <div className="bg-grey-20 px-3 py-1 rounded min-w-20 flex justify-center h-10 items-center">
-              <span className="text-grey-60 font-bold text-sm">in</span>
+              <span className="text-grey-60 font-bold text-sm">
+                {t('workflows:action.in_inbox')}
+              </span>
             </div>
             <div className="flex-1">
               <InboxSelector
