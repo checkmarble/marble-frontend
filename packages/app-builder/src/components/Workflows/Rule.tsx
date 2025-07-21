@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { ActionSelector } from './ActionSelector';
 import { ConditionSelector } from './ConditionSelector';
 import { useWorkflow } from './WorkflowProvider';
 
@@ -272,12 +273,12 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
             }`}
           >
             <div className="bg-grey-05 rounded-md">
-              {/* <ActionSelector
+              <ActionSelector
                 action={rule.actions?.[0]}
                 onChange={(action) => updateAction(rule.id, action)}
                 triggerObjectType={triggerObjectType}
                 dataModel={dataModel}
-              /> */}
+              />
             </div>
           </div>
         </div>
