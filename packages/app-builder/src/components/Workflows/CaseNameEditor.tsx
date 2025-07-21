@@ -9,7 +9,6 @@ import {
 } from '@app-builder/models/astNode/strings';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -23,7 +22,6 @@ export type CaseNameEditorProps = {
 };
 
 export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) => {
-  const { t } = useTranslation(['scenarios']);
   const currentScenario = useCurrentScenario();
   const [isEditing, setIsEditing] = useState(false);
   const { defaultCaseNameNode } = useDefaultCaseName(currentScenario.triggerObjectType);
@@ -76,7 +74,6 @@ export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) 
             onClick={() => onChange(initialValueRef.current ?? defaultCaseNameNode)}
           >
             <Icon icon="restart-alt" className="size-4" />
-            <span className="line-clamp-1">{t('scenarios:edit_operand.clear_operand')}</span>
           </Button>
         ) : null}
         {isEditing ? (

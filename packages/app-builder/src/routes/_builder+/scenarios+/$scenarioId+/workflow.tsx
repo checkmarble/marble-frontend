@@ -1,37 +1,24 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
-import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { DetailPanel } from '@app-builder/components/Scenario/Workflow/DetailPanel/DetailPanel';
-import {
-  adaptScenarioUpdateWorkflowInput,
-  adaptValidWorkflow,
-  type ValidWorkflow,
-} from '@app-builder/components/Scenario/Workflow/models/validation';
-import {
-  WorkflowFlow,
-  workflowFlowStyles,
-} from '@app-builder/components/Scenario/Workflow/WorkflowFlow';
-import { WorkflowProvider } from '@app-builder/components/Scenario/Workflow/WorkflowProvider';
+import { BreadCrumbLink, BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { workflowI18n } from '@app-builder/components/Scenario/Workflow/workflow-i18n';
-import {
-  type ScenarioUpdateWorkflowInput,
-  scenarioUpdateWorkflowInputSchema,
-} from '@app-builder/models/scenario';
+import { WorkflowList } from '@app-builder/components/Workflows/WorkflowList';
+import { useWorkflow, WorkflowProvider } from '@app-builder/components/Workflows/WorkflowProvider';
+import { WorkflowScrollHandler } from '@app-builder/components/Workflows/WorkflowScrollHandler.client';
+import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { isCreateInboxAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type LinksFunction, type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { useFetcher, useLoaderData, useRouteError } from '@remix-run/react';
+import { LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { type Namespace } from 'i18next';
+import { Namespace } from 'i18next';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { useCurrentScenario } from './_layout';
+import { ClientOnly } from 'remix-utils/client-only';
+import { match } from 'ts-pattern';
+import { Button, Modal } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 export const handle = {
   i18n: workflowI18n satisfies Namespace,
@@ -54,153 +41,138 @@ export const handle = {
   ],
 };
 
-export const links: LinksFunction = () => [{ rel: 'stylesheet', href: workflowFlowStyles }];
-
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { authService } = initServerServices(request);
-  const scenarioId = fromParams(params, 'scenarioId');
-
-  const { user, scenario, inbox, dataModelRepository, entitlements } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
-
-  if (!isWorkflowsAvailable(entitlements)) {
-    return redirect(
-      getRoute('/scenarios/:scenarioId/home', {
-        scenarioId: fromUUIDtoSUUID(scenarioId),
-      }),
-    );
-  }
-
-  const [scenarios, inboxes, pivotValues] = await Promise.all([
-    scenario.listScenarios(),
-    inbox.listInboxes(),
-    dataModelRepository.listPivots({}),
-  ]);
-
-  const currentScenario = scenarios.find((s) => s.id === scenarioId);
-
-  const hasPivotValue = pivotValues.some(
-    (pivot) => pivot.baseTable === currentScenario?.triggerObjectType,
-  );
-
-  return {
-    scenarios,
-    inboxes,
-    hasPivotValue,
-    workflowDataFeatureAccess: {
-      isCreateInboxAvailable: isCreateInboxAvailable(user),
-    },
-  };
-}
-
-export async function action({ request, params }: LoaderFunctionArgs) {
-  const {
-    authService,
-    i18nextService: { getFixedT },
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
-  const scenarioId = fromParams(params, 'scenarioId');
-  const { scenario, entitlements } = await authService.isAuthenticated(request, {
+  const { dataModelRepository, entitlements, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   if (!isWorkflowsAvailable(entitlements)) {
     return redirect(
       getRoute('/scenarios/:scenarioId/home', {
-        scenarioId: fromUUIDtoSUUID(scenarioId),
+        scenarioId: fromUUIDtoSUUID(fromParams(params, 'scenarioId')),
       }),
     );
   }
 
-  const input = scenarioUpdateWorkflowInputSchema.parse(await request.json());
+  const [dataModel] = await Promise.all([dataModelRepository.getDataModel()]);
 
-  const session = await getSession(request);
-
-  try {
-    await scenario.updateScenarioWorkflow(scenarioId, input);
-  } catch {
-    setToastMessage(session, {
-      type: 'error',
-      message: 'Something went wrong',
-    });
-    return redirect(
-      getRoute('/scenarios/:scenarioId/workflow', {
-        scenarioId: fromUUIDtoSUUID(scenarioId),
-      }),
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  }
-
-  const t = await getFixedT(request, ['workflows']);
-  setToastMessage(session, {
-    type: 'success',
-    message:
-      input.decisionToCaseWorkflowType === 'DISABLED'
-        ? t('workflows:toast.success.delete_workflow')
-        : t('workflows:toast.success.create_workflow'),
-  });
-
-  return redirect(
-    getRoute('/scenarios/:scenarioId/home', {
-      scenarioId: fromUUIDtoSUUID(scenarioId),
-    }),
-    {
-      headers: { 'Set-Cookie': await commitSession(session) },
+  return {
+    scenarioId: fromParams(params, 'scenarioId'),
+    dataModel,
+    workflowFeatureAccess: {
+      isCreateInboxAvailable: isCreateInboxAvailable(user),
     },
-  );
+  };
+};
+
+function WorkflowContent() {
+  const { t } = useTranslation(['common', 'workflows']);
+  const {
+    isLoading,
+    isError,
+    error,
+    deleteModalOpen,
+    ruleToDelete,
+    confirmDeleteRule,
+    cancelDeleteRule,
+    setDeleteModalOpen,
+  } = useWorkflow();
+
+  return match({ isLoading, isError })
+    .with({ isError: true }, () => {
+      return <ErrorComponent error={error} />;
+    })
+    .with({ isLoading: true }, () => {
+      return (
+        <div className="flex items-center justify-center h-full w-full text-purple-60 gap-2">
+          <Icon icon="spinner" className="size-10 animate-spin" />
+          {t('common:loading')}
+        </div>
+      );
+    })
+    .otherwise(() => (
+      <ClientOnly fallback={<></>}>
+        {() => {
+          const [scrolled, setScrolled] = useState(false);
+
+          useEffect(() => {
+            const scrollHandler = (element: HTMLElement) => {
+              const scrollTop = element.scrollTop;
+              setScrolled(scrollTop > 32);
+            };
+
+            const mainElement = document.querySelector('.h-screen.overflow-y-auto');
+            if (mainElement) {
+              mainElement.addEventListener('scroll', () =>
+                scrollHandler(mainElement as HTMLElement),
+              );
+              return () =>
+                mainElement.removeEventListener('scroll', () =>
+                  scrollHandler(mainElement as HTMLElement),
+                );
+            }
+          }, []);
+
+          return (
+            <>
+              <WorkflowScrollHandler />
+              <Page.Main className="h-screen overflow-y-auto">
+                <Page.Header
+                  className={`gap-4 sticky top-0 z-20 shadow-sm transition-shadow duration-2000 ease-in-out ${scrolled ? 'shadow-md' : ''}`}
+                >
+                  <BreadCrumbs />
+                </Page.Header>
+                <WorkflowList />
+              </Page.Main>
+              <Modal.Root open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+                <Modal.Content>
+                  <Modal.Title>{t('workflows:delete_rule.title')}</Modal.Title>
+                  <div className="flex flex-col gap-6 p-6">
+                    <div className="text-s flex flex-1 flex-col gap-4">
+                      <p className="text-center">
+                        {t('workflows:delete_rule.confirm_delete', {
+                          ruleName: ruleToDelete?.name,
+                        })}
+                      </p>
+                    </div>
+                    <div className="flex flex-1 flex-row gap-2">
+                      <Modal.Close asChild>
+                        <Button className="flex-1" variant="secondary" onClick={cancelDeleteRule}>
+                          {t('common:cancel')}
+                        </Button>
+                      </Modal.Close>
+                      <Button
+                        color="red"
+                        className="flex-1"
+                        variant="primary"
+                        onClick={confirmDeleteRule}
+                      >
+                        <Icon icon="delete" className="size-4" />
+                        {t('workflows:delete_rule.delete_button')}
+                      </Button>
+                    </div>
+                  </div>
+                </Modal.Content>
+              </Modal.Root>
+            </>
+          );
+        }}
+      </ClientOnly>
+    ));
 }
 
-export default function Workflow() {
-  const { scenarios, inboxes, hasPivotValue, workflowDataFeatureAccess } =
-    useLoaderData<typeof loader>();
-
-  const currentScenario = useCurrentScenario();
-  const initialWorkflow = adaptValidWorkflow(currentScenario);
-  const fetcher = useFetcher();
-
-  const saveWorkflow = (workflow: ValidWorkflow) => {
-    const input = adaptScenarioUpdateWorkflowInput(workflow);
-    fetcher.submit(input, {
-      method: 'POST',
-      encType: 'application/json',
-    });
-  };
-
-  const deleteWorkflow = () => {
-    const input: ScenarioUpdateWorkflowInput = {
-      decisionToCaseWorkflowType: 'DISABLED',
-    };
-    fetcher.submit(input, {
-      method: 'POST',
-      encType: 'application/json',
-    });
-  };
+export default function WorkflowPage() {
+  const { scenarioId, dataModel, workflowFeatureAccess } = useLoaderData<typeof loader>();
 
   return (
-    <Page.Main>
-      <Page.Header className="gap-4">
-        <BreadCrumbs />
-      </Page.Header>
-      <WorkflowProvider
-        data={{
-          scenarios,
-          inboxes,
-          nonEditableData: { scenarioId: currentScenario.id },
-          hasPivotValue,
-        }}
-        workflowDataFeatureAccess={workflowDataFeatureAccess}
-        initialWorkflow={initialWorkflow}
-      >
-        <div className="grid size-full grid-cols-[2fr_1fr]">
-          <WorkflowFlow />
-          <DetailPanel onDelete={deleteWorkflow} onSave={saveWorkflow} />
-        </div>
-      </WorkflowProvider>
-    </Page.Main>
+    <WorkflowProvider
+      scenarioId={scenarioId}
+      dataModel={dataModel}
+      workflowDataFeatureAccess={workflowFeatureAccess}
+    >
+      <WorkflowContent />
+    </WorkflowProvider>
   );
 }
 
