@@ -468,6 +468,9 @@ components:
         sanctions_limit:
           type: number
           description: Limit for screenings
+        auto_assign_queue_limit:
+          type: number
+          description: Maximum number of assignable cases for a user
     CreateOrganizationBodyDto:
       type: object
       required:
@@ -483,6 +486,8 @@ components:
         sanctions_threshold:
           type: number
         sanctions_limit:
+          type: number
+        auto_assign_queue_limit:
           type: number
     UserDto:
       type: object

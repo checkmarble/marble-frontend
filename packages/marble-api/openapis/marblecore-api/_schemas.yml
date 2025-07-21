@@ -433,3 +433,8 @@ WorkflowActionDisabled:
   $ref: workflow.yml#/components/schemas/WorkflowActionDisabled
 WorkflowActionCase:
   $ref: workflow.yml#/components/schemas/WorkflowActionCase
+
+# USER SETTINGS
+
+PersonalSettingsUnavailableDto:
+  $ref: users.yml#/components/schemas/PersonalSettingsUnavailableDto

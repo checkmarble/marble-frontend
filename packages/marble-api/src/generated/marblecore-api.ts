@@ -1130,6 +1130,8 @@ export type OrganizationDto = {
     sanctions_threshold?: number;
     /** Limit for screenings */
     sanctions_limit?: number;
+    /** Maximum number of assignable cases for a user */
+    auto_assign_queue_limit?: number;
 };
 export type CreateOrganizationBodyDto = {
     name: string;
@@ -1138,12 +1140,14 @@ export type UpdateOrganizationBodyDto = {
     default_scenario_timezone?: string;
     sanctions_threshold?: number;
     sanctions_limit?: number;
+    auto_assign_queue_limit?: number;
 };
 export type InboxUserDto = {
     id: string;
     inbox_id: string;
     user_id: string;
     role: string;
+    auto_assignable: boolean;
 };
 export type InboxDto = {
     id: string;
@@ -1161,10 +1165,12 @@ export type CreateInboxBodyDto = {
 export type InboxMetadataDto = {
     id: string;
     name: string;
+    auto_assign_enabled?: boolean;
 };
 export type AddInboxUserBodyDto = {
     user_id: string;
     role: string;
+    auto_assignable: boolean;
 };
 export type WebhookDto = {
     id: string;
@@ -1277,6 +1283,9 @@ export type CreateWorkflowRuleDto = {
     scenario_id: string;
     name: string;
     fallthrough: boolean;
+};
+export type PersonalSettingsUnavailableDto = {
+    until: string;
 };
 /**
  * Get an access token
@@ -3837,6 +3846,7 @@ export function getInbox(inboxId: string, opts?: Oazapfts.RequestOpts) {
 export function updateInbox(inboxId: string, body: {
     name: string;
     escalation_inbox_id?: string;
+    auto_assign_enabled?: boolean;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -4465,6 +4475,60 @@ export function deleteWorkflowAction(ruleId: string, actionId: string, opts?: Oa
         status: 403;
         data: string;
     }>(`/workflows/rule/${encodeURIComponent(ruleId)}/action/${encodeURIComponent(actionId)}`, {
+        ...opts,
+        method: "DELETE"
+    }));
+}
+/**
+ * Get the current unavailability
+ */
+export function setUnavailable(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: PersonalSettingsUnavailableDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+    }>("/settings/me/unavailable", {
+        ...opts
+    }));
+}
+/**
+ * Set a user as unavailable until a date
+ */
+export function setUnavailable2(personalSettingsUnavailableDto: PersonalSettingsUnavailableDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/settings/me/unavailable", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: personalSettingsUnavailableDto
+    })));
+}
+/**
+ * Cancel the current or planned unavailability
+ */
+export function setUnavailable3(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>("/settings/me/unavailable", {
         ...opts,
         method: "DELETE"
     }));
