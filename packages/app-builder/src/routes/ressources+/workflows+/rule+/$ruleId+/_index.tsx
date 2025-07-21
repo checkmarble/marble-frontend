@@ -1,3 +1,4 @@
+import { AstNode } from '@app-builder/models/astNode/ast-node';
 import {
   type Rule,
   WorkflowAction,
@@ -105,18 +106,18 @@ export async function action({ request, params }: ActionFunctionArgs) {
                 return {
                   action: 'CREATE_CASE' as const,
                   params: action.params as {
-                    inbox_id: string;
-                    any_inbox?: boolean;
-                    title_template?: string;
+                    inboxId: string;
+                    anyInbox?: boolean;
+                    titleTemplate?: AstNode;
                   },
                 };
               case 'ADD_TO_CASE_IF_POSSIBLE':
                 return {
                   action: 'ADD_TO_CASE_IF_POSSIBLE' as const,
                   params: action.params as {
-                    inbox_id: string;
-                    any_inbox?: boolean;
-                    title_template?: string;
+                    inboxId: string;
+                    anyInbox?: boolean;
+                    titleTemplate?: AstNode;
                   },
                 };
             }
