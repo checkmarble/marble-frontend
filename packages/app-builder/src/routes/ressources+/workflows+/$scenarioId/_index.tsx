@@ -17,5 +17,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     scenarioId,
   });
 
+  console.log('workflow ===.>', JSON.stringify(workflow, null, 2));
   return Response.json({ workflow, triggerObjectType });
 }

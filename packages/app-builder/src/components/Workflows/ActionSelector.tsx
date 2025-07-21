@@ -1,5 +1,4 @@
 import { type AstNode, type DataModel } from '@app-builder/models';
-// TODO : REMOVE ADAPTS
 import { adaptAstNode, adaptNodeDto } from '@app-builder/models/astNode/ast-node';
 import {
   isStringTemplateAstNode,
@@ -105,9 +104,9 @@ export function ActionSelector({
             tempIdRef.current ||
             `temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
           params: {
-            inbox_id: inboxesQuery.data?.[0]?.id ?? '',
-            any_inbox: false,
-            title_template: adaptNodeDto(createDefaultTitleTemplate()),
+            inboxId: inboxesQuery.data?.[0]?.id ?? '',
+            anyInbox: false,
+            titleTemplate: adaptAstNode(adaptNodeDto(createDefaultTitleTemplate())),
           },
         };
         break;
@@ -119,9 +118,9 @@ export function ActionSelector({
             tempIdRef.current ||
             `temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
           params: {
-            inbox_id: inboxesQuery.data?.[0]?.id ?? '',
-            any_inbox: false,
-            title_template: adaptNodeDto(createDefaultTitleTemplate()),
+            inboxId: inboxesQuery.data?.[0]?.id ?? '',
+            anyInbox: false,
+            titleTemplate: adaptAstNode(adaptNodeDto(createDefaultTitleTemplate())),
           },
         };
         break;
@@ -139,8 +138,8 @@ export function ActionSelector({
       ...action,
       params: {
         ...action.params,
-        inbox_id: inboxId === 'any_inbox' ? (inboxesQuery.data?.[0]?.id ?? '') : inboxId,
-        any_inbox: inboxId === 'any_inbox',
+        inboxId: inboxId === 'any_inbox' ? (inboxesQuery.data?.[0]?.id ?? '') : inboxId,
+        anyInbox: inboxId === 'any_inbox',
       },
     };
 
@@ -157,7 +156,7 @@ export function ActionSelector({
       ...action,
       params: {
         ...action.params,
-        title_template: adaptNodeDto(safeTemplate),
+        titleTemplate: safeTemplate,
       },
     };
 
@@ -169,7 +168,7 @@ export function ActionSelector({
   const selectedAction = action?.action;
 
   const getTitleTemplateAsStringTemplate = (): StringTemplateAstNode => {
-    if (!action || !('params' in action) || !action.params?.title_template) {
+    if (!action || !('params' in action) || !action.params?.titleTemplate) {
       return createDefaultTitleTemplate();
     }
 
@@ -177,13 +176,13 @@ export function ActionSelector({
       let astNode: AstNode;
       // If it's already an AstNode, use it directly
       if (
-        'id' in action.params.title_template &&
-        typeof action.params.title_template.id === 'string'
+        'id' in action.params.titleTemplate &&
+        typeof action.params.titleTemplate.id === 'string'
       ) {
-        astNode = action.params.title_template as AstNode;
+        astNode = action.params.titleTemplate as AstNode;
       } else {
         // Otherwise, adapt from NodeDto
-        astNode = adaptAstNode(action.params.title_template);
+        astNode = action.params.titleTemplate;
       }
 
       // Ensure the node has proper structure
@@ -249,12 +248,12 @@ export function ActionSelector({
             </div>
             <div className="flex-1">
               <InboxSelector
-                selectedInboxId={action && 'params' in action ? action.params?.inbox_id : undefined}
+                selectedInboxId={action && 'params' in action ? action.params?.inboxId : undefined}
                 onSelectedInboxIdChange={handleInboxSelect}
                 inboxes={inboxesQuery.data || []}
                 isCreateInboxAvailable={isCreateInboxAvailable}
                 withAnyInboxAvailable={true}
-                isAnyInboxSelected={action && 'params' in action ? action.params?.any_inbox : false}
+                isAnyInboxSelected={action && 'params' in action ? action.params?.anyInbox : false}
               />
             </div>
           </div>

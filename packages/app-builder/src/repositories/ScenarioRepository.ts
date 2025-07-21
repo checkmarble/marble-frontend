@@ -33,8 +33,12 @@ import {
 } from '@app-builder/models/scenario/validation';
 import {
   adaptWorkflow,
+  adaptWorkflowAction,
+  adaptWorkflowCondition,
   adaptWorkflowRule,
   type Rule,
+  transformWorkflowAction,
+  transformWorkflowCondition,
   type WorkflowAction,
   type WorkflowCondition,
 } from '@app-builder/models/scenario/workflow';
@@ -255,8 +259,13 @@ export function makeGetScenarioRepository() {
       await marbleCoreApiClient.reorderWorkflows(scenarioId, workflowIds);
     },
     createWorkflowCondition: async ({ ruleId, condition }) => {
-      const newCondition = await marbleCoreApiClient.createWorkflowCondition(ruleId, condition);
-      return newCondition; // Return WorkflowConditionDto directly
+      console.log('🔄 createWorkflowCondition', condition);
+      console.log('🔄 transformWorkflowCondition', transformWorkflowCondition(condition));
+      const newCondition = await marbleCoreApiClient.createWorkflowCondition(
+        ruleId,
+        transformWorkflowCondition(condition),
+      );
+      return adaptWorkflowCondition(newCondition); // Return WorkflowConditionDto directly
     },
     deleteWorkflowCondition: async ({ ruleId, conditionId }) => {
       await marbleCoreApiClient.deleteWorkflowCondition(ruleId, conditionId);
@@ -265,16 +274,19 @@ export function makeGetScenarioRepository() {
       const updatedCondition = await marbleCoreApiClient.updateWorkflowCondition(
         ruleId,
         conditionId,
-        condition,
+        transformWorkflowCondition(condition),
       );
-      return updatedCondition;
+      return adaptWorkflowCondition(updatedCondition);
     },
     deleteWorkflowRule: async ({ ruleId }) => {
       await marbleCoreApiClient.deleteWorkflowRule(ruleId);
     },
     createWorkflowAction: async ({ ruleId, action }) => {
-      const newAction = await marbleCoreApiClient.createWorkflowAction(ruleId, action);
-      return newAction;
+      const newAction = await marbleCoreApiClient.createWorkflowAction(
+        ruleId,
+        transformWorkflowAction(action),
+      );
+      return adaptWorkflowAction(newAction);
     },
     deleteWorkflowAction: async ({ ruleId, actionId }) => {
       await marbleCoreApiClient.deleteWorkflowAction(ruleId, actionId);
