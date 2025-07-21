@@ -84,25 +84,23 @@ export function ActionSelector({
   };
 
   const handleActionSelect = (actionType: (typeof actionOptions)[number]['value']) => {
+    const id =
+      action?.id ||
+      tempIdRef.current ||
+      `temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
     let newAction: WorkflowAction;
 
     switch (actionType) {
       case 'DISABLED':
         newAction = {
+          id,
           action: 'DISABLED',
-          id:
-            action?.id ||
-            tempIdRef.current ||
-            `temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
         };
         break;
       case 'CREATE_CASE':
         newAction = {
+          id,
           action: 'CREATE_CASE',
-          id:
-            action?.id ||
-            tempIdRef.current ||
-            `temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
           params: {
             inboxId: inboxesQuery.data?.[0]?.id ?? '',
             anyInbox: false,
@@ -112,11 +110,8 @@ export function ActionSelector({
         break;
       case 'ADD_TO_CASE_IF_POSSIBLE':
         newAction = {
+          id,
           action: 'ADD_TO_CASE_IF_POSSIBLE',
-          id:
-            action?.id ||
-            tempIdRef.current ||
-            `temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
           params: {
             inboxId: inboxesQuery.data?.[0]?.id ?? '',
             anyInbox: false,

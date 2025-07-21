@@ -12,6 +12,7 @@ export function useUpdateRuleMutation() {
 
   return useMutation({
     mutationFn: async ({ ruleId, scenarioId, rule }: UpdateRuleInput): Promise<Rule> => {
+      console.log('🔄 updateRuleMutation', rule);
       const response = await fetch(`/ressources/workflows/rule/${ruleId}`, {
         method: 'PUT',
         headers: {
