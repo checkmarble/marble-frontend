@@ -85,6 +85,7 @@
   "success.add_to_case": "تم إضافة القرار  إلى الحالة بنجاح .",
   "success.deleted": "تم حذفه بنجاح",
   "success.save": "تم الحفظ بنجاح",
+  "then": "ثم",
   "to": "إلى {{input}}",
   "true": "صحيح",
   "understand": "أعي ذلك",
