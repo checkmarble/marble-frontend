@@ -48,7 +48,7 @@ export function WorkflowList() {
         <Droppable droppableId="workflow-rules" direction="vertical">
           {(provided) => (
             <div
-              className="flex flex-col items-stretch gap-4 py-8 max-w-7xl mx-auto"
+              className="gap-8 py-8 max-w-7xl ml-8"
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
@@ -76,7 +76,7 @@ export function WorkflowList() {
                         {/* Else arrow - appears after each rule except the last one */}
                         {index < rules.length - 1 && (
                           <div
-                            className={`items-center w-[800px] justify-center -mb-4 transition-all duration-300 ${
+                            className={`items-center w-[800px] justify-center transition-all duration-300 ${
                               isDragging ? 'opacity-0' : 'opacity-100'
                             } ${hasModifiedRules && !isCurrentRuleModified ? 'opacity-20' : ''}`}
                           >
@@ -103,24 +103,15 @@ export function WorkflowList() {
         </Droppable>
       </DragDropContext>
 
-      {/* Create Rule Button - Positioned after the last rule */}
       <div
-        className={`flex items-center w-full mt-4 max-w-7xl mx-auto transition-all duration-300 ${
+        className={`flex flex-col items-center w-[800px] ml-8 pb-8 transition-all duration-300 ${
           hasModifiedRules ? 'opacity-40 pointer-events-none' : ''
         }`}
       >
-        <div className="flex-[6] flex justify-center mb-8">
-          <Button variant="primary" onClick={createRule}>
-            <Icon icon="plus" className="size-4" />
-            {t('workflows:create_rule.label')}
-          </Button>
-        </div>
-        {/* Center spacer - aligned with "Then" arrow */}
-        <div className="flex items-center justify-center">
-          <div className="w-24 h-0"></div>
-        </div>
-        {/* Right side - aligned with actions box */}
-        <div className="flex-[2]"></div>
+        <Button variant="primary" onClick={createRule}>
+          <Icon icon="plus" className="size-4" />
+          {t('workflows:create_rule.label')}
+        </Button>
       </div>
     </>
   );
