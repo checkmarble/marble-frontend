@@ -432,6 +432,9 @@ export function WorkflowProvider({
       if (conditionsToDelete && conditionsToDelete.size > 0) {
         // Delete each condition that was marked for deletion
         for (const conditionId of conditionsToDelete) {
+          if (conditionId.startsWith('temp-')) {
+            continue;
+          }
           await deleteConditionMutation.mutateAsync({
             ruleId,
             conditionId,
