@@ -127,48 +127,48 @@ export const ruleValidationSchema = z
   .passthrough(); // Allow additional fields that might exist in the actual data
 
 // Helper function to validate payload_evaluates conditions
-function validatePayloadEvaluatesCondition(
-  condition: any,
-  conditionIndex: number,
-): {
-  isValid: boolean;
-  errors: string[];
-} {
-  const errors: string[] = [];
+// function validatePayloadEvaluatesCondition(
+//   condition: any,
+//   conditionIndex: number,
+// ): {
+//   isValid: boolean;
+//   errors: string[];
+// } {
+//   const errors: string[] = [];
 
-  if (!('params' in condition) || !condition.params || typeof condition.params !== 'object') {
-    errors.push(`Condition ${conditionIndex}: Payload condition must have parameters`);
-    return { isValid: false, errors };
-  }
+//   if (!('params' in condition) || !condition.params || typeof condition.params !== 'object') {
+//     errors.push(`Condition ${conditionIndex}: Payload condition must have parameters`);
+//     return { isValid: false, errors };
+//   }
 
-  if (!('expression' in condition.params) || !condition.params.expression) {
-    errors.push(`Condition ${conditionIndex}: Payload condition must have an expression`);
-    return { isValid: false, errors };
-  }
+//   if (!('expression' in condition.params) || !condition.params.expression) {
+//     errors.push(`Condition ${conditionIndex}: Payload condition must have an expression`);
+//     return { isValid: false, errors };
+//   }
 
-  const expression = condition.params.expression;
+//   const expression = condition.params.expression;
 
-  // Check if operator is selected (name should not be null, undefined, or "Undefined")
-  if (!expression.name || expression.name === undefinedAstNodeName) {
-    errors.push(`Condition ${conditionIndex}: An operator must be selected`);
-  } else if (!isBinaryMainAstOperatorFunction(expression.name)) {
-    errors.push(`Condition ${conditionIndex}: Invalid operator selected`);
-  }
+//   // Check if operator is selected (name should not be null, undefined, or "Undefined")
+//   if (!expression.name || expression.name === undefinedAstNodeName) {
+//     errors.push(`Condition ${conditionIndex}: An operator must be selected`);
+//   } else if (!isBinaryMainAstOperatorFunction(expression.name)) {
+//     errors.push(`Condition ${conditionIndex}: Invalid operator selected`);
+//   }
 
-  // Check if both operands are defined
-  if (!Array.isArray(expression.children) || expression.children.length !== 2) {
-    errors.push(`Condition ${conditionIndex}: Expression must have exactly 2 operands`);
-  } else {
-    expression.children.forEach((child: any, childIndex: number) => {
-      if (!child || child.name === undefinedAstNodeName) {
-        const operandLabel = childIndex === 0 ? 'left' : 'right';
-        errors.push(`Condition ${conditionIndex}: The ${operandLabel} operand must be set`);
-      }
-    });
-  }
+//   // Check if both operands are defined
+//   if (!Array.isArray(expression.children) || expression.children.length !== 2) {
+//     errors.push(`Condition ${conditionIndex}: Expression must have exactly 2 operands`);
+//   } else {
+//     expression.children.forEach((child: any, childIndex: number) => {
+//       if (!child || child.name === undefinedAstNodeName) {
+//         const operandLabel = childIndex === 0 ? 'left' : 'right';
+//         errors.push(`Condition ${conditionIndex}: The ${operandLabel} operand must be set`);
+//       }
+//     });
+//   }
 
-  return { isValid: errors.length === 0, errors };
-}
+//   return { isValid: errors.length === 0, errors };
+// }
 
 // More specific validation functions for better error messages
 export function validateRuleConditions(conditions: WorkflowCondition[]): {
@@ -185,22 +185,23 @@ export function validateRuleConditions(conditions: WorkflowCondition[]): {
   conditions.forEach((condition, index) => {
     if (!condition.function) {
       errors.push(`Condition ${index + 1}: Missing function type`);
-    } else if (condition.function === 'outcome_in') {
-      if (
-        !('params' in condition) ||
-        !Array.isArray(condition.params) ||
-        condition.params.length === 0
-      ) {
-        errors.push(
-          `Condition ${index + 1}: Outcome condition must have at least one outcome selected`,
-        );
-      }
-    } else if (condition.function === 'payload_evaluates') {
-      console.log('🔍 Validating payload_evaluates condition:', condition);
-      const validationResult = validatePayloadEvaluatesCondition(condition, index + 1);
-      console.log('📋 Payload validation result:', validationResult);
-      errors.push(...validationResult.errors);
     }
+    // } else if (condition.function === 'outcome_in') {
+    //   if (
+    //     !('params' in condition) ||
+    //     !Array.isArray(condition.params) ||
+    //     condition.params.length === 0
+    //   ) {
+    //     errors.push(
+    //       `Condition ${index + 1}: Outcome condition must have at least one outcome selected`,
+    //     );
+    //   }
+    // } else if (condition.function === 'payload_evaluates') {
+    //   console.log('🔍 Validating payload_evaluates condition:', condition);
+    //   const validationResult = validatePayloadEvaluatesCondition(condition, index + 1);
+    //   console.log('📋 Payload validation result:', validationResult);
+    //   errors.push(...validationResult.errors);
+    // }
   });
 
   return { isValid: errors.length === 0, errors };

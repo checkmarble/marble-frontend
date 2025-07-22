@@ -33,10 +33,14 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
     deleteRule,
     cancelRuleChanges,
     confirmRule,
+    getRuleValidationErrors,
   } = useWorkflow();
 
   const isModified = isRuleModified(rule.id);
   const hasValidationErrors = hasRuleValidationErrors(rule.id);
+
+  // get the rule validation errors
+  const ruleValidationErrors = getRuleValidationErrors(rule.id);
 
   const handleRenameClick = (event: React.MouseEvent, ruleId: string, currentName: string) => {
     event.stopPropagation();
@@ -224,6 +228,15 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                     dataModel={dataModel}
                     onChange={(newCondition) => addCondition(rule.id, newCondition)}
                   />
+                  <div className="flex flex-col items-center gap-2">
+                    {ruleValidationErrors.length > 0 && (
+                      <div className="text-red-47 text-sm">
+                        {ruleValidationErrors.map((error) => (
+                          <div key={error}>{error}</div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   {isModified && (
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-2">
