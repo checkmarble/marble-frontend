@@ -136,7 +136,6 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
 
   const handleTitleTemplateChange = (titleTemplate: StringTemplateAstNode | null) => {
     if (!action || action.action === 'DISABLED' || !('params' in action)) return;
-    ``;
 
     const templateToUse = titleTemplate || createDefaultTitleTemplate();
     const safeTemplate = ensureValidAstNode(templateToUse);
