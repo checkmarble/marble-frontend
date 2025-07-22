@@ -71,7 +71,7 @@ export function ActionSelector({
 
   // Helper function to create a proper default title template
   const createDefaultTitleTemplate = (): StringTemplateAstNode => {
-    return NewStringTemplateAstNode('Case {{object_id}}', {});
+    return NewStringTemplateAstNode('Case %object_id%', {});
   };
 
   // Helper function to ensure AST node has proper structure
