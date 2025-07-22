@@ -1838,18 +1838,6 @@ export function escalateCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
- * Ask a review for a case powered by AI
- */
-export function askReviewForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: CaseReviewDto;
-    }>(`/cases/${encodeURIComponent(caseId)}/review`, {
-        ...opts,
-        method: "POST"
-    }));
-}
-/**
  * Get the most recent AI generated review (if present) for a case
  */
 export function getMostRecentCaseReview(caseId: string, opts?: Oazapfts.RequestOpts) {

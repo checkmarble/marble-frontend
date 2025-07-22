@@ -30,7 +30,6 @@ import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/pre
 import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { useCallbackRef } from '@marble/shared';
 import { type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
 import {
   defer,
@@ -290,11 +289,7 @@ export default function CaseManagerIndexPage() {
     'pivot',
   );
   const askReviewMutation = useAskCaseReviewMutation();
-  const onAiAssistOpenChange = useCallbackRef((open: boolean) => {
-    if (open) {
-      askReviewMutation.mutate(details.id);
-    }
-  });
+  const [hasRequestedReview, setHasRequestedReview] = useState(false);
 
   useEffect(() => {
     if (isMenuExpanded) {
@@ -308,7 +303,7 @@ export default function CaseManagerIndexPage() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
         <div className="flex items-center gap-2">
-          <AiAssist.Root onOpenChange={onAiAssistOpenChange}>
+          <AiAssist.Root>
             {aiAssistEnabled === 'allowed' ? (
               <AiAssist.Trigger>
                 <Button variant="secondary" size="medium">
@@ -366,7 +361,22 @@ export default function CaseManagerIndexPage() {
                           })()
                         : null}
                     </div>
-                    <FileLink endpoint={`/cases/${details.id}/data_for_investigation`} />
+                    <div className="flex gap-2">
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          askReviewMutation.mutate(details.id);
+                          setHasRequestedReview(true);
+                        }}
+                        disabled={hasRequestedReview}
+                      >
+                        <Icon icon="case-manager" className="size-5" />
+                        {hasRequestedReview
+                          ? 'Review will be ready in a few minutes, refresh to see it'
+                          : 'Generate Review'}
+                      </Button>
+                      <FileLink endpoint={`/cases/${details.id}/data_for_investigation`} />
+                    </div>
                   </div>
                 </AiAssist.Content>
               )}

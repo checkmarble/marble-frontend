@@ -728,28 +728,6 @@
         $ref: 'components.yml#/responses/404'
 
 /cases/{caseId}/review:
-  post:
-    tags:
-      - Cases
-    summary: Ask a review for a case powered by AI
-    operationId: askReviewForCase
-    security:
-      - bearerAuth: []
-    parameters:
-      - name: caseId
-        description: ID of the case that needs to be reviewed
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    responses:
-      '200':
-        description: The review output for a case
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CaseReviewDto'
   get:
     tags:
       - Cases
