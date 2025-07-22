@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { undefinedAstNodeName } from '../astNode/ast-node';
 import { isBinaryMainAstOperatorFunction } from '../astNode/builder-ast-node-node-operator';
 import { knownOutcomes } from '../outcome';
-import { type WorkflowAction, type WorkflowCondition } from './workflow';
+import { type Rule, type WorkflowAction, type WorkflowCondition } from './workflow';
 
 // OutcomeDto validation schema
 const outcomeSchema = z.enum([
@@ -101,18 +101,17 @@ export const workflowConditionDetailSchema = z.discriminatedUnion('function', [
 export const ruleValidationSchema = z
   .object({
     id: z.string(),
-    name: z.string().min(1, 'Rule name cannot be empty'),
+    name: z.string().min(1, ''),
     fallthrough: z.boolean(),
-    conditions: z
-      .array(
-        z
-          .object({
-            id: z.string(),
-            function: z.string(),
-          })
-          .passthrough(),
-      )
-      .min(1, 'At least one condition is required'),
+    conditions: z.array(
+      z
+        .object({
+          id: z.string(),
+          function: z.string(),
+        })
+        .passthrough(),
+    ),
+    // .min(1, t('workflows:condition.error.atLeastOneCondition')),
     actions: z
       .array(
         z
@@ -177,10 +176,10 @@ export function validateRuleConditions(conditions: WorkflowCondition[]): {
 } {
   const errors: string[] = [];
 
-  if (!Array.isArray(conditions) || conditions.length === 0) {
-    errors.push('At least one condition is required');
-    return { isValid: false, errors };
-  }
+  // if (!Array.isArray(conditions) || conditions.length === 0) {
+  //   errors.push(t('workflows:condition.error.atLeastOneCondition'));
+  //   return { isValid: false, errors };
+  // }
 
   conditions.forEach((condition, index) => {
     if (!condition.function) {
@@ -222,7 +221,7 @@ export function validateRuleAction(actions: WorkflowAction[]): {
 }
 
 // Enhanced validation function
-export function validateRuleEnhanced(rule: unknown): {
+export function validateRuleEnhanced(rule: Rule): {
   success: boolean;
   error?: { errors: Array<{ message: string; path: string[] }> };
 } {
@@ -306,7 +305,7 @@ export function getFieldErrors(error: z.ZodError, fieldPath: string): string[] {
 }
 
 // Helper function to check if a rule has validation errors
-export function hasValidationErrors(rule: unknown): boolean {
-  const result = validateRule(rule);
+export function hasValidationErrors(rule: Rule): boolean {
+  const result = validateRuleEnhanced(rule);
   return !result.success;
 }

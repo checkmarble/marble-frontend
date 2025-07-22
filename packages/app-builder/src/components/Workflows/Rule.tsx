@@ -1,3 +1,4 @@
+import { Callout } from '@app-builder/components/Callout';
 import { type Rule } from '@app-builder/models/scenario/workflow';
 import { type DraggableProvided, type DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { useState } from 'react';
@@ -142,7 +143,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   size="small"
                   onClick={() => deleteRule(rule.id, rule.name)}
                   className="flex items-center hover:bg-red-200 text-red-600 hover:text-red-700 transition-colors duration-200"
-                  title="Delete rule"
                 >
                   <Icon icon="delete" className="size-5" />
                   {t('common:delete')}
@@ -212,7 +212,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                                 type="button"
                                 onClick={() => deleteCondition(rule.id, condition.id)}
                                 className="flex items-center justify-center transition-colors duration-200 hover:bg-red-200 text-red-600 hover:text-red-700"
-                                title="Delete condition"
                               >
                                 <Icon icon="delete" className="size-4" />
                               </Button>
@@ -221,7 +220,11 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                         );
                       })}
                   </div>
-                ) : null}
+                ) : (
+                  <Callout variant="outlined">
+                    {t('workflows:rule.no_conditions.description')}
+                  </Callout>
+                )}
                 <div className="mt-5 flex items-center justify-between">
                   <ConditionSelector
                     triggerObjectType={triggerObjectType}
@@ -240,18 +243,13 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   {isModified && (
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-2">
-                        <Button
-                          variant="secondary"
-                          onClick={() => cancelRuleChanges(rule.id)}
-                          title="Cancel changes"
-                        >
+                        <Button variant="secondary" onClick={() => cancelRuleChanges(rule.id)}>
                           <Icon icon="arrow-left" className="size-4" />
                           {t('common:cancel')}
                         </Button>
                         <Button
                           variant="primary"
                           onClick={() => confirmRule(rule.id)}
-                          title="Confirm changes"
                           disabled={hasValidationErrors}
                         >
                           <Icon icon="checked" className="size-4" />
