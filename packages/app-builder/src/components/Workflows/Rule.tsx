@@ -195,14 +195,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                                   triggerObjectType={triggerObjectType}
                                   dataModel={dataModel}
                                   onChange={(updatedCondition) => {
-                                    console.log(
-                                      '🔄 Rule: Condition changed for rule',
-                                      rule.id,
-                                      'condition',
-                                      condition.id,
-                                      ':',
-                                      updatedCondition,
-                                    );
                                     updateCondition(rule.id, condition.id, updatedCondition);
                                   }}
                                 />

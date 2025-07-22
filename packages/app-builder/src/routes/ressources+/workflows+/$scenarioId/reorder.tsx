@@ -4,8 +4,6 @@ import { ActionFunctionArgs } from '@remix-run/node';
 import invariant from 'tiny-invariant';
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  console.log('reorder.tsx action called - method:', request.method, 'url:', request.url);
-
   if (request.method !== 'PUT') {
     throw new Response('Method not allowed', { status: 405 });
   }

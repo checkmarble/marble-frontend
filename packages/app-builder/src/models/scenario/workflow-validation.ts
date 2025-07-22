@@ -225,12 +225,12 @@ export function validateRuleEnhanced(rule: Rule): {
   success: boolean;
   error?: { errors: Array<{ message: string; path: string[] }> };
 } {
-  console.log('🔍 Enhanced validation for rule:', rule);
+  // console.log('🔍 Enhanced validation for rule:', rule);
 
   try {
     // First try the basic Zod validation
     const zodResult = ruleValidationSchema.safeParse(rule);
-    console.log('📋 Zod validation result:', JSON.stringify(zodResult, null, 2));
+    // console.log('📋 Zod validation result:', JSON.stringify(zodResult, null, 2));
 
     if (zodResult.success) {
       // Additional custom validations

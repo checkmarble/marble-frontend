@@ -49,8 +49,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
                   params: condition.params,
                 };
               case 'payload_evaluates':
-                console.log('payload_evaluates');
-                console.dir(condition.params, { depth: null });
                 return {
                   function: 'payload_evaluates' as const,
                   params: condition.params,
