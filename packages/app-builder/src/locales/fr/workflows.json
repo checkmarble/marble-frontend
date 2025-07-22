@@ -10,7 +10,7 @@
   "action.add_action": "Ajouter une action",
   "action.add_to_case_if_possible.description": "Ajouter à l'investigation existante ou en créer une nouvelle",
   "action.add_to_case_if_possible.label": "Ajouter à l'investigation si possible",
-  "action.create_case.description": "Créer une nouvelle inverstigation dans la boîte de réception spécifiée",
+  "action.create_case.description": "Créer une nouvelle investigation dans la boîte de réception spécifiée",
   "action.create_case.label": "Créer une investigation",
   "action.disabled.description": "Aucune action ne sera prise",
   "action.disabled.label": "Ne rien faire",
