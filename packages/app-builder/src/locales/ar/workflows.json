@@ -32,6 +32,8 @@
   "condition_selector.rule_hit": "ضربات القاعدة",
   "condition_selector.rule_hit_description": "تحقق مما إذا تم تشغيل قاعدة محددة",
   "condition_selector.set_params.label": "تعيين المعاملات",
+  "condition.prefix.and": "و",
+  "condition.prefix.if": "إذا",
   "create_rule.label": "إنشاء القاعدة",
   "delete_rule.confirm_delete": "هل أنت متأكد من أنك تريد حذف القاعدة {{ruleName}}؟ \nلا يمكن التراجع عن هذا الإجراء.",
   "delete_rule.delete_button": "حذف القاعدة",

@@ -32,6 +32,8 @@
   "condition_selector.rule_hit": "Rule hits",
   "condition_selector.rule_hit_description": "Check if a specific rule was triggered",
   "condition_selector.set_params.label": "Set Params",
+  "condition.prefix.and": "And",
+  "condition.prefix.if": "If",
   "create_rule.label": "Create rule",
   "delete_rule.confirm_delete": "Are you sure you want to delete the rule {{ruleName}} ? This action cannot be undone.",
   "delete_rule.delete_button": "Delete Rule",

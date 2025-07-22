@@ -113,7 +113,9 @@ export function ConditionSelector({
     return (
       <div className="flex items-center gap-2">
         <div className="bg-grey-20 px-2 py-1 rounded">
-          <span className="text-grey-60 font-bold text-sm">{isFirst ? 'IF' : 'AND'}</span>
+          <span className="text-grey-60 font-bold text-sm">
+            {isFirst ? t('workflows:condition.prefix.if') : t('workflows:condition.prefix.and')}
+          </span>
         </div>
 
         <PayloadEvaluationCondition condition={condition as any} onChange={onChange!} />
@@ -125,7 +127,9 @@ export function ConditionSelector({
     <div className="flex items-center gap-2">
       {selectedCondition && (
         <div className="bg-grey-20 px-2 py-1 rounded">
-          <span className="text-grey-60 font-bold text-sm">{isFirst ? 'IF' : 'AND'}</span>
+          <span className="text-grey-60 font-bold text-sm">
+            {isFirst ? t('workflows:condition.prefix.if') : t('workflows:condition.prefix.and')}
+          </span>
         </div>
       )}
 

@@ -32,6 +32,8 @@
   "condition_selector.rule_hit": "Règle Hits",
   "condition_selector.rule_hit_description": "Vérifiez si une règle spécifique a été déclenchée",
   "condition_selector.set_params.label": "Définir les paramètres",
+  "condition.prefix.and": "Et",
+  "condition.prefix.if": "Si",
   "create_rule.label": "Créer une règle",
   "delete_rule.confirm_delete": "Êtes-vous sûr de vouloir supprimer la règle {{ruleName}}? \nCette action ne peut pas être annulée.",
   "delete_rule.delete_button": "Supprimer la règle",
