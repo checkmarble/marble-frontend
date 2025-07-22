@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { undefinedAstNodeName } from '../astNode/ast-node';
 import { isBinaryMainAstOperatorFunction } from '../astNode/builder-ast-node-node-operator';
 import { knownOutcomes } from '../outcome';
-import { type WorkflowAction, type WorkflowCondition } from './workflow';
+import { type Rule, type WorkflowAction, type WorkflowCondition } from './workflow';
 
 // OutcomeDto validation schema
 const outcomeSchema = z.enum([
@@ -101,18 +101,17 @@ export const workflowConditionDetailSchema = z.discriminatedUnion('function', [
 export const ruleValidationSchema = z
   .object({
     id: z.string(),
-    name: z.string().min(1, 'Rule name cannot be empty'),
+    name: z.string().min(1, ''),
     fallthrough: z.boolean(),
-    conditions: z
-      .array(
-        z
-          .object({
-            id: z.string(),
-            function: z.string(),
-          })
-          .passthrough(),
-      )
-      .min(1, 'At least one condition is required'),
+    conditions: z.array(
+      z
+        .object({
+          id: z.string(),
+          function: z.string(),
+        })
+        .passthrough(),
+    ),
+    // .min(1, t('workflows:condition.error.atLeastOneCondition')),
     actions: z
       .array(
         z
@@ -127,48 +126,48 @@ export const ruleValidationSchema = z
   .passthrough(); // Allow additional fields that might exist in the actual data
 
 // Helper function to validate payload_evaluates conditions
-function validatePayloadEvaluatesCondition(
-  condition: any,
-  conditionIndex: number,
-): {
-  isValid: boolean;
-  errors: string[];
-} {
-  const errors: string[] = [];
+// function validatePayloadEvaluatesCondition(
+//   condition: any,
+//   conditionIndex: number,
+// ): {
+//   isValid: boolean;
+//   errors: string[];
+// } {
+//   const errors: string[] = [];
 
-  if (!('params' in condition) || !condition.params || typeof condition.params !== 'object') {
-    errors.push(`Condition ${conditionIndex}: Payload condition must have parameters`);
-    return { isValid: false, errors };
-  }
+//   if (!('params' in condition) || !condition.params || typeof condition.params !== 'object') {
+//     errors.push(`Condition ${conditionIndex}: Payload condition must have parameters`);
+//     return { isValid: false, errors };
+//   }
 
-  if (!('expression' in condition.params) || !condition.params.expression) {
-    errors.push(`Condition ${conditionIndex}: Payload condition must have an expression`);
-    return { isValid: false, errors };
-  }
+//   if (!('expression' in condition.params) || !condition.params.expression) {
+//     errors.push(`Condition ${conditionIndex}: Payload condition must have an expression`);
+//     return { isValid: false, errors };
+//   }
 
-  const expression = condition.params.expression;
+//   const expression = condition.params.expression;
 
-  // Check if operator is selected (name should not be null, undefined, or "Undefined")
-  if (!expression.name || expression.name === undefinedAstNodeName) {
-    errors.push(`Condition ${conditionIndex}: An operator must be selected`);
-  } else if (!isBinaryMainAstOperatorFunction(expression.name)) {
-    errors.push(`Condition ${conditionIndex}: Invalid operator selected`);
-  }
+//   // Check if operator is selected (name should not be null, undefined, or "Undefined")
+//   if (!expression.name || expression.name === undefinedAstNodeName) {
+//     errors.push(`Condition ${conditionIndex}: An operator must be selected`);
+//   } else if (!isBinaryMainAstOperatorFunction(expression.name)) {
+//     errors.push(`Condition ${conditionIndex}: Invalid operator selected`);
+//   }
 
-  // Check if both operands are defined
-  if (!Array.isArray(expression.children) || expression.children.length !== 2) {
-    errors.push(`Condition ${conditionIndex}: Expression must have exactly 2 operands`);
-  } else {
-    expression.children.forEach((child: any, childIndex: number) => {
-      if (!child || child.name === undefinedAstNodeName) {
-        const operandLabel = childIndex === 0 ? 'left' : 'right';
-        errors.push(`Condition ${conditionIndex}: The ${operandLabel} operand must be set`);
-      }
-    });
-  }
+//   // Check if both operands are defined
+//   if (!Array.isArray(expression.children) || expression.children.length !== 2) {
+//     errors.push(`Condition ${conditionIndex}: Expression must have exactly 2 operands`);
+//   } else {
+//     expression.children.forEach((child: any, childIndex: number) => {
+//       if (!child || child.name === undefinedAstNodeName) {
+//         const operandLabel = childIndex === 0 ? 'left' : 'right';
+//         errors.push(`Condition ${conditionIndex}: The ${operandLabel} operand must be set`);
+//       }
+//     });
+//   }
 
-  return { isValid: errors.length === 0, errors };
-}
+//   return { isValid: errors.length === 0, errors };
+// }
 
 // More specific validation functions for better error messages
 export function validateRuleConditions(conditions: WorkflowCondition[]): {
@@ -177,30 +176,31 @@ export function validateRuleConditions(conditions: WorkflowCondition[]): {
 } {
   const errors: string[] = [];
 
-  if (!Array.isArray(conditions) || conditions.length === 0) {
-    errors.push('At least one condition is required');
-    return { isValid: false, errors };
-  }
+  // if (!Array.isArray(conditions) || conditions.length === 0) {
+  //   errors.push(t('workflows:condition.error.atLeastOneCondition'));
+  //   return { isValid: false, errors };
+  // }
 
   conditions.forEach((condition, index) => {
     if (!condition.function) {
       errors.push(`Condition ${index + 1}: Missing function type`);
-    } else if (condition.function === 'outcome_in') {
-      if (
-        !('params' in condition) ||
-        !Array.isArray(condition.params) ||
-        condition.params.length === 0
-      ) {
-        errors.push(
-          `Condition ${index + 1}: Outcome condition must have at least one outcome selected`,
-        );
-      }
-    } else if (condition.function === 'payload_evaluates') {
-      console.log('🔍 Validating payload_evaluates condition:', condition);
-      const validationResult = validatePayloadEvaluatesCondition(condition, index + 1);
-      console.log('📋 Payload validation result:', validationResult);
-      errors.push(...validationResult.errors);
     }
+    // } else if (condition.function === 'outcome_in') {
+    //   if (
+    //     !('params' in condition) ||
+    //     !Array.isArray(condition.params) ||
+    //     condition.params.length === 0
+    //   ) {
+    //     errors.push(
+    //       `Condition ${index + 1}: Outcome condition must have at least one outcome selected`,
+    //     );
+    //   }
+    // } else if (condition.function === 'payload_evaluates') {
+    //   console.log('🔍 Validating payload_evaluates condition:', condition);
+    //   const validationResult = validatePayloadEvaluatesCondition(condition, index + 1);
+    //   console.log('📋 Payload validation result:', validationResult);
+    //   errors.push(...validationResult.errors);
+    // }
   });
 
   return { isValid: errors.length === 0, errors };
@@ -221,16 +221,16 @@ export function validateRuleAction(actions: WorkflowAction[]): {
 }
 
 // Enhanced validation function
-export function validateRuleEnhanced(rule: unknown): {
+export function validateRuleEnhanced(rule: Rule): {
   success: boolean;
   error?: { errors: Array<{ message: string; path: string[] }> };
 } {
-  console.log('🔍 Enhanced validation for rule:', rule);
+  // console.log('🔍 Enhanced validation for rule:', rule);
 
   try {
     // First try the basic Zod validation
     const zodResult = ruleValidationSchema.safeParse(rule);
-    console.log('📋 Zod validation result:', JSON.stringify(zodResult, null, 2));
+    // console.log('📋 Zod validation result:', JSON.stringify(zodResult, null, 2));
 
     if (zodResult.success) {
       // Additional custom validations
@@ -305,7 +305,7 @@ export function getFieldErrors(error: z.ZodError, fieldPath: string): string[] {
 }
 
 // Helper function to check if a rule has validation errors
-export function hasValidationErrors(rule: unknown): boolean {
-  const result = validateRule(rule);
+export function hasValidationErrors(rule: Rule): boolean {
+  const result = validateRuleEnhanced(rule);
   return !result.success;
 }

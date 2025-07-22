@@ -1,4 +1,4 @@
-import { type AstNode, type DataModel } from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
 import { adaptAstNode, adaptNodeDto } from '@app-builder/models/astNode/ast-node';
 import {
   isStringTemplateAstNode,
@@ -19,16 +19,9 @@ import { useWorkflowDataFeatureAccess } from './WorkflowProvider';
 interface ActionSelectorProps {
   action?: WorkflowAction;
   onChange?: (action: WorkflowAction) => void;
-  triggerObjectType?: string;
-  dataModel?: DataModel;
 }
 
-export function ActionSelector({
-  action,
-  onChange,
-  triggerObjectType = 'decision',
-  dataModel = [],
-}: ActionSelectorProps) {
+export function ActionSelector({ action, onChange }: ActionSelectorProps) {
   const { t } = useTranslation(workflowI18n);
   const workflowFeatureAccess = useWorkflowDataFeatureAccess();
   const isCreateInboxAvailable = workflowFeatureAccess.isCreateInboxAvailable;
@@ -51,27 +44,27 @@ export function ActionSelector({
   const actionOptions = [
     {
       value: 'DISABLED',
-      label: 'Do nothing',
-      description: 'No action will be taken',
+      label: t('workflows:action.disabled.label'),
+      description: t('workflows:action.disabled.description'),
       icon: 'stop',
     },
     {
       value: 'CREATE_CASE',
-      label: 'Create case',
-      description: 'Create a new case in the specified inbox',
+      label: t('workflows:action.create_case.label'),
+      description: t('workflows:action.create_case.description'),
       icon: 'plus',
     },
     {
       value: 'ADD_TO_CASE_IF_POSSIBLE',
-      label: 'Add to case if possible',
-      description: 'Add to existing case or create new one',
+      label: t('workflows:action.add_to_case_if_possible.label'),
+      description: t('workflows:action.add_to_case_if_possible.description'),
       icon: 'plus',
     },
   ] as const;
 
   // Helper function to create a proper default title template
   const createDefaultTitleTemplate = (): StringTemplateAstNode => {
-    return NewStringTemplateAstNode('Case {{object_id}}', {});
+    return NewStringTemplateAstNode('Case %object_id%', {});
   };
 
   // Helper function to ensure AST node has proper structure

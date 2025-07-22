@@ -259,8 +259,6 @@ export function makeGetScenarioRepository() {
       await marbleCoreApiClient.reorderWorkflows(scenarioId, workflowIds);
     },
     createWorkflowCondition: async ({ ruleId, condition }) => {
-      console.log('🔄 createWorkflowCondition', condition);
-      console.log('🔄 transformWorkflowCondition', transformWorkflowCondition(condition));
       const newCondition = await marbleCoreApiClient.createWorkflowCondition(
         ruleId,
         transformWorkflowCondition(condition),

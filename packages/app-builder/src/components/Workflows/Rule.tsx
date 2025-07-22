@@ -1,3 +1,4 @@
+import { Callout } from '@app-builder/components/Callout';
 import { type Rule } from '@app-builder/models/scenario/workflow';
 import { type DraggableProvided, type DraggableStateSnapshot } from '@hello-pangea/dnd';
 import { useState } from 'react';
@@ -15,7 +16,7 @@ interface RuleProps {
 }
 
 export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'workflows']);
   const [editingRuleId, setEditingRuleId] = useState<string | null>(null);
   const [editingRuleName, setEditingRuleName] = useState<string>('');
 
@@ -33,10 +34,14 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
     deleteRule,
     cancelRuleChanges,
     confirmRule,
+    getRuleValidationErrors,
   } = useWorkflow();
 
   const isModified = isRuleModified(rule.id);
   const hasValidationErrors = hasRuleValidationErrors(rule.id);
+
+  // get the rule validation errors
+  const ruleValidationErrors = getRuleValidationErrors(rule.id);
 
   const handleRenameClick = (event: React.MouseEvent, ruleId: string, currentName: string) => {
     event.stopPropagation();
@@ -75,7 +80,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
       >
         {/* Conditions and Actions Boxes */}
         <div className="flex items-center w-full">
-          <div className="flex-none items-stretch relative w-[800px] bg-grey-100">
+          <div className="flex-none items-stretch relative w-[750px] bg-grey-100">
             {/* Rule title bar */}
             <div
               className={` text-grey-00 font-semibold px-4 py-2 rounded-t-lg border-2 border-b-0 w-auto bg-purple-98 flex items-center justify-between ${
@@ -138,7 +143,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   size="small"
                   onClick={() => deleteRule(rule.id, rule.name)}
                   className="flex items-center hover:bg-red-200 text-red-600 hover:text-red-700 transition-colors duration-200"
-                  title="Delete rule"
                 >
                   <Icon icon="delete" className="size-5" />
                   {t('common:delete')}
@@ -191,14 +195,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                                   triggerObjectType={triggerObjectType}
                                   dataModel={dataModel}
                                   onChange={(updatedCondition) => {
-                                    console.log(
-                                      '🔄 Rule: Condition changed for rule',
-                                      rule.id,
-                                      'condition',
-                                      condition.id,
-                                      ':',
-                                      updatedCondition,
-                                    );
                                     updateCondition(rule.id, condition.id, updatedCondition);
                                   }}
                                 />
@@ -208,7 +204,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                                 type="button"
                                 onClick={() => deleteCondition(rule.id, condition.id)}
                                 className="flex items-center justify-center transition-colors duration-200 hover:bg-red-200 text-red-600 hover:text-red-700"
-                                title="Delete condition"
                               >
                                 <Icon icon="delete" className="size-4" />
                               </Button>
@@ -217,28 +212,36 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                         );
                       })}
                   </div>
-                ) : null}
+                ) : (
+                  <Callout variant="outlined">
+                    {t('workflows:rule.no_conditions.description')}
+                  </Callout>
+                )}
                 <div className="mt-5 flex items-center justify-between">
                   <ConditionSelector
                     triggerObjectType={triggerObjectType}
                     dataModel={dataModel}
                     onChange={(newCondition) => addCondition(rule.id, newCondition)}
                   />
+                  <div className="flex flex-col items-center gap-2">
+                    {ruleValidationErrors.length > 0 && (
+                      <div className="text-red-47 text-sm">
+                        {ruleValidationErrors.map((error) => (
+                          <div key={error}>{error}</div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   {isModified && (
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-2">
-                        <Button
-                          variant="secondary"
-                          onClick={() => cancelRuleChanges(rule.id)}
-                          title="Cancel changes"
-                        >
+                        <Button variant="secondary" onClick={() => cancelRuleChanges(rule.id)}>
                           <Icon icon="arrow-left" className="size-4" />
                           {t('common:cancel')}
                         </Button>
                         <Button
                           variant="primary"
                           onClick={() => confirmRule(rule.id)}
-                          title="Confirm changes"
                           disabled={hasValidationErrors}
                         >
                           <Icon icon="checked" className="size-4" />
@@ -276,8 +279,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
               <ActionSelector
                 action={rule.actions?.[0]}
                 onChange={(action) => updateAction(rule.id, action)}
-                triggerObjectType={triggerObjectType}
-                dataModel={dataModel}
               />
             </div>
           </div>
