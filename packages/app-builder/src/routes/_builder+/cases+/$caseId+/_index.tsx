@@ -17,7 +17,7 @@ import {
   mergeDataModelWithTableOptions,
   type TableModelWithOptions,
 } from '@app-builder/models';
-import { useAskCaseReviewMutation } from '@app-builder/queries/ask-case-review';
+import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
 import {
   AlreadyDownloadingError,
   AuthRequestError,
@@ -288,7 +288,7 @@ export default function CaseManagerIndexPage() {
   const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision' | 'snooze'>(
     'pivot',
   );
-  const askReviewMutation = useAskCaseReviewMutation();
+  const enqueueReviewMutation = useEnqueueCaseReviewMutation();
   const [hasRequestedReview, setHasRequestedReview] = useState(false);
 
   useEffect(() => {
@@ -365,7 +365,7 @@ export default function CaseManagerIndexPage() {
                       <Button
                         variant="secondary"
                         onClick={() => {
-                          askReviewMutation.mutate(details.id);
+                          enqueueReviewMutation.mutate(details.id);
                           setHasRequestedReview(true);
                         }}
                         disabled={hasRequestedReview}
