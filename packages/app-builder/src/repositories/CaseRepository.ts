@@ -94,6 +94,8 @@ export interface CaseRepository {
   getNextUnassignedCaseId(args: { caseId: string }): Promise<string | null>;
   escalateCase(args: { caseId: string }): Promise<unknown>;
   askReviewForCase(args: { caseId: string }): Promise<CaseReview>;
+  enqueueReviewForCase(args: { caseId: string }): Promise<unknown>;
+  getMostRecentCaseReview(args: { caseId: string }): Promise<CaseReview[]>;
 }
 
 export function makeGetCaseRepository() {
@@ -194,6 +196,13 @@ export function makeGetCaseRepository() {
     escalateCase: ({ caseId }) => marbleCoreApiClient.escalateCase(caseId),
     askReviewForCase: async ({ caseId }) => {
       return adaptCaseReview(await marbleCoreApiClient.askReviewForCase(caseId));
+    },
+    enqueueReviewForCase: async ({ caseId }) => {
+      await marbleCoreApiClient.enqueueReviewForCase(caseId);
+    },
+    getMostRecentCaseReview: async ({ caseId }) => {
+      const reviews = await marbleCoreApiClient.getMostRecentCaseReview(caseId);
+      return reviews.map(adaptCaseReview);
     },
   });
 }

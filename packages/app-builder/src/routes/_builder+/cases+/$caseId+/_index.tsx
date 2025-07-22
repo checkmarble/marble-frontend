@@ -74,16 +74,25 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { caseId } = parsedResult.data;
 
   // Get case by ID
-  const [currentCase, nextCaseId, reports, inboxes, pivotObjects, dataModel, pivots] =
-    await Promise.all([
-      cases.getCase({ caseId }),
-      cases.getNextUnassignedCaseId({ caseId }),
-      cases.listSuspiciousActivityReports({ caseId }),
-      inbox.listInboxes(),
-      cases.listPivotObjects({ caseId }),
-      dataModelRepository.getDataModel(),
-      dataModelRepository.listPivots({}),
-    ]);
+  const [
+    currentCase,
+    nextCaseId,
+    reports,
+    inboxes,
+    pivotObjects,
+    dataModel,
+    pivots,
+    mostRecentReview,
+  ] = await Promise.all([
+    cases.getCase({ caseId }),
+    cases.getNextUnassignedCaseId({ caseId }),
+    cases.listSuspiciousActivityReports({ caseId }),
+    inbox.listInboxes(),
+    cases.listPivotObjects({ caseId }),
+    dataModelRepository.getDataModel(),
+    dataModelRepository.listPivots({}),
+    cases.getMostRecentCaseReview({ caseId }),
+  ]);
 
   const dataModelWithTableOptions = (await Promise.all(
     dataModel.map<Promise<TableModelWithOptions>>((table) =>
@@ -210,6 +219,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     rulesByPivotPromise,
     entitlements,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
+    mostRecentReview,
   });
 };
 
@@ -270,6 +280,7 @@ export default function CaseManagerIndexPage() {
     nextCaseId,
     entitlements: { AiAssist: aiAssistEnabled },
     isMenuExpanded,
+    mostRecentReview,
   } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
   const navigate = useNavigate();
@@ -312,57 +323,48 @@ export default function CaseManagerIndexPage() {
                 <AiAssist.Content>
                   <div className="p-4 h-full flex flex-col gap-2 justify-between">
                     <div className="border border-grey-90 rounded-md p-2 grow min-h-0">
-                      {match(askReviewMutation)
-                        .with({ isPending: true }, () => (
-                          <div className="grid place-content-center place-items-center h-full">
-                            <Icon icon="spinner" className="size-10 animate-spin" />
-                            <span className="text-s">
-                              {t('cases:case.ai_assist.review_in_progress')}
-                            </span>
-                          </div>
-                        ))
-                        .with({ isError: true }, () => (
-                          <div className="grid place-items-center h-full">
-                            {t('common:errors.unknown')}
-                          </div>
-                        ))
-                        .with({ isSuccess: true }, ({ data }) => {
-                          return (
-                            <div className="flex flex-col gap-2 h-full text-xs">
-                              <Tabs defaultValue="review" className="flex flex-col h-full gap-2">
-                                <TabsList className="self-start">
-                                  <TabsTrigger value="review" className="flex items-center gap-2">
-                                    {t('cases:case.ai_assist.review')}
-                                    <Icon
-                                      icon={data.review.ok ? 'tick' : 'cross'}
-                                      className={cn(
-                                        'size-5',
-                                        data.review.ok ? 'text-green-34' : 'text-red-47',
-                                      )}
-                                    />
-                                  </TabsTrigger>
-                                  {!data.review.ok ? (
-                                    <TabsTrigger value="sanityCheck">
-                                      {t('cases:case.ai_assist.sanity_check')}
+                      {mostRecentReview.length === 1
+                        ? (() => {
+                            const data = mostRecentReview[0]!;
+                            return (
+                              <div className="flex flex-col gap-2 h-full text-xs">
+                                <Tabs defaultValue="review" className="flex flex-col h-full gap-2">
+                                  <TabsList className="self-start">
+                                    <TabsTrigger value="review" className="flex items-center gap-2">
+                                      {t('cases:case.ai_assist.review')}
+                                      <Icon
+                                        icon={data.ok ? 'tick' : 'cross'}
+                                        className={cn(
+                                          'size-5',
+                                          data.ok ? 'text-green-34' : 'text-red-47',
+                                        )}
+                                      />
                                     </TabsTrigger>
-                                  ) : null}
-                                </TabsList>
-                                <TabsContent value="review" className="min-h-0 p-2 overflow-scroll">
-                                  <Markdown>{data.review.output}</Markdown>
-                                </TabsContent>
-                                {!data.review.ok ? (
+                                    {!data.ok ? (
+                                      <TabsTrigger value="sanityCheck">
+                                        {t('cases:case.ai_assist.sanity_check')}
+                                      </TabsTrigger>
+                                    ) : null}
+                                  </TabsList>
                                   <TabsContent
-                                    value="sanityCheck"
+                                    value="review"
                                     className="min-h-0 p-2 overflow-scroll"
                                   >
-                                    <Markdown>{data.review.sanityCheck}</Markdown>
+                                    <Markdown>{data.output}</Markdown>
                                   </TabsContent>
-                                ) : null}
-                              </Tabs>
-                            </div>
-                          );
-                        })
-                        .otherwise(() => null)}
+                                  {!data.ok ? (
+                                    <TabsContent
+                                      value="sanityCheck"
+                                      className="min-h-0 p-2 overflow-scroll"
+                                    >
+                                      <Markdown>{data.sanityCheck}</Markdown>
+                                    </TabsContent>
+                                  ) : null}
+                                </Tabs>
+                              </div>
+                            );
+                          })()
+                        : null}
                     </div>
                     <FileLink endpoint={`/cases/${details.id}/data_for_investigation`} />
                   </div>
