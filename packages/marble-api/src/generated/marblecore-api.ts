@@ -1850,6 +1850,46 @@ export function askReviewForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
+ * Get the most recent AI generated review (if present) for a case
+ */
+export function getMostRecentCaseReview(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CaseReviewDto[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/review`, {
+        ...opts
+    }));
+}
+/**
+ * Enqueue a review for a case powered by AI
+ */
+export function enqueueReviewForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/review/enqueue`, {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
  * List suspicious activity reports for a case
  */
 export function sarList(caseId: string, opts?: Oazapfts.RequestOpts) {
