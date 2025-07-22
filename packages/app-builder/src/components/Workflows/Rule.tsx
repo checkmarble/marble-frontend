@@ -16,7 +16,7 @@ interface RuleProps {
 }
 
 export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'workflows']);
   const [editingRuleId, setEditingRuleId] = useState<string | null>(null);
   const [editingRuleName, setEditingRuleName] = useState<string>('');
 
@@ -80,7 +80,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
       >
         {/* Conditions and Actions Boxes */}
         <div className="flex items-center w-full">
-          <div className="flex-none items-stretch relative w-[800px] bg-grey-100">
+          <div className="flex-none items-stretch relative w-[750px] bg-grey-100">
             {/* Rule title bar */}
             <div
               className={` text-grey-00 font-semibold px-4 py-2 rounded-t-lg border-2 border-b-0 w-auto bg-purple-98 flex items-center justify-between ${
@@ -287,8 +287,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
               <ActionSelector
                 action={rule.actions?.[0]}
                 onChange={(action) => updateAction(rule.id, action)}
-                triggerObjectType={triggerObjectType}
-                dataModel={dataModel}
               />
             </div>
           </div>

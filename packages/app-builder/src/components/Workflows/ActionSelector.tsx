@@ -1,4 +1,4 @@
-import { type AstNode, type DataModel } from '@app-builder/models';
+import { type AstNode } from '@app-builder/models';
 import { adaptAstNode, adaptNodeDto } from '@app-builder/models/astNode/ast-node';
 import {
   isStringTemplateAstNode,
@@ -19,16 +19,9 @@ import { useWorkflowDataFeatureAccess } from './WorkflowProvider';
 interface ActionSelectorProps {
   action?: WorkflowAction;
   onChange?: (action: WorkflowAction) => void;
-  triggerObjectType?: string;
-  dataModel?: DataModel;
 }
 
-export function ActionSelector({
-  action,
-  onChange,
-  triggerObjectType = 'decision',
-  dataModel = [],
-}: ActionSelectorProps) {
+export function ActionSelector({ action, onChange }: ActionSelectorProps) {
   const { t } = useTranslation(workflowI18n);
   const workflowFeatureAccess = useWorkflowDataFeatureAccess();
   const isCreateInboxAvailable = workflowFeatureAccess.isCreateInboxAvailable;
