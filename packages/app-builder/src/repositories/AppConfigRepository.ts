@@ -10,8 +10,8 @@ export function makeGetAppConfigRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): AppConfigRepository => ({
     async getAppConfig() {
       const appVersion = getServerEnv('APP_VERSION') ?? 'dev';
-      const firebaseOptions = getServerEnv('FIREBASE_CONFIG');
-      return adaptAppConfig(await marbleCoreApiClient.getAppConfig(), appVersion, firebaseOptions);
+      const firebaseConfig = getServerEnv('FIREBASE_CONFIG');
+      return adaptAppConfig(await marbleCoreApiClient.getAppConfig(), appVersion, firebaseConfig);
     },
   });
 }
