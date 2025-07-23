@@ -7,6 +7,7 @@ import {
 } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
 import { DatasetFreshnessBanner } from '@app-builder/components/Sanctions/DatasetFresshnessBanner';
+import { UnavailableBanner } from '@app-builder/components/Settings/UnavailableBanner';
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
@@ -27,7 +28,6 @@ import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
-
 import { getSettings } from './settings+/_layout';
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -117,7 +117,7 @@ export default function Builder() {
                           lastName={user.actorIdentity.lastName}
                           role={user.role}
                           orgOrPartnerName={organization.name}
-                        />
+                        ></UserInfo>
                       </div>
                       <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
                         <ul className="flex flex-col gap-2">
@@ -252,6 +252,7 @@ export default function Builder() {
                     </LeftSidebar>
 
                     <Outlet />
+                    <UnavailableBanner />
                   </LeftSidebarSharpFactory.Provider>
                 </div>
               </div>

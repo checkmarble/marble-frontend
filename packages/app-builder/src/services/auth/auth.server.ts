@@ -25,6 +25,7 @@ import { type makeGetFeatureAccessRepository } from '@app-builder/repositories/F
 import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
 import { type PartnerRepository } from '@app-builder/repositories/PartnerRepository';
+import { PersonalSettingsRepository } from '@app-builder/repositories/PersonalSettingsRepository';
 import { type RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
 import { type SanctionCheckRepository } from '@app-builder/repositories/SanctionCheckRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
@@ -42,7 +43,6 @@ import { captureRemixServerException } from '@sentry/remix';
 import { marblecoreApi } from 'marble-api';
 import { type CSRF, CSRFError } from 'remix-utils/csrf/server';
 import * as z from 'zod';
-
 import { getRoute } from '../../utils/routes';
 import { captureUnexpectedRemixError } from '../monitoring';
 import { type SessionService } from './session.server';
@@ -73,6 +73,7 @@ interface AuthenticatedInfo {
   user: CurrentUser;
   entitlements: FeatureAccesses;
   inbox: InboxRepository;
+  personalSettings: PersonalSettingsRepository;
 }
 
 export interface AuthenticationServerService {
@@ -152,6 +153,7 @@ interface MakeAuthenticationServerServiceArgs {
   getWebhookRepository: (marbleCoreApiClient: MarbleCoreApi) => WebhookRepository;
   getRuleSnoozeRepository: (marbleCoreApiClient: MarbleCoreApi) => RuleSnoozeRepository;
   getFeatureAccessRepository: ReturnType<typeof makeGetFeatureAccessRepository>;
+  getPersonalSettingsRepository: (marbleCoreApiClient: MarbleCoreApi) => PersonalSettingsRepository;
   authSessionService: SessionService<AuthData, AuthFlashData>;
   csrfService: CSRF;
 }
@@ -185,6 +187,7 @@ export function makeAuthenticationServerService({
   getWebhookRepository,
   getRuleSnoozeRepository,
   getFeatureAccessRepository,
+  getPersonalSettingsRepository,
   authSessionService,
   csrfService,
 }: MakeAuthenticationServerServiceArgs) {
@@ -367,6 +370,7 @@ export function makeAuthenticationServerService({
       user,
       entitlements,
       inbox: getInboxRepository(marbleCoreApiClient),
+      personalSettings: getPersonalSettingsRepository(marbleCoreApiClient),
     };
   }
 

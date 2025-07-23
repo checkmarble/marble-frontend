@@ -5,6 +5,7 @@ import {
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
 import { casesI18n } from '@app-builder/components/Cases';
+import { AvailabilityToggle } from '@app-builder/components/Settings/AvailabilityToggle';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import {
   canAccessInboxesSettings,
@@ -20,7 +21,6 @@ import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { CtaClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { MY_INBOX_ID } from './_index';
 
 export const handle = {
@@ -75,6 +75,7 @@ export default function Cases() {
       </Page.Header>
       <div className="flex h-full flex-row overflow-hidden">
         <div className="border-e-grey-90 bg-grey-100 flex h-full w-fit min-w-[200px] max-w-[300px] shrink-0 flex-col overflow-y-auto border-e p-4">
+          <AvailabilityToggle />
           <NavLink
             className={({ isActive }) =>
               clsx(

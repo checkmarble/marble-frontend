@@ -12,6 +12,8 @@
   "api_keys.role.unknown": "UNKNOWN",
   "api_keys.value": "Value",
   "case_manager": "Case Manager",
+  "current-state-offline": "Away",
+  "current-state-online": "Available",
   "data_display": "Data display",
   "data_display.global_explanation": "Drag and drop the fields to set the display order, and use the toggle to hide those not needed by default in the case manager.",
   "inboxes": "Inboxes",
@@ -61,6 +63,8 @@
   "scenario_sanction_threshold_placeholder": "80",
   "scenarios": "Scenarios",
   "scenenario_execution": "Scenario execution settings",
+  "set-me-offline": "Set yourself as away",
+  "set-me-online": "Set yourself as active",
   "tags": "Tags",
   "tags.cases": "Cases",
   "tags.color": "Color",
@@ -125,5 +129,6 @@
   "webhooks.secret.value": "Value",
   "webhooks.setup_documentation": "For more information on webhooks, please refer to <DocLink>the documentation</DocLink>.",
   "webhooks.update_webhook": "Update webhook",
-  "webhooks.url": "URL"
+  "webhooks.url": "URL",
+  "you-are-set-offline": "You are set away."
 }
