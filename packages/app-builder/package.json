@@ -12,7 +12,7 @@
     "dev": "remix vite:dev",
     "build": "remix vite:build",
     "start": "remix-serve ./build/server/index.js",
-    "generate-routes": "source scripts/generateRoutes.sh && tsx scripts/generateRoutes.ts && biome format --write ./src/utils/routes/types.ts"
+    "generate-routes": "source scripts/generateRoutes.sh && tsx scripts/generateRoutes.ts && biome check --write ./src/utils/routes/types.ts"
   },
   "author": "",
   "license": "ISC",

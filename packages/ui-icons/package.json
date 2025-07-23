@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "biome lint",
     "type-check": "pnpm exec tsc --noEmit",
-    "generate-icons": "tsx scripts/generate.ts"
+    "generate-icons": "tsx scripts/generate.ts && biome check --write ./src/generated"
   },
   "devDependencies": {
     "@biomejs/js-api": "^2.0.3",
