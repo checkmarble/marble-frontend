@@ -17,7 +17,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@biomejs/js-api": "^2.0.3",
     "@remix-run/dev": "^2.16.8",
     "@segment/analytics-next": "^1.78.1",
     "@sentry/cli": "^2.42.3",
@@ -125,8 +124,5 @@
     "uuid": "^11.1.0",
     "zod": "^3.24.2",
     "zustand": "^5.0.3"
-  },
-  "peerDependencies": {
-    "@biomejs/wasm-nodejs": "^2.1.1"
   }
 }

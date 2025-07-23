@@ -2,12 +2,7 @@ import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { routes } from '@app-builder/utils/routes/routes';
-// import { Biome } from '@biomejs/js-api/nodejs';
 import ora from 'ora';
-
-// const biome = new Biome();
-
-// const { projectKey } = biome.openProject();
 
 const outTypesFile = join(process.cwd(), '/src/utils/routes/types.ts');
 
@@ -50,24 +45,6 @@ async function buildTypesFile(routes: readonly Route[]) {
     const RouteID = `export type RouteID = ${getRoutesIds(routes)
       .map((routeId) => `'${routeId}'`)
       .join(' | ')};`;
-
-    // const formatted = biome.formatContent(
-    //   projectKey,
-    //   `
-    //     ${RoutePath}
-
-    //     ${RouteID}
-    //   `,
-    //   {
-    //     filePath: outTypesFile,
-    //   },
-    // );
-    // const result = biome.lintContent(projectKey, formatted.content, {
-    //   filePath: outTypesFile,
-    //   fixFileMode: 'safeAndUnsafeFixes',
-    // });
-
-    // console.info('result', result.content);
     await writeFile(
       outTypesFile,
       `
@@ -87,7 +64,6 @@ async function buildTypesFile(routes: readonly Route[]) {
 async function main() {
   try {
     await buildTypesFile(routes);
-    // biome.shutdown();
   } catch (error) {
     console.error('\n', error);
     process.exit(1);

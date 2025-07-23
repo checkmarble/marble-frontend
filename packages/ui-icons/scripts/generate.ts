@@ -2,17 +2,12 @@ import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import type { Stream } from 'node:stream';
 
-// import { Biome } from '@biomejs/js-api/nodejs';
 import ora from 'ora';
 import SVGSpriter from 'svg-sprite';
 
 const OUT_DIR = join(process.cwd(), '/src/generated');
 const IN_ICONS_DIR = join(process.cwd(), '/svgs/icons/');
 const IN_LOGOS_DIR = join(process.cwd(), '/svgs/logos');
-
-// const biome = new Biome();
-
-// const { projectKey } = biome.openProject(process.cwd());
 
 async function buildIconTypeFile(svgFileNames: string[]) {
   const icons = svgFileNames.map((file) => basename(file, '.svg'));
@@ -21,12 +16,6 @@ async function buildIconTypeFile(svgFileNames: string[]) {
     export const iconNames = [ ${icons.map((icon) => `"${icon}",`).join('')} ] as const;
     export type IconName = typeof iconNames[number];
   `;
-  // const formatted = biome.formatContent(projectKey, output, {
-  //   filePath: `${OUT_DIR}/icon-names.ts`,
-  // });
-  // const result = biome.lintContent(projectKey, formatted.content, {
-  //   filePath: `${OUT_DIR}/icon-names.ts`,
-  // });
 
   await writeFile(join(OUT_DIR, 'icon-names.ts'), output);
 }
@@ -79,14 +68,6 @@ async function buildLogoTypeFile(svgFileNames: string[]) {
     export const logoNames = [${logos.map((logo) => `"${logo}",`).join('')}] as const;
     export type LogoName = typeof logoNames[number];
   `;
-
-  // const formatted = biome.formatContent(projectKey, output, {
-  //   filePath: `${OUT_DIR}/logo-names.ts`,
-  // });
-
-  // const result = biome.lintContent(projectKey, formatted.content, {
-  //   filePath: `${OUT_DIR}/logo-names.ts`,
-  // });
 
   await writeFile(join(OUT_DIR, 'logo-names.ts'), output);
 }
@@ -159,7 +140,6 @@ async function main() {
     await mkdir(OUT_DIR);
 
     await generateIcons();
-    // biome.shutdown();
   } catch (error) {
     console.error('\n', error);
     process.exit(1);
