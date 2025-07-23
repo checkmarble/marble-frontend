@@ -3,7 +3,7 @@
     tags:
       - Personal settings
     summary: Get the current unavailability
-    operationId: setUnavailable
+    operationId: getUnavailability
     security:
       - bearerAuth: []
     responses:
@@ -23,7 +23,7 @@
     tags:
       - Personal settings
     summary: Set a user as unavailable until a date
-    operationId: setUnavailable
+    operationId: setUnavailability
     security:
       - bearerAuth: []
     requestBody:
@@ -43,7 +43,7 @@
     tags:
       - Personal settings
     summary: Cancel the current or planned unavailability
-    operationId: setUnavailable
+    operationId: cancelUnavailability
     security:
       - bearerAuth: []
     responses:
