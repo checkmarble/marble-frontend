@@ -2,7 +2,6 @@ import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import type { Stream } from 'node:stream';
 
-import { Biome, Distribution } from '@biomejs/js-api';
 import ora from 'ora';
 import SVGSpriter from 'svg-sprite';
 
@@ -10,23 +9,15 @@ const OUT_DIR = join(process.cwd(), '/src/generated');
 const IN_ICONS_DIR = join(process.cwd(), '/svgs/icons/');
 const IN_LOGOS_DIR = join(process.cwd(), '/svgs/logos');
 
-const biome = await Biome.create({
-  distribution: Distribution.NODE,
-});
-const { projectKey } = biome.openProject(`${process.cwd()}/../..`);
-
 async function buildIconTypeFile(svgFileNames: string[]) {
   const icons = svgFileNames.map((file) => basename(file, '.svg'));
-  const output = `export const iconNames = [
-${icons.map((icon) => `  "${icon}",`).join('\n')}
-] as const;
 
-export type IconName = typeof iconNames[number];
-`;
+  const output = `
+    export const iconNames = [ ${icons.map((icon) => `"${icon}",`).join('')} ] as const;
+    export type IconName = typeof iconNames[number];
+  `;
 
-  biome.formatContent(projectKey, output, {
-    filePath: `${OUT_DIR}/icon-names.ts`,
-  });
+  await writeFile(join(OUT_DIR, 'icon-names.ts'), output);
 }
 
 async function buildIconSvgSprite(svgFileNames: string[]) {
@@ -73,15 +64,12 @@ async function buildIconSvgSprite(svgFileNames: string[]) {
 
 async function buildLogoTypeFile(svgFileNames: string[]) {
   const logos = svgFileNames.map((file) => basename(file, '.svg'));
-  const output = `export const logoNames = [
-${logos.map((logo) => `  "${logo}",`).join('\n')}
-] as const;
+  const output = `
+    export const logoNames = [${logos.map((logo) => `"${logo}",`).join('')}] as const;
+    export type LogoName = typeof logoNames[number];
+  `;
 
-export type LogoName = typeof logoNames[number];
-`;
-  biome.formatContent(projectKey, output, {
-    filePath: `${OUT_DIR}/logo-names.ts`,
-  });
+  await writeFile(join(OUT_DIR, 'logo-names.ts'), output);
 }
 
 async function buildLogoSvgSprite(svgFileNames: string[]) {
@@ -152,7 +140,6 @@ async function main() {
     await mkdir(OUT_DIR);
 
     await generateIcons();
-    biome.shutdown();
   } catch (error) {
     console.error('\n', error);
     process.exit(1);
