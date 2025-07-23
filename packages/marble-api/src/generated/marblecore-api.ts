@@ -4482,7 +4482,7 @@ export function deleteWorkflowAction(ruleId: string, actionId: string, opts?: Oa
 /**
  * Get the current unavailability
  */
-export function setUnavailable(opts?: Oazapfts.RequestOpts) {
+export function getUnavailability(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: PersonalSettingsUnavailableDto;
@@ -4501,7 +4501,7 @@ export function setUnavailable(opts?: Oazapfts.RequestOpts) {
 /**
  * Set a user as unavailable until a date
  */
-export function setUnavailable2(personalSettingsUnavailableDto: PersonalSettingsUnavailableDto, opts?: Oazapfts.RequestOpts) {
+export function setUnavailability(personalSettingsUnavailableDto: PersonalSettingsUnavailableDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -4519,7 +4519,7 @@ export function setUnavailable2(personalSettingsUnavailableDto: PersonalSettings
 /**
  * Cancel the current or planned unavailability
  */
-export function setUnavailable3(opts?: Oazapfts.RequestOpts) {
+export function cancelUnavailability(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
