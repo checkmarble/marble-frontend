@@ -11,7 +11,7 @@ import { UnavailableBanner } from '@app-builder/components/Settings/UnavailableB
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
+import { isAnalyticsAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { OrganizationDetailsContextProvider } from '@app-builder/services/organization/organization-detail';
 import { OrganizationObjectTagsContextProvider } from '@app-builder/services/organization/organization-object-tags';
@@ -66,6 +66,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         isAvailable: firstSettings !== undefined,
         ...(firstSettings !== undefined && { to: firstSettings.to }),
       },
+      isRoundRobinAvailable: isWorkflowsAvailable(entitlements),
     },
     versions: appConfig.versions,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
@@ -117,6 +118,7 @@ export default function Builder() {
                           lastName={user.actorIdentity.lastName}
                           role={user.role}
                           orgOrPartnerName={organization.name}
+                          isRoundRobinFeatureAvailable={featuresAccess.isRoundRobinAvailable}
                         ></UserInfo>
                       </div>
                       <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
@@ -252,7 +254,7 @@ export default function Builder() {
                     </LeftSidebar>
 
                     <Outlet />
-                    <UnavailableBanner />
+                    {featuresAccess.isRoundRobinAvailable ? <UnavailableBanner /> : null}
                   </LeftSidebarSharpFactory.Provider>
                 </div>
               </div>

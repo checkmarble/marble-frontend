@@ -28,11 +28,13 @@ export function SetMyselfAvailable() {
       <Modal.Content>
         <Modal.Title>
           {t('settings:set-me-online-description', {
-            date: formatDateTimeWithoutPresets(unavailabilityQuery.data?.until, {
-              language,
-              dateStyle: 'medium',
-              timeStyle: undefined,
-            }),
+            date: unavailabilityQuery.data?.until
+              ? formatDateTimeWithoutPresets(unavailabilityQuery.data.until, {
+                  language,
+                  dateStyle: 'medium',
+                  timeStyle: undefined,
+                })
+              : null,
           })}
         </Modal.Title>
         <Modal.Description className="flex flex-col gap-4 m-4">
@@ -49,7 +51,7 @@ export function SetMyselfAvailable() {
               </Button>
 
               <Button className="flex-1" variant="primary" onClick={() => setMeUnavailable()}>
-                {t('settings:set-me-online')}
+                {t('settings:set-myself-available.validate.button')}
               </Button>
             </div>
           </Modal.Close>
