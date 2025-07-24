@@ -7,18 +7,13 @@ import {
 import { initServerServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';
 import { getRoute } from '@app-builder/utils/routes';
-import { json, type LinksFunction, type LoaderFunctionArgs } from '@remix-run/node';
+import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
-import * as React from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
-import swaggercss from 'swagger-ui-react/swagger-ui.css?url';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-const SwaggerUI = React.lazy(() => import('swagger-ui-react'));
 
 export const handle = {
   i18n: ['common', 'navigation', 'api'] satisfies Namespace,
@@ -36,9 +31,6 @@ export const handle = {
   ],
 };
 
-export const links: LinksFunction = () =>
-  swaggercss ? [{ rel: 'stylesheet', href: swaggercss }] : [];
-
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
   const { dataModelRepository } = await authService.isAuthenticated(request, {
@@ -52,14 +44,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function Api() {
   const { t } = useTranslation(handle.i18n);
   const { openapi } = useLoaderData<typeof loader>();
-
-  // Remove those parts, because they are part of the proper openapi spec but we do not want them as input to SwaggerUI
-  const openapiWithoutSomeParts = React.useMemo(() => {
-    const openapiWithoutSomeParts = R.clone(openapi);
-    delete openapiWithoutSomeParts.info;
-    delete openapiWithoutSomeParts.components?.securitySchemes;
-    return openapiWithoutSomeParts;
-  }, [openapi]);
 
   return (
     <Page.Main>
@@ -86,17 +70,6 @@ export default function Api() {
               <Icon icon="download" className="me-2 size-6" />
               {t('api:download_openapi_spec')}
             </Button>
-          </div>
-          <div className="-mx-5">
-            <React.Suspense fallback={t('common:loading')}>
-              {/* Issue with UNSAFE_componentWillReceiveProps: https://github.com/swagger-api/swagger-ui/issues/5729 */}
-              <SwaggerUI
-                spec={openapiWithoutSomeParts}
-                supportedSubmitMethods={[]}
-                defaultModelExpandDepth={5}
-                defaultModelsExpandDepth={4}
-              />
-            </React.Suspense>
           </div>
         </Page.Content>
       </Page.Container>
