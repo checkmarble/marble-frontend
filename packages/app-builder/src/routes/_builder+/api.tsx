@@ -7,7 +7,7 @@ import {
 import { initServerServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';
 import { getRoute } from '@app-builder/utils/routes';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
+import { type LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import toast from 'react-hot-toast';
@@ -37,13 +37,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const openapi = await dataModelRepository.getOpenApiSpec();
-  return json({ openapi });
+  const [openapi, openapiV1] = await Promise.all([
+    dataModelRepository.getOpenApiSpec(),
+    dataModelRepository.getOpenApiSpecOfVersion('v1'),
+  ]);
+
+  return Response.json({ openapi, openapiV1 });
 }
 
 export default function Api() {
   const { t } = useTranslation(handle.i18n);
-  const { openapi } = useLoaderData<typeof loader>();
+  const { openapi, openapiV1 } = useLoaderData<typeof loader>();
+
+  console.log('openapi', openapi);
+  console.log('openapiV1', openapiV1);
 
   return (
     <Page.Main>
@@ -52,7 +59,24 @@ export default function Api() {
       </Page.Header>
       <Page.Container>
         <Page.Content>
-          <div className="flex">
+          <div className="flex flex-col gap-2  items-start">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                try {
+                  const blob = new Blob([JSON.stringify(openapiV1)], {
+                    type: 'application/json;charset=utf-8,',
+                  });
+                  const url = URL.createObjectURL(blob);
+                  void downloadFile(url, 'openapi-v1.json');
+                } catch (_error) {
+                  toast.error(t('common:errors.unknown'));
+                }
+              }}
+            >
+              <Icon icon="download" className="me-2 size-6" />
+              {t('api:download_openapi_spec_v1')}
+            </Button>
             <Button
               variant="secondary"
               onClick={() => {

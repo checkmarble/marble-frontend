@@ -1,3 +1,4 @@
 {
-  "download_openapi_spec": "Download OpenAPI specification"
+  "download_openapi_spec": "Download OpenAPI specification v0 (Deprecated)",
+  "download_openapi_spec_v1": "Download OpenAPI specification v1"
 }

@@ -30,6 +30,7 @@ import { type OpenApiSpec } from 'marble-api';
 export interface DataModelRepository {
   getDataModel(): Promise<DataModel>;
   getOpenApiSpec(): Promise<OpenApiSpec>;
+  getOpenApiSpecOfVersion(version: string): Promise<OpenApiSpec>;
   postDataModelTableField(tableId: string, createFieldInput: CreateFieldInput): Promise<void>;
   patchDataModelField(tableId: string, updateFieldInput: UpdateFieldInput): Promise<void>;
   listPivots(args: { tableId?: string }): Promise<Pivot[]>;
@@ -55,6 +56,9 @@ export function makeGetDataModelRepository() {
     },
     getOpenApiSpec: async () => {
       return marbleCoreApiClient.getDataModelOpenApi();
+    },
+    getOpenApiSpecOfVersion: async (version: string) => {
+      return marbleCoreApiClient.getDataModelOpenApiOfVersion(version);
     },
     postDataModelTableField: async (tableId, createFieldInput) => {
       await marbleCoreApiClient.postDataModelTableField(
