@@ -126,6 +126,7 @@ export type RoutePath =
   | '/ressources/settings/webhooks/create'
   | '/ressources/settings/webhooks/delete'
   | '/ressources/settings/webhooks/update'
+  | '/ressources/settings/personal/unavailability'
   | '/ressources/user/language'
   | '/transfercheck'
   | '/transfercheck/*'

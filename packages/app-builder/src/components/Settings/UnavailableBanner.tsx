@@ -1,25 +1,24 @@
-import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
+import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
 import { Icon } from 'ui-icons';
-import { AvailabilityToggle } from './AvailabilityToggle';
 
 export function UnavailableBanner() {
-  const { currentUser } = useOrganizationDetails();
+  const { query: unavailabilityQuery } = useUnavailabilitySettings();
 
-  if (currentUser.available !== false) {
+  if (
+    unavailabilityQuery?.isPending ||
+    (unavailabilityQuery?.isSuccess && unavailabilityQuery.data?.until === null)
+  ) {
     return null;
   }
 
-  console.log('currentUser', currentUser);
-
   return (
-    <div className="fixed bottom-0 start-0 flex justify-between w-full p-2 border-t bg-red-74 border-grey-90">
+    <div className="fixed bottom-0 start-0 flex justify-between w-full p-2 border-t bg-red-43 border-grey-90">
       <div className="flex items-center mx-auto">
         <p className="flex items-center text-md text-grey-00 dark:text-grey-50">
           <span className="inline-flex p-1 me-3 text-grey-00 rounded-full w-6 h-6 items-center justify-center">
             <Icon icon="account-circle-off" className="size-5" />
           </span>
           <span className="font-semibold text-grey-00">You are set offline.</span>
-          <AvailabilityToggle />
         </p>
       </div>
       <div className="flex items-center">

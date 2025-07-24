@@ -1,5 +1,9 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import { adaptUnavailability, PersonalSettings } from '@app-builder/models/personal-settings';
+import {
+  adaptUnavailability,
+  PersonalSettings,
+  transformUnavailability,
+} from '@app-builder/models/personal-settings';
 
 export interface PersonalSettingsRepository {
   getUnavailability(): Promise<PersonalSettings>;
@@ -17,9 +21,7 @@ export const makeGetPersonalSettingsRepository =
       return adaptUnavailability(data);
     },
     setUnavailability: async (unavailability: PersonalSettings) => {
-      //   const response = await client.setUnavailability(unavailability);
-      //   return response.data;
-      return;
+      await client.setUnavailability(transformUnavailability(unavailability));
     },
     cancelUnavailability: async () => {
       await client.cancelUnavailability();

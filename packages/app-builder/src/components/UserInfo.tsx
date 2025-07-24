@@ -1,5 +1,5 @@
+import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
 import { LanguagePicker } from '@app-builder/routes/ressources+/user+/language';
-import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { segment } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
 import { getRoute } from '@app-builder/utils/routes';
@@ -8,7 +8,8 @@ import { Form } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Tag } from 'ui-design-system';
 import { Icon, Logo } from 'ui-icons';
-import { AvailabilityToggle } from './Settings/AvailabilityToggle';
+import { SetMyselfAvailable } from './Settings/SetMyselfAvailable';
+import { SetMyselfUnavailable } from './Settings/SetMyselfUnavailable';
 
 interface UserInfoProps {
   email?: string;
@@ -21,7 +22,7 @@ interface UserInfoProps {
 export function UserInfo({ email, firstName, lastName, role, orgOrPartnerName }: UserInfoProps) {
   const { t } = useTranslation(['common']);
   const fullName = getFullName({ firstName, lastName });
-  const { unavailabilityQuery } = useOrganizationDetails();
+  const { query: unavailabilityQuery } = useUnavailabilitySettings();
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
@@ -44,7 +45,7 @@ export function UserInfo({ email, firstName, lastName, role, orgOrPartnerName }:
               className="group-radix-state-open:rotate-180 size-6 shrink-0 opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
             />
           </button>
-          {unavailabilityQuery.isSuccess && unavailabilityQuery.data.unavailableUntil !== null ? (
+          {unavailabilityQuery.isSuccess && unavailabilityQuery.data.until !== null ? (
             <div className="absolute top-1 left-1 flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-47 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-red-47"></span>
@@ -76,8 +77,11 @@ export function UserInfo({ email, firstName, lastName, role, orgOrPartnerName }:
           </div>
 
           <div className="mt-6 flex flex-col items-center gap-10">
-            <AvailabilityToggle />
-
+            {unavailabilityQuery.isSuccess && unavailabilityQuery.data.until === null ? (
+              <SetMyselfUnavailable />
+            ) : (
+              <SetMyselfAvailable />
+            )}
             <Form action={getRoute('/ressources/auth/logout')} method="POST">
               <Button
                 variant="secondary"

@@ -1,15 +1,13 @@
 import { type CurrentUser } from '@app-builder/models';
 import { type Organization } from '@app-builder/models/organization';
-import { type PersonalSettings } from '@app-builder/models/personal-settings';
-import { useGetUnavailabilityQuery } from '@app-builder/queries/personal-settings';
+// import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 interface OrganizationDetailsContext {
   org: Organization;
   currentUser: CurrentUser;
-  unavailabilityQuery: UseQueryResult<PersonalSettings, Error>;
+  // unavailabilityQuery: UseQueryResult<PersonalSettings, Error>;
 }
 
 const OrganizationDetailsContext =
@@ -24,12 +22,9 @@ export function OrganizationDetailsContextProvider({
   currentUser: CurrentUser;
   children: React.ReactNode;
 }) {
-  const unavailabilityQuery = useGetUnavailabilityQuery();
+  // const { query: unavailabilityQuery } = useUnavailabilitySettings();
 
-  const value = useMemo(
-    () => ({ org, currentUser, unavailabilityQuery }),
-    [org, currentUser, unavailabilityQuery],
-  );
+  const value = useMemo(() => ({ org, currentUser }), [org, currentUser]);
   return (
     <OrganizationDetailsContext.Provider value={value}>
       {children}
