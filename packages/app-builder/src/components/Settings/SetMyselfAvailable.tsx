@@ -1,12 +1,14 @@
+import { Callout } from '@app-builder/components/Callout';
 import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
+import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function SetMyselfAvailable() {
-  const { t } = useTranslation(['settings']);
+  const language = useFormatLanguage();
+  const { t } = useTranslation(['settings', 'common']);
 
   const { query: unavailabilityQuery, deleteUnavailability } = useUnavailabilitySettings();
   console.log('unavailabilityQuery', unavailabilityQuery);
@@ -18,19 +20,40 @@ export function SetMyselfAvailable() {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
-        <Button variant="primary" color="red">
+        <div className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-red-43 text-grey-98 font-semibold bg-red-47 transition-all duration-100">
           <Icon icon="account-circle" className="size-5" />
           {t('settings:current-state-offline')}
-        </Button>
+        </div>
       </Modal.Trigger>
       <Modal.Content>
-        <Modal.Title>{t('settings:set-me-online')}</Modal.Title>
-        <Modal.Description>{t('settings:set-me-online-description')}</Modal.Description>
-        <Modal.Close asChild>
-          <Button variant="primary" color="green" onClick={() => setMeUnavailable()}>
-            {t('settings:set-me-online')}
-          </Button>
-        </Modal.Close>
+        <Modal.Title>
+          {t('settings:set-me-online-description', {
+            date: formatDateTimeWithoutPresets(unavailabilityQuery.data?.until, {
+              language,
+              dateStyle: 'medium',
+              timeStyle: undefined,
+            }),
+          })}
+        </Modal.Title>
+        <Modal.Description className="flex flex-col gap-4 m-4">
+          <Callout variant="outlined" className="m-4">
+            {t('settings:set-me-online-description-callout')}
+          </Callout>
+        </Modal.Description>
+
+        <Modal.Footer>
+          <Modal.Close asChild>
+            <div className="flex flex-1 flex-row gap-2 p-4">
+              <Button variant="secondary" className="flex-1">
+                {t('common:cancel')}
+              </Button>
+
+              <Button className="flex-1" variant="primary" onClick={() => setMeUnavailable()}>
+                {t('settings:set-me-online')}
+              </Button>
+            </div>
+          </Modal.Close>
+        </Modal.Footer>
       </Modal.Content>
     </Modal.Root>
   );

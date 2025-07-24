@@ -65,6 +65,8 @@
   "scenenario_execution": "Scenario execution settings",
   "set-me-offline": "Set yourself as away",
   "set-me-online": "Set yourself as active",
+  "set-me-online-description": "You are currently set unavailable until the {{date}}.",
+  "set-me-online-description-callout": "If you confirm, you will be immediately marked as available.",
   "tags": "Tags",
   "tags.cases": "Cases",
   "tags.color": "Color",

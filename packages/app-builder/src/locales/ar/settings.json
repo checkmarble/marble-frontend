@@ -61,6 +61,8 @@
   "scenario_sanction_threshold_placeholder": "80",
   "scenarios": "السيناريوهات",
   "scenenario_execution": "إعدادات تنفيذ السيناريو",
+  "set-me-online-description": "أنت حاليا معين كغير متاح حتى {{date}}.",
+  "set-me-online-description-callout": "إذا قمت بتأكيد ذلك، سيتم تحديثك فورا كمتاح.",
   "tags": "الإشارات",
   "tags.cases": "الحالات",
   "tags.color": "اللون",

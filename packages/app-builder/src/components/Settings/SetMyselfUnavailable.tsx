@@ -2,7 +2,7 @@ import { Callout } from '@app-builder/components/Callout';
 import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { useFormatLanguage } from '@app-builder/utils/format';
-import { endOfTomorrow } from 'date-fns';
+import { endOfToday } from 'date-fns';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Calendar, Modal } from 'ui-design-system';
@@ -39,7 +39,7 @@ export function SetMyselfUnavailable() {
         <div className="flex flex-row items-center justify-center gap-2">
           <Calendar
             mode="single"
-            disabled={{ before: endOfTomorrow() }}
+            disabled={{ before: endOfToday() }}
             selected={dateSelected}
             onSelect={setDateSelected}
             locale={getDateFnsLocale(language)}

@@ -1,10 +1,13 @@
 import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
+import { useState } from 'react';
 import { Icon } from 'ui-icons';
 
 export function UnavailableBanner() {
   const { query: unavailabilityQuery } = useUnavailabilitySettings();
 
+  const [isOpen, setIsOpen] = useState(true);
   if (
+    !isOpen ||
     unavailabilityQuery?.isPending ||
     (unavailabilityQuery?.isSuccess && unavailabilityQuery.data?.until === null)
   ) {
@@ -27,8 +30,9 @@ export function UnavailableBanner() {
           type="button"
           className="shrink-0 inline-flex justify-center w-7 h-7 items-center text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 dark:hover:bg-gray-600 dark:hover:text-white"
         >
-          <Icon icon="cross" className="size-5" />
-          <span className="sr-only">Close banner</span>
+          <button onClick={() => setIsOpen(false)}>
+            <Icon icon="cross" className="size-5" />
+          </button>
         </button>
       </div>
     </div>

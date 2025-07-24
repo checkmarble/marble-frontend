@@ -21,6 +21,8 @@ export const makeGetPersonalSettingsRepository =
       return adaptUnavailability(data);
     },
     setUnavailability: async (unavailability: PersonalSettings) => {
+      console.log('setUnavailability', unavailability);
+      console.log('transformUnavailability', transformUnavailability(unavailability));
       await client.setUnavailability(transformUnavailability(unavailability));
     },
     cancelUnavailability: async () => {

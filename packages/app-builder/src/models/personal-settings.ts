@@ -1,3 +1,4 @@
+import { add } from 'date-fns';
 import { PersonalSettingsUnavailableDto } from 'marble-api';
 
 export type PersonalSettings = {
@@ -14,5 +15,19 @@ export const transformUnavailability = (
   if (unavailability.until === null) {
     throw new Error('Unavailability should not be null');
   }
-  return unavailability as unknown as PersonalSettingsUnavailableDto;
+  console.log(
+    'unavailability.until',
+    add(unavailability.until, {
+      hours: 23,
+      minutes: 59,
+      seconds: 59,
+    }).toISOString(),
+  );
+  return {
+    until: add(unavailability.until, {
+      hours: 23,
+      minutes: 59,
+      seconds: 59,
+    }).toISOString(),
+  } as unknown as PersonalSettingsUnavailableDto;
 };

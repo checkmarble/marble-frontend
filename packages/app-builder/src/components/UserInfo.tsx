@@ -34,23 +34,24 @@ export function UserInfo({ email, firstName, lastName, role, orgOrPartnerName }:
                 aria-labelledby="marble logo"
                 className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12"
               />
+              {unavailabilityQuery.isSuccess && unavailabilityQuery.data.until !== null ? (
+                <div className="absolute top-1 left-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-47 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-47"></span>
+                </div>
+              ) : null}
               <Logo
                 logo="marble"
                 aria-labelledby="marble"
                 className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
               />
             </div>
+
             <Icon
               icon="arrow-2-down"
               className="group-radix-state-open:rotate-180 size-6 shrink-0 opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
             />
           </button>
-          {unavailabilityQuery.isSuccess && unavailabilityQuery.data.until !== null ? (
-            <div className="absolute top-1 left-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-47 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-47"></span>
-            </div>
-          ) : null}
         </div>
       </Popover.Trigger>
       <Popover.Portal>
