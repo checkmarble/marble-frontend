@@ -1,3 +1,4 @@
+import { useDeleteUnavailabilityMutation } from '@app-builder/queries/personal-settings';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +9,7 @@ import { DateRangeFilter } from '../Filters';
 export function AvailabilityToggle() {
   const { t } = useTranslation(['settings']);
   const { unavailabilityQuery } = useOrganizationDetails();
+  const setMeAvailableMutation = useDeleteUnavailabilityMutation();
   const [dateRange, setDateRange] = useState<DateRange>({
     from: new Date(),
     to: new Date(),
@@ -16,6 +18,11 @@ export function AvailabilityToggle() {
   const [open, setOpen] = useState(false);
 
   console.log('=========>', unavailabilityQuery);
+
+  const setMeAvailable = () => {
+    console.log('set me available');
+    setMeAvailableMutation.mutate();
+  };
 
   return (
     <Modal.Root>
@@ -46,20 +53,20 @@ export function AvailabilityToggle() {
           </MenuCommand.Trigger>
           <MenuCommand.Content>
             <MenuCommand.List>
-              <Modal.Trigger>
-                {unavailabilityQuery.isSuccess &&
-                unavailabilityQuery.data.unavailableUntil === null ? (
+              {unavailabilityQuery.isSuccess &&
+              unavailabilityQuery.data.unavailableUntil === null ? (
+                <Modal.Trigger>
                   <MenuCommand.Item>
                     <Icon icon="account-circle" className="size-5" />
                     {t('settings:set-me-offline')}
                   </MenuCommand.Item>
-                ) : (
-                  <MenuCommand.Item>
-                    <Icon icon="account-circle-off" className="size-5" />
-                    {t('settings:set-me-online')}
-                  </MenuCommand.Item>
-                )}
-              </Modal.Trigger>
+                </Modal.Trigger>
+              ) : (
+                <MenuCommand.Item onSelect={() => setMeAvailable()}>
+                  <Icon icon="account-circle-off" className="size-5" />
+                  {t('settings:set-me-online')}
+                </MenuCommand.Item>
+              )}
             </MenuCommand.List>
           </MenuCommand.Content>
         </MenuCommand.Menu>

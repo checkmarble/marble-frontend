@@ -22,8 +22,6 @@ export const makeGetPersonalSettingsRepository =
       return;
     },
     cancelUnavailability: async () => {
-      // const response = await client.cancelUnavailability();
-      // return response.data;
-      return;
+      await client.cancelUnavailability();
     },
   });
