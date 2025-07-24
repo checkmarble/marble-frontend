@@ -3292,7 +3292,7 @@ export function postDataModelTableLink(createTableLinkBody: CreateTableLinkBody,
     })));
 }
 /**
- * Get the OpenAPI specification of the client specific API for data ingestion and decision making
+ * Get the current version of the OpenAPI specification of the client specific API for data ingestion and decision making
  */
 export function getDataModelOpenApi(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -3305,6 +3305,23 @@ export function getDataModelOpenApi(opts?: Oazapfts.RequestOpts) {
         status: 403;
         data: string;
     }>("/data-model/openapi", {
+        ...opts
+    }));
+}
+/**
+ * Get the OpenAPI specification of the client specific API for data ingestion and decision making for a specific version
+ */
+export function getDataModelOpenApiOfVersion(version: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: OpenApiSpec;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/data-model/openapi/${encodeURIComponent(version)}`, {
         ...opts
     }));
 }
