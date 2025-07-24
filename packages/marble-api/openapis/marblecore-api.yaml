@@ -232,6 +232,8 @@ paths:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1links
   /data-model/openapi:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1openapi
+  /data-model/openapi/{version}:
+    $ref: ./marblecore-api/data-model.yml#/~1data-model~1openapi~1{version}
   /data-model/pivots:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1pivots
   /data-model/tables/{tableId}/navigation_options:
