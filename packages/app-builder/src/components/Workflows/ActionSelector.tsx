@@ -242,7 +242,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
                 onSelectedInboxIdChange={handleInboxSelect}
                 inboxes={inboxesQuery.data || []}
                 isCreateInboxAvailable={isCreateInboxAvailable}
-                withAnyInboxAvailable={true}
+                withAnyInboxAvailable={false}
                 isAnyInboxSelected={action && 'params' in action ? action.params?.anyInbox : false}
               />
             </div>
