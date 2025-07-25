@@ -21,13 +21,13 @@ export function Examples({
       <caption className="sr-only">{t('scenarios:edit_fuzzy_match.examples.caption')}</caption>
       <thead>
         <tr>
-          <th className="text-grey-00 bg-grey-98 border-grey-90 border px-2 text-start text-xs font-normal capitalize">
+          <th className="text-grey-00 bg-grey-98 border-grey-90 border px-2 text-start text-xs font-normal">
             {t('scenarios:edit_fuzzy_match.examples.left')}
           </th>
-          <th className="text-grey-00 bg-grey-98 border-grey-90 border px-2 text-start text-xs font-normal capitalize">
+          <th className="text-grey-00 bg-grey-98 border-grey-90 border px-2 text-start text-xs font-normal">
             {t('scenarios:edit_fuzzy_match.examples.right')}
           </th>
-          <th className="text-grey-00 bg-grey-98 border-grey-90 border px-2 text-start text-xs font-normal capitalize">
+          <th className="text-grey-00 bg-grey-98 border-grey-90 border px-2 text-start text-xs font-normal">
             {t('scenarios:edit_fuzzy_match.examples.result')}
           </th>
         </tr>
