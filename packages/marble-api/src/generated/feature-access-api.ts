@@ -25,6 +25,7 @@ export type FeatureAccessDto = {
     sanctions: FeatureAccessLevelDto;
     name_recognition: FeatureAccessLevelDto;
     ai_assist: FeatureAccessLevelDto;
+    auto_assignment: FeatureAccessLevelDto;
 };
 /**
  * Get the entitlements of an organization
