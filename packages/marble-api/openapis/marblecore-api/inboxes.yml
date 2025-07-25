@@ -370,9 +370,12 @@
             type: object
             required:
               - role
+              - auto_assignable
             properties:
               role:
                 type: string
+              auto_assignable:
+                type: boolean
       required: true
     responses:
       '200':
