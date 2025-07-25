@@ -18,12 +18,21 @@ export const ComparatorFuzzyMatchConfig =
     defaultEditableAlgorithm: 'token_set_ratio',
 
     thresholds: {
+      low: 55,
       medium: 70,
       high: 85,
     },
     defaultLevel: 'high',
 
     examples: [
+      {
+        left: 'Cabinet Dupond',
+        right: 'Jean-Charles Dupond',
+        resultsScores: {
+          ratio: 61,
+          token_set_ratio: 61,
+        },
+      },
       {
         left: 'Mr Mrs John Jane OR Doe Smith',
         right: 'John Doe',
