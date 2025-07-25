@@ -210,6 +210,12 @@ export default function Inbox() {
                 {t('settings:inboxes.inbox_details.escalation_inbox')}
               </span>
               {escalationInbox?.name ?? t('settings:inboxes.inbox_details.no_escalation_inbox')}
+              <span className="font-bold">
+                {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
+              </span>
+              {inbox.autoAssignEnabled
+                ? t('settings:inboxes.inbox_details.auto_assign_enabled')
+                : t('settings:inboxes.inbox_details.auto_assign_disabled')}
             </div>
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>

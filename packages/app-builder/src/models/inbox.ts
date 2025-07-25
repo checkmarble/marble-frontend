@@ -15,6 +15,7 @@ export interface Inbox {
   status: 'active' | 'archived';
   users: InboxUser[];
   escalationInboxId?: string;
+  autoAssignEnabled: boolean;
 }
 
 export function adaptInbox(inbox: InboxDto): Inbox {
@@ -26,6 +27,7 @@ export function adaptInbox(inbox: InboxDto): Inbox {
     status: inbox.status,
     users: (inbox.users ?? []).map(adaptInboxUser),
     escalationInboxId: inbox.escalation_inbox_id,
+    autoAssignEnabled: inbox.auto_assign_enabled,
   };
 }
 
@@ -60,15 +62,18 @@ export interface InboxCreateBody {
 export interface InboxUpdateBody {
   name: string;
   escalationInboxId?: string | null;
+  autoAssignEnabled?: boolean;
 }
 
 export function adaptUpdateInboxDto(model: InboxUpdateBody): {
   name: string;
   escalation_inbox_id?: string;
+  auto_assign_enabled?: boolean;
 } {
   return {
     name: model.name,
     escalation_inbox_id: model.escalationInboxId ?? undefined,
+    auto_assign_enabled: model.autoAssignEnabled ?? undefined,
   };
 }
 
