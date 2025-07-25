@@ -1,10 +1,10 @@
 openapi: 3.0.3
 info:
   version: 1.0.0
-  title: 'Feature access API'
-  description: 'API for retrieving feature access entitlements'
+  title: "Feature access API"
+  description: "API for retrieving feature access entitlements"
 servers:
-  - url: 'http://localhost:8080'
+  - url: "http://localhost:8080"
     description: Local development server
 paths:
   /feature_access:
@@ -15,7 +15,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Feature access response
           content:
             application/json:
@@ -23,39 +23,41 @@ paths:
                 type: object
                 properties:
                   feature_access:
-                    $ref: '#/components/schemas/FeatureAccessDto'
+                    $ref: "#/components/schemas/FeatureAccessDto"
                 required:
                   - feature_access
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
 components:
   schemas:
     FeatureAccessLevelDto:
       type: string
-      enum: ['allowed', 'restricted', 'test', 'missing_configuration']
+      enum: ["allowed", "restricted", "test", "missing_configuration"]
     FeatureAccessDto:
       type: object
       properties:
         workflows:
-          $ref: '#/components/schemas/FeatureAccessLevelDto'
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
         analytics:
-          $ref: '#/components/schemas/FeatureAccessLevelDto'
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
         roles:
-          $ref: '#/components/schemas/FeatureAccessLevelDto'
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
         webhooks:
-          $ref: '#/components/schemas/FeatureAccessLevelDto'
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
         rule_snoozes:
-          $ref: '#/components/schemas/FeatureAccessLevelDto'
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
         test_run:
-          $ref: '#/components/schemas/FeatureAccessLevelDto'
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
         sanctions:
-          $ref: '#/components/schemas/FeatureAccessLevelDto'
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
         name_recognition:
-          $ref: '#/components/schemas/FeatureAccessLevelDto'
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
         ai_assist:
-          $ref: '#/components/schemas/FeatureAccessLevelDto'
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
+        auto_assignment:
+          $ref: "#/components/schemas/FeatureAccessLevelDto"
       required:
         - workflows
         - analytics
@@ -66,15 +68,16 @@ components:
         - sanctions
         - name_recognition
         - ai_assist
+        - auto_assignment
   responses:
-    '401':
+    "401":
       description: Unauthorized
       content:
         application/json:
           schema:
             type: string
             example: Unauthorized
-    '403':
+    "403":
       description: Forbidden
       content:
         application/json:

@@ -423,6 +423,7 @@ components:
         - created_at
         - updated_at
         - status
+        - auto_assign_enabled
       properties:
         id:
           type: string
@@ -447,6 +448,8 @@ components:
         escalation_inbox_id:
           type: string
           format: uuid
+        auto_assign_enabled:
+          type: boolean
     InboxMetadataDto:
       type: object
       required:
@@ -458,8 +461,6 @@ components:
           format: uuid
         name:
           type: string
-        auto_assign_enabled:
-          type: boolean
     CreateInboxBodyDto:
       type: object
       required:

@@ -1158,6 +1158,7 @@ export type InboxDto = {
     users?: InboxUserDto[];
     cases_count?: number;
     escalation_inbox_id?: string;
+    auto_assign_enabled: boolean;
 };
 export type CreateInboxBodyDto = {
     name: string;
@@ -1165,7 +1166,6 @@ export type CreateInboxBodyDto = {
 export type InboxMetadataDto = {
     id: string;
     name: string;
-    auto_assign_enabled?: boolean;
 };
 export type AddInboxUserBodyDto = {
     user_id: string;
