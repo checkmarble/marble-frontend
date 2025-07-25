@@ -4,6 +4,7 @@ import {
   adaptInboxMetadata,
   adaptInboxUser,
   adaptInboxUserCreateBody,
+  adaptInboxUserUpdateBody,
   adaptInboxWithCasesCount,
   adaptUpdateInboxDto,
   type Inbox,
@@ -86,10 +87,16 @@ export function makeGetInboxRepository() {
         inboxId,
         adaptInboxUserCreateBody(data),
       );
+      console.log('data', data);
+      console.log('adaptInboxUserCreateBody', adaptInboxUserCreateBody(data));
+      console.log('inbox_user', inbox_user);
       return adaptInboxUser(inbox_user);
     },
     updateInboxUser: async (inboxUserId, data) => {
-      const { inbox_user } = await marbleCoreApiClient.updateInboxUser(inboxUserId, data);
+      const { inbox_user } = await marbleCoreApiClient.updateInboxUser(
+        inboxUserId,
+        adaptInboxUserUpdateBody(data),
+      );
       return adaptInboxUser(inbox_user);
     },
     deleteInboxUser: async (inboxUserId) => {

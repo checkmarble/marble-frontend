@@ -10,6 +10,7 @@ import { DatasetFreshnessBanner } from '@app-builder/components/Sanctions/Datase
 import { UnavailableBanner } from '@app-builder/components/Settings/UnavailableBanner';
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleCoreUser } from '@app-builder/models';
+import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
 import { isAnalyticsAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -99,6 +100,8 @@ export default function Builder() {
 
   const marbleCoreResources = useMarbleCoreResources();
 
+  const { query: unavailabilityQuery } = useUnavailabilitySettings();
+
   return (
     <>
       <ClientOnly>{() => <TokenRefresher />}</ClientOnly>
@@ -123,6 +126,11 @@ export default function Builder() {
                       </div>
                       <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
                         <ul className="flex flex-col gap-2">
+                          {!(
+                            unavailabilityQuery.isSuccess && unavailabilityQuery.data.until === null
+                          ) ? (
+                            <Icon icon="account-circle-off" className="size-6 text-red-47 m-auto" />
+                          ) : null}
                           <li>
                             <SidebarLink
                               labelTKey="navigation:scenarios"

@@ -1,6 +1,7 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
-import { isAdmin } from '@app-builder/models';
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { isAdmin, type User } from '@app-builder/models';
 import { type InboxUser, tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { DeleteInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/delete';
 import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.create';
@@ -20,13 +21,20 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
-import { useLoaderData, useRouteLoaderData } from '@remix-run/react';
+import {
+  ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  redirect,
+  type SerializeFrom,
+} from '@remix-run/node';
+import { useFetcher, useLoaderData, useRouteLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
-import { useMemo } from 'react';
+import { pick } from 'radash';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, Tooltip, useTable } from 'ui-design-system';
+import { Switch, Table, Tooltip, useTable } from 'ui-design-system';
+import { z } from 'zod';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
@@ -79,7 +87,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const escalationInboxes = await inboxApi.listInboxesMetadata();
 
-  return json({
+  return Response.json({
     inbox,
     inboxesList,
     escalationInboxes,
@@ -95,6 +103,60 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     isEditInboxUserAvailable: isEditInboxUserAvailable(user, inbox),
     isDeleteInboxUserAvailable: isDeleteInboxUserAvailable(user, inbox),
   });
+}
+
+function getUpdateInboxUserFormSchema(inboxUserRoles: readonly [string, ...string[]]) {
+  return z.object({
+    id: z.string().uuid(),
+    role: z.enum(inboxUserRoles),
+    autoAssignable: z.boolean(),
+  });
+}
+export async function action({ request }: ActionFunctionArgs) {
+  const {
+    authService,
+    i18nextService: { getFixedT },
+    toastSessionService: { getSession, commitSession },
+  } = initServerServices(request);
+
+  const [t, session, rawData, { inbox, entitlements }] = await Promise.all([
+    getFixedT(request, ['common']),
+    getSession(request),
+    request.json(),
+    authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    }),
+  ]);
+
+  const { data, success, error } = getUpdateInboxUserFormSchema(
+    getInboxUserRoles(entitlements),
+  ).safeParse(rawData);
+
+  if (!success) {
+    return Response.json(
+      { status: 'error', errors: error.flatten() },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
+  }
+
+  try {
+    await inbox.updateInboxUser(data.id, pick(data, ['role', 'autoAssignable']));
+    return Response.json({ status: 'success' });
+  } catch (_error) {
+    setToastMessage(session, {
+      type: 'error',
+      message: t('common:errors.unknown'),
+    });
+
+    return Response.json(
+      { status: 'error', errors: [] },
+      {
+        headers: { 'Set-Cookie': await commitSession(session) },
+      },
+    );
+  }
 }
 
 const columnHelper = createColumnHelper<InboxUser>();
@@ -133,6 +195,44 @@ export default function Inbox() {
         header: t('settings:inboxes.inbox_details.role'),
         size: 200,
         cell: ({ getValue }) => t(tKeyForInboxUserRole(getValue())),
+      }),
+      columnHelper.accessor((row) => row.autoAssignable, {
+        id: 'autoAssignable',
+        header: t('settings:inboxes.inbox_details.auto_assign_enabled.label'),
+        size: 150,
+        cell: ({ getValue, row }) => {
+          const fetcher = useFetcher<typeof UpdateInboxUser>();
+          const [value, setValue] = useState(getValue());
+          const handleChange = (checked: boolean) => {
+            setValue(checked);
+            fetcher.submit(
+              {
+                id: row.original.id,
+                role: row.original.role,
+                autoAssignable: checked,
+              },
+              {
+                method: 'PATCH',
+                action: getRoute('/settings/inboxes/:inboxId', {
+                  inboxId: fromUUIDtoSUUID(inbox.id),
+                }),
+                encType: 'application/json',
+              },
+            );
+          };
+
+          return isEditInboxUserAvailable ? (
+            <Switch
+              checked={value}
+              onCheckedChange={handleChange}
+              disabled={!isEditInboxUserAvailable}
+            />
+          ) : getValue() ? (
+            t('settings:inboxes.inbox_details.auto_assign_enabled')
+          ) : (
+            t('settings:inboxes.inbox_details.auto_assign_disabled')
+          );
+        },
       }),
       ...(isEditInboxUserAvailable || isDeleteInboxUserAvailable
         ? [
@@ -183,7 +283,7 @@ export default function Inbox() {
   });
 
   const nonInboxUsers = orgUsers.filter(
-    (user) => !inbox.users?.some((u) => u.userId === user.userId),
+    (user) => !inbox.users?.some((u: User) => u.userId === user.userId),
   );
 
   return (

@@ -82,6 +82,7 @@ export type InboxUser = {
   inboxId: string;
   userId: string;
   role: string;
+  autoAssignable: boolean;
 };
 
 export function adaptInboxUser(inboxUser: InboxUserDto): InboxUser {
@@ -90,26 +91,41 @@ export function adaptInboxUser(inboxUser: InboxUserDto): InboxUser {
     inboxId: inboxUser.inbox_id,
     userId: inboxUser.user_id,
     role: inboxUser.role,
+    autoAssignable: inboxUser.auto_assignable,
   };
 }
 
 export interface InboxUserCreateBody {
   userId: string;
   role: string;
+  autoAssignable: boolean;
 }
 
 export function adaptInboxUserCreateBody({
   userId,
   role,
+  autoAssignable,
 }: InboxUserCreateBody): AddInboxUserBodyDto {
   return {
     user_id: userId,
     role,
+    auto_assignable: autoAssignable,
   };
 }
 
 export interface InboxUserUpdateBody {
   role: string;
+  autoAssignable: boolean;
+}
+
+export function adaptInboxUserUpdateBody(data: InboxUserUpdateBody): {
+  role: string;
+  auto_assignable: boolean;
+} {
+  return {
+    role: data.role,
+    auto_assignable: data.autoAssignable,
+  };
 }
 
 export function tKeyForInboxUserRole(role: string): ParseKeys<['settings']> {

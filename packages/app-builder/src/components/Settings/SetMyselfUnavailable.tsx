@@ -59,7 +59,9 @@ export function SetMyselfUnavailable() {
               onClick={setMeUnavailable}
               disabled={!dateSelected}
             >
-              {t('common:save')}
+              <Icon icon="account-circle-off" className="size-4" />
+
+              {t('settings:set-myself-unavailable.validate.button')}
             </Button>
           </div>
         </Modal.Footer>

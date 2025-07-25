@@ -66,6 +66,7 @@
   "scenenario_execution": "إعدادات تنفيذ السيناريو",
   "set-me-online-description": "أنت حاليا معين كغير متاح حتى {{date}}.",
   "set-me-online-description-callout": "إذا قمت بتأكيد ذلك، سيتم تحديثك فورا كمتاح.",
+  "set-myself-unavailable.validate.button": "تعيين غير متاح",
   "tags": "الإشارات",
   "tags.cases": "الحالات",
   "tags.color": "اللون",

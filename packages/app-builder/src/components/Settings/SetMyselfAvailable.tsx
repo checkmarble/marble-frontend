@@ -21,7 +21,7 @@ export function SetMyselfAvailable() {
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
         <div className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-red-43 text-grey-98 font-semibold bg-red-47 transition-all duration-100">
-          <Icon icon="account-circle" className="size-5" />
+          <Icon icon="account-circle-off" className="size-5" />
           {t('settings:current-state-offline')}
         </div>
       </Modal.Trigger>
@@ -51,6 +51,8 @@ export function SetMyselfAvailable() {
               </Button>
 
               <Button className="flex-1" variant="primary" onClick={() => setMeUnavailable()}>
+                <Icon icon="account-circle" className="size-4" />
+
                 {t('settings:set-myself-available.validate.button')}
               </Button>
             </div>
