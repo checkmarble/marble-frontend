@@ -9,7 +9,7 @@ import { Button, Calendar, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function SetMyselfUnavailable() {
-  const { t } = useTranslation(['settings']);
+  const { t } = useTranslation(['common', 'settings']);
   const language = useFormatLanguage();
 
   const { setUnavailability } = useUnavailabilitySettings();
@@ -27,11 +27,11 @@ export function SetMyselfUnavailable() {
       <Modal.Trigger>
         <div className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-green-34 text-grey-98 font-semibold bg-green-38 transition-all duration-100">
           <Icon icon="account-circle" className="size-5" />
-          {t('settings:current-state-online')}
+          {t('settings:current_state_available')}
         </div>
       </Modal.Trigger>
       <Modal.Content className="gap-4">
-        <Modal.Title>{t('settings:offline_mode')}</Modal.Title>
+        <Modal.Title>{t('settings:set_myself_unavailable.title')}</Modal.Title>
         <Callout variant="outlined" className="m-4">
           {t('settings:offline_mode_description')}
         </Callout>
@@ -61,7 +61,7 @@ export function SetMyselfUnavailable() {
             >
               <Icon icon="account-circle-off" className="size-4" />
 
-              {t('settings:set-myself-unavailable.validate.button')}
+              {t('settings:set_myself_unavailable.validate.button')}
             </Button>
           </div>
         </Modal.Footer>

@@ -8,7 +8,7 @@ import { Icon } from 'ui-icons';
 
 export function SetMyselfAvailable() {
   const language = useFormatLanguage();
-  const { t } = useTranslation(['settings', 'common']);
+  const { t } = useTranslation(['common', 'settings']);
 
   const { query: unavailabilityQuery, deleteUnavailability } = useUnavailabilitySettings();
   console.log('unavailabilityQuery', unavailabilityQuery);
@@ -22,12 +22,12 @@ export function SetMyselfAvailable() {
       <Modal.Trigger>
         <div className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-red-43 text-grey-98 font-semibold bg-red-47 transition-all duration-100">
           <Icon icon="account-circle-off" className="size-5" />
-          {t('settings:current-state-offline')}
+          {t('settings:current_state_unavailable')}
         </div>
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>
-          {t('settings:set-me-online-description', {
+          {t('settings:set_myself_available.title', {
             date: unavailabilityQuery.data?.until
               ? formatDateTimeWithoutPresets(unavailabilityQuery.data.until, {
                   language,
@@ -39,7 +39,7 @@ export function SetMyselfAvailable() {
         </Modal.Title>
         <Modal.Description className="flex flex-col gap-4 m-4">
           <Callout variant="outlined" className="m-4">
-            {t('settings:set-me-online-description-callout')}
+            {t('settings:set_myself_available.description.callout')}
           </Callout>
         </Modal.Description>
 
@@ -53,7 +53,7 @@ export function SetMyselfAvailable() {
               <Button className="flex-1" variant="primary" onClick={() => setMeUnavailable()}>
                 <Icon icon="account-circle" className="size-4" />
 
-                {t('settings:set-myself-available.validate.button')}
+                {t('settings:set_myself_available.validate.button')}
               </Button>
             </div>
           </Modal.Close>
