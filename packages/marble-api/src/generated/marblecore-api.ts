@@ -3984,7 +3984,8 @@ export function getInboxUser(inboxUserId: string, opts?: Oazapfts.RequestOpts) {
  * Update an inbox user
  */
 export function updateInboxUser(inboxUserId: string, body: {
-    role: string;
+    role?: string;
+    auto_assignable?: boolean;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;

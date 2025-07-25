@@ -368,11 +368,11 @@
         application/json:
           schema:
             type: object
-            required:
-              - role
             properties:
               role:
                 type: string
+              auto_assignable:
+                type: boolean
       required: true
     responses:
       '200':
