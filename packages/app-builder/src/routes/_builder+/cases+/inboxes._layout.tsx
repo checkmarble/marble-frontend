@@ -20,7 +20,6 @@ import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { CtaClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { MY_INBOX_ID } from './_index';
 
 export const handle = {

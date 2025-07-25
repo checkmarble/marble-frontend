@@ -147,6 +147,8 @@
               escalation_inbox_id:
                 type: string
                 format: uuid
+              auto_assign_enabled:
+                type: boolean
       required: true
     responses:
       '200':
@@ -368,9 +370,12 @@
             type: object
             required:
               - role
+              - auto_assignable
             properties:
               role:
                 type: string
+              auto_assignable:
+                type: boolean
       required: true
     responses:
       '200':
@@ -421,6 +426,7 @@ components:
         - created_at
         - updated_at
         - status
+        - auto_assign_enabled
       properties:
         id:
           type: string
@@ -445,6 +451,8 @@ components:
         escalation_inbox_id:
           type: string
           format: uuid
+        auto_assign_enabled:
+          type: boolean
     InboxMetadataDto:
       type: object
       required:
@@ -470,6 +478,7 @@ components:
         - inbox_id
         - user_id
         - role
+        - auto_assignable
       properties:
         id:
           type: string
@@ -482,14 +491,19 @@ components:
           format: uuid
         role:
           type: string
+        auto_assignable:
+          type: boolean
     AddInboxUserBodyDto:
       type: object
       required:
         - user_id
         - role
+        - auto_assignable
       properties:
         user_id:
           type: string
           format: uuid
         role:
           type: string
+        auto_assignable:
+          type: boolean

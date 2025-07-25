@@ -7,10 +7,12 @@ import {
 } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
 import { DatasetFreshnessBanner } from '@app-builder/components/Sanctions/DatasetFresshnessBanner';
+import { UnavailableBanner } from '@app-builder/components/Settings/UnavailableBanner';
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleCoreUser } from '@app-builder/models';
+import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
+import { isAnalyticsAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { OrganizationDetailsContextProvider } from '@app-builder/services/organization/organization-detail';
 import { OrganizationObjectTagsContextProvider } from '@app-builder/services/organization/organization-object-tags';
@@ -27,7 +29,6 @@ import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
-
 import { getSettings } from './settings+/_layout';
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -66,6 +67,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         isAvailable: firstSettings !== undefined,
         ...(firstSettings !== undefined && { to: firstSettings.to }),
       },
+      isRoundRobinAvailable: isWorkflowsAvailable(entitlements),
     },
     versions: appConfig.versions,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
@@ -98,6 +100,8 @@ export default function Builder() {
 
   const marbleCoreResources = useMarbleCoreResources();
 
+  const { query: unavailabilityQuery } = useUnavailabilitySettings();
+
   return (
     <>
       <ClientOnly>{() => <TokenRefresher />}</ClientOnly>
@@ -117,10 +121,16 @@ export default function Builder() {
                           lastName={user.actorIdentity.lastName}
                           role={user.role}
                           orgOrPartnerName={organization.name}
-                        />
+                          isRoundRobinFeatureAvailable={featuresAccess.isRoundRobinAvailable}
+                        ></UserInfo>
                       </div>
                       <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
                         <ul className="flex flex-col gap-2">
+                          {!(
+                            unavailabilityQuery.isSuccess && unavailabilityQuery.data.until === null
+                          ) ? (
+                            <Icon icon="account-circle-off" className="size-6 text-red-47 m-auto" />
+                          ) : null}
                           <li>
                             <SidebarLink
                               labelTKey="navigation:scenarios"
@@ -252,6 +262,7 @@ export default function Builder() {
                     </LeftSidebar>
 
                     <Outlet />
+                    {featuresAccess.isRoundRobinAvailable ? <UnavailableBanner /> : null}
                   </LeftSidebarSharpFactory.Provider>
                 </div>
               </div>

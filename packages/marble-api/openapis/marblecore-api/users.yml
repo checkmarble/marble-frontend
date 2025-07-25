@@ -1,0 +1,66 @@
+/settings/me/unavailable:
+  get:
+    tags:
+      - Personal settings
+    summary: Get the current unavailability
+    operationId: getUnavailability
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: End date of the current unavailability
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PersonalSettingsUnavailableDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        description: The user has no current unavailability
+  post:
+    tags:
+      - Personal settings
+    summary: Set a user as unavailable until a date
+    operationId: setUnavailability
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PersonalSettingsUnavailableDto"
+    responses:
+      "204":
+        description: Unavailability recorded
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+  delete:
+    tags:
+      - Personal settings
+    summary: Cancel the current or planned unavailability
+    operationId: cancelUnavailability
+    security:
+      - bearerAuth: []
+    responses:
+      "204":
+        description: Unavailability cancelled
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+components:
+  schemas:
+    PersonalSettingsUnavailableDto:
+      type: object
+      required:
+        - until
+      properties:
+        until:
+          type: string
+          format: date

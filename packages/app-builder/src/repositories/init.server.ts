@@ -20,6 +20,7 @@ import { makeGetFeatureAccessRepository } from './FeatureAccessRepository';
 import { makeGetInboxRepository } from './InboxRepository';
 import { makeGetOrganizationRepository } from './OrganizationRepository';
 import { makeGetPartnerRepository } from './PartnerRepository';
+import { makeGetPersonalSettingsRepository } from './PersonalSettingsRepository';
 import { makeGetRuleSnoozeRepository } from './RuleSnoozeRepository';
 import { makeGetSanctionCheckRepository } from './SanctionCheckRepository';
 import { makeGetScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
@@ -85,6 +86,7 @@ export function makeServerRepositories({
     getTestRunRepository: makeGetTestRunRepository(),
     getAppConfigRepository: makeGetAppConfigRepository(),
     getFeatureAccessRepository: makeGetFeatureAccessRepository(),
+    getPersonalSettingsRepository: makeGetPersonalSettingsRepository(),
   };
 }
 
