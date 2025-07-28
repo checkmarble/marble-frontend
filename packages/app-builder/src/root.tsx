@@ -83,6 +83,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const disableSegment = getServerEnv('DISABLE_SEGMENT') ?? false;
   const appConfig = await appConfigRepository.getAppConfig();
 
+  const userPreferences = await i18nextService.getUserPreferences(request);
+
   return Response.json(
     {
       ENV,
@@ -91,6 +93,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       toastMessage,
       segmentScript: !disableSegment && segmentApiKey ? getSegmentScript(segmentApiKey) : undefined,
       appConfig,
+      userPreferences,
     },
     {
       headers,
