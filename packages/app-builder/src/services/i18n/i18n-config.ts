@@ -47,3 +47,21 @@ export function getDateFnsLocale(locale: string): Locale {
   const supportedLocale = supportedLngs.find((lng) => lang === lng) ?? fallbackLng;
   return dateFnsLocales[supportedLocale];
 }
+
+/** Dates and hours formats */
+export const dateFormatsLocales = {
+  en: 'en-GB',
+  fr: 'fr-FR',
+  ar: 'ar-SA',
+} satisfies Record<(typeof supportedLngs)[number], string>;
+
+export const sampleDateFormats = {
+  'dd/MM/yyyy': { value: 'dd/MM/yyyy', displayName: 'European (DD/MM/YYYY)' },
+  'MM/dd/yyyy': { value: 'MM/dd/yyyy', displayName: 'US (MM/DD/YYYY)' },
+  'yyyy-MM-dd': { value: 'yyyy-MM-dd', displayName: 'ISO (YYYY-MM-DD)' },
+} as const;
+
+export const sampleHoursFormats = {
+  'HH:mm': { value: 'HH:mm', displayName: '24 hours' },
+  'hh:mm': { value: 'hh:mm', displayName: '12 hours' },
+} as const;
