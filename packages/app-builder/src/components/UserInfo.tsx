@@ -31,7 +31,6 @@ export function UserInfo({
   const fullName = getFullName({ firstName, lastName });
   const { query: unavailabilityQuery } = useUnavailabilitySettings();
 
-  console.log('isAutoAssignmentAvailable', isAutoAssignmentAvailable);
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
@@ -67,7 +66,7 @@ export function UserInfo({
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="bg-grey-100 border-grey-90 animate-slideUpAndFade z-50 w-full max-w-xs rounded-md border border-solid p-6 drop-shadow-md will-change-auto"
+          className="bg-grey-100 border-grey-90 animate-slideUpAndFade z-50 w-full max-w-xs rounded-md border border-solid p-6 drop-shadow-md will-change-auto min-w-64"
           side="bottom"
           align="start"
           sideOffset={4}
