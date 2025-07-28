@@ -6,6 +6,7 @@ export interface Organization {
   defaultScenarioTimezone: string | null;
   sanctionThreshold?: number;
   sanctionLimit?: number;
+  autoAssignQueueLimit?: number;
 }
 
 export const adaptOrganizationDto = (organizationDto: OrganizationDto): Organization => ({
@@ -16,10 +17,12 @@ export const adaptOrganizationDto = (organizationDto: OrganizationDto): Organiza
     : null,
   sanctionLimit: organizationDto.sanctions_limit,
   sanctionThreshold: organizationDto.sanctions_threshold,
+  autoAssignQueueLimit: organizationDto.auto_assign_queue_limit,
 });
 
 export interface OrganizationUpdateInput {
   defaultScenarioTimezone?: string;
   sanctionThreshold?: number;
   sanctionLimit?: number;
+  autoAssignQueueLimit?: number;
 }

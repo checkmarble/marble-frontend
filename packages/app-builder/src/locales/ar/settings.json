@@ -16,6 +16,8 @@
   "current_state_unavailable": "غير متاح",
   "data_display": "عرض البيانات",
   "data_display.global_explanation": "اسحب الحقول وإسقاطها لتعيين ترتيب العرض ، واستخدم Toggle لإخفاء تلك التي لا تحتاجها افتراضيًا في مدير الحالة.",
+  "global_settings.auto_assign_queue_limit": "حد التعيين التلقائي",
+  "global_settings.title": "الإعدادات العامة",
   "inboxes": "صناديق البريدالوارد",
   "inboxes.cases": "الحالات",
   "inboxes.delete_inbox": "حذف الصندوق الوارد",

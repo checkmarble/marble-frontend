@@ -16,6 +16,8 @@
   "current_state_unavailable": "Unavailable",
   "data_display": "Data display",
   "data_display.global_explanation": "Drag and drop the fields to set the display order, and use the toggle to hide those not needed by default in the case manager.",
+  "global_settings.auto_assign_queue_limit": "Auto assign queue limit",
+  "global_settings.title": "Global settings",
   "inboxes": "Inboxes",
   "inboxes.cases": "Cases",
   "inboxes.delete_inbox": "Delete inbox",
