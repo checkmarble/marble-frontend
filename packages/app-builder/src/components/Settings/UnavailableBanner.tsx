@@ -26,13 +26,12 @@ export function UnavailableBanner() {
       </div>
       <div className="flex items-center">
         <button
+          onClick={() => setIsOpen(false)}
           data-dismiss-target="#bottom-banner"
           type="button"
           className="shrink-0 inline-flex justify-center w-7 h-7 items-center text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 dark:hover:bg-gray-600 dark:hover:text-white"
         >
-          <button onClick={() => setIsOpen(false)}>
-            <Icon icon="cross" className="size-5 text-grey-100" />
-          </button>
+          <Icon icon="cross" className="size-6 text-grey-100" />
         </button>
       </div>
     </div>
