@@ -139,3 +139,6 @@ export const isEditWebhookAvailable = ({ permissions }: CurrentUser) =>
 
 export const isDeleteWebhookAvailable = ({ permissions }: CurrentUser) =>
   permissions.canManageWebhooks;
+
+export const isAutoAssignmentAvailable = (entitlements: FeatureAccesses) =>
+  isAccessible(entitlements.autoAssignment);

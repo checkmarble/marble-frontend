@@ -11,7 +11,6 @@ export function SetMyselfAvailable() {
   const { t } = useTranslation(['common', 'settings']);
 
   const { query: unavailabilityQuery, deleteUnavailability } = useUnavailabilitySettings();
-  console.log('unavailabilityQuery', unavailabilityQuery);
   const [open, setOpen] = useState(false);
   const setMeUnavailable = () => {
     deleteUnavailability.mutate();
