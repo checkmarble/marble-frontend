@@ -53,7 +53,7 @@ export function useRefreshToken() {
     },
     {
       delay: visibilityState === 'hidden' ? null : REFRESH_TOKEN_INTERVAL,
-      executeImmediately: true,
+      executeImmediately: false, // Don't fire immediately on mount to reduce duplicate API calls
     },
   );
 }

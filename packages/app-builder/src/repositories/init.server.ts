@@ -7,10 +7,8 @@ import {
   type MarbleCoreApi,
 } from '@app-builder/infra/marblecore-api';
 import { type GetTransfercheckAPIClientWithAuth } from '@app-builder/infra/transfercheck-api';
-
 import { makeGetAnalyticsRepository } from './AnalyticsRepository';
 import { makeGetApiKeyRepository } from './ApiKeyRepository';
-import { makeGetAppConfigRepository } from './AppConfigRepository';
 import { makeGetCaseRepository } from './CaseRepository';
 import { makeGetCustomListRepository } from './CustomListRepository';
 import { makeGetDataModelRepository } from './DataModelRepository';
@@ -25,6 +23,7 @@ import { makeGetSanctionCheckRepository } from './SanctionCheckRepository';
 import { makeGetScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
 import { makeGetScenarioIterationSanctionRepository } from './ScenarioIterationSanctionRepository';
 import { makeGetScenarioRepository } from './ScenarioRepository';
+import { makeServerCachedAppConfigRepository } from './ServerCachedAppConfigRepository';
 import {
   getAuthStorageRepository,
   getCsrfCookie,
@@ -83,7 +82,7 @@ export function makeServerRepositories({
     getWebhookRepository: makeGetWebhookRepository(),
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     getTestRunRepository: makeGetTestRunRepository(),
-    getAppConfigRepository: makeGetAppConfigRepository(),
+    getAppConfigRepository: makeServerCachedAppConfigRepository(),
     getFeatureAccessRepository: makeGetFeatureAccessRepository(),
   };
 }

@@ -26,6 +26,7 @@ import { iconsSVGSpriteHref, Logo, logosSVGSpriteHref } from 'ui-icons';
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
 import { AppConfigContext } from './contexts/AppConfigContext';
+import { createCachedAppConfigRepository } from './repositories/CachedAppConfigRepository';
 import { initServerServices } from './services/init.server';
 import { useSegmentPageTracking } from './services/segment';
 import { SegmentScript } from './services/segment/SegmentScript';
@@ -81,7 +82,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const segmentApiKey = getServerEnv('SEGMENT_WRITE_KEY');
   const disableSegment = getServerEnv('DISABLE_SEGMENT') ?? false;
-  const appConfig = await appConfigRepository.getAppConfig();
+
+  // Use cached app config repository to reduce duplicate API calls
+  const cachedAppConfigRepository = createCachedAppConfigRepository(appConfigRepository);
+  const appConfig = await cachedAppConfigRepository.getAppConfig();
 
   return Response.json(
     {

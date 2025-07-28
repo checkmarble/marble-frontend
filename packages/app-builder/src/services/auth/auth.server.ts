@@ -16,6 +16,8 @@ import {
 import { emptyFeatureAccesses, type FeatureAccesses } from '@app-builder/models/feature-access';
 import { type AnalyticsRepository } from '@app-builder/repositories/AnalyticsRepository';
 import { type ApiKeyRepository } from '@app-builder/repositories/ApiKeyRepository';
+import { createCachedFeatureAccessRepository } from '@app-builder/repositories/CachedFeatureAccessRepository';
+import { createCachedUserRepository } from '@app-builder/repositories/CachedUserRepository';
 import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
 import { type CustomListsRepository } from '@app-builder/repositories/CustomListRepository';
 import { type DataModelRepository } from '@app-builder/repositories/DataModelRepository';
@@ -331,9 +333,17 @@ export function makeAuthenticationServerService({
     let user: CurrentUser;
     let entitlements: FeatureAccesses;
     try {
-      user = await getUserRepository(marbleCoreApiClient).getCurrentUser();
+      // Use cached repositories to reduce duplicate API calls
+      const cachedUserRepository = createCachedUserRepository(
+        getUserRepository(marbleCoreApiClient),
+      );
+      const cachedFeatureAccessRepository = createCachedFeatureAccessRepository(
+        getFeatureAccessRepository(featureAccessApiClient),
+      );
+
+      user = await cachedUserRepository.getCurrentUser();
       entitlements = user.organizationId
-        ? await getFeatureAccessRepository(featureAccessApiClient).getEntitlements()
+        ? await cachedFeatureAccessRepository.getEntitlements()
         : emptyFeatureAccesses();
     } catch (err) {
       captureRemixServerException(err, 'remix.server', request);
