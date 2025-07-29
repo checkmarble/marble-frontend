@@ -15,14 +15,10 @@ export const makeGetPersonalSettingsRepository =
   () =>
   (client: MarbleCoreApi): PersonalSettingsRepository => ({
     getUnavailability: async () => {
-      console.log('getUnavailability');
       const data = await client.getUnavailability();
-      console.log('data', data);
       return adaptUnavailability(data);
     },
     setUnavailability: async (unavailability: PersonalSettings) => {
-      console.log('setUnavailability', unavailability);
-      console.log('transformUnavailability', transformUnavailability(unavailability));
       await client.setUnavailability(transformUnavailability(unavailability));
     },
     cancelUnavailability: async () => {

@@ -87,9 +87,6 @@ export function makeGetInboxRepository() {
         inboxId,
         adaptInboxUserCreateBody(data),
       );
-      console.log('data', data);
-      console.log('adaptInboxUserCreateBody', adaptInboxUserCreateBody(data));
-      console.log('inbox_user', inbox_user);
       return adaptInboxUser(inbox_user);
     },
     updateInboxUser: async (inboxUserId, data) => {

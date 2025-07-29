@@ -19,8 +19,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  console.log('personalSettings ressource', request.method);
-
   try {
     const unavailability = await personalSettings.getUnavailability();
     return Response.json(unavailability);

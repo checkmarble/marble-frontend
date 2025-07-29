@@ -15,14 +15,6 @@ export const transformUnavailability = (
   if (unavailability.until === null) {
     throw new Error('Unavailability should not be null');
   }
-  console.log(
-    'unavailability.until',
-    add(unavailability.until, {
-      hours: 23,
-      minutes: 59,
-      seconds: 59,
-    }).toISOString(),
-  );
   return {
     until: add(unavailability.until, {
       hours: 23,
