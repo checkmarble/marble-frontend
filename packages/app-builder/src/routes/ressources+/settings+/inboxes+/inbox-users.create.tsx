@@ -240,9 +240,11 @@ export function CreateInboxUserContent({
           }}
         >
           {(field) => (
-            <div className="group flex flex-col gap-2">
-              <FormLabel name={field.name} className="flex items-center gap-2">
-                {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
+            <div className="group flex justify-between">
+              <div className="flex gap-2">
+                <FormLabel name={field.name} className="flex items-center gap-2">
+                  {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
+                </FormLabel>
                 {!isAutoAssignmentAvailable ? (
                   <Nudge
                     className="size-5"
@@ -252,7 +254,8 @@ export function CreateInboxUserContent({
                     })}
                   />
                 ) : null}
-              </FormLabel>
+              </div>
+
               <Switch
                 checked={isAutoAssignmentAvailable ? field.state.value : false}
                 onCheckedChange={field.handleChange}

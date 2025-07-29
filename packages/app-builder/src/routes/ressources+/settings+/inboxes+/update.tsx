@@ -2,6 +2,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { Nudge } from '@app-builder/components/Nudge';
 import { type Inbox, type InboxMetadata } from '@app-builder/models/inbox';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
@@ -95,10 +96,12 @@ export function UpdateInbox({
   inbox,
   escalationInboxes,
   redirectRoutePath,
+  isAutoAssignmentAvailable = false,
 }: {
   inbox: Inbox;
   escalationInboxes: InboxMetadata[];
   redirectRoutePath: (typeof redirectRouteOptions)[number];
+  isAutoAssignmentAvailable: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);
   const navigation = useNavigation();
@@ -123,6 +126,7 @@ export function UpdateInbox({
           inbox={inbox}
           escalationInboxes={escalationInboxes}
           redirectRoutePath={redirectRoutePath}
+          isAutoAssignmentAvailable={isAutoAssignmentAvailable}
         />
       </Modal.Content>
     </Modal.Root>
@@ -133,10 +137,12 @@ export function UpdateInboxContent({
   inbox,
   escalationInboxes,
   redirectRoutePath,
+  isAutoAssignmentAvailable = false,
 }: {
   inbox: Inbox;
   escalationInboxes: InboxMetadata[];
   redirectRoutePath: (typeof redirectRouteOptions)[number];
+  isAutoAssignmentAvailable: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
@@ -247,11 +253,27 @@ export function UpdateInboxContent({
           }}
         >
           {(field) => (
-            <div className="group flex flex-col gap-2">
-              <FormLabel name={field.name}>
-                {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
-              </FormLabel>
-              <Switch checked={field.state.value} onCheckedChange={field.handleChange} />
+            <div className="group flex justify-between">
+              <div className="flex gap-2">
+                <FormLabel name={field.name}>
+                  {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
+                </FormLabel>
+                {!isAutoAssignmentAvailable ? (
+                  <Nudge
+                    className="size-5"
+                    kind="restricted"
+                    content={t('settings:inboxes.auto_assign_queue_limit.nudge', {
+                      defaultValue: 'N/A',
+                    })}
+                  />
+                ) : null}
+              </div>
+
+              <Switch
+                checked={isAutoAssignmentAvailable ? field.state.value : false}
+                onCheckedChange={field.handleChange}
+                disabled={!isAutoAssignmentAvailable}
+              />
             </div>
           )}
         </form.Field>
