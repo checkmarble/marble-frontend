@@ -36,11 +36,9 @@ export function SetMyselfAvailable() {
               : null,
           })}
         </Modal.Title>
-        <Modal.Description className="flex flex-col gap-4 m-4">
-          <Callout variant="outlined" className="m-4">
-            {t('settings:set_myself_available.description.callout')}
-          </Callout>
-        </Modal.Description>
+        <Callout variant="outlined" className="m-8">
+          {t('settings:set_myself_available.description.callout')}
+        </Callout>
 
         <Modal.Footer>
           <Modal.Close asChild>

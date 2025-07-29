@@ -42,7 +42,6 @@ function useSetUnavailabilityMutation() {
 
   return useMutation({
     mutationFn: async (unavailability: PersonalSettings) => {
-      console.log('====>useSetUnavailabilityMutation', unavailability);
       const response = await fetch(endpoint(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

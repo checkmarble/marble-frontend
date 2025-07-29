@@ -92,11 +92,13 @@ export function CreateInboxUser({
   users,
   inboxUserRoles,
   access,
+  isAutoAssignmentAvailable = false,
 }: {
   inboxId: string;
   users: User[];
   inboxUserRoles: readonly [string, ...string[]];
   access: FeatureAccessLevelDto;
+  isAutoAssignmentAvailable: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = useState(false);
@@ -122,6 +124,7 @@ export function CreateInboxUser({
           users={users}
           inboxUserRoles={inboxUserRoles}
           access={access}
+          isAutoAssignmentAvailable={isAutoAssignmentAvailable}
         />
       </Modal.Content>
     </Modal.Root>
@@ -133,11 +136,13 @@ export function CreateInboxUserContent({
   users,
   inboxUserRoles,
   access,
+  isAutoAssignmentAvailable = false,
 }: {
   currentInboxId: string;
   users: User[];
   inboxUserRoles: readonly [string, ...string[]];
   access: FeatureAccessLevelDto;
+  isAutoAssignmentAvailable: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
@@ -236,10 +241,23 @@ export function CreateInboxUserContent({
         >
           {(field) => (
             <div className="group flex flex-col gap-2">
-              <FormLabel name={field.name}>
+              <FormLabel name={field.name} className="flex items-center gap-2">
                 {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
+                {!isAutoAssignmentAvailable ? (
+                  <Nudge
+                    className="size-5"
+                    kind="restricted"
+                    content={t('settings:inboxes.auto_assign_queue_limit.nudge', {
+                      defaultValue: 'N/A',
+                    })}
+                  />
+                ) : null}
               </FormLabel>
-              <Switch checked={field.state.value} onCheckedChange={field.handleChange} />
+              <Switch
+                checked={isAutoAssignmentAvailable ? field.state.value : false}
+                onCheckedChange={field.handleChange}
+                disabled={!isAutoAssignmentAvailable}
+              />
             </div>
           )}
         </form.Field>

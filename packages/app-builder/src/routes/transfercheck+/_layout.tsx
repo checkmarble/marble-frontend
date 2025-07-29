@@ -13,7 +13,7 @@ import {
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleAdmin, isTransferCheckUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import { isWorkflowsAvailable } from '@app-builder/services/feature-access';
+import { isAutoAssignmentAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { segment, useSegmentIdentification } from '@app-builder/services/segment';
 import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
@@ -82,7 +82,7 @@ export default function Builder() {
               lastName={user.actorIdentity.lastName}
               role={user.role}
               orgOrPartnerName={partner.name}
-              isAutoAssignmentAvailable={isWorkflowsAvailable(entitlements)}
+              isAutoAssignmentAvailable={isAutoAssignmentAvailable(entitlements)}
             />
           </div>
           <nav className="flex flex-1 flex-col overflow-y-auto p-2">

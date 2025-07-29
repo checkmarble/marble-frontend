@@ -19,6 +19,7 @@
   "global_settings.auto_assign_queue_limit": "حد التعيين التلقائي",
   "global_settings.title": "الإعدادات العامة",
   "inboxes": "صناديق البريدالوارد",
+  "inboxes.auto_assign_queue_limit.nudge": "يسمح التعيين التلقائي بتوزيع الحالات بين المستخدمين.",
   "inboxes.cases": "الحالات",
   "inboxes.delete_inbox": "حذف الصندوق الوارد",
   "inboxes.delete_inbox.content": "أنت على وشك حذف هذا الصندوق الوارد. هذه العملية غير قابلة للتراجع، هل ترغب في المتابعة؟",

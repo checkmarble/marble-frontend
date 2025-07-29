@@ -1,8 +1,14 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { isAdmin, type User } from '@app-builder/models';
-import { type InboxUser, tKeyForInboxUserRole } from '@app-builder/models/inbox';
+import { Nudge } from '@app-builder/components/Nudge';
+import { type FeatureAccesses, isAdmin } from '@app-builder/models';
+import {
+  type InboxMetadata,
+  type InboxUser,
+  InboxWithCasesCount,
+  tKeyForInboxUserRole,
+} from '@app-builder/models/inbox';
 import { DeleteInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/delete';
 import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.create';
 import { DeleteInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.delete';
@@ -10,6 +16,7 @@ import { UpdateInboxUser } from '@app-builder/routes/ressources+/settings+/inbox
 import { UpdateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/update';
 import {
   getInboxUserRoles,
+  isAutoAssignmentAvailable,
   isCreateInboxUserAvailable,
   isDeleteInboxAvailable,
   isDeleteInboxUserAvailable,
@@ -33,7 +40,7 @@ import { type Namespace } from 'i18next';
 import { pick } from 'radash';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Switch, Table, Tooltip, useTable } from 'ui-design-system';
+import { cn, Switch, Table, Tooltip, useTable } from 'ui-design-system';
 import { z } from 'zod';
 
 export const handle = {
@@ -66,6 +73,22 @@ export const handle = {
   ],
 };
 
+type LoaderData = {
+  inbox: InboxWithCasesCount;
+  inboxesList: InboxWithCasesCount[];
+  escalationInboxes: InboxMetadata[];
+  escalationInbox: InboxMetadata | null;
+  caseCount: number;
+  entitlements: FeatureAccesses;
+  inboxUserRoles: readonly [string, ...string[]];
+  isEditInboxAvailable: boolean;
+  isDeleteInboxAvailable: boolean;
+  isCreateInboxUserAvailable: boolean;
+  isEditInboxUserAvailable: boolean;
+  isDeleteInboxUserAvailable: boolean;
+  isAutoAssignmentAvailable: boolean;
+};
+
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
   const {
@@ -87,7 +110,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const escalationInboxes = await inboxApi.listInboxesMetadata();
 
-  return Response.json({
+  const datas: LoaderData = {
     inbox,
     inboxesList,
     escalationInboxes,
@@ -96,13 +119,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       : null,
     caseCount: inbox.casesCount,
     entitlements,
+    isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
     inboxUserRoles: getInboxUserRoles(entitlements),
     isEditInboxAvailable: isEditInboxAvailable(user, inbox),
     isDeleteInboxAvailable: isDeleteInboxAvailable(user),
     isCreateInboxUserAvailable: isCreateInboxUserAvailable(user, inbox),
     isEditInboxUserAvailable: isEditInboxUserAvailable(user, inbox),
     isDeleteInboxUserAvailable: isDeleteInboxUserAvailable(user, inbox),
-  });
+  };
+
+  return Response.json(datas);
 }
 
 function getUpdateInboxUserFormSchema(inboxUserRoles: readonly [string, ...string[]]) {
@@ -174,7 +200,8 @@ export default function Inbox() {
     isCreateInboxUserAvailable,
     isEditInboxUserAvailable,
     isDeleteInboxUserAvailable,
-  } = useLoaderData<typeof loader>();
+    isAutoAssignmentAvailable,
+  } = useLoaderData<LoaderData>();
   const { t } = useTranslation(handle.i18n);
   const { orgUsers } = useOrganizationUsers();
 
@@ -196,44 +223,48 @@ export default function Inbox() {
         size: 200,
         cell: ({ getValue }) => t(tKeyForInboxUserRole(getValue())),
       }),
-      columnHelper.accessor((row) => row.autoAssignable, {
-        id: 'autoAssignable',
-        header: t('settings:inboxes.inbox_details.auto_assign_enabled.label'),
-        size: 150,
-        cell: ({ getValue, row }) => {
-          const fetcher = useFetcher<typeof UpdateInboxUser>();
-          const [value, setValue] = useState(getValue());
-          const handleChange = (checked: boolean) => {
-            setValue(checked);
-            fetcher.submit(
-              {
-                id: row.original.id,
-                role: row.original.role,
-                autoAssignable: checked,
-              },
-              {
-                method: 'PATCH',
-                action: getRoute('/settings/inboxes/:inboxId', {
-                  inboxId: fromUUIDtoSUUID(inbox.id),
-                }),
-                encType: 'application/json',
-              },
-            );
-          };
+      ...(isAutoAssignmentAvailable
+        ? [
+            columnHelper.accessor((row) => row.autoAssignable, {
+              id: 'autoAssignable',
+              header: t('settings:inboxes.inbox_details.auto_assign_enabled.label'),
+              size: 150,
+              cell: ({ getValue, row }) => {
+                const fetcher = useFetcher<typeof UpdateInboxUser>();
+                const [value, setValue] = useState(getValue());
+                const handleChange = (checked: boolean) => {
+                  setValue(checked);
+                  fetcher.submit(
+                    {
+                      id: row.original.id,
+                      role: row.original.role,
+                      autoAssignable: checked,
+                    },
+                    {
+                      method: 'PATCH',
+                      action: getRoute('/settings/inboxes/:inboxId', {
+                        inboxId: fromUUIDtoSUUID(inbox.id),
+                      }),
+                      encType: 'application/json',
+                    },
+                  );
+                };
 
-          return isEditInboxUserAvailable ? (
-            <Switch
-              checked={value}
-              onCheckedChange={handleChange}
-              disabled={!isEditInboxUserAvailable}
-            />
-          ) : getValue() ? (
-            t('settings:inboxes.inbox_details.auto_assign_enabled')
-          ) : (
-            t('settings:inboxes.inbox_details.auto_assign_disabled')
-          );
-        },
-      }),
+                return isEditInboxUserAvailable ? (
+                  <Switch
+                    checked={value}
+                    onCheckedChange={handleChange}
+                    disabled={!isEditInboxUserAvailable}
+                  />
+                ) : getValue() ? (
+                  t('settings:inboxes.inbox_details.auto_assign_enabled')
+                ) : (
+                  t('settings:inboxes.inbox_details.auto_assign_disabled')
+                );
+              },
+            }),
+          ]
+        : []),
       ...(isEditInboxUserAvailable || isDeleteInboxUserAvailable
         ? [
             columnHelper.display({
@@ -283,7 +314,7 @@ export default function Inbox() {
   });
 
   const nonInboxUsers = orgUsers.filter(
-    (user) => !inbox.users?.some((u: User) => u.userId === user.userId),
+    (user) => !inbox.users?.some((u) => u.userId === user.userId),
   );
 
   return (
@@ -310,12 +341,23 @@ export default function Inbox() {
                 {t('settings:inboxes.inbox_details.escalation_inbox')}
               </span>
               {escalationInbox?.name ?? t('settings:inboxes.inbox_details.no_escalation_inbox')}
-              <span className="font-bold">
+              <span className="font-bold flex items-center gap-2">
                 {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
+                {!isAutoAssignmentAvailable ? (
+                  <Nudge
+                    className="size-5"
+                    kind="restricted"
+                    content={t('settings:inboxes.auto_assign_queue_limit.nudge', {
+                      defaultValue: 'N/A',
+                    })}
+                  />
+                ) : null}
               </span>
-              {inbox.autoAssignEnabled
-                ? t('settings:inboxes.inbox_details.auto_assign_enabled')
-                : t('settings:inboxes.inbox_details.auto_assign_disabled')}
+              <span className={cn({ 'blur-sm': !isAutoAssignmentAvailable })}>
+                {inbox.autoAssignEnabled
+                  ? t('settings:inboxes.inbox_details.auto_assign_enabled')
+                  : t('settings:inboxes.inbox_details.auto_assign_disabled')}
+              </span>
             </div>
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>
@@ -329,6 +371,7 @@ export default function Inbox() {
                 users={nonInboxUsers}
                 inboxUserRoles={inboxUserRoles}
                 access={entitlements.userRoles}
+                isAutoAssignmentAvailable={isAutoAssignmentAvailable}
               />
             ) : null}
           </CollapsiblePaper.Title>

@@ -2,6 +2,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { Nudge } from '@app-builder/components/Nudge';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
@@ -84,9 +85,11 @@ export async function action({ request }: ActionFunctionArgs) {
 export function UpdateOrganizationSettings({
   organizationId,
   autoAssignQueueLimit,
+  isAutoAssignmentAvailable = false,
 }: {
   organizationId: string;
   autoAssignQueueLimit: number;
+  isAutoAssignmentAvailable: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);
   const navigation = useNavigation();
@@ -97,6 +100,25 @@ export function UpdateOrganizationSettings({
       setOpen(false);
     }
   }, [navigation.state]);
+
+  if (!isAutoAssignmentAvailable) {
+    return (
+      <div className="relative">
+        <Button className="w-fit whitespace-nowrap" disabled>
+          <Icon icon="edit-square" className="size-6" />
+          {t('common:edit')}
+        </Button>
+        <Nudge
+          className="absolute -top-1 -right-1 size-4"
+          iconClass="size-2.5"
+          kind="restricted"
+          content={t('settings:inboxes.auto_assign_queue_limit.nudge', {
+            defaultValue: 'N/A',
+          })}
+        />
+      </div>
+    );
+  }
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>

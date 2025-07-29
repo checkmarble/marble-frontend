@@ -19,6 +19,7 @@
   "global_settings.auto_assign_queue_limit": "Limite d'assignation automatique",
   "global_settings.title": "Paramètres globaux",
   "inboxes": "Boîtes de réception",
+  "inboxes.auto_assign_queue_limit.nudge": "L'assignation automatique permet de distribuer automatiquement les investigations aux agents.",
   "inboxes.cases": "Investigation",
   "inboxes.delete_inbox": "Supprimer la boîte de réception",
   "inboxes.delete_inbox.content": "Vous êtes sur le point de supprimer cette boîte de réception. \nCette action est irréversible, souhaitez-vous continuer ?",
