@@ -2,7 +2,8 @@ import { CollapsiblePaper, Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
-import { type FeatureAccesses, isAdmin } from '@app-builder/models';
+import { isAdmin } from '@app-builder/models';
+import { type FeatureAccesses } from '@app-builder/models/feature-access';
 import {
   type InboxMetadata,
   type InboxUser,
