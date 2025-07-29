@@ -2,7 +2,7 @@ import { CollapsiblePaper, Page } from '@app-builder/components';
 import { isAdmin } from '@app-builder/models';
 import { type InboxWithCasesCount, tKeyForInboxUserRole } from '@app-builder/models/inbox';
 import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
-import { UpdateGlobalSettings } from '@app-builder/routes/ressources+/settings+/inboxes+/global.update';
+import { UpdateOrganizationSettings } from '@app-builder/routes/ressources+/settings+/organization+/update';
 import { isCreateInboxAvailable, isInboxAdmin } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -125,7 +125,7 @@ export default function Inboxes() {
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:global_settings.title')}</span>
             {isCreateInboxAvailable ? (
-              <UpdateGlobalSettings
+              <UpdateOrganizationSettings
                 organizationId={organizationId}
                 autoAssignQueueLimit={autoAssignQueueLimit}
               />

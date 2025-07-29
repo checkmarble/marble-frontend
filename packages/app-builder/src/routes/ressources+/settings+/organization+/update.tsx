@@ -81,7 +81,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-export function UpdateGlobalSettings({
+export function UpdateOrganizationSettings({
   organizationId,
   autoAssignQueueLimit,
 }: {
@@ -107,21 +107,24 @@ export function UpdateGlobalSettings({
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <UpdateGlobalSettingsContents
+        <UpdateOrganizationSettingsContents
           organizationId={organizationId}
           autoAssignQueueLimit={autoAssignQueueLimit}
+          closeModal={() => setOpen(false)}
         />
       </Modal.Content>
     </Modal.Root>
   );
 }
 
-export function UpdateGlobalSettingsContents({
+export function UpdateOrganizationSettingsContents({
   organizationId,
   autoAssignQueueLimit,
+  closeModal,
 }: {
   organizationId: string;
   autoAssignQueueLimit: number;
+  closeModal: () => void;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
@@ -133,15 +136,25 @@ export function UpdateGlobalSettingsContents({
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        fetcher.submit(value, {
-          method: 'PATCH',
-          action: getRoute('/ressources/settings/inboxes/global/update'),
-          encType: 'application/json',
-        });
+        try {
+          fetcher.submit(value, {
+            method: 'PATCH',
+            action: getRoute('/ressources/settings/organization/update'),
+            encType: 'application/json',
+          });
+          closeModal();
+        } catch (error) {
+          console.error(error);
+        }
       }
     },
     validators: {
-      onSubmit: editOrganizationSchema,
+      onSubmit: editOrganizationSchema
+        .pick({
+          organizationId: true,
+          autoAssignQueueLimit: true,
+        })
+        .required({ autoAssignQueueLimit: true }),
     },
   });
 
@@ -158,8 +171,8 @@ export function UpdateGlobalSettingsContents({
         <form.Field
           name="autoAssignQueueLimit"
           validators={{
-            onChange: editOrganizationSchema.shape.autoAssignQueueLimit,
-            onBlur: editOrganizationSchema.shape.autoAssignQueueLimit,
+            onChange: z.coerce.number().min(0),
+            onBlur: z.coerce.number().min(0),
           }}
         >
           {(field) => (
@@ -171,7 +184,7 @@ export function UpdateGlobalSettingsContents({
                 type="number"
                 min={0}
                 step={1}
-                placeholder={t('settings:global_settings.auto_assign_queue_limit_placeholder')}
+                placeholder={t('settings:global_settings.auto_assign_queue_limit')}
                 max={1000}
                 name={field.name}
                 onBlur={field.handleBlur}
