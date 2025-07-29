@@ -39,6 +39,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     ? 'BackendUnavailable'
     : (session.get('authError')?.message as AuthErrors);
 
+  const url = new URL(request.url);
+  const prefilledEmail = url.searchParams.get('email');
+
   return Response.json(
     {
       isSignupReady: appConfig
@@ -48,6 +51,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       authError,
       isSsoEnabled: appConfig && appConfig.features.sso,
       isManagedMarble: appConfig?.isManagedMarble ?? false,
+      prefilledEmail,
     },
     {
       headers: {
@@ -72,8 +76,14 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function LoginWithEmail() {
   const { t } = useTranslation(['common', 'auth']);
-  const { authError, isSsoEnabled, isSignupReady, didMigrationsRun, isManagedMarble } =
-    useLoaderData<typeof loader>();
+  const {
+    authError,
+    isSsoEnabled,
+    isSignupReady,
+    didMigrationsRun,
+    isManagedMarble,
+    prefilledEmail,
+  } = useLoaderData<typeof loader>();
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
@@ -104,7 +114,10 @@ export default function LoginWithEmail() {
         <ClientOnly
           fallback={
             <StaticSignInWithEmailAndPassword
-              additionalContent={isSsoEnabled ? <SignInFirstConnection /> : null}
+              additionalContent={
+                isSsoEnabled ? <SignInFirstConnection isSignInHomepage={false} /> : null
+              }
+              prefilledEmail={prefilledEmail}
             />
           }
         >
@@ -113,7 +126,10 @@ export default function LoginWithEmail() {
               signIn={signIn}
               // eslint-disable-next-line react/jsx-no-leaked-render
               loading={loading && type === 'email'}
-              additionalContent={isSsoEnabled ? <SignInFirstConnection /> : null}
+              additionalContent={
+                isSsoEnabled ? <SignInFirstConnection isSignInHomepage={false} /> : null
+              }
+              prefilledEmail={prefilledEmail}
             />
           )}
         </ClientOnly>
@@ -127,7 +143,10 @@ export default function LoginWithEmail() {
             <div className="flex flex-col gap-8">
               <h2 className="text-2xl text-center">{t('auth:sign_in.first_connection')}</h2>
               <div className="flex flex-col gap-2">
-                <SignInFirstConnection showAskDemoButton={!isSsoEnabled && isManagedMarble} />
+                <SignInFirstConnection
+                  isSignInHomepage={false}
+                  showAskDemoButton={!isSsoEnabled && isManagedMarble}
+                />
               </div>
             </div>
           </>

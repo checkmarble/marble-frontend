@@ -22,7 +22,7 @@ const resetPasswordFormSchema = z.object({
 
 type ResetPasswordForm = z.infer<typeof resetPasswordFormSchema>;
 
-export function ResetPassword() {
+export function ResetPassword({ prefilledEmail }: { prefilledEmail?: string | null }) {
   const { t } = useTranslation(['auth', 'common']);
   const clientServices = useClientServices();
 
@@ -31,7 +31,7 @@ export function ResetPassword() {
   );
 
   const form = useForm({
-    defaultValues: { email: '' } as ResetPasswordForm,
+    defaultValues: { email: prefilledEmail ?? '' } as ResetPasswordForm,
     validators: { onSubmit: resetPasswordFormSchema },
     onSubmit: async ({ value: { email } }) => {
       try {
@@ -88,14 +88,14 @@ export function ResetPassword() {
   );
 }
 
-export const StaticResetPassword = () => {
+export const StaticResetPassword = ({ prefilledEmail }: { prefilledEmail?: string | null }) => {
   const { t } = useTranslation(['auth', 'common']);
 
   return (
     <form className="flex w-full flex-col gap-4">
       <div className="flex flex-col items-start gap-2">
         <FormLabel name="email">{t('auth:sign_in.email')}</FormLabel>
-        <FormInput type="email" className="w-full" />
+        <FormInput type="email" className="w-full" defaultValue={prefilledEmail ?? ''} />
       </div>
       <Button>{t('auth:reset-password.send')}</Button>
     </form>
