@@ -2,6 +2,7 @@ import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { Outlet, useMatches } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
 import { Logo } from 'ui-icons';
+import { LanguagePicker } from '../ressources+/user+/language';
 
 export type AuthPageHandle = {
   alignment?: 'reverse' | 'default';
@@ -44,6 +45,9 @@ export default function AuthLayout() {
         </div>
       </div>
       <div className="relative bg-grey-100 basis-[600px] px-[120px] py-[124px] grid place-items-center">
+        <div className="absolute bottom-6 right-6">
+          <LanguagePicker />
+        </div>
         <div className="min-h-[500px] w-full">
           <Outlet />
         </div>

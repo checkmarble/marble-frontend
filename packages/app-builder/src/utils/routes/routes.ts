@@ -14,14 +14,14 @@ export const routes = [
         "file": "routes/_auth+/_layout.tsx",
         "children": [
           {
+            "id": "routes/_auth+/create-password",
+            "path": "create-password",
+            "file": "routes/_auth+/create-password.tsx"
+          },
+          {
             "id": "routes/_auth+/email-verification",
             "path": "email-verification",
             "file": "routes/_auth+/email-verification.tsx"
-          },
-          {
-            "id": "routes/_auth+/forgot-password",
-            "path": "forgot-password",
-            "file": "routes/_auth+/forgot-password.tsx"
           },
           {
             "id": "routes/_auth+/sign-in-email",
@@ -32,11 +32,6 @@ export const routes = [
             "id": "routes/_auth+/sign-in",
             "path": "sign-in",
             "file": "routes/_auth+/sign-in.tsx"
-          },
-          {
-            "id": "routes/_auth+/sign-up",
-            "path": "sign-up",
-            "file": "routes/_auth+/sign-up.tsx"
           }
         ]
       },
@@ -359,9 +354,9 @@ export const routes = [
         "file": "routes/ressources+/auth+/refresh.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/$caseId.ask-review",
-        "path": "ressources/cases/:caseId/ask-review",
-        "file": "routes/ressources+/cases+/$caseId.ask-review.tsx"
+        "id": "routes/ressources+/cases+/$caseId.enqueue-review",
+        "path": "ressources/cases/:caseId/enqueue-review",
+        "file": "routes/ressources+/cases+/$caseId.enqueue-review.tsx"
       },
       {
         "id": "routes/ressources+/cases+/add-comment",
@@ -733,6 +728,45 @@ export const routes = [
         "id": "routes/ressources+/user+/language",
         "path": "ressources/user/language",
         "file": "routes/ressources+/user+/language.tsx"
+      },
+      {
+        "id": "routes/ressources+/workflows+/$scenarioId/_index",
+        "path": "ressources/workflows/:scenarioId",
+        "file": "routes/ressources+/workflows+/$scenarioId/_index.tsx",
+        "children": [
+          {
+            "id": "routes/ressources+/workflows+/$scenarioId.reorder",
+            "path": "reorder",
+            "file": "routes/ressources+/workflows+/$scenarioId.reorder.tsx"
+          }
+        ]
+      },
+      {
+        "id": "routes/ressources+/workflows+/inboxes",
+        "path": "ressources/workflows/inboxes",
+        "file": "routes/ressources+/workflows+/inboxes.tsx"
+      },
+      {
+        "id": "routes/ressources+/workflows+/rule+/$ruleId+/_index",
+        "index": true,
+        "path": "ressources/workflows/rule/:ruleId",
+        "file": "routes/ressources+/workflows+/rule+/$ruleId+/_index.tsx"
+      },
+      {
+        "id": "routes/ressources+/workflows+/rule+/$ruleId+/condition+/$conditionId",
+        "path": "ressources/workflows/rule/:ruleId/condition/:conditionId",
+        "file": "routes/ressources+/workflows+/rule+/$ruleId+/condition+/$conditionId.tsx"
+      },
+      {
+        "id": "routes/ressources+/workflows+/rule+/$ruleId+/rename",
+        "path": "ressources/workflows/rule/:ruleId/rename",
+        "file": "routes/ressources+/workflows+/rule+/$ruleId+/rename.ts"
+      },
+      {
+        "id": "routes/ressources+/workflows+/rule+/_index",
+        "index": true,
+        "path": "ressources/workflows/rule",
+        "file": "routes/ressources+/workflows+/rule+/_index.tsx"
       },
       {
         "id": "routes/transfercheck+/_layout",

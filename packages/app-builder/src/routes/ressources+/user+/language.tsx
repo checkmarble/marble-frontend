@@ -1,4 +1,4 @@
-import { supportedLngs } from '@app-builder/services/i18n/i18n-config';
+import { languageNames, supportedLngs } from '@app-builder/services/i18n/i18n-config';
 import { initServerServices } from '@app-builder/services/init.server';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -72,8 +72,8 @@ export function LanguagePicker() {
     >
       {supportedLngs.map((lng) => {
         return (
-          <Select.DefaultItem key={lng} value={lng}>
-            {lng}
+          <Select.DefaultItem dir={languageNames[lng].dir} key={lng} value={lng}>
+            {languageNames[lng].name}
           </Select.DefaultItem>
         );
       })}

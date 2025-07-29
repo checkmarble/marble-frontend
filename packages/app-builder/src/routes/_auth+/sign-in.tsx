@@ -31,9 +31,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
     console.error('Error fetching app config API');
   }
 
+  const url = new URL(request.url);
+
   const isSsoEnabled = appConfig && appConfig.features.sso;
-  if (!isSsoEnabled) {
-    return redirect(getRoute('/sign-in-email'));
+  const prefilledEmail = url.searchParams.get('email') ?? '';
+
+  if (!isSsoEnabled || prefilledEmail) {
+    return redirect(getRoute('/sign-in-email') + `?email=${encodeURIComponent(prefilledEmail)}`);
   }
 
   return {
@@ -109,7 +113,7 @@ export default function Login() {
       <div className="flex flex-col gap-8">
         <h2 className="text-2xl text-center">{t('auth:sign_in.first_connection')}</h2>
         <div className="flex flex-col gap-2">
-          <SignInFirstConnection showAskDemoButton={isManagedMarble} />
+          <SignInFirstConnection isSignInHomepage showAskDemoButton={isManagedMarble} />
         </div>
       </div>
     </div>

@@ -1,7 +1,8 @@
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { ResetPassword, StaticResetPassword } from '@app-builder/components/Auth/ResetPassword';
 import { getRoute } from '@app-builder/utils/routes';
-import { Link } from '@remix-run/react';
+import { LoaderFunctionArgs } from '@remix-run/node';
+import { Link, useLoaderData } from '@remix-run/react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 
@@ -9,22 +10,29 @@ export const handle = {
   i18n: authI18n,
 };
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  const prefilledEmail = url.searchParams.get('email');
+
+  return { prefilledEmail };
+}
+
 export default function ForgotPassword() {
+  const { prefilledEmail } = useLoaderData<typeof loader>();
   const { t } = useTranslation(handle.i18n);
 
   return (
     <div className="flex flex-col gap-10 w-full">
       <h2 className="text-2xl text-center">{t('auth:reset-password.title')}</h2>
-      <ClientOnly fallback={<StaticResetPassword />}>{() => <ResetPassword />}</ClientOnly>
+      <ClientOnly fallback={<StaticResetPassword prefilledEmail={prefilledEmail} />}>
+        {() => <ResetPassword prefilledEmail={prefilledEmail} />}
+      </ClientOnly>
       <p className="mt-2 text-xs">
         <Trans
           t={t}
           i18nKey="auth:reset-password.wrong_place"
           components={{
             SignIn: <Link className="text-purple-65 underline" to={getRoute('/sign-in-email')} />,
-          }}
-          values={{
-            signIn: t('auth:sign_in'),
           }}
         />
       </p>
