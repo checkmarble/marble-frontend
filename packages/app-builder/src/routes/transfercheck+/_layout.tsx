@@ -82,7 +82,7 @@ export default function Builder() {
               lastName={user.actorIdentity.lastName}
               role={user.role}
               orgOrPartnerName={partner.name}
-              isRoundRobinFeatureAvailable={isWorkflowsAvailable(entitlements)}
+              isAutoAssignmentAvailable={isWorkflowsAvailable(entitlements)}
             />
           </div>
           <nav className="flex flex-1 flex-col overflow-y-auto p-2">
