@@ -34,7 +34,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
 
   const isSsoEnabled = appConfig && appConfig.features.sso;
-  const prefilledEmail = url.searchParams.get('email') ?? '';
+  // Handle email parameter manually to preserve literal '+' characters
+  const emailParam = url.searchParams.toString().match(/email=([^&]*)/)?.[1];
+  const prefilledEmail = emailParam ? decodeURIComponent(emailParam.replace(/\+/g, '%2B')) : '';
 
   if (!isSsoEnabled || prefilledEmail) {
     return redirect(getRoute('/sign-in-email') + `?email=${encodeURIComponent(prefilledEmail)}`);

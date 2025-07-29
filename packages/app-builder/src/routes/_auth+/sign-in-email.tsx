@@ -40,7 +40,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     : (session.get('authError')?.message as AuthErrors);
 
   const url = new URL(request.url);
-  const prefilledEmail = url.searchParams.get('email');
+  // Handle email parameter manually to preserve literal '+' characters
+  const emailParam = url.searchParams.toString().match(/email=([^&]*)/)?.[1];
+  const prefilledEmail = emailParam ? decodeURIComponent(emailParam.replace(/\+/g, '%2B')) : null;
 
   return Response.json(
     {
