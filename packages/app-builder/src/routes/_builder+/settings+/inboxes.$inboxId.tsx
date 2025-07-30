@@ -329,6 +329,7 @@ export default function Inbox() {
                 inbox={inbox}
                 escalationInboxes={escalationInboxes}
                 redirectRoutePath="/settings/inboxes/:inboxId"
+                isAutoAssignmentAvailable={isAutoAssignmentAvailable}
               />
             ) : null}
           </CollapsiblePaper.Title>
