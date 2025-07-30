@@ -3,9 +3,6 @@ import { UnknownError } from '@app-builder/utils/unknown-error';
 import { useState } from 'react';
 import { z } from 'zod';
 
-import { useBackendInfo } from './auth/auth.client';
-import { useClientServices } from './init.client';
-
 export class AlreadyDownloadingError extends Error {}
 export class FetchLinkError extends Error {}
 export class AuthRequestError extends Error {}
@@ -43,12 +40,10 @@ const handleDownloadResponse = async (response: Response): Promise<void> => {
 };
 
 export function useDownloadFile(
-  endpoint: string,
+  downloadEndpoint: string,
   { onError }: { onError?: (error: DownloadFileError) => void } = {},
 ) {
-  const clientServices = useClientServices();
   const [downloading, setDownloading] = useState(false);
-  const { backendUrl, getAccessToken } = useBackendInfo(clientServices.authenticationClientService);
 
   const downloadCaseFile = async () => {
     try {
@@ -57,18 +52,7 @@ export function useDownloadFile(
       }
       setDownloading(true);
 
-      const tokenResponse = await getAccessToken();
-      if (!tokenResponse.success) {
-        throw new AuthRequestError();
-      }
-
-      const downloadLink = `${backendUrl}${endpoint}`;
-      const response = await fetch(downloadLink, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${tokenResponse.accessToken}`,
-        },
-      });
+      const response = await fetch(downloadEndpoint, { method: 'GET' });
 
       if (!response.ok) {
         throw new FetchLinkError('Internal error: Failed to download file: ' + response.statusText);

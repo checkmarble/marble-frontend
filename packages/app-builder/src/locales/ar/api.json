@@ -1,3 +1,4 @@
 {
-  "download_openapi_spec": "تنزيل مواصفات OpenAPI"
+  "download_openapi_spec": "تنزيل مواصفات OpenAPI v0 (مهمل)",
+  "download_openapi_spec_v1": "تنزيل مواصفات OpenAPI v1"
 }

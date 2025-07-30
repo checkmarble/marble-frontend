@@ -32,7 +32,6 @@ import { match } from 'ts-pattern';
 import { Button, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
 import { RemoveFileAnnotation } from './delete-annotation.$annotationId';
 
 const baseCreateAnnotationSchema = z.object({
@@ -192,11 +191,13 @@ export async function action({ request }: ActionFunctionArgs) {
             body.append('files[]', file);
           });
 
+          const endpoint = getClientAnnotationFileUploadEndpoint(data.tableName, data.objectId);
           promises.push(
-            fetch(
-              `${getServerEnv('MARBLE_API_URL_SERVER')}${getClientAnnotationFileUploadEndpoint(data.tableName, data.objectId)}`,
-              { method: 'POST', body, headers: { Authorization: `Bearer ${token}` } },
-            ).then((response) => {
+            fetch(`${getServerEnv('MARBLE_API_URL_SERVER')}${endpoint}`, {
+              method: 'POST',
+              body,
+              headers: { Authorization: `Bearer ${token}` },
+            }).then((response) => {
               if (response.status === 200) return response;
               throw response;
             }),

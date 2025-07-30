@@ -12,7 +12,7 @@ export type AggregationFuzzyMatchAlgorithms =
 
 export type FuzzyMatchAlgorithm = ComparatorFuzzyMatchAlgorithms | AggregationFuzzyMatchAlgorithms;
 
-export type Level = 'medium' | 'high';
+export type Level = 'low' | 'medium' | 'high';
 
 export type FuzzyMatchExampleCase = {
   left: string;

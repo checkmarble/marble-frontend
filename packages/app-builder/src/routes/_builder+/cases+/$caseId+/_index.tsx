@@ -17,12 +17,7 @@ import {
   mergeDataModelWithTableOptions,
   type TableModelWithOptions,
 } from '@app-builder/models';
-import { useAskCaseReviewMutation } from '@app-builder/queries/ask-case-review';
-import {
-  AlreadyDownloadingError,
-  AuthRequestError,
-  useDownloadFile,
-} from '@app-builder/services/DownloadFilesService';
+import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseIdParamSafe } from '@app-builder/utils/input-validation';
@@ -30,11 +25,11 @@ import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/pre
 import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { useCallbackRef } from '@marble/shared';
 import { type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
 import {
   defer,
   isRouteErrorResponse,
+  Link,
   useLoaderData,
   useNavigate,
   useRouteError,
@@ -44,12 +39,20 @@ import { Future, Result } from '@swan-io/boxed';
 import { type Namespace } from 'i18next';
 import { pick, unique } from 'radash';
 import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { filter, flat, groupBy, map, mapValues, omit, pipe, uniqueBy } from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
-import { Button, cn, Markdown, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui-design-system';
+import {
+  Button,
+  CtaClassName,
+  cn,
+  Markdown,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
@@ -74,16 +77,25 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { caseId } = parsedResult.data;
 
   // Get case by ID
-  const [currentCase, nextCaseId, reports, inboxes, pivotObjects, dataModel, pivots] =
-    await Promise.all([
-      cases.getCase({ caseId }),
-      cases.getNextUnassignedCaseId({ caseId }),
-      cases.listSuspiciousActivityReports({ caseId }),
-      inbox.listInboxes(),
-      cases.listPivotObjects({ caseId }),
-      dataModelRepository.getDataModel(),
-      dataModelRepository.listPivots({}),
-    ]);
+  const [
+    currentCase,
+    nextCaseId,
+    reports,
+    inboxes,
+    pivotObjects,
+    dataModel,
+    pivots,
+    mostRecentReview,
+  ] = await Promise.all([
+    cases.getCase({ caseId }),
+    cases.getNextUnassignedCaseId({ caseId }),
+    cases.listSuspiciousActivityReports({ caseId }),
+    inbox.listInboxes(),
+    cases.listPivotObjects({ caseId }),
+    dataModelRepository.getDataModel(),
+    dataModelRepository.listPivots({}),
+    cases.getMostRecentCaseReview({ caseId }),
+  ]);
 
   const dataModelWithTableOptions = (await Promise.all(
     dataModel.map<Promise<TableModelWithOptions>>((table) =>
@@ -210,6 +222,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     rulesByPivotPromise,
     entitlements,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
+    mostRecentReview,
   });
 };
 
@@ -270,6 +283,7 @@ export default function CaseManagerIndexPage() {
     nextCaseId,
     entitlements: { AiAssist: aiAssistEnabled },
     isMenuExpanded,
+    mostRecentReview,
   } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
   const navigate = useNavigate();
@@ -278,12 +292,8 @@ export default function CaseManagerIndexPage() {
   const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision' | 'snooze'>(
     'pivot',
   );
-  const askReviewMutation = useAskCaseReviewMutation();
-  const onAiAssistOpenChange = useCallbackRef((open: boolean) => {
-    if (open) {
-      askReviewMutation.mutate(details.id);
-    }
-  });
+  const enqueueReviewMutation = useEnqueueCaseReviewMutation();
+  const [hasRequestedReview, setHasRequestedReview] = useState(false);
 
   useEffect(() => {
     if (isMenuExpanded) {
@@ -297,7 +307,7 @@ export default function CaseManagerIndexPage() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
         <div className="flex items-center gap-2">
-          <AiAssist.Root onOpenChange={onAiAssistOpenChange}>
+          <AiAssist.Root>
             {aiAssistEnabled === 'allowed' ? (
               <AiAssist.Trigger>
                 <Button variant="secondary" size="medium">
@@ -312,59 +322,74 @@ export default function CaseManagerIndexPage() {
                 <AiAssist.Content>
                   <div className="p-4 h-full flex flex-col gap-2 justify-between">
                     <div className="border border-grey-90 rounded-md p-2 grow min-h-0">
-                      {match(askReviewMutation)
-                        .with({ isPending: true }, () => (
-                          <div className="grid place-content-center place-items-center h-full">
-                            <Icon icon="spinner" className="size-10 animate-spin" />
-                            <span className="text-s">
-                              {t('cases:case.ai_assist.review_in_progress')}
-                            </span>
-                          </div>
-                        ))
-                        .with({ isError: true }, () => (
-                          <div className="grid place-items-center h-full">
-                            {t('common:errors.unknown')}
-                          </div>
-                        ))
-                        .with({ isSuccess: true }, ({ data }) => {
-                          return (
-                            <div className="flex flex-col gap-2 h-full text-xs">
-                              <Tabs defaultValue="review" className="flex flex-col h-full gap-2">
-                                <TabsList className="self-start">
-                                  <TabsTrigger value="review" className="flex items-center gap-2">
-                                    {t('cases:case.ai_assist.review')}
-                                    <Icon
-                                      icon={data.review.ok ? 'tick' : 'cross'}
-                                      className={cn(
-                                        'size-5',
-                                        data.review.ok ? 'text-green-34' : 'text-red-47',
-                                      )}
-                                    />
-                                  </TabsTrigger>
-                                  {!data.review.ok ? (
-                                    <TabsTrigger value="sanityCheck">
-                                      {t('cases:case.ai_assist.sanity_check')}
+                      {mostRecentReview.length === 1
+                        ? (() => {
+                            const data = mostRecentReview[0]!;
+                            return (
+                              <div className="flex flex-col gap-2 h-full text-xs">
+                                <Tabs defaultValue="review" className="flex flex-col h-full gap-2">
+                                  <TabsList className="self-start">
+                                    <TabsTrigger value="review" className="flex items-center gap-2">
+                                      {t('cases:case.ai_assist.review')}
+                                      <Icon
+                                        icon={data.ok ? 'tick' : 'cross'}
+                                        className={cn(
+                                          'size-5',
+                                          data.ok ? 'text-green-34' : 'text-red-47',
+                                        )}
+                                      />
                                     </TabsTrigger>
-                                  ) : null}
-                                </TabsList>
-                                <TabsContent value="review" className="min-h-0 p-2 overflow-scroll">
-                                  <Markdown>{data.review.output}</Markdown>
-                                </TabsContent>
-                                {!data.review.ok ? (
+                                    {!data.ok ? (
+                                      <TabsTrigger value="sanityCheck">
+                                        {t('cases:case.ai_assist.sanity_check')}
+                                      </TabsTrigger>
+                                    ) : null}
+                                  </TabsList>
                                   <TabsContent
-                                    value="sanityCheck"
+                                    value="review"
                                     className="min-h-0 p-2 overflow-scroll"
                                   >
-                                    <Markdown>{data.review.sanityCheck}</Markdown>
+                                    <Markdown>{data.output}</Markdown>
                                   </TabsContent>
-                                ) : null}
-                              </Tabs>
-                            </div>
-                          );
-                        })
-                        .otherwise(() => null)}
+                                  {!data.ok ? (
+                                    <TabsContent
+                                      value="sanityCheck"
+                                      className="min-h-0 p-2 overflow-scroll"
+                                    >
+                                      <Markdown>{data.sanityCheck}</Markdown>
+                                    </TabsContent>
+                                  ) : null}
+                                </Tabs>
+                              </div>
+                            );
+                          })()
+                        : null}
                     </div>
-                    <FileLink endpoint={`/cases/${details.id}/data_for_investigation`} />
+                    <div className="flex gap-2">
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          enqueueReviewMutation.mutate(details.id);
+                          setHasRequestedReview(true);
+                        }}
+                        disabled={hasRequestedReview}
+                      >
+                        <Icon icon="case-manager" className="size-5" />
+                        {hasRequestedReview
+                          ? 'Review will be ready in a few minutes, refresh to see it'
+                          : 'Generate Review'}
+                      </Button>
+                      <Link
+                        className={CtaClassName({ variant: 'secondary' })}
+                        reloadDocument
+                        to={getRoute('/ressources/cases/download-data/:caseId', {
+                          caseId: details.id,
+                        })}
+                      >
+                        <Icon icon="download" className="size-5" />
+                        {t('cases:case.file.download')}
+                      </Link>
+                    </div>
                   </div>
                 </AiAssist.Content>
               )}
@@ -446,42 +471,4 @@ export function ErrorBoundary() {
   }
 
   return <ErrorComponent error={error} />;
-}
-
-function FileLink({ endpoint }: { endpoint: string }) {
-  const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(endpoint, {
-    onError: (e) => {
-      if (e instanceof AlreadyDownloadingError) {
-        // Already downloading, do nothing
-        return;
-      } else if (e instanceof AuthRequestError) {
-        toast.error(t('cases:case.file.errors.downloading_link.auth_error'));
-      } else {
-        toast.error(t('cases:case.file.errors.downloading_link.unknown'));
-      }
-    },
-  });
-  const { t } = useTranslation(['cases']);
-
-  return (
-    <ClientOnly>
-      {() => (
-        <Button
-          variant="secondary"
-          onClick={() => {
-            void downloadCaseFile();
-          }}
-          name="download"
-          disabled={downloadingCaseFile}
-        >
-          {downloadingCaseFile ? (
-            <Icon icon="spinner" className="size-5 animate-spin" />
-          ) : (
-            <Icon icon="download" className="size-5" />
-          )}
-          {t('cases:case.file.download')}
-        </Button>
-      )}
-    </ClientOnly>
-  );
 }

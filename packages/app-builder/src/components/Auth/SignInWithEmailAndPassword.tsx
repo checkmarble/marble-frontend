@@ -37,10 +37,12 @@ export function SignInWithEmailAndPassword({
   signIn,
   loading,
   additionalContent,
+  prefilledEmail,
 }: {
   signIn: (authPayload: AuthPayload) => void;
   loading?: boolean;
   additionalContent?: React.ReactNode;
+  prefilledEmail?: string | null;
 }) {
   const { t } = useTranslation(['auth', 'common']);
   const clientServices = useClientServices();
@@ -52,7 +54,9 @@ export function SignInWithEmailAndPassword({
   );
 
   const form = useForm({
-    defaultValues: { credentials: { email: '', password: '' } } as EmailAndPasswordForm,
+    defaultValues: {
+      credentials: { email: prefilledEmail ?? '', password: '' },
+    } as EmailAndPasswordForm,
     validators: { onSubmit: emailAndPasswordFormSchema },
     onSubmit: async ({ value: { credentials }, formApi }) => {
       try {
@@ -142,8 +146,8 @@ export function SignInWithEmailAndPassword({
             </div>
           )}
         </form.Field>
-        <Link className="text-s text-purple-65 underline" to="/forgot-password">
-          Forgot password?
+        <Link className="text-s text-purple-65 underline" to={getRoute('/create-password')}>
+          {t('auth:sign_in.forgot_password')}
         </Link>
       </div>
       <div className="flex flex-col gap-2">
@@ -158,8 +162,10 @@ export function SignInWithEmailAndPassword({
 
 export const StaticSignInWithEmailAndPassword = ({
   additionalContent,
+  prefilledEmail,
 }: {
   additionalContent?: React.ReactNode;
+  prefilledEmail?: string | null;
 }) => {
   const hydrated = useHydrated();
   const { t } = useTranslation(['auth', 'common']);
@@ -175,6 +181,7 @@ export const StaticSignInWithEmailAndPassword = ({
             disabled={!hydrated}
             className="w-full"
             valid
+            defaultValue={prefilledEmail ?? ''}
           />
         </div>
         <div className="flex flex-col items-start gap-2">
@@ -188,7 +195,7 @@ export const StaticSignInWithEmailAndPassword = ({
             valid
           />
         </div>
-        <Link className="text-s text-purple-65 underline" to={getRoute('/forgot-password')}>
+        <Link className="text-s text-purple-65 underline" to={getRoute('/create-password')}>
           {t('auth:sign_in.forgot_password')}
         </Link>
       </div>

@@ -1,5 +1,5 @@
 import { isHttpError } from '@app-builder/models';
-import { type ScenarioIteration } from '@app-builder/models/scenario-iteration';
+import { type ScenarioIteration } from '@app-builder/models/scenario/iteration';
 import { type SanctionCheckRepository } from '@app-builder/repositories/SanctionCheckRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { initServerServices } from '@app-builder/services/init.server';

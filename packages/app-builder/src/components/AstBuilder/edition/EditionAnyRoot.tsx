@@ -7,10 +7,14 @@ import { AstBuilderNodeSharpFactory } from './node-store';
 
 export function EditionAstBuilderAnyRoot(props: AstBuilderRootProps) {
   const nodeStore = useRoot(props);
-
   return (
     <AstBuilderNodeSharpFactory.Provider value={nodeStore}>
-      <EditionAstBuilderNode path="root" />
+      <EditionAstBuilderNode
+        root
+        path="root"
+        coerceDataType={props.coerceDataType}
+        optionsDataType={props.optionsDataType}
+      />
       <EditionEvaluationErrors id={nodeStore.value.node.id} />
     </AstBuilderNodeSharpFactory.Provider>
   );

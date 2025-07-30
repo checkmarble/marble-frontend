@@ -6,6 +6,7 @@ import { type TFunction } from 'i18next';
 import { type InferSharpApi } from 'sharpstate';
 
 import { type AstBuilderNodeSharpFactory } from './edition/node-store';
+import { AstBuilderOperandProps } from './Operand';
 
 type TFunctionDisplayName = TFunction<['common', 'scenarios'], undefined>;
 export type AstNodeStringifierContext = {
@@ -24,4 +25,6 @@ export type AstBuilderRootProps<NodeType extends AstNode = AstNode> = {
   onStoreChange?: (nodeStore: InferSharpApi<typeof AstBuilderNodeSharpFactory> | null) => void;
   onValidationUpdate?: (validation: FlatAstValidation) => void;
   returnType?: ReturnValueType;
+  coerceDataType?: AstBuilderOperandProps['coerceDataType'];
+  optionsDataType?: AstBuilderOperandProps['optionsDataType'];
 };

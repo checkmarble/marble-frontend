@@ -1,18 +1,10 @@
+import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { routes } from '@app-builder/utils/routes/routes';
-import { Biome, Distribution } from '@biomejs/js-api';
 import ora from 'ora';
 
-const biome = await Biome.create({
-  distribution: Distribution.NODE,
-});
-
-const { projectKey } = biome.openProject(`${process.cwd()}/../..`);
-
 const outTypesFile = join(process.cwd(), '/src/utils/routes/types.ts');
-console.log(`${process.cwd()}/../..`);
-console.log('outTypesFile', outTypesFile);
 
 type Route = {
   readonly id: string;
@@ -54,16 +46,13 @@ async function buildTypesFile(routes: readonly Route[]) {
       .map((routeId) => `'${routeId}'`)
       .join(' | ')};`;
 
-    biome.formatContent(
-      projectKey,
+    await writeFile(
+      outTypesFile,
       `
         ${RoutePath}
 
         ${RouteID}
       `,
-      {
-        filePath: outTypesFile,
-      },
     );
 
     spinner.succeed('Succesfully generated route based types');
@@ -76,7 +65,6 @@ async function buildTypesFile(routes: readonly Route[]) {
 async function main() {
   try {
     await buildTypesFile(routes);
-    biome.shutdown();
   } catch (error) {
     console.error('\n', error);
     process.exit(1);

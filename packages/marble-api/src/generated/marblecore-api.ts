@@ -1741,7 +1741,7 @@ export function downloadCaseFile(caseFileId: string, opts?: Oazapfts.RequestOpts
     } | {
         status: 403;
         data: string;
-    }>(`/cases/files/$${encodeURIComponent(caseFileId)}/download_link`, {
+    }>(`/cases/files/${encodeURIComponent(caseFileId)}/download_link`, {
         ...opts
     }));
 }
@@ -1847,15 +1847,57 @@ export function escalateCase(caseId: string, opts?: Oazapfts.RequestOpts) {
     }));
 }
 /**
- * Ask a review for a case powered by AI
+ * Get the most recent AI generated review (if present) for a case
  */
-export function askReviewForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+export function getMostRecentCaseReview(caseId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: CaseReviewDto;
+        data: CaseReviewDto[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
     }>(`/cases/${encodeURIComponent(caseId)}/review`, {
+        ...opts
+    }));
+}
+/**
+ * Enqueue a review for a case powered by AI
+ */
+export function enqueueReviewForCase(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 204;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/review/enqueue`, {
         ...opts,
         method: "POST"
+    }));
+}
+/**
+ * Download a case data for investigation
+ */
+export function downloadCaseData(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: Blob;
+    } | {
+        status: 401;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/data_for_investigation`, {
+        ...opts
     }));
 }
 /**
@@ -2284,6 +2326,26 @@ export function deleteAnnotation(annotationId: string, opts?: Oazapfts.RequestOp
     }));
 }
 /**
+ * Download an annotation file
+ */
+export function downloadAnnotationFile(annotationId: string, fileId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            /** Signed url to download the case file's content */
+            url: string;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/annotations/file/${encodeURIComponent(annotationId)}/${encodeURIComponent(fileId)}`, {
+        ...opts
+    }));
+}
+/**
  * List custom list
  */
 export function listCustomLists(opts?: Oazapfts.RequestOpts) {
@@ -2391,6 +2453,20 @@ export function deleteCustomList(customListId: string, opts?: Oazapfts.RequestOp
     }>(`/custom-lists/${encodeURIComponent(customListId)}`, {
         ...opts,
         method: "DELETE"
+    }));
+}
+/**
+ * Download a custom list values as a CSV file
+ */
+export function downloadListValuesAsCsvFile(customListId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    }>(`/custom-lists/${encodeURIComponent(customListId)}/values`, {
+        ...opts
     }));
 }
 /**
@@ -2851,6 +2927,35 @@ export function listSanctionCheckFiles(screeningId: string, opts?: Oazapfts.Requ
     }));
 }
 /**
+ * Upload a file to a screening
+ */
+export function uploadScreeningFile(screeningId: string, body?: {
+    file?: Blob;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchText(`/sanction-checks/${encodeURIComponent(screeningId)}/files`, oazapfts.multipart({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
+ * Download a screening uploaded file
+ */
+export function downloadScreeningFile(screeningId: string, fileId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            /** Signed url to download the screening file's content */
+            url: string;
+        };
+    } | {
+        status: 401;
+        data: string;
+    }>(`/sanction-checks/${encodeURIComponent(screeningId)}/files/${encodeURIComponent(fileId)}`, {
+        ...opts
+    }));
+}
+/**
  * Update the status of a screening match
  */
 export function updateSanctionCheckMatch(matchId: string, updateSanctionCheckMatchDto: UpdateSanctionCheckMatchDto, opts?: Oazapfts.RequestOpts) {
@@ -3273,7 +3378,7 @@ export function postDataModelTableLink(createTableLinkBody: CreateTableLinkBody,
     })));
 }
 /**
- * Get the OpenAPI specification of the client specific API for data ingestion and decision making
+ * Get the current version of the OpenAPI specification of the client specific API for data ingestion and decision making
  */
 export function getDataModelOpenApi(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
@@ -3286,6 +3391,23 @@ export function getDataModelOpenApi(opts?: Oazapfts.RequestOpts) {
         status: 403;
         data: string;
     }>("/data-model/openapi", {
+        ...opts
+    }));
+}
+/**
+ * Get the OpenAPI specification of the client specific API for data ingestion and decision making for a specific version
+ */
+export function getDataModelOpenApiOfVersion(version: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: OpenApiSpec;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/data-model/openapi/${encodeURIComponent(version)}`, {
         ...opts
     }));
 }

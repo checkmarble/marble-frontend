@@ -2,7 +2,8 @@ export const createDecisionDocHref = 'https://docs.checkmarble.com/reference/pos
 
 export const pivotValuesDocHref = 'https://docs.checkmarble.com/docs/pivot-values';
 
-export const fuzzyMatchingDocHref = 'https://docs.checkmarble.com/docs/fuzzy-matching';
+export const fuzzyMatchingDocHref =
+  'https://docs.checkmarble.com/docs/string-similarity-scoring-copy';
 
 export const stringTemplatingDocHref = 'https://docs.checkmarble.com/docs/string-templating';
 

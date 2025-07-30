@@ -598,7 +598,7 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
-/cases/files/${caseFileId}/download_link:
+/cases/files/{caseFileId}/download_link:
   get:
     tags:
       - Cases
@@ -701,12 +701,12 @@
               type: array
               items:
                 $ref: '#/components/schemas/CaseDto'
-/cases/{caseId}/review:
+/cases/{caseId}/review/enqueue:
   post:
     tags:
       - Cases
-    summary: Ask a review for a case powered by AI
-    operationId: askReviewForCase
+    summary: Enqueue a review for a case powered by AI
+    operationId: enqueueReviewForCase
     security:
       - bearerAuth: []
     parameters:
@@ -718,12 +718,74 @@
           type: string
           format: uuid
     responses:
+      '204':
+        description: The review was enqueued
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+
+/cases/{caseId}/review:
+  get:
+    tags:
+      - Cases
+    summary: Get the most recent AI generated review (if present) for a case
+    operationId: getMostRecentCaseReview
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case on which to get the most recent review
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
       '200':
-        description: The review output for a case
+        description: The most recent review output for a case
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CaseReviewDto'
+              type: array
+              minItems: 0
+              maxItems: 1
+              items:
+                $ref: '#/components/schemas/CaseReviewDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/cases/{caseId}/data_for_investigation:
+  get:
+    tags:
+      - Cases
+    summary: Download a case data for investigation
+    operationId: downloadCaseData
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The data of the case
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      '401':
+        $ref: 'components.yml#/responses/401'
 
 components:
   schemas:

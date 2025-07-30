@@ -6,7 +6,7 @@ import {
   type CreateScenarioIterationRuleInput,
   type ScenarioIterationRule,
   type UpdateScenarioIterationRuleInput,
-} from '@app-builder/models/scenario-iteration-rule';
+} from '@app-builder/models/scenario/iteration-rule';
 
 export interface ScenarioIterationRuleRepository {
   listRules(args: { scenarioIterationId?: string }): Promise<ScenarioIterationRule[]>;

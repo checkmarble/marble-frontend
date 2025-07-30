@@ -81,8 +81,8 @@ paths:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1snooze
   /cases/{caseId}/case_tags:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1case_tags
-  /cases/files/${caseFileId}/download_link:
-    $ref: ./marblecore-api/cases.yml#/~1cases~1files~1${caseFileId}~1download_link
+  /cases/files/{caseFileId}/download_link:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1files~1{caseFileId}~1download_link
   /cases/review_decision:
     $ref: ./marblecore-api/cases.yml#/~1cases~1review_decision
   /cases/{caseId}/pivot_objects:
@@ -95,6 +95,10 @@ paths:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1escalate
   /cases/{caseId}/review:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1review
+  /cases/{caseId}/review/enqueue:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1review~1enqueue
+  /cases/{caseId}/data_for_investigation:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1data_for_investigation
 
   # SUSPICIOUS ACTIVITY REPORTS
 
@@ -135,8 +139,13 @@ paths:
     $ref: ./marblecore-api/ingestion.yml#/~1client_data~1{tableName}~1{objectId}~1annotations
   /client_data/{tableName}/list:
     $ref: ./marblecore-api/ingestion.yml#/~1client_data~1{tableName}~1list
+
+  # ANNOTATIONS
+
   /annotations/{annotationId}:
     $ref: ./marblecore-api/ingestion.yml#/~1annotations~1{annotationId}
+  /annotations/file/{annotationId}/{fileId}:
+    $ref: ./marblecore-api/annotations.yml#/~1annotations~1file~1{annotationId}~1{fileId}
 
   # CUSTOM LISTS
 
@@ -187,6 +196,8 @@ paths:
     $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1datasets
   /sanction-checks/{screeningId}/files:
     $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1{screeningId}~1files
+  /sanction-checks/{screeningId}/files/{fileId}:
+    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1{screeningId}~1files~1{fileId}
   /sanction-checks/matches/{matchId}:
     $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1matches~1{matchId}
   /sanction-checks/matches/{matchId}/enrich:
@@ -230,6 +241,8 @@ paths:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1links
   /data-model/openapi:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1openapi
+  /data-model/openapi/{version}:
+    $ref: ./marblecore-api/data-model.yml#/~1data-model~1openapi~1{version}
   /data-model/pivots:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1pivots
   /data-model/tables/{tableId}/navigation_options:

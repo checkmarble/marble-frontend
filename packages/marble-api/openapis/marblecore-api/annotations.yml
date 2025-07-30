@@ -23,6 +23,47 @@
                 - $ref: '#/components/schemas/CommentEntityAnnotationDto'
                 - $ref: '#/components/schemas/TagEntityAnnotationDto'
                 - $ref: '#/components/schemas/FileEntityAnnotationDto'
+/annotations/file/{annotationId}/{fileId}:
+  get:
+    tags:
+      - Annotations
+    summary: Download an annotation file
+    operationId: downloadAnnotationFile
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: annotationId
+        description: ID of the annotation
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: fileId
+        description: ID of the file
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Signed url to download the case file's content
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: Signed url to download the case file's content
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
 
 components:
   schemas:

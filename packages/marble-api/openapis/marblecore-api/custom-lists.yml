@@ -159,6 +159,30 @@
       '404':
         $ref: 'components.yml#/responses/404'
 /custom-lists/{customListId}/values:
+  get:
+    tags:
+      - CustomList
+    summary: Download a custom list values as a CSV file
+    operationId: downloadListValuesAsCsvFile
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: customListId
+        description: ID of the custom list that need to be downloaded
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The CSV file containing the custom list values corresponding to the provided `customListId`
+        content:
+          text/csv:
+            schema:
+              type: string
+      '401':
+        $ref: 'components.yml#/responses/401'
   post:
     tags:
       - CustomList

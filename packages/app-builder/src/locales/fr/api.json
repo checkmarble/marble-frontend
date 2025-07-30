@@ -1,3 +1,4 @@
 {
-  "download_openapi_spec": "Télécharger la spécification OpenAPI"
+  "download_openapi_spec": "Télécharger la spécification OpenAPI v0 (Déprécié)",
+  "download_openapi_spec_v1": "Télécharger la spécification OpenAPI v1"
 }

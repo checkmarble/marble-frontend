@@ -7,9 +7,9 @@ import {
 import { CaseStatusBadge, casesI18n } from '@app-builder/components/Cases';
 import { SanctionStatusTag } from '@app-builder/components/Sanctions/SanctionStatusTag';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
+import { useUploadScreeningFile } from '@app-builder/queries/upload-screening-file';
 import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
 import { initServerServices } from '@app-builder/services/init.server';
-import { getSanctionCheckFileUploadEndpoint } from '@app-builder/utils/files';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { defer, type LoaderFunctionArgs, type SerializeFrom } from '@remix-run/node';
@@ -145,6 +145,7 @@ export function useCurrentCase() {
 export default function CaseSanctionReviewPage() {
   const { t } = useTranslation(handle.i18n);
   const { caseDetail, sanctionCheck } = useLoaderData<typeof loader>();
+  const { mutateAsync: uploadScreeningFile } = useUploadScreeningFile(sanctionCheck.id);
 
   return (
     <Page.Main>
@@ -178,7 +179,7 @@ export default function CaseSanctionReviewPage() {
           </Page.Content>
         </Page.Container>
         <div className="bg-grey-100 border-t-grey-90 flex shrink-0 flex-row items-center justify-end gap-4 border-t p-4">
-          <UploadFile uploadFileEndpoint={getSanctionCheckFileUploadEndpoint(sanctionCheck)}>
+          <UploadFile uploadFileEndpoint={uploadScreeningFile}>
             <Button className="h-14 w-fit whitespace-nowrap" variant="secondary">
               <Icon icon="attachment" className="size-5" />
               {t('cases:add_file')}

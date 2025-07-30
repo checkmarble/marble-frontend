@@ -14,14 +14,14 @@ export const routes = [
         "file": "routes/_auth+/_layout.tsx",
         "children": [
           {
+            "id": "routes/_auth+/create-password",
+            "path": "create-password",
+            "file": "routes/_auth+/create-password.tsx"
+          },
+          {
             "id": "routes/_auth+/email-verification",
             "path": "email-verification",
             "file": "routes/_auth+/email-verification.tsx"
-          },
-          {
-            "id": "routes/_auth+/forgot-password",
-            "path": "forgot-password",
-            "file": "routes/_auth+/forgot-password.tsx"
           },
           {
             "id": "routes/_auth+/sign-in-email",
@@ -32,11 +32,6 @@ export const routes = [
             "id": "routes/_auth+/sign-in",
             "path": "sign-in",
             "file": "routes/_auth+/sign-in.tsx"
-          },
-          {
-            "id": "routes/_auth+/sign-up",
-            "path": "sign-up",
-            "file": "routes/_auth+/sign-up.tsx"
           }
         ]
       },
@@ -349,6 +344,11 @@ export const routes = [
         "file": "routes/healthcheck.ts"
       },
       {
+        "id": "routes/ressources+/annotations+/download-file.$annotationId.$fileId",
+        "path": "ressources/annotations/download-file/:annotationId/:fileId",
+        "file": "routes/ressources+/annotations+/download-file.$annotationId.$fileId.tsx"
+      },
+      {
         "id": "routes/ressources+/auth+/logout",
         "path": "ressources/auth/logout",
         "file": "routes/ressources+/auth+/logout.tsx"
@@ -359,9 +359,9 @@ export const routes = [
         "file": "routes/ressources+/auth+/refresh.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/$caseId.ask-review",
-        "path": "ressources/cases/:caseId/ask-review",
-        "file": "routes/ressources+/cases+/$caseId.ask-review.tsx"
+        "id": "routes/ressources+/cases+/$caseId.enqueue-review",
+        "path": "ressources/cases/:caseId/enqueue-review",
+        "file": "routes/ressources+/cases+/$caseId.enqueue-review.tsx"
       },
       {
         "id": "routes/ressources+/cases+/add-comment",
@@ -387,6 +387,16 @@ export const routes = [
         "id": "routes/ressources+/cases+/create-case",
         "path": "ressources/cases/create-case",
         "file": "routes/ressources+/cases+/create-case.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/download-data.$caseId",
+        "path": "ressources/cases/download-data/:caseId",
+        "file": "routes/ressources+/cases+/download-data.$caseId.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/download-file.$fileId",
+        "path": "ressources/cases/download-file/:fileId",
+        "file": "routes/ressources+/cases+/download-file.$fileId.tsx"
       },
       {
         "id": "routes/ressources+/cases+/edit-assignee",
@@ -438,6 +448,11 @@ export const routes = [
         "id": "routes/ressources+/cases+/review-sanction-match",
         "path": "ressources/cases/review-sanction-match",
         "file": "routes/ressources+/cases+/review-sanction-match.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/sar+/download.$caseId.$reportId",
+        "path": "ressources/cases/sar/download/:caseId/:reportId",
+        "file": "routes/ressources+/cases+/sar+/download.$caseId.$reportId.tsx"
       },
       {
         "id": "routes/ressources+/cases+/snooze-case",
@@ -505,6 +520,11 @@ export const routes = [
         "file": "routes/ressources+/files+/upload-file.tsx"
       },
       {
+        "id": "routes/ressources+/ingestion+/upload.$objectType",
+        "path": "ressources/ingestion/upload/:objectType",
+        "file": "routes/ressources+/ingestion+/upload.$objectType.tsx"
+      },
+      {
         "id": "routes/ressources+/lists+/create",
         "path": "ressources/lists/create",
         "file": "routes/ressources+/lists+/create.tsx"
@@ -515,9 +535,19 @@ export const routes = [
         "file": "routes/ressources+/lists+/delete.tsx"
       },
       {
+        "id": "routes/ressources+/lists+/download-csv-file.$listId",
+        "path": "ressources/lists/download-csv-file/:listId",
+        "file": "routes/ressources+/lists+/download-csv-file.$listId.tsx"
+      },
+      {
         "id": "routes/ressources+/lists+/edit",
         "path": "ressources/lists/edit",
         "file": "routes/ressources+/lists+/edit.tsx"
+      },
+      {
+        "id": "routes/ressources+/lists+/upload.$listId",
+        "path": "ressources/lists/upload/:listId",
+        "file": "routes/ressources+/lists+/upload.$listId.tsx"
       },
       {
         "id": "routes/ressources+/lists+/value_create",
@@ -645,6 +675,16 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/update.tsx"
       },
       {
+        "id": "routes/ressources+/screenings+/download.$screeningId.$fileId",
+        "path": "ressources/screenings/download/:screeningId/:fileId",
+        "file": "routes/ressources+/screenings+/download.$screeningId.$fileId.tsx"
+      },
+      {
+        "id": "routes/ressources+/screenings+/upload.$screeningId",
+        "path": "ressources/screenings/upload/:screeningId",
+        "file": "routes/ressources+/screenings+/upload.$screeningId.tsx"
+      },
+      {
         "id": "routes/ressources+/settings+/api-keys+/create",
         "path": "ressources/settings/api-keys/create",
         "file": "routes/ressources+/settings+/api-keys+/create.tsx"
@@ -744,6 +784,45 @@ export const routes = [
         "id": "routes/ressources+/user+/language",
         "path": "ressources/user/language",
         "file": "routes/ressources+/user+/language.tsx"
+      },
+      {
+        "id": "routes/ressources+/workflows+/$scenarioId/_index",
+        "path": "ressources/workflows/:scenarioId",
+        "file": "routes/ressources+/workflows+/$scenarioId/_index.tsx",
+        "children": [
+          {
+            "id": "routes/ressources+/workflows+/$scenarioId.reorder",
+            "path": "reorder",
+            "file": "routes/ressources+/workflows+/$scenarioId.reorder.tsx"
+          }
+        ]
+      },
+      {
+        "id": "routes/ressources+/workflows+/inboxes",
+        "path": "ressources/workflows/inboxes",
+        "file": "routes/ressources+/workflows+/inboxes.tsx"
+      },
+      {
+        "id": "routes/ressources+/workflows+/rule+/$ruleId+/_index",
+        "index": true,
+        "path": "ressources/workflows/rule/:ruleId",
+        "file": "routes/ressources+/workflows+/rule+/$ruleId+/_index.tsx"
+      },
+      {
+        "id": "routes/ressources+/workflows+/rule+/$ruleId+/condition+/$conditionId",
+        "path": "ressources/workflows/rule/:ruleId/condition/:conditionId",
+        "file": "routes/ressources+/workflows+/rule+/$ruleId+/condition+/$conditionId.tsx"
+      },
+      {
+        "id": "routes/ressources+/workflows+/rule+/$ruleId+/rename",
+        "path": "ressources/workflows/rule/:ruleId/rename",
+        "file": "routes/ressources+/workflows+/rule+/$ruleId+/rename.ts"
+      },
+      {
+        "id": "routes/ressources+/workflows+/rule+/_index",
+        "index": true,
+        "path": "ressources/workflows/rule",
+        "file": "routes/ressources+/workflows+/rule+/_index.tsx"
       },
       {
         "id": "routes/transfercheck+/_layout",

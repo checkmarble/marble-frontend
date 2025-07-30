@@ -264,13 +264,39 @@
   get:
     tags:
       - Data Model
-    summary: Get the OpenAPI specification of the client specific API for data ingestion and decision making
+    summary: Get the current version of the OpenAPI specification of the client specific API for data ingestion and decision making
     operationId: getDataModelOpenApi
     security:
       - bearerAuth: []
     responses:
       '200':
-        description: The OpenAPI specification of the client specific API for data ingestion and decision making
+        description: The OpenAPI specification of the client specific API for data ingestion and decision making for the current version
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpenAPISpec'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+/data-model/openapi/{version}:
+  get:
+    tags:
+      - Data Model
+    summary: Get the OpenAPI specification of the client specific API for data ingestion and decision making for a specific version
+    operationId: getDataModelOpenApiOfVersion
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: version
+        description: Version of the API to get the OpenAPI specification for
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: The OpenAPI specification of the client specific API for data ingestion and decision making for the provided version
         content:
           application/json:
             schema:

@@ -1,3 +1,4 @@
+import { UploadFileContentProps } from '@app-builder/routes/ressources+/files+/upload-file';
 import {
   AlreadyDownloadingError,
   AuthRequestError,
@@ -9,9 +10,7 @@ import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { ClientOnly } from 'remix-utils/client-only';
 import { Button, Table, useVirtualTable } from 'ui-design-system';
-
 import { AddYourFirstFile } from './AddYourFirstFile';
 
 const columnHelper = createColumnHelper<FilesListFile>();
@@ -24,11 +23,11 @@ export type FilesListFile = {
 
 export type FilesListProps = {
   files: FilesListFile[];
-  downloadEnpoint: (id: string) => string;
-  uploadEnpoint: string;
+  downloadEndpoint: (id: string) => string;
+  uploadEndpoint: UploadFileContentProps['uploadFileEndpoint'];
 };
 
-export function FilesList({ files, downloadEnpoint, uploadEnpoint }: FilesListProps) {
+export function FilesList({ files, downloadEndpoint, uploadEndpoint }: FilesListProps) {
   const { t } = useTranslation(['cases']);
 
   if (files.length === 0) {
@@ -39,7 +38,7 @@ export function FilesList({ files, downloadEnpoint, uploadEnpoint }: FilesListPr
             t={t}
             i18nKey="cases:case_detail.no_files"
             components={{
-              Button: <AddYourFirstFile uploadFileEndpoint={uploadEnpoint} />,
+              Button: <AddYourFirstFile uploadFileEndpoint={uploadEndpoint} />,
             }}
           />
         </span>
@@ -47,10 +46,13 @@ export function FilesList({ files, downloadEnpoint, uploadEnpoint }: FilesListPr
     );
   }
 
-  return <FilesListTable downloadEnpoint={downloadEnpoint} files={files} />;
+  return <FilesListTable downloadEndpoint={downloadEndpoint} files={files} />;
 }
 
-export function FilesListTable({ files, downloadEnpoint }: Omit<FilesListProps, 'uploadEnpoint'>) {
+export function FilesListTable({
+  files,
+  downloadEndpoint,
+}: Omit<FilesListProps, 'uploadEndpoint'>) {
   const { t } = useTranslation(['cases']);
   const language = useFormatLanguage();
 
@@ -87,12 +89,12 @@ export function FilesListTable({ files, downloadEnpoint }: Omit<FilesListProps, 
         header: t('cases:case.file.download'),
         size: 40,
         cell: ({ getValue }) => {
-          return <FileLink endpoint={downloadEnpoint(getValue())} />;
+          return <FileLink endpoint={downloadEndpoint(getValue())} />;
         },
       }),
     ];
     return columns;
-  }, [language, t, downloadEnpoint]);
+  }, [language, t, downloadEndpoint]);
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: files,
@@ -130,19 +132,15 @@ function FileLink({ endpoint }: { endpoint: string }) {
   const { t } = useTranslation(['cases']);
 
   return (
-    <ClientOnly>
-      {() => (
-        <Button
-          variant="secondary"
-          onClick={() => {
-            void downloadCaseFile();
-          }}
-          name="download"
-          disabled={downloadingCaseFile}
-        >
-          {downloadingCaseFile ? t('cases:case.file.downloading') : t('cases:case.file.download')}
-        </Button>
-      )}
-    </ClientOnly>
+    <Button
+      variant="secondary"
+      onClick={() => {
+        void downloadCaseFile();
+      }}
+      name="download"
+      disabled={downloadingCaseFile}
+    >
+      {downloadingCaseFile ? t('cases:case.file.downloading') : t('cases:case.file.download')}
+    </Button>
   );
 }

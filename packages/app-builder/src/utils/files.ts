@@ -1,33 +1,22 @@
-import type { CaseDetail } from '@app-builder/models/cases';
-import type { SanctionCheck } from '@app-builder/models/sanction-check';
+export const getCaseFileUploadEndpoint = (caseId: string) =>
+  `/cases/${encodeURIComponent(caseId)}/files`;
 
-export function getCaseFileUploadEndpoint(caseDetail: CaseDetail) {
-  return `/cases/${caseDetail.id}/files`;
-}
-
-export const getCaseFileUploadEndpointById = (caseId: string) => `/cases/${caseId}/files`;
+export const getCaseInvestigationDataDownloadEndpoint = (caseId: string) =>
+  `/cases/${encodeURIComponent(caseId)}/data_for_investigation`;
 
 export const getCaseSuspiciousActivityReportFileUploadEndpointById = (
   caseId: string,
   reportId: string,
 ) => `/cases/${caseId}/sar/${reportId}/file`;
 
-export function getCaseFileDownloadEndpoint() {
-  return (id: string) => `/cases/files/${encodeURIComponent(id)}/download_link`;
-}
+export const getScreeningFileUploadEndpoint = (screeningId: string) =>
+  `/sanction-checks/${encodeURIComponent(screeningId)}/files`;
 
-export function getSanctionCheckFileUploadEndpoint(sanctionCheck: SanctionCheck) {
-  return `/sanction-checks/${sanctionCheck.id}/files`;
-}
+export const getClientAnnotationFileUploadEndpoint = (tableName: string, objectId: string) =>
+  `/client_data/${tableName}/${objectId}/annotations/file`;
 
-export function getSanctionCheckFileDownloadEndpoint(sanctionCheck: SanctionCheck) {
-  return (id: string) => `/sanction-checks/${sanctionCheck.id}/files/${encodeURIComponent(id)}`;
-}
+export const getIngestionDataBatchUploadEndpoint = (objectType: string) =>
+  `/ingestion/${encodeURIComponent(objectType)}/batch`;
 
-export function getClientAnnotationFileUploadEndpoint(tableName: string, objectId: string) {
-  return `/client_data/${tableName}/${objectId}/annotations/file`;
-}
-
-export function getClientAnnotationFileDownloadEndpoint(annotationId: string) {
-  return (fileId: string) => `/annotations/file/${annotationId}/${fileId}`;
-}
+export const getCustomListDataUploadEndpoint = (listId: string) =>
+  `/custom-lists/${encodeURIComponent(listId)}/values/batch`;

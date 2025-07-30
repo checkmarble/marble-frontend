@@ -1,10 +1,6 @@
 import { FilesList } from '@app-builder/components/Files/FilesList';
+import { useUploadScreeningFile } from '@app-builder/queries/upload-screening-file';
 import { initServerServices } from '@app-builder/services/init.server';
-import {
-  getSanctionCheckFileDownloadEndpoint,
-  getSanctionCheckFileUploadEndpoint,
-} from '@app-builder/utils/files';
-import { useCallbackRef } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs } from '@remix-run/node';
@@ -35,10 +31,20 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export default function SanctionCheckFilesPage() {
   const { files, sanctionCheck } = useLoaderData<typeof loader>();
-  const downloadEnpoint = useCallbackRef(getSanctionCheckFileDownloadEndpoint(sanctionCheck));
-  const uploadEnpoint = getSanctionCheckFileUploadEndpoint(sanctionCheck);
+  const { mutateAsync: uploadScreeningFile } = useUploadScreeningFile(sanctionCheck.id);
+
+  const downloadEndpoint = (fileId: string) => {
+    return getRoute('/ressources/screenings/download/:screeningId/:fileId', {
+      screeningId: sanctionCheck.id,
+      fileId,
+    });
+  };
 
   return (
-    <FilesList files={files} downloadEnpoint={downloadEnpoint} uploadEnpoint={uploadEnpoint} />
+    <FilesList
+      files={files}
+      downloadEndpoint={downloadEndpoint}
+      uploadEndpoint={uploadScreeningFile}
+    />
   );
 }
