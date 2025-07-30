@@ -337,6 +337,11 @@ paths:
   /workflows/rule/{ruleId}/action/{actionId}:
     $ref: ./marblecore-api/workflow.yml#/~1workflows~1rule~1{ruleId}~1action~1{actionId}
 
+  # PERSONAL SETTINGS
+
+  /settings/me/unavailable:
+    $ref: ./marblecore-api/users.yml#/~1settings~1me~1unavailable
+
 components:
   securitySchemes:
     $ref: marblecore-api/_common.yml#/securitySchemes

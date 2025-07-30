@@ -8,7 +8,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
+import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
@@ -31,6 +31,7 @@ function getUpdateInboxUserFormSchema(inboxUserRoles: readonly [string, ...strin
     id: z.string().uuid(),
     inboxId: z.string().uuid(),
     role: z.enum(inboxUserRoles),
+    autoAssignable: z.boolean(),
   });
 }
 
@@ -55,7 +56,7 @@ export async function action({ request }: ActionFunctionArgs) {
   ).safeParse(rawData);
 
   if (!success) {
-    return json(
+    return Response.json(
       { status: 'error', errors: error.flatten() },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
@@ -64,7 +65,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    await inbox.updateInboxUser(data.id, pick(data, ['role']));
+    await inbox.updateInboxUser(data.id, pick(data, ['role', 'autoAssignable']));
 
     return redirect(
       getRoute('/settings/inboxes/:inboxId', {
@@ -77,7 +78,7 @@ export async function action({ request }: ActionFunctionArgs) {
       message: t('common:errors.unknown'),
     });
 
-    return json(
+    return Response.json(
       { status: 'error', errors: [] },
       {
         headers: { 'Set-Cookie': await commitSession(session) },

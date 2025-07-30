@@ -725,6 +725,17 @@ export const routes = [
         "file": "routes/ressources+/settings+/inboxes+/update.tsx"
       },
       {
+        "id": "routes/ressources+/settings+/organization+/update",
+        "path": "ressources/settings/organization/update",
+        "file": "routes/ressources+/settings+/organization+/update.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/personal+/unavailability+/_index",
+        "index": true,
+        "path": "ressources/settings/personal/unavailability",
+        "file": "routes/ressources+/settings+/personal+/unavailability+/_index.ts"
+      },
+      {
         "id": "routes/ressources+/settings+/tags+/create",
         "path": "ressources/settings/tags/create",
         "file": "routes/ressources+/settings+/tags+/create.tsx"

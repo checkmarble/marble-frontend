@@ -9,7 +9,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
+import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { useFetcher, useNavigation } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
@@ -18,7 +18,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { omit } from 'radash';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select } from 'ui-design-system';
+import { Button, Modal, Select, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -31,6 +31,7 @@ function getCreateInboxUserFormSchema(inboxUserRoles: readonly [string, ...strin
     userId: z.string().uuid().nonempty(),
     inboxId: z.string().uuid().nonempty(),
     role: z.enum(inboxUserRoles),
+    autoAssignable: z.boolean(),
   });
 }
 
@@ -55,7 +56,7 @@ export async function action({ request }: ActionFunctionArgs) {
   ).safeParse(rawData);
 
   if (!success) {
-    return json(
+    return Response.json(
       { status: 'error', errors: error.flatten() },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
@@ -77,7 +78,7 @@ export async function action({ request }: ActionFunctionArgs) {
       message: t('common:errors.unknown'),
     });
 
-    return json(
+    return Response.json(
       { status: 'error', errors: [] },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
@@ -91,11 +92,13 @@ export function CreateInboxUser({
   users,
   inboxUserRoles,
   access,
+  isAutoAssignmentAvailable = false,
 }: {
   inboxId: string;
   users: User[];
   inboxUserRoles: readonly [string, ...string[]];
   access: FeatureAccessLevelDto;
+  isAutoAssignmentAvailable: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);
   const [open, setOpen] = useState(false);
@@ -121,6 +124,7 @@ export function CreateInboxUser({
           users={users}
           inboxUserRoles={inboxUserRoles}
           access={access}
+          isAutoAssignmentAvailable={isAutoAssignmentAvailable}
         />
       </Modal.Content>
     </Modal.Root>
@@ -132,11 +136,13 @@ export function CreateInboxUserContent({
   users,
   inboxUserRoles,
   access,
+  isAutoAssignmentAvailable = false,
 }: {
   currentInboxId: string;
   users: User[];
   inboxUserRoles: readonly [string, ...string[]];
   access: FeatureAccessLevelDto;
+  isAutoAssignmentAvailable: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
@@ -223,6 +229,38 @@ export function CreateInboxUserContent({
                 ))}
               </Select.Default>
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+            </div>
+          )}
+        </form.Field>
+        <form.Field
+          name="autoAssignable"
+          validators={{
+            onBlur: schema.shape.autoAssignable,
+            onChange: schema.shape.autoAssignable,
+          }}
+        >
+          {(field) => (
+            <div className="group flex justify-between">
+              <div className="flex gap-2">
+                <FormLabel name={field.name} className="flex items-center gap-2">
+                  {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
+                </FormLabel>
+                {!isAutoAssignmentAvailable ? (
+                  <Nudge
+                    className="size-5"
+                    kind="restricted"
+                    content={t('settings:inboxes.auto_assign_queue_limit.nudge', {
+                      defaultValue: 'N/A',
+                    })}
+                  />
+                ) : null}
+              </div>
+
+              <Switch
+                checked={isAutoAssignmentAvailable ? field.state.value : false}
+                onCheckedChange={field.handleChange}
+                disabled={!isAutoAssignmentAvailable}
+              />
             </div>
           )}
         </form.Field>

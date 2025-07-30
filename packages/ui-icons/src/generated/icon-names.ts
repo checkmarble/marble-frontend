@@ -1,5 +1,7 @@
 export const iconNames = [
   'accepted',
+  'account-circle-off',
+  'account-circle',
   'add-alert',
   'add-circle',
   'alt-route',
@@ -132,5 +134,4 @@ export const iconNames = [
   'warning',
   'world',
 ] as const;
-
 export type IconName = (typeof iconNames)[number];

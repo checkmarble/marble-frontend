@@ -2,6 +2,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { Nudge } from '@app-builder/components/Nudge';
 import { type Inbox, type InboxMetadata } from '@app-builder/models/inbox';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
@@ -15,7 +16,7 @@ import { pick } from 'radash';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { safeRedirect } from 'remix-utils/safe-redirect';
-import { Button, MenuCommand, Modal } from 'ui-design-system';
+import { Button, MenuCommand, Modal, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -29,6 +30,7 @@ const updateInboxFormSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
   escalationInboxId: z.union([z.string().uuid(), z.null()]),
+  autoAssignEnabled: z.boolean(),
   redirectRoute: z.enum(redirectRouteOptions),
 });
 
@@ -53,7 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const { data, success, error } = updateInboxFormSchema.safeParse(rawData);
 
   if (!success) {
-    return json(
+    return Response.json(
       { status: 'error', errors: error.flatten() },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
@@ -64,7 +66,7 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     const updatedInbox = await inbox.updateInbox(
       data.id,
-      pick(data, ['name', 'escalationInboxId']),
+      pick(data, ['name', 'escalationInboxId', 'autoAssignEnabled']),
     );
 
     return redirect(
@@ -94,10 +96,12 @@ export function UpdateInbox({
   inbox,
   escalationInboxes,
   redirectRoutePath,
+  isAutoAssignmentAvailable = false,
 }: {
   inbox: Inbox;
   escalationInboxes: InboxMetadata[];
   redirectRoutePath: (typeof redirectRouteOptions)[number];
+  isAutoAssignmentAvailable: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);
   const navigation = useNavigation();
@@ -122,6 +126,7 @@ export function UpdateInbox({
           inbox={inbox}
           escalationInboxes={escalationInboxes}
           redirectRoutePath={redirectRoutePath}
+          isAutoAssignmentAvailable={isAutoAssignmentAvailable}
         />
       </Modal.Content>
     </Modal.Root>
@@ -132,10 +137,12 @@ export function UpdateInboxContent({
   inbox,
   escalationInboxes,
   redirectRoutePath,
+  isAutoAssignmentAvailable = false,
 }: {
   inbox: Inbox;
   escalationInboxes: InboxMetadata[];
   redirectRoutePath: (typeof redirectRouteOptions)[number];
+  isAutoAssignmentAvailable: boolean;
 }) {
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
@@ -237,6 +244,40 @@ export function UpdateInboxContent({
             );
           }}
         </form.Field>
+
+        <form.Field
+          name="autoAssignEnabled"
+          validators={{
+            onChange: updateInboxFormSchema.shape.autoAssignEnabled,
+            onBlur: updateInboxFormSchema.shape.autoAssignEnabled,
+          }}
+        >
+          {(field) => (
+            <div className="group flex justify-between">
+              <div className="flex gap-2">
+                <FormLabel name={field.name}>
+                  {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
+                </FormLabel>
+                {!isAutoAssignmentAvailable ? (
+                  <Nudge
+                    className="size-5"
+                    kind="restricted"
+                    content={t('settings:inboxes.auto_assign_queue_limit.nudge', {
+                      defaultValue: 'N/A',
+                    })}
+                  />
+                ) : null}
+              </div>
+
+              <Switch
+                checked={isAutoAssignmentAvailable ? field.state.value : false}
+                onCheckedChange={field.handleChange}
+                disabled={!isAutoAssignmentAvailable}
+              />
+            </div>
+          )}
+        </form.Field>
+
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>
             <Button className="flex-1" variant="secondary" type="button">

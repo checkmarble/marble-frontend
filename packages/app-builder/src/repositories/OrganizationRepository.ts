@@ -35,9 +35,18 @@ export function makeGetOrganizationRepository() {
     },
     updateOrganization: async (args) => {
       const { organization } = await marbleCoreApiClient.updateOrganization(organizationId, {
-        default_scenario_timezone: args.changes.defaultScenarioTimezone,
-        sanctions_limit: args.changes.sanctionLimit,
-        sanctions_threshold: args.changes.sanctionThreshold,
+        ...(args.changes.defaultScenarioTimezone && {
+          default_scenario_timezone: args.changes.defaultScenarioTimezone,
+        }),
+        ...(args.changes.sanctionLimit && {
+          sanctions_limit: args.changes.sanctionLimit,
+        }),
+        ...(args.changes.sanctionThreshold && {
+          sanctions_threshold: args.changes.sanctionThreshold,
+        }),
+        ...(args.changes.autoAssignQueueLimit && {
+          auto_assign_queue_limit: args.changes.autoAssignQueueLimit,
+        }),
       });
 
       return adaptOrganizationDto(organization);

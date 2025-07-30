@@ -1,3 +1,4 @@
+import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
 import { LanguagePicker } from '@app-builder/routes/ressources+/user+/language';
 import { segment } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
@@ -7,6 +8,7 @@ import { Form } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Tag } from 'ui-design-system';
 import { Icon, Logo } from 'ui-icons';
+import { UserAvailabilityStatus } from './Settings/UserAvailabilityStatus';
 
 interface UserInfoProps {
   email?: string;
@@ -14,36 +16,57 @@ interface UserInfoProps {
   lastName?: string;
   role: string;
   orgOrPartnerName: string;
+  isAutoAssignmentAvailable: boolean;
 }
 
-export function UserInfo({ email, firstName, lastName, role, orgOrPartnerName }: UserInfoProps) {
+export function UserInfo({
+  email,
+  firstName,
+  lastName,
+  role,
+  orgOrPartnerName,
+  isAutoAssignmentAvailable = false,
+}: UserInfoProps) {
   const { t } = useTranslation(['common']);
   const fullName = getFullName({ firstName, lastName });
+  const { query: unavailabilityQuery } = useUnavailabilitySettings();
+
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <button className="hover:bg-grey-95 active:bg-grey-90 group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
-          <div className="inline-flex items-center gap-5">
-            <Logo
-              logo="logo"
-              aria-labelledby="marble logo"
-              className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12"
+        <div className="relative">
+          <button className="hover:bg-grey-95 active:bg-grey-90 group flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md p-2">
+            <div className="inline-flex items-center gap-5">
+              <Logo
+                logo="logo"
+                aria-labelledby="marble logo"
+                className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12"
+              />
+              {isAutoAssignmentAvailable &&
+              unavailabilityQuery.isSuccess &&
+              unavailabilityQuery.data.until !== null ? (
+                <div className="absolute top-1 left-1 flex h-3 w-3">
+                  <span className="animate-[ping_1s_ease-in-out_4s] absolute inline-flex h-full w-full rounded-full bg-red-47 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-47"></span>
+                </div>
+              ) : null}
+              <Logo
+                logo="marble"
+                aria-labelledby="marble"
+                className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
+              />
+            </div>
+
+            <Icon
+              icon="arrow-2-down"
+              className="group-radix-state-open:rotate-180 size-6 shrink-0 opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
             />
-            <Logo
-              logo="marble"
-              aria-labelledby="marble"
-              className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
-            />
-          </div>
-          <Icon
-            icon="arrow-2-down"
-            className="group-radix-state-open:rotate-180 size-6 shrink-0 opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
-          />
-        </button>
+          </button>
+        </div>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
-          className="bg-grey-100 border-grey-90 animate-slideUpAndFade z-50 w-full max-w-xs rounded-md border border-solid p-6 drop-shadow-md will-change-auto"
+          className="bg-grey-100 border-grey-90 animate-slideUpAndFade z-50 w-full max-w-xs rounded-md border border-solid p-6 drop-shadow-md will-change-auto min-w-64"
           side="bottom"
           align="start"
           sideOffset={4}
@@ -64,7 +87,9 @@ export function UserInfo({ email, firstName, lastName, role, orgOrPartnerName }:
             <LanguagePicker />
           </div>
 
-          <div className="mt-6 flex flex-col items-center">
+          <div className="mt-6 flex flex-col items-center gap-10">
+            <UserAvailabilityStatus {...{ isAutoAssignmentAvailable }} />
+
             <Form action={getRoute('/ressources/auth/logout')} method="POST">
               <Button
                 variant="secondary"

@@ -7,10 +7,14 @@ import {
 } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
 import { DatasetFreshnessBanner } from '@app-builder/components/Sanctions/DatasetFresshnessBanner';
+import { UnavailableBanner } from '@app-builder/components/Settings/UnavailableBanner';
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleCoreUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
+import {
+  isAnalyticsAvailable,
+  isAutoAssignmentAvailable,
+} from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { OrganizationDetailsContextProvider } from '@app-builder/services/organization/organization-detail';
 import { OrganizationObjectTagsContextProvider } from '@app-builder/services/organization/organization-object-tags';
@@ -27,7 +31,6 @@ import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
-
 import { getSettings } from './settings+/_layout';
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -66,6 +69,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
         isAvailable: firstSettings !== undefined,
         ...(firstSettings !== undefined && { to: firstSettings.to }),
       },
+      isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
     },
     versions: appConfig.versions,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
@@ -117,7 +121,8 @@ export default function Builder() {
                           lastName={user.actorIdentity.lastName}
                           role={user.role}
                           orgOrPartnerName={organization.name}
-                        />
+                          isAutoAssignmentAvailable={featuresAccess.isAutoAssignmentAvailable}
+                        ></UserInfo>
                       </div>
                       <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
                         <ul className="flex flex-col gap-2">
@@ -252,6 +257,7 @@ export default function Builder() {
                     </LeftSidebar>
 
                     <Outlet />
+                    {featuresAccess.isAutoAssignmentAvailable ? <UnavailableBanner /> : null}
                   </LeftSidebarSharpFactory.Provider>
                 </div>
               </div>

@@ -3,7 +3,7 @@ import { type FeatureAccesses } from '@app-builder/models/feature-access';
 import { type Inbox } from '@app-builder/models/inbox';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 
-export const isAccessible = (featureAccess: FeatureAccessLevelDto) =>
+export const isAccessible = (featureAccess: FeatureAccessLevelDto): boolean =>
   featureAccess !== 'restricted' && featureAccess !== 'missing_configuration';
 
 export const isAnalyticsAvailable = ({ permissions }: CurrentUser, entitlements: FeatureAccesses) =>
@@ -139,3 +139,6 @@ export const isEditWebhookAvailable = ({ permissions }: CurrentUser) =>
 
 export const isDeleteWebhookAvailable = ({ permissions }: CurrentUser) =>
   permissions.canManageWebhooks;
+
+export const isAutoAssignmentAvailable = (entitlements: FeatureAccesses): boolean =>
+  isAccessible(entitlements.autoAssignment);

@@ -13,6 +13,7 @@ import {
 import { UserInfo } from '@app-builder/components/UserInfo';
 import { isMarbleAdmin, isTransferCheckUser } from '@app-builder/models';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
+import { isAutoAssignmentAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { segment, useSegmentIdentification } from '@app-builder/services/segment';
 import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
@@ -32,7 +33,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     authService,
     appConfigRepository: { getAppConfig },
   } = initServerServices(request);
-  const { user, partnerRepository } = await authService.isAuthenticated(request, {
+  const { entitlements, user, partnerRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -47,6 +48,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const partner = await partnerRepository.getPartner(user.partnerId);
 
   return {
+    entitlements,
     user,
     partner,
     versions: (await getAppConfig()).versions,
@@ -59,7 +61,7 @@ export const handle = {
 };
 
 export default function Builder() {
-  const { user, partner, versions, isMenuExpanded } = useLoaderData<typeof loader>();
+  const { entitlements, user, partner, versions, isMenuExpanded } = useLoaderData<typeof loader>();
   useSegmentIdentification(user);
   const leftSidebarSharp = LeftSidebarSharpFactory.createSharp(isMenuExpanded);
 
@@ -80,6 +82,7 @@ export default function Builder() {
               lastName={user.actorIdentity.lastName}
               role={user.role}
               orgOrPartnerName={partner.name}
+              isAutoAssignmentAvailable={isAutoAssignmentAvailable(entitlements)}
             />
           </div>
           <nav className="flex flex-1 flex-col overflow-y-auto p-2">
