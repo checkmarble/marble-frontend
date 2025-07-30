@@ -598,7 +598,7 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
-/cases/files/${caseFileId}/download_link:
+/cases/files/{caseFileId}/download_link:
   get:
     tags:
       - Cases
@@ -760,6 +760,32 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/cases/{caseId}/data_for_investigation:
+  get:
+    tags:
+      - Cases
+    summary: Download a case data for investigation
+    operationId: downloadCaseData
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: The data of the case
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      '401':
+        $ref: 'components.yml#/responses/401'
 
 components:
   schemas:

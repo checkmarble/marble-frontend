@@ -5,20 +5,18 @@ import {
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
 import { LoadingIcon } from '@app-builder/components/Spinner';
+import { useUploadListDataFile } from '@app-builder/queries/upload-list-data';
 import { DeleteList } from '@app-builder/routes/ressources+/lists+/delete';
 import { EditList } from '@app-builder/routes/ressources+/lists+/edit';
 import { NewListValue } from '@app-builder/routes/ressources+/lists+/value_create';
 import { DeleteListValue } from '@app-builder/routes/ressources+/lists+/value_delete';
-import { useBackendInfo } from '@app-builder/services/auth/auth.client';
 import {
   isCreateListValueAvailable,
   isDeleteListAvailable,
   isDeleteListValueAvailable,
   isEditListAvailable,
 } from '@app-builder/services/feature-access';
-import { useClientServices } from '@app-builder/services/init.client';
 import { initServerServices } from '@app-builder/services/init.server';
-import { downloadFile } from '@app-builder/utils/download-file';
 import useAsync from '@app-builder/utils/hooks/use-async';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
@@ -26,7 +24,7 @@ import { parseIdParamSafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData, useRevalidator, useRouteError } from '@remix-run/react';
+import { Link, useLoaderData, useRevalidator, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import {
   createColumnHelper,
@@ -41,9 +39,9 @@ import { useDropzone } from 'react-dropzone-esm';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
-import { Button, type ButtonProps, Input, ModalV2, Table, useVirtualTable } from 'ui-design-system';
+import { Button, CtaClassName, Input, ModalV2, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import * as z from 'zod';
+import { z } from 'zod';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
@@ -200,86 +198,21 @@ export function ErrorBoundary() {
   return <ErrorComponent error={error} />;
 }
 
-const DownloadAsCSVButton = React.forwardRef<
-  HTMLButtonElement,
-  Omit<ButtonProps, 'children'> & { loading?: boolean }
->(function DownloadAsCSVButton({ className, loading, ...props }, ref) {
+function DownloadAsCSV({ listId }: { listId: string }) {
   const { t } = useTranslation(handle.i18n);
-  return (
-    <Button ref={ref} variant="secondary" className={clsx('w-fit', className)} {...props}>
-      <LoadingIcon icon="download" loading={loading ?? false} className="size-6" />
-      {t('lists:download_values_as_csv')}
-    </Button>
-  );
-});
-
-function ClientDownloadAsCSV({ listId }: { listId: string }) {
-  const { t } = useTranslation(handle.i18n);
-  const clientServices = useClientServices();
-
-  const { getAccessToken, backendUrl } = useBackendInfo(clientServices.authenticationClientService);
-
-  const [downloadCsv, { loading }] = useAsync(async (listId: string) => {
-    try {
-      const tokenResponse = await getAccessToken();
-      if (!tokenResponse.success) {
-        toast.error(t('common:errors.firebase_auth_error'));
-        return;
-      }
-      const response = await fetch(`${backendUrl}/custom-lists/${listId}/values`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${tokenResponse.accessToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        toast.error(t('common:errors.unknown'));
-        return;
-      }
-      const blob = await response.blob();
-      const contentDisposition = response.headers.get('Content-Disposition');
-      const filename = parseContentDisposition(contentDisposition);
-
-      const url = URL.createObjectURL(blob);
-      await downloadFile(url, filename);
-    } catch (_error) {
-      toast.error(t('common:errors.unknown'));
-    }
+  const downloadUrl = getRoute('/ressources/lists/download-csv-file/:listId', {
+    listId: fromUUIDtoSUUID(listId),
   });
 
   return (
-    <DownloadAsCSVButton
-      loading={loading}
-      onClick={() => {
-        void downloadCsv(listId);
-      }}
-    />
-  );
-}
-
-function parseContentDisposition(header: string | null) {
-  if (!header) {
-    return 'list-values.csv';
-  }
-  const filenameMatch = header.match(/filename\*=UTF-8''([^;]+)/i);
-  if (filenameMatch && filenameMatch[1]) {
-    return decodeURIComponent(filenameMatch[1]);
-  }
-  // Fallback to simple filename
-  const simpleMatch = header.match(/filename="?([^";\n]+)"?/i);
-  if (simpleMatch && simpleMatch[1]) {
-    return simpleMatch[1];
-  }
-
-  return 'list-values.csv';
-}
-
-function DownloadAsCSV({ listId }: { listId: string }) {
-  return (
-    <ClientOnly fallback={<DownloadAsCSVButton className="cursor-wait" disabled />}>
-      {() => <ClientDownloadAsCSV listId={listId} />}
-    </ClientOnly>
+    <Link
+      reloadDocument
+      to={downloadUrl}
+      className={CtaClassName({ variant: 'secondary', className: 'w-fit' })}
+    >
+      <Icon icon="download" className="size-6" />
+      {t('lists:download_values_as_csv')}
+    </Link>
   );
 }
 
@@ -364,10 +297,8 @@ function modalReducer(state: State, action: Actions): State {
 
 function ClientUploadAsCsv({ listId }: { listId: string }) {
   const { t } = useTranslation(handle.i18n);
-  const clientServices = useClientServices();
   const [modalState, dispatch] = React.useReducer(modalReducer, initialState);
-
-  const { getAccessToken, backendUrl } = useBackendInfo(clientServices.authenticationClientService);
+  const uploadListDataFile = useUploadListDataFile(listId);
 
   const revalidator = useRevalidator();
   const [onDrop, { loading }] = useAsync(async (acceptedFiles: File[]) => {
@@ -375,23 +306,13 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
     if (!file) {
       return;
     }
+
     try {
       const formData = new FormData();
       formData.append('file', file);
 
-      const tokenResponse = await getAccessToken();
-      if (!tokenResponse.success) {
-        toast.error(t('common:errors.firebase_auth_error'));
-        return;
-      }
+      const response = await uploadListDataFile.mutateAsync(formData);
 
-      const response = await fetch(`${backendUrl}/custom-lists/${listId}/values/batch`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${tokenResponse.accessToken}`,
-        },
-      });
       if (!response.ok) {
         if (response.status === REQUEST_TIMEOUT) {
           toast.error(t('lists:errors.request_timeout'));

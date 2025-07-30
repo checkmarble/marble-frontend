@@ -1,10 +1,9 @@
 import { Page, Paper } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type TableModel } from '@app-builder/models';
-import { useBackendInfo } from '@app-builder/services/auth/auth.client';
+import { useUploadIngestionData } from '@app-builder/queries/upload-ingestion-data';
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { isIngestDataAvailable } from '@app-builder/services/feature-access';
-import { useClientServices } from '@app-builder/services/init.client';
 import { initServerServices } from '@app-builder/services/init.server';
 import {
   formatDateTimeWithoutPresets,
@@ -61,7 +60,6 @@ type ModalContent = {
 
 const UploadForm = ({ objectType }: { objectType: string }) => {
   const { t } = useTranslation(handle.i18n);
-  const clientServices = useClientServices();
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<ModalContent>({
@@ -69,8 +67,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
     success: true,
   });
   const revalidator = useRevalidator();
-
-  const { getAccessToken, backendUrl } = useBackendInfo(clientServices.authenticationClientService);
+  const uploadIngestionData = useUploadIngestionData(objectType);
 
   const computeModalMessage = useCallback(
     ({
@@ -110,23 +107,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const tokenResponse = await getAccessToken();
-      if (!tokenResponse.success) {
-        setIsModalOpen(true);
-        computeModalMessage({
-          success: false,
-          errorMessage: t('common:errors.firebase_auth_error'),
-        });
-        return;
-      }
-
-      const response = await fetch(`${backendUrl}/ingestion/${objectType}/batch`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${tokenResponse.accessToken}`,
-        },
-      });
+      const response = await uploadIngestionData.mutateAsync(formData);
       if (!response.ok) {
         setIsModalOpen(true);
         let errorMessage: string | undefined;

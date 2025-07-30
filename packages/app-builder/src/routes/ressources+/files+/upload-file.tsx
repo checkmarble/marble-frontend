@@ -1,5 +1,3 @@
-import { useBackendInfo } from '@app-builder/services/auth/auth.client';
-import { useClientServices } from '@app-builder/services/init.client';
 import { useNavigation, useRevalidator } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import clsx from 'clsx';
@@ -18,7 +16,7 @@ export function UploadFile({
   uploadFileEndpoint,
   children,
 }: {
-  uploadFileEndpoint: string;
+  uploadFileEndpoint: UploadFileContentProps['uploadFileEndpoint'];
   children: React.ReactElement;
 }) {
   const [open, setOpen] = useState(false);
@@ -40,19 +38,15 @@ export function UploadFile({
   );
 }
 
-function UploadFileContent({
-  uploadFileEndpoint,
-  setOpen,
-}: {
-  uploadFileEndpoint: string;
+export type UploadFileContentProps = {
+  uploadFileEndpoint: (formData: FormData) => Promise<Response>;
   setOpen: (open: boolean) => void;
-}) {
+};
+
+function UploadFileContent({ uploadFileEndpoint, setOpen }: UploadFileContentProps) {
   const { t } = useTranslation(['common', 'cases']);
-  const clientServices = useClientServices();
   const [loading, setLoading] = useState(false);
   const revalidator = useRevalidator();
-
-  const { getAccessToken, backendUrl } = useBackendInfo(clientServices.authenticationClientService);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
@@ -81,24 +75,14 @@ function UploadFileContent({
     }
     try {
       setLoading(true);
-      const tokenResponse = await getAccessToken();
-      if (!tokenResponse.success) {
-        toast.error(t('common:errors.firebase_auth_error'));
-        return;
-      }
 
       const formData = new FormData();
       acceptedFiles.forEach((file) => {
         formData.append('file[]', file);
       });
 
-      const response = await fetch(`${backendUrl}${uploadFileEndpoint}`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${tokenResponse.accessToken}`,
-        },
-      });
+      const response = await uploadFileEndpoint(formData);
+
       if (!response.ok) {
         Sentry.captureException(await response.text());
         toast.error('An error occurred while trying to upload the file.');
