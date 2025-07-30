@@ -7,7 +7,6 @@ import { useMemo } from 'react';
 interface OrganizationDetailsContext {
   org: Organization;
   currentUser: CurrentUser;
-  // unavailabilityQuery: UseQueryResult<PersonalSettings, Error>;
 }
 
 const OrganizationDetailsContext =
@@ -22,8 +21,6 @@ export function OrganizationDetailsContextProvider({
   currentUser: CurrentUser;
   children: React.ReactNode;
 }) {
-  // const { query: unavailabilityQuery } = useUnavailabilitySettings();
-
   const value = useMemo(() => ({ org, currentUser }), [org, currentUser]);
   return (
     <OrganizationDetailsContext.Provider value={value}>
