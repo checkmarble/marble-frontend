@@ -148,7 +148,7 @@ export default function Settings() {
                           className="text-s bg-grey-100 text-grey-80 inline-flex w-full gap-2 p-2 font-medium first-letter:capitalize"
                         >
                           {t(`settings:${setting.title}`)}
-                          {entitlements.webhooks === 'restricted' ? (
+                          {entitlements.webhooks !== 'allowed' ? (
                             <Nudge content="" kind="restricted" className="size-5" />
                           ) : null}
                         </span>
