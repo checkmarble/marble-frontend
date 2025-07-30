@@ -89,6 +89,7 @@
   "tags.target.case": "Case",
   "tags.target.object": "Object",
   "tags.update_tag": "Update tag",
+  "unavailableBanner.caption": "You are currently set unavailable until the {{date}}.",
   "users": "Users",
   "users.delete_user": "Delete user",
   "users.delete_user.content": "You are about to delete this user. This action is irreversible, do you want to proceed ?",
