@@ -15,7 +15,7 @@ export function UnavailableBanner() {
   }
 
   return (
-    <div className="fixed bottom-0 start-0 flex justify-between w-full p-2 border-t bg-red-43 border-grey-90 shadow-sticky-top">
+    <div className="fixed z-10 bottom-0 start-0 flex justify-between w-full p-2 border-t bg-red-43 border-grey-90 shadow-sticky-top">
       <div className="flex items-center mx-auto">
         <p className="flex items-center text-md text-grey-100 dark:text-grey-50">
           <span className="inline-flex p-1 me-3 text-grey-100 rounded-full w-6 h-6 items-center justify-center">
