@@ -28,9 +28,9 @@ export function useDeleteConditionMutation() {
 
       return response.json();
     },
-    onSuccess: (_, { scenarioId }) => {
+    onSuccess: () => {
       // Invalidate and refetch the workflow rules
-      queryClient.invalidateQueries({ queryKey: ['workflow-rules', scenarioId] });
+      queryClient.invalidateQueries({ queryKey: ['workflow-rules'] });
     },
   });
 }

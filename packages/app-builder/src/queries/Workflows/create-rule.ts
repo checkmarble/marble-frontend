@@ -32,9 +32,9 @@ export function useCreateRuleMutation() {
 
       return response.json();
     },
-    onSuccess: (data, variables) => {
+    onSuccess: () => {
       // Invalidate and refetch the rules query
-      queryClient.invalidateQueries({ queryKey: ['workflow-rules', variables.scenarioId] });
+      queryClient.invalidateQueries({ queryKey: ['workflow-rules'] });
     },
   });
 }

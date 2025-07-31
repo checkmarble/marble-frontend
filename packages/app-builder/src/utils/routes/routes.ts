@@ -791,16 +791,20 @@ export const routes = [
         "file": "routes/ressources+/user+/language.tsx"
       },
       {
-        "id": "routes/ressources+/workflows+/$scenarioId/_index",
+        "id": "routes/ressources+/workflows+/$scenarioId+/_index",
+        "index": true,
         "path": "ressources/workflows/:scenarioId",
-        "file": "routes/ressources+/workflows+/$scenarioId/_index.tsx",
-        "children": [
-          {
-            "id": "routes/ressources+/workflows+/$scenarioId.reorder",
-            "path": "reorder",
-            "file": "routes/ressources+/workflows+/$scenarioId.reorder.tsx"
-          }
-        ]
+        "file": "routes/ressources+/workflows+/$scenarioId+/_index.tsx"
+      },
+      {
+        "id": "routes/ressources+/workflows+/$scenarioId+/reorder",
+        "path": "ressources/workflows/:scenarioId/reorder",
+        "file": "routes/ressources+/workflows+/$scenarioId+/reorder.tsx"
+      },
+      {
+        "id": "routes/ressources+/workflows+/$scenarioId.reorder",
+        "path": "ressources/workflows/:scenarioId/reorder",
+        "file": "routes/ressources+/workflows+/$scenarioId.reorder.tsx"
       },
       {
         "id": "routes/ressources+/workflows+/inboxes",

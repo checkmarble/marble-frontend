@@ -1284,6 +1284,10 @@ export type CreateWorkflowRuleDto = {
     name: string;
     fallthrough: boolean;
 };
+export type WorkflowRuleDetailDto = WorkflowRuleDto & {
+    conditions: WorkflowConditionDto[];
+    actions: WorkflowActionDto[];
+};
 export type PersonalSettingsUnavailableDto = {
     until: string;
 };
@@ -4452,6 +4456,23 @@ export function createWorkflowRule(createWorkflowRuleDto?: CreateWorkflowRuleDto
         method: "POST",
         body: createWorkflowRuleDto
     })));
+}
+/**
+ * Get a workflow rule
+ */
+export function getWorkflowRule(ruleId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: WorkflowRuleDetailDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/workflows/rule/${encodeURIComponent(ruleId)}`, {
+        ...opts
+    }));
 }
 /**
  * Update a workflow rule

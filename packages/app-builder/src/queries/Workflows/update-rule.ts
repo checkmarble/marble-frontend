@@ -3,15 +3,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UpdateRuleInput {
   ruleId: string;
-  scenarioId: string;
   rule: Rule;
+  scenarioId: string;
 }
 
 export function useUpdateRuleMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ ruleId, scenarioId, rule }: UpdateRuleInput): Promise<Rule> => {
+    mutationFn: async ({ ruleId, rule, scenarioId }: UpdateRuleInput): Promise<Rule> => {
       const response = await fetch(`/ressources/workflows/rule/${ruleId}`, {
         method: 'PUT',
         headers: {
@@ -26,10 +26,10 @@ export function useUpdateRuleMutation() {
 
       return response.json();
     },
-    onSuccess: (updatedRule, { scenarioId }) => {
+    onSuccess: () => {
       // Invalidate and refetch the workflow rules
       queryClient.invalidateQueries({
-        queryKey: ['workflow-rules', scenarioId],
+        queryKey: ['workflow-rules'],
       });
     },
   });

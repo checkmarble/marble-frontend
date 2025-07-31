@@ -24,10 +24,10 @@ export function useRenameRuleMutation() {
         throw new Error('Failed to rename rule');
       }
     },
-    onSuccess: (_, { scenarioId }) => {
+    onSuccess: () => {
       // Invalidate and refetch workflow rules after successful rename
       queryClient.invalidateQueries({
-        queryKey: ['workflow-rules', scenarioId],
+        queryKey: ['workflow-rules'],
       });
     },
   });

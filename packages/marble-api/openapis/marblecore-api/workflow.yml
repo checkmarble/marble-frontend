@@ -88,6 +88,32 @@
         $ref: "components.yml#/responses/403"
 
 /workflows/rule/{ruleId}:
+  get:
+    tags:
+      - Workflows
+    summary: Get a workflow rule
+    operationId: getWorkflowRule
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ruleId
+        description: Workflow rule to get
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      "200":
+        description: The workflow rule that was retrieved
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowRuleDetailDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
   put:
     tags:
       - Workflows
@@ -382,6 +408,20 @@ components:
           type: string
         fallthrough:
           type: boolean
+
+    WorkflowRuleDetailDto:
+      allOf:
+        - $ref: "#/components/schemas/WorkflowRuleDto"
+        - type: object
+          properties:
+            conditions:
+              type: array
+              items:
+                $ref: "#/components/schemas/WorkflowConditionDto"
+            actions:
+              type: array
+              items:
+                $ref: "#/components/schemas/WorkflowActionDto"
 
     CreateWorkflowRuleDto:
       type: object

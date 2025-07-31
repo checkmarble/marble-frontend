@@ -83,6 +83,7 @@ export interface ScenarioRepository {
   getScenarioIterationActiveSnoozes(scenarioIterationId: string): Promise<SnoozesOfIteration>;
   scheduleScenarioExecution(args: { iterationId: string }): Promise<void>;
   listWorkflowRules(args: { scenarioId: string }): Promise<Rule[]>;
+  getWorkflowRule(args: { ruleId: string }): Promise<Rule>;
   createWorkflowRule(args: {
     scenarioId: string;
     name: string;
@@ -239,6 +240,11 @@ export function makeGetScenarioRepository() {
     listWorkflowRules: async ({ scenarioId }): Promise<Rule[]> => {
       const workflows = await marbleCoreApiClient.listWorkflows(scenarioId);
       return adaptWorkflow(workflows);
+    },
+    getWorkflowRule: async ({ ruleId }) => {
+      const rule = await marbleCoreApiClient.getWorkflowRule(ruleId);
+      console.log(rule);
+      return adaptWorkflowRule(rule);
     },
     createWorkflowRule: async ({ scenarioId, name, fallthrough }) => {
       const rule = await marbleCoreApiClient.createWorkflowRule({

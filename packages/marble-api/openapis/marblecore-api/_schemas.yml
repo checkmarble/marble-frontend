@@ -413,6 +413,8 @@ TestRunCreateInputDto:
 
 WorkflowRuleDto:
   $ref: workflow.yml#/components/schemas/WorkflowRuleDto
+WorkflowRuleDetailDto:
+  $ref: workflow.yml#/components/schemas/WorkflowRuleDetailDto
 CreateWorkflowRuleDto:
   $ref: workflow.yml#/components/schemas/CreateWorkflowRuleDto
 WorkflowConditionDto:

@@ -7,6 +7,7 @@ import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ActionSelector } from './ActionSelector';
 import { ConditionSelector } from './ConditionSelector';
+import { useRule } from './RuleProvider';
 import { useWorkflow } from './WorkflowProvider';
 
 interface RuleProps {
@@ -20,28 +21,27 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
   const [editingRuleId, setEditingRuleId] = useState<string | null>(null);
   const [editingRuleName, setEditingRuleName] = useState<string>('');
 
+  console.log('rule', rule);
   const {
-    dataModel,
-    triggerObjectType,
-    isRuleModified,
-    hasRuleValidationErrors,
-    isConditionMarkedForDeletion,
+    rule: currentRule,
+    isModified,
+    updateRuleName,
     addCondition,
     updateCondition,
     updateAction,
     deleteCondition,
-    updateRuleName,
-    deleteRule,
-    cancelRuleChanges,
-    confirmRule,
-    getRuleValidationErrors,
-  } = useWorkflow();
+    saveRule,
+    cancelChanges,
+    hasValidationErrors,
+  } = useRule();
 
-  const isModified = isRuleModified(rule.id);
-  const hasValidationErrors = hasRuleValidationErrors(rule.id);
+  const { deleteRule, dataModel, triggerObjectType } = useWorkflow();
 
-  // get the rule validation errors
-  const ruleValidationErrors = getRuleValidationErrors(rule.id);
+  const isRuleModified = isModified;
+  const hasValidationErrorsForRule = hasValidationErrors();
+
+  // Use the current rule from context, fallback to prop if not available
+  const displayRule = currentRule || rule;
 
   const handleRenameClick = (event: React.MouseEvent, ruleId: string, currentName: string) => {
     event.stopPropagation();
@@ -50,8 +50,8 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
   };
 
   const handleNameChange = (newName: string) => {
-    if (newName.trim() !== rule.name) {
-      updateRuleName(rule.id, newName.trim());
+    if (newName.trim() !== displayRule.name) {
+      updateRuleName(newName.trim());
     }
   };
 
@@ -76,7 +76,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
       <div
         className={`w-full max-w-7xl mx-auto relative transition-all duration-200 ${
           snapshot.isDragging ? 'rotate-1 scale-105 z-50' : ''
-        } ${isModified ? 'drop-shadow-2xl' : ''}`}
+        } ${isRuleModified ? 'drop-shadow-2xl' : ''}`}
       >
         {/* Conditions and Actions Boxes */}
         <div className="flex items-center w-full">
@@ -86,13 +86,13 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
               className={` text-grey-00 font-semibold px-4 py-2 rounded-t-lg border-2 border-b-0 w-auto bg-purple-98 flex items-center justify-between ${
                 snapshot.isDragging
                   ? 'border-purple-60'
-                  : isModified
+                  : isRuleModified
                     ? 'border-purple-60 shadow-lg ring-2 ring-blue-200'
                     : 'border-grey-90'
               }`}
               style={{ marginBottom: 0 }}
             >
-              {editingRuleId === rule.id ? (
+              {editingRuleId === displayRule.id ? (
                 <input
                   type="text"
                   value={editingRuleName}
@@ -100,7 +100,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                     const newValue = e.target.value;
                     setEditingRuleName(newValue);
                     // Trigger modification state on first keystroke
-                    if (newValue.trim() !== rule.name) {
+                    if (newValue.trim() !== displayRule.name) {
                       handleNameChange(newValue.trim());
                     }
                   }}
@@ -123,17 +123,17 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
               ) : (
                 <span
                   className="cursor-text hover:bg-white hover:bg-opacity-20 px-1 py-0.5 rounded transition-colors"
-                  onClick={(event) => handleRenameClick(event, rule.id, rule.name)}
+                  onClick={(event) => handleRenameClick(event, displayRule.id, displayRule.name)}
                 >
-                  {rule.name}
+                  {displayRule.name}
                 </span>
               )}
               <div className="flex items-center gap-2">
                 <Button
                   variant="secondary"
                   size="small"
-                  onClick={(event) => handleRenameClick(event, rule.id, rule.name)}
-                  disabled={editingRuleId === rule.id}
+                  onClick={(event) => handleRenameClick(event, displayRule.id, displayRule.name)}
+                  disabled={editingRuleId === displayRule.id}
                 >
                   <Icon icon="edit" className="size-5" />
                   {t('common:rename')}
@@ -141,7 +141,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                 <Button
                   variant="secondary"
                   size="small"
-                  onClick={() => deleteRule(rule.id, rule.name)}
+                  onClick={() => deleteRule(displayRule.id, displayRule.name)}
                   className="flex items-center hover:bg-red-200 text-red-600 hover:text-red-700 transition-colors duration-200"
                 >
                   <Icon icon="delete" className="size-5" />
@@ -153,7 +153,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
               className={`rounded-b-lg border-2 border-t-0 border-grey-90 bg-white p-4 transition-all duration-200 relative ${
                 snapshot.isDragging
                   ? 'border-purple-60 shadow-xl'
-                  : isModified
+                  : isRuleModified
                     ? 'border-purple-60 shadow-xl'
                     : 'border-grey-20'
               }`}
@@ -168,49 +168,42 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                 <Icon icon="drag" className="size-3 text-white" />
               </div>
               <div className="bg-grey-05 rounded-md p-4 overflow-x-auto">
-                {rule.conditions?.length > 0 ? (
+                {displayRule.conditions?.length > 0 ? (
                   <div className="flex flex-col gap-2 relative whitespace-nowrap">
-                    {rule.conditions
-                      .filter((c) => !isConditionMarkedForDeletion(rule.id, c.id))
-                      .map((condition, conditionIndex: number) => {
-                        // Calculate the visual index for non-deleted conditions to show proper "IF"/"AND" labels
-                        const visibleConditionIndex = rule.conditions
-                          .slice(0, conditionIndex)
-                          .filter((c) => !isConditionMarkedForDeletion(rule.id, c.id)).length;
-
-                        return (
-                          <div
-                            key={condition.id || conditionIndex}
-                            className="flex items-center relative transition-all duration-200"
-                          >
-                            {/* Vertical line connecting conditions */}
-                            {visibleConditionIndex > 0 && (
-                              <div className="absolute left-8 top-0 w-0.5 h-8 bg-grey-30 -translate-y-4"></div>
-                            )}
-                            <div className="flex items-center gap-2 flex-1">
-                              <div>
-                                <ConditionSelector
-                                  condition={condition}
-                                  isFirst={visibleConditionIndex === 0}
-                                  triggerObjectType={triggerObjectType}
-                                  dataModel={dataModel}
-                                  onChange={(updatedCondition) => {
-                                    updateCondition(rule.id, condition.id, updatedCondition);
-                                  }}
-                                />
-                              </div>
-                              <Button
-                                variant="secondary"
-                                type="button"
-                                onClick={() => deleteCondition(rule.id, condition.id)}
-                                className="flex items-center justify-center transition-colors duration-200 hover:bg-red-200 text-red-600 hover:text-red-700"
-                              >
-                                <Icon icon="delete" className="size-4" />
-                              </Button>
+                    {displayRule.conditions.map((condition, conditionIndex: number) => {
+                      return (
+                        <div
+                          key={condition.id || conditionIndex}
+                          className="flex items-center relative transition-all duration-200"
+                        >
+                          {/* Vertical line connecting conditions */}
+                          {conditionIndex > 0 && (
+                            <div className="absolute left-8 top-0 w-0.5 h-8 bg-grey-30 -translate-y-4"></div>
+                          )}
+                          <div className="flex items-center gap-2 flex-1">
+                            <div>
+                              <ConditionSelector
+                                condition={condition}
+                                isFirst={conditionIndex === 0}
+                                triggerObjectType={triggerObjectType}
+                                dataModel={dataModel}
+                                onChange={(updatedCondition) => {
+                                  updateCondition(condition.id, updatedCondition);
+                                }}
+                              />
                             </div>
+                            <Button
+                              variant="secondary"
+                              type="button"
+                              onClick={() => deleteCondition(condition.id)}
+                              className="flex items-center justify-center transition-colors duration-200 hover:bg-red-200 text-red-600 hover:text-red-700"
+                            >
+                              <Icon icon="delete" className="size-4" />
+                            </Button>
                           </div>
-                        );
-                      })}
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <Callout variant="outlined">
@@ -221,9 +214,9 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   <ConditionSelector
                     triggerObjectType={triggerObjectType}
                     dataModel={dataModel}
-                    onChange={(newCondition) => addCondition(rule.id, newCondition)}
+                    onChange={(newCondition) => addCondition(newCondition)}
                   />
-                  <div className="flex flex-col items-center gap-2">
+                  {/* <div className="flex flex-col items-center gap-2">
                     {ruleValidationErrors.length > 0 && (
                       <div className="text-red-47 text-sm">
                         {ruleValidationErrors.map((error) => (
@@ -231,18 +224,18 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                         ))}
                       </div>
                     )}
-                  </div>
-                  {isModified && (
+                  </div> */}
+                  {isRuleModified && (
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-2">
-                        <Button variant="secondary" onClick={() => cancelRuleChanges(rule.id)}>
+                        <Button variant="secondary" onClick={() => cancelChanges()}>
                           <Icon icon="arrow-left" className="size-4" />
                           {t('common:cancel')}
                         </Button>
                         <Button
                           variant="primary"
-                          onClick={() => confirmRule(rule.id)}
-                          disabled={hasValidationErrors}
+                          onClick={() => saveRule()}
+                          disabled={hasValidationErrorsForRule}
                         >
                           <Icon icon="checked" className="size-4" />
                           {t('common:validate')}
@@ -272,15 +265,15 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
             className={`flex-none rounded-lg border-2 border-grey-90 bg-white p-4 transition-all duration-200 w-[400px] bg-grey-100 ${
               snapshot.isDragging
                 ? 'border-purple-60 shadow-xl'
-                : isModified
+                : isRuleModified
                   ? 'border-purple-60 shadow-xl ring-2 ring-blue-200'
                   : 'border-grey-20'
             }`}
           >
             <div className="bg-grey-05 rounded-md">
               <ActionSelector
-                action={rule.actions?.[0]}
-                onChange={(action) => updateAction(rule.id, action)}
+                action={displayRule.actions?.[0]}
+                onChange={(action) => updateAction(action)}
               />
             </div>
           </div>
