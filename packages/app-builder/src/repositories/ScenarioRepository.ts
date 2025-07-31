@@ -104,6 +104,11 @@ export interface ScenarioRepository {
   deleteWorkflowRule(args: { ruleId: string }): Promise<void>;
   createWorkflowAction(args: { ruleId: string; action: WorkflowAction }): Promise<WorkflowAction>;
   deleteWorkflowAction(args: { ruleId: string; actionId: string }): Promise<void>;
+  updateWorkflowAction(args: {
+    ruleId: string;
+    actionId: string;
+    action: WorkflowAction;
+  }): Promise<WorkflowAction>;
 }
 
 export function makeGetScenarioRepository() {
@@ -294,6 +299,14 @@ export function makeGetScenarioRepository() {
     },
     deleteWorkflowAction: async ({ ruleId, actionId }) => {
       await marbleCoreApiClient.deleteWorkflowAction(ruleId, actionId);
+    },
+    updateWorkflowAction: async ({ ruleId, actionId, action }) => {
+      const updatedAction = await marbleCoreApiClient.updateWorkflowAction(
+        ruleId,
+        actionId,
+        transformWorkflowAction(action),
+      );
+      return adaptWorkflowAction(updatedAction);
     },
   });
 }
