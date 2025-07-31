@@ -197,11 +197,7 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
     }
 
     try {
-      await updateRuleMutation.mutateAsync({
-        ruleId: localRule.id,
-        rule: localRule,
-        scenarioId: scenarioId,
-      });
+      await updateRuleMutation.mutateAsync(localRule);
 
       setIsModified(false);
       toast.success('Rule saved successfully');
