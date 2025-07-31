@@ -21,10 +21,10 @@ export function useDeleteRuleMutation() {
         throw new Error('Failed to delete rule');
       }
     },
-    onSuccess: (_, { scenarioId }) => {
+    onSuccess: () => {
       // Invalidate and refetch workflow rules after successful deletion
       queryClient.invalidateQueries({
-        queryKey: ['workflow-rules', scenarioId],
+        queryKey: ['workflow-rules'],
       });
     },
   });
