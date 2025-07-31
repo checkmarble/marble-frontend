@@ -425,12 +425,28 @@ export type PivotObjectDto = {
 export type NextCaseIdDto = {
     id: string;
 };
+export type CaseReviewProofDto = {
+    /** The id of the object (could be the object_id if organization data model object) */
+    id: string;
+    /** The type of the object (case, decision, account, transaction, etc.) */
+    "type": string;
+    /** Whether the object is a organization data model object or not (Marble internal object) */
+    is_data_model: boolean;
+    /** The reason why the object was used to justify the review */
+    reason: string;
+};
 export type CaseReviewOkDto = {
     ok: true;
+    output: string;
+    /** The list of objects used to justify the review */
+    proofs: CaseReviewProofDto[];
 };
 export type CaseReviewNotOkDto = {
     ok: false;
     sanity_check: string;
+    output: string;
+    /** The list of objects used to justify the review */
+    proofs: CaseReviewProofDto[];
 };
 export type CaseReviewDto = {
     output: string;
