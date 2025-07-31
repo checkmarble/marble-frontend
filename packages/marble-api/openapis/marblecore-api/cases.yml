@@ -1434,6 +1434,21 @@ components:
           - $ref: '#/components/schemas/CaseReviewOkDto'
           - $ref: '#/components/schemas/CaseReviewNotOkDto'
 
+    CaseReviewProof:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The id of the object (could be the object_id if organization data model object)
+        type:
+          type: string
+          description: The type of the object (case, decision, account, transaction, etc.)
+        is_data_model:
+          type: boolean
+          description: Whether the object is a organization data model object or not (Marble internal object)
+        reason:
+          type: string
+          description: The reason why the object was used to justify the review
     CaseReviewOkDto:
       type: object
       required:
@@ -1442,6 +1457,12 @@ components:
         ok:
           type: boolean
           enum: [true]
+        output: string
+        proofs:
+          type: array
+          description: The list of objects used to justify the review
+          items:
+            $ref: '#/components/schemas/CaseReviewProof'
     CaseReviewNotOkDto:
       type: object
       required:
@@ -1453,3 +1474,9 @@ components:
           enum: [false]
         sanity_check:
           type: string
+        output: string
+        proofs:
+          type: array
+          description: The list of objects used to justify the review
+          items:
+            $ref: '#/components/schemas/CaseReviewProof'
