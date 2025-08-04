@@ -1,8 +1,11 @@
 import { type ClientObjectDetail } from '@app-builder/models';
-import { type PivotObject } from '@app-builder/models/cases';
 
 export type DataModelExplorerNavigationTab = {
-  pivotObject: PivotObject;
+  pivotObject: {
+    pivotValue: string;
+    pivotObjectName: string;
+    isIngested: boolean;
+  };
   sourceObject: ClientObjectDetail['data'];
   sourceTableName: string;
   sourceFieldName: string;
