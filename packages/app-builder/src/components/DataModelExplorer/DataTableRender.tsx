@@ -7,7 +7,6 @@ import {
   type NavigationOption,
   type TableModelWithOptions,
 } from '@app-builder/models';
-import { type PivotObject } from '@app-builder/models/cases';
 import { useClientObjectListQuery } from '@app-builder/queries/client-object-list';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
@@ -81,7 +80,7 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
             <span className="text-s font-semibold">{item.pivotObject.pivotObjectName}</span>
             <ClientObjectDataList
               tableModel={pivotTableModel}
-              data={item.pivotObject.pivotObjectData.data}
+              data={item.sourceObject}
               isIncompleteObject={!item.pivotObject.isIngested}
             />
           </div>
@@ -174,7 +173,7 @@ function getHeaderStyle(fieldStatistic: FieldStatistics | undefined) {
 
 type DataTableProps = {
   caseId: string;
-  pivotObject: PivotObject;
+  pivotObject: DataModelExplorerNavigationTab['pivotObject'];
   table: TableModelWithOptions;
   list: ClientDataListResponse['data'];
   pagination: ReactElement;
@@ -383,7 +382,7 @@ function DataTable({
 type DataTableActionsButtonProps = {
   caseId: string;
   navigationOptions: NavigationOption[] | undefined;
-  pivotObject: PivotObject;
+  pivotObject: DataModelExplorerNavigationTab['pivotObject'];
   sourceObject: ClientObjectDetail;
   tableName: string;
   navigateTo: (tab: DataModelExplorerNavigationTab) => void;

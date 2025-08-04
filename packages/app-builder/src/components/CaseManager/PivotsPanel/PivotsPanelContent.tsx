@@ -1,7 +1,9 @@
 import { CaseStatusBadge } from '@app-builder/components/Cases';
 import { ClientObjectDataList } from '@app-builder/components/DataModelExplorer/ClientObjectDataList';
+import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
 import {
   type CurrentUser,
+  DataModelObject,
   type DataModelWithTableOptions,
   isAdmin,
   type TableModelWithOptions,
@@ -16,8 +18,8 @@ import { cva } from 'class-variance-authority';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { CtaClassName } from 'ui-design-system';
-
+import { Button, CtaClassName } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { DataCard } from './DataCard';
 import { PivotAnnotations } from './PivotAnnotations';
 import { PivotNavigationOptions } from './PivotNavigationOptions';
@@ -32,17 +34,20 @@ export function PivotsPanelContent({
   currentUser,
   case: caseObj,
   pivotObjects,
+  reviewProofs,
   dataModel,
   onExplore,
 }: {
   currentUser: CurrentUser;
   case: CaseDetail;
   pivotObjects: PivotObject[];
+  reviewProofs: { type: string; object: DataModelObject }[];
   dataModel: DataModelWithTableOptions;
   onExplore: () => void;
 }) {
   const { t } = useTranslation(['cases']);
 
+  const [isDisplayingProofs, setIsDisplayingProofs] = useState(false);
   const [currentPivotUniqKey, setCurrentPivotObjectUniqKey] = useState(
     pivotUniqKey(pivotObjects[0]),
   );
@@ -59,6 +64,7 @@ export function PivotsPanelContent({
     (pivotValue) =>
       !pivotObjects.find((pivotObject) => pivotObject.pivotValue === pivotValue.value),
   );
+  const dataModelExplorerContext = DataModelExplorerContext.useValue();
 
   return (
     <div className="flex flex-col gap-8">
@@ -79,8 +85,16 @@ export function PivotsPanelContent({
           ) : null}
         </div>
       ) : null}
-      {pivotObjects.length > 1 ? (
-        <div className="border-grey-90 mt-4 flex h-12 gap-2 self-start rounded-lg border p-1">
+      <div className="flex items-center gap-2 mt-4">
+        {reviewProofs.length > 0 ? (
+          <button
+            onClick={() => setIsDisplayingProofs(true)}
+            className="bg-purple-96 text-purple-65 h-7 px-4 rounded-lg flex items-center"
+          >
+            {t('cases:ai_review.proof.title')}
+          </button>
+        ) : null}
+        <div className="border-grey-90 flex h-12 gap-2 self-start rounded-lg border p-1">
           {pivotObjects.map((pivotObject, idx) => {
             const uniqKey = pivotUniqKey(pivotObject);
             return (
@@ -88,45 +102,118 @@ export function PivotsPanelContent({
                 key={uniqKey}
                 className="text-grey-50 aria-[current=true]:bg-purple-96 aria-[current=true]:text-purple-65 rounded p-1 px-4"
                 aria-current={uniqKey === pivotUniqKey(currentPivotObject)}
-                onClick={() => setCurrentPivotObjectUniqKey(pivotUniqKey(pivotObject))}
+                onClick={() => {
+                  setCurrentPivotObjectUniqKey(pivotUniqKey(pivotObject));
+                  setIsDisplayingProofs(false);
+                }}
               >
                 {pivotObject.pivotObjectName} {idx + 1}
               </button>
             );
           })}
         </div>
-      ) : null}
-      {currentTable && currentPivotObject ? (
+      </div>
+      {!isDisplayingProofs ? (
         <>
-          <PivotObjectDetails
-            tableModel={currentTable}
-            dataModel={dataModel}
-            pivotObject={currentPivotObject}
-          />
-          <PivotNavigationOptions
-            currentUser={currentUser}
-            pivotObject={currentPivotObject}
-            table={currentTable}
-            dataModel={dataModel}
-            onExplore={onExplore}
-          />
-        </>
-      ) : null}
-      {currentPivotObject ? (
-        <>
-          {currentTable &&
-          currentPivotObject.pivotObjectId &&
-          currentPivotObject.pivotObjectData.metadata.canBeAnnotated ? (
-            <PivotAnnotations
-              caseId={caseObj.id}
-              tableName={currentTable.name}
-              objectId={currentPivotObject.pivotObjectId}
-              annotations={currentPivotObject.pivotObjectData.annotations}
-            />
+          {currentTable && currentPivotObject ? (
+            <>
+              <PivotObjectDetails
+                tableModel={currentTable}
+                dataModel={dataModel}
+                pivotObject={currentPivotObject}
+              />
+              <PivotNavigationOptions
+                currentUser={currentUser}
+                pivotObject={currentPivotObject}
+                table={currentTable}
+                dataModel={dataModel}
+                onExplore={onExplore}
+              />
+            </>
           ) : null}
-          <RelatedCases pivotValue={currentPivotObject.pivotValue} currentCase={caseObj} />
+          {currentPivotObject ? (
+            <>
+              {currentTable &&
+              currentPivotObject.pivotObjectId &&
+              currentPivotObject.pivotObjectData.metadata.canBeAnnotated ? (
+                <PivotAnnotations
+                  caseId={caseObj.id}
+                  tableName={currentTable.name}
+                  objectId={currentPivotObject.pivotObjectId}
+                  annotations={currentPivotObject.pivotObjectData.annotations}
+                />
+              ) : null}
+              <RelatedCases pivotValue={currentPivotObject.pivotValue} currentCase={caseObj} />
+            </>
+          ) : null}
         </>
-      ) : null}
+      ) : (
+        <>
+          {reviewProofs.map((proof, idx) => {
+            const tableModel = dataModel.find((t) => t.name === proof.type);
+            if (!tableModel) return null;
+
+            const navigationOptions = tableModel.navigationOptions;
+
+            return (
+              <div key={proof.type} className="rounded-xl border border-grey-90 bg-grey-98">
+                <div className="bg-grey-100 px-4 py-2 rounded-t-xl border-b border-grey-90">
+                  {t('cases:ai_review.proof.tab_title', { number: idx + 1 })}
+                </div>
+                <div className="p-4 flex flex-col gap-2">
+                  <ClientObjectDataList tableModel={tableModel} data={proof.object.data} />
+                  {navigationOptions ? (
+                    <>
+                      <div className="h-px bg-grey-90" />
+                      <div className="flex flex-col gap-2">
+                        {navigationOptions.map((navOption) => (
+                          <div
+                            key={navOption.targetTableName}
+                            className="grid grid-cols-[116px,_1fr] gap-x-3"
+                          >
+                            <div>{navOption.targetTableName}</div>
+                            <Button
+                              disabled={navOption.status === 'pending'}
+                              size="small"
+                              variant="secondary"
+                              onClick={() => {
+                                dataModelExplorerContext.startNavigation({
+                                  pivotObject: {
+                                    isIngested: true,
+                                    pivotValue: proof.object.data['object_id'] as string,
+                                    pivotObjectName: tableModel.name,
+                                  },
+                                  sourceObject: proof.object.data,
+                                  sourceTableName: tableModel.name,
+                                  sourceFieldName: navOption.sourceFieldName,
+                                  targetTableName: navOption.targetTableName,
+                                  filterFieldName: navOption.filterFieldName,
+                                  orderingFieldName: navOption.orderingFieldName,
+                                });
+                                onExplore();
+                              }}
+                              className="flex items-center gap-1"
+                            >
+                              {navOption.status === 'pending'
+                                ? t('cases:case_detail.pivot_panel.explore_waiting_creation')
+                                : t('cases:case_detail.pivot_panel.explore')}
+                              {navOption.status === 'pending' ? (
+                                <Icon icon="spinner" className="size-4 animate-spin" />
+                              ) : (
+                                <Icon icon="arrow-up-right" className="size-4" />
+                              )}
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+            );
+          })}
+        </>
+      )}
     </div>
   );
 }

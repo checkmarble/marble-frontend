@@ -1,7 +1,11 @@
 import { DataModelExplorer } from '@app-builder/components/DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { type CurrentUser, type DataModelWithTableOptions } from '@app-builder/models';
+import {
+  type CurrentUser,
+  DataModelObject,
+  type DataModelWithTableOptions,
+} from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
@@ -15,6 +19,7 @@ type PivotsPanelProps = {
   case: CaseDetail;
   pivotObjects: PivotObject[];
   dataModel: DataModelWithTableOptions;
+  reviewProofs: { type: string; object: DataModelObject }[];
 };
 
 export function PivotsPanel(props: PivotsPanelProps) {
@@ -63,6 +68,7 @@ export function PivotsPanel(props: PivotsPanelProps) {
             currentUser={props.currentUser}
             case={props.case}
             pivotObjects={props.pivotObjects}
+            reviewProofs={props.reviewProofs}
             dataModel={props.dataModel}
             onExplore={() => {
               drawerContext.setExpanded(true);

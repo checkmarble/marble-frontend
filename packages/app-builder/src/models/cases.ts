@@ -7,6 +7,7 @@ import {
   type CaseEventDto,
   type CaseFileDto,
   CaseReviewDto,
+  CaseReviewProofDto,
   type CaseStatusDto,
   type CaseStatusForCaseEventDto,
   type CaseTagDto,
@@ -572,13 +573,38 @@ export function adaptPivotObject(dto: PivotObjectDto): PivotObject {
   };
 }
 
+export type CaseReviewProof = {
+  id: string;
+  type: string;
+  isDataModel: boolean;
+  reason: string;
+};
+
 export type CaseReview = {
+  id: string;
   output: string;
   thought?: string;
+  proofs: CaseReviewProof[];
+  reaction: 'ok' | 'ko' | null;
 } & ({ ok: true; sanityCheck?: undefined } | { ok: false; sanityCheck: string });
 
+export function adaptCaseReviewProof(dto: CaseReviewProofDto): CaseReviewProof {
+  return {
+    id: dto.id,
+    type: dto.type,
+    isDataModel: dto.is_data_model,
+    reason: dto.reason,
+  };
+}
+
 export function adaptCaseReview(dto: CaseReviewDto): CaseReview {
-  const baseCaseReview = { output: dto.output, thought: dto.thought } as const;
+  const baseCaseReview = {
+    id: dto.id,
+    output: dto.output,
+    thought: dto.thought,
+    proofs: dto.proofs.map(adaptCaseReviewProof),
+    reaction: dto.reaction,
+  } as const;
 
   if (!dto.ok) {
     return { ...baseCaseReview, ok: false, sanityCheck: dto.sanity_check };
