@@ -720,6 +720,11 @@ export const routes = [
         "file": "routes/ressources+/settings+/inboxes+/inbox-users+/update.tsx"
       },
       {
+        "id": "routes/ressources+/settings+/inboxes+/inboxusers+/$inboxUserId",
+        "path": "ressources/settings/inboxes/inboxusers/:inboxUserId",
+        "file": "routes/ressources+/settings+/inboxes+/inboxusers+/$inboxUserId.ts"
+      },
+      {
         "id": "routes/ressources+/settings+/inboxes+/update",
         "path": "ressources/settings/inboxes/update",
         "file": "routes/ressources+/settings+/inboxes+/update.tsx"
