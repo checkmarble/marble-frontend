@@ -440,6 +440,8 @@ export type CaseReviewOkDto = {
     output: string;
     /** The list of objects used to justify the review */
     proofs: CaseReviewProofDto[];
+    /** The reaction to the review, can be null if not set or removed */
+    reaction?: ("ok" | "ko") | null;
 };
 export type CaseReviewNotOkDto = {
     ok: false;
@@ -447,6 +449,8 @@ export type CaseReviewNotOkDto = {
     output: string;
     /** The list of objects used to justify the review */
     proofs: CaseReviewProofDto[];
+    /** The reaction to the review, can be null if not set or removed */
+    reaction?: ("ok" | "ko") | null;
 };
 export type CaseReviewDto = {
     output: string;

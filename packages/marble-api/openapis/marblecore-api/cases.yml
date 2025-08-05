@@ -1471,6 +1471,11 @@ components:
           description: The list of objects used to justify the review
           items:
             $ref: '#/components/schemas/CaseReviewProofDto'
+        reaction:
+          type: string
+          description: The reaction to the review, can be null if not set or removed
+          enum: ['ok', 'ko']
+          nullable: true
     CaseReviewNotOkDto:
       type: object
       required:
@@ -1491,3 +1496,8 @@ components:
           description: The list of objects used to justify the review
           items:
             $ref: '#/components/schemas/CaseReviewProofDto'
+        reaction:
+          type: string
+          description: The reaction to the review, can be null if not set or removed
+          enum: ['ok', 'ko']
+          nullable: true
