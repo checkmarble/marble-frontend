@@ -368,9 +368,7 @@
         application/json:
           schema:
             type: object
-            required:
-              - role
-              - auto_assignable
+            minProperties: 1
             properties:
               role:
                 type: string
