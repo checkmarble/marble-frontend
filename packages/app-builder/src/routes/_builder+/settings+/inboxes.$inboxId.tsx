@@ -11,9 +11,9 @@ import {
   tKeyForInboxUserRole,
 } from '@app-builder/models/inbox';
 import { DeleteInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/delete';
-import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.create';
-import { DeleteInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.delete';
-import { UpdateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.update';
+import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users+/create';
+import { DeleteInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users+/delete';
+import { UpdateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users+/update';
 import { UpdateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/update';
 import {
   getInboxUserRoles,

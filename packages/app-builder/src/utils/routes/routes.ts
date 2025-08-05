@@ -705,19 +705,19 @@ export const routes = [
         "file": "routes/ressources+/settings+/inboxes+/delete.tsx"
       },
       {
-        "id": "routes/ressources+/settings+/inboxes+/inbox-users.create",
+        "id": "routes/ressources+/settings+/inboxes+/inbox-users+/create",
         "path": "ressources/settings/inboxes/inbox-users/create",
-        "file": "routes/ressources+/settings+/inboxes+/inbox-users.create.tsx"
+        "file": "routes/ressources+/settings+/inboxes+/inbox-users+/create.tsx"
       },
       {
-        "id": "routes/ressources+/settings+/inboxes+/inbox-users.delete",
+        "id": "routes/ressources+/settings+/inboxes+/inbox-users+/delete",
         "path": "ressources/settings/inboxes/inbox-users/delete",
-        "file": "routes/ressources+/settings+/inboxes+/inbox-users.delete.tsx"
+        "file": "routes/ressources+/settings+/inboxes+/inbox-users+/delete.tsx"
       },
       {
-        "id": "routes/ressources+/settings+/inboxes+/inbox-users.update",
+        "id": "routes/ressources+/settings+/inboxes+/inbox-users+/update",
         "path": "ressources/settings/inboxes/inbox-users/update",
-        "file": "routes/ressources+/settings+/inboxes+/inbox-users.update.tsx"
+        "file": "routes/ressources+/settings+/inboxes+/inbox-users+/update.tsx"
       },
       {
         "id": "routes/ressources+/settings+/inboxes+/update",
