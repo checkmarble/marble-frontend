@@ -15,7 +15,10 @@ export function SignInFirstConnection({
 
   return (
     <>
-      <Link className={CtaClassName({ variant: 'secondary' })} to={getRoute('/create-password')}>
+      <Link
+        className={CtaClassName({ variant: 'secondary', className: 'text-center' })}
+        to={getRoute('/create-password')}
+      >
         {t(
           isSignInHomepage
             ? 'auth:sign_up.set_password_sign_in'
