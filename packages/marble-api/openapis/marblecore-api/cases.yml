@@ -760,6 +760,54 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/cases/{caseId}/review/{reviewId}/feedback:
+  put:
+    tags:
+      - Cases
+    summary: Add or update feedback for a case review
+    operationId: addOrUpdateCaseReviewFeedback
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case on which to add or update feedback
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: reviewId
+        description: ID of the review on which to add or update feedback
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Feedback to add or update for a case review
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - reaction
+            properties:
+              reaction:
+                $ref: '#/components/schemas/CaseReviewFeedbackDto'
+    responses:
+      '200':
+        description: The updated case review
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/CaseReviewDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /cases/{caseId}/data_for_investigation:
   get:
     tags:
@@ -1424,12 +1472,25 @@ components:
       allOf:
         - type: object
           required:
+            - id
             - output
+            - proofs
+            - reaction
           properties:
+            id:
+              type: string
+              format: uuid
             output:
               type: string
             thought:
               type: string
+            proofs:
+              type: array
+              description: The list of objects used to justify the review
+              items:
+                $ref: '#/components/schemas/CaseReviewProofDto'
+            reaction:
+              $ref: '#/components/schemas/CaseReviewFeedbackDto'
         - anyOf:
           - $ref: '#/components/schemas/CaseReviewOkDto'
           - $ref: '#/components/schemas/CaseReviewNotOkDto'
@@ -1458,46 +1519,25 @@ components:
       type: object
       required:
         - ok
-        - output
-        - proofs
       properties:
         ok:
           type: boolean
           enum: [true]
-        output:
-          type: string
-        proofs:
-          type: array
-          description: The list of objects used to justify the review
-          items:
-            $ref: '#/components/schemas/CaseReviewProofDto'
-        reaction:
-          type: string
-          description: The reaction to the review, can be null if not set or removed
-          enum: ['ok', 'ko']
-          nullable: true
+
     CaseReviewNotOkDto:
       type: object
       required:
         - ok
         - sanity_check
-        - output
-        - proofs
       properties:
         ok:
           type: boolean
           enum: [false]
         sanity_check:
           type: string
-        output:
-          type: string
-        proofs:
-          type: array
-          description: The list of objects used to justify the review
-          items:
-            $ref: '#/components/schemas/CaseReviewProofDto'
-        reaction:
-          type: string
-          description: The reaction to the review, can be null if not set or removed
-          enum: ['ok', 'ko']
-          nullable: true
+    
+    CaseReviewFeedbackDto:
+      type: string
+      enum: ['ok', 'ko']
+      description: The reaction to the review, can be null if not set or removed
+      nullable: true

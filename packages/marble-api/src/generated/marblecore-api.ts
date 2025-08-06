@@ -435,26 +435,21 @@ export type CaseReviewProofDto = {
     /** The reason why the object was used to justify the review */
     reason: string;
 };
+export type CaseReviewFeedbackDto = ("ok" | "ko") | null;
 export type CaseReviewOkDto = {
     ok: true;
-    output: string;
-    /** The list of objects used to justify the review */
-    proofs: CaseReviewProofDto[];
-    /** The reaction to the review, can be null if not set or removed */
-    reaction?: ("ok" | "ko") | null;
 };
 export type CaseReviewNotOkDto = {
     ok: false;
     sanity_check: string;
-    output: string;
-    /** The list of objects used to justify the review */
-    proofs: CaseReviewProofDto[];
-    /** The reaction to the review, can be null if not set or removed */
-    reaction?: ("ok" | "ko") | null;
 };
 export type CaseReviewDto = {
+    id: string;
     output: string;
     thought?: string;
+    /** The list of objects used to justify the review */
+    proofs: CaseReviewProofDto[];
+    reaction: CaseReviewFeedbackDto;
 } & (CaseReviewOkDto | CaseReviewNotOkDto);
 export type SuspiciousActivityReportDto = {
     id: string;
