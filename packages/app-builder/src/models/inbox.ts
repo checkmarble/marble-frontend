@@ -114,13 +114,13 @@ export function adaptInboxUserCreateBody({
 }
 
 export interface InboxUserUpdateBody {
-  role: string;
-  autoAssignable: boolean;
+  role?: string;
+  autoAssignable?: boolean;
 }
 
 export function adaptInboxUserUpdateBody(data: InboxUserUpdateBody): {
-  role: string;
-  auto_assignable: boolean;
+  role?: string;
+  auto_assignable?: boolean;
 } {
   return {
     role: data.role,

@@ -10,10 +10,11 @@ import {
   InboxWithCasesCount,
   tKeyForInboxUserRole,
 } from '@app-builder/models/inbox';
+import { useEditAutoAssignMutation } from '@app-builder/queries/InboxUsers/edit-auto-assign';
 import { DeleteInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/delete';
-import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.create';
-import { DeleteInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.delete';
-import { UpdateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users.update';
+import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users+/create';
+import { DeleteInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users+/delete';
+import { UpdateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users+/update';
 import { UpdateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/update';
 import {
   getInboxUserRoles,
@@ -35,7 +36,7 @@ import {
   redirect,
   type SerializeFrom,
 } from '@remix-run/node';
-import { useFetcher, useLoaderData, useRouteLoaderData } from '@remix-run/react';
+import { useLoaderData, useRouteLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { pick } from 'radash';
@@ -231,24 +232,14 @@ export default function Inbox() {
               header: t('settings:inboxes.inbox_details.auto_assign_enabled.label'),
               size: 150,
               cell: ({ getValue, row }) => {
-                const fetcher = useFetcher<typeof UpdateInboxUser>();
                 const [value, setValue] = useState(getValue());
+                const editAutoAssignMutation = useEditAutoAssignMutation();
                 const handleChange = (checked: boolean) => {
                   setValue(checked);
-                  fetcher.submit(
-                    {
-                      id: row.original.id,
-                      role: row.original.role,
-                      autoAssignable: checked,
-                    },
-                    {
-                      method: 'PATCH',
-                      action: getRoute('/settings/inboxes/:inboxId', {
-                        inboxId: fromUUIDtoSUUID(inbox.id),
-                      }),
-                      encType: 'application/json',
-                    },
-                  );
+                  editAutoAssignMutation.mutate({
+                    id: row.original.id,
+                    autoAssignable: checked,
+                  });
                 };
 
                 return isEditInboxUserAvailable ? (
