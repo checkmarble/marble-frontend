@@ -164,4 +164,24 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
       action: modifiedAction,
     });
   }
+
+  // Update rule name
+
+  // Update rule name
+  if (originalRule.name !== modifiedRule.name) {
+    scenario.updateWorkflowRule({
+      ruleId: rule.id,
+      name: modifiedRule.name,
+      fallthrough: modifiedRule.fallthrough,
+    });
+  }
+
+  // Update rule fallthrough
+  // For future use
+  // if (originalRule.fallthrough !== modifiedRule.fallthrough) {
+  //   scenario.updateWorkflowRule({
+  //     ruleId: rule.id,
+  //     fallthrough: modifiedRule.fallthrough,
+  //   });
+  // }
 }
