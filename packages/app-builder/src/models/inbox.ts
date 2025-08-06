@@ -123,8 +123,8 @@ export function adaptInboxUserUpdateBody(data: InboxUserUpdateBody): {
   auto_assignable?: boolean;
 } {
   return {
-    ...(data.role !== undefined && { role: data.role }),
-    ...(data.autoAssignable !== undefined && { auto_assignable: data.autoAssignable }),
+    role: data.role,
+    auto_assignable: data.autoAssignable,
   };
 }
 

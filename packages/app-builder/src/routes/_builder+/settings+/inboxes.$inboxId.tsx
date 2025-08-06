@@ -233,10 +233,10 @@ export default function Inbox() {
               size: 150,
               cell: ({ getValue, row }) => {
                 const [value, setValue] = useState(getValue());
-                const { mutate: editAutoAssign } = useEditAutoAssignMutation();
+                const editAutoAssignMutation = useEditAutoAssignMutation();
                 const handleChange = (checked: boolean) => {
                   setValue(checked);
-                  editAutoAssign({
+                  editAutoAssignMutation.mutate({
                     id: row.original.id,
                     autoAssignable: checked,
                   });
