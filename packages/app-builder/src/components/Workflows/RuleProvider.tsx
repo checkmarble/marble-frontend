@@ -7,6 +7,7 @@ import { validateRuleEnhanced } from '@app-builder/models/scenario/workflow-vali
 import { useUpdateRuleMutation } from '@app-builder/queries/Workflows';
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 interface RuleContextValue {
   // Data
@@ -45,6 +46,7 @@ interface RuleProviderProps {
 }
 
 export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: RuleProviderProps) {
+  const { t } = useTranslation();
   // Mutations
   const updateRuleMutation = useUpdateRuleMutation();
 
@@ -187,12 +189,12 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
     if (!localRule || !isModified) return;
 
     if (validationErrors.length > 0) {
-      toast.error('Cannot save rule with validation errors');
+      toast.error(t('workflows:toast.error.rule.validation.errors'));
       return;
     }
 
     if (!scenarioId) {
-      toast.error('Scenario ID is required to save rule');
+      toast.error(t('workflows:toast.error.rule.validation.scenario.id'));
       return;
     }
 
@@ -200,10 +202,10 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
       await updateRuleMutation.mutateAsync(localRule);
 
       setIsModified(false);
-      toast.success('Rule saved successfully');
+      toast.success(t('workflows:toast.success.rule.saved'));
     } catch (error) {
       console.error('Failed to update rule:', error);
-      toast.error('Failed to update rule');
+      toast.error(t('workflows:toast.error.rule.update.failed'));
     }
   };
 
@@ -215,7 +217,7 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
       setValidationErrors([]);
     } catch (error) {
       console.error('Failed to reset rule data:', error);
-      toast.error('Failed to reset rule data');
+      toast.error(t('workflows:toast.error.rule.reset.failed'));
     }
   };
 
