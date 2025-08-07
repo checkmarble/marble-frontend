@@ -578,10 +578,10 @@ export type CaseReview = {
 } & ({ ok: true; sanityCheck?: undefined } | { ok: false; sanityCheck: string });
 
 export function adaptCaseReview(dto: CaseReviewDto): CaseReview {
-  const baseCaseReview = { output: dto.output, thought: dto.thought } as const;
+  const baseCaseReview = { output: dto.review.output, thought: dto.review.thought } as const;
 
-  if (!dto.ok) {
-    return { ...baseCaseReview, ok: false, sanityCheck: dto.sanity_check };
+  if (!dto.review.ok) {
+    return { ...baseCaseReview, ok: false, sanityCheck: dto.review.sanity_check };
   }
   return { ...baseCaseReview, ok: true };
 }

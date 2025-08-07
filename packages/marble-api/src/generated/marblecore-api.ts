@@ -425,17 +425,17 @@ export type PivotObjectDto = {
 export type NextCaseIdDto = {
     id: string;
 };
+export type CaseReviewFeedbackDto = ("ok" | "ko") | null;
 export type CaseReviewProofDto = {
     /** The id of the object (could be the object_id if organization data model object) */
     id: string;
     /** The type of the object (case, decision, account, transaction, etc.) */
     "type": string;
-    /** Whether the object is a organization data model object or not (Marble internal object) */
-    is_data_model: boolean;
+    /** The origin of the object (organization data model object or internal object) */
+    origin: "data_model" | "internal";
     /** The reason why the object was used to justify the review */
     reason: string;
 };
-export type CaseReviewFeedbackDto = ("ok" | "ko") | null;
 export type CaseReviewOkDto = {
     ok: true;
 };
@@ -443,14 +443,18 @@ export type CaseReviewNotOkDto = {
     ok: false;
     sanity_check: string;
 };
+export type CaseReviewContentDto = {
+    version: string;
+    output: string;
+    proofs: CaseReviewProofDto[];
+    thought?: string;
+} & (CaseReviewOkDto | CaseReviewNotOkDto);
 export type CaseReviewDto = {
     id: string;
-    output: string;
-    thought?: string;
-    /** The list of objects used to justify the review */
-    proofs: CaseReviewProofDto[];
     reaction: CaseReviewFeedbackDto;
-} & (CaseReviewOkDto | CaseReviewNotOkDto);
+    version: string;
+    review: CaseReviewContentDto;
+};
 export type SuspiciousActivityReportDto = {
     id: string;
     status: "pending" | "completed";
