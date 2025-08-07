@@ -12,7 +12,6 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { workflowI18n } from '../Scenario/Workflow/workflow-i18n';
 import { CaseNameEditor } from './CaseNameEditor';
 import { InboxSelector } from './InboxSelector';
 import { useWorkflowDataFeatureAccess } from './WorkflowProvider';
@@ -23,7 +22,7 @@ interface ActionSelectorProps {
 }
 
 export function ActionSelector({ action, onChange }: ActionSelectorProps) {
-  const { t } = useTranslation(workflowI18n);
+  const { t } = useTranslation('workflows');
   const workflowFeatureAccess = useWorkflowDataFeatureAccess();
   const isCreateInboxAvailable = workflowFeatureAccess.isCreateInboxAvailable;
 

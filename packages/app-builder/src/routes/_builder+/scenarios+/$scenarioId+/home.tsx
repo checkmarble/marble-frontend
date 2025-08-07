@@ -11,8 +11,8 @@ import {
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
 import { TestRunNudge } from '@app-builder/components/Scenario/TestRun/TestRunNudge';
-import { WorkflowNudge } from '@app-builder/components/Scenario/Workflow/WorkflowNudge';
 import { Spinner } from '@app-builder/components/Spinner';
+import { WorkflowNudge } from '@app-builder/components/Workflows/Nudge';
 import { type ScheduledExecution } from '@app-builder/models/decision';
 import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
@@ -600,6 +600,7 @@ function WorkflowSection({
 
   const isEdit = scenario.decisionToCaseWorkflowType !== 'DISABLED';
 
+  console.log('🔄 scenario', scenario);
   let tag: string | undefined;
   let tooltip: string | undefined;
   if (scenario.decisionToCaseWorkflowType === 'CREATE_CASE') {

@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OutcomeBadge } from '../Decisions/OutcomeTag';
-import { workflowI18n } from '../Scenario/Workflow/workflow-i18n';
 
 export function SelectOutcomesList({
   selectedOutcomes,
@@ -16,7 +15,7 @@ export function SelectOutcomesList({
   selectedOutcomes: OutcomeDto[];
   onSelectedOutcomesChange: (outcomes: OutcomeDto[]) => void;
 }) {
-  const { t } = useTranslation(workflowI18n);
+  const { t } = useTranslation('workflows');
   const [searchValue, setSearchValue] = useState('');
   const [open, setOpen] = useState(false);
   const deferredValue = useDeferredValue(searchValue);

@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { workflowI18n } from '../Scenario/Workflow/workflow-i18n';
 import { PayloadEvaluationCondition } from './PayloadEvaluationCondition';
 import { SelectOutcomesList } from './SelectOutcomesList';
 
@@ -25,7 +24,7 @@ export function ConditionSelector({
   dataModel,
   onChange,
 }: ConditionSelectorProps) {
-  const { t } = useTranslation(workflowI18n);
+  const { t } = useTranslation('workflows');
   const [open, setOpen] = useState(false);
 
   const conditionOptions = [

@@ -212,6 +212,7 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
   const cancelChanges = async () => {
     try {
       // Reset to the original rule data
+      console.log('🔄 RuleProvider: cancelChanges called for rule', rule.id);
       setLocalRule(rule);
       setIsModified(false);
       setValidationErrors([]);

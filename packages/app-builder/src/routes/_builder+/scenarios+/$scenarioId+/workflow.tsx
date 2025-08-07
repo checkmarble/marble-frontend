@@ -1,6 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { BreadCrumbLink, BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
-import { workflowI18n } from '@app-builder/components/Scenario/Workflow/workflow-i18n';
 import { WorkflowList } from '@app-builder/components/Workflows/WorkflowList';
 import { useWorkflow, WorkflowProvider } from '@app-builder/components/Workflows/WorkflowProvider';
 import { WorkflowScrollHandler } from '@app-builder/components/Workflows/WorkflowScrollHandler.client';
@@ -21,7 +20,7 @@ import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const handle = {
-  i18n: workflowI18n satisfies Namespace,
+  i18n: ['common', 'workflows'] satisfies Namespace,
   BreadCrumbs: [
     ({ isLast }: BreadCrumbProps) => {
       const { t } = useTranslation(['scenarios']);
