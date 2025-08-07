@@ -167,14 +167,14 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
               >
                 <Icon icon="drag" className="size-3 text-white" />
               </div>
-              <div className="bg-grey-05 rounded-md p-4 overflow-x-auto">
+              <div className="bg-grey-05 rounded-md p-1 overflow-x-auto w-full">
                 {displayRule.conditions?.length > 0 ? (
                   <div className="flex flex-col gap-2 relative whitespace-nowrap">
                     {displayRule.conditions.map((condition, conditionIndex: number) => {
                       return (
                         <div
                           key={condition.id || conditionIndex}
-                          className="flex items-center relative transition-all duration-200"
+                          className="group flex items-center relative transition-all duration-200"
                         >
                           {/* Vertical line connecting conditions */}
                           {conditionIndex > 0 && (
@@ -193,12 +193,12 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                               />
                             </div>
                             <Button
-                              variant="secondary"
+                              variant="ghost"
                               type="button"
                               onClick={() => deleteCondition(condition.id)}
-                              className="flex items-center justify-center transition-colors duration-200 hover:bg-red-200 text-red-600 hover:text-red-700"
+                              className="opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200 hover:bg-red-200 text-red-600 hover:text-red-700"
                             >
-                              <Icon icon="delete" className="size-4" />
+                              <Icon icon="delete" className="size-5 shrink-0" />
                             </Button>
                           </div>
                         </div>
