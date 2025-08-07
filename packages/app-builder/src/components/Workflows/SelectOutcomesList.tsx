@@ -2,7 +2,7 @@ import { knownOutcomes } from '@app-builder/models/outcome';
 import { validateOutcomes } from '@app-builder/models/scenario/workflow-validation';
 import { type OutcomeDto } from 'marble-api';
 import { matchSorter } from 'match-sorter';
-import { useDeferredValue, useEffect, useMemo, useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -12,11 +12,9 @@ import { workflowI18n } from '../Scenario/Workflow/workflow-i18n';
 export function SelectOutcomesList({
   selectedOutcomes,
   onSelectedOutcomesChange,
-  onValidationChange,
 }: {
   selectedOutcomes: OutcomeDto[];
   onSelectedOutcomesChange: (outcomes: OutcomeDto[]) => void;
-  onValidationChange?: (isValid: boolean) => void;
 }) {
   const { t } = useTranslation(workflowI18n);
   const [searchValue, setSearchValue] = useState('');
@@ -25,27 +23,23 @@ export function SelectOutcomesList({
 
   const matches = useMemo(() => matchSorter(knownOutcomes, deferredValue), [deferredValue]);
 
-  // Validate outcomes and notify parent component
-  useEffect(() => {
-    if (onValidationChange) {
-      const isValid = validateOutcomes(selectedOutcomes);
-      onValidationChange(isValid);
-    }
-  }, [selectedOutcomes, onValidationChange]);
+  const [pristine, setPristine] = useState(true);
 
   const handleItemSelect = (outcome: OutcomeDto) => {
-    const isSelected = selectedOutcomes.includes(outcome);
-    if (isSelected) {
-      onSelectedOutcomesChange(selectedOutcomes.filter((o) => o !== outcome));
-    } else {
-      onSelectedOutcomesChange([...selectedOutcomes, outcome]);
-    }
+    setPristine(false);
+    onSelectedOutcomesChange(
+      selectedOutcomes.includes(outcome)
+        ? selectedOutcomes.filter((o) => o !== outcome)
+        : [...selectedOutcomes, outcome],
+    );
   };
 
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen} persistOnSelect>
       <MenuCommand.Trigger>
-        <MenuCommand.SelectButton className="whitespace-nowrap overflow-hidden">
+        <MenuCommand.SelectButton
+          className={`whitespace-nowrap overflow-hidden ${!pristine && !validateOutcomes(selectedOutcomes) ? 'border-red-47' : ''}`}
+        >
           {(() => {
             const validOutcomes = selectedOutcomes.filter(
               (outcome) => outcome && outcome.length > 0,
