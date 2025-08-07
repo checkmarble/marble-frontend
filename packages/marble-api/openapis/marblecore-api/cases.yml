@@ -1469,38 +1469,49 @@ components:
         - pivot_object_data
         - number_of_decisions
     CaseReviewDto:
+      type: object
+      required:
+        - id
+        - reaction
+        - version
+        - review
+      properties:
+        id:
+          type: string
+          format: uuid
+        reaction:
+          $ref: '#/components/schemas/CaseReviewFeedbackDto'
+        version:
+          type: string
+        review:
+          $ref: '#/components/schemas/CaseReviewContentDto'
+    CaseReviewContentDto:
       allOf:
         - type: object
           required:
-            - id
             - output
             - proofs
-            - reaction
+            - version
           properties:
-            id:
+            version:
               type: string
-              format: uuid
             output:
-              type: string
-            thought:
               type: string
             proofs:
               type: array
-              description: The list of objects used to justify the review
               items:
                 $ref: '#/components/schemas/CaseReviewProofDto'
-            reaction:
-              $ref: '#/components/schemas/CaseReviewFeedbackDto'
+            thought:
+              type: string
         - anyOf:
           - $ref: '#/components/schemas/CaseReviewOkDto'
           - $ref: '#/components/schemas/CaseReviewNotOkDto'
-
     CaseReviewProofDto:
       type: object
       required:
         - id
         - type
-        - is_data_model
+        - origin
         - reason
       properties:
         id:
@@ -1509,9 +1520,10 @@ components:
         type:
           type: string
           description: The type of the object (case, decision, account, transaction, etc.)
-        is_data_model:
-          type: boolean
-          description: Whether the object is a organization data model object or not (Marble internal object)
+        origin:
+          type: string
+          description: The origin of the object (organization data model object or internal object)
+          enum: ['data_model', 'internal']
         reason:
           type: string
           description: The reason why the object was used to justify the review
