@@ -15,7 +15,7 @@ export function SelectOutcomesList({
   selectedOutcomes: OutcomeDto[];
   onSelectedOutcomesChange: (outcomes: OutcomeDto[]) => void;
 }) {
-  const { t } = useTranslation('workflows');
+  const { t } = useTranslation(['workflows']);
   const [searchValue, setSearchValue] = useState('');
   const [open, setOpen] = useState(false);
   const deferredValue = useDeferredValue(searchValue);

@@ -22,7 +22,7 @@ interface ActionSelectorProps {
 }
 
 export function ActionSelector({ action, onChange }: ActionSelectorProps) {
-  const { t } = useTranslation('workflows');
+  const { t } = useTranslation(['workflows']);
   const workflowFeatureAccess = useWorkflowDataFeatureAccess();
   const isCreateInboxAvailable = workflowFeatureAccess.isCreateInboxAvailable;
 

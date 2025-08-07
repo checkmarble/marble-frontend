@@ -24,7 +24,7 @@ export function ConditionSelector({
   dataModel,
   onChange,
 }: ConditionSelectorProps) {
-  const { t } = useTranslation('workflows');
+  const { t } = useTranslation(['workflows']);
   const [open, setOpen] = useState(false);
 
   const conditionOptions = [
