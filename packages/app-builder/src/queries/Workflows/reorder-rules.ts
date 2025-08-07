@@ -1,4 +1,4 @@
-import { Rule } from '@app-builder/models/scenario/workflow';
+import { type Rule } from '@app-builder/models/scenario/workflow';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type ReorderRulesInput = {
@@ -12,7 +12,7 @@ export function useReorderRulesMutation() {
   return useMutation({
     mutationFn: async ({ scenarioId, ruleIds }: ReorderRulesInput) => {
       // Optimistically update the UI
-      queryClient.setQueryData(['workflow-rules'], (oldData: { workflow: Rule[] }) => {
+      queryClient.setQueryData(['workflow-rules', scenarioId], (oldData: { workflow: Rule[] }) => {
         if (!oldData?.workflow) return oldData;
 
         // Reorder the workflow rules according to the new order
@@ -34,16 +34,15 @@ export function useReorderRulesMutation() {
       });
 
       if (!response.ok) {
-        queryClient.invalidateQueries({ queryKey: ['workflow-rules'] });
-        throw new Error('Failed to reorder rules');
         // invalidate the query
+        queryClient.invalidateQueries({ queryKey: ['workflow-rules', scenarioId] });
+        throw new Error('Failed to reorder rules');
       }
 
-      return response.json();
+      return { scenarioId, ruleIds };
     },
-    onSuccess: (_, { ruleIds }) => {
-      console.log('onSuccess', ruleIds);
-      // Update the query data directly instead of invalidating
+    onSuccess: ({ scenarioId }: ReorderRulesInput) => {
+      queryClient.invalidateQueries({ queryKey: ['workflow-rules', scenarioId] });
     },
   });
 }

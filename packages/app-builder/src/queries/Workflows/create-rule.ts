@@ -1,4 +1,3 @@
-import { Rule } from '@app-builder/models/scenario/workflow';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type CreateRuleInput = {
@@ -11,7 +10,7 @@ export function useCreateRuleMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (input: CreateRuleInput): Promise<Rule> => {
+    mutationFn: async (input: CreateRuleInput): Promise<CreateRuleInput> => {
       const response = await fetch('/ressources/workflows/rule', {
         method: 'POST',
         headers: {
@@ -30,11 +29,11 @@ export function useCreateRuleMutation() {
         throw new Error('Failed to create rule');
       }
 
-      return response.json();
+      return input;
     },
-    onSuccess: () => {
+    onSuccess: ({ scenarioId }: CreateRuleInput) => {
       // Invalidate and refetch the rules query
-      queryClient.invalidateQueries({ queryKey: ['workflow-rules'] });
+      queryClient.invalidateQueries({ queryKey: ['workflow-rules', scenarioId] });
     },
   });
 }

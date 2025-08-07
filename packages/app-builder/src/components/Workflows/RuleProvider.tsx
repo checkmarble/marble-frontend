@@ -42,7 +42,7 @@ interface RuleProviderProps {
   children: ReactNode;
   rule: Rule;
   setEditingRuleId?: (ruleId: string | null) => void;
-  scenarioId?: string;
+  scenarioId: string;
 }
 
 export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: RuleProviderProps) {
@@ -199,7 +199,7 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
     }
 
     try {
-      await updateRuleMutation.mutateAsync(localRule);
+      await updateRuleMutation.mutateAsync({ rule: localRule, scenarioId });
 
       setIsModified(false);
       toast.success(t('workflows:toast.success.rule.saved'));

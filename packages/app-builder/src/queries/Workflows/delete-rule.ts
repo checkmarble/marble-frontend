@@ -9,7 +9,7 @@ export function useDeleteRuleMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ ruleId, scenarioId }: DeleteRuleInput): Promise<void> => {
+    mutationFn: async ({ ruleId, scenarioId }: DeleteRuleInput): Promise<DeleteRuleInput> => {
       const response = await fetch(`/ressources/workflows/rule/${ruleId}`, {
         method: 'DELETE',
         headers: {
@@ -20,11 +20,13 @@ export function useDeleteRuleMutation() {
       if (!response.ok) {
         throw new Error('Failed to delete rule');
       }
+
+      return { ruleId, scenarioId };
     },
-    onSuccess: () => {
+    onSuccess: ({ scenarioId }: DeleteRuleInput) => {
       // Invalidate and refetch workflow rules after successful deletion
       queryClient.invalidateQueries({
-        queryKey: ['workflow-rules'],
+        queryKey: ['workflow-rules', scenarioId],
       });
     },
   });

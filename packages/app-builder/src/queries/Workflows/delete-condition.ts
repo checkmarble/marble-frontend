@@ -26,11 +26,11 @@ export function useDeleteConditionMutation() {
         throw new Error('Failed to delete condition');
       }
 
-      return response.json();
+      return { ruleId, conditionId, scenarioId };
     },
-    onSuccess: () => {
+    onSuccess: ({ scenarioId }: DeleteConditionInput) => {
       // Invalidate and refetch the workflow rules
-      queryClient.invalidateQueries({ queryKey: ['workflow-rules'] });
+      queryClient.invalidateQueries({ queryKey: ['workflow-rules', scenarioId] });
     },
   });
 }

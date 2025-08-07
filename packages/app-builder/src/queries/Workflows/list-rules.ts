@@ -5,7 +5,7 @@ export function useListRulesQuery(
   scenarioId: string,
 ): UseQueryResult<{ workflow: Rule[]; triggerObjectType: string }, Error> {
   return useQuery({
-    queryKey: ['workflow-rules'],
+    queryKey: ['workflow-rules', scenarioId],
     queryFn: async (): Promise<{ workflow: Rule[]; triggerObjectType: string }> => {
       const response = await fetch(`/ressources/workflows/${scenarioId}`);
       const data = await response.json();
