@@ -38,20 +38,20 @@ export function SelectOutcomesList({
     <MenuCommand.Menu open={open} onOpenChange={setOpen} persistOnSelect>
       <MenuCommand.Trigger>
         <MenuCommand.SelectButton
-          className={`whitespace-nowrap overflow-hidden ${!pristine && !validateOutcomes(selectedOutcomes) ? 'border-red-47' : ''}`}
+          className={`min-w-0 flex-1 ${!pristine && !validateOutcomes(selectedOutcomes) ? 'border-red-47' : ''}`}
         >
           {(() => {
             const validOutcomes = selectedOutcomes.filter(
               (outcome) => outcome && outcome.length > 0,
             );
             return validOutcomes.length > 0 ? (
-              <div className="flex flex-wrap gap-1 overflow-hidden">
+              <div className="flex gap-1 flex-nowrap overflow-x-auto">
                 {validOutcomes.map((outcome) => (
                   <OutcomeBadge key={outcome} outcome={outcome} size="md" className="shrink-0" />
                 ))}
               </div>
             ) : (
-              <span className="text-grey-80 truncate">
+              <span className="text-grey-80">
                 {t('workflows:detail_panel.decision_created.outcomes.placeholder')}
               </span>
             );

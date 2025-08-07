@@ -173,10 +173,12 @@ export function ConditionSelector({
 
       {needsParams &&
         (selectedCondition === 'outcome_in' ? (
-          <SelectOutcomesList
-            selectedOutcomes={(condition?.params as OutcomeDto[]) || []}
-            onSelectedOutcomesChange={(outcomes) => handleParamsSelect(outcomes?.join(',') || '')}
-          />
+          <div className="flex-1 min-w-0">
+            <SelectOutcomesList
+              selectedOutcomes={(condition?.params as OutcomeDto[]) || []}
+              onSelectedOutcomesChange={(outcomes) => handleParamsSelect(outcomes?.join(',') || '')}
+            />
+          </div>
         ) : null)}
     </div>
   );
