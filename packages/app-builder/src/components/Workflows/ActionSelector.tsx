@@ -1,5 +1,6 @@
 import { type AstNode } from '@app-builder/models';
 import { adaptAstNode, adaptNodeDto } from '@app-builder/models/astNode/ast-node';
+import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import {
   isStringTemplateAstNode,
   NewStringTemplateAstNode,
@@ -64,7 +65,9 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
 
   // Helper function to create a proper default title template
   const createDefaultTitleTemplate = (): StringTemplateAstNode => {
-    return NewStringTemplateAstNode('Case %object_id%', {});
+    return NewStringTemplateAstNode('Case %object_id%', {
+      object_id: NewPayloadAstNode('object_id'),
+    });
   };
 
   // Helper function to ensure AST node has proper structure
