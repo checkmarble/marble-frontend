@@ -248,8 +248,11 @@ export function makeGetScenarioRepository() {
     },
     getWorkflowRule: async ({ ruleId }) => {
       const rule = await marbleCoreApiClient.getWorkflowRule(ruleId);
-      console.log(rule);
-      return adaptWorkflowRule(rule);
+      return adaptWorkflowRule({
+        ...rule,
+        conditions: rule.conditions ?? [],
+        actions: rule.actions ?? [],
+      });
     },
     createWorkflowRule: async ({ scenarioId, name, fallthrough }) => {
       const rule = await marbleCoreApiClient.createWorkflowRule({
