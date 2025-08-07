@@ -193,21 +193,6 @@ components:
         created_at:
           type: string
           format: date-time
-        decision_to_case_inbox_id:
-          type: string
-          format: uuid
-        decision_to_case_outcomes:
-          type: array
-          items:
-            $ref: "decisions.yml#/components/schemas/OutcomeDto"
-        decision_to_case_workflow_type:
-          type: string
-          enum: ["DISABLED", "CREATE_CASE", "ADD_TO_CASE_IF_POSSIBLE"]
-        decision_to_case_name_template:
-          type: object
-          nullable: true
-          allOf:
-            - $ref: "ast.yml#/components/schemas/NodeDto"
         description:
           type: string
         live_version_id:
@@ -223,8 +208,6 @@ components:
       required:
         - id
         - created_at
-        - decision_to_case_outcomes
-        - decision_to_case_workflow_type
         - description
         - name
         - organization_id
@@ -267,20 +250,6 @@ components:
     ScenarioUpdateInputDto:
       type: object
       properties:
-        decision_to_case_inbox_id:
-          type: string
-          format: uuid
-        decision_to_case_outcomes:
-          type: array
-          items:
-            $ref: "decisions.yml#/components/schemas/OutcomeDto"
-        decision_to_case_workflow_type:
-          type: string
-          enum: ["DISABLED", "CREATE_CASE", "ADD_TO_CASE_IF_POSSIBLE"]
-        decision_to_case_name_template:
-          type: object
-          allOf:
-            - $ref: "ast.yml#/components/schemas/NodeDto"
         description:
           type: string
         name:

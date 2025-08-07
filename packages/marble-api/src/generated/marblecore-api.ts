@@ -604,22 +604,9 @@ export type UpdateCustomListBodyDto = {
 export type CreateCustomListValueBody = {
     value: string;
 };
-export type NodeDto = {
-    id?: string;
-    name?: string;
-    constant?: ConstantDto;
-    children?: NodeDto[];
-    named_children?: {
-        [key: string]: NodeDto;
-    };
-};
 export type ScenarioDto = {
     id: string;
     created_at: string;
-    decision_to_case_inbox_id?: string;
-    decision_to_case_outcomes: OutcomeDto[];
-    decision_to_case_workflow_type: "DISABLED" | "CREATE_CASE" | "ADD_TO_CASE_IF_POSSIBLE";
-    decision_to_case_name_template?: (NodeDto) | null;
     description: string;
     live_version_id?: string;
     name: string;
@@ -632,12 +619,17 @@ export type ScenarioCreateInputDto = {
     trigger_object_type: string;
 };
 export type ScenarioUpdateInputDto = {
-    decision_to_case_inbox_id?: string;
-    decision_to_case_outcomes?: OutcomeDto[];
-    decision_to_case_workflow_type?: "DISABLED" | "CREATE_CASE" | "ADD_TO_CASE_IF_POSSIBLE";
-    decision_to_case_name_template?: NodeDto;
     description?: string;
     name?: string;
+};
+export type NodeDto = {
+    id?: string;
+    name?: string;
+    constant?: ConstantDto;
+    children?: NodeDto[];
+    named_children?: {
+        [key: string]: NodeDto;
+    };
 };
 export type ScenarioAstValidateInputDto = {
     node?: NodeDto;
@@ -1285,8 +1277,8 @@ export type CreateWorkflowRuleDto = {
     fallthrough: boolean;
 };
 export type WorkflowRuleDetailDto = WorkflowRuleDto & {
-    conditions: WorkflowConditionDto[];
-    actions: WorkflowActionDto[];
+    conditions?: WorkflowConditionDto[];
+    actions?: WorkflowActionDto[];
 };
 export type PersonalSettingsUnavailableDto = {
     until: string;
