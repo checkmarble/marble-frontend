@@ -96,6 +96,11 @@ export interface CaseRepository {
   enqueueReviewForCase(args: { caseId: string }): Promise<unknown>;
   getMostRecentCaseReview(args: { caseId: string }): Promise<CaseReview[]>;
   getCaseFileDownloadLink(fileId: string): Promise<{ url: string }>;
+  addCaseReviewFeedback(args: {
+    caseId: string;
+    reviewId: string;
+    reaction: 'ok' | 'ko';
+  }): Promise<void>;
 }
 
 export function makeGetCaseRepository() {
@@ -203,6 +208,9 @@ export function makeGetCaseRepository() {
     },
     getCaseFileDownloadLink: async (fileId) => {
       return marbleCoreApiClient.downloadCaseFile(fileId);
+    },
+    addCaseReviewFeedback: async ({ caseId, reviewId, reaction }) => {
+      await marbleCoreApiClient.addOrUpdateCaseReviewFeedback(caseId, reviewId, { reaction });
     },
   });
 }

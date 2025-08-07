@@ -359,6 +359,16 @@ export const routes = [
         "file": "routes/ressources+/auth+/refresh.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments",
+        "path": "ressources/cases/:caseId/review/:reviewId/add-to-case-comments",
+        "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/$caseId+/review.$reviewId.feedback",
+        "path": "ressources/cases/:caseId/review/:reviewId/feedback",
+        "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.feedback.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/$caseId.enqueue-review",
         "path": "ressources/cases/:caseId/enqueue-review",
         "file": "routes/ressources+/cases+/$caseId.enqueue-review.tsx"

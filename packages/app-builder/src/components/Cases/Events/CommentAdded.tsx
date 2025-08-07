@@ -2,7 +2,7 @@ import { EventTime } from '@app-builder/components/Cases/Events/Time';
 import { type CommentAddedEvent } from '@app-builder/models/cases';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { useMemo } from 'react';
-import { Avatar } from 'ui-design-system';
+import { Avatar, Markdown } from 'ui-design-system';
 
 export const CommentAddedDetail = ({ event }: { event: CommentAddedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
@@ -14,7 +14,9 @@ export const CommentAddedDetail = ({ event }: { event: CommentAddedEvent }) => {
   return (
     <div key={event.id} className="flex items-start gap-2">
       <Avatar firstName={user?.firstName} lastName={user?.lastName} size="xxs" color="grey" />
-      <span className="text-grey-00 whitespace-pre text-wrap text-xs">{event.comment}</span>
+      <span className="text-grey-00 whitespace-pre text-wrap text-xs">
+        <Markdown>{event.comment}</Markdown>
+      </span>
       <EventTime time={event.createdAt} />
     </div>
   );
