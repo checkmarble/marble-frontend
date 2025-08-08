@@ -148,8 +148,11 @@ importers:
         specifier: ^1.1.0
         version: 1.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.2)
       '@tanstack/react-query':
-        specifier: ^5.69.0
-        version: 5.69.0(react@18.3.1)
+        specifier: ^5.84.1
+        version: 5.84.1(react@18.3.1)
+      '@tanstack/react-query-devtools':
+        specifier: 5.83.1
+        version: 5.83.1(@tanstack/react-query@5.84.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-table':
         specifier: ^8.21.2
         version: 8.21.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -3690,8 +3693,11 @@ packages:
   '@tanstack/form-core@1.1.2':
     resolution: {integrity: sha512-Pjges7LoCKoglwnXPQrOUlR2L4LEyb6LVr3sMPcLCw15Ex32J7ox4rVEoz2TwPxz8LgoXl+sNsPn2Qp+thhTuQ==}
 
-  '@tanstack/query-core@5.69.0':
-    resolution: {integrity: sha512-Kn410jq6vs1P8Nm+ZsRj9H+U3C0kjuEkYLxbiCyn3MDEiYor1j2DGVULqAz62SLZtUZ/e9Xt6xMXiJ3NJ65WyQ==}
+  '@tanstack/query-core@5.83.1':
+    resolution: {integrity: sha512-OG69LQgT7jSp+5pPuCfzltq/+7l2xoweggjme9vlbCPa/d7D7zaqv5vN/S82SzSYZ4EDLTxNO1PWrv49RAS64Q==}
+
+  '@tanstack/query-devtools@5.83.1':
+    resolution: {integrity: sha512-KOQ3SMLnHHrnwwAHflK50QT8zEHg3rjPZx6cd+G7yZl4vU9moctTQU1A3zvHYEXabzKu5G31bcll6qhNCya9+w==}
 
   '@tanstack/react-form@1.1.2':
     resolution: {integrity: sha512-kbjKFvFrNMe+3QHJxmKLO61mXuScgRcB6xAWLI7yw8UkQ/MNVi1ZoL3inp5I4hDkcjdpCD1Syn1DotMOX5XQxw==}
@@ -3705,8 +3711,14 @@ packages:
       vinxi:
         optional: true
 
-  '@tanstack/react-query@5.69.0':
-    resolution: {integrity: sha512-Ift3IUNQqTcaFa1AiIQ7WCb/PPy8aexZdq9pZWLXhfLcLxH0+PZqJ2xFImxCpdDZrFRZhLJrh76geevS5xjRhA==}
+  '@tanstack/react-query-devtools@5.83.1':
+    resolution: {integrity: sha512-t5zcIHoSbT4ducv5YBYULgol6mt1gflHBLbN9oMa/VvPxVtQBY7nyDWFzOYycGXLlH3RrSp7w+oFBTB2GS04Ug==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.83.1
+      react: ^18 || ^19
+
+  '@tanstack/react-query@5.84.1':
+    resolution: {integrity: sha512-zo7EUygcWJMQfFNWDSG7CBhy8irje/XY0RDVKKV4IQJAysb+ZJkkJPcnQi+KboyGUgT+SQebRFoTqLuTtfoDLw==}
     peerDependencies:
       react: ^18 || ^19
 
@@ -11958,7 +11970,9 @@ snapshots:
     dependencies:
       '@tanstack/store': 0.7.0
 
-  '@tanstack/query-core@5.69.0': {}
+  '@tanstack/query-core@5.83.1': {}
+
+  '@tanstack/query-devtools@5.83.1': {}
 
   '@tanstack/react-form@1.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.2)':
     dependencies:
@@ -11971,9 +11985,15 @@ snapshots:
       - react-dom
       - typescript
 
-  '@tanstack/react-query@5.69.0(react@18.3.1)':
+  '@tanstack/react-query-devtools@5.83.1(@tanstack/react-query@5.84.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@tanstack/query-core': 5.69.0
+      '@tanstack/query-devtools': 5.83.1
+      '@tanstack/react-query': 5.84.1(react@18.3.1)
+      react: 18.3.1
+
+  '@tanstack/react-query@5.84.1(react@18.3.1)':
+    dependencies:
+      '@tanstack/query-core': 5.83.1
       react: 18.3.1
 
   '@tanstack/react-store@0.7.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':

@@ -13,6 +13,7 @@ import {
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError, withSentry } from '@sentry/remix';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +23,6 @@ import { AuthenticityTokenProvider } from 'remix-utils/csrf/react';
 import { ExternalScripts } from 'remix-utils/external-scripts';
 import { Tooltip } from 'ui-design-system';
 import { iconsSVGSpriteHref, Logo, logosSVGSpriteHref } from 'ui-icons';
-
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
 import { AppConfigContext } from './contexts/AppConfigContext';
@@ -198,6 +198,7 @@ function App() {
       <AppConfigContext.Provider value={appConfig}>
         <Outlet />
       </AppConfigContext.Provider>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
