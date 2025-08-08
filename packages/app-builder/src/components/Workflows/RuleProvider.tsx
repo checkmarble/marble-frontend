@@ -100,9 +100,8 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
     if (!localRule) return;
 
     const updatedRule = { ...localRule };
-    if (!updatedRule.conditions) {
-      updatedRule.conditions = [];
-    }
+    const existingConditions = updatedRule.conditions ?? [];
+    updatedRule.conditions = [...existingConditions];
 
     if (condition.id) {
       const existingConditionIndex = updatedRule.conditions.findIndex(
@@ -110,15 +109,11 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
       );
 
       if (existingConditionIndex !== -1) {
-        // Update existing condition
-        updatedRule.conditions = [...updatedRule.conditions];
         updatedRule.conditions[existingConditionIndex] = condition;
       } else {
-        // New condition with ID - add it
         updatedRule.conditions.push(condition);
       }
     } else {
-      // New condition without ID - generate unique ID
       const newCondition: WorkflowCondition = {
         ...condition,
         id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -132,13 +127,6 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
 
   const updateCondition = (conditionId: string, updatedCondition: WorkflowCondition) => {
     if (!localRule?.conditions) return;
-
-    console.log(
-      '🔄 RuleProvider: updateCondition called for condition',
-      conditionId,
-      ':',
-      updatedCondition,
-    );
 
     const updatedRule = { ...localRule };
     const conditionIndex = localRule.conditions.findIndex(
@@ -171,15 +159,13 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
     if (!localRule) return;
 
     const updatedRule = { ...localRule };
-    if (!updatedRule.actions) {
-      updatedRule.actions = [];
-    }
-
-    if (updatedRule.actions.length > 0) {
-      updatedRule.actions[0] = updatedAction;
+    const currentActions = updatedRule.actions ? [...updatedRule.actions] : [];
+    if (currentActions.length > 0) {
+      currentActions[0] = updatedAction;
     } else {
-      updatedRule.actions.push(updatedAction);
+      currentActions.push(updatedAction);
     }
+    updatedRule.actions = currentActions;
 
     setLocalRule(updatedRule);
     setIsModified(true);
@@ -211,8 +197,6 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
 
   const cancelChanges = async () => {
     try {
-      // Reset to the original rule data
-      console.log('🔄 RuleProvider: cancelChanges called for rule', rule.id);
       setLocalRule(rule);
       setIsModified(false);
       setValidationErrors([]);
