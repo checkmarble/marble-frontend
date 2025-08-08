@@ -129,8 +129,14 @@ CreateCaseBodyDto:
   $ref: cases.yml#/components/schemas/CreateCaseBodyDto
 PivotObjectDto:
   $ref: cases.yml#/components/schemas/PivotObjectDto
+CaseReviewFeedbackDto:
+  $ref: cases.yml#/components/schemas/CaseReviewFeedbackDto
+CaseReviewProofDto:
+  $ref: cases.yml#/components/schemas/CaseReviewProofDto
 CaseReviewDto:
   $ref: cases.yml#/components/schemas/CaseReviewDto
+CaseReviewContentDto:
+  $ref: cases.yml#/components/schemas/CaseReviewContentDto
 CaseReviewOkDto:
   $ref: cases.yml#/components/schemas/CaseReviewOkDto
 CaseReviewNotOkDto:

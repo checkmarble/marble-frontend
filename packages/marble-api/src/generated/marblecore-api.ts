@@ -425,6 +425,17 @@ export type PivotObjectDto = {
 export type NextCaseIdDto = {
     id: string;
 };
+export type CaseReviewFeedbackDto = ("ok" | "ko") | null;
+export type CaseReviewProofDto = {
+    /** The id of the object (could be the object_id if organization data model object) */
+    id: string;
+    /** The type of the object (case, decision, account, transaction, etc.) */
+    "type": string;
+    /** The origin of the object (organization data model object or internal object) */
+    origin: "data_model" | "internal";
+    /** The reason why the object was used to justify the review */
+    reason: string;
+};
 export type CaseReviewOkDto = {
     ok: true;
 };
@@ -432,10 +443,18 @@ export type CaseReviewNotOkDto = {
     ok: false;
     sanity_check: string;
 };
-export type CaseReviewDto = {
+export type CaseReviewContentDto = {
+    version: string;
     output: string;
+    proofs: CaseReviewProofDto[];
     thought?: string;
 } & (CaseReviewOkDto | CaseReviewNotOkDto);
+export type CaseReviewDto = {
+    id: string;
+    reaction: CaseReviewFeedbackDto;
+    version: string;
+    review: CaseReviewContentDto;
+};
 export type SuspiciousActivityReportDto = {
     id: string;
     status: "pending" | "completed";
