@@ -262,7 +262,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
 
           {/* Actions Box */}
           <div
-            className={`flex-none rounded-lg border-2 border-grey-90 bg-white p-4 transition-all duration-200 w-[400px] bg-grey-100 ${
+            className={`flex-none rounded-lg border-2 border-grey-90 bg-white p-4 transition-all duration-200 w-auto max-w-full bg-grey-100 ${
               snapshot.isDragging
                 ? 'border-purple-60 shadow-xl'
                 : isRuleModified

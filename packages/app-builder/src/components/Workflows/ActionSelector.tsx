@@ -255,7 +255,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
                 {t('workflows:action.inbox.with_title')}
               </span>
             </div>
-            <div className="flex-1">
+            <div>
               <CaseNameEditor
                 label=""
                 value={getTitleTemplateAsStringTemplate()}
