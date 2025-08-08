@@ -80,7 +80,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                     ? 'border-purple-60 shadow-lg ring-2 ring-blue-200'
                     : 'border-grey-90'
               }`}
-              style={{ marginBottom: 0 }}
             >
               {editingRuleId === displayRule.id ? (
                 <input
@@ -96,11 +95,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   }}
                   autoFocus
                   className="bg-white font-semibold text-base w-2/3 min-w-0 px-2 py-1 rounded border-2 border-purple-60 outline-none focus:ring-2 focus:ring-purple-30 transition-all"
-                  style={{
-                    fontSize: 'inherit',
-                    fontFamily: 'inherit',
-                    lineHeight: 'inherit',
-                  }}
                 />
               ) : (
                 <div className="group inline-flex items-center gap-1">

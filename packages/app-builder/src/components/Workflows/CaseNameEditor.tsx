@@ -61,7 +61,7 @@ export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) 
   return (
     <>
       <div>{label}</div>
-      <div className="flex gap-2">
+      <div className="flex items-stretch gap-2">
         <button
           onClick={() => setIsEditing(true)}
           className="border-grey-90 text-s inline-flex items-center rounded border p-2 max-w-full"
@@ -70,11 +70,11 @@ export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) 
         </button>
         {!isDefaultCaseName ? (
           <Button
-            size="icon"
             variant="secondary"
             onClick={() => onChange(initialValueRef.current ?? defaultCaseNameNode)}
+            className="self-stretch"
           >
-            <Icon icon="restart-alt" className="size-4" />
+            <Icon icon="restart-alt" className="size-5" />
           </Button>
         ) : null}
         {isEditing ? (
