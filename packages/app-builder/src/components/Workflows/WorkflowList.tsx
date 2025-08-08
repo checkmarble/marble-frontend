@@ -119,7 +119,7 @@ export function WorkflowList() {
 
       <div
         className={`flex flex-col items-center w-[800px] ml-8 pb-8 transition-all duration-300 ${
-          hasModifiedRules ? 'opacity-40 pointer-events-none' : ''
+          hasModifiedRules ? 'opacity-40 pointer-events-none blur-sm' : ''
         }`}
       >
         <Button variant="primary" onClick={createRule}>
