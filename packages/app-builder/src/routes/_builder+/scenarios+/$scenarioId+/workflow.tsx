@@ -101,7 +101,7 @@ function WorkflowContent() {
               setScrolled(scrollTop > 32);
             };
 
-            const mainElement = document.querySelector('.h-screen.overflow-y-auto');
+            const mainElement = document.querySelector('.h-screen.overflow-auto');
             if (mainElement) {
               mainElement.addEventListener('scroll', () =>
                 scrollHandler(mainElement as HTMLElement),
