@@ -225,24 +225,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                       </div>
                     )}
                   </div> */}
-                  {isRuleModified && (
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-2">
-                        <Button variant="secondary" onClick={() => cancelChanges()}>
-                          <Icon icon="arrow-left" className="size-4" />
-                          {t('common:cancel')}
-                        </Button>
-                        <Button
-                          variant="primary"
-                          onClick={() => saveRule()}
-                          disabled={hasValidationErrorsForRule}
-                        >
-                          <Icon icon="checked" className="size-4" />
-                          {t('common:validate')}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -278,6 +260,27 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
             </div>
           </div>
         </div>
+        {isRuleModified && (
+          <div className="mt-6 w-full flex justify-center gap-8">
+            <Button
+              variant="secondary"
+              onClick={() => cancelChanges()}
+              className="shadow-xl ring-2 ring-blue-200"
+            >
+              <Icon icon="arrow-left" className="size-4" />
+              {t('common:cancel')}
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => saveRule()}
+              disabled={hasValidationErrorsForRule}
+              className="shadow-xl ring-2 ring-blue-200 min-w-44"
+            >
+              <Icon icon="checked" className="size-5" />
+              {t('common:save')}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
