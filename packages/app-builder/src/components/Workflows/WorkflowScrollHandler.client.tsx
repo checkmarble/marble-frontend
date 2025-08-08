@@ -8,8 +8,8 @@ export function WorkflowScrollHandler() {
     if (shouldScrollToBottom) {
       // Use setTimeout to ensure the DOM has been updated with the new rule
       setTimeout(() => {
-        // Find the scrollable container (Page.Main with overflow-y-auto)
-        const scrollableContainer = document.querySelector('.h-screen.overflow-y-auto');
+        // Find the scrollable container (Page.Main with overflow-auto)
+        const scrollableContainer = document.querySelector('.h-screen.overflow-auto');
         if (scrollableContainer) {
           scrollableContainer.scrollTo({
             top: scrollableContainer.scrollHeight,

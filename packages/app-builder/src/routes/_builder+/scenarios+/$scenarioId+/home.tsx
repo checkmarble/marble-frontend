@@ -11,11 +11,12 @@ import {
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
 import { TestRunNudge } from '@app-builder/components/Scenario/TestRun/TestRunNudge';
-import { WorkflowNudge } from '@app-builder/components/Scenario/Workflow/WorkflowNudge';
 import { Spinner } from '@app-builder/components/Spinner';
+import { WorkflowNudge } from '@app-builder/components/Workflows/Nudge';
 import { type ScheduledExecution } from '@app-builder/models/decision';
 import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
+import { useListRulesQuery } from '@app-builder/queries/Workflows';
 import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';
@@ -41,7 +42,6 @@ import { match } from 'ts-pattern';
 import { Button, CtaClassName, HiddenInputs, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
-
 import { useCurrentScenario, useScenarioIterations } from './_layout';
 
 export const handle = {
@@ -598,17 +598,12 @@ function WorkflowSection({
 }) {
   const { t } = useTranslation(['common', 'scenarios', 'workflows']);
 
-  const isEdit = scenario.decisionToCaseWorkflowType !== 'DISABLED';
+  // TODO load workflow rules and check if at least one rule is defined
+  const rulesQuery = useListRulesQuery(scenario.id);
+  const isEdit = (rulesQuery.data?.workflow?.length ?? 0) > 0;
 
   let tag: string | undefined;
   let tooltip: string | undefined;
-  if (scenario.decisionToCaseWorkflowType === 'CREATE_CASE') {
-    tag = t('scenarios:home.workflow_type.create_case');
-    tooltip = t('scenarios:home.workflow_type.create_case.tooltip');
-  } else if (scenario.decisionToCaseWorkflowType === 'ADD_TO_CASE_IF_POSSIBLE') {
-    tag = t('scenarios:home.workflow_type.add_to_case_if_possible');
-    tooltip = t('scenarios:home.workflow_type.add_to_case_if_possible.tooltip');
-  }
 
   return (
     <section className="bg-grey-100 border-grey-90 relative flex h-fit max-w-[500px] flex-col gap-4 rounded-lg border p-8">
@@ -649,18 +644,25 @@ function WorkflowSection({
           </div>
         ) : null}
 
-        <Link
-          className={CtaClassName({
-            variant: isEdit ? 'secondary' : 'primary',
-            color: isEdit ? 'grey' : 'purple',
-          })}
-          to={getRoute('/scenarios/:scenarioId/workflow', {
-            scenarioId: fromUUIDtoSUUID(scenario.id),
-          })}
-        >
-          <Icon icon={isEdit ? 'edit-square' : 'plus'} className="size-6" />
-          <p>{t(isEdit ? 'scenarios:home.workflow.edit' : 'scenarios:home.workflow.create')}</p>
-        </Link>
+        {rulesQuery.isLoading ? (
+          <div className="bg-grey-90 h-10 w-36 animate-pulse rounded flex items-center gap-2 px-4">
+            <div className="bg-grey-80 size-6 animate-pulse rounded" />
+            <div className="bg-grey-80 h-4 w-16 animate-pulse rounded" />
+          </div>
+        ) : (
+          <Link
+            className={CtaClassName({
+              variant: isEdit ? 'secondary' : 'primary',
+              color: isEdit ? 'grey' : 'purple',
+            })}
+            to={getRoute('/scenarios/:scenarioId/workflow', {
+              scenarioId: fromUUIDtoSUUID(scenario.id),
+            })}
+          >
+            <Icon icon={isEdit ? 'edit-square' : 'plus'} className="size-6" />
+            <p>{t(isEdit ? 'scenarios:home.workflow.edit' : 'scenarios:home.workflow.create')}</p>
+          </Link>
+        )}
       </div>
     </section>
   );

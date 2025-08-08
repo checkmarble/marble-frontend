@@ -11,22 +11,7 @@ export function useReorderRulesMutation() {
 
   return useMutation({
     mutationFn: async ({ scenarioId, ruleIds }: ReorderRulesInput) => {
-      const response = await fetch(`/ressources/workflows/${scenarioId}/reorder`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ruleIds }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to reorder rules');
-      }
-
-      return response.json();
-    },
-    onSuccess: (_, { scenarioId, ruleIds }) => {
-      // Update the query data directly instead of invalidating
+      // Optimistically update the UI
       queryClient.setQueryData(['workflow-rules', scenarioId], (oldData: { workflow: Rule[] }) => {
         if (!oldData?.workflow) return oldData;
 
@@ -39,6 +24,25 @@ export function useReorderRulesMutation() {
           workflow: reorderedRules,
         };
       });
+
+      const response = await fetch(`/ressources/workflows/${scenarioId}/reorder`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ruleIds }),
+      });
+
+      if (!response.ok) {
+        // invalidate the query
+        queryClient.invalidateQueries({ queryKey: ['workflow-rules', scenarioId] });
+        throw new Error('Failed to reorder rules');
+      }
+
+      return { scenarioId, ruleIds };
+    },
+    onSuccess: ({ scenarioId }: ReorderRulesInput) => {
+      queryClient.invalidateQueries({ queryKey: ['workflow-rules', scenarioId] });
     },
   });
 }

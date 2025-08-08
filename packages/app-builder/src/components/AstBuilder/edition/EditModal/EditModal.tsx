@@ -10,7 +10,7 @@ import {
 } from '@app-builder/models/astNode/strings';
 import { isTimeAdd, isTimestampExtract } from '@app-builder/models/astNode/time';
 import { type ParseKeys } from 'i18next';
-import { type ComponentType } from 'react';
+import { type ComponentType, type ReactNode } from 'react';
 import { match } from 'ts-pattern';
 
 import { getEvaluationForNode } from '../helpers';
@@ -34,6 +34,7 @@ export type OperandEditModalProps = {
   onSave: (node: EditableAstNode) => void;
   onCancel: () => void;
   node: EditableAstNode;
+  saveLabel?: ReactNode;
 };
 
 export function OperandEditModal({ node, ...props }: OperandEditModalProps) {

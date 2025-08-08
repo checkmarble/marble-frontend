@@ -2,31 +2,30 @@ import { type Rule } from '@app-builder/models/scenario/workflow';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UpdateRuleInput {
-  ruleId: string;
-  scenarioId: string;
   rule: Rule;
+  scenarioId: string;
 }
 
 export function useUpdateRuleMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ ruleId, scenarioId, rule }: UpdateRuleInput): Promise<Rule> => {
-      const response = await fetch(`/ressources/workflows/rule/${ruleId}`, {
+    mutationFn: async ({ rule, scenarioId }: UpdateRuleInput): Promise<UpdateRuleInput> => {
+      const response = await fetch(`/ressources/workflows/rule/${rule.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ rule, scenarioId }),
+        body: JSON.stringify(rule),
       });
 
       if (!response.ok) {
         throw new Error('Failed to update rule');
       }
 
-      return response.json();
+      return { rule, scenarioId };
     },
-    onSuccess: (updatedRule, { scenarioId }) => {
+    onSuccess: ({ scenarioId }: UpdateRuleInput) => {
       // Invalidate and refetch the workflow rules
       queryClient.invalidateQueries({
         queryKey: ['workflow-rules', scenarioId],

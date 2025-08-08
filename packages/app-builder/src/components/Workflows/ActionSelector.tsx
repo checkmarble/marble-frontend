@@ -1,5 +1,6 @@
 import { type AstNode } from '@app-builder/models';
 import { adaptAstNode, adaptNodeDto } from '@app-builder/models/astNode/ast-node';
+import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import {
   isStringTemplateAstNode,
   NewStringTemplateAstNode,
@@ -11,7 +12,6 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { workflowI18n } from '../Scenario/Workflow/workflow-i18n';
 import { CaseNameEditor } from './CaseNameEditor';
 import { InboxSelector } from './InboxSelector';
 import { useWorkflowDataFeatureAccess } from './WorkflowProvider';
@@ -22,7 +22,7 @@ interface ActionSelectorProps {
 }
 
 export function ActionSelector({ action, onChange }: ActionSelectorProps) {
-  const { t } = useTranslation(workflowI18n);
+  const { t } = useTranslation(['workflows']);
   const workflowFeatureAccess = useWorkflowDataFeatureAccess();
   const isCreateInboxAvailable = workflowFeatureAccess.isCreateInboxAvailable;
 
@@ -64,7 +64,9 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
 
   // Helper function to create a proper default title template
   const createDefaultTitleTemplate = (): StringTemplateAstNode => {
-    return NewStringTemplateAstNode('Case %object_id%', {});
+    return NewStringTemplateAstNode('Case %object_id%', {
+      object_id: NewPayloadAstNode('object_id'),
+    });
   };
 
   // Helper function to ensure AST node has proper structure
@@ -253,7 +255,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
                 {t('workflows:action.inbox.with_title')}
               </span>
             </div>
-            <div className="flex-1">
+            <div>
               <CaseNameEditor
                 label=""
                 value={getTitleTemplateAsStringTemplate()}

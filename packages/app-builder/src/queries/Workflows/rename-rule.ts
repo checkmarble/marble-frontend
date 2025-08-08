@@ -11,7 +11,12 @@ export function useRenameRuleMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ ruleId, name, fallthrough }: RenameRuleInput): Promise<void> => {
+    mutationFn: async ({
+      ruleId,
+      name,
+      fallthrough,
+      scenarioId,
+    }: RenameRuleInput): Promise<RenameRuleInput> => {
       const response = await fetch(`/ressources/workflows/rule/${ruleId}/rename`, {
         method: 'PUT',
         headers: {
@@ -23,8 +28,10 @@ export function useRenameRuleMutation() {
       if (!response.ok) {
         throw new Error('Failed to rename rule');
       }
+
+      return { ruleId, scenarioId, name, fallthrough };
     },
-    onSuccess: (_, { scenarioId }) => {
+    onSuccess: ({ scenarioId }: RenameRuleInput) => {
       // Invalidate and refetch workflow rules after successful rename
       queryClient.invalidateQueries({
         queryKey: ['workflow-rules', scenarioId],

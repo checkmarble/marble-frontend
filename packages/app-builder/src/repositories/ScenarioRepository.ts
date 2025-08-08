@@ -83,6 +83,7 @@ export interface ScenarioRepository {
   getScenarioIterationActiveSnoozes(scenarioIterationId: string): Promise<SnoozesOfIteration>;
   scheduleScenarioExecution(args: { iterationId: string }): Promise<void>;
   listWorkflowRules(args: { scenarioId: string }): Promise<Rule[]>;
+  getWorkflowRule(args: { ruleId: string }): Promise<Rule>;
   createWorkflowRule(args: {
     scenarioId: string;
     name: string;
@@ -103,6 +104,11 @@ export interface ScenarioRepository {
   deleteWorkflowRule(args: { ruleId: string }): Promise<void>;
   createWorkflowAction(args: { ruleId: string; action: WorkflowAction }): Promise<WorkflowAction>;
   deleteWorkflowAction(args: { ruleId: string; actionId: string }): Promise<void>;
+  updateWorkflowAction(args: {
+    ruleId: string;
+    actionId: string;
+    action: WorkflowAction;
+  }): Promise<WorkflowAction>;
 }
 
 export function makeGetScenarioRepository() {
@@ -240,6 +246,14 @@ export function makeGetScenarioRepository() {
       const workflows = await marbleCoreApiClient.listWorkflows(scenarioId);
       return adaptWorkflow(workflows);
     },
+    getWorkflowRule: async ({ ruleId }) => {
+      const rule = await marbleCoreApiClient.getWorkflowRule(ruleId);
+      return adaptWorkflowRule({
+        ...rule,
+        conditions: rule.conditions ?? [],
+        actions: rule.actions ?? [],
+      });
+    },
     createWorkflowRule: async ({ scenarioId, name, fallthrough }) => {
       const rule = await marbleCoreApiClient.createWorkflowRule({
         scenario_id: scenarioId,
@@ -288,6 +302,14 @@ export function makeGetScenarioRepository() {
     },
     deleteWorkflowAction: async ({ ruleId, actionId }) => {
       await marbleCoreApiClient.deleteWorkflowAction(ruleId, actionId);
+    },
+    updateWorkflowAction: async ({ ruleId, actionId, action }) => {
+      const updatedAction = await marbleCoreApiClient.updateWorkflowAction(
+        ruleId,
+        actionId,
+        transformWorkflowAction(action),
+      );
+      return adaptWorkflowAction(updatedAction);
     },
   });
 }

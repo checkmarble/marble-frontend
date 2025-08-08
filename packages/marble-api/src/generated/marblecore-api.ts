@@ -604,22 +604,9 @@ export type UpdateCustomListBodyDto = {
 export type CreateCustomListValueBody = {
     value: string;
 };
-export type NodeDto = {
-    id?: string;
-    name?: string;
-    constant?: ConstantDto;
-    children?: NodeDto[];
-    named_children?: {
-        [key: string]: NodeDto;
-    };
-};
 export type ScenarioDto = {
     id: string;
     created_at: string;
-    decision_to_case_inbox_id?: string;
-    decision_to_case_outcomes: OutcomeDto[];
-    decision_to_case_workflow_type: "DISABLED" | "CREATE_CASE" | "ADD_TO_CASE_IF_POSSIBLE";
-    decision_to_case_name_template?: (NodeDto) | null;
     description: string;
     live_version_id?: string;
     name: string;
@@ -632,12 +619,17 @@ export type ScenarioCreateInputDto = {
     trigger_object_type: string;
 };
 export type ScenarioUpdateInputDto = {
-    decision_to_case_inbox_id?: string;
-    decision_to_case_outcomes?: OutcomeDto[];
-    decision_to_case_workflow_type?: "DISABLED" | "CREATE_CASE" | "ADD_TO_CASE_IF_POSSIBLE";
-    decision_to_case_name_template?: NodeDto;
     description?: string;
     name?: string;
+};
+export type NodeDto = {
+    id?: string;
+    name?: string;
+    constant?: ConstantDto;
+    children?: NodeDto[];
+    named_children?: {
+        [key: string]: NodeDto;
+    };
 };
 export type ScenarioAstValidateInputDto = {
     node?: NodeDto;
@@ -1283,6 +1275,10 @@ export type CreateWorkflowRuleDto = {
     scenario_id: string;
     name: string;
     fallthrough: boolean;
+};
+export type WorkflowRuleDetailDto = WorkflowRuleDto & {
+    conditions?: WorkflowConditionDto[];
+    actions?: WorkflowActionDto[];
 };
 export type PersonalSettingsUnavailableDto = {
     until: string;
@@ -4452,6 +4448,23 @@ export function createWorkflowRule(createWorkflowRuleDto?: CreateWorkflowRuleDto
         method: "POST",
         body: createWorkflowRuleDto
     })));
+}
+/**
+ * Get a workflow rule
+ */
+export function getWorkflowRule(ruleId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: WorkflowRuleDetailDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/workflows/rule/${encodeURIComponent(ruleId)}`, {
+        ...opts
+    }));
 }
 /**
  * Update a workflow rule

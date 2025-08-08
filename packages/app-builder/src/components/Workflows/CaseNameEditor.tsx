@@ -9,10 +9,10 @@ import {
 } from '@app-builder/models/astNode/strings';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { useDefaultCaseName } from './CaseNameEditor.hook';
 
 export type CaseNameEditorProps = {
@@ -22,6 +22,7 @@ export type CaseNameEditorProps = {
 };
 
 export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) => {
+  const { t } = useTranslation(['common']);
   const currentScenario = useCurrentScenario();
   const [isEditing, setIsEditing] = useState(false);
   const { defaultCaseNameNode } = useDefaultCaseName(currentScenario.triggerObjectType);
@@ -60,20 +61,20 @@ export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) 
   return (
     <>
       <div>{label}</div>
-      <div className="flex gap-2">
+      <div className="flex items-stretch gap-2">
         <button
           onClick={() => setIsEditing(true)}
-          className="border-grey-90 text-s flex grow items-center overflow-hidden rounded border p-2"
+          className="border-grey-90 text-s inline-flex items-center rounded border p-2 max-w-full"
         >
           {caseNameContent}
         </button>
         {!isDefaultCaseName ? (
           <Button
-            size="icon"
             variant="secondary"
             onClick={() => onChange(initialValueRef.current ?? defaultCaseNameNode)}
+            className="self-stretch"
           >
-            <Icon icon="restart-alt" className="size-4" />
+            <Icon icon="restart-alt" className="size-5" />
           </Button>
         ) : null}
         {isEditing ? (
@@ -82,6 +83,7 @@ export const CaseNameEditor = ({ label, value, onChange }: CaseNameEditorProps) 
               node={value ?? NewStringTemplateAstNode()}
               onSave={handleAstNodeChange}
               onCancel={() => setIsEditing(false)}
+              saveLabel={t('common:validate')}
             />
           </AstBuilder.Provider>
         ) : null}
@@ -95,7 +97,7 @@ function getAstNodeDisplayElement(astNode: StringTemplateAstNode): ReactNode {
   const splittedTemplate = template.split(STRING_TEMPLATE_VARIABLE_CAPTURE_REGEXP);
 
   return (
-    <span className="truncate whitespace-pre-wrap text-nowrap">
+    <span className="whitespace-pre-wrap text-nowrap max-w-full">
       {splittedTemplate.map((el, i) =>
         STRING_TEMPLATE_VARIABLE_REGEXP.test(el) ? (
           <code key={i} className="text-blue-58">
