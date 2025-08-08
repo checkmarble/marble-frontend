@@ -73,7 +73,7 @@ export function SanctionReviewSection({
           <MatchCard
             key={sanctionMatch.id}
             match={sanctionMatch}
-            unreviewable={sanctionCheck.partial || hasError}
+            unreviewable={hasError}
             defaultOpen={sanctionCheck.matches.length === 1}
           />
         ))}
