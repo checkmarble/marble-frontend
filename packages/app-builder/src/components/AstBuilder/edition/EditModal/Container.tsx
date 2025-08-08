@@ -48,7 +48,7 @@ export function OperandEditModalContainer({ className, ...props }: OperandEditMo
                 props.onSave(nodeSharp.value.node as EditableAstNode);
               }}
             >
-              {t('common:save')}
+              {props.saveLabel ?? t('common:save')}
             </Button>
           </div>
         </Modal.Footer>
