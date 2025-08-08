@@ -95,8 +95,8 @@ export function WorkflowList() {
                             )}
                           >
                             <div className="w-[800px] flex justify-center items-center relative">
-                              <div className="w-0.5 h-16 bg-grey-90 relative">
-                                <div className="absolute -bottom-0 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-8 border-transparent border-t-grey-50"></div>
+                              <div className="w-0.5 h-16 bg-grey-80 relative">
+                                <div className="absolute -bottom-0 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-8 border-transparent border-t-grey-80"></div>
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-grey-90 px-3 py-1 rounded z-10">
                                   <span className="text-sm font-bold text-white uppercase tracking-wide">
                                     {t('workflows:else_arrow.label')}

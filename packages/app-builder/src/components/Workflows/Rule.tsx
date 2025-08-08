@@ -232,8 +232,8 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
 
           {/* "Then" arrow */}
           <div className="flex items-center justify-center">
-            <div className="w-24 h-0.5 bg-grey-90 relative">
-              <div className="absolute -right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-l-8 border-transparent border-l-grey-50"></div>
+            <div className="w-28 h-0.5 bg-grey-80 relative">
+              <div className="absolute -right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-l-8 border-transparent border-l-grey-80"></div>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-grey-90 px-3 py-1 rounded z-10">
                 <span className="text-sm font-bold text-white uppercase tracking-wide">
                   {t('common:then')}
