@@ -60,16 +60,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
     setEditingRuleName('');
   };
 
-  const handleRenameKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      handleCancelRenaming();
-    } else if (event.key === 'Escape') {
-      event.preventDefault();
-      handleCancelRenaming();
-    }
-  };
-
   return (
     <div className="flex flex-col items-stretch gap-4 w-full">
       {/* Rule Container */}
@@ -104,14 +94,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                       handleNameChange(newValue.trim());
                     }
                   }}
-                  onBlur={(e) => {
-                    // Only cancel editing if not clicking on buttons or other interactive elements
-                    const relatedTarget = e.relatedTarget as HTMLElement;
-                    if (!relatedTarget || !relatedTarget.closest('button')) {
-                      handleCancelRenaming();
-                    }
-                  }}
-                  onKeyDown={(e) => handleRenameKeyDown(e)}
                   autoFocus
                   className="bg-white font-semibold text-base w-2/3 min-w-0 px-2 py-1 rounded border-2 border-purple-60 outline-none focus:ring-2 focus:ring-purple-30 transition-all"
                   style={{
@@ -121,23 +103,25 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   }}
                 />
               ) : (
-                <span
-                  className="cursor-text hover:bg-white hover:bg-opacity-20 px-1 py-0.5 rounded transition-colors"
-                  onClick={(event) => handleRenameClick(event, displayRule.id, displayRule.name)}
-                >
-                  {displayRule.name}
-                </span>
+                <div className="group inline-flex items-center gap-1">
+                  <span
+                    className="cursor-text hover:bg-white hover:bg-opacity-20 px-1 py-0.5 rounded transition-colors"
+                    onClick={(event) => handleRenameClick(event, displayRule.id, displayRule.name)}
+                  >
+                    {displayRule.name}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    type="button"
+                    onClick={(event) => handleRenameClick(event, displayRule.id, displayRule.name)}
+                    disabled={editingRuleId === displayRule.id}
+                    className="opacity-0 group-hover:opacity-100 transition-all duration-200"
+                  >
+                    <Icon icon="edit" className="size-5 shrink-0" />
+                  </Button>
+                </div>
               )}
               <div className="flex items-center gap-2">
-                <Button
-                  variant="secondary"
-                  size="small"
-                  onClick={(event) => handleRenameClick(event, displayRule.id, displayRule.name)}
-                  disabled={editingRuleId === displayRule.id}
-                >
-                  <Icon icon="edit" className="size-5" />
-                  {t('common:rename')}
-                </Button>
                 <Button
                   variant="secondary"
                   size="small"
@@ -216,15 +200,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                     dataModel={dataModel}
                     onChange={(newCondition) => addCondition(newCondition)}
                   />
-                  {/* <div className="flex flex-col items-center gap-2">
-                    {ruleValidationErrors.length > 0 && (
-                      <div className="text-red-47 text-sm">
-                        {ruleValidationErrors.map((error) => (
-                          <div key={error}>{error}</div>
-                        ))}
-                      </div>
-                    )}
-                  </div> */}
                 </div>
               </div>
             </div>
@@ -264,7 +239,10 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
           <div className="mt-6 w-full flex justify-center gap-8">
             <Button
               variant="secondary"
-              onClick={() => cancelChanges()}
+              onClick={() => {
+                cancelChanges();
+                handleCancelRenaming();
+              }}
               className="shadow-xl ring-2 ring-blue-200"
             >
               <Icon icon="arrow-left" className="size-4" />
@@ -272,7 +250,10 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
             </Button>
             <Button
               variant="primary"
-              onClick={() => saveRule()}
+              onClick={() => {
+                saveRule();
+                handleCancelRenaming();
+              }}
               disabled={hasValidationErrorsForRule}
               className="shadow-xl ring-2 ring-blue-200 min-w-44"
             >
