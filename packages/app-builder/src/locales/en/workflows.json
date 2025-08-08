@@ -88,6 +88,7 @@
   "detail_panel.no_selected_nodes.description": "Select a node to see its details.",
   "detail_panel.no_selected_nodes.title": "Workflow detail",
   "else_arrow.label": "Else",
+  "empty_state.no_rule_yet": "No rule yet",
   "nudge": "Let Marble handle repetitive tasks through workflows so you can focus on what truly matters",
   "rule.error.nameCannotBeEmpty": "Rule name cannot be empty",
   "rule.no_conditions.description": "A rule without conditions is ignored.",

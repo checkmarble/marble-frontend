@@ -10,6 +10,7 @@ export function WorkflowList() {
   const { t } = useTranslation(['workflows']);
   const {
     rules,
+    isLoading,
     isDragging,
     setIsDragging,
     reorderRules,
@@ -53,6 +54,11 @@ export function WorkflowList() {
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
+              {!isLoading && rules.length === 0 ? (
+                <div className="w-[800px] text-center text-grey-60 italic py-8">
+                  {t('workflows:empty_state.no_rule_yet')}
+                </div>
+              ) : null}
               {rules.map((rule, index) => {
                 const isCurrentRuleEditing = editingRuleId === rule.id;
                 const isOtherRuleEditing = editingRuleId !== null && editingRuleId !== rule.id;

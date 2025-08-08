@@ -88,6 +88,7 @@
   "detail_panel.no_selected_nodes.description": "Sélectionnez un nœud pour voir ses détails.",
   "detail_panel.no_selected_nodes.title": "Détails de l'automatisation",
   "else_arrow.label": "Sinon",
+  "empty_state.no_rule_yet": "Aucune règle pour le moment",
   "nudge": "Laissez Marble gérer les tâches répétitives via les workflow afin que vous puissiez vous concentrer sur ce qui compte vraiment",
   "rule.error.nameCannotBeEmpty": "Le nom de la règle ne peut pas être vide",
   "rule.no_conditions.description": "Une règle sans conditions est ignorée.",

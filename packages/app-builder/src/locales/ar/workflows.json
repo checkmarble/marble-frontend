@@ -88,6 +88,7 @@
   "detail_panel.no_selected_nodes.description": "حدد عنصر لعرض تفاصيله.",
   "detail_panel.no_selected_nodes.title": "تفاصيل سير العمل",
   "else_arrow.label": "آخر",
+  "empty_state.no_rule_yet": "لا توجد قاعدة بعد",
   "nudge": "اسمح لـ Marble بالتعامل مع المهام المتكررة من خلال سير العمل حتى تتمكن من التركيز على ما يهم حقًا",
   "rule.error.nameCannotBeEmpty": "لا يمكن أن يكون اسم القاعدة فارغًا",
   "rule.no_conditions.description": "يتم تجاهل قاعدة بدون شروط.",
