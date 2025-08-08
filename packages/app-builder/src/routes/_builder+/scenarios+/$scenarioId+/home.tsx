@@ -602,16 +602,8 @@ function WorkflowSection({
   const rulesQuery = useListRulesQuery(scenario.id);
   const isEdit = (rulesQuery.data?.workflow?.length ?? 0) > 0;
 
-  console.log('🔄 scenario', scenario);
   let tag: string | undefined;
   let tooltip: string | undefined;
-  // if (scenario.decisionToCaseWorkflowType === 'CREATE_CASE') {
-  //   tag = t('scenarios:home.workflow_type.create_case');
-  //   tooltip = t('scenarios:home.workflow_type.create_case.tooltip');
-  // } else if (scenario.decisionToCaseWorkflowType === 'ADD_TO_CASE_IF_POSSIBLE') {
-  //   tag = t('scenarios:home.workflow_type.add_to_case_if_possible');
-  //   tooltip = t('scenarios:home.workflow_type.add_to_case_if_possible.tooltip');
-  // }
 
   return (
     <section className="bg-grey-100 border-grey-90 relative flex h-fit max-w-[500px] flex-col gap-4 rounded-lg border p-8">

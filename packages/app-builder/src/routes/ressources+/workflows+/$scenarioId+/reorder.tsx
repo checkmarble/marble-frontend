@@ -4,7 +4,6 @@ import { ActionFunctionArgs } from '@remix-run/node';
 import invariant from 'tiny-invariant';
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  console.log('reorder');
   if (request.method !== 'PUT') {
     throw new Response('Method not allowed', { status: 405 });
   }
@@ -19,9 +18,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const { ruleIds } = await request.json();
   invariant(Array.isArray(ruleIds), 'ruleIds must be an array');
-
-  console.log('scenarioId', scenarioId);
-  console.log('ruleIds', ruleIds);
 
   await scenario.reorderWorkflows({
     scenarioId,

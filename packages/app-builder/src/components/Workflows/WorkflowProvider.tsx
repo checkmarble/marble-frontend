@@ -92,12 +92,11 @@ export function WorkflowProvider({
   // Actions
   const createRule = async () => {
     try {
-      const rule = await createRuleMutation.mutateAsync({
+      await createRuleMutation.mutateAsync({
         scenarioId,
         name: 'New Rule',
         fallthrough: false,
       });
-      console.log('new rule', rule);
 
       setShouldScrollToBottom(true);
     } catch (error) {
@@ -133,7 +132,6 @@ export function WorkflowProvider({
   };
 
   const reorderRules = async (sourceIndex: number, destinationIndex: number) => {
-    console.log('reorderRules', sourceIndex, destinationIndex);
     const newOrder = Array.from(ruleOrder);
     const [reorderedItem] = newOrder.splice(sourceIndex, 1);
     if (reorderedItem) {

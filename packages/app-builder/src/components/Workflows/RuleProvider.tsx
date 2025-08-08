@@ -72,14 +72,11 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
   // Validate rule in real-time when it changes
   useEffect(() => {
     if (localRule && isModified) {
-      console.log('🔄 Validation triggered for rule:', localRule.id);
       const validationResult = validateRuleEnhanced(localRule);
       if (!validationResult.success) {
         const errors = validationResult.error?.errors?.map((error) => error.message) || [];
-        console.log(`❌ Validation errors for rule ${localRule.id}:`, errors);
         setValidationErrors(errors);
       } else {
-        console.log(`✅ Rule ${localRule.id} passed validation`);
         setValidationErrors([]);
       }
     } else {
@@ -143,8 +140,6 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
 
   const deleteCondition = (conditionId: string) => {
     if (!localRule?.conditions) return;
-
-    console.log('🔄 RuleProvider: deleteCondition called for condition', conditionId);
 
     const updatedRule = { ...localRule };
     updatedRule.conditions = localRule.conditions.filter(

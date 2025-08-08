@@ -182,11 +182,6 @@ export function validateRuleConditions(conditions: WorkflowCondition[]): {
 } {
   const errors: string[] = [];
 
-  // if (!Array.isArray(conditions) || conditions.length === 0) {
-  //   errors.push(t('workflows:condition.error.atLeastOneCondition'));
-  //   return { isValid: false, errors };
-  // }
-
   conditions.forEach((condition, index) => {
     if (!condition.function) {
       errors.push(`Condition ${index + 1}: Missing function type`);
@@ -201,9 +196,7 @@ export function validateRuleConditions(conditions: WorkflowCondition[]): {
         );
       }
     } else if (condition.function === 'payload_evaluates') {
-      console.log('🔍 Validating payload_evaluates condition:', condition);
       const validationResult = validatePayloadEvaluatesCondition(condition, index + 1);
-      console.log('📋 Payload validation result:', validationResult);
       errors.push(...validationResult.errors);
     }
   });
@@ -230,12 +223,9 @@ export function validateRuleEnhanced(rule: Rule): {
   success: boolean;
   error?: { errors: Array<{ message: string; path: string[] }> };
 } {
-  // console.log('🔍 Enhanced validation for rule:', rule);
-
   try {
     // First try the basic Zod validation
     const zodResult = ruleValidationSchema.safeParse(rule);
-    // console.log('📋 Zod validation result:', JSON.stringify(zodResult, null, 2));
 
     if (zodResult.success) {
       // Additional custom validations

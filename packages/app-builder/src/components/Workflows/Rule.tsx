@@ -21,7 +21,6 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
   const [editingRuleId, setEditingRuleId] = useState<string | null>(null);
   const [editingRuleName, setEditingRuleName] = useState<string>('');
 
-  console.log('rule', rule);
   const {
     rule: currentRule,
     isModified,

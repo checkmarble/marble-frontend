@@ -17,6 +17,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs } from '@remix-run/node';
+import * as Sentry from '@sentry/remix';
 import * as R from 'remeda';
 
 export type AstValidationPayload = {
@@ -169,8 +170,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     return Response.json(result);
   } catch (error) {
-    // TODO: manage error
-    console.log('an error happened', error);
-    throw error;
+    Sentry.captureException(error);
+    return Response.json({ error: 'Validation failed' }, { status: 500 });
   }
 }

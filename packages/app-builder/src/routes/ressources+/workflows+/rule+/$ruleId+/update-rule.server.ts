@@ -98,14 +98,10 @@ const getModifiedItems = <T extends { id: string }>(
   );
 
 export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rule): Promise<void> {
-  console.log('requestData', JSON.stringify(rule, null, 2));
   const modifiedRule = validateUpdateWorkflowRuleRequest(rule);
 
   // First get the rule from the API
   const originalRule = await scenario.getWorkflowRule({ ruleId: rule.id });
-  console.log('originalRule', JSON.stringify(originalRule, null, 2));
-
-  console.log('request.json', JSON.stringify(modifiedRule, null, 2));
 
   // Handle conditions
   const originalConditions: ConditionsMap = new Map(
@@ -114,10 +110,6 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
   const modifiedConditions: ConditionsMap = new Map(
     modifiedRule.conditions.map((condition) => [condition.id, condition]),
   );
-
-  console.log('getNewItems', getNewItems(originalConditions, modifiedConditions));
-  console.log('getMissingItems', getMissingItems(originalConditions, modifiedConditions));
-  console.log('getModifiedItems', getModifiedItems(originalConditions, modifiedConditions));
 
   // Delete missing conditions
   getMissingItems(originalConditions, modifiedConditions).forEach((condition) => {
