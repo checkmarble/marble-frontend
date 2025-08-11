@@ -5,7 +5,7 @@ import {
   type TransferAlertUpdateAsBeneficiaryBodyDto,
   type TransferAlertUpdateAsSenderBodyDto,
 } from 'marble-api/generated/transfercheck-api';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const transferAlerStatuses = ['pending', 'acknowledged', 'archived'] as const;
 export const transferAlerStatusesWithoutArchived = transferAlerStatuses.filter(
@@ -118,11 +118,21 @@ export function adaptUpdateTransferAlertAsBeneficiaryDto(
 }
 
 export const messageSchema = z
-  .string({ required_error: 'required' })
-  .max(1000, { message: 'max 1000 characters' });
+  .string({
+    error: (issue) => (issue.input === undefined ? 'required' : undefined),
+  })
+  .max(1000, {
+    error: 'max 1000 characters',
+  });
 
-export const transferEndToEndIdSchema = z.string().max(100, { message: 'max 100 characters' });
+export const transferEndToEndIdSchema = z.string().max(100, {
+  error: 'max 100 characters',
+});
 
-export const senderIbanSchema = z.string().max(34, { message: 'max 34 characters' });
+export const senderIbanSchema = z.string().max(34, {
+  error: 'max 34 characters',
+});
 
-export const beneficiaryIbanSchema = z.string().max(34, { message: 'max 34 characters' });
+export const beneficiaryIbanSchema = z.string().max(34, {
+  error: 'max 34 characters',
+});

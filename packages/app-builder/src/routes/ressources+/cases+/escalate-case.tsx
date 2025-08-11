@@ -12,7 +12,7 @@ import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const schema = z.object({ caseId: z.string(), inboxId: z.string() });
 
@@ -34,7 +34,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, data, error } = schema.safeParse(raw);
 
-  if (!success) return { success: false, errors: error.flatten() };
+  if (!success) return { success: false, errors: z.treeifyError(error) };
 
   try {
     await cases.escalateCase({ caseId: data.caseId });

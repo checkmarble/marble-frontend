@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { redirectBack } from 'remix-utils/redirect-back';
 import { Button, Checkbox, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const deactivateFormSchema = z.object({
   stopOperating: z.boolean().pipe(z.literal(true)),
@@ -41,7 +41,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   if (!success) {
     return json(
-      { status: 'error', errors: error.flatten() },
+      { status: 'error', errors: z.treeifyError(error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },

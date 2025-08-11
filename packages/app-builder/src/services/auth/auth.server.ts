@@ -42,7 +42,7 @@ import { json, redirect } from '@remix-run/node';
 import { captureRemixServerException } from '@sentry/remix';
 import { marblecoreApi, TokenService } from 'marble-api';
 import { type CSRF, CSRFError } from 'remix-utils/csrf/server';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 import { getRoute } from '../../utils/routes';
 import { captureUnexpectedRemixError } from '../monitoring';
 import { type SessionService } from './session.server';

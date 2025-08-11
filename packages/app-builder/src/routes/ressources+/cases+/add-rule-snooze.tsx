@@ -19,7 +19,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 import { Button, ModalV2, Select, TextArea } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const durationUnitOptions = ['hours', 'days', 'weeks'] as const;
 
@@ -53,7 +53,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!success) {
     return json(
-      { status: 'error', errors: error.flatten() },
+      { status: 'error', errors: z.treeifyError(error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },

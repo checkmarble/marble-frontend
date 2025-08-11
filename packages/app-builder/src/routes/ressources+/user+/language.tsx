@@ -7,7 +7,7 @@ import { useFetcher } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { redirectBack } from 'remix-utils/redirect-back';
 import { Select } from 'ui-design-system';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 import { setToastMessage } from '../../../components/MarbleToaster';
 

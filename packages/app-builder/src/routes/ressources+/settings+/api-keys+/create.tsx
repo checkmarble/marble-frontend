@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const createApiKeyFormSchema = z.object({
   description: z.string().min(1),
@@ -45,7 +45,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!result.success) {
     return json(
-      { status: 'error', errors: result.error.flatten() },
+      { status: 'error', errors: z.treeifyError(result.error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },

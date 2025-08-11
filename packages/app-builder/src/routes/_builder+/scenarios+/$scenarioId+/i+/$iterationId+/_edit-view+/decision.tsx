@@ -22,7 +22,7 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Collapsible } from 'ui-design-system';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 import { useCurrentScenarioIteration, useCurrentScenarioValidation } from '../_layout';
 
@@ -92,21 +92,23 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
     .superRefine(
       ({ scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold }, ctx) => {
         if (scoreBlockAndReviewThreshold < scoreReviewThreshold) {
-          ctx.addIssue({
+          ctx.issues.push({
             code: z.ZodIssueCode.custom,
             path: ['scoreBlockAndReviewThreshold'],
             message: t('scenarios:validation.decision.score_threshold_min', {
               replace: { min: scoreReviewThreshold },
             }),
+            input: '',
           });
         }
         if (scoreDeclineThreshold < scoreBlockAndReviewThreshold) {
-          ctx.addIssue({
+          ctx.issues.push({
             code: z.ZodIssueCode.custom,
             path: ['scoreDeclineThreshold'],
             message: t('scenarios:validation.decision.score_threshold_min', {
               replace: { min: scoreBlockAndReviewThreshold },
             }),
+            input: '',
           });
         }
       },
@@ -133,7 +135,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   if (!result.success) {
     return json(
-      { status: 'error', errors: result.error.flatten() },
+      { status: 'error', errors: z.treeifyError(result.error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },

@@ -14,11 +14,11 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const createCaseFormSchema = z.object({
   name: z.string().min(1),
-  inboxId: z.string().uuid(),
+  inboxId: z.uuid(),
 });
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -48,7 +48,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = createCaseFormSchema.safeParse(raw);
 
-  if (!success) return json({ success: 'false', errors: error.flatten() });
+  if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
 
   try {
     const createdCase = await cases.createCase(data);

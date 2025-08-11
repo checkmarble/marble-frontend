@@ -17,7 +17,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button } from 'ui-design-system';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '../Form/Tanstack/FormInput';

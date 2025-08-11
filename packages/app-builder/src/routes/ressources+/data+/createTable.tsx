@@ -13,7 +13,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['data', 'navigation', 'common'] satisfies Namespace,
@@ -24,7 +24,7 @@ const createTableFormSchema = z.object({
     .string()
     .min(1)
     .regex(/^[a-z]+[a-z0-9_]+$/, {
-      message: 'Only lower case alphanumeric and _, must start with a letter',
+      error: 'Only lower case alphanumeric and _, must start with a letter',
     }),
   description: z.string(),
 });
@@ -49,7 +49,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = createTableFormSchema.safeParse(raw);
 
-  if (!success) return json({ success: 'false', errors: error.flatten() });
+  if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
 
   try {
     await apiClient.postDataModelTable(data);

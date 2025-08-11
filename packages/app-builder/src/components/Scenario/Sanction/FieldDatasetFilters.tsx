@@ -7,11 +7,11 @@ import { useTranslation } from 'react-i18next';
 import { filter, flatMap, map, pipe, unique } from 'remeda';
 import { Button, Checkbox, Input, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const datasetFiltersSchema = z.object({
   tags: z.array(z.string()),
-  search: z.string().optional().default(''),
+  search: z.string().optional().prefault(''),
 });
 
 export type DatasetFiltersForm = z.infer<typeof datasetFiltersSchema>;

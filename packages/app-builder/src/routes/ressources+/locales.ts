@@ -2,7 +2,7 @@ import { supportedLngs } from '@app-builder/services/i18n/i18n-config';
 import { resources } from '@app-builder/services/i18n/resources/resources.server';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { cacheHeader } from 'pretty-cache-header';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);

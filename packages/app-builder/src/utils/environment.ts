@@ -1,5 +1,5 @@
 import { type FirebaseOptions } from 'firebase/app';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 /**
  * To:
@@ -66,7 +66,7 @@ function getEnv<K extends keyof EnvVars>(envVarName: K) {
 export function checkEnv() {
   const result = EnvVarsSchema.safeParse(process.env);
   if (!result.success) {
-    const { _errors, ...rest } = result.error.format();
+    const { _errors, ...rest } = z.treeifyError(result.error);
     const formatted = Object.entries(rest)
       .map(([key, value]) => `\t- ${key}: ${value._errors.join(', ')}`)
       .join('\n');

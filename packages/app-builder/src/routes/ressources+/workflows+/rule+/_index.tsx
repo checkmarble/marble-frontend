@@ -1,10 +1,10 @@
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { ActionFunctionArgs } from '@remix-run/node';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const schema = z.object({
-  scenario_id: z.string().uuid(),
+  scenario_id: z.uuid(),
   name: z.string().min(1),
   fallthrough: z.boolean(),
   conditions: z.array(z.any()),
@@ -21,7 +21,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const result = schema.safeParse(body);
 
   if (!result.success) {
-    return Response.json({ error: result.error.flatten().fieldErrors }, { status: 400 });
+    return Response.json({ error: z.treeifyError(result.error).fieldErrors }, { status: 400 });
   }
 
   const { scenario_id, name, fallthrough } = result.data;

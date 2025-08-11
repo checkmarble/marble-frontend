@@ -19,7 +19,7 @@ import { type Namespace } from 'i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Modal } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['data', 'navigation', 'common'] satisfies Namespace,
@@ -27,7 +27,7 @@ export const handle = {
 
 const editFieldFormSchema = z.object({
   description: z.string(),
-  fieldId: z.string().uuid(),
+  fieldId: z.uuid(),
   isEnum: z.boolean(),
   isUnique: z.boolean(),
 });
@@ -50,7 +50,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = editFieldFormSchema.safeParse(raw);
 
-  if (!success) return json({ success: 'false', errors: error.flatten() });
+  if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
   const { description, fieldId, isEnum, isUnique } = data;
 
   try {

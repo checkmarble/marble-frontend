@@ -10,15 +10,15 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
 };
 
 const deleteInboxUserFormSchema = z.object({
-  inboxId: z.string().uuid(),
-  inboxUserId: z.string().uuid(),
+  inboxId: z.uuid(),
+  inboxUserId: z.uuid(),
 });
 
 export async function action({ request }: ActionFunctionArgs) {

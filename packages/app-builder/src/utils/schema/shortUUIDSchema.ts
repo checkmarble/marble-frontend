@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 import { fromSUUIDtoUUID } from '../short-uuid';
 
@@ -23,7 +23,7 @@ export const shortUUIDSchema = z.string().transform((value, ctx) => {
   } catch (_e) {
     const parsedValue = z.string().uuid().safeParse(value);
     if (parsedValue.success) {
-      ctx.addIssue({
+      ctx.issues.push({
         code: z.ZodIssueCode.custom,
         params: {
           expected: 'short-uuid',
@@ -34,9 +34,10 @@ export const shortUUIDSchema = z.string().transform((value, ctx) => {
       return z.NEVER;
     }
 
-    ctx.addIssue({
+    ctx.issues.push({
       code: z.ZodIssueCode.custom,
       params: { expected: 'short-uuid', received: 'string', value },
+      input: '',
     });
     return z.NEVER;
   }

@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 type CloseCaseForm = {
   caseId: string;
@@ -25,7 +25,7 @@ type CloseCaseForm = {
 };
 
 const schema = z.object({
-  caseId: z.string().uuid(),
+  caseId: z.uuid(),
   outcome: z.enum(finalOutcomes).optional(),
   comment: z.string(),
 });
@@ -48,7 +48,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { data, success, error } = schema.safeParse(rawData);
 
-  if (!success) return Response.json({ sucess: false, errors: error.flatten() });
+  if (!success) return Response.json({ sucess: false, errors: z.treeifyError(error) });
 
   const { caseId, outcome, comment } = data;
 

@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const schema = z.object({
   caseId: z.string(),
@@ -38,7 +38,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { data, success, error } = schema.safeParse(rawData);
 
-  if (!success) return Response.json({ sucess: false, errors: error.flatten() });
+  if (!success) return Response.json({ sucess: false, errors: z.treeifyError(error) });
 
   try {
     const promises = [];

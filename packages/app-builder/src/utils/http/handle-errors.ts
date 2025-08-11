@@ -1,5 +1,5 @@
 import { redirect } from '@remix-run/node';
-import { type ZodError, type ZodIssueOptionalMessage } from 'zod';
+import { type ZodError, type ZodIssueOptionalMessage } from 'zod/v4';
 
 import { isRawUUIDIssue } from '../schema/shortUUIDSchema';
 import { fromUUIDtoSUUID } from '../short-uuid';

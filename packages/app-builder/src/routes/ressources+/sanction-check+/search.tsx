@@ -3,18 +3,18 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { decode as decodeFormdata } from 'decode-formdata';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const refineSearchSchema = z.discriminatedUnion('entityType', [
   z.object({
-    sanctionCheckId: z.string().uuid(),
+    sanctionCheckId: z.uuid(),
     entityType: z.literal('Thing'),
     fields: z.object({
       name: z.string().optional(),
     }),
   }),
   z.object({
-    sanctionCheckId: z.string().uuid(),
+    sanctionCheckId: z.uuid(),
     entityType: z.literal('Person'),
     fields: z.object({
       name: z.string().optional(),
@@ -25,7 +25,7 @@ export const refineSearchSchema = z.discriminatedUnion('entityType', [
     }),
   }),
   z.object({
-    sanctionCheckId: z.string().uuid(),
+    sanctionCheckId: z.uuid(),
     entityType: z.literal('Organization'),
     fields: z.object({
       name: z.string().optional(),
@@ -35,7 +35,7 @@ export const refineSearchSchema = z.discriminatedUnion('entityType', [
     }),
   }),
   z.object({
-    sanctionCheckId: z.string().uuid(),
+    sanctionCheckId: z.uuid(),
     entityType: z.literal('Vehicle'),
     fields: z.object({
       name: z.string().optional(),

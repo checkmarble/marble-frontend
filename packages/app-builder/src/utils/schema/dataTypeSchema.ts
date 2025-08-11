@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 const protocolWhitelist = ['http:', 'https:'];
 export const urlDataTypeSchema = z.string().refine((value) => {

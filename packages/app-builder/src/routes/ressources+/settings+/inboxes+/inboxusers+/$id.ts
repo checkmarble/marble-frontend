@@ -3,7 +3,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import * as Sentry from '@sentry/remix';
 import { type Namespace } from 'i18next';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
@@ -47,7 +47,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   if (!success) {
     return Response.json(
-      { status: 'error', errors: error.flatten() },
+      { status: 'error', errors: z.treeifyError(error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },

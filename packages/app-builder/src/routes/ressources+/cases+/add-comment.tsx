@@ -24,11 +24,11 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const schema = z
   .object({
-    caseId: z.string().uuid().nonempty(),
+    caseId: z.uuid().nonempty(),
     comment: z.string(),
     files: z.array(z.instanceof(File)),
   })
@@ -78,7 +78,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { data, success, error } = schema.safeParse(decode(raw, { arrays: ['files'] }));
 
-  if (!success) return Response.json({ success, errors: error.flatten() });
+  if (!success) return Response.json({ success, errors: z.treeifyError(error) });
 
   try {
     const promises = [];

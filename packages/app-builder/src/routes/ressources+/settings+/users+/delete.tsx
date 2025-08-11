@@ -7,14 +7,14 @@ import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
 };
 
 const deleteUserFormSchema = z.object({
-  userId: z.string().uuid(),
+  userId: z.uuid(),
 });
 
 export async function action({ request }: ActionFunctionArgs) {

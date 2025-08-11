@@ -41,7 +41,7 @@ import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 import { Button, CtaClassName, Input, ModalV2, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);

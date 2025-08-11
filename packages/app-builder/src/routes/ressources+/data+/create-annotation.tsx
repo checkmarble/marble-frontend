@@ -31,13 +31,13 @@ import { isDeepEqual } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { RemoveFileAnnotation } from './delete-annotation.$annotationId';
 
 const baseCreateAnnotationSchema = z.object({
   tableName: z.string(),
   objectId: z.string(),
-  caseId: z.string().uuid(),
+  caseId: z.uuid(),
 });
 
 const createTagAnnotationSchema = z.intersection(
@@ -45,8 +45,8 @@ const createTagAnnotationSchema = z.intersection(
   z.object({
     type: z.literal('tag'),
     payload: z.object({
-      addedTags: z.array(z.string().uuid()).optional(),
-      removedAnnotations: z.array(z.string().uuid()).optional(),
+      addedTags: z.array(z.uuid()).optional(),
+      removedAnnotations: z.array(z.uuid()).optional(),
     }),
   }),
 );
@@ -135,7 +135,7 @@ export async function action({ request }: ActionFunctionArgs) {
   );
 
   if (!success) {
-    return Response.json({ success, errors: error.flatten() });
+    return Response.json({ success, errors: z.treeifyError(error) });
   }
 
   try {

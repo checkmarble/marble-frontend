@@ -16,7 +16,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Select, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['decisions', 'navigation', 'common'] satisfies Namespace,
@@ -69,7 +69,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = addToCaseFormSchema.safeParse(raw);
 
-  if (!success) return json({ success: 'false', errors: error.flatten() });
+  if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
 
   try {
     if (data.newCase) {

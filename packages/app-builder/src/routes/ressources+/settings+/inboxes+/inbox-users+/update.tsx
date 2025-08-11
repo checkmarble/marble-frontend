@@ -20,7 +20,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
@@ -28,8 +28,8 @@ export const handle = {
 
 function getUpdateInboxUserFormSchema(inboxUserRoles: readonly [string, ...string[]]) {
   return z.object({
-    id: z.string().uuid(),
-    inboxId: z.string().uuid(),
+    id: z.uuid(),
+    inboxId: z.uuid(),
     role: z.enum(inboxUserRoles),
     autoAssignable: z.boolean(),
   });
@@ -57,7 +57,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!success) {
     return Response.json(
-      { status: 'error', errors: error.flatten() },
+      { status: 'error', errors: z.treeifyError(error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },

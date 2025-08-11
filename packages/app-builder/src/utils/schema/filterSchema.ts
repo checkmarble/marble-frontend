@@ -1,5 +1,5 @@
 import { Temporal } from 'temporal-polyfill';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 export const dateRangeSchema = z.discriminatedUnion('type', [
   z.object({

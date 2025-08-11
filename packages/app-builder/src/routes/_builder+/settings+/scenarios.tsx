@@ -15,7 +15,7 @@ import { useForm } from '@tanstack/react-form';
 import { decode as formDataToObject } from 'decode-formdata';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);

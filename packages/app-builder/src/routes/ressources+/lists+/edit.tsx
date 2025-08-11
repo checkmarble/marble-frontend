@@ -13,14 +13,14 @@ import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['lists', 'navigation', 'common'] satisfies Namespace,
 };
 
 const editListFormSchema = z.object({
-  listId: z.string().uuid(),
+  listId: z.uuid(),
   name: z.string().nonempty(),
   description: z.string(),
 });
@@ -39,7 +39,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = editListFormSchema.safeParse(raw);
 
-  if (!success) return json({ success: 'false', errors: error.flatten() });
+  if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
 
   await customListsRepository.updateCustomList(data.listId, omit(data, ['listId']));
 

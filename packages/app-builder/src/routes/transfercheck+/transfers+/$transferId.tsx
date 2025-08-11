@@ -20,7 +20,7 @@ import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['common', 'navigation', ...transfersI18n] satisfies Namespace,
@@ -82,7 +82,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const formData = await request.json();
   const { error, success, data } = transferUpdateBodySchema.safeParse(formData);
 
-  if (!success) return json({ status: 'success', errors: error.flatten() });
+  if (!success) return json({ status: 'success', errors: z.treeifyError(error) });
 
   await transferRepository.updateTransfer({
     transferId,

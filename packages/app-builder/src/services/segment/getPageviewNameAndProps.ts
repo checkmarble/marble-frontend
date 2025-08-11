@@ -1,7 +1,7 @@
 import { type RouteID } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { type UIMatch } from '@remix-run/react';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 interface PageViewNameAndProps {
   name: string;

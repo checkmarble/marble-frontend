@@ -14,7 +14,7 @@ import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Collapsible } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { UpdateAlertStatus } from '../ressources+/alert.update.status';
 

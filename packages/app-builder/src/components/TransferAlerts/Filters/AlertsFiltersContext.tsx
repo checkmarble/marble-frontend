@@ -5,7 +5,7 @@ import { type DateRangeFilterForm, dateRangeSchema } from '@app-builder/utils/sc
 import * as React from 'react';
 import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 import { type AlertsFilterName, alertsFilterNames } from './filters';
 

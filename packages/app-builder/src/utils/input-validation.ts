@@ -1,7 +1,7 @@
 import { type Params } from '@remix-run/react';
 import qs, { type IParseOptions } from 'qs';
 import { type UUID } from 'short-uuid';
-import { type ZodType, type ZodTypeDef, z } from 'zod';
+import { type ZodType, type ZodTypeDef, z } from 'zod/v4';
 
 import { shortUUIDSchema } from './schema/shortUUIDSchema';
 
@@ -72,7 +72,7 @@ export async function parseIdParamSafe<KeyName extends string>(
   | { success: false; error: z.ZodError; params: Params }
 > {
   const schema = z.object({
-    [keyName]: z.union([shortUUIDSchema, z.string().uuid()]),
+    [keyName]: z.union([shortUUIDSchema, z.uuid()]),
   });
 
   const result = await schema.safeParseAsync(params);

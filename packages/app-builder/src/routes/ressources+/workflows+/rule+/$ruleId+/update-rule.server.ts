@@ -1,7 +1,7 @@
 import { Rule, WorkflowAction, WorkflowCondition } from '@app-builder/models/scenario/workflow';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import * as R from 'remeda';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export type ConditionsMap = Map<string, WorkflowCondition>;
 export type ActionsMap = Map<string, WorkflowAction>;
@@ -12,7 +12,12 @@ const astNodeSchema: z.ZodTypeAny = z.object({
   name: z.string().optional(),
   constant: z.any().optional(),
   children: z.array(z.lazy(() => astNodeSchema)).optional(),
-  named_children: z.record(z.lazy(() => astNodeSchema)).optional(),
+  named_children: z
+    .record(
+      z.string(),
+      z.lazy(() => astNodeSchema),
+    )
+    .optional(),
 });
 
 const workflowConditionSchema = z

@@ -12,14 +12,14 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2 as Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['lists', 'navigation', 'common'] satisfies Namespace,
 };
 
 const addValueFormSchema = z.object({
-  listId: z.string().uuid(),
+  listId: z.uuid(),
   value: z.string().nonempty(),
 });
 
@@ -37,7 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = addValueFormSchema.safeParse(raw);
 
-  if (!success) return json({ success: false as const, errors: error.format() });
+  if (!success) return json({ success: false as const, errors: z.treeifyError(error) });
 
   await customListsRepository.createCustomListValue(data.listId, {
     value: data.value,

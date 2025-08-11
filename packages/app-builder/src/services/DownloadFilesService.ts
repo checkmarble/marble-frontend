@@ -1,7 +1,7 @@
 import { DownloadError, downloadFile } from '@app-builder/utils/download-file';
 import { UnknownError } from '@app-builder/utils/unknown-error';
 import { useState } from 'react';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export class AlreadyDownloadingError extends Error {}
 export class FetchLinkError extends Error {}

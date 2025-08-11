@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 function createTableOptionSchema(dataModel: DataModel) {
   return z.object(
@@ -80,7 +80,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const session = await getSession(request);
 
   if (!submission.success) {
-    return { success: false, errors: submission.error.flatten() };
+    return { success: false, errors: z.treeifyError(submission.error) };
   }
 
   try {

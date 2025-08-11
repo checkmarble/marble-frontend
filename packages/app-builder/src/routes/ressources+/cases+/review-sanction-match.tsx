@@ -12,7 +12,7 @@ import { type UpdateSanctionCheckMatchDto } from 'marble-api';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2, Switch, TextArea } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const reviewSanctionSchema = z.object({
   matchId: z.string(),
@@ -20,7 +20,7 @@ const reviewSanctionSchema = z.object({
   comment: z.string().optional(),
   whitelist: z
     .preprocess((onoff) => onoff === 'on', z.boolean())
-    .default(false)
+    .prefault(false)
     .optional(),
 });
 
@@ -43,7 +43,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const { success, error, data } = reviewSanctionSchema.safeParse(decode(raw));
 
   if (!success) {
-    return json({ success: 'false', errors: error.flatten() });
+    return json({ success: 'false', errors: z.treeifyError(error) });
   }
 
   try {

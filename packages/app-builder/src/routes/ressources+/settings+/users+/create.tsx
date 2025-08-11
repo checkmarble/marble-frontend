@@ -18,7 +18,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['settings', 'navigation', 'common'] satisfies Namespace,
@@ -28,9 +28,9 @@ function getCreateUserFormSchema(userRoles: readonly [string, ...string[]]) {
   return z.object({
     firstName: z.string().nonempty(),
     lastName: z.string().nonempty(),
-    email: z.string().email().nonempty(),
+    email: z.email().nonempty(),
     role: z.enum(userRoles),
-    organizationId: z.string().uuid().nonempty(),
+    organizationId: z.uuid().nonempty(),
   });
 }
 
@@ -56,7 +56,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!success) {
     return json(
-      { status: 'error', errors: error.flatten() },
+      { status: 'error', errors: z.treeifyError(error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
