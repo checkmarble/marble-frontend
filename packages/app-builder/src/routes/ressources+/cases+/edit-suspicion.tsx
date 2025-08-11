@@ -193,7 +193,7 @@ export const EditCaseSuspicion = ({
   const lastData = data as
     | {
         success: boolean;
-        errors?: z.typeToFlattenedError<EditSuspicionForm>;
+        errors?: ReturnType<z.ZodError<z.output<typeof schema>>['flatten']>;
         data?: SuspiciousActivityReport;
       }
     | undefined;

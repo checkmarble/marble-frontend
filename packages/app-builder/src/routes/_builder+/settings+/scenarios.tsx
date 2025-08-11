@@ -107,9 +107,9 @@ export default function Users() {
       if (formApi.state.isValid) fetcher.submit(value, { method: 'PATCH' });
     },
     validators: {
-      onChange: editOrganizationSchema,
-      onBlur: editOrganizationSchema,
-      onSubmit: editOrganizationSchema,
+      onChange: editOrganizationSchema as unknown as any,
+      onBlur: editOrganizationSchema as unknown as any,
+      onSubmit: editOrganizationSchema as unknown as any,
     },
     defaultValues: {
       organizationId: organization.id,

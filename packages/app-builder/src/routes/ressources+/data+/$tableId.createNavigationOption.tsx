@@ -44,7 +44,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
   invariant(sourceTableId, 'Expected tableId to be in URL');
 
   if (!options.success) {
-    return { success: false, errors: z.treeifyError(options.error).fieldErrors };
+    const { errors } = z.treeifyError(options.error);
+    return { success: false, errors };
   }
 
   try {

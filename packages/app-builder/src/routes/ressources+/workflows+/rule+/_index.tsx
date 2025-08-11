@@ -21,7 +21,8 @@ export async function action({ request }: ActionFunctionArgs) {
   const result = schema.safeParse(body);
 
   if (!result.success) {
-    return Response.json({ error: z.treeifyError(result.error).fieldErrors }, { status: 400 });
+    const { errors } = z.treeifyError(result.error);
+    return Response.json({ error: errors }, { status: 400 });
   }
 
   const { scenario_id, name, fallthrough } = result.data;

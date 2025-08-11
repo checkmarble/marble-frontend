@@ -200,14 +200,20 @@ export async function action({ request, params }: ActionFunctionArgs) {
       message: t('common:success.save'),
     });
 
-    return json({ status: 'success' }, { headers: { 'Set-Cookie': await commitSession(session) } });
+    return Response.json(
+      { status: 'success' },
+      { headers: { 'Set-Cookie': await commitSession(session) } },
+    );
   } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),
     });
 
-    return json({ status: 'error' }, { headers: { 'Set-Cookie': await commitSession(session) } });
+    return Response.json(
+      { status: 'error' },
+      { headers: { 'Set-Cookie': await commitSession(session) } },
+    );
   }
 }
 
@@ -220,7 +226,7 @@ export default function SanctionDetail() {
   const lastData = data as
     | {
         status: 'error' | 'success';
-        errors?: z.typeToFlattenedError<EditSanctionForm>;
+        errors?: ReturnType<z.ZodError<z.output<typeof editSanctionFormSchema>>['flatten']>;
       }
     | undefined;
   const scenario = useCurrentScenario();

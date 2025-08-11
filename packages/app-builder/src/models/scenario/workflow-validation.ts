@@ -243,10 +243,10 @@ export function validateRuleEnhanced(rule: Rule): {
 
       return { success: true };
     } else {
-      // Map Zod errors to our format
-      const mappedErrors = zodResult.error.errors.map((error) => ({
-        message: error.message,
-        path: error.path.map((p) => String(p)),
+      // Map Zod issues to our format (Zod v4)
+      const mappedErrors = zodResult.error.issues.map((issue) => ({
+        message: issue.message,
+        path: issue.path.map((p) => String(p)),
       }));
 
       return { success: false, error: { errors: mappedErrors } };
@@ -268,7 +268,7 @@ export function validateRuleEnhanced(rule: Rule): {
 }
 
 // Type for validation errors
-export type RuleValidationError = z.ZodError<typeof ruleValidationSchema._type>;
+export type RuleValidationError = z.ZodError<z.output<typeof ruleValidationSchema>>;
 
 // Helper function to validate a rule (legacy support)
 export function validateRule(rule: unknown) {
@@ -288,7 +288,9 @@ export function validateOutcomes(outcomes: OutcomeDto[]): boolean {
 
 // Helper function to get validation errors for a specific field
 export function getFieldErrors(error: z.ZodError, fieldPath: string): string[] {
-  return error.errors.filter((err) => err.path.join('.') === fieldPath).map((err) => err.message);
+  return error.issues
+    .filter((issue) => issue.path.join('.') === fieldPath)
+    .map((issue) => issue.message);
 }
 
 // Helper function to check if a rule has validation errors

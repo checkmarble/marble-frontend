@@ -127,7 +127,7 @@ export function AddComment({ caseId }: { caseId: string }) {
   const lastData = data as
     | {
         success: boolean;
-        errors?: z.typeToFlattenedError<CaseCommentForm>;
+        errors?: ReturnType<z.ZodError<z.output<typeof schema>>['flatten']>;
       }
     | undefined;
 

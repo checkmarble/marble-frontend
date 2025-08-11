@@ -109,7 +109,7 @@ const editRuleFormSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().optional(),
   ruleGroup: z.string().optional(),
-  scoreModifier: z.coerce.number().int().min(-1000).max(1000),
+  scoreModifier: z.number().int().min(-1000).max(1000),
   formula: z.any(),
 });
 

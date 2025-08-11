@@ -172,11 +172,8 @@ export function UpdateOrganizationSettingsContents({
     },
     validators: {
       onSubmit: editOrganizationSchema
-        .pick({
-          organizationId: true,
-          autoAssignQueueLimit: true,
-        })
-        .required({ autoAssignQueueLimit: true }),
+        .pick({ organizationId: true, autoAssignQueueLimit: true })
+        .required({ autoAssignQueueLimit: true }) as unknown as any,
     },
   });
 
@@ -193,8 +190,8 @@ export function UpdateOrganizationSettingsContents({
         <form.Field
           name="autoAssignQueueLimit"
           validators={{
-            onChange: z.coerce.number().min(0),
-            onBlur: z.coerce.number().min(0),
+            onChange: z.number().min(0),
+            onBlur: z.number().min(0),
           }}
         >
           {(field) => (
