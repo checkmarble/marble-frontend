@@ -121,7 +121,7 @@
     "ui-design-system": "workspace:*",
     "ui-icons": "workspace:*",
     "uuid": "^11.1.0",
-    "zod": "^3.24.2",
+    "zod": "^4.0.17",
     "zustand": "^5.0.3"
   }
 }
