@@ -15,10 +15,11 @@ import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
+import { matchSorter } from 'match-sorter';
 import { omit } from 'radash';
-import { useEffect, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal, Select, Switch } from 'ui-design-system';
+import { Button, MenuCommand, Modal, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod';
 
@@ -147,20 +148,38 @@ export function CreateInboxUserContent({
   const { t } = useTranslation(handle.i18n);
   const fetcher = useFetcher<typeof action>();
   const schema = useMemo(() => getCreateInboxUserFormSchema(inboxUserRoles), [inboxUserRoles]);
+  const [searchValue, setSearchValue] = useState('');
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [roleMenuOpen, setRoleMenuOpen] = useState(false);
+  const deferredSearchValue = useDeferredValue(searchValue);
+  const filteredUsers = useMemo(
+    () =>
+      matchSorter(users, deferredSearchValue, {
+        keys: [
+          (u: User) => `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim(),
+          'firstName',
+          'lastName',
+        ],
+      }),
+    [deferredSearchValue, users],
+  );
 
   const form = useForm({
-    defaultValues: { userId: '', inboxId: currentInboxId, role: 'admin' } as z.infer<typeof schema>,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        fetcher.submit(value, {
-          method: 'POST',
-          action: getRoute('/ressources/settings/inboxes/inbox-users/create'),
-          encType: 'application/json',
-        });
-      }
+    defaultValues: {
+      userId: '',
+      inboxId: currentInboxId,
+      role: 'admin',
+      autoAssignable: false,
+    } as z.infer<typeof schema>,
+    onSubmit: async ({ value }) => {
+      await fetcher.submit(value, {
+        method: 'POST',
+        action: getRoute('/ressources/settings/inboxes/inbox-users/create'),
+        encType: 'application/json',
+      });
     },
     validators: {
-      onSubmitAsync: schema,
+      onSubmit: schema,
     },
   });
 
@@ -181,18 +200,49 @@ export function CreateInboxUserContent({
           {(field) => (
             <div className="group flex flex-col gap-2">
               <FormLabel name={field.name}>{t('settings:inboxes.inbox_details.user')}</FormLabel>
-              <Select.Default
-                name={field.name}
-                defaultValue={field.state.value}
-                onValueChange={field.handleChange}
-                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
-              >
-                {users.map(({ userId, firstName, lastName }) => (
-                  <Select.DefaultItem key={userId} value={userId}>
-                    {`${firstName} ${lastName}`}
-                  </Select.DefaultItem>
-                ))}
-              </Select.Default>
+              <MenuCommand.Menu open={userMenuOpen} onOpenChange={setUserMenuOpen}>
+                <MenuCommand.Trigger>
+                  <MenuCommand.SelectButton
+                    hasError={field.state.meta.errors.length > 0}
+                    className="w-full"
+                  >
+                    {users.find((u) => u.userId === field.state.value)
+                      ? `${users.find((u) => u.userId === field.state.value)?.firstName ?? ''} ${users.find((u) => u.userId === field.state.value)?.lastName ?? ''}`
+                      : ''}
+                  </MenuCommand.SelectButton>
+                </MenuCommand.Trigger>
+                <MenuCommand.Content
+                  sameWidth
+                  align="start"
+                  className="min-w-[var(--radix-popover-trigger-width)]"
+                >
+                  <MenuCommand.Combobox
+                    placeholder={t('common:search')}
+                    onValueChange={setSearchValue}
+                  />
+                  <MenuCommand.List className="max-h-60">
+                    {filteredUsers.map(({ userId, firstName, lastName }) => (
+                      <MenuCommand.Item
+                        key={userId}
+                        value={`${firstName ?? ''} ${lastName ?? ''}`.trim()}
+                        selected={field.state.value === userId}
+                        onSelect={() => {
+                          field.handleChange(userId);
+                          setUserMenuOpen(false);
+                          setSearchValue('');
+                        }}
+                      >
+                        {`${firstName} ${lastName}`}
+                      </MenuCommand.Item>
+                    ))}
+                    <MenuCommand.Empty>
+                      <div className="text-center p-2">
+                        {t('common:no_results', { defaultValue: 'No results' })}
+                      </div>
+                    </MenuCommand.Empty>
+                  </MenuCommand.List>
+                </MenuCommand.Content>
+              </MenuCommand.Menu>
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
@@ -215,19 +265,38 @@ export function CreateInboxUserContent({
                   />
                 )}
               </FormLabel>
-              <Select.Default
-                name={field.name}
-                defaultValue={field.state.value}
-                onValueChange={field.handleChange}
-                borderColor={field.state.meta.errors.length === 0 ? 'greyfigma-90' : 'redfigma-47'}
-                disabled={!isAccessible(access)}
-              >
-                {inboxUserRoles.map((role) => (
-                  <Select.DefaultItem key={role} value={role}>
-                    {t(tKeyForInboxUserRole(role))}
-                  </Select.DefaultItem>
-                ))}
-              </Select.Default>
+              <MenuCommand.Menu open={roleMenuOpen} onOpenChange={setRoleMenuOpen}>
+                <MenuCommand.Trigger>
+                  <MenuCommand.SelectButton
+                    hasError={field.state.meta.errors.length > 0}
+                    className="w-full"
+                    disabled={!isAccessible(access)}
+                  >
+                    {field.state.value ? t(tKeyForInboxUserRole(field.state.value)) : ''}
+                  </MenuCommand.SelectButton>
+                </MenuCommand.Trigger>
+                <MenuCommand.Content
+                  sameWidth
+                  align="start"
+                  className="min-w-[var(--radix-popover-trigger-width)]"
+                >
+                  <MenuCommand.List>
+                    {inboxUserRoles.map((role) => (
+                      <MenuCommand.Item
+                        key={role}
+                        value={role}
+                        selected={field.state.value === role}
+                        onSelect={(value) => {
+                          field.handleChange(value);
+                          setRoleMenuOpen(false);
+                        }}
+                      >
+                        {t(tKeyForInboxUserRole(role))}
+                      </MenuCommand.Item>
+                    ))}
+                  </MenuCommand.List>
+                </MenuCommand.Content>
+              </MenuCommand.Menu>
               <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
             </div>
           )}
