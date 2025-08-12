@@ -40,6 +40,7 @@ import { type Namespace } from 'i18next';
 import { pick, unique } from 'radash';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as R from 'remeda';
 import { filter, flat, groupBy, map, mapValues, omit, pipe, uniqueBy } from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
@@ -85,7 +86,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     pivotObjects,
     dataModel,
     pivots,
-    mostRecentReview,
+    mostRecentReviews,
   ] = await Promise.all([
     cases.getCase({ caseId }),
     cases.getNextUnassignedCaseId({ caseId }),
@@ -208,6 +209,26 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     return redirect(getRoute('/cases/inboxes'));
   }
 
+  let review: any = null;
+  if (mostRecentReviews.length > 0 && mostRecentReviews[0]) {
+    const mostRecentReview = mostRecentReviews[0];
+
+    const fetchedProofs = R.pipe(
+      mostRecentReview.review.proofs,
+      R.filter((proof) => proof.origin === 'data_model'),
+      R.map((proof) =>
+        dataModelRepository
+          .getIngestedObject(proof.type, proof.id)
+          .then((dataModelObject) => ({ type: proof.type, object: dataModelObject })),
+      ),
+    );
+
+    review = {
+      ...mostRecentReview,
+      proofs: await Promise.all(fetchedProofs),
+    };
+  }
+
   return defer({
     case: currentCase,
     pivotObjects,
@@ -222,7 +243,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     rulesByPivotPromise,
     entitlements,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
-    mostRecentReview,
+    mostRecentReview: review,
   });
 };
 
@@ -322,9 +343,8 @@ export default function CaseManagerIndexPage() {
                 <AiAssist.Content>
                   <div className="p-4 h-full flex flex-col gap-2 justify-between">
                     <div className="border border-grey-90 rounded-md p-2 grow min-h-0">
-                      {mostRecentReview.length === 1
+                      {mostRecentReview
                         ? (() => {
-                            const data = mostRecentReview[0]!;
                             return (
                               <div className="flex flex-col gap-2 h-full text-xs">
                                 <Tabs defaultValue="review" className="flex flex-col h-full gap-2">
@@ -332,14 +352,14 @@ export default function CaseManagerIndexPage() {
                                     <TabsTrigger value="review" className="flex items-center gap-2">
                                       {t('cases:case.ai_assist.review')}
                                       <Icon
-                                        icon={data.ok ? 'tick' : 'cross'}
+                                        icon={mostRecentReview.ok ? 'tick' : 'cross'}
                                         className={cn(
                                           'size-5',
-                                          data.ok ? 'text-green-34' : 'text-red-47',
+                                          mostRecentReview.ok ? 'text-green-34' : 'text-red-47',
                                         )}
                                       />
                                     </TabsTrigger>
-                                    {!data.ok ? (
+                                    {!mostRecentReview.ok ? (
                                       <TabsTrigger value="sanityCheck">
                                         {t('cases:case.ai_assist.sanity_check')}
                                       </TabsTrigger>
@@ -349,14 +369,14 @@ export default function CaseManagerIndexPage() {
                                     value="review"
                                     className="min-h-0 p-2 overflow-scroll"
                                   >
-                                    <Markdown>{data.output}</Markdown>
+                                    <Markdown>{mostRecentReview.output}</Markdown>
                                   </TabsContent>
-                                  {!data.ok ? (
+                                  {!mostRecentReview.ok ? (
                                     <TabsContent
                                       value="sanityCheck"
                                       className="min-h-0 p-2 overflow-scroll"
                                     >
-                                      <Markdown>{data.sanityCheck}</Markdown>
+                                      <Markdown>{mostRecentReview.sanityCheck}</Markdown>
                                     </TabsContent>
                                   ) : null}
                                 </Tabs>
@@ -410,18 +430,20 @@ export default function CaseManagerIndexPage() {
         </div>
       </Page.Header>
       <Page.Container className="text-r relative h-full flex-row p-0 lg:p-0">
+        {/* TabSystem when mostRecentReview is not empty */}
         <CaseDetails
           key={details.id}
           currentUser={currentUser}
           selectDecision={selectDecision}
           drawerContentMode={drawerContentMode}
           setDrawerContentMode={setDrawerContentMode}
+          caseReview={mostRecentReview}
         />
         <DataModelExplorerProvider>
           <CaseManagerDrawer>
             {match(drawerContentMode)
               .with('pivot', () => {
-                if (!pivotObjects) return null;
+                if (!pivotObjects && !mostRecentReview?.proofs.length) return null;
 
                 return (
                   <PivotsPanel
@@ -429,7 +451,8 @@ export default function CaseManagerIndexPage() {
                     currentUser={currentUser}
                     case={details}
                     dataModel={dataModelWithTableOptions}
-                    pivotObjects={pivotObjects}
+                    pivotObjects={pivotObjects ?? []}
+                    reviewProofs={mostRecentReview?.proofs ?? []}
                   />
                 );
               })

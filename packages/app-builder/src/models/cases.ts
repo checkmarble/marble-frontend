@@ -7,6 +7,7 @@ import {
   type CaseEventDto,
   type CaseFileDto,
   CaseReviewDto,
+  CaseReviewProofDto,
   type CaseStatusDto,
   type CaseStatusForCaseEventDto,
   type CaseTagDto,
@@ -572,16 +573,60 @@ export function adaptPivotObject(dto: PivotObjectDto): PivotObject {
   };
 }
 
-export type CaseReview = {
+export type CaseProofOrigin = 'data_model' | 'internal';
+
+export type CaseReviewProof = {
+  id: string;
+  type: string;
+  origin: CaseProofOrigin;
+  reason: string;
+};
+
+export type CaseReviewContent = {
+  version: string;
   output: string;
+  proofs: CaseReviewProof[];
   thought?: string;
 } & ({ ok: true; sanityCheck?: undefined } | { ok: false; sanityCheck: string });
 
+export type CaseReview = {
+  id: string;
+  reaction: 'ok' | 'ko' | null;
+  version: string;
+  review: CaseReviewContent;
+};
+
+export function adaptCaseReviewProof(dto: CaseReviewProofDto): CaseReviewProof {
+  return {
+    id: dto.id,
+    type: dto.type,
+    origin: dto.origin,
+    reason: dto.reason,
+  };
+}
+
 export function adaptCaseReview(dto: CaseReviewDto): CaseReview {
-  const baseCaseReview = { output: dto.review.output, thought: dto.review.thought } as const;
+  const review: Omit<CaseReview, 'review'> = {
+    id: dto.id,
+    reaction: dto.reaction,
+    version: dto.version,
+  };
+  const baseCaseContentReview = {
+    version: dto.review.version,
+    output: dto.review.output,
+    thought: dto.review.thought,
+    proofs: dto.review.proofs.map(adaptCaseReviewProof),
+  } as const;
 
   if (!dto.review.ok) {
-    return { ...baseCaseReview, ok: false, sanityCheck: dto.review.sanity_check };
+    return {
+      ...review,
+      review: { ...baseCaseContentReview, ok: false, sanityCheck: dto.review.sanity_check },
+    };
   }
-  return { ...baseCaseReview, ok: true };
+
+  return {
+    ...review,
+    review: { ...baseCaseContentReview, ok: true },
+  };
 }
