@@ -3,6 +3,7 @@ import { type Rule, type WorkflowFeatureAccess } from '@app-builder/models/scena
 import {
   useCreateRuleMutation,
   useDeleteRuleMutation,
+  useGetLatestRulesReferencesQuery,
   useListRulesQuery,
   useReorderRulesMutation,
 } from '@app-builder/queries/Workflows';
@@ -69,6 +70,10 @@ export function WorkflowProvider({
   const createRuleMutation = useCreateRuleMutation();
   const deleteRuleMutation = useDeleteRuleMutation();
   const reorderRulesMutation = useReorderRulesMutation();
+
+  const latestRulesReferencesQuery = useGetLatestRulesReferencesQuery(scenarioId);
+
+  console.log('latestRulesReferencesQuery', latestRulesReferencesQuery.data);
 
   // State
   const [ruleOrder, setRuleOrder] = useState<string[]>([]);
