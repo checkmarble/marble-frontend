@@ -1,9 +1,10 @@
+import { useRefreshTokenMutation } from '@app-builder/queries/auth/refresh-token';
 import { useClientServices } from '@app-builder/services/init.client';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useInterval, useVisibilityChange } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, redirect } from '@remix-run/node';
-import { useFetcher, useNavigate } from '@remix-run/react';
+import { useNavigate } from '@remix-run/react';
 import { useAuthenticityToken } from 'remix-utils/csrf/react';
 
 export function loader() {
@@ -12,6 +13,7 @@ export function loader() {
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = initServerServices(request);
+
   return await authService.refresh(request, {
     failureRedirect: getRoute('/ressources/auth/logout'),
   });
@@ -22,7 +24,7 @@ export async function action({ request }: ActionFunctionArgs) {
 const REFRESH_TOKEN_INTERVAL = 1000 * 60 * 20; // 20 minutes
 
 export function useRefreshToken() {
-  const { submit } = useFetcher();
+  const refreshTokenMutation = useRefreshTokenMutation();
   const csrf = useAuthenticityToken();
   const visibilityState = useVisibilityChange();
   const navigate = useNavigate();
@@ -35,10 +37,7 @@ export function useRefreshToken() {
 
       firebaseIdToken().then(
         (idToken: string) => {
-          submit(
-            { idToken, csrf },
-            { method: 'POST', action: getRoute('/ressources/auth/refresh') },
-          );
+          refreshTokenMutation.mutate({ idToken, csrf });
         },
         () => {
           let redirectUrl = getRoute('/ressources/auth/logout');
