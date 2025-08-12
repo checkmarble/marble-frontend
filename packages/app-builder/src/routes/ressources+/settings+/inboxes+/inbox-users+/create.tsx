@@ -119,7 +119,7 @@ export function CreateInboxUser({
           {t('settings:inboxes.inbox_details.add_member')}
         </Button>
       </Modal.Trigger>
-      <Modal.Content onClick={(e) => e.stopPropagation()}>
+      <Modal.Content onClick={(e) => e.stopPropagation()} aria-describedby={undefined}>
         <CreateInboxUserContent
           currentInboxId={inboxId}
           users={users}
