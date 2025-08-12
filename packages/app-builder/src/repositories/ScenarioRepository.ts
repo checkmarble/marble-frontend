@@ -32,11 +32,13 @@ import {
   type ScenarioValidation,
 } from '@app-builder/models/scenario/validation';
 import {
+  adaptScenarioRuleLatestVersion,
   adaptWorkflow,
   adaptWorkflowAction,
   adaptWorkflowCondition,
   adaptWorkflowRule,
   type Rule,
+  type ScenarioRuleLatestVersion,
   transformWorkflowAction,
   transformWorkflowCondition,
   type WorkflowAction,
@@ -109,6 +111,7 @@ export interface ScenarioRepository {
     actionId: string;
     action: WorkflowAction;
   }): Promise<WorkflowAction>;
+  getLatestRulesReferences(scenarioId: string): Promise<ScenarioRuleLatestVersion[]>;
 }
 
 export function makeGetScenarioRepository() {
@@ -310,6 +313,10 @@ export function makeGetScenarioRepository() {
         transformWorkflowAction(action),
       );
       return adaptWorkflowAction(updatedAction);
+    },
+    getLatestRulesReferences: async (scenarioId: string): Promise<ScenarioRuleLatestVersion[]> => {
+      const rules = await marbleCoreApiClient.scenarioRuleLatestVersions(scenarioId);
+      return rules.map(adaptScenarioRuleLatestVersion);
     },
   });
 }

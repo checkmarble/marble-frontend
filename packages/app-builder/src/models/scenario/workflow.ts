@@ -4,6 +4,7 @@ import {
   type AlwaysMatches,
   type IfOutcomeIn,
   type NeverMatches,
+  ScenarioRuleLatestVersionDto,
   WorkflowActionDto,
   WorkflowConditionDetailDto,
   WorkflowConditionDto,
@@ -147,6 +148,24 @@ export function transformWorkflowAction(action: WorkflowAction): WorkflowActionD
         action: 'DISABLED',
       };
   }
+}
+
+export type ScenarioRuleLatestVersion = {
+  type: 'rule' | 'screening';
+  stableId: string;
+  name: string;
+  latestVersion: string;
+};
+
+export function adaptScenarioRuleLatestVersion(
+  dto: ScenarioRuleLatestVersionDto,
+): ScenarioRuleLatestVersion {
+  return {
+    type: dto.type,
+    stableId: dto.stable_id,
+    name: dto.name,
+    latestVersion: dto.latest_version,
+  };
 }
 
 export type WorkflowFeatureAccess = {
