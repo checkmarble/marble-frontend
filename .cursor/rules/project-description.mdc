@@ -1,0 +1,51 @@
+---
+description: Project description
+globs:
+alwaysApply: false
+---
+
+This is a monorepo TypeScript project using **pnpm** as the package manager. The project follows a modular architecture with distinct packages for different concerns.
+- **pnpm** - Used for dependency management and workspace coordination
+
+## Key Packages
+
+### `app-builder`
+- **Purpose**: Main web application
+- **Technology**: Remix (React-based full-stack framework)
+- **Role**: Primary user interface and application logic
+
+### `marble-api`
+- **Purpose**: OpenAPI specification for backend APIs
+- **Role**: API contract definitions and type generation
+- **Note**: Backend implementation is maintained in a separate repository
+
+### `ui-design-system`
+- **Purpose**: Design system components
+- **Contents**: Collection of atomic and molecular UI components
+- **Role**: Provides consistent UI primitives across the application
+
+### `ui-icons`
+- **Purpose**: Icon collection
+- **Role**: Centralized icon assets and components
+
+## Development Commands
+
+### Type Checking
+```bash
+pnpm -r type-check
+```
+- Runs TypeScript type checking across all packages in the workspace
+- The `-r` flag executes the command recursively across all workspace packages
+
+### Linting and Formatting
+```bash
+pnpm biome check
+```
+- Runs Biome for both linting and formatting checks
+- Biome is a fast linter and formatter for JavaScript/TypeScript
+
+## Architecture Notes
+- Monorepo structure enables shared tooling and dependencies
+- Each package has its own `package.json` and can be developed independently
+- Workspace configuration allows for cross-package dependencies
+- Consistent tooling (TypeScript, Biome) across all packages 
