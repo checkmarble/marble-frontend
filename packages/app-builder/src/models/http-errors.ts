@@ -6,7 +6,7 @@ import {
   UNAUTHORIZED,
 } from '@app-builder/utils/http/http-status-codes';
 import type * as Oazapfts from '@oazapfts/runtime';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 export function isHttpError(error: unknown): error is Oazapfts.HttpError {
   return error instanceof Error && 'status' in error;

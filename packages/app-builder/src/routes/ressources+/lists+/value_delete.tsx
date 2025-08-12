@@ -8,15 +8,15 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['lists', 'navigation', 'common'] satisfies Namespace,
 };
 
 const deleteValueFormSchema = z.object({
-  listId: z.string().uuid(),
-  listValueId: z.string().uuid(),
+  listId: z.uuid(),
+  listValueId: z.uuid(),
 });
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -31,7 +31,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({
       success: false as const,
       values: parsedForm.formData,
-      error: parsedForm.error.format(),
+      error: z.treeifyError(parsedForm.error),
     });
   }
   const { listId, listValueId } = parsedForm.data;

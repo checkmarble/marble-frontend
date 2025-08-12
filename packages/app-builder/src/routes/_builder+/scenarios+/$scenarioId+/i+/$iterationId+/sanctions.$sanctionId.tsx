@@ -45,7 +45,7 @@ import { difference } from 'remeda';
 import { match } from 'ts-pattern';
 import { Button, cn, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { useCurrentScenario } from '../../_layout';
 import { useCurrentScenarioIteration, useRuleGroups } from './_layout';
 
@@ -135,7 +135,7 @@ const editSanctionFormSchema = z.object({
   forcedOutcome: z.enum(['review', 'decline', 'block_and_review']),
   triggerRule: z.any(),
   entityType: z.enum(['Person', 'Organization', 'Vehicle', 'Thing']).optional(),
-  query: z.record(z.any()),
+  query: z.record(z.string(), z.any()),
   counterPartyId: z.any().nullish(),
   preprocessing: z
     .object({
@@ -173,7 +173,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const { error, data, success } = editSanctionFormSchema.safeParse(raw);
 
-  if (!success) return json({ status: 'error', errors: error.flatten() });
+  if (!success) return json({ status: 'error', errors: z.treeifyError(error) });
 
   try {
     await scenarioIterationSanctionRepository.updateSanctionCheckConfig({
@@ -200,14 +200,20 @@ export async function action({ request, params }: ActionFunctionArgs) {
       message: t('common:success.save'),
     });
 
-    return json({ status: 'success' }, { headers: { 'Set-Cookie': await commitSession(session) } });
+    return Response.json(
+      { status: 'success' },
+      { headers: { 'Set-Cookie': await commitSession(session) } },
+    );
   } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),
     });
 
-    return json({ status: 'error' }, { headers: { 'Set-Cookie': await commitSession(session) } });
+    return Response.json(
+      { status: 'error' },
+      { headers: { 'Set-Cookie': await commitSession(session) } },
+    );
   }
 }
 
@@ -220,7 +226,7 @@ export default function SanctionDetail() {
   const lastData = data as
     | {
         status: 'error' | 'success';
-        errors?: z.typeToFlattenedError<EditSanctionForm>;
+        errors?: ReturnType<z.ZodError<z.output<typeof editSanctionFormSchema>>['flatten']>;
       }
     | undefined;
   const scenario = useCurrentScenario();

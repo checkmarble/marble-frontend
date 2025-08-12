@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, Calendar, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const editSnoozeSchema = z.object({
   caseId: z.string(),

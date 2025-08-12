@@ -2,7 +2,7 @@ import { supportedLngs } from '@app-builder/services/i18n/i18n-config';
 import { resources } from '@app-builder/services/i18n/resources/resources.server';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { cacheHeader } from 'pretty-cache-header';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -13,9 +13,7 @@ export function loader({ request }: LoaderFunctionArgs) {
 
   const ns = z
     .string()
-    .refine((ns): ns is keyof typeof namespaces => {
-      return Object.keys(resources[lng]).includes(ns);
-    })
+    .refine((key): key is keyof typeof namespaces => Object.keys(namespaces).includes(String(key)))
     .parse(url.searchParams.get('ns'));
 
   const headers = new Headers();
@@ -34,5 +32,5 @@ export function loader({ request }: LoaderFunctionArgs) {
     );
   }
 
-  return json(namespaces[ns], { headers });
+  return json(namespaces[ns as keyof typeof namespaces], { headers });
 }

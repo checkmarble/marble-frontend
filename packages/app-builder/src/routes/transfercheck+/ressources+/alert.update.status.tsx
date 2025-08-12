@@ -14,7 +14,7 @@ import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { useTranslation } from 'react-i18next';
 import { Select } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const updateAlertStatusFormSchema = z.object({
   alertId: z.string(),
@@ -43,7 +43,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!success) {
     return json(
-      { status: 'error', errors: error.flatten() },
+      { status: 'error', errors: z.treeifyError(error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },

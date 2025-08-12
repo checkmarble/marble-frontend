@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, ModalV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
@@ -52,7 +52,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!result.success) {
     return json(
-      { status: 'error', errors: result.error.flatten() },
+      { status: 'error', errors: z.treeifyError(result.error) },
       { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   }

@@ -19,7 +19,7 @@ import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, Collapsible } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { UpdateAlert } from '../ressources+/alert.update';
 

@@ -28,7 +28,7 @@ import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, CtaClassName, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { useCurrentScenarioIterationRule, useRuleGroups } from './_layout';
 
@@ -109,7 +109,7 @@ const editRuleFormSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().optional(),
   ruleGroup: z.string().optional(),
-  scoreModifier: z.coerce.number().int().min(-1000).max(1000),
+  scoreModifier: z.number().int().min(-1000).max(1000),
   formula: z.any(),
 });
 
@@ -133,7 +133,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   if (!result.success) {
     return json(
-      { status: 'error', errors: result.error.flatten() },
+      { status: 'error', errors: z.treeifyError(result.error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },

@@ -19,12 +19,12 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, ModalV2 } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const updateWebhookFormSchema = z.object({
   id: z.string().nonempty(),
   eventTypes: z.array(z.enum(eventTypes)),
-  httpTimeout: z.number().int().positive().optional(),
+  httpTimeout: z.int().positive().optional(),
 });
 
 type UpdateWebhookForm = z.infer<typeof updateWebhookFormSchema>;
@@ -49,7 +49,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!success) {
     return json(
-      { status: 'error', errors: error.flatten() },
+      { status: 'error', errors: z.treeifyError(error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },

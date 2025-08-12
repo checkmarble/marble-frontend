@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { isDeepEqual } from 'remeda';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const schema = z.object({
   caseId: z.string(),
@@ -33,7 +33,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, data, error } = schema.safeParse(raw);
 
-  if (!success) return { success: false, errors: error.flatten() };
+  if (!success) return { success: false, errors: z.treeifyError(error) };
 
   await cases.setTags(data);
 

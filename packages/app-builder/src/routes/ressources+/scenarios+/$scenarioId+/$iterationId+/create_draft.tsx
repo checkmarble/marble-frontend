@@ -8,14 +8,14 @@ import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Button, HiddenInputs, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['scenarios', 'navigation', 'common'] satisfies Namespace,
 };
 
 const createDraftIterationFormSchema = z.object({
-  iterationId: z.string().uuid(),
+  iterationId: z.uuid(),
 });
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -31,7 +31,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return json({
       success: false as const,
       values: parsedForm.formData,
-      error: parsedForm.error.format(),
+      error: z.treeifyError(parsedForm.error),
     });
   }
   const scenarioId = fromParams(params, 'scenarioId');

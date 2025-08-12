@@ -24,7 +24,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Input, ModalV2, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { type z } from 'zod';
+import { type z } from 'zod/v4';
 
 import { MatchResult } from './MatchResult';
 import { SanctionStatusTag } from './SanctionStatusTag';

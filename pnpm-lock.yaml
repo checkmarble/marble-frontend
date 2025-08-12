@@ -263,7 +263,7 @@ importers:
         version: 6.4.1(@remix-run/node@2.16.5(typescript@5.8.2))(@remix-run/react@2.16.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.2))(i18next@23.16.8)(react-i18next@15.4.1(i18next@23.16.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       remix-utils:
         specifier: ^7.7.0
-        version: 7.7.0(@remix-run/node@2.16.5(typescript@5.8.2))(@remix-run/react@2.16.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.2))(@remix-run/router@1.23.0)(crypto-js@4.2.0)(react@18.3.1)(zod@3.24.2)
+        version: 7.7.0(@remix-run/node@2.16.5(typescript@5.8.2))(@remix-run/react@2.16.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.2))(@remix-run/router@1.23.0)(crypto-js@4.2.0)(react@18.3.1)(zod@4.0.17)
       sharpstate:
         specifier: ^0.0.13
         version: 0.0.13(@preact/signals-core@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -295,8 +295,8 @@ importers:
         specifier: ^11.1.0
         version: 11.1.0
       zod:
-        specifier: ^3.24.2
-        version: 3.24.2
+        specifier: ^4.0.17
+        version: 4.0.17
       zustand:
         specifier: ^5.0.3
         version: 5.0.3(@types/react@18.3.11)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
@@ -8151,8 +8151,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod@3.24.2:
-    resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
+  zod@4.0.17:
+    resolution: {integrity: sha512-1PHjlYRevNxxdy2JZ8JcNAw7rX8V9P1AKkP+x/xZfxB0K5FYfuV+Ug6P/6NVSR2jHQ+FzDDoDHS04nYUsOIyLQ==}
 
   zustand@4.5.6:
     resolution: {integrity: sha512-ibr/n1hBzLLj5Y+yUcU7dYw8p6WnIVzdJbnX+1YpaScvZVF2ziugqHs+LAmHw4lWO9c/zRj+K1ncgWDQuthEdQ==}
@@ -15897,7 +15897,7 @@ snapshots:
     optionalDependencies:
       '@remix-run/node': 2.16.5(typescript@5.8.2)
 
-  remix-utils@7.7.0(@remix-run/node@2.16.5(typescript@5.8.2))(@remix-run/react@2.16.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.2))(@remix-run/router@1.23.0)(crypto-js@4.2.0)(react@18.3.1)(zod@3.24.2):
+  remix-utils@7.7.0(@remix-run/node@2.16.5(typescript@5.8.2))(@remix-run/react@2.16.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.2))(@remix-run/router@1.23.0)(crypto-js@4.2.0)(react@18.3.1)(zod@4.0.17):
     dependencies:
       type-fest: 4.38.0
     optionalDependencies:
@@ -15906,7 +15906,7 @@ snapshots:
       '@remix-run/router': 1.23.0
       crypto-js: 4.2.0
       react: 18.3.1
-      zod: 3.24.2
+      zod: 4.0.17
 
   remove-accents@0.4.4: {}
 
@@ -17129,7 +17129,7 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod@3.24.2: {}
+  zod@4.0.17: {}
 
   zustand@4.5.6(@types/react@18.3.11)(react@18.3.1):
     dependencies:

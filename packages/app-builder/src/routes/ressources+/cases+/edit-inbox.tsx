@@ -9,7 +9,7 @@ import { useForm, useStore } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const schema = z.object({ inboxId: z.string(), caseId: z.string() });
 
@@ -27,7 +27,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, data, error } = schema.safeParse(raw);
 
-  if (!success) return { success: false, errors: error.flatten() };
+  if (!success) return { success: false, errors: z.treeifyError(error) };
 
   await cases.updateCase({
     caseId: data.caseId,

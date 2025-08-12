@@ -1,5 +1,5 @@
 import { type FirebaseOptions } from 'firebase/app';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 /**
  * To:
@@ -66,9 +66,12 @@ function getEnv<K extends keyof EnvVars>(envVarName: K) {
 export function checkEnv() {
   const result = EnvVarsSchema.safeParse(process.env);
   if (!result.success) {
-    const { _errors, ...rest } = result.error.format();
-    const formatted = Object.entries(rest)
-      .map(([key, value]) => `\t- ${key}: ${value._errors.join(', ')}`)
+    const tree = z.treeifyError(result.error);
+    const entries: Array<[string, string[]]> = Object.entries(tree.properties ?? {}).map(
+      ([key, value]) => [key, value.errors] as [string, string[]],
+    );
+    const formatted = entries
+      .map(([key, messages]) => `\t- ${key}: ${messages.join(', ')}`)
       .join('\n');
 
     throw new Error(`[MissingEnv] validation issues :\n${formatted}`);

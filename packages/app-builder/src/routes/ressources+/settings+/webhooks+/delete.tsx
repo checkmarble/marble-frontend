@@ -7,7 +7,7 @@ import { Form, useNavigation } from '@remix-run/react';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const deleteWebhookFormSchema = z.object({
   webhookId: z.string(),

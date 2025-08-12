@@ -16,7 +16,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Code, Modal } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { SelectLinkPath } from './create-pivot/SelectLinkPath';
 import { SelectTargetEntity } from './create-pivot/SelectTargetEntity';
 import { SelectField } from './create-pivot/selectField';
@@ -72,7 +72,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = createPivotFormSchema.safeParse(raw);
 
-  if (!success) return { success: 'false', errors: error.flatten() };
+  if (!success) return { success: 'false', errors: z.treeifyError(error) };
 
   try {
     await dataModelRepository.createPivot(data.pivot);

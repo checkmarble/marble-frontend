@@ -19,7 +19,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button, ModalV2, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['scenarios', 'navigation', 'common'] satisfies Namespace,
@@ -60,7 +60,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!success) {
     return json(
-      { status: 'error', errors: error.flatten() },
+      { status: 'error', errors: z.treeifyError(error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },

@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { safeRedirect } from 'remix-utils/safe-redirect';
 import { Button, MenuCommand, Modal, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import { redirectRouteOptions } from './create';
 
@@ -27,9 +27,9 @@ export const handle = {
 };
 
 const updateInboxFormSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string().min(1),
-  escalationInboxId: z.union([z.string().uuid(), z.null()]),
+  escalationInboxId: z.union([z.uuid(), z.null()]),
   autoAssignEnabled: z.boolean(),
   redirectRoute: z.enum(redirectRouteOptions),
 });
@@ -56,7 +56,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!success) {
     return Response.json(
-      { status: 'error', errors: error.flatten() },
+      { status: 'error', errors: z.treeifyError(error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },

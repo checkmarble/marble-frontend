@@ -14,7 +14,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal, Select } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['data', 'navigation', 'common'] satisfies Namespace,
@@ -25,12 +25,12 @@ const createLinkFormSchema = z.object({
     .string()
     .min(1)
     .regex(/^[a-z]+[a-z0-9_]+$/, {
-      message: 'Only lower case alphanumeric and _, must start with a letter',
+      error: 'Only lower case alphanumeric and _, must start with a letter',
     }),
-  parentTableId: z.string().min(1).uuid(),
-  parentFieldId: z.string().min(1).uuid(),
-  childTableId: z.string().min(1).uuid(),
-  childFieldId: z.string().min(1).uuid(),
+  parentTableId: z.uuid().min(1),
+  parentFieldId: z.uuid().min(1),
+  childTableId: z.uuid().min(1),
+  childFieldId: z.uuid().min(1),
 });
 
 type CreateLinkForm = z.infer<typeof createLinkFormSchema>;
@@ -53,7 +53,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = createLinkFormSchema.safeParse(raw);
 
-  if (!success) return json({ success: 'false', errors: error.flatten() });
+  if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
   const { name, parentFieldId, childFieldId, parentTableId, childTableId } = data;
 
   try {

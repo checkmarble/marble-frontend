@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 function createTableOptionSchema(dataModel: DataModel) {
   return z.object(
@@ -34,7 +34,7 @@ function createTableOptionSchema(dataModel: DataModel) {
           [
             table.id,
             z.object({
-              displayedFields: z.array(z.string(), z.undefined()),
+              displayedFields: z.array(z.string()).default([]),
               fieldOrder: z.array(z.string()),
             }),
           ] as const,
@@ -80,7 +80,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const session = await getSession(request);
 
   if (!submission.success) {
-    return { success: false, errors: submission.error.flatten() };
+    return { success: false, errors: z.treeifyError(submission.error) };
   }
 
   try {
@@ -88,7 +88,10 @@ export async function action({ request }: ActionFunctionArgs) {
 
     await Promise.all(
       payloadEntries.map(([tableId, body]) =>
-        dataModelRepository.setDataModelTableOptions(tableId, body),
+        dataModelRepository.setDataModelTableOptions(tableId, {
+          ...body,
+          displayedFields: body.displayedFields ?? [],
+        }),
       ),
     );
 
@@ -138,7 +141,7 @@ export default function DataDisplaySettings() {
       R.fromEntries(),
     ),
     validators: {
-      onChange: createTableOptionSchema(dataModelWithTableOptions),
+      onChange: createTableOptionSchema(dataModelWithTableOptions) as unknown as any,
     },
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
@@ -164,14 +167,12 @@ export default function DataDisplaySettings() {
               key={tableModelWithOptions.id}
               name={tableModelWithOptions.id}
               validators={{
-                onChange:
-                  createTableOptionSchema(dataModelWithTableOptions).shape[
-                    tableModelWithOptions.id
-                  ],
-                onBlur:
-                  createTableOptionSchema(dataModelWithTableOptions).shape[
-                    tableModelWithOptions.id
-                  ],
+                onChange: createTableOptionSchema(dataModelWithTableOptions).shape[
+                  tableModelWithOptions.id
+                ] as unknown as any,
+                onBlur: createTableOptionSchema(dataModelWithTableOptions).shape[
+                  tableModelWithOptions.id
+                ] as unknown as any,
               }}
             >
               {(field) => {

@@ -3,7 +3,7 @@ import { useCallbackRef } from '@app-builder/utils/hooks';
 import { useCallback, useMemo } from 'react';
 import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 import { type RulesFilterName, rulesFilterNames } from './filters';
 

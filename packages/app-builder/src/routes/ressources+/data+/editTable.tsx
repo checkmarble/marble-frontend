@@ -12,7 +12,7 @@ import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['data', 'navigation', 'common'] satisfies Namespace,
@@ -20,7 +20,7 @@ export const handle = {
 
 const editTableFormSchema = z.object({
   description: z.string(),
-  tableId: z.string().uuid(),
+  tableId: z.uuid(),
 });
 
 type EditTableForm = z.infer<typeof editTableFormSchema>;
@@ -37,7 +37,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = editTableFormSchema.safeParse(raw);
 
-  if (!success) return json({ success: 'false', errors: error.flatten() });
+  if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
 
   try {
     await apiClient.patchDataModelTable(data.tableId, {

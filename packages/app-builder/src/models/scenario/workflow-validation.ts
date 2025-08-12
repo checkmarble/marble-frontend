@@ -1,6 +1,6 @@
 import { type OutcomeDto } from 'marble-api';
 import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { undefinedAstNodeName } from '../astNode/ast-node';
 import { isBinaryMainAstOperatorFunction } from '../astNode/builder-ast-node-node-operator';
 import { knownOutcomes } from '../outcome';
@@ -21,13 +21,13 @@ const baseNodeSchema = z.object({
   name: z.string().nullable(),
   constant: z.unknown().optional(),
   children: z.array(z.unknown()).optional(),
-  namedChildren: z.record(z.unknown()).optional(),
+  namedChildren: z.record(z.string(), z.unknown()).optional(),
 });
 
 // Create a recursive schema for complete AST node validation
 const nodeSchema: z.ZodType<any> = baseNodeSchema.extend({
   children: z.lazy(() => z.array(nodeSchema)).optional(),
-  namedChildren: z.lazy(() => z.record(nodeSchema)).optional(),
+  namedChildren: z.lazy(() => z.record(z.string(), nodeSchema)).optional(),
 });
 
 // Specific schema for binary expression validation
@@ -39,26 +39,24 @@ const binaryExpressionSchema = z.object({
       (name) =>
         name !== null && name !== undefinedAstNodeName && isBinaryMainAstOperatorFunction(name),
       {
-        message: 'A valid operator must be selected',
+        error: 'A valid operator must be selected',
       },
     ),
   constant: z.undefined(),
   children: z
     .array(
-      z
-        .object({
-          id: z.string(),
-          name: z
-            .string()
-            .nullable()
-            .refine((name) => name !== undefinedAstNodeName, {
-              message: 'Operand cannot be empty',
-            }),
-        })
-        .passthrough(),
+      z.looseObject({
+        id: z.string(),
+        name: z
+          .string()
+          .nullable()
+          .refine((name) => name !== undefinedAstNodeName, {
+            error: 'Operand cannot be empty',
+          }),
+      }),
     )
     .length(2, 'Binary expression must have exactly 2 operands'),
-  namedChildren: z.record(z.unknown()).optional(),
+  namedChildren: z.record(z.string(), z.unknown()).optional(),
 });
 
 // Workflow condition schemas
@@ -99,32 +97,26 @@ export const workflowConditionDetailSchema = z.discriminatedUnion('function', [
 ]);
 
 // Rule validation schema - more flexible approach
-export const ruleValidationSchema = z
-  .object({
-    id: z.string(),
-    name: z.string().min(1, ''),
-    fallthrough: z.boolean(),
-    conditions: z.array(
-      z
-        .object({
-          id: z.string(),
-          function: z.string(),
-        })
-        .passthrough(),
-    ),
-    // .min(1, t('workflows:condition.error.atLeastOneCondition')),
-    actions: z
-      .array(
-        z
-          .object({
-            id: z.string(),
-            action: z.string(),
-          })
-          .passthrough(),
-      )
-      .length(1, 'An action is required'),
-  })
-  .passthrough(); // Allow additional fields that might exist in the actual data
+export const ruleValidationSchema = z.looseObject({
+  id: z.string(),
+  name: z.string().min(1, ''),
+  fallthrough: z.boolean(),
+  conditions: z.array(
+    z.looseObject({
+      id: z.string(),
+      function: z.string(),
+    }),
+  ),
+  // .min(1, t('workflows:condition.error.atLeastOneCondition')),
+  actions: z
+    .array(
+      z.looseObject({
+        id: z.string(),
+        action: z.string(),
+      }),
+    )
+    .length(1, 'An action is required'),
+}); // Allow additional fields that might exist in the actual data
 
 // Helper function to validate payload_evaluates conditions
 function validatePayloadEvaluatesCondition(
@@ -251,10 +243,10 @@ export function validateRuleEnhanced(rule: Rule): {
 
       return { success: true };
     } else {
-      // Map Zod errors to our format
-      const mappedErrors = zodResult.error.errors.map((error) => ({
-        message: error.message,
-        path: error.path.map((p) => String(p)),
+      // Map Zod issues to our format (Zod v4)
+      const mappedErrors = zodResult.error.issues.map((issue) => ({
+        message: issue.message,
+        path: issue.path.map((p) => String(p)),
       }));
 
       return { success: false, error: { errors: mappedErrors } };
@@ -276,7 +268,7 @@ export function validateRuleEnhanced(rule: Rule): {
 }
 
 // Type for validation errors
-export type RuleValidationError = z.ZodError<typeof ruleValidationSchema._type>;
+export type RuleValidationError = z.ZodError<z.output<typeof ruleValidationSchema>>;
 
 // Helper function to validate a rule (legacy support)
 export function validateRule(rule: unknown) {
@@ -296,7 +288,9 @@ export function validateOutcomes(outcomes: OutcomeDto[]): boolean {
 
 // Helper function to get validation errors for a specific field
 export function getFieldErrors(error: z.ZodError, fieldPath: string): string[] {
-  return error.errors.filter((err) => err.path.join('.') === fieldPath).map((err) => err.message);
+  return error.issues
+    .filter((issue) => issue.path.join('.') === fieldPath)
+    .map((issue) => issue.message);
 }
 
 // Helper function to check if a rule has validation errors

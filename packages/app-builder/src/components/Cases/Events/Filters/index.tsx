@@ -11,13 +11,13 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Button, Calendar, Checkbox, type CheckedState, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { casesI18n } from '../../cases-i18n';
 
 export const caseEventsFilterSchema = z.object({
   types: z.array(z.enum(CASE_EVENT_CATEGORIES)),
-  startDate: z.string().datetime().optional(),
-  endDate: z.string().datetime().optional(),
+  startDate: z.iso.datetime().optional(),
+  endDate: z.iso.datetime().optional(),
 });
 
 export type CaseEventFiltersForm = z.infer<typeof caseEventsFilterSchema>;

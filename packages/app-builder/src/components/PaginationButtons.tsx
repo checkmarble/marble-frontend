@@ -7,7 +7,7 @@ import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/ut
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const paginationSchema = z.object({
   offsetId: z.string().optional(),

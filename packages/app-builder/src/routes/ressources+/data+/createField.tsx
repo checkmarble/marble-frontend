@@ -14,7 +14,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Modal, Select } from 'ui-design-system';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['data', 'navigation', 'common'] satisfies Namespace,
@@ -25,10 +25,10 @@ const createFieldFormSchema = z.object({
     .string()
     .min(1)
     .regex(/^[a-z]+[a-z0-9_]+$/, {
-      message: 'Only lower case alphanumeric and _, must start with a letter',
+      error: 'Only lower case alphanumeric and _, must start with a letter',
     })
     .refine((value) => value !== 'id', {
-      message: 'The name "id" is reserved',
+      error: 'The name "id" is reserved',
     }),
   description: z.string(),
   required: z.string(),
@@ -70,7 +70,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = createFieldFormSchema.safeParse(raw);
 
-  if (!success) return json({ success: 'false', errors: error.flatten() });
+  if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
   const { name, description, type, required, tableId, isEnum, isUnique } = data;
 
   try {

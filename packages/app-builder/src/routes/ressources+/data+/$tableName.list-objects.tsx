@@ -4,7 +4,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import * as R from 'remeda';
 import invariant from 'tiny-invariant';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export type DataTableObjectListResource = {
   clientDataListResponse: ClientDataListResponse;

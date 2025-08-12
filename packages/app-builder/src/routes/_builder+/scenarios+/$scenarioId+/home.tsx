@@ -41,7 +41,7 @@ import { useHydrated } from 'remix-utils/use-hydrated';
 import { match } from 'ts-pattern';
 import { Button, CtaClassName, HiddenInputs, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { useCurrentScenario, useScenarioIterations } from './_layout';
 
 export const handle = {
@@ -102,7 +102,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!result.success) {
     return json(
-      { status: 'error', errors: result.error.flatten() },
+      { status: 'error', errors: z.treeifyError(result.error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },

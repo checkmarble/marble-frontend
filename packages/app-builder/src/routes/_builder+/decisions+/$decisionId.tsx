@@ -37,7 +37,7 @@ import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 export type LoaderData = {
   decision: DecisionDetails;

@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const handle = {
   i18n: ['settings', 'common'] satisfies Namespace,
@@ -42,7 +42,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const { data, success, error } = editOrganizationSchema.safeParse(rawData);
   if (!success) {
     return Response.json(
-      { status: 'error', errors: error.flatten() },
+      { status: 'error', errors: z.treeifyError(error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
@@ -172,11 +172,8 @@ export function UpdateOrganizationSettingsContents({
     },
     validators: {
       onSubmit: editOrganizationSchema
-        .pick({
-          organizationId: true,
-          autoAssignQueueLimit: true,
-        })
-        .required({ autoAssignQueueLimit: true }),
+        .pick({ organizationId: true, autoAssignQueueLimit: true })
+        .required({ autoAssignQueueLimit: true }) as unknown as any,
     },
   });
 
@@ -193,8 +190,8 @@ export function UpdateOrganizationSettingsContents({
         <form.Field
           name="autoAssignQueueLimit"
           validators={{
-            onChange: z.coerce.number().min(0),
-            onBlur: z.coerce.number().min(0),
+            onChange: z.number().min(0),
+            onBlur: z.number().min(0),
           }}
         >
           {(field) => (

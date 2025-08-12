@@ -1,5 +1,5 @@
 import { type Session } from '@remix-run/node';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 /**
  * @param messageKey translation key for the message

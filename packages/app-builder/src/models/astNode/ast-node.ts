@@ -1,7 +1,7 @@
 import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
 import { v7 as uuidv7 } from 'uuid';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 import {
   type AndAstNode,
@@ -25,7 +25,7 @@ export const constantTypeSchema: z.ZodType<ConstantType> = baseConstantTypeSchem
 );
 
 const baseAstNodeSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string().nullish(),
   constant: z.optional(constantTypeSchema),
 });

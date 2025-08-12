@@ -34,7 +34,7 @@ import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
 import { Button, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const schema = z.object({
   status: z.union([
@@ -88,7 +88,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { data, success, error } = schema.safeParse(decode(raw));
 
-  if (!success) return Response.json({ success, errors: error.flatten() });
+  if (!success) return Response.json({ success, errors: z.treeifyError(error) });
 
   try {
     let sar: SuspiciousActivityReport | undefined = undefined;
@@ -193,7 +193,7 @@ export const EditCaseSuspicion = ({
   const lastData = data as
     | {
         success: boolean;
-        errors?: z.typeToFlattenedError<EditSuspicionForm>;
+        errors?: ReturnType<z.ZodError<z.output<typeof schema>>['flatten']>;
         data?: SuspiciousActivityReport;
       }
     | undefined;

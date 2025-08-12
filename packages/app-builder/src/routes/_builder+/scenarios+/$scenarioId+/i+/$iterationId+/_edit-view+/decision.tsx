@@ -13,7 +13,7 @@ import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
+import { type ActionFunctionArgs } from '@remix-run/node';
 import { useFetcher } from '@remix-run/react';
 import { useForm, useStore } from '@tanstack/react-form';
 import { type Namespace, type TFunction } from 'i18next';
@@ -22,7 +22,7 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Collapsible } from 'ui-design-system';
-import * as z from 'zod';
+import * as z from 'zod/v4';
 
 import { useCurrentScenarioIteration, useCurrentScenarioValidation } from '../_layout';
 
@@ -92,21 +92,23 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
     .superRefine(
       ({ scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold }, ctx) => {
         if (scoreBlockAndReviewThreshold < scoreReviewThreshold) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+          ctx.issues.push({
+            code: 'custom',
             path: ['scoreBlockAndReviewThreshold'],
             message: t('scenarios:validation.decision.score_threshold_min', {
               replace: { min: scoreReviewThreshold },
             }),
+            input: '',
           });
         }
         if (scoreDeclineThreshold < scoreBlockAndReviewThreshold) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+          ctx.issues.push({
+            code: 'custom',
             path: ['scoreDeclineThreshold'],
             message: t('scenarios:validation.decision.score_threshold_min', {
               replace: { min: scoreBlockAndReviewThreshold },
             }),
+            input: '',
           });
         }
       },
@@ -132,8 +134,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const result = getFormSchema(t).safeParse(data);
 
   if (!result.success) {
-    return json(
-      { status: 'error', errors: result.error.flatten() },
+    return Response.json(
+      { status: 'error', errors: z.treeifyError(result.error) },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
@@ -149,7 +151,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       message: t('common:success.save'),
     });
 
-    return json(
+    return Response.json(
       { status: 'success', errors: [] },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
@@ -161,7 +163,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       message: t('common:errors.unknown'),
     });
 
-    return json(
+    return Response.json(
       { status: 'error', errors: [] },
       {
         headers: { 'Set-Cookie': await commitSession(session) },
@@ -220,6 +222,49 @@ function EditScoreThresholds() {
   const editorMode = useEditorMode();
 
   const schema = React.useMemo(() => getFormSchema(t), [t]);
+  const fieldValidators = React.useMemo(() => {
+    return {
+      scoreReviewThreshold: z
+        .number({ message: t('scenarios:validation.decision.score_threshold_missing') })
+        .max(MAX_THRESHOLD, {
+          message: t('scenarios:validation.decision.score_threshold_max', {
+            replace: { max: MAX_THRESHOLD },
+          }),
+        })
+        .min(-MAX_THRESHOLD, {
+          message: t('scenarios:validation.decision.score_threshold_min', {
+            replace: { min: -MAX_THRESHOLD },
+          }),
+        })
+        .int(),
+      scoreBlockAndReviewThreshold: z
+        .number({ message: t('scenarios:validation.decision.score_threshold_missing') })
+        .max(MAX_THRESHOLD, {
+          message: t('scenarios:validation.decision.score_threshold_max', {
+            replace: { max: MAX_THRESHOLD },
+          }),
+        })
+        .min(-MAX_THRESHOLD, {
+          message: t('scenarios:validation.decision.score_threshold_min', {
+            replace: { min: -MAX_THRESHOLD },
+          }),
+        })
+        .int(),
+      scoreDeclineThreshold: z
+        .number({ message: t('scenarios:validation.decision.score_threshold_missing') })
+        .max(MAX_THRESHOLD, {
+          message: t('scenarios:validation.decision.score_threshold_max', {
+            replace: { max: MAX_THRESHOLD },
+          }),
+        })
+        .min(-MAX_THRESHOLD, {
+          message: t('scenarios:validation.decision.score_threshold_min', {
+            replace: { min: -MAX_THRESHOLD },
+          }),
+        })
+        .int(),
+    } as const;
+  }, [t]);
 
   const form = useForm({
     defaultValues: {
@@ -228,7 +273,8 @@ function EditScoreThresholds() {
       scoreDeclineThreshold: iteration.scoreDeclineThreshold ?? 0,
     } as z.infer<typeof schema>,
     validators: {
-      onSubmit: schema,
+      // Cast to loosen overly strict generic expectation from TanStack on StandardSchemaV1
+      onSubmit: schema as unknown as any,
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
@@ -264,8 +310,8 @@ function EditScoreThresholds() {
         <form.Field
           name="scoreReviewThreshold"
           validators={{
-            onChange: schema._def.schema.shape.scoreReviewThreshold,
-            onBlur: schema._def.schema.shape.scoreReviewThreshold,
+            onChange: fieldValidators.scoreReviewThreshold,
+            onBlur: fieldValidators.scoreReviewThreshold,
           }}
         >
           {(field) => (
@@ -303,8 +349,8 @@ function EditScoreThresholds() {
         <form.Field
           name="scoreBlockAndReviewThreshold"
           validators={{
-            onChange: schema._def.schema.shape.scoreBlockAndReviewThreshold,
-            onBlur: schema._def.schema.shape.scoreBlockAndReviewThreshold,
+            onChange: fieldValidators.scoreBlockAndReviewThreshold,
+            onBlur: fieldValidators.scoreBlockAndReviewThreshold,
           }}
         >
           {(field) => (
@@ -346,8 +392,8 @@ function EditScoreThresholds() {
         <form.Field
           name="scoreDeclineThreshold"
           validators={{
-            onChange: schema._def.schema.shape.scoreDeclineThreshold,
-            onBlur: schema._def.schema.shape.scoreDeclineThreshold,
+            onChange: fieldValidators.scoreDeclineThreshold,
+            onBlur: fieldValidators.scoreDeclineThreshold,
           }}
         >
           {(field) => (

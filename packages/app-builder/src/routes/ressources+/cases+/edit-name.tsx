@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const schema = z.object({ name: z.string(), caseId: z.string() });
 
@@ -28,7 +28,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, data, error } = schema.safeParse(raw);
 
-  if (!success) return { success: false, errors: error.flatten() };
+  if (!success) return { success: false, errors: z.treeifyError(error) };
 
   await cases.updateCase({
     caseId: data.caseId,

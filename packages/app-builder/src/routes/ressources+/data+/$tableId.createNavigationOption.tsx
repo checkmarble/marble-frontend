@@ -13,13 +13,13 @@ import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
 import { Button, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const createNavigationOptionSchema = z.object({
-  sourceFieldId: z.string().uuid(),
-  targetTableId: z.string().uuid(),
-  filterFieldId: z.string().uuid(),
-  orderingFieldId: z.string().uuid(),
+  sourceFieldId: z.uuid(),
+  targetTableId: z.uuid(),
+  filterFieldId: z.uuid(),
+  orderingFieldId: z.uuid(),
 });
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -44,7 +44,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
   invariant(sourceTableId, 'Expected tableId to be in URL');
 
   if (!options.success) {
-    return { success: false, errors: options.error.flatten().fieldErrors };
+    const { errors } = z.treeifyError(options.error);
+    return { success: false, errors };
   }
 
   try {
