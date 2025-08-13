@@ -12,7 +12,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = params['scenarioId'];
   invariant(scenarioId, 'scenarioId is required');
 
+  console.log('scenarioId', scenarioId);
   const references = await scenario.getLatestRulesReferences(scenarioId);
-
-  return Response.json(references);
+  return Response.json(
+    references.sort((a, b) => Number(b.latestVersion) - Number(a.latestVersion)),
+  );
 }

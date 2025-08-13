@@ -520,9 +520,9 @@ components:
           enum: [rule_hit]
         params:
           type: object
-          required: [rule_ids]
+          required: [rule_id]
           properties:
-            rule_ids:
+            rule_id:
               description: IDs of rules that must match
               type: array
               items:

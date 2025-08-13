@@ -76,7 +76,7 @@ const outcomeInConditionSchema = z.object({
 const ruleHitConditionSchema = z.object({
   function: z.literal('rule_hit'),
   params: z.object({
-    rule_id: z.string().min(1, 'Rule ID cannot be empty'),
+    rule_ids: z.array(z.string()).min(1, 'At least one rule must be selected'),
   }),
 });
 
@@ -187,6 +187,15 @@ export function validateRuleConditions(conditions: WorkflowCondition[]): {
           `Condition ${index + 1}: Outcome condition must have at least one outcome selected`,
         );
       }
+    } else if (condition.function === 'rule_hit') {
+      if (
+        !('params' in condition) ||
+        !('rule_ids' in (condition as any).params) ||
+        !Array.isArray((condition as any).params.rule_ids) ||
+        (condition as any).params.rule_ids.length === 0
+      ) {
+        errors.push(`Condition ${index + 1}: At least one rule must be selected`);
+      }
     } else if (condition.function === 'payload_evaluates') {
       const validationResult = validatePayloadEvaluatesCondition(condition, index + 1);
       errors.push(...validationResult.errors);
@@ -286,6 +295,9 @@ export function validateOutcomes(outcomes: OutcomeDto[]): boolean {
   );
 }
 
+export function validateScenarioRules(ruleIds: string[]): boolean {
+  return ruleIds.length > 0;
+}
 // Helper function to get validation errors for a specific field
 export function getFieldErrors(error: z.ZodError, fieldPath: string): string[] {
   return error.issues

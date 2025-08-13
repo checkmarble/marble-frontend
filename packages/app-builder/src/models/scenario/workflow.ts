@@ -47,7 +47,7 @@ export type WorkflowCondition = {
       function: 'rule_hit';
       params: {
         /** ID of a rule that must match */
-        rule_id: string;
+        rule_ids: string[];
       };
     }
   | {
@@ -88,6 +88,16 @@ export function adaptWorkflowCondition(dto: WorkflowConditionDto): WorkflowCondi
       },
     };
   }
+  if (dto.function === 'rule_hit') {
+    return {
+      id: dto.id,
+      function: 'rule_hit',
+      params: {
+        // Backend returns snake_case 'rule_id', adapt to frontend 'rule_ids'
+        rule_ids: dto.params.rule_id,
+      },
+    };
+  }
   return dto;
 }
 
@@ -103,10 +113,12 @@ export function transformWorkflowCondition(
     };
   }
   if (condition.function === 'rule_hit') {
+    console.log('transformWorkflowCondition rule_hit', JSON.stringify(condition.params, null, 2));
     return {
       function: 'rule_hit',
       params: {
-        rule_id: condition.params.rule_id,
+        // Backend expects snake_case 'rule_id'
+        rule_id: condition.params.rule_ids,
       },
     };
   }
@@ -157,7 +169,9 @@ export type ScenarioRuleLatestVersion = {
   latestVersion: string;
 };
 
-export function adaptScenarioRuleLatestVersion(
+export type ScenarioRuleLatestVersionMap = Map<string, ScenarioRuleLatestVersion>;
+
+export function adaptScenarioRulesLatestVersion(
   dto: ScenarioRuleLatestVersionDto,
 ): ScenarioRuleLatestVersion {
   return {

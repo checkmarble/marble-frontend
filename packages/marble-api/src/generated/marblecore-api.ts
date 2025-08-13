@@ -1264,7 +1264,7 @@ export type WorkflowConditionDetailDto = AlwaysMatches | NeverMatches | IfOutcom
     "function": "rule_hit";
     params: {
         /** IDs of rules that must match */
-        rule_ids: string[];
+        rule_id: string[];
     };
 } | {
     "function": "payload_evaluates";

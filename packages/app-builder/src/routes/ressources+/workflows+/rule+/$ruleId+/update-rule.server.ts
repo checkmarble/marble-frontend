@@ -39,7 +39,7 @@ const workflowConditionSchema = z
       z.object({
         function: z.literal('rule_hit'),
         params: z.object({
-          rule_id: z.string(),
+          rule_ids: z.array(z.string()),
         }),
       }),
       z.object({
@@ -103,7 +103,9 @@ const getModifiedItems = <T extends { id: string }>(
   );
 
 export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rule): Promise<void> {
+  console.log('updateWorkflowRule', JSON.stringify(rule, null, 2));
   const modifiedRule = validateUpdateWorkflowRuleRequest(rule);
+  console.log('modifiedRule', JSON.stringify(modifiedRule, null, 2));
 
   // First get the rule from the API
   const originalRule = await scenario.getWorkflowRule({ ruleId: rule.id });
@@ -117,29 +119,38 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
   );
 
   // Delete missing conditions
-  getMissingItems(originalConditions, modifiedConditions).forEach((condition) => {
+  const deleteMissingConditionsPromises = Array.from(
+    getMissingItems(originalConditions, modifiedConditions).values(),
+  ).map((condition) =>
     scenario.deleteWorkflowCondition({
       ruleId: rule.id,
       conditionId: condition.id,
-    });
-  });
+    }),
+  );
+  await Promise.all(deleteMissingConditionsPromises);
 
   // Create new conditions
-  getNewItems(originalConditions, modifiedConditions).forEach((condition) => {
+  const createNewConditionsPromises = Array.from(
+    getNewItems(originalConditions, modifiedConditions).values(),
+  ).map((condition) =>
     scenario.createWorkflowCondition({
       ruleId: rule.id,
       condition,
-    });
-  });
+    }),
+  );
+  await Promise.all(createNewConditionsPromises);
 
   // Update modified conditions
-  getModifiedItems(originalConditions, modifiedConditions).forEach((condition) => {
+  const updateModifiedConditionsPromises = Array.from(
+    getModifiedItems(originalConditions, modifiedConditions).values(),
+  ).map((condition) =>
     scenario.updateWorkflowCondition({
       ruleId: rule.id,
       conditionId: condition.id,
       condition,
-    });
-  });
+    }),
+  );
+  await Promise.all(updateModifiedConditionsPromises);
 
   // Update action
   // We currently support only one action per rule
@@ -147,15 +158,15 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
   const originalAction = originalRule.actions[0];
   const modifiedAction = modifiedRule.actions[0];
 
-  if (!originalAction) {
-    scenario.createWorkflowAction({
+  if (!originalAction && modifiedAction) {
+    await scenario.createWorkflowAction({
       ruleId: rule.id,
-      action: modifiedAction!,
+      action: modifiedAction,
     });
   }
 
   if (originalAction && modifiedAction && !R.isDeepEqual(originalAction, modifiedAction)) {
-    scenario.updateWorkflowAction({
+    await scenario.updateWorkflowAction({
       ruleId: rule.id,
       actionId: originalAction.id!,
       action: modifiedAction,
@@ -165,8 +176,11 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
   // Update rule name
 
   // Update rule name
-  if (originalRule.name !== modifiedRule.name) {
-    scenario.updateWorkflowRule({
+  if (
+    originalRule.name !== modifiedRule.name ||
+    originalRule.fallthrough !== modifiedRule.fallthrough
+  ) {
+    await scenario.updateWorkflowRule({
       ruleId: rule.id,
       name: modifiedRule.name,
       fallthrough: modifiedRule.fallthrough,
