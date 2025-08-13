@@ -1,8 +1,12 @@
 import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
+import { formatDate } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
 export function UnavailableBanner() {
+  const { t } = useTranslation(['settings']);
   const { query: unavailabilityQuery } = useUnavailabilitySettings();
 
   const [isOpen, setIsOpen] = useState(true);
@@ -21,7 +25,13 @@ export function UnavailableBanner() {
           <span className="inline-flex p-1 me-3 text-grey-100 rounded-full w-6 h-6 items-center justify-center">
             <Icon icon="account-circle-off" className="size-5" />
           </span>
-          <span className="font-semibold text-grey-100">You are set offline.</span>
+          <span className="font-semibold text-grey-100">
+            {t('unavailableBanner.caption', {
+              date: formatDate(unavailabilityQuery.data?.until!, 'dd/MM/yyyy', {
+                locale: fr,
+              }),
+            })}
+          </span>
         </p>
       </div>
       <div className="flex items-center">
