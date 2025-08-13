@@ -1263,8 +1263,8 @@ export type IfOutcomeIn = {
 export type WorkflowConditionDetailDto = AlwaysMatches | NeverMatches | IfOutcomeIn | {
     "function": "rule_hit";
     params: {
-        /** ID of a rule that must match */
-        rule_id: string;
+        /** IDs of rules that must match */
+        rule_ids: string[];
     };
 } | {
     "function": "payload_evaluates";

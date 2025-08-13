@@ -520,12 +520,14 @@ components:
           enum: [rule_hit]
         params:
           type: object
-          required: [rule_id]
+          required: [rule_ids]
           properties:
-            rule_id:
-              description: ID of a rule that must match
-              type: string
-              format: uuid
+            rule_ids:
+              description: IDs of rules that must match
+              type: array
+              items:
+                type: string
+                format: uuid
 
     WorkflowConditionPayloadEvaluates:
       title: "If a payload AST matches"
