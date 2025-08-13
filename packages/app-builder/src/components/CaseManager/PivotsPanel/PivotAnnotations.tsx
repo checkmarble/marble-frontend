@@ -1,11 +1,9 @@
+import { ClientCommentForm } from '@app-builder/components/Annotations/ClientCommentForm';
 import { ClientDocumentsList } from '@app-builder/components/Annotations/ClientDocumentsList';
+import { ClientDocumentsPopover } from '@app-builder/components/Annotations/ClientDocumentsPopover';
+import { ClientTagsEditSelect } from '@app-builder/components/Annotations/ClientTagsEditSelect';
 import { ClientTagsList } from '@app-builder/components/Annotations/ClientTagsList';
 import { ClientObjectComments } from '@app-builder/components/DataModelExplorer/ClientObjectComments';
-import {
-  ClientCommentForm,
-  ClientDocumentsPopover,
-  ClientTagsEditSelect,
-} from '@app-builder/routes/ressources+/data+/create-annotation';
 import { type GroupedAnnotations } from 'marble-api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

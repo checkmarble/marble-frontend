@@ -1,6 +1,5 @@
 import { AutoLayoutControlButton } from '@app-builder/components/ReactFlow';
 import { type DataModel, type Pivot } from '@app-builder/models/data-model';
-import { CreateTable } from '@app-builder/routes/ressources+/data+/createTable';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import Dagre from '@dagrejs/dagre';
 import * as React from 'react';
@@ -24,6 +23,7 @@ import { Button, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '../Schema/SchemaMenu';
+import { CreateTable } from './CreateTable';
 import { dataI18n } from './data-i18n';
 import {
   adaptLinkToSingleData,

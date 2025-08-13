@@ -1,16 +1,13 @@
-import {
-  ClientCommentForm,
-  ClientDocumentsPopover,
-  ClientTagsEditSelect,
-} from '@app-builder/routes/ressources+/data+/create-annotation';
 import { useCallbackRef } from '@marble/shared';
 import { useQueryClient } from '@tanstack/react-query';
 import { type GroupedAnnotations } from 'marble-api';
 import { type ReactNode, useState } from 'react';
 import { Button, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
+import { ClientCommentForm } from '../Annotations/ClientCommentForm';
 import { ClientDocumentsList } from '../Annotations/ClientDocumentsList';
+import { ClientDocumentsPopover } from '../Annotations/ClientDocumentsPopover';
+import { ClientTagsEditSelect } from '../Annotations/ClientTagsEditSelect';
 import { ClientTagsList } from '../Annotations/ClientTagsList';
 import { ClientObjectComments } from './ClientObjectComments';
 
