@@ -7,11 +7,6 @@ import {
   type TableModel,
   type UnicityConstraintType,
 } from '@app-builder/models/data-model';
-import { CreatePivot } from '@app-builder/routes/ressources+/data+/create-pivot';
-import { CreateField } from '@app-builder/routes/ressources+/data+/createField';
-import { CreateLink } from '@app-builder/routes/ressources+/data+/createLink';
-import { EditField } from '@app-builder/routes/ressources+/data+/editField';
-import { EditTable } from '@app-builder/routes/ressources+/data+/editTable';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { getRoute } from '@app-builder/utils/routes';
 import { NavLink } from '@remix-run/react';
@@ -31,14 +26,18 @@ import { Handle, type NodeProps, Position } from 'reactflow';
 import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import {
   SchemaMenuMenuButton,
   SchemaMenuMenuItem,
   SchemaMenuMenuPopover,
   SchemaMenuRoot,
 } from '../Schema/SchemaMenu';
+import { CreateField } from './CreateField';
+import { CreateLink } from './CreateLink';
+import { CreatePivot } from './CreatePivot/CreatePivot';
 import { dataI18n } from './data-i18n';
+import { EditField } from './EditField';
+import { EditTable } from './EditTable';
 import { useSelectedPivot } from './SelectedPivot';
 
 const MIN_COLUMNS = 2;

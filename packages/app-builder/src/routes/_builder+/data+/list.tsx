@@ -1,7 +1,7 @@
 import { Page, TabLink } from '@app-builder/components';
+import { CreateTable } from '@app-builder/components/Data/CreateTable';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
 import { TableDetails } from '@app-builder/components/Data/TableDetails';
-import { CreateTable } from '@app-builder/routes/ressources+/data+/createTable';
 import { useDataModel, useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { getRoute } from '@app-builder/utils/routes';
 import { type Namespace } from 'i18next';

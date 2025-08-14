@@ -1,7 +1,7 @@
+import { CreateNavigationOptionModal } from '@app-builder/components/Data/CreateNavigationOptionModal';
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
 import { type CurrentUser, type DataModel, isAdmin, type TableModel } from '@app-builder/models';
 import { type PivotObject } from '@app-builder/models/cases';
-import { CreateNavigationOptionModal } from '@app-builder/routes/ressources+/data+/$tableId.createNavigationOption';
 import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';

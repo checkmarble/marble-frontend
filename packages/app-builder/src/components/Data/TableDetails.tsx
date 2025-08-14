@@ -1,14 +1,12 @@
 import { CollapsiblePaper } from '@app-builder/components';
+import { EditField } from '@app-builder/components/Data/EditField';
+import { EditTable } from '@app-builder/components/Data/EditTable';
 import {
   type DataModel,
   type DataType,
   type TableModel,
   type UnicityConstraintType,
 } from '@app-builder/models/data-model';
-import { CreateField } from '@app-builder/routes/ressources+/data+/createField';
-import { CreateLink } from '@app-builder/routes/ressources+/data+/createLink';
-import { EditField } from '@app-builder/routes/ressources+/data+/editField';
-import { EditTable } from '@app-builder/routes/ressources+/data+/editTable';
 import { useDataModelFeatureAccess } from '@app-builder/services/data/data-model';
 import { getRoute } from '@app-builder/utils/routes';
 import { NavLink } from '@remix-run/react';
@@ -19,7 +17,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
+import { CreateField } from './CreateField';
+import { CreateLink } from './CreateLink';
 import { dataI18n } from './data-i18n';
 
 interface TableDetailsProps {

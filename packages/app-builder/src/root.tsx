@@ -8,6 +8,7 @@ import {
   ScrollRestoration,
   type ShouldRevalidateFunctionArgs,
   useLoaderData,
+  useRevalidator,
   useRouteError,
   useRouteLoaderData,
 } from '@remix-run/react';
@@ -26,6 +27,7 @@ import { iconsSVGSpriteHref, Logo, logosSVGSpriteHref } from 'ui-icons';
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
 import { AppConfigContext } from './contexts/AppConfigContext';
+import { LoaderRevalidatorContext } from './contexts/LoaderRevalidatorContext';
 import { initServerServices } from './services/init.server';
 import { useSegmentPageTracking } from './services/segment';
 import { SegmentScript } from './services/segment/SegmentScript';
@@ -190,13 +192,16 @@ function App() {
       }),
   );
   const { locale, appConfig } = useLoaderData<typeof loader>();
+  const revalidator = useRevalidator();
 
   useChangeLanguage(locale);
 
   return (
     <QueryClientProvider client={queryClient}>
       <AppConfigContext.Provider value={appConfig}>
-        <Outlet />
+        <LoaderRevalidatorContext.Provider value={revalidator.revalidate}>
+          <Outlet />
+        </LoaderRevalidatorContext.Provider>
       </AppConfigContext.Provider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
