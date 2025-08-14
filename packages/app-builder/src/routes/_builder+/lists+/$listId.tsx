@@ -4,12 +4,12 @@ import {
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
+import { AddListValueModal } from '@app-builder/components/Lists/AddListValueModal';
+import { DeleteListModal } from '@app-builder/components/Lists/DeleteListModal';
+import { DeleteListValueModal } from '@app-builder/components/Lists/DeleteListValueModal';
+import { EditListModal } from '@app-builder/components/Lists/EditListModal';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { useUploadListDataFile } from '@app-builder/queries/upload-list-data';
-import { DeleteList } from '@app-builder/routes/ressources+/lists+/delete';
-import { EditList } from '@app-builder/routes/ressources+/lists+/edit';
-import { NewListValue } from '@app-builder/routes/ressources+/lists+/value_create';
-import { DeleteListValue } from '@app-builder/routes/ressources+/lists+/value_delete';
 import {
   isCreateListValueAvailable,
   isDeleteListAvailable,
@@ -109,7 +109,11 @@ export default function Lists() {
             <div className="group flex items-center justify-between">
               <p className="text-grey-00 text-s font-medium">{value}</p>
               {listFeatureAccess.isDeleteListValueAvailable ? (
-                <DeleteListValue listId={customList.id} listValueId={row.original.id} value={value}>
+                <DeleteListValueModal
+                  listId={customList.id}
+                  listValueId={row.original.id}
+                  value={value}
+                >
                   <button
                     className="group-hover:text-grey-00 text-transparent transition-colors duration-200 ease-in-out"
                     name="delete"
@@ -118,7 +122,7 @@ export default function Lists() {
                     <Icon icon="delete" className="size-6 shrink-0" />
                     <span className="sr-only">{t('common:delete')}</span>
                   </button>
-                </DeleteListValue>
+                </DeleteListValueModal>
               ) : null}
             </div>
           );
@@ -141,7 +145,7 @@ export default function Lists() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
         {listFeatureAccess.isEditListAvailable ? (
-          <EditList
+          <EditListModal
             listId={customList.id}
             name={customList.name}
             description={customList.description}
@@ -171,7 +175,7 @@ export default function Lists() {
                 />
               </form>
               {listFeatureAccess.isCreateListValueAvailable ? (
-                <NewListValue listId={customList.id} />
+                <AddListValueModal listId={customList.id} />
               ) : null}
             </div>
             {virtualTable.isEmpty ? (
@@ -186,7 +190,9 @@ export default function Lists() {
               <Table.Default {...virtualTable}></Table.Default>
             )}
           </div>
-          {listFeatureAccess.isDeleteListAvailable ? <DeleteList listId={customList.id} /> : null}
+          {listFeatureAccess.isDeleteListAvailable ? (
+            <DeleteListModal listId={customList.id} />
+          ) : null}
         </Page.Content>
       </Page.Container>
     </Page.Main>

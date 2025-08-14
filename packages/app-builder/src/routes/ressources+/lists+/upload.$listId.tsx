@@ -1,3 +1,4 @@
+import { MAX_FILE_SIZE } from '@app-builder/hooks/useFormDropzone';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getCustomListDataUploadEndpoint } from '@app-builder/utils/files';
@@ -9,9 +10,6 @@ import {
 } from '@remix-run/node';
 import { tryit } from 'radash';
 import invariant from 'tiny-invariant';
-
-const MAX_FILE_SIZE_MB = 20;
-const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   const { authService } = initServerServices(request);
