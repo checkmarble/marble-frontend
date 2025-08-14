@@ -1,4 +1,3 @@
-import { UploadFileContentProps } from '@app-builder/routes/ressources+/files+/upload-file';
 import {
   AlreadyDownloadingError,
   AuthRequestError,
@@ -12,6 +11,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Table, useVirtualTable } from 'ui-design-system';
 import { AddYourFirstFile } from './AddYourFirstFile';
+import { UploadFileContentProps } from './UploadFile';
 
 const columnHelper = createColumnHelper<FilesListFile>();
 

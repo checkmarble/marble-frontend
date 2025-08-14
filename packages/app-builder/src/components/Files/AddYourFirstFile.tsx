@@ -1,7 +1,4 @@
-import {
-  UploadFile,
-  UploadFileContentProps,
-} from '@app-builder/routes/ressources+/files+/upload-file';
+import { UploadFile, UploadFileContentProps } from './UploadFile';
 
 export function AddYourFirstFile({
   children,
