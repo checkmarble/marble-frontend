@@ -174,7 +174,7 @@
             schema:
               type: array
               items:
-                $ref: "#/components/schemas/ScenarioRuleLatestVersion"
+                $ref: "#/components/schemas/ScenarioRuleLatestVersionDto"
       "401":
         $ref: "components.yml#/responses/401"
       "403":
@@ -275,7 +275,7 @@ components:
         - FORMULA_INCORRECT_RETURN_TYPE
         - SCORE_THRESHOLD_MISSING
         - SCORE_THRESHOLDS_MISMATCH
-    ScenarioRuleLatestVersion:
+    ScenarioRuleLatestVersionDto:
       type: object
       required: [type, stable_id, name, latest_version]
       properties:

@@ -807,6 +807,11 @@ export const routes = [
         "file": "routes/ressources+/workflows+/$scenarioId+/_index.tsx"
       },
       {
+        "id": "routes/ressources+/workflows+/$scenarioId+/latest-references",
+        "path": "ressources/workflows/:scenarioId/latest-references",
+        "file": "routes/ressources+/workflows+/$scenarioId+/latest-references.tsx"
+      },
+      {
         "id": "routes/ressources+/workflows+/$scenarioId+/reorder",
         "path": "ressources/workflows/:scenarioId/reorder",
         "file": "routes/ressources+/workflows+/$scenarioId+/reorder.tsx"

@@ -30,7 +30,26 @@ export async function action({ request, params }: ActionFunctionArgs) {
         );
       }
 
-      return Response.json({ error: 'Failed to update rule' }, { status: 500 });
+      // Forward API error details to the client when available
+      const anyError = error as any;
+      const status: number | undefined = anyError?.status;
+      const apiMessage: string | undefined = anyError?.data?.message ?? anyError?.message;
+      const apiCode: string | undefined = anyError?.data?.error_code;
+
+      if (typeof status === 'number') {
+        return Response.json(
+          {
+            error: apiMessage ?? 'Failed to update rule',
+            errorCode: apiCode ?? null,
+          },
+          { status },
+        );
+      }
+
+      return Response.json(
+        { error: apiMessage ?? 'Failed to update rule', errorCode: apiCode ?? null },
+        { status: 500 },
+      );
     }
 
     return Response.json({ success: true });
@@ -42,7 +61,20 @@ export async function action({ request, params }: ActionFunctionArgs) {
       return new Response(null, { status: 204 });
     } catch (error) {
       console.error('Failed to delete workflow rule:', error);
-      return Response.json({ error: 'Failed to delete rule' }, { status: 500 });
+      const anyError = error as any;
+      const status: number | undefined = anyError?.status;
+      const apiMessage: string | undefined = anyError?.data?.message ?? anyError?.message;
+      const apiCode: string | undefined = anyError?.data?.error_code;
+      if (typeof status === 'number') {
+        return Response.json(
+          { error: apiMessage ?? 'Failed to delete rule', errorCode: apiCode ?? null },
+          { status },
+        );
+      }
+      return Response.json(
+        { error: apiMessage ?? 'Failed to delete rule', errorCode: apiCode ?? null },
+        { status: 500 },
+      );
     }
   }
 
