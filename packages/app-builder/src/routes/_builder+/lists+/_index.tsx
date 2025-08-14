@@ -1,7 +1,7 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import { CreateListModal } from '@app-builder/components/Lists/CreateListModal';
 import { type CustomList } from '@app-builder/models/custom-list';
-import { CreateList } from '@app-builder/routes/ressources+/lists+/create';
 import { isCreateListAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -94,7 +94,7 @@ export default function ListsPage() {
         <Page.Content className="max-w-screen-xl">
           <div className="flex flex-col gap-4">
             <div className="flex flex-row justify-end">
-              {isCreateListAvailable ? <CreateList /> : null}
+              {isCreateListAvailable ? <CreateListModal /> : null}
             </div>
             {isEmpty ? (
               <div className="bg-grey-100 border-grey-90 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
