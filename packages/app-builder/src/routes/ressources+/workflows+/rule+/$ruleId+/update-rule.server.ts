@@ -39,7 +39,7 @@ const workflowConditionSchema = z
       z.object({
         function: z.literal('rule_hit'),
         params: z.object({
-          rule_ids: z.array(z.string()),
+          ruleIds: z.array(z.string()),
         }),
       }),
       z.object({

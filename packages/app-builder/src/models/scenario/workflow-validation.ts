@@ -1,5 +1,4 @@
 import { type OutcomeDto } from 'marble-api';
-import { useTranslation } from 'react-i18next';
 import { z } from 'zod/v4';
 import { undefinedAstNodeName } from '../astNode/ast-node';
 import { isBinaryMainAstOperatorFunction } from '../astNode/builder-ast-node-node-operator';
@@ -76,7 +75,7 @@ const outcomeInConditionSchema = z.object({
 const ruleHitConditionSchema = z.object({
   function: z.literal('rule_hit'),
   params: z.object({
-    rule_ids: z.array(z.string()).min(1, 'At least one rule must be selected'),
+    ruleIds: z.array(z.string()).min(1, 'At least one rule must be selected'),
   }),
 });
 
@@ -126,16 +125,15 @@ function validatePayloadEvaluatesCondition(
   isValid: boolean;
   errors: string[];
 } {
-  const { t } = useTranslation();
   const errors: string[] = [];
 
   if (!('params' in condition) || !condition.params || typeof condition.params !== 'object') {
-    errors.push(t('workflows:condition.error.payload.must.have.parameters', { conditionIndex }));
+    errors.push(`Condition ${conditionIndex}: Must have parameters`);
     return { isValid: false, errors };
   }
 
   if (!('expression' in condition.params) || !condition.params.expression) {
-    errors.push(t('workflows:condition.error.payload.must.have.expression', { conditionIndex }));
+    errors.push(`Condition ${conditionIndex}: Must have an expression`);
     return { isValid: false, errors };
   }
 
@@ -143,23 +141,19 @@ function validatePayloadEvaluatesCondition(
 
   // Check if operator is selected (name should not be null, undefined, or "Undefined")
   if (!expression.name || expression.name === undefinedAstNodeName) {
-    errors.push(t('workflows:condition.error.payload.must.have.operator', { conditionIndex }));
+    errors.push(`Condition ${conditionIndex}: Must have a valid operator`);
   } else if (!isBinaryMainAstOperatorFunction(expression.name)) {
-    errors.push(t('workflows:condition.error.payload.must.have.operator', { conditionIndex }));
+    errors.push(`Condition ${conditionIndex}: Must have a valid operator`);
   }
 
   // Check if both operands are defined
   if (!Array.isArray(expression.children) || expression.children.length !== 2) {
-    errors.push(t('workflows:condition.error.payload.must.have.operands', { conditionIndex }));
+    errors.push(`Condition ${conditionIndex}: Must have exactly two operands`);
   } else {
     expression.children.forEach((child: any, childIndex: number) => {
       if (!child || child.name === undefinedAstNodeName) {
         const operandLabel = childIndex === 0 ? 'left' : 'right';
-        errors.push(
-          t(`workflows:condition.error.payload.must.have.operand.${operandLabel}`, {
-            conditionIndex,
-          }),
-        );
+        errors.push(`Condition ${conditionIndex}: Must have a valid ${operandLabel} operand`);
       }
     });
   }
@@ -190,9 +184,9 @@ export function validateRuleConditions(conditions: WorkflowCondition[]): {
     } else if (condition.function === 'rule_hit') {
       if (
         !('params' in condition) ||
-        !('rule_ids' in (condition as any).params) ||
-        !Array.isArray((condition as any).params.rule_ids) ||
-        (condition as any).params.rule_ids.length === 0
+        !('ruleIds' in (condition as any).params) ||
+        !Array.isArray((condition as any).params.ruleIds) ||
+        (condition as any).params.ruleIds.length === 0
       ) {
         errors.push(`Condition ${index + 1}: At least one rule must be selected`);
       }

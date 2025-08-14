@@ -47,7 +47,7 @@ export type WorkflowCondition = {
       function: 'rule_hit';
       params: {
         /** ID of a rule that must match */
-        rule_ids: string[];
+        ruleIds: string[];
       };
     }
   | {
@@ -93,8 +93,8 @@ export function adaptWorkflowCondition(dto: WorkflowConditionDto): WorkflowCondi
       id: dto.id,
       function: 'rule_hit',
       params: {
-        // Backend returns snake_case 'rule_id', adapt to frontend 'rule_ids'
-        rule_ids: dto.params.rule_id,
+        // Backend returns snake_case 'rule_id', adapt to frontend 'ruleIds'
+        ruleIds: dto.params.rule_id,
       },
     };
   }
@@ -118,7 +118,7 @@ export function transformWorkflowCondition(
       function: 'rule_hit',
       params: {
         // Backend expects snake_case 'rule_id'
-        rule_id: condition.params.rule_ids,
+        rule_id: condition.params.ruleIds,
       },
     };
   }
