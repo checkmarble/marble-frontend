@@ -1,16 +1,14 @@
-import { useNavigation, useRevalidator } from '@remix-run/react';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { MAX_FILE_SIZE } from '@app-builder/hooks/useFormDropzone';
 import * as Sentry from '@sentry/remix';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, ModalV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
-const MAX_FILE_SIZE_MB = 20;
-const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export function UploadFile({
   uploadFileEndpoint,
@@ -20,19 +18,20 @@ export function UploadFile({
   children: React.ReactElement;
 }) {
   const [open, setOpen] = useState(false);
-
-  const navigation = useNavigation();
-  useEffect(() => {
-    if (navigation.state === 'loading') {
-      setOpen(false);
-    }
-  }, [navigation.state]);
+  const revalidate = useLoaderRevalidator();
 
   return (
     <ModalV2.Root open={open} setOpen={setOpen}>
       <ModalV2.Trigger render={children} />
       <ModalV2.Content>
-        <UploadFileContent uploadFileEndpoint={uploadFileEndpoint} setOpen={setOpen} />
+        <UploadFileContent
+          uploadFileEndpoint={uploadFileEndpoint}
+          setOpen={setOpen}
+          onUploadCompleted={() => {
+            setOpen(false);
+            revalidate();
+          }}
+        />
       </ModalV2.Content>
     </ModalV2.Root>
   );
@@ -41,12 +40,16 @@ export function UploadFile({
 export type UploadFileContentProps = {
   uploadFileEndpoint: (formData: FormData) => Promise<Response>;
   setOpen: (open: boolean) => void;
+  onUploadCompleted: (success: boolean) => void;
 };
 
-function UploadFileContent({ uploadFileEndpoint, setOpen }: UploadFileContentProps) {
+function UploadFileContent({
+  uploadFileEndpoint,
+  setOpen,
+  onUploadCompleted,
+}: UploadFileContentProps) {
   const { t } = useTranslation(['common', 'cases']);
   const [loading, setLoading] = useState(false);
-  const revalidator = useRevalidator();
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: (acceptedFiles) => {
@@ -73,6 +76,8 @@ function UploadFileContent({ uploadFileEndpoint, setOpen }: UploadFileContentPro
       // );
       return;
     }
+
+    let success = false;
     try {
       setLoading(true);
 
@@ -91,13 +96,15 @@ function UploadFileContent({ uploadFileEndpoint, setOpen }: UploadFileContentPro
 
       setLoading(false);
       setOpen(false);
+      success = true;
     } catch (error) {
       Sentry.captureException(error);
       toast.error('An error occurred while trying to upload the file.');
     } finally {
       setLoading(false);
     }
-    revalidator.revalidate();
+
+    onUploadCompleted(success);
   };
 
   return (
