@@ -12,7 +12,7 @@ const astNodeSchema: z.ZodTypeAny = z.object({
   name: z.string().optional(),
   constant: z.any().optional(),
   children: z.array(z.lazy(() => astNodeSchema)).optional(),
-  named_children: z
+  namedChildren: z
     .record(
       z.string(),
       z.lazy(() => astNodeSchema),
