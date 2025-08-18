@@ -17,7 +17,7 @@ export function RuleHitSelector({ onChange, selectedRuleIds, rulesList }: RuleHi
   const [open, setOpen] = useState(false);
 
   const [pristine, setPristine] = useState(true);
-  const { t } = useTranslation(['workflows']);
+  const { t } = useTranslation(['scenarios', 'workflows']);
 
   const [search, setSearch] = useState('');
 
@@ -60,16 +60,27 @@ export function RuleHitSelector({ onChange, selectedRuleIds, rulesList }: RuleHi
                   const selectedRules = selectedRuleIds
                     .map((id) => rulesList.get(id))
                     .filter(Boolean) as ScenarioRuleLatestVersion[];
-                  const firstTwoNames = selectedRules
-                    .slice(0, 2)
-                    .map((r) => r.name)
-                    .join(', ');
+                  const firstTwoNames = selectedRules.slice(0, 2).map((r) => r.name);
                   const extraCount = Math.max(0, selectedRules.length - 2);
-                  const andMoreLabel =
-                    extraCount > 0
-                      ? ` ${t('workflows:rule_hit_selector.and_more', { count: extraCount })}`
-                      : '';
-                  return <span className="truncate">{`${firstTwoNames}${andMoreLabel}`}</span>;
+                  return (
+                    <span className="truncate">
+                      {firstTwoNames.map((name, index) => (
+                        <Fragment key={name}>
+                          {index > 0 && (
+                            <span className="text-grey-60 font-bold uppercase mx-1">
+                              {t('scenarios:logical_operator.or')}
+                            </span>
+                          )}
+                          <span className="font-medium  text-grey-00">{name}</span>
+                        </Fragment>
+                      ))}
+                      {extraCount ? (
+                        <span className="text-grey-60 font-bold mx-1">
+                          {t('workflows:rule_hit_selector.and_more', { count: extraCount })}
+                        </span>
+                      ) : null}
+                    </span>
+                  );
                 })()}
               </div>
             ) : (
