@@ -663,7 +663,7 @@ export type AstValidationDto = {
     errors: ScenarioValidationErrorDto[];
     evaluation: NodeEvaluationDto;
 };
-export type ScenarioRuleLatestVersion = {
+export type ScenarioRuleLatestVersionDto = {
     "type": "rule" | "screening";
     stable_id: string;
     name: string;
@@ -1263,8 +1263,8 @@ export type IfOutcomeIn = {
 export type WorkflowConditionDetailDto = AlwaysMatches | NeverMatches | IfOutcomeIn | {
     "function": "rule_hit";
     params: {
-        /** ID of a rule that must match */
-        rule_id: string;
+        /** IDs of rules that must match */
+        rule_id: string[];
     };
 } | {
     "function": "payload_evaluates";
@@ -2667,7 +2667,7 @@ export function validateAstNode(scenarioId: string, scenarioAstValidateInputDto?
 export function scenarioRuleLatestVersions(scenarioId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: ScenarioRuleLatestVersion[];
+        data: ScenarioRuleLatestVersionDto[];
     } | {
         status: 401;
         data: string;

@@ -4,6 +4,7 @@ import {
   type AlwaysMatches,
   type IfOutcomeIn,
   type NeverMatches,
+  ScenarioRuleLatestVersionDto,
   WorkflowActionDto,
   WorkflowConditionDetailDto,
   WorkflowConditionDto,
@@ -46,7 +47,7 @@ export type WorkflowCondition = {
       function: 'rule_hit';
       params: {
         /** ID of a rule that must match */
-        rule_id: string;
+        ruleIds: string[];
       };
     }
   | {
@@ -87,6 +88,16 @@ export function adaptWorkflowCondition(dto: WorkflowConditionDto): WorkflowCondi
       },
     };
   }
+  if (dto.function === 'rule_hit') {
+    return {
+      id: dto.id,
+      function: 'rule_hit',
+      params: {
+        // Backend returns snake_case 'rule_id', adapt to frontend 'ruleIds'
+        ruleIds: dto.params.rule_id,
+      },
+    };
+  }
   return dto;
 }
 
@@ -105,7 +116,8 @@ export function transformWorkflowCondition(
     return {
       function: 'rule_hit',
       params: {
-        rule_id: condition.params.rule_id,
+        // Backend expects snake_case 'rule_id'
+        rule_id: condition.params.ruleIds,
       },
     };
   }
@@ -147,6 +159,26 @@ export function transformWorkflowAction(action: WorkflowAction): WorkflowActionD
         action: 'DISABLED',
       };
   }
+}
+
+export type ScenarioRuleLatestVersion = {
+  type: 'rule' | 'screening';
+  stableId: string;
+  name: string;
+  latestVersion: string;
+};
+
+export type ScenarioRuleLatestVersionMap = Map<string, ScenarioRuleLatestVersion>;
+
+export function adaptScenarioRulesLatestVersion(
+  dto: ScenarioRuleLatestVersionDto,
+): ScenarioRuleLatestVersion {
+  return {
+    type: dto.type,
+    stableId: dto.stable_id,
+    name: dto.name,
+    latestVersion: dto.latest_version,
+  };
 }
 
 export type WorkflowFeatureAccess = {

@@ -49,9 +49,6 @@ export default function Api() {
   const { t } = useTranslation(handle.i18n);
   const { openapi, openapiV1 } = useLoaderData<typeof loader>();
 
-  console.log('openapi', openapi);
-  console.log('openapiV1', openapiV1);
-
   return (
     <Page.Main>
       <Page.Header className="justify-between">

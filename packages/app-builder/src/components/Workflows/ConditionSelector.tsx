@@ -1,12 +1,16 @@
 import { type DataModel } from '@app-builder/models';
 import { NewAstNode, NewUndefinedAstNode } from '@app-builder/models/astNode/ast-node';
 import { type WorkflowCondition } from '@app-builder/models/scenario/workflow';
+import { useGetLatestRulesReferencesQuery } from '@app-builder/queries/Workflows';
 import { type OutcomeDto } from 'marble-api';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { match } from 'ts-pattern';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { PayloadEvaluationCondition } from './PayloadEvaluationCondition';
+import { RuleHitSelector } from './RuleHitSelector';
+import { useRule } from './RuleProvider';
 import { SelectOutcomesList } from './SelectOutcomesList';
 
 interface ConditionSelectorProps {
@@ -14,7 +18,29 @@ interface ConditionSelectorProps {
   isFirst?: boolean;
   triggerObjectType?: string;
   dataModel?: DataModel;
-  onChange?: (condition: WorkflowCondition) => void;
+  onChange: (condition: WorkflowCondition) => void;
+}
+
+// Common prefix component for condition lines
+function ConditionPrefix({ isFirst }: { isFirst: boolean }) {
+  const { t } = useTranslation(['workflows']);
+
+  return (
+    <div className="bg-grey-20 px-2 py-1 rounded">
+      <span className="text-grey-60 font-bold text-sm">
+        {isFirst ? t('workflows:condition.prefix.if') : t('workflows:condition.prefix.and')}
+      </span>
+    </div>
+  );
+}
+
+// Common equals separator component
+function ConditionSeparator() {
+  return (
+    <div className="bg-grey-20 px-2 py-1 rounded">
+      <span className="text-grey-60 font-bold text-sm">=</span>
+    </div>
+  );
 }
 
 export function ConditionSelector({
@@ -26,34 +52,43 @@ export function ConditionSelector({
 }: ConditionSelectorProps) {
   const { t } = useTranslation(['workflows']);
   const [open, setOpen] = useState(false);
-
-  const conditionOptions = [
-    {
-      value: 'always',
-      label: t('workflows:condition_selector.always_matches'),
-      description: t('workflows:condition_selector.always_matches_description'),
-    },
-    {
-      value: 'never',
-      label: t('workflows:condition_selector.never_matches'),
-      description: t('workflows:condition_selector.never_matches_description'),
-    },
-    {
-      value: 'outcome_in',
-      label: t('workflows:condition_selector.outcome_in'),
-      description: t('workflows:condition_selector.outcome_in_description'),
-    },
-    // {
-    //   value: 'rule_hit',
-    //   label: t('workflows:condition_selector.rule_hit'),
-    //   description: t('workflows:condition_selector.rule_hit_description'),
-    // },
-    {
-      value: 'payload_evaluates',
-      label: t('workflows:condition_selector.payload_evaluates'),
-      description: t('workflows:condition_selector.payload_evaluates_description'),
-    },
-  ] as const;
+  const { scenarioId } = useRule();
+  const latestRulesReferences = useGetLatestRulesReferencesQuery(scenarioId);
+  const conditionOptions = useMemo(
+    () =>
+      [
+        {
+          value: 'always',
+          label: t('workflows:condition_selector.always_matches'),
+          description: t('workflows:condition_selector.always_matches_description'),
+        },
+        {
+          value: 'never',
+          label: t('workflows:condition_selector.never_matches'),
+          description: t('workflows:condition_selector.never_matches_description'),
+        },
+        {
+          value: 'outcome_in',
+          label: t('workflows:condition_selector.outcome_in'),
+          description: t('workflows:condition_selector.outcome_in_description'),
+        },
+        ...(latestRulesReferences.data && latestRulesReferences.data.size > 0
+          ? [
+              {
+                value: 'rule_hit',
+                label: t('workflows:condition_selector.rule_hit'),
+                description: t('workflows:condition_selector.rule_hit_description'),
+              },
+            ]
+          : []),
+        {
+          value: 'payload_evaluates',
+          label: t('workflows:condition_selector.payload_evaluates'),
+          description: t('workflows:condition_selector.payload_evaluates_description'),
+        },
+      ] as const,
+    [latestRulesReferences.data, t],
+  );
 
   const handleConditionSelect = (conditionType: (typeof conditionOptions)[number]['value']) => {
     const id = condition?.id || `temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
@@ -63,24 +98,24 @@ export function ConditionSelector({
       id,
     } as WorkflowCondition;
 
-    onChange?.(newCondition);
+    onChange(newCondition);
     setOpen(false);
   };
 
-  const handleParamsSelect = (paramValue: string) => {
+  const handleParamsSelect = (paramValue: string | string[]) => {
     if (!condition) return;
 
     let params;
     const conditionFunction = condition.function;
     switch (conditionFunction) {
       case 'outcome_in':
-        params = paramValue
+        params = (paramValue as string)
           .split(',')
-          .map((s) => s.trim())
-          .filter((s) => s.length > 0);
+          .map((s: string) => s.trim())
+          .filter((s: string) => s.length > 0);
         break;
       case 'rule_hit':
-        params = { rule_id: paramValue };
+        params = { ruleIds: Array.isArray(paramValue) ? paramValue : [paramValue] };
         break;
       case 'payload_evaluates':
         params = {
@@ -100,7 +135,7 @@ export function ConditionSelector({
       id: condition.id,
     } as WorkflowCondition;
 
-    onChange?.(newCondition);
+    onChange(newCondition);
   };
 
   const needsParams =
@@ -108,77 +143,82 @@ export function ConditionSelector({
     false;
   const selectedCondition = condition?.function;
 
-  if (selectedCondition === 'payload_evaluates' && triggerObjectType && dataModel) {
+  // Render condition line with common structure
+  const renderConditionLine = () => {
+    // Special case for payload_evaluates with custom rendering
+    if (selectedCondition === 'payload_evaluates' && triggerObjectType && dataModel) {
+      return (
+        <>
+          <ConditionPrefix {...{ isFirst }} />
+          <PayloadEvaluationCondition condition={condition as any} onChange={onChange} />
+        </>
+      );
+    }
+
+    // Standard condition rendering
     return (
-      <div className="flex items-center gap-2">
-        <div className="bg-grey-20 px-2 py-1 rounded">
-          <span className="text-grey-60 font-bold text-sm">
-            {isFirst ? t('workflows:condition.prefix.if') : t('workflows:condition.prefix.and')}
-          </span>
-        </div>
+      <>
+        {selectedCondition && <ConditionPrefix {...{ isFirst }} />}
 
-        <PayloadEvaluationCondition condition={condition as any} onChange={onChange!} />
-      </div>
+        <MenuCommand.Menu open={open} onOpenChange={setOpen}>
+          <MenuCommand.Trigger>
+            <Button variant="secondary">
+              {selectedCondition ? (
+                conditionOptions.find((opt) => opt.value === selectedCondition)?.label
+              ) : (
+                <>
+                  <Icon icon="plus" className="size-4" />
+                  <span>{t('workflows:condition_selector.add_condition.label')}</span>
+                </>
+              )}
+            </Button>
+          </MenuCommand.Trigger>
+          <MenuCommand.Content>
+            <MenuCommand.List>
+              {conditionOptions.map((option) => (
+                <MenuCommand.Item
+                  key={option.value}
+                  value={option.value}
+                  onSelect={() => handleConditionSelect(option.value)}
+                  className="flex flex-col items-start gap-1 p-3 hover:bg-grey-05 rounded-md cursor-pointer"
+                >
+                  <div className="flex items-center">
+                    <span className="font-medium text-grey-00">{option.label}</span>
+                  </div>
+                  <span className="text-sm text-grey-50">{option.description}</span>
+                </MenuCommand.Item>
+              ))}
+            </MenuCommand.List>
+          </MenuCommand.Content>
+        </MenuCommand.Menu>
+
+        {needsParams && <ConditionSeparator />}
+
+        {needsParams &&
+          match(condition as WorkflowCondition | undefined)
+            .with({ function: 'outcome_in' }, (c) => (
+              <div className="flex-1 min-w-0">
+                <SelectOutcomesList
+                  selectedOutcomes={(c.params as unknown as OutcomeDto[]) || []}
+                  onSelectedOutcomesChange={(outcomes) =>
+                    handleParamsSelect(outcomes?.join(',') || '')
+                  }
+                />
+              </div>
+            ))
+            .with({ function: 'rule_hit' }, (c) => (
+              <div className="flex-1 min-w-0">
+                <RuleHitSelector
+                  selectedRuleIds={(c as any).params?.ruleIds ?? []}
+                  rulesList={latestRulesReferences.data ?? new Map()}
+                  onChange={(ruleIds) => handleParamsSelect(ruleIds)}
+                />
+              </div>
+            ))
+            .otherwise(() => null)}
+      </>
     );
-  }
+  };
 
-  return (
-    <div className="flex items-center gap-2">
-      {selectedCondition && (
-        <div className="bg-grey-20 px-2 py-1 rounded">
-          <span className="text-grey-60 font-bold text-sm">
-            {isFirst ? t('workflows:condition.prefix.if') : t('workflows:condition.prefix.and')}
-          </span>
-        </div>
-      )}
-
-      <MenuCommand.Menu open={open} onOpenChange={setOpen}>
-        <MenuCommand.Trigger>
-          <Button variant="secondary">
-            {selectedCondition ? (
-              conditionOptions.find((opt) => opt.value === selectedCondition)?.label
-            ) : (
-              <>
-                <Icon icon="plus" className="size-4" />
-                <span>{t('workflows:condition_selector.add_condition.label')}</span>
-              </>
-            )}
-          </Button>
-        </MenuCommand.Trigger>
-        <MenuCommand.Content>
-          <MenuCommand.List>
-            {conditionOptions.map((option) => (
-              <MenuCommand.Item
-                key={option.value}
-                value={option.value}
-                onSelect={() => handleConditionSelect(option.value)}
-                className="flex flex-col items-start gap-1 p-3 hover:bg-grey-05 rounded-md cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-grey-00">{option.label}</span>
-                </div>
-                <span className="text-sm text-grey-50">{option.description}</span>
-              </MenuCommand.Item>
-            ))}
-          </MenuCommand.List>
-        </MenuCommand.Content>
-      </MenuCommand.Menu>
-
-      {needsParams && (
-        <div className="bg-grey-20 px-2 py-1 rounded">
-          <span className="text-grey-60 font-bold text-sm">=</span>
-        </div>
-      )}
-
-      {needsParams &&
-        (selectedCondition === 'outcome_in' ? (
-          <div className="flex-1 min-w-0">
-            <SelectOutcomesList
-              selectedOutcomes={(condition?.params as OutcomeDto[]) || []}
-              onSelectedOutcomesChange={(outcomes) => handleParamsSelect(outcomes?.join(',') || '')}
-            />
-          </div>
-        ) : null)}
-    </div>
-  );
+  return <div className="flex items-center gap-2">{renderConditionLine()}</div>;
 }

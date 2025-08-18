@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 interface RuleContextValue {
   // Data
+  scenarioId: string;
   rule?: Rule;
   isLoading: boolean;
   isError: boolean;
@@ -212,6 +213,7 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
 
   const value: RuleContextValue = {
     // Data
+    scenarioId,
     rule: localRule,
     isLoading: false,
     isError: false,

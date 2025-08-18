@@ -523,9 +523,11 @@ components:
           required: [rule_id]
           properties:
             rule_id:
-              description: ID of a rule that must match
-              type: string
-              format: uuid
+              description: IDs of rules that must match
+              type: array
+              items:
+                type: string
+                format: uuid
 
     WorkflowConditionPayloadEvaluates:
       title: "If a payload AST matches"

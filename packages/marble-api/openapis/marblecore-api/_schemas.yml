@@ -208,8 +208,8 @@ ScenarioValidationErrorDto:
   $ref: scenarios.yml#/components/schemas/ScenarioValidationErrorDto
 ScenarioValidationErrorCodeDto:
   $ref: scenarios.yml#/components/schemas/ScenarioValidationErrorCodeDto
-ScenarioRuleLatestVersion:
-  $ref: scenarios.yml#/components/schemas/ScenarioRuleLatestVersion
+ScenarioRuleLatestVersionDto:
+  $ref: scenarios.yml#/components/schemas/ScenarioRuleLatestVersionDto
 
 # AST EVALUATION
 
