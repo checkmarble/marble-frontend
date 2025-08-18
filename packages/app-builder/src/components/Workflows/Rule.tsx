@@ -69,7 +69,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
       >
         {/* Conditions and Actions Boxes */}
         <div className="flex items-center w-full">
-          <div className="flex-none items-stretch relative w-[750px] bg-grey-100">
+          <div className="flex-none items-stretch relative w-[800px] bg-grey-100">
             {/* Unified bordered wrapper for title + content */}
             <div
               className={`rounded-lg overflow-hidden border-2 transition-all duration-200 ${
