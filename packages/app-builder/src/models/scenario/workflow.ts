@@ -113,7 +113,6 @@ export function transformWorkflowCondition(
     };
   }
   if (condition.function === 'rule_hit') {
-    console.log('transformWorkflowCondition rule_hit', JSON.stringify(condition.params, null, 2));
     return {
       function: 'rule_hit',
       params: {

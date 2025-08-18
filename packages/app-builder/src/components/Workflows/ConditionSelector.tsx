@@ -103,8 +103,6 @@ export function ConditionSelector({
   };
 
   const handleParamsSelect = (paramValue: string | string[]) => {
-    console.log('paramValue', paramValue);
-    console.log('condition', condition);
     if (!condition) return;
 
     let params;
@@ -120,7 +118,6 @@ export function ConditionSelector({
         params = { ruleIds: Array.isArray(paramValue) ? paramValue : [paramValue] };
         break;
       case 'payload_evaluates':
-        console.log('payload_evaluates');
         params = {
           expression: NewAstNode({
             name: '=',

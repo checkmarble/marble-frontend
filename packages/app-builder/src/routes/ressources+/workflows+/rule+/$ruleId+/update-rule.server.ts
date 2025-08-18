@@ -6,7 +6,6 @@ import { z } from 'zod/v4';
 export type ConditionsMap = Map<string, WorkflowCondition>;
 export type ActionsMap = Map<string, WorkflowAction>;
 
-// Zod schema for validating PUT request body
 const astNodeSchema: z.ZodTypeAny = z.object({
   id: z.string().optional(),
   name: z.string().optional(),
@@ -103,9 +102,7 @@ const getModifiedItems = <T extends { id: string }>(
   );
 
 export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rule): Promise<void> {
-  console.log('updateWorkflowRule', JSON.stringify(rule, null, 2));
   const modifiedRule = validateUpdateWorkflowRuleRequest(rule);
-  console.log('modifiedRule', JSON.stringify(modifiedRule, null, 2));
 
   // First get the rule from the API
   const originalRule = await scenario.getWorkflowRule({ ruleId: rule.id });

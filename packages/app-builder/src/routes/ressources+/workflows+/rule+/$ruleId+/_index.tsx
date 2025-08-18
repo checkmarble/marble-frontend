@@ -91,6 +91,5 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   invariant(ruleId, 'ruleId is required');
 
   const rule = await scenario.getWorkflowRule({ ruleId });
-  console.log('rule fetched', rule);
   return Response.json(rule);
 }
