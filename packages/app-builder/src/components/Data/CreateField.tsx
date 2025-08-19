@@ -49,6 +49,15 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
   const createFieldMutation = useCreateFieldMutation();
   const revalidate = useLoaderRevalidator();
 
+  // Helper function to translate error messages
+  const translateError = (key: string) => {
+    try {
+      return t(key as any);
+    } catch {
+      return key; // Fallback to the key if translation fails
+    }
+  };
+
   const form = useForm({
     defaultValues: {
       required: REQUIRED_OPTIONS[0].value,
@@ -59,16 +68,28 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
       isEnum: false,
       isUnique: false,
     } as CreateFieldValue,
-    onSubmit: ({ value, formApi }) => {
-      if (formApi.state.isValid) {
-        createFieldMutation.mutateAsync(value).then((result) => {
-          revalidate();
-
-          if (result.success) {
-            closeModal();
-          }
-        });
+    onSubmit: async ({ value, formApi }) => {
+      if (!formApi.state.isValid) {
+        return;
       }
+      try {
+        const response = await createFieldMutation.mutateAsync(value);
+
+        if (!response.success) {
+          if (response.status === 409) {
+            return response.errors.forEach(
+              ({ field, message }: { field: string; message: string }) => {
+                formApi.getFieldMeta(field as keyof CreateFieldValue)?.errors.push({ message });
+              },
+            );
+          }
+          throw new Error('Unexpected error');
+        }
+      } catch (error: any) {
+        console.error(error);
+      }
+      closeModal();
+      revalidate();
     },
     validators: {
       onSubmit: createFieldValueSchema,
@@ -94,7 +115,6 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             name="name"
             validators={{
               onChange: createFieldValueSchema.shape.name,
-              onBlur: createFieldValueSchema.shape.name,
             }}
           >
             {(field) => (
@@ -109,7 +129,9 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('data:create_field.name_placeholder')}
                 />
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                <FormErrorOrDescription
+                  errors={getFieldErrors(field.state.meta.errors).map(translateError)}
+                />
               </div>
             )}
           </form.Field>
@@ -117,7 +139,6 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             name="description"
             validators={{
               onChange: createFieldValueSchema.shape.description,
-              onBlur: createFieldValueSchema.shape.description,
             }}
           >
             {(field) => (
@@ -132,7 +153,9 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('data:create_field.description_placeholder')}
                 />
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                <FormErrorOrDescription
+                  errors={getFieldErrors(field.state.meta.errors).map(translateError)}
+                />
               </div>
             )}
           </form.Field>
@@ -141,7 +164,6 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
               name="required"
               validators={{
                 onChange: createFieldValueSchema.shape.required,
-                onBlur: createFieldValueSchema.shape.required,
               }}
             >
               {(field) => (
@@ -162,7 +184,9 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                       );
                     })}
                   </Select.Default>
-                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  <FormErrorOrDescription
+                    errors={getFieldErrors(field.state.meta.errors).map(translateError)}
+                  />
                 </div>
               )}
             </form.Field>
@@ -170,7 +194,6 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
               name="type"
               validators={{
                 onChange: createFieldValueSchema.shape.type,
-                onBlur: createFieldValueSchema.shape.type,
               }}
             >
               {(field) => (
@@ -191,7 +214,9 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                       );
                     })}
                   </Select.Default>
-                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  <FormErrorOrDescription
+                    errors={getFieldErrors(field.state.meta.errors).map(translateError)}
+                  />
                 </div>
               )}
             </form.Field>
@@ -201,7 +226,6 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
               name="isEnum"
               validators={{
                 onChange: createFieldValueSchema.shape.isEnum,
-                onBlur: createFieldValueSchema.shape.isEnum,
               }}
             >
               {(field) => (
@@ -218,7 +242,9 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                     <p>{t('data:create_field.is_enum.title')}</p>
                     <p className="text-xs">{t('data:create_field.is_enum.subtitle')}</p>
                   </FormLabel>
-                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  <FormErrorOrDescription
+                    errors={getFieldErrors(field.state.meta.errors).map(translateError)}
+                  />
                 </div>
               )}
             </form.Field>
@@ -228,7 +254,6 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
               name="isUnique"
               validators={{
                 onChange: createFieldValueSchema.shape.isUnique,
-                onBlur: createFieldValueSchema.shape.isUnique,
               }}
             >
               {(field) => (
@@ -250,7 +275,9 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                       </p>
                     ) : null}
                   </FormLabel>
-                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  <FormErrorOrDescription
+                    errors={getFieldErrors(field.state.meta.errors).map(translateError)}
+                  />
                 </div>
               )}
             </form.Field>
@@ -258,11 +285,22 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary">
+            <Button
+              className="flex-1"
+              variant="secondary"
+              type="button"
+              onClick={() => console.log(form.state)}
+            >
               {t('common:cancel')}
             </Button>
           </Modal.Close>
-          <Button className="flex-1" variant="primary" type="submit" name="create">
+          <Button
+            className="flex-1"
+            variant="primary"
+            type="submit"
+            name="create"
+            disabled={form.state.isSubmitting}
+          >
             {t('data:create_field.button_accept')}
           </Button>
         </div>

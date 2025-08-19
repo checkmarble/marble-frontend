@@ -4,19 +4,17 @@ import { createFieldValueSchema } from '@app-builder/queries/data/create-field';
 import { initServerServices } from '@app-builder/services/init.server';
 import { captureUnexpectedRemixError } from '@app-builder/services/monitoring';
 import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
+import { type ActionFunctionArgs } from '@remix-run/node';
 import { z } from 'zod/v4';
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
     authService,
-    i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = initServerServices(request);
 
-  const [session, t, raw, { dataModelRepository }] = await Promise.all([
+  const [session, raw, { dataModelRepository }] = await Promise.all([
     getSession(request),
-    getFixedT(request, ['common']),
     request.json(),
     authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
@@ -25,7 +23,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const { success, error, data } = createFieldValueSchema.safeParse(raw);
 
-  if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
+  if (!success) return Response.json({ success: false, errors: z.treeifyError(error) });
   const { name, description, type, required, tableId, isEnum, isUnique } = data;
 
   try {
@@ -38,28 +36,36 @@ export async function action({ request }: ActionFunctionArgs) {
       isUnique,
     });
 
-    return json({ success: 'true' });
+    return Response.json({ success: true });
   } catch (error) {
     if (isStatusConflictHttpError(error)) {
-      setToastMessage(session, {
-        type: 'error',
-        message: t('common:errors.data.duplicate_field_name'),
-      });
-
-      return json(
-        { success: 'false', errors: [] },
-        { headers: { 'Set-Cookie': await commitSession(session) } },
+      return Response.json(
+        {
+          success: false,
+          status: 409,
+          message: 'Field name already exists',
+          errors: [
+            {
+              field: 'name',
+              message: 'data:create_field.name_conflict_error',
+            },
+          ],
+        },
+        {
+          status: 409,
+          headers: { 'Set-Cookie': await commitSession(session) },
+        },
       );
     } else {
       setToastMessage(session, {
         type: 'error',
-        message: t('common:errors.unknown'),
+        message: 'common:errors.unknown',
       });
 
       captureUnexpectedRemixError(error, 'createField@action', request);
 
-      return json(
-        { success: 'false', errors: [] },
+      return Response.json(
+        { success: false, errors: [] },
         { headers: { 'Set-Cookie': await commitSession(session) } },
       );
     }

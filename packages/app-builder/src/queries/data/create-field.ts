@@ -5,12 +5,14 @@ import { z } from 'zod/v4';
 export const createFieldValueSchema = z.object({
   name: z
     .string()
-    .min(1)
-    .regex(/^[a-z]+[a-z0-9_]+$/, {
-      error: 'Only lower case alphanumeric and _, must start with a letter',
+    .min(1, {
+      message: 'data:create_field.name_min_error',
+    })
+    .regex(/^[a-z]+[a-z0-9_]*$/, {
+      message: 'data:create_field.name_regex_error',
     })
     .refine((value) => value !== 'id', {
-      error: 'The name "id" is reserved',
+      message: 'data:create_field.name_reserved_error',
     }),
   description: z.string(),
   required: z.string(),
@@ -32,7 +34,6 @@ export const useCreateFieldMutation = () => {
         method: 'POST',
         body: JSON.stringify(field),
       });
-
       return response.json();
     },
   });
