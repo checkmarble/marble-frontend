@@ -223,9 +223,16 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       ),
     );
 
+    const proofsSettled = await Promise.allSettled(fetchedProofs);
+    const proofs = R.pipe(
+      proofsSettled,
+      R.filter((result) => result.status === 'fulfilled'),
+      R.map((result) => result.value),
+    );
+
     review = {
       ...mostRecentReview,
-      proofs: await Promise.all(fetchedProofs),
+      proofs,
     };
   }
 
