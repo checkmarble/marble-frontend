@@ -1,3 +1,4 @@
+import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { EnumDataTypes, UniqueDataTypes } from '@app-builder/models';
 import {
@@ -6,7 +7,6 @@ import {
   useCreateFieldMutation,
 } from '@app-builder/queries/data/create-field';
 import { getFieldErrors } from '@app-builder/utils/form';
-import { FormLabel } from '@ariakit/react';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
