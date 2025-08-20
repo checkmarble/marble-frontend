@@ -6,13 +6,13 @@ export const createFieldValueSchema = z.object({
   name: z
     .string()
     .min(1, {
-      message: 'data:create_field.name_min_error',
+      message: 'NAME_MIN',
     })
     .regex(/^[a-z]+[a-z0-9_]*$/, {
-      message: 'data:create_field.name_regex_error',
+      message: 'NAME_REGEX',
     })
     .refine((value) => value !== 'id', {
-      message: 'data:create_field.name_reserved_error',
+      message: 'NAME_RESERVED',
     }),
   description: z.string(),
   required: z.string(),

@@ -47,7 +47,7 @@ export async function action({ request }: ActionFunctionArgs) {
           errors: [
             {
               field: 'name',
-              message: 'data:create_field.name_conflict_error',
+              code: 'NAME_CONFLICT',
             },
           ],
         },

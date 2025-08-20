@@ -6,9 +6,15 @@ import {
   createFieldValueSchema,
   useCreateFieldMutation,
 } from '@app-builder/queries/data/create-field';
+import {
+  type CreateFieldValidationErrorCode,
+  createFieldErrorResolver,
+  useGetCreateFieldValidationErrorMessage,
+} from '@app-builder/services/data/validation/field-validation-error-messages';
 import { getFieldErrors } from '@app-builder/utils/form';
+import { createErrorTranslator } from '@app-builder/utils/translate-error';
 import { useForm, useStore } from '@tanstack/react-form';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Modal, Select } from 'ui-design-system';
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
@@ -46,17 +52,11 @@ export function CreateField({ tableId, children }: { tableId: string; children: 
 
 function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeModal: () => void }) {
   const { t } = useTranslation(['data', 'navigation', 'common']);
+  const translateError = useMemo(() => createErrorTranslator(t, [createFieldErrorResolver]), [t]);
+  const getCreateFieldErrorMessage = useGetCreateFieldValidationErrorMessage();
+
   const createFieldMutation = useCreateFieldMutation();
   const revalidate = useLoaderRevalidator();
-
-  // Helper function to translate error messages
-  const translateError = (key: string) => {
-    try {
-      return t(key as any);
-    } catch {
-      return key; // Fallback to the key if translation fails
-    }
-  };
 
   const form = useForm({
     defaultValues: {
@@ -78,7 +78,8 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
         if (!response.success) {
           if (response.status === 409) {
             return response.errors.forEach(
-              ({ field, message }: { field: string; message: string }) => {
+              ({ field, code }: { field: string; code: CreateFieldValidationErrorCode }) => {
+                const message = getCreateFieldErrorMessage(code);
                 formApi.getFieldMeta(field as keyof CreateFieldValue)?.errors.push({ message });
               },
             );
