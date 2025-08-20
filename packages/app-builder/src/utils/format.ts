@@ -6,6 +6,7 @@ import { formatDistanceStrict } from 'date-fns/formatDistanceStrict';
 import { formatRelative } from 'date-fns/formatRelative';
 import { type Currency, dinero, toDecimal } from 'dinero.js';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
 
 /**
@@ -24,10 +25,26 @@ import { Temporal } from 'temporal-polyfill';
  * We just need to add an interface to allow the user to change it.
  */
 export function useFormatLanguage() {
-  return useMemo(
-    () => (typeof window === 'undefined' ? 'fr-FR' : (navigator?.languages[0] ?? 'fr-FR')),
-    [],
-  );
+  const { i18n } = useTranslation();
+
+  return useMemo(() => {
+    const appliedLanguage = i18n.language;
+    if (!appliedLanguage) return 'en-GB';
+
+    // If a region is already specified, use it as-is
+    if (appliedLanguage.includes('-')) return appliedLanguage;
+
+    // Map base language to a stable default locale for formatting
+    switch (appliedLanguage) {
+      case 'fr':
+        return 'fr-FR';
+      case 'ar':
+        return 'ar';
+      case 'en':
+      default:
+        return 'en-GB';
+    }
+  }, [i18n.language]);
 }
 
 export function formatDateTimeWithoutPresets(
