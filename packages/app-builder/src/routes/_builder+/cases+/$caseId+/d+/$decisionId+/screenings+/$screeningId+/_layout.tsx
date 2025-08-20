@@ -5,10 +5,10 @@ import {
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
 import { CaseStatusBadge, casesI18n } from '@app-builder/components/Cases';
+import { UploadFile } from '@app-builder/components/Files/UploadFile';
 import { SanctionStatusTag } from '@app-builder/components/Sanctions/SanctionStatusTag';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { useUploadScreeningFile } from '@app-builder/queries/upload-screening-file';
-import { UploadFile } from '@app-builder/routes/ressources+/files+/upload-file';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
