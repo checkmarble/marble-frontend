@@ -89,6 +89,7 @@
   "tags.target.case": "قضية",
   "tags.target.object": "هدف",
   "tags.update_tag": "تحديث الإشارة",
+  "unavailableBanner.caption": "أنت حاليا معين كغير متاح حتى {{date}}.",
   "users": "المستخدمين",
   "users.delete_user": "حذف المستخدم",
   "users.delete_user.content": "أنت على وشك حذف هذا المستخدم. هذه العملية غير قابلة للتراجع، هل ترغب في المتابعة؟",

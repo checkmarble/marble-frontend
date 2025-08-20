@@ -89,6 +89,7 @@
   "tags.target.case": "Investigation",
   "tags.target.object": "Objet",
   "tags.update_tag": "Mettre à jour le label",
+  "unavailableBanner.caption": "Vous êtes actuellement défini comme indisponible jusqu'au {{date}}.",
   "users": "Utilisateurs",
   "users.delete_user": "Supprimer un utilisateur",
   "users.delete_user.content": "Vous êtes sur le point de supprimer cet utilisateur. \nCette action est irréversible, souhaitez-vous continuer ?",
