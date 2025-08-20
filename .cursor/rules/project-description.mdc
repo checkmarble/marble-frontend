@@ -1,32 +1,46 @@
 ---
-description: Project description
+description: Global context and coding conventions for the monorepo project
 globs:
-alwaysApply: false
+  - "**/*"
+alwaysApply: true
 ---
 
-This is a monorepo TypeScript project using **pnpm** as the package manager. The project follows a modular architecture with distinct packages for different concerns.
-- **pnpm** - Used for dependency management and workspace coordination
+# Project Overview
 
-## Key Packages
+This is a **monorepo** TypeScript project managed with **pnpm**.  
+It follows a modular architecture, with separate packages for distinct concerns, and consistent tooling across the workspace.
+
+- **pnpm** — dependency management & workspace coordination  
+- **TypeScript** — strict type checking (`strict` mode enabled)  
+- **Biome** — unified linting & formatting  
+- **Remix** — full-stack framework (currently transitioning towards a more SPA-oriented approach)  
+- **TanStack Query** — preferred library for data fetching & caching on the client side  
+
+---
+
+## Packages
 
 ### `app-builder`
 - **Purpose**: Main web application
-- **Technology**: Remix (React-based full-stack framework)
-- **Role**: Primary user interface and application logic
+- **Technology**: Remix + React  
+- **Role**: Primary user interface & application logic  
+- **Notes**: Moving towards a more SPA-like architecture, reducing reliance on Remix’s server data handling in favor of client-side TanStack Query.
 
 ### `marble-api`
-- **Purpose**: OpenAPI specification for backend APIs
-- **Role**: API contract definitions and type generation
-- **Note**: Backend implementation is maintained in a separate repository
+- **Purpose**: OpenAPI specification for backend APIs  
+- **Role**: API contract definitions & type generation  
+- **Note**: Backend implementation lives in a separate repository.
 
 ### `ui-design-system`
-- **Purpose**: Design system components
-- **Contents**: Collection of atomic and molecular UI components
-- **Role**: Provides consistent UI primitives across the application
+- **Purpose**: Design system components  
+- **Contents**: Atomic & molecular UI components  
+- **Role**: Ensures visual and functional consistency across the app.
 
 ### `ui-icons`
-- **Purpose**: Icon collection
-- **Role**: Centralized icon assets and components
+- **Purpose**: Icon collection  
+- **Role**: Centralized icon assets & React components.
+
+---
 
 ## Development Commands
 
@@ -34,18 +48,66 @@ This is a monorepo TypeScript project using **pnpm** as the package manager. The
 ```bash
 pnpm -r type-check
 ```
-- Runs TypeScript type checking across all packages in the workspace
-- The `-r` flag executes the command recursively across all workspace packages
+Runs TypeScript type checks recursively across all workspace packages.
 
-### Linting and Formatting
+### Linting & Formatting
 ```bash
 pnpm biome check
 ```
-- Runs Biome for both linting and formatting checks
-- Biome is a fast linter and formatter for JavaScript/TypeScript
+Runs Biome for linting & formatting.
+
+## Coding Conventions
+### Architecture & Data Flow
+ - We are transitioning to a true SPA architecture, gradually replacing Remix loaders/actions/fetchers with TanStack Query for data fetching and caching.
+ - Server-side logic still runs in Remix, acting as a Backend-for-Frontend (BFF):
+ - The BFF fetches data from the backend API using generated client functions from marble-api.
+ - We convert snake_case (backend) → camelCase (frontend) using dedicated adapter methods.
+ - Reverse conversion (camelCase → snake_case) happens when sending data back.
+
+### Data Transformation
+ - Adapters (adaptFoo) → Convert backend responses from snake_case to camelCase and map them to frontend-friendly structures.
+ - Transformers (transformFoo) → Convert frontend data to backend-compatible formats.
+ - These functions live in the models directory, grouped by domain entity.
+
+### UI & Components
+ - Prefer ui-design-system components over creating new ones.
+ - If a new component is needed, ensure it’s generic enough to live in the design system unless it’s highly domain-specific.
+
+### Naming
+ - camelCase for variables, functions, object keys
+ - PascalCase for components, types, classes
+ - UPPER_SNAKE_CASE for constants
+ - Backend API types match the generated OpenAPI client exactly.
+
+### File Structure
+ - Feature/domain-based folder organization in app-builder/src
+ - Tests co-located next to the source file: foo.test.ts or foo.test.tsx
+
+### Testing
+ - Use Vitest for unit & integration tests
+ - Write tests for adapters & transformers to ensure consistent data mappings
+
+⸻
 
 ## Architecture Notes
-- Monorepo structure enables shared tooling and dependencies
-- Each package has its own `package.json` and can be developed independently
-- Workspace configuration allows for cross-package dependencies
-- Consistent tooling (TypeScript, Biome) across all packages 
+ - Monorepo structure enables shared tooling & dependencies.
+ - Each package has its own package.json and can be developed independently.
+ - Workspace configuration allows cross-package imports without duplication.
+ - Shared logic belongs in dedicated utility or model packages to avoid circular dependencies.
+
+ ## Data Flow Diagram
+ ```mermaid
+ flowchart LR
+    BackendAPI[Backend API\n(snake_case)]
+    BFF[Remix Server\n(BFF Layer)]
+    Adapter[Adapter Methods\n(adaptFoo)]
+    Frontend[SPA Frontend\n(camelCase)]
+    Transformer[Transformer Methods\n(transformFoo)]
+
+    BackendAPI -->|Generated API client| BFF
+    BFF -->|snake_case → camelCase| Adapter
+    Adapter --> Frontend
+    Frontend -->|camelCase → snake_case| Transformer
+    Transformer --> BFF
+    BFF --> BackendAPI
+```
