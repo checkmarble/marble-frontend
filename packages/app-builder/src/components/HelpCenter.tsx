@@ -63,7 +63,7 @@ export function HelpCenter({
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue} rtl={i18n.dir() === 'rtl'}>
       <MenuButton render={renderMenuButton} />
       <MenuPopover
-        className="flex h-[600px] max-h-[var(--popover-available-height)] w-[400px] max-w-[var(--popover-available-width)] flex-col"
+        className="flex h-[600px] max-h-[var(--popover-available-height)] w-[400px] max-w-[var(--popover-available-width)] flex-col z-20"
         render={<Ariakit.FocusTrapRegion enabled />}
       >
         <HelpCenterContent
