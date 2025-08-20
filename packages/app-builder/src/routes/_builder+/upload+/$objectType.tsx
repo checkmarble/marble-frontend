@@ -26,7 +26,7 @@ import { ClientOnly } from 'remix-utils/client-only';
 import { Button, Modal, Table, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-const MAX_FILE_SIZE_MB = 50;
+const MAX_FILE_SIZE_MB = 32;
 const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 export const handle = {

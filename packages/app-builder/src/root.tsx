@@ -8,6 +8,7 @@ import {
   ScrollRestoration,
   type ShouldRevalidateFunctionArgs,
   useLoaderData,
+  useNavigate,
   useRevalidator,
   useRouteError,
   useRouteLoaderData,
@@ -26,6 +27,7 @@ import { Tooltip } from 'ui-design-system';
 import { iconsSVGSpriteHref, Logo, logosSVGSpriteHref } from 'ui-icons';
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
+import { AgnosticNavigationContext } from './contexts/AgnosticNavigationContext';
 import { AppConfigContext } from './contexts/AppConfigContext';
 import { LoaderRevalidatorContext } from './contexts/LoaderRevalidatorContext';
 import { initServerServices } from './services/init.server';
@@ -193,6 +195,7 @@ function App() {
   );
   const { locale, appConfig } = useLoaderData<typeof loader>();
   const revalidator = useRevalidator();
+  const navigate = useNavigate();
 
   useChangeLanguage(locale);
 
@@ -200,7 +203,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AppConfigContext.Provider value={appConfig}>
         <LoaderRevalidatorContext.Provider value={revalidator.revalidate}>
-          <Outlet />
+          <AgnosticNavigationContext.Provider value={navigate}>
+            <Outlet />
+          </AgnosticNavigationContext.Provider>
         </LoaderRevalidatorContext.Provider>
       </AppConfigContext.Provider>
       <ReactQueryDevtools initialIsOpen={false} />
