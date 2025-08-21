@@ -14,6 +14,7 @@ import {
   isSameDay,
   nextMonday,
   startOfHour,
+  startOfTomorrow,
 } from 'date-fns';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -188,6 +189,7 @@ export function SnoozeCase({
                     <Calendar
                       mode="single"
                       selected={field.state.value ? new Date(field.state.value) : undefined}
+                      disabled={{ before: startOfTomorrow() }}
                       onSelect={(date) => {
                         if (date) {
                           field.handleChange(
