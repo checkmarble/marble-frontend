@@ -11,7 +11,7 @@ export function MatchResult({ entity }: { entity: SanctionCheckMatchPayload }) {
   const entitySchema = entity.schema.toLowerCase() as Lowercase<typeof entity.schema>;
 
   return (
-    <div className="text-s bg-grey-98 flex items-center rounded">
+    <div className="text-s bg-grey-98 flex items-center rounded-sm">
       <div className="flex items-center gap-2 p-4">
         <span className="max-w-60 truncate font-semibold">{entity.caption}</span>
         <span>{t(`sanctions:entity.schema.${entitySchema}`, { defaultValue: entitySchema })}</span>
@@ -25,7 +25,7 @@ export function MatchResult({ entity }: { entity: SanctionCheckMatchPayload }) {
         <a
           href={`https://www.opensanctions.org/entities/${entity.id}`}
           target="_blank"
-          className="border-grey-90 bg-grey-100 flex items-center gap-2 rounded border p-1"
+          className="border-grey-90 bg-grey-100 flex items-center gap-2 rounded-sm border p-1"
           rel="noreferrer"
         >
           OpenSanctions

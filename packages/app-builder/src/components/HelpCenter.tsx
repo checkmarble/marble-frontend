@@ -63,7 +63,7 @@ export function HelpCenter({
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue} rtl={i18n.dir() === 'rtl'}>
       <MenuButton render={renderMenuButton} />
       <MenuPopover
-        className="flex h-[600px] max-h-[var(--popover-available-height)] w-[400px] max-w-[var(--popover-available-width)] flex-col z-20"
+        className="flex h-[600px] max-h-(--popover-available-height) w-[400px] max-w-(--popover-available-width) flex-col z-20"
         render={<Ariakit.FocusTrapRegion enabled />}
       >
         <HelpCenterContent
@@ -160,7 +160,7 @@ function HelpCenterContent({
               {currentResources.map((resource) => (
                 <MenuItem
                   key={`${resource.category}-${resource.label}`}
-                  className="border-grey-95 bg-grey-100 data-[active-item]:bg-purple-98 data-[active-item]:border-purple-65 flex scroll-my-2 flex-col gap-2 rounded border p-2 outline-none"
+                  className="border-grey-95 bg-grey-100 data-active-item:bg-purple-98 data-active-item:border-purple-65 flex scroll-my-2 flex-col gap-2 rounded-sm border p-2 outline-hidden"
                   render={
                     // eslint-disable-next-line jsx-a11y/anchor-has-content
                     <a href={resource.href} target="_blank" rel="noreferrer" />
@@ -238,7 +238,7 @@ const CategoryTab = React.forwardRef<HTMLButtonElement, Ariakit.TabProps>(
     return (
       <Ariakit.Tab
         ref={composedRef}
-        className="aria-selected:bg-purple-96 aria-selected:border-purple-96 text-grey-00 bg-grey-95 border-grey-95 aria-selected:text-purple-65 data-[active-item]:border-purple-65 flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize"
+        className="aria-selected:bg-purple-96 aria-selected:border-purple-96 text-grey-00 bg-grey-95 border-grey-95 aria-selected:text-purple-65 data-active-item:border-purple-65 flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize"
         accessibleWhenDisabled={false}
         {...props}
       />

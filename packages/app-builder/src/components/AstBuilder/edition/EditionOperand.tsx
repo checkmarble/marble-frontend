@@ -35,7 +35,7 @@ import { AstBuilderOperandMenu, type BottomAction } from './OperandMenu';
 export const editionOperandLabelClassnames = cva(
   [
     'group',
-    'size-fit min-h-10 min-w-10 rounded outline-none',
+    'size-fit min-h-10 min-w-10 rounded-sm outline-hidden',
     'flex flex-row items-center justify-between gap-2 px-2',
     'bg-grey-100 aria-expanded:bg-purple-98 aria-expanded:border-purple-65',
   ],

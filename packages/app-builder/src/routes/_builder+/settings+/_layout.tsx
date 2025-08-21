@@ -157,7 +157,7 @@ export default function Settings() {
                           key={setting.title}
                           className={({ isActive }) =>
                             clsx(
-                              'text-s flex w-full cursor-pointer flex-row rounded p-2 font-medium first-letter:capitalize',
+                              'text-s flex w-full cursor-pointer flex-row rounded-sm p-2 font-medium first-letter:capitalize',
                               isActive
                                 ? 'bg-purple-96 text-purple-65'
                                 : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',

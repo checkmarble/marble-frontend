@@ -145,7 +145,7 @@ function CreateScenarioContent() {
       <ModalV2.Title>{t('scenarios:create_scenario.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <ModalV2.Description render={<Callout variant="outlined" />}>
-          <p className="whitespace-pre text-wrap">
+          <p className="whitespace-pre-wrap">
             <Trans
               t={t}
               i18nKey="scenarios:create_scenario.callout"
@@ -223,7 +223,7 @@ function CreateScenarioContent() {
                     <Ariakit.Hovercard
                       portal
                       gutter={4}
-                      className="bg-grey-100 border-grey-90 flex w-fit max-w-80 rounded border p-2 shadow-md"
+                      className="bg-grey-100 border-grey-90 flex w-fit max-w-80 rounded-sm border p-2 shadow-md"
                     >
                       {t('scenarios:trigger_object.description')}
                     </Ariakit.Hovercard>

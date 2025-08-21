@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 import { cn } from '../utils';
 
 export const CtaClassName = cva(
-  'text-s flex flex-row items-center justify-center rounded font-semibold outline-none border border-solid transition-colors',
+  'text-s flex flex-row items-center justify-center rounded-sm font-semibold outline-hidden border border-solid transition-colors',
   {
     variants: {
       variant: {

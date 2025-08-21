@@ -91,7 +91,7 @@ export default function ListsPage() {
         <BreadCrumbs />
       </Page.Header>
       <Page.Container>
-        <Page.Content className="max-w-screen-xl">
+        <Page.Content className="max-w-(--breakpoint-xl)">
           <div className="flex flex-col gap-4">
             <div className="flex flex-row justify-end">
               {isCreateListAvailable ? <CreateListModal /> : null}

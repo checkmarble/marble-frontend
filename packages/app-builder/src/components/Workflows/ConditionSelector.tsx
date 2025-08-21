@@ -26,7 +26,7 @@ function ConditionPrefix({ isFirst }: { isFirst: boolean }) {
   const { t } = useTranslation(['workflows']);
 
   return (
-    <div className="bg-grey-20 px-2 py-1 rounded">
+    <div className="bg-grey-20 px-2 py-1 rounded-sm">
       <span className="text-grey-60 font-bold text-sm">
         {isFirst ? t('workflows:condition.prefix.if') : t('workflows:condition.prefix.and')}
       </span>
@@ -37,7 +37,7 @@ function ConditionPrefix({ isFirst }: { isFirst: boolean }) {
 // Common equals separator component
 function ConditionSeparator() {
   return (
-    <div className="bg-grey-20 px-2 py-1 rounded">
+    <div className="bg-grey-20 px-2 py-1 rounded-sm">
       <span className="text-grey-60 font-bold text-sm">=</span>
     </div>
   );

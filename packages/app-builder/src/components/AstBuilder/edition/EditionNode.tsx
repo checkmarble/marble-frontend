@@ -265,7 +265,7 @@ const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <button className="text-grey-00 border-grey-90 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-95 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:border-grey-50 flex h-10 items-center justify-center rounded border px-2">
+        <button className="text-grey-00 border-grey-90 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-95 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:border-grey-50 flex h-10 items-center justify-center rounded-sm border px-2">
           {children}
         </button>
       </MenuCommand.Trigger>
@@ -274,7 +274,7 @@ const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps
           {!props.unary ? (
             <MenuCommand.Item
               onSelect={props.invertOperands}
-              className="data-[active-item]:bg-purple-98 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
+              className="data-active-item:bg-purple-98 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
             >
               <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon="swap" />
               <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
@@ -286,7 +286,7 @@ const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps
           ) : null}
           <MenuCommand.Item
             onSelect={addNesting}
-            className="data-[active-item]:bg-purple-98 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
+            className="data-active-item:bg-purple-98 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
           >
             <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon="parentheses" />
             <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
@@ -297,7 +297,7 @@ const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps
           </MenuCommand.Item>
           <MenuCommand.Item
             onSelect={removeNesting}
-            className="data-[active-item]:bg-red-95 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-sm p-2 outline-none"
+            className="data-active-item:bg-red-95 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
           >
             <Icon
               aria-hidden="true"

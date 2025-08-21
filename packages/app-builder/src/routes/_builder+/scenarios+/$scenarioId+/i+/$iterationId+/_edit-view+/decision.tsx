@@ -182,7 +182,7 @@ export default function Decision() {
       <Collapsible.Title>{t('scenarios:decision.score_based.title')}</Collapsible.Title>
       <Collapsible.Content>
         <Callout variant="outlined" className="mb-4 lg:mb-6">
-          <p className="whitespace-pre text-wrap">
+          <p className="whitespace-pre-wrap">
             <Trans
               t={t}
               i18nKey="scenarios:decision.score_based.callout"
@@ -452,5 +452,5 @@ function EditScoreThresholds() {
 }
 
 const style = {
-  errorMessage: 'bg-red-95 rounded px-2 py-1 h-8 flex items-center justify-center',
+  errorMessage: 'bg-red-95 rounded-sm px-2 py-1 h-8 flex items-center justify-center',
 } as const;

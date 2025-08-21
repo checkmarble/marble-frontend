@@ -116,7 +116,7 @@ export function EventTypes({
 
 function EventType({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-grey-95 flex h-6 items-center rounded px-2">
+    <div className="bg-grey-95 flex h-6 items-center rounded-sm px-2">
       <span className="text-grey-00 line-clamp-1 text-xs font-normal">{children}</span>
     </div>
   );

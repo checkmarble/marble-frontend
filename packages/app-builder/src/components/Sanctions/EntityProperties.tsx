@@ -57,7 +57,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
   };
 
   return (
-    <div className="grid grid-cols-[168px,_1fr] gap-2">
+    <div className="grid grid-cols-[168px_1fr] gap-2">
       {before}
       {entityPropertyList.map(({ property, values, restItemsCount }) => {
         return (

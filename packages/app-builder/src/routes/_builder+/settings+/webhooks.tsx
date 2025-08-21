@@ -93,7 +93,7 @@ export default function Webhooks() {
 
   return (
     <Page.Container>
-      <Page.Content className="max-w-screen-xl">
+      <Page.Content className="max-w-(--breakpoint-xl)">
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:webhooks')}</span>
@@ -112,7 +112,7 @@ export default function Webhooks() {
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Callout className="mb-4 lg:mb-6" variant="outlined">
-              <p className="whitespace-pre text-wrap">
+              <p className="whitespace-pre-wrap">
                 <Trans
                   t={t}
                   i18nKey="settings:webhooks.setup_documentation"
@@ -177,15 +177,15 @@ export function ErrorBoundary() {
 
   return (
     <Page.Container>
-      <Page.Content className="relative max-w-screen-xl">
+      <Page.Content className="relative max-w-(--breakpoint-xl)">
         <div className="bg-grey-00/20 absolute z-50 flex size-full items-center justify-center p-4 backdrop-blur-[2px] transition-all">
-          <div className="bg-grey-100 border-grey-90 flex max-w-[500px] flex-col items-center rounded border shadow-md">
+          <div className="bg-grey-100 border-grey-90 flex max-w-[500px] flex-col items-center rounded-sm border shadow-md">
             <h1 className="bg-grey-95 text-grey-00 w-full p-8 text-center font-semibold">
               {t('settings:webhooks.configuration_error')}
             </h1>
             <div className="w-full p-12">
               <Callout variant="outlined">
-                <p className="whitespace-pre text-wrap">
+                <p className="whitespace-pre-wrap">
                   <Trans
                     t={t}
                     i18nKey="settings:webhooks.convoy_error"
@@ -208,7 +208,7 @@ export function ErrorBoundary() {
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Callout className="mb-4 lg:mb-6" variant="outlined">
-              <p className="whitespace-pre text-wrap">
+              <p className="whitespace-pre-wrap">
                 <Trans
                   t={t}
                   i18nKey="settings:webhooks.setup_documentation"

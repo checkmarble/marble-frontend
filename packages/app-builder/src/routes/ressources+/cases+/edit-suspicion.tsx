@@ -336,7 +336,7 @@ export const EditCaseSuspicion = ({
                 <div
                   {...getRootProps()}
                   className={cn(
-                    'flex flex-col items-center justify-center gap-6 rounded border-2 border-dashed p-6',
+                    'flex flex-col items-center justify-center gap-6 rounded-sm border-2 border-dashed p-6',
                     isDragActive ? 'bg-purple-96 border-purple-82 opacity-90' : 'border-grey-50',
                   )}
                 >
@@ -354,7 +354,7 @@ export const EditCaseSuspicion = ({
                     {t('cases:sar.modale.cta_choose_file')}
                   </Button>
                   {reportFile ? (
-                    <span className="border-grey-90 flex items-center gap-1 rounded border px-1.5 py-0.5 text-xs font-medium">
+                    <span className="border-grey-90 flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
                       {reportFile.name}
                       <Button
                         variant="ghost"

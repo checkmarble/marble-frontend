@@ -6,7 +6,7 @@ import { Icon, type IconName } from 'ui-icons';
 import { type inputBorderColor } from './Input.constants';
 
 export const input = cva(
-  'bg-grey-100 text-s text-grey-00 placeholder:text-grey-80 disabled:bg-grey-95 peer block size-full rounded px-2 font-medium outline-none border focus:border-purple-65',
+  'bg-grey-100 text-s text-grey-00 placeholder:text-grey-80 disabled:bg-grey-95 peer block size-full rounded-sm px-2 font-medium outline-hidden border focus:border-purple-65',
   {
     variants: {
       borderColor: {

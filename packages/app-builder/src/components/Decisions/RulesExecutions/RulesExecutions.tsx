@@ -37,11 +37,11 @@ export function RuleExecutionCollapsible({
 
 export function RuleExecutionTitle({ ruleExecution }: { ruleExecution: RuleExecution }) {
   return (
-    <CollapsibleV2.Title className="bg-grey-98 group col-span-full grid grid-cols-subgrid items-center outline-none">
+    <CollapsibleV2.Title className="bg-grey-98 group col-span-full grid grid-cols-subgrid items-center outline-hidden">
       <Icon
         icon="smallarrow-up"
         aria-hidden
-        className="size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180 rtl:-rotate-90 rtl:group-aria-expanded:-rotate-180 rtl:group-data-[initial]:-rotate-180"
+        className="size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-initial:rotate-180 rtl:-rotate-90 group-aria-expanded:rtl:-rotate-180 group-data-initial:rtl:-rotate-180"
       />
       <span className="text-s line-clamp-1 text-start font-semibold">{ruleExecution.name}</span>
       <RuleExecutionStatus ruleExecution={ruleExecution} />
@@ -63,7 +63,7 @@ export function RuleExecutionContent({
 export function RuleExecutionDescription({ description }: { description?: string }) {
   if (!description) return null;
   return (
-    <div className="bg-purple-98 border-purple-96 flex flex-row gap-2 rounded border p-2">
+    <div className="bg-purple-98 border-purple-96 flex flex-row gap-2 rounded-sm border p-2">
       <Icon icon="tip" className="text-purple-65 size-5 shrink-0" />
       <span className="text-s text-purple-65 font-normal">{description}</span>
     </div>

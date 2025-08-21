@@ -31,7 +31,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
 ) {
   return (
     <Dialog.Portal>
-      <Dialog.Overlay className="animate-overlayShow bg-grey-00/20 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm" />
+      <Dialog.Overlay className="animate-overlay-show bg-grey-00/20 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-xs" />
       <Dialog.Content
         ref={ref}
         {...props}
@@ -80,7 +80,7 @@ export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(
           size,
           fixedHeight,
           className: clsx(
-            'z-50 scale-95 opacity-0 transition-all data-[enter]:scale-100 data-[enter]:opacity-100',
+            'z-50 scale-95 opacity-0 transition-all data-enter:scale-100 data-enter:opacity-100',
             className,
           ),
         })}
@@ -88,7 +88,7 @@ export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(
           // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-grey-00/20 fixed inset-0 flex items-center justify-center p-4 opacity-0 backdrop-blur-sm transition-all data-[enter]:opacity-100"
+            className="bg-grey-00/20 fixed inset-0 flex items-center justify-center p-4 opacity-0 backdrop-blur-xs transition-all data-enter:opacity-100"
           />
         }
         unmountOnHide

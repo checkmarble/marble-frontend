@@ -40,7 +40,7 @@ export default function AuthLayout() {
         <div className="text-[40px] text-[#ADA7FD] font-medium text-center">
           Iterate. Improve. <span className="text-grey-100">Automate.</span>
         </div>
-        <div className="aspect-[342/198] w-full max-w-[600px]">
+        <div className="aspect-342/198 w-full max-w-[600px]">
           <img src="/img/main-illu.svg" alt="main-illu" className="size-full" />
         </div>
       </div>

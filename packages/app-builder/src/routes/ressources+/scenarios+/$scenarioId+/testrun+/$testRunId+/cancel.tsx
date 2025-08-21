@@ -77,7 +77,7 @@ export function CancelTestRun({
           })}
         >
           <ModalV2.Description render={<Callout variant="outlined" />}>
-            <p className="whitespace-pre text-wrap">{t('scenarios:testrun.cancel.callout')}</p>
+            <p className="whitespace-pre-wrap">{t('scenarios:testrun.cancel.callout')}</p>
           </ModalV2.Description>
           <div className="flex flex-1 flex-row gap-2">
             <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>

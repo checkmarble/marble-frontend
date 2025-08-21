@@ -35,7 +35,7 @@ export function EditionAstBuilderAndRoot(props: AstBuilderRootProps<AndAstNode>)
     <AstBuilderNodeSharpFactory.Provider value={nodeStore}>
       <div className="flex flex-col gap-2 lg:gap-4">
         <div className="text-s grid grid-cols-[8px_16px_max-content_1fr_max-content]">
-          <div className="text-s bg-grey-98 text-purple-65 col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold">
+          <div className="text-s bg-grey-98 text-purple-65 col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded-sm p-2 font-semibold">
             {dataSharp.value.data.$triggerObjectType}
           </div>
           {nodeStore.value.node.children.map((child, i, children) => {

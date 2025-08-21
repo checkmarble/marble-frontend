@@ -119,7 +119,7 @@ export default function TestRun() {
       </Page.Header>
 
       <Page.Container>
-        <Page.Content className="flex max-w-screen-lg flex-col gap-8">
+        <Page.Content className="flex max-w-(--breakpoint-lg) flex-col gap-8">
           <TestRunDetails {...run} iterations={iterations} creator={creator} />
           <Suspense fallback={<DistributionOfDecisionChartSkeleton />}>
             <Await resolve={decisionsPromise}>

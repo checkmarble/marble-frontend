@@ -52,8 +52,8 @@ const SearchInput = ({ request }: { request: NonNullable<SanctionCheck['request'
     <div className="flex items-center gap-2">
       <span>{t('sanctions:search_input')}</span>
       {searchInputList.map((input, i) => (
-        <div key={i} className="border-grey-90 flex items-center gap-2 rounded border p-2">
-          <span className="bg-grey-95 size-6 rounded-sm p-1">
+        <div key={i} className="border-grey-90 flex items-center gap-2 rounded-sm border p-2">
+          <span className="bg-grey-95 size-6 rounded-xs p-1">
             <Icon icon="string" className="size-4" />
           </span>
           {input}

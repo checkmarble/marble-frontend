@@ -30,7 +30,10 @@ function SelectContent({
   return (
     <Portal>
       <Content
-        className={clsx('bg-grey-100 border-grey-90 z-50 mt-2 rounded border shadow-md', className)}
+        className={clsx(
+          'bg-grey-100 border-grey-90 z-50 mt-2 rounded-sm border shadow-md',
+          className,
+        )}
         position="popper"
         {...props}
       >
@@ -59,7 +62,7 @@ function SelectViewport({
 }
 
 export const selectTrigger = cva(
-  'text-s text-grey-00 flex min-h-10 min-w-10 items-center justify-between border font-medium outline-none radix-state-open:border-purple-65 radix-state-open:text-purple-65 radix-disabled:border-grey-90 radix-disabled:bg-grey-95 radix-disabled:text-grey-50 radix-placeholder:text-grey-80 radix-placeholder:radix-state-open:text-grey-80',
+  'text-s text-grey-00 flex min-h-10 min-w-10 items-center justify-between border font-medium outline-hidden radix-state-open:border-purple-65 radix-state-open:text-purple-65 radix-disabled:border-grey-90 radix-disabled:bg-grey-95 radix-disabled:text-grey-50 radix-placeholder:text-grey-80 radix-placeholder:radix-state-open:text-grey-80',
   {
     variants: {
       backgroundColor: {
@@ -67,7 +70,7 @@ export const selectTrigger = cva(
         disabled: 'bg-grey-98',
       },
       border: {
-        square: 'gap-2 rounded p-2',
+        square: 'gap-2 rounded-sm p-2',
         rounded: 'rounded-full p-2',
       },
       borderColor: {
@@ -117,7 +120,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectIt
     <Item
       ref={ref}
       className={clsx(
-        'text-s rounded-sm p-2 font-medium outline-none',
+        'text-s rounded-xs p-2 font-medium outline-hidden',
         'radix-highlighted:bg-purple-98 radix-highlighted:text-purple-65',
         className,
       )}
@@ -170,7 +173,7 @@ const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(function Select
         <Select.Arrow />
       </Select.Trigger>
       <Select.Content
-        className="z-50 max-h-60 min-w-[var(--radix-select-trigger-width)]"
+        className="z-50 max-h-60 min-w-(--radix-select-trigger-width)"
         align={border === 'rounded' ? 'center' : 'start'}
       >
         <Select.Viewport>{children}</Select.Viewport>

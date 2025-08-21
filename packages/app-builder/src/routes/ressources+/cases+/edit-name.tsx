@@ -108,7 +108,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 onBlur={field.handleBlur}
-                className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
+                className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-hidden"
                 placeholder={t('cases:case.name')}
               />
             </div>

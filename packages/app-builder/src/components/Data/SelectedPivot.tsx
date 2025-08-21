@@ -110,12 +110,12 @@ export function SelectedPivotPanel() {
 
   return (
     <Panel position="bottom-center">
-      <div className="bg-grey-100 border-grey-90 flex min-w-60 flex-col overflow-hidden rounded border drop-shadow-md">
+      <div className="bg-grey-100 border-grey-90 flex min-w-60 flex-col overflow-hidden rounded-sm border drop-shadow-md">
         <p className="text-l bg-grey-98 border-b-grey-90 border-b p-4 font-semibold">
           {t('data:view_pivot.title')}
         </p>
 
-        <div className="flex flex-col gap-4 rounded p-4">
+        <div className="flex flex-col gap-4 rounded-sm p-4">
           {selectedPivot ? <PivotDetails pivot={selectedPivot} /> : null}
 
           <div className="flex flex-row-reverse">

@@ -16,7 +16,7 @@ export const SchemaMenuMenuButton = React.forwardRef<HTMLDivElement, Omit<MenuBu
       <MenuButton
         ref={ref}
         className={clsx(
-          'hover:bg-purple-60 active:bg-purple-60 text-grey-100 bg-purple-65 flex size-fit flex-row gap-1 rounded p-2',
+          'hover:bg-purple-60 active:bg-purple-60 text-grey-100 bg-purple-65 flex size-fit flex-row gap-1 rounded-sm p-2',
           className,
         )}
         {...props}
@@ -45,7 +45,7 @@ export const SchemaMenuMenuItem = React.forwardRef<HTMLDivElement, Omit<MenuItem
       <MenuItem
         ref={ref}
         className={clsx(
-          'data-[active-item]:bg-purple-98 flex flex-row gap-2 rounded p-2 outline-none',
+          'data-active-item:bg-purple-98 flex flex-row gap-2 rounded-sm p-2 outline-hidden',
           className,
         )}
         {...props}

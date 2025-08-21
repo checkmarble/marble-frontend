@@ -55,7 +55,7 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
           <Icon
             icon="smallarrow-up"
             aria-hidden
-            className="border-grey-90 group-radix-state-open:rotate-180 size-6 rounded border transition-transform duration-200"
+            className="border-grey-90 group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
           />
         </div>
       </Trigger>
@@ -64,7 +64,7 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
 );
 
 const content =
-  'border-grey-90 border-t radix-state-open:animate-slideDown radix-state-closed:animate-slideUp overflow-hidden';
+  'border-grey-90 border-t radix-state-open:animate-slide-down radix-state-closed:animate-slide-up overflow-hidden';
 
 const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
   function CollapsibleContent({ children, className, ...props }, ref) {
@@ -128,7 +128,7 @@ const CollapsibleV2Content = forwardRef<HTMLDivElement, React.ComponentPropsWith
         ref={ref}
         data-initial={initialRender || undefined}
         className={clsx(
-          'group col-span-full grid grid-rows-[0fr] transition-all duration-200 data-[enter]:grid-rows-[1fr] data-[initial]:grid-rows-[1fr]',
+          'group col-span-full grid grid-rows-[0fr] transition-all duration-200 data-enter:grid-rows-[1fr] data-initial:grid-rows-[1fr]',
           className,
         )}
       >
@@ -136,7 +136,7 @@ const CollapsibleV2Content = forwardRef<HTMLDivElement, React.ComponentPropsWith
           // The animation is used to remove the overflow-hidden class after the transition ends (overflow-hidden prevents sticky positioning).
           // - Sync with the duration of the transition above.
           // - The fill-mode-forwards is used to keep the final state of the animation (overflow: visible).
-          className="group-data-[enter]:animate-overflow group-data-[enter]:fill-mode-forwards overflow-hidden group-data-[enter]:duration-200"
+          className="group-data-enter:animate-overflow group-data-enter:fill-mode-forwards overflow-hidden group-data-enter:duration-200"
           {...props}
         />
       </Ariakit.DisclosureContent>

@@ -37,7 +37,7 @@ type RadioItemProps = {
   onCheck: () => void;
 };
 
-const radio = cva('transition-colors flex items-center gap-2 rounded', {
+const radio = cva('transition-colors flex items-center gap-2 rounded-sm', {
   variants: {
     checked: {
       true: 'text-purple-65',

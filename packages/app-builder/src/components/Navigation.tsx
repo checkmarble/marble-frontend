@@ -17,7 +17,7 @@ export interface SidebarLinkProps {
 }
 
 export const sidebarLink = cva(
-  'text-s flex flex-row items-center gap-2 rounded-sm p-2 font-medium w-full',
+  'text-s flex flex-row items-center gap-2 rounded-xs p-2 font-medium w-full',
   {
     variants: {
       isActive: {
@@ -79,7 +79,7 @@ export function TabLink({ Icon, labelTKey, to }: TabLinkProps) {
     <NavLink
       className={({ isActive }) =>
         clsx(
-          'text-s flex flex-row items-center gap-2 rounded px-4 py-2 font-medium',
+          'text-s flex flex-row items-center gap-2 rounded-sm px-4 py-2 font-medium',
           isActive
             ? 'bg-purple-96 text-purple-65'
             : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',

@@ -161,7 +161,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
       <div
         {...getRootProps()}
         className={clsx(
-          'text-s flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
+          'text-s flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
           isDragActive ? 'bg-purple-96 border-purple-82 opacity-90' : 'border-grey-50',
         )}
       >
@@ -385,7 +385,7 @@ export default function Upload() {
       </Page.Header>
       <Page.Container>
         <Page.Description>
-          <p className="whitespace-pre text-wrap">
+          <p className="whitespace-pre-wrap">
             <Trans
               t={t}
               i18nKey="upload:upload_callout_1"
@@ -407,7 +407,7 @@ export default function Upload() {
                   href={generateCsvTemplateLink(table)}
                   download={`${objectType}_template.csv`}
                   className={clsx(
-                    'text-s flex flex-row items-center justify-center gap-1 rounded border border-solid px-4 py-2 font-semibold outline-none',
+                    'text-s flex flex-row items-center justify-center gap-1 rounded-sm border border-solid px-4 py-2 font-semibold outline-hidden',
                     'hover:bg-grey-95 active:bg-grey-90 bg-grey-100 border-grey-90 text-grey-00 disabled:text-grey-50 disabled:border-grey-95 disabled:bg-grey-95 focus:border-purple-65',
                   )}
                 >
@@ -433,7 +433,7 @@ const Loading = ({ className }: { className?: string }) => {
     <div
       className={clsx(
         className,
-        'border-grey-50 flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
+        'border-grey-50 flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
       )}
     >
       {t('common:loading')}

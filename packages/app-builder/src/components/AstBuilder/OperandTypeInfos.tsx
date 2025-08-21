@@ -9,7 +9,7 @@ import { type TFunction } from 'i18next';
 import { Icon } from 'ui-icons';
 
 const operandTypeInfosClassnames = cva(
-  'flex items-center justify-center rounded-sm p-1 text-grey-00',
+  'flex items-center justify-center rounded-xs p-1 text-grey-00',
   {
     variants: {
       interactionMode: {

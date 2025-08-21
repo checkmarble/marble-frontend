@@ -174,7 +174,7 @@ export function AddComment({ caseId }: { caseId: string }) {
               onBlur={field.handleBlur}
               name={field.name}
               placeholder={t('cases:case_detail.add_a_comment.placeholder')}
-              className="form-textarea text-s w-full resize-none border-none bg-transparent outline-none"
+              className="form-textarea text-s w-full resize-none border-none bg-transparent outline-hidden"
             />
           )}
         </form.Field>
@@ -189,7 +189,7 @@ export function AddComment({ caseId }: { caseId: string }) {
                 {field.state.value.map((file) => (
                   <div
                     key={file.name}
-                    className="border-grey-90 flex items-center gap-1 rounded border px-1.5 py-0.5"
+                    className="border-grey-90 flex items-center gap-1 rounded-sm border px-1.5 py-0.5"
                   >
                     <span className="text-xs font-medium">{file.name}</span>
                     <Icon

@@ -25,7 +25,7 @@ export function SetMyselfUnavailable() {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
-        <div className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-green-34 text-grey-98 font-semibold bg-green-38 transition-all duration-100">
+        <div className="flex items-center gap-2 cursor-pointer p-2 rounded-sm hover:bg-green-34 text-grey-98 font-semibold bg-green-38 transition-all duration-100">
           <Icon icon="account-circle" className="size-5" />
           {t('settings:current_state_available')}
         </div>

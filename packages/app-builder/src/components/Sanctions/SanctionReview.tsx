@@ -32,7 +32,7 @@ export function SanctionReviewSection({
   const isRefinable = !isSanctionCheckReviewCompleted(sanctionCheck);
 
   return (
-    <div className="flex h-fit flex-[2] flex-col gap-6">
+    <div className="flex h-fit flex-2 flex-col gap-6">
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <span className="text-m font-semibold">{t('sanctions:potential_matches')}</span>
@@ -54,7 +54,7 @@ export function SanctionReviewSection({
           .when(
             (sc) => sc.status === 'in_review' && sc.partial,
             (sc: SanctionCheckSuccess) => (
-              <div className="text-s bg-red-95 text-red-47 flex items-center gap-2 rounded p-2">
+              <div className="text-s bg-red-95 text-red-47 flex items-center gap-2 rounded-sm p-2">
                 <Icon icon="error" className="size-5 shrink-0" />
                 {t('sanctions:callout.needs_refine', {
                   matchCount: sc.request.limit,

@@ -38,7 +38,7 @@ export const RequiredActions = ({
   const isThereSanctionChecks = decision.sanctionChecks.length > 0;
 
   return isPendingDecision || isThereSanctionChecks ? (
-    <div className="bg-grey-98 group-hover:bg-grey-95 flex flex-col gap-2.5 rounded p-4 transition-colors">
+    <div className="bg-grey-98 group-hover:bg-grey-95 flex flex-col gap-2.5 rounded-sm p-4 transition-colors">
       <span className="text-grey-50 text-xs">{t('sanctions:required_actions.title')}</span>
       {isThereSanctionChecks ? (
         <div className="flex flex-col gap-1.5">

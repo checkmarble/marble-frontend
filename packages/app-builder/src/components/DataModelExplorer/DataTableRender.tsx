@@ -57,7 +57,7 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
 
   if (!currentTable) {
     return (
-      <div className="border-red-47 bg-red-95 text-red-47 mt-3 rounded border p-2">
+      <div className="border-red-47 bg-red-95 text-red-47 mt-3 rounded-sm border p-2">
         {t('common:global_error')}
       </div>
     );
@@ -90,7 +90,7 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
       {match(dataListQuery)
         .with({ isError: true }, () => {
           return (
-            <div className="border-red-47 bg-red-95 text-red-47 mt-3 rounded border p-2">
+            <div className="border-red-47 bg-red-95 text-red-47 mt-3 rounded-sm border p-2">
               {t('common:global_error')}
             </div>
           );
@@ -313,7 +313,7 @@ function DataTable({
                     return (
                       <th
                         key={header.id}
-                        className="border-grey-90 border-y px-2 font-normal [&:not(:last-child)]:border-r box-border"
+                        className="border-grey-90 border-y px-2 font-normal not-last:border-r box-border"
                         style={getHeaderStyle(fieldStatistic)}
                       >
                         {header.isPlaceholder
@@ -357,7 +357,7 @@ function DataTable({
                     </td>
                     {row.getVisibleCells().map((cell) => (
                       <td
-                        className="border-grey-90 group-hover:bg-grey-98 border-b [&:not(:last-child)]:border-r"
+                        className="border-grey-90 group-hover:bg-grey-98 border-b not-last:border-r"
                         key={cell.id}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -369,7 +369,7 @@ function DataTable({
             </tbody>
           </table>
         ) : (
-          <div className="border-grey-90 rounded border p-2 text-center">
+          <div className="border-grey-90 rounded-sm border p-2 text-center">
             {t('cases:data_explorer.no_table_data', { tableName: table.name })}
           </div>
         )}

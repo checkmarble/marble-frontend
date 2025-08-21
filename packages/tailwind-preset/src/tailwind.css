@@ -1,0 +1,339 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  /* Reset all default colors from tailwind */
+  --color-*: initial;
+
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Grey scale */
+  --color-grey-00: oklch(0% 0 0);
+  --color-grey-50: oklch(61.29% 0.024 288.54);
+  --color-grey-80: oklch(81.1% 0.0112 291.9);
+  --color-grey-90: oklch(92.58% 0.004 286.32);
+  --color-grey-95: oklch(96.44% 0.0013 286.38);
+  --color-grey-98: oklch(98.54% 0.0013 286.38);
+  --color-grey-100: oklch(100% 0 0);
+
+  /* Purple scale */
+  --color-purple-60: oklch(51.34% 0.2286 277.47);
+  --color-purple-65: oklch(55.15% 0.2424 277.49);
+  --color-purple-82: oklch(76.65% 0.1218 286.34);
+  --color-purple-96: oklch(95.19% 0.0227 288.67);
+  --color-purple-98: oklch(97.65% 0.011964760849213694 291.2928951486998);
+  --color-purple-99: oklch(99.19% 0.003955633727212019 286.3274403025669);
+
+  /* Green scale */
+  --color-green-34: oklch(60.19% 0.1439 155.06);
+  --color-green-38: oklch(64.97% 0.1594 153.6);
+  --color-green-68: oklch(81.03% 0.0926 161.33);
+  --color-green-94: oklch(96.01% 0.0183 166.38);
+
+  /* Yellow scale */
+  --color-yellow-50: oklch(82.26% 0.1684 83.23);
+  --color-yellow-75: oklch(90.35% 0.1157 91.7);
+  --color-yellow-90: oklch(95.87% 0.0473 91.32);
+
+  /* Red scale */
+  --color-red-43: oklch(53.16% 0.1799 31.32);
+  --color-red-47: oklch(57.14% 0.1956 32.06);
+  --color-red-74: oklch(76.36% 0.0962 29.85);
+  --color-red-87: oklch(88% 0.045 28.28);
+  --color-red-95: oklch(95.19% 0.0179 30.27);
+
+  /* Blue scale */
+  --color-blue-58: oklch(63.11% 0.19990007248114244 257.69061986426914);
+  --color-blue-96: oklch(96.09% 0.018782499204383577 255.53286989477857);
+
+  /* Orange scale */
+  --color-orange-50: oklch(69.58% 0.20425909529071523 43.49103689485837);
+  --color-orange-87: oklch(88.69% 0.06019174087690467 32.301452587972335);
+  --color-orange-95: oklch(95.66% 0.022279930128345612 38.33533240178478);
+
+  /* Font sizes */
+  --text-2xl: 28px;
+  --text-2xl--line-height: 32px;
+  --text-l: 20px;
+  --text-l--line-height: 30px;
+  --text-m: 16px;
+  --text-m--line-height: 24px;
+  --text-s: 14px;
+  --text-s--line-height: 21px;
+  --text-r: 13px;
+  --text-r--line-height: 20px;
+  --text-xs: 12px;
+  --text-xs--line-height: 18px;
+  --text-2xs: 10px;
+  --text-2xs--line-height: 12px;
+
+  /* Font families */
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+
+  /* Box shadows */
+  --shadow-sticky-bottom: 0 -8px 24px rgba(8, 5, 37, 0.06);
+  --shadow-sticky-top: 0 8px 24px rgba(8, 5, 37, 0.06);
+  --shadow-sticky-left: 8px 0 12px rgba(8, 5, 37, 0.06);
+}
+
+/* Custom keyframes */
+@keyframes ping-slow {
+  10% {
+    transform: scale(2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes circleAnimation {
+  from {
+    transform: scale(0) rotate(45deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(45deg);
+    opacity: 1;
+  }
+}
+
+@keyframes firstLineAnimation {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes secondLineAnimation {
+  from {
+    transform: scale(0) rotate(90deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(90deg);
+    opacity: 1;
+  }
+}
+
+@keyframes checkmarkAnimation {
+  0% {
+    height: 0;
+    width: 0;
+    opacity: 0;
+  }
+  40% {
+    height: 0;
+    width: 6px;
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    height: 10px;
+  }
+}
+
+@keyframes overlayShow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideLeftAndFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-100%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes slideLeftAndFadeOut {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-100%, 0);
+  }
+}
+
+@keyframes slideRightAndFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(+100%, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes slideRightAndFadeOut {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(+100%, 0);
+  }
+}
+
+@keyframes slideUpAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@keyframes overflow {
+  0% {
+    overflow: hidden;
+  }
+  99% {
+    overflow: hidden;
+  }
+  100% {
+    overflow: visible;
+  }
+}
+
+/* Custom animations */
+.animate-ping-slow {
+  animation: ping-slow 5s ease infinite;
+}
+
+.animate-slideUpAndFade {
+  animation: slideUpAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-circleAnimation {
+  animation: circleAnimation 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.animate-firstLineAnimation {
+  animation: firstLineAnimation 300ms ease-out forwards;
+}
+
+.animate-secondLineAnimation {
+  animation: secondLineAnimation 300ms ease-out forwards;
+}
+
+.animate-checkmarkAnimation {
+  animation: checkmarkAnimation 300ms ease-out forwards;
+}
+
+.animate-overlayShow {
+  animation: overlayShow 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slideLeftAndFadeIn {
+  animation: slideLeftAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slideLeftAndFadeOut {
+  animation: slideLeftAndFadeOut 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slideRightAndFadeIn {
+  animation: slideRightAndFadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slideRightAndFadeOut {
+  animation: slideRightAndFadeOut 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slideDown {
+  animation: slideDown 200ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.animate-slideUp {
+  animation: slideUp 200ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.animate-overflow {
+  animation: overflow linear;
+}
+
+/* Custom utilities */
+.not-last > *:not(:last-child) {
+  /* This will be handled by the not-last variant */
+}
+
+/* Scrollbar styling */
+* {
+  --scrollbar-color-thumb: rgb(193, 192, 200);
+  --scrollbar-color-track: transparent;
+  --scrollbar-width: 6px;
+}
+
+@supports (scrollbar-width: auto) {
+  * {
+    scrollbar-color: var(--scrollbar-color-thumb) var(--scrollbar-color-track);
+    scrollbar-width: thin;
+    --scrollbar-width: 10px;
+  }
+}
+
+@supports selector(::-webkit-scrollbar) {
+  *::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-color-thumb);
+    border-radius: 9999px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: var(--scrollbar-color-track);
+  }
+
+  *::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+    height: var(--scrollbar-width);
+  }
+}
+
+.scrollbar-gutter-stable {
+  scrollbar-gutter: stable;
+}
+
+.text-rtl {
+  direction: rtl;
+}
+
+.text-ltr {
+  direction: ltr;
+}

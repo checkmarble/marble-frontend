@@ -8,7 +8,7 @@ export function EvaluationErrors({ errors, className }: { errors: string[]; clas
         <span
           key={error}
           className={clsx(
-            'bg-red-95 text-s text-red-47 flex h-8 items-center justify-center rounded px-2 py-1 font-medium',
+            'bg-red-95 text-s text-red-47 flex h-8 items-center justify-center rounded-sm px-2 py-1 font-medium',
             className,
           )}
         >

@@ -54,7 +54,7 @@ type OperandInfosProps = {
 
 const contentClassnames = clsx([
   'flex flex-col w-full flex-1 overflow-hidden z-50',
-  'bg-grey-100 border-grey-90 rounded border shadow-md outline-none',
+  'bg-grey-100 border-grey-90 rounded-sm border shadow-md outline-hidden',
 ]);
 
 export function OperandInfos(props: OperandInfosProps) {
@@ -63,7 +63,7 @@ export function OperandInfos(props: OperandInfosProps) {
       <HoverCardTrigger asChild>
         <Icon
           icon="tip"
-          className="group-hover:hover:text-purple-65 group-hover:text-purple-82 data-[state=open]:text-purple-65 size-5 shrink-0 text-transparent"
+          className="hover:group-hover:text-purple-65 group-hover:text-purple-82 data-[state=open]:text-purple-65 size-5 shrink-0 text-transparent"
         />
       </HoverCardTrigger>
       <HoverCardPortal>

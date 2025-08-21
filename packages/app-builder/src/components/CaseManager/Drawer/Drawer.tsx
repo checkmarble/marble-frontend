@@ -24,7 +24,7 @@ const drawerVariants = cva(
     variants: {
       expanded: {
         false: '',
-        true: 'translate-x-[calc(-80vw_+_519px)] shadow-2xl',
+        true: 'translate-x-[calc(-80vw+519px)] shadow-2xl',
       },
     },
   },
@@ -71,7 +71,7 @@ export function CaseManagerDrawerButtons({ expandable = false }: { expandable?: 
 
   return (
     <div className="p-4">
-      <div className="border-grey-90 bg-grey-100 z-10 flex rounded border">
+      <div className="border-grey-90 bg-grey-100 z-10 flex rounded-sm border">
         <button
           type="button"
           onClick={expandable ? () => context.setExpanded(false) : undefined}

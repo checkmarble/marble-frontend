@@ -23,7 +23,7 @@ export const caseEventsFilterSchema = z.object({
 export type CaseEventFiltersForm = z.infer<typeof caseEventsFilterSchema>;
 
 const Badge = ({ children }: ComponentProps<'span'>) => (
-  <span className="bg-purple-65 text-grey-100 text-2xs rounded px-1 py-0.5">{children}</span>
+  <span className="bg-purple-65 text-grey-100 text-2xs rounded-sm px-1 py-0.5">{children}</span>
 );
 
 export type CaseEventFiltersProps = {

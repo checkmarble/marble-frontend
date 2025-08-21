@@ -78,7 +78,7 @@ export function ClientCommentForm({
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               name={field.name}
               placeholder={t('cases:case_detail.add_a_comment.placeholder')}
-              className="form-textarea text-s max-h-40 w-full resize-none overflow-y-scroll border-none bg-transparent outline-none"
+              className="form-textarea text-s max-h-40 w-full resize-none overflow-y-scroll border-none bg-transparent outline-hidden"
             />
           </div>
         )}

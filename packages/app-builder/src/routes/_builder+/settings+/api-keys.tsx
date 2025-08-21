@@ -101,7 +101,7 @@ export default function ApiKeys() {
 
   return (
     <Page.Container>
-      <Page.Content className="max-w-screen-xl">
+      <Page.Content className="max-w-(--breakpoint-xl)">
         {createdApiKey ? <CreatedAPIKey createdApiKey={createdApiKey} /> : null}
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>

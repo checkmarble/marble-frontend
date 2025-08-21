@@ -84,7 +84,7 @@ export function FieldNodeConcat({
                         <div className="flex flex-row">
                           <div
                             key={node.id}
-                            className="hover:bg-grey-95 flex size-6 items-center justify-center rounded"
+                            className="hover:bg-grey-95 flex size-6 items-center justify-center rounded-sm"
                             {...dragProvided.dragHandleProps}
                           >
                             <Icon icon="drag" className="text-grey-80 size-3" />

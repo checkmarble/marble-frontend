@@ -16,7 +16,7 @@ export const AddLogicalOperatorButton = React.forwardRef<
     <button
       type="button"
       className={clsx(
-        'flex size-fit flex-row items-center justify-center gap-1 rounded border-none px-4 py-2 outline-none',
+        'flex size-fit flex-row items-center justify-center gap-1 rounded-sm border-none px-4 py-2 outline-hidden',
         'text-grey-80 disabled:text-grey-50 hover:text-purple-65 text-xs font-semibold',
         'hover:bg-purple-96 active:bg-grey-90 bg-grey-100 disabled:bg-grey-100 focus:border-purple-65',
         className,

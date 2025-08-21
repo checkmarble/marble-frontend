@@ -17,8 +17,8 @@ export const FilterTransactionByDecisionSkeleton = () => {
 
         <div className="space-y-2">
           <div className="mb-4 grid grid-cols-2 gap-4">
-            <div className="bg-grey-90 h-4 w-24 animate-pulse rounded" />
-            <div className="bg-grey-90 h-4 w-16 animate-pulse rounded" />
+            <div className="bg-grey-90 h-4 w-24 animate-pulse rounded-sm" />
+            <div className="bg-grey-90 h-4 w-16 animate-pulse rounded-sm" />
           </div>
 
           {[1, 2, 3, 4].map((index) => (
@@ -27,12 +27,12 @@ export const FilterTransactionByDecisionSkeleton = () => {
               className="border-grey-90 grid grid-cols-2 gap-4 rounded-lg border p-4 transition-colors"
             >
               <div className="flex items-center space-x-2">
-                <div className="bg-grey-90 size-4 animate-pulse rounded" />
-                <div className="bg-grey-90 h-4 w-32 animate-pulse rounded" />
+                <div className="bg-grey-90 size-4 animate-pulse rounded-sm" />
+                <div className="bg-grey-90 h-4 w-32 animate-pulse rounded-sm" />
               </div>
               <div className="flex items-center space-x-2">
-                <div className="bg-grey-90 h-4 w-16 animate-pulse rounded" />
-                <div className="bg-grey-90 size-4 animate-pulse rounded" />
+                <div className="bg-grey-90 h-4 w-16 animate-pulse rounded-sm" />
+                <div className="bg-grey-90 size-4 animate-pulse rounded-sm" />
               </div>
             </div>
           ))}

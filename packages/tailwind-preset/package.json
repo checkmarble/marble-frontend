@@ -9,10 +9,13 @@
     "type-check": "pnpm exec tsc --noEmit"
   },
   "devDependencies": {
-    "tailwindcss": "3.4.14",
+    "@tailwindcss/container-queries": "^0.1.1",
+    "tailwindcss": "4.1.12",
     "tailwindcss-animate": "^1.0.7",
-    "tailwindcss-radix": "^4.0.2",
-    "@tailwindcss/container-queries": "^0.1.1"
+    "tailwindcss-radix": "^4.0.2"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "tw-animate-css": "^1.3.7"
+  }
 }

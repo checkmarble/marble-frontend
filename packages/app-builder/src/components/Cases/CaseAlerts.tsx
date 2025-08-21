@@ -114,7 +114,7 @@ export const CaseAlerts = ({
                           return property ? (
                             <span
                               key={id}
-                              className="border-grey-90 flex w-fit gap-1 truncate rounded-sm border px-1.5 py-0.5 text-xs"
+                              className="border-grey-90 flex w-fit gap-1 truncate rounded-xs border px-1.5 py-0.5 text-xs"
                             >
                               <span>{property}:</span>
                               <FormatData
@@ -147,7 +147,7 @@ export const CaseAlerts = ({
                         map((r) => (
                           <span
                             key={r.name}
-                            className="border-grey-90 flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-normal"
+                            className="border-grey-90 flex items-center gap-1 rounded-xs border px-1.5 py-0.5 text-xs font-normal"
                           >
                             {r.name === 'executions-remains' ? (
                               <span>{t('common:more_remains', { count: r.scoreModifier })}</span>

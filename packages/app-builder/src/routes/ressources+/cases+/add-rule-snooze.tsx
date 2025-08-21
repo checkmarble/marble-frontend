@@ -190,7 +190,7 @@ function AddRuleSnoozeContent({
       <ModalV2.Title>{t('cases:case_detail.add_rule_snooze.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <ModalV2.Description render={<Callout variant="outlined" />}>
-          <p className="whitespace-pre text-wrap">
+          <p className="whitespace-pre-wrap">
             <Trans
               t={t}
               i18nKey="cases:case_detail.add_rule_snooze.callout"
@@ -226,7 +226,7 @@ function AddRuleSnoozeContent({
           )}
         </form.Field>
 
-        <div className="grid w-full grid-cols-2 grid-rows-[repeat(3,_max-content)] gap-2">
+        <div className="grid w-full grid-cols-2 grid-rows-[repeat(3,max-content)] gap-2">
           <form.Field
             name="durationValue"
             validators={{

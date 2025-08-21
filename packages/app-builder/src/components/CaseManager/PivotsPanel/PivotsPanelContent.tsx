@@ -69,7 +69,7 @@ export function PivotsPanelContent({
   return (
     <div className="flex flex-col gap-8">
       {isAllMissingPivotObject ? (
-        <div className="border-grey-90 flex h-40 flex-col items-center justify-center gap-2 rounded border p-8">
+        <div className="border-grey-90 flex h-40 flex-col items-center justify-center gap-2 rounded-sm border p-8">
           <span className="text-center">
             {isAdmin(currentUser)
               ? t('cases:case_detail.pivot_panel.missing_pivot.admin')
@@ -100,7 +100,7 @@ export function PivotsPanelContent({
             return (
               <button
                 key={uniqKey}
-                className="text-grey-50 aria-[current=true]:bg-purple-96 aria-[current=true]:text-purple-65 rounded p-1 px-4"
+                className="text-grey-50 aria-current:bg-purple-96 aria-current:text-purple-65 rounded-sm p-1 px-4"
                 aria-current={uniqKey === pivotUniqKey(currentPivotObject)}
                 onClick={() => {
                   setCurrentPivotObjectUniqKey(pivotUniqKey(pivotObject));
@@ -169,7 +169,7 @@ export function PivotsPanelContent({
                         {navigationOptions.map((navOption) => (
                           <div
                             key={navOption.targetTableName}
-                            className="grid grid-cols-[116px,_1fr] gap-x-3"
+                            className="grid grid-cols-[116px_1fr] gap-x-3"
                           >
                             <div>{navOption.targetTableName}</div>
                             <Button
@@ -245,7 +245,7 @@ function RelatedCases({
     .with({ isError: true }, () => {
       return (
         <DataCard title={t('cases:case_detail.pivot_panel.case_history')}>
-          <div className="border-red-74 bg-red-95 text-red-47 mt-3 rounded border p-2">
+          <div className="border-red-74 bg-red-95 text-red-47 mt-3 rounded-sm border p-2">
             {t('common:global_error')}
           </div>
         </DataCard>

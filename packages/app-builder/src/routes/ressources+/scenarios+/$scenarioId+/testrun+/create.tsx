@@ -193,7 +193,7 @@ function CreateTestRunToContent({
       <ModalV2.Title>{t('scenarios:create_testrun.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <ModalV2.Description render={<Callout variant="outlined" />}>
-          <p className="whitespace-pre text-wrap">
+          <p className="whitespace-pre-wrap">
             <Trans
               t={t}
               i18nKey="scenarios:create_testrun.callout"

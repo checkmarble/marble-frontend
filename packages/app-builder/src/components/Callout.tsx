@@ -5,7 +5,7 @@ import { Icon } from 'ui-icons';
 export const variants = ['info', 'error'] as const;
 
 const callout = cva(
-  'text-s text-grey-00 flex flex-row items-center gap-2 rounded p-2 font-normal',
+  'text-s text-grey-00 flex flex-row items-center gap-2 rounded-sm p-2 font-normal',
   {
     variants: {
       /**

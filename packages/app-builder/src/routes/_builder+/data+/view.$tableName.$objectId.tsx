@@ -61,7 +61,7 @@ export default function DataSearchObjectPage() {
 
   if (!object) {
     return (
-      <div className="border-grey-90 bg-grey-100 rounded border p-4 text-center">
+      <div className="border-grey-90 bg-grey-100 rounded-sm border p-4 text-center">
         {t('data:viewer.no_object_found', { tableName, objectId })}
       </div>
     );

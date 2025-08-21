@@ -53,7 +53,7 @@ export function AlertStatus({
       <div
         className={cx(
           alertStatusVariants({ color, variant: 'contained' }),
-          'text-s flex size-6 items-center justify-center rounded font-semibold capitalize',
+          'text-s flex size-6 items-center justify-center rounded-sm font-semibold capitalize',
           className,
         )}
       >

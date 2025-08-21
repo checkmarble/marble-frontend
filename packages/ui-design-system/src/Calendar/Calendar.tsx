@@ -58,7 +58,7 @@ export function Calendar({
         [UI.DayButton]: 'size-12 text-s font-medium outline-1 outline-purple-65',
         [SelectionState.selected]: clsx(
           'transition-colors',
-          props.mode === 'single' && 'rounded bg-purple-65 text-grey-100 ',
+          props.mode === 'single' && 'rounded-sm bg-purple-65 text-grey-100 ',
         ),
         [SelectionState.range_start]: 'text-grey-100 bg-purple-65 rounded-s',
         [SelectionState.range_end]: 'text-grey-100 bg-purple-65 rounded-e',

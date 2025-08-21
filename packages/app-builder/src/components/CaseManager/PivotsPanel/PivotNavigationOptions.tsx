@@ -37,7 +37,7 @@ export function PivotNavigationOptions({
   return (
     <>
       {linksToTable.length > 0 ? (
-        <div className="grid grid-cols-[116px,_1fr] gap-3">
+        <div className="grid grid-cols-[116px_1fr] gap-3">
           {linksToTable.map((linkToTable) => {
             const navigationOptions =
               table.navigationOptions?.filter(

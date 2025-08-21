@@ -277,7 +277,7 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
         </Select.Value>
         <Select.Arrow />
       </Select.Trigger>
-      <Select.Content className="min-w-[var(--radix-select-trigger-width)]" align="start">
+      <Select.Content className="min-w-(--radix-select-trigger-width)" align="start">
         <Select.Viewport>
           {schemas.map((schema) => {
             const schemaKey = schema.toLowerCase() as Lowercase<typeof schema>;
@@ -315,8 +315,8 @@ function SearchInput({ request }: { request: NonNullable<SanctionCheck['request'
   return (
     <Field label={t('sanctions:refine_modal.search_input_label')}>
       {searchInputs.map((input, i) => (
-        <div key={i} className="border-grey-90 flex items-center gap-2 rounded border p-2">
-          <span className="bg-grey-95 size-6 rounded-sm p-1">
+        <div key={i} className="border-grey-90 flex items-center gap-2 rounded-sm border p-2">
+          <span className="bg-grey-95 size-6 rounded-xs p-1">
             <Icon icon="string" className="size-4" />
           </span>
           {input}

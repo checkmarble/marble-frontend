@@ -34,7 +34,7 @@ export function EditTimestampExtract(props: Omit<OperandEditModalProps, 'node'>)
       size="medium"
     >
       <Callout variant="outlined">
-        <Modal.Description className="whitespace-pre text-wrap">
+        <Modal.Description className="whitespace-pre-wrap">
           <Trans
             t={t}
             i18nKey="scenarios:edit_timestamp_extract.description"

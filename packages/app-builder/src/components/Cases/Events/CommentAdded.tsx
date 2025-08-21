@@ -14,7 +14,7 @@ export const CommentAddedDetail = ({ event }: { event: CommentAddedEvent }) => {
   return (
     <div key={event.id} className="flex items-start gap-2">
       <Avatar firstName={user?.firstName} lastName={user?.lastName} size="xxs" color="grey" />
-      <span className="text-grey-00 whitespace-pre text-wrap text-xs">
+      <span className="text-grey-00 whitespace-pre-wrap text-xs">
         <Markdown>{event.comment}</Markdown>
       </span>
       <EventTime time={event.createdAt} />

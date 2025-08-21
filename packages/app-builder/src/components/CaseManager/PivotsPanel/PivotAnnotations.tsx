@@ -34,7 +34,7 @@ export function PivotAnnotations({
 
   return (
     <DataCard title={t('cases:case_detail.pivot_panel.annotations')}>
-      <div className="grid grid-cols-[116px,_1fr] gap-x-3 gap-y-2 py-2">
+      <div className="grid grid-cols-[116px_1fr] gap-x-3 gap-y-2 py-2">
         <div>{t('cases:annotations.tags.title')}</div>
         <div className="flex items-start justify-between">
           <div>

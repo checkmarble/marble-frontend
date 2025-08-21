@@ -21,7 +21,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
       <HovercardAnchor
         tabIndex={-1}
         className={cn(
-          'text-grey-100 flex flex-row items-center justify-center rounded',
+          'text-grey-100 flex flex-row items-center justify-center rounded-sm',
           { 'bg-purple-65': kind === 'test' },
           { 'bg-purple-82': kind === 'restricted' },
           { 'bg-yellow-50': kind === 'missing_configuration' },
@@ -43,7 +43,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
         portal
         gutter={8}
         className={cn(
-          'bg-grey-100 z-50 flex w-60 flex-col items-center gap-6 rounded border p-4 shadow-lg',
+          'bg-grey-100 z-50 flex w-60 flex-col items-center gap-6 rounded-sm border p-4 shadow-lg',
           {
             'border-purple-82': kind !== 'missing_configuration',
             'border-yellow-50': kind === 'missing_configuration',

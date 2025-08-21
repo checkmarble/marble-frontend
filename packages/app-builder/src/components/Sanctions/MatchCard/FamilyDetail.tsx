@@ -11,7 +11,7 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
   const { t } = useTranslation(['sanctions']);
 
   return (
-    <div className="grid grid-cols-[168px,_1fr] gap-y-2">
+    <div className="grid grid-cols-[168px_1fr] gap-y-2">
       <div className="font-bold py-6">{t('sanctions:match.family-members.title')}</div>
       <Collapsible.Container defaultOpen={familyMembers.length <= 3}>
         <Collapsible.Title>
@@ -33,7 +33,7 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
 
                 return (
                   <div key={`person-${id}-${idx}`} className="contents">
-                    <div className="flex flex-row items-start  gap-2 rounded p-2 bg-grey-100">
+                    <div className="flex flex-row items-start  gap-2 rounded-sm p-2 bg-grey-100">
                       <div className="flex flex-col  gap-2">
                         {properties.caption?.length > 0 ? (
                           <div className="text-sm text-grey-70 font-medium">

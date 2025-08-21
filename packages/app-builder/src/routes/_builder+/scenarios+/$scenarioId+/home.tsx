@@ -283,7 +283,7 @@ function VersionSection({
         {quickDraft ? <QuickVersionAccess scenarioIteration={quickDraft} /> : null}
         {labelledOtherVersions.length > 0 ? (
           <ScenarioIterationMenu labelledScenarioIteration={labelledOtherVersions}>
-            <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 font-semibold outline-none transition-colors">
+            <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 font-semibold outline-hidden transition-colors">
               {t('scenarios:home.other_versions', {
                 count: otherVersions.length,
               })}
@@ -622,7 +622,7 @@ function WorkflowSection({
 
       <div className="flex flex-row gap-4">
         {tag ? (
-          <div className="bg-purple-98 text-s text-purple-65 flex h-10 flex-row items-center gap-2 rounded px-2 uppercase">
+          <div className="bg-purple-98 text-s text-purple-65 flex h-10 flex-row items-center gap-2 rounded-sm px-2 uppercase">
             {tag}
             {tooltip ? (
               <Ariakit.HovercardProvider showTimeout={0} hideTimeout={0} placement="right">
@@ -635,7 +635,7 @@ function WorkflowSection({
                 <Ariakit.Hovercard
                   portal
                   gutter={8}
-                  className="bg-grey-100 border-grey-90 flex w-fit max-w-80 rounded border p-2 shadow-md"
+                  className="bg-grey-100 border-grey-90 flex w-fit max-w-80 rounded-sm border p-2 shadow-md"
                 >
                   {tooltip}
                 </Ariakit.Hovercard>
@@ -645,9 +645,9 @@ function WorkflowSection({
         ) : null}
 
         {rulesQuery.isLoading ? (
-          <div className="bg-grey-90 h-10 w-36 animate-pulse rounded flex items-center gap-2 px-4">
-            <div className="bg-grey-80 size-6 animate-pulse rounded" />
-            <div className="bg-grey-80 h-4 w-16 animate-pulse rounded" />
+          <div className="bg-grey-90 h-10 w-36 animate-pulse rounded-sm flex items-center gap-2 px-4">
+            <div className="bg-grey-80 size-6 animate-pulse rounded-sm" />
+            <div className="bg-grey-80 h-4 w-16 animate-pulse rounded-sm" />
           </div>
         ) : (
           <Link
@@ -706,7 +706,7 @@ function ResourcesSection() {
           <a
             key={tKey}
             href={href}
-            className="border-grey-90 hover:border-purple-65 focus:border-purple-65 group flex flex-col overflow-hidden rounded border outline-none transition-colors"
+            className="border-grey-90 hover:border-purple-65 focus:border-purple-65 group flex flex-col overflow-hidden rounded-sm border outline-hidden transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >

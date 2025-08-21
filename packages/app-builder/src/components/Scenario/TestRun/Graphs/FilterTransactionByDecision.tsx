@@ -120,7 +120,7 @@ const TestRunRuleHitPercentage = ({
         </span>
       ) : null}
       <div
-        className={clsx('flex flex-row items-center justify-center rounded p-1.5', {
+        className={clsx('flex flex-row items-center justify-center rounded-sm p-1.5', {
           'bg-purple-96': direction === 'up' || direction === 'down',
           'bg-grey-95': direction === 'equal',
         })}

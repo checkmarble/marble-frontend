@@ -57,7 +57,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
     >
       <div className="flex flex-1 flex-col gap-4">
         <Callout variant="outlined">
-          <Modal.Description className="whitespace-pre text-wrap">
+          <Modal.Description className="whitespace-pre-wrap">
             <Trans
               t={t}
               i18nKey="scenarios:edit_aggregation.description"

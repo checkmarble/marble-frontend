@@ -34,7 +34,10 @@ function renderItems(items: typeof groceries, group?: string) {
 
     const element =
       typeof item === 'string' ? (
-        <MenuItem name={group} className="data-[active-item]:bg-purple-98 rounded p-2 outline-none">
+        <MenuItem
+          name={group}
+          className="data-active-item:bg-purple-98 rounded-sm p-2 outline-hidden"
+        >
           {item}
         </MenuItem>
       ) : (
@@ -108,14 +111,17 @@ function renderNestedItems(items: typeof groceries, group?: string) {
 
     const element =
       typeof item === 'string' ? (
-        <MenuItem name={group} className="data-[active-item]:bg-purple-98 rounded p-2 outline-none">
+        <MenuItem
+          name={group}
+          className="data-active-item:bg-purple-98 rounded-sm p-2 outline-hidden"
+        >
           {item}
         </MenuItem>
       ) : (
         <Fragment>
           <MenuSeparator className="my-2" />
           <SubMenuRoot>
-            <SubMenuButton className="data-[active-item]:bg-purple-98 flex flex-row justify-between gap-2 rounded p-2 outline-none">
+            <SubMenuButton className="data-active-item:bg-purple-98 flex flex-row justify-between gap-2 rounded-sm p-2 outline-hidden">
               <span>{item.label}</span>
               <span>{'>'}</span>
             </SubMenuButton>
