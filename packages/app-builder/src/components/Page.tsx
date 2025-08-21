@@ -22,8 +22,8 @@ function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
 export const headerHeight = cva(undefined, {
   variants: {
     type: {
-      height: 'h-16 lg:h-20',
-      mt: 'mt-16 lg:mt-20',
+      height: 'h-16',
+      mt: 'mt-16',
     },
   },
 });
@@ -32,7 +32,7 @@ function PageHeader({ className, children, ...props }: React.ComponentProps<'div
   return (
     <div
       className={cn(
-        'border-b-grey-90 bg-grey-100 text-l text-grey-00 relative flex shrink-0 flex-row items-center border-b px-4 font-bold lg:px-6',
+        'border-b-grey-90 bg-grey-100 text-l text-grey-00 relative flex shrink-0 flex-row items-center border-b font-bold px-md',
         headerHeight({ type: 'height' }),
         className,
       )}

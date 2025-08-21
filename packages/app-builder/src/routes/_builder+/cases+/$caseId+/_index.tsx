@@ -46,7 +46,8 @@ import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
 import {
   Button,
-  CtaClassName,
+  ButtonV2,
+  CtaV2ClassName,
   cn,
   Markdown,
   Tabs,
@@ -291,7 +292,7 @@ export const handle = {
             <span className="line-clamp-2 text-start">{caseDetail.name}</span>
           </BreadCrumbLink>
           <CopyToClipboardButton toCopy={caseDetail.id}>
-            <span className="text-s flex max-w-40 gap-1 font-normal">
+            <span className="text-small flex max-w-40 gap-1 font-normal">
               <span className="shrink-0 font-medium">ID</span>{' '}
               <span className="text-rtl truncate">{caseDetail.id}</span>
             </span>
@@ -338,10 +339,10 @@ export default function CaseManagerIndexPage() {
           <AiAssist.Root>
             {aiAssistEnabled === 'allowed' ? (
               <AiAssist.Trigger>
-                <Button variant="secondary" size="medium">
-                  <Icon icon="case-manager" className="size-5" />
-                  <span className="text-s">AI assist</span>
-                </Button>
+                <ButtonV2 variant="secondary">
+                  <Icon icon="case-manager" className="size-3.5" />
+                  AI assist
+                </ButtonV2>
               </AiAssist.Trigger>
             ) : null}
 
@@ -353,20 +354,22 @@ export default function CaseManagerIndexPage() {
                       {mostRecentReview
                         ? (() => {
                             return (
-                              <div className="flex flex-col gap-2 h-full text-xs">
+                              <div className="flex flex-col gap-2 h-full text-default">
                                 <Tabs defaultValue="review" className="flex flex-col h-full gap-2">
                                   <TabsList className="self-start">
                                     <TabsTrigger value="review" className="flex items-center gap-2">
                                       {t('cases:case.ai_assist.review')}
                                       <Icon
-                                        icon={mostRecentReview.ok ? 'tick' : 'cross'}
+                                        icon={mostRecentReview.review.ok ? 'tick' : 'cross'}
                                         className={cn(
                                           'size-5',
-                                          mostRecentReview.ok ? 'text-green-34' : 'text-red-47',
+                                          mostRecentReview.review.ok
+                                            ? 'text-green-34'
+                                            : 'text-red-47',
                                         )}
                                       />
                                     </TabsTrigger>
-                                    {!mostRecentReview.ok ? (
+                                    {!mostRecentReview.review.ok ? (
                                       <TabsTrigger value="sanityCheck">
                                         {t('cases:case.ai_assist.sanity_check')}
                                       </TabsTrigger>
@@ -376,14 +379,14 @@ export default function CaseManagerIndexPage() {
                                     value="review"
                                     className="min-h-0 p-2 overflow-scroll"
                                   >
-                                    <Markdown>{mostRecentReview.output}</Markdown>
+                                    <Markdown>{mostRecentReview.review.output}</Markdown>
                                   </TabsContent>
                                   {!mostRecentReview.ok ? (
                                     <TabsContent
                                       value="sanityCheck"
                                       className="min-h-0 p-2 overflow-scroll"
                                     >
-                                      <Markdown>{mostRecentReview.sanityCheck}</Markdown>
+                                      <Markdown>{mostRecentReview.review.sanityCheck}</Markdown>
                                     </TabsContent>
                                   ) : null}
                                 </Tabs>
@@ -393,7 +396,7 @@ export default function CaseManagerIndexPage() {
                         : null}
                     </div>
                     <div className="flex gap-2">
-                      <Button
+                      <ButtonV2
                         variant="secondary"
                         onClick={() => {
                           enqueueReviewMutation.mutate(details.id);
@@ -405,9 +408,9 @@ export default function CaseManagerIndexPage() {
                         {hasRequestedReview
                           ? 'Review will be ready in a few minutes, refresh to see it'
                           : 'Generate Review'}
-                      </Button>
+                      </ButtonV2>
                       <Link
-                        className={CtaClassName({ variant: 'secondary' })}
+                        className={CtaV2ClassName({ variant: 'secondary', mode: 'normal' })}
                         reloadDocument
                         to={getRoute('/ressources/cases/download-data/:caseId', {
                           caseId: details.id,
@@ -423,20 +426,19 @@ export default function CaseManagerIndexPage() {
             </ClientOnly>
           </AiAssist.Root>
           {nextCaseId ? (
-            <Button
+            <ButtonV2
               variant="secondary"
-              size="medium"
               onClick={() =>
                 navigate(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(nextCaseId) }))
               }
             >
-              <span className="text-xs font-medium">{t('cases:next_unassigned_case')}</span>
-              <Icon icon="arrow-up" className="size-5 rotate-90" />
-            </Button>
+              {t('cases:next_unassigned_case')}
+              <Icon icon="arrow-up" className="size-3.5 rotate-90" />
+            </ButtonV2>
           ) : null}
         </div>
       </Page.Header>
-      <Page.Container className="text-r relative h-full flex-row p-0 lg:p-0">
+      <Page.Container className="text-default relative h-full flex-row p-0 lg:p-0">
         {/* TabSystem when mostRecentReview is not empty */}
         <CaseDetails
           key={details.id}

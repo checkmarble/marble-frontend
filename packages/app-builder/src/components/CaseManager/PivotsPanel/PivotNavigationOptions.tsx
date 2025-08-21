@@ -5,7 +5,7 @@ import { type PivotObject } from '@app-builder/models/cases';
 import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export type PivotNavigationOptionsProps = {
@@ -37,7 +37,7 @@ export function PivotNavigationOptions({
   return (
     <>
       {linksToTable.length > 0 ? (
-        <div className="grid grid-cols-[116px_1fr] gap-3">
+        <div className="grid grid-cols-[116px_1fr] gap-3 items-center">
           {linksToTable.map((linkToTable) => {
             const navigationOptions =
               table.navigationOptions?.filter(
@@ -52,9 +52,8 @@ export function PivotNavigationOptions({
                       {navOption.targetTableName}
                       {navigationOptions.length > 1 ? ` (${navOption.orderingFieldName})` : null}
                     </div>
-                    <Button
+                    <ButtonV2
                       disabled={navOption.status === 'pending'}
-                      size="small"
                       variant="secondary"
                       onClick={() => {
                         dataModelExplorerContext.startNavigation({
@@ -68,17 +67,16 @@ export function PivotNavigationOptions({
                         });
                         onExplore();
                       }}
-                      className="flex items-center gap-1"
                     >
                       {navOption.status === 'pending'
                         ? t('cases:case_detail.pivot_panel.explore_waiting_creation')
                         : t('cases:case_detail.pivot_panel.explore')}
                       {navOption.status === 'pending' ? (
-                        <Icon icon="spinner" className="size-4 animate-spin" />
+                        <Icon icon="spinner" className="size-3.5 animate-spin" />
                       ) : (
-                        <Icon icon="arrow-up-right" className="size-4" />
+                        <Icon icon="arrow-up-right" className="size-3.5" />
                       )}
-                    </Button>
+                    </ButtonV2>
                   </Fragment>
                 ))}
               </Fragment>

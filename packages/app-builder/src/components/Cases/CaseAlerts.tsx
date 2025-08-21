@@ -5,7 +5,7 @@ import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, map, pipe, take } from 'remeda';
-import { Button, cn } from 'ui-design-system';
+import { ButtonV2, cn } from 'ui-design-system';
 
 import { OutcomeBadge } from '../Decisions';
 import { FormatData } from '../FormatData';
@@ -38,12 +38,12 @@ export const CaseAlerts = ({
       <Await resolve={decisionsPromise}>
         {(decisions) =>
           decisions ? (
-            <div className="border-grey-90 bg-grey-100 rounded-lg border">
-              <div className="text-2xs text-grey-50 grid grid-cols-[82px_2fr_1.3fr_1fr] font-normal">
-                <span className="p-2">{t('cases:decisions.date')}</span>
-                <span className="p-2">{t('cases:decisions.alert')}</span>
-                <span className="p-2">{t('cases:decisions.trigger_object')}</span>
-                <span className="p-2">{t('cases:decisions.rule_hits')}</span>
+            <div className="text-small border-grey-90 bg-grey-100 rounded-lg border">
+              <div className="text-default text-grey-50 grid grid-cols-[82px_2fr_1.3fr_1fr] font-normal">
+                <span className="p-sm">{t('cases:decisions.date')}</span>
+                <span className="p-sm">{t('cases:decisions.alert')}</span>
+                <span className="p-sm">{t('cases:decisions.trigger_object')}</span>
+                <span className="p-sm">{t('cases:decisions.rule_hits')}</span>
               </div>
               {decisions.map((decision) => {
                 const triggerObjectOptions = dataModelWithTableOptions.find(
@@ -82,9 +82,8 @@ export const CaseAlerts = ({
                           </span>
                           <ScoreModifier score={decision.score} />
                         </div>
-                        <Button
+                        <ButtonV2
                           variant="secondary"
-                          size="xs"
                           className="absolute right-0 top-0 hidden group-hover:flex"
                           onClick={() => {
                             selectDecision(decision.id);
@@ -93,7 +92,7 @@ export const CaseAlerts = ({
                           }}
                         >
                           {t('common:open')}
-                        </Button>
+                        </ButtonV2>
                       </div>
                       <RequiredActions decision={decision} caseId={caseDetail.id} />
                     </div>

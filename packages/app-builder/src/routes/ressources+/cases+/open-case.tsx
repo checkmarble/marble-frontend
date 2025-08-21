@@ -11,7 +11,7 @@ import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Modal } from 'ui-design-system';
+import { ButtonV2, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -98,10 +98,10 @@ export const OpenCase = ({ id }: { id: string }) => {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button variant="primary" size="medium" className="flex-1 first-letter:capitalize">
-          <Icon icon="save" className="size-5" />
+        <ButtonV2 variant="primary" className="flex-1 first-letter:capitalize">
+          <Icon icon="save" className="size-3.5" />
           {t('cases:case.reopen')}
-        </Button>
+        </ButtonV2>
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('cases:case.reopen')}</Modal.Title>
@@ -127,14 +127,14 @@ export const OpenCase = ({ id }: { id: string }) => {
           </form.Field>
           <div className="flex w-full flex-row gap-2">
             <Modal.Close asChild>
-              <Button variant="secondary" type="button" className="flex-1 first-letter:capitalize">
+              <ButtonV2 variant="secondary" className="flex-1 first-letter:capitalize">
                 {t('common:cancel')}
-              </Button>
+              </ButtonV2>
             </Modal.Close>
 
-            <Button type="submit" className="flex-1 first-letter:capitalize">
+            <ButtonV2 type="submit" className="flex-1 first-letter:capitalize">
               Re-Open
-            </Button>
+            </ButtonV2>
           </div>
         </form>
       </Modal.Content>

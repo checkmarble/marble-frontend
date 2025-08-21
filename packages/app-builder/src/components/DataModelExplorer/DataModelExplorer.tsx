@@ -1,7 +1,7 @@
 import { type DataModelWithTableOptions } from '@app-builder/models';
 import { useCallbackRef } from '@marble/shared';
 import { useState } from 'react';
-import { Button, MenuCommand } from 'ui-design-system';
+import { ButtonV2, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { DataTableRender } from './DataTableRender';
@@ -183,13 +183,13 @@ function DataModelExplorerTab(props: {
     <button
       aria-current={props.current}
       type="button"
-      className="group/tab text-m text-grey-50 aria-current:bg-purple-96 aria-current:text-purple-65 relative inline-flex h-10 items-center gap-2 rounded-sm px-4 py-2"
+      className="group/tab text-default text-grey-50 aria-current:bg-purple-96 aria-current:text-purple-65 relative inline-flex items-center gap-2 rounded-v2-md px-sm py-xs"
       onClick={props.onClick}
     >
       {props.label}
       <Icon
         icon="cross"
-        className="invisible size-5 group-aria-current/tab:visible"
+        className="invisible size-3.5 group-aria-current/tab:visible"
         onClick={(e) => {
           e.stopPropagation();
           props.onClose?.();
@@ -209,9 +209,9 @@ function TabBarActions(props: {
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <Button size="icon" variant="secondary" className={props.className}>
-          <Icon icon="more-menu" className="size-4" />
-        </Button>
+        <ButtonV2 mode="icon" variant="secondary" className={props.className}>
+          <Icon icon="more-menu" className="size-3.5" />
+        </ButtonV2>
       </MenuCommand.Trigger>
       <MenuCommand.Content align="end" sideOffset={4}>
         <MenuCommand.List>

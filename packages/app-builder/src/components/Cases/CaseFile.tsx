@@ -6,7 +6,7 @@ import {
 import { getRoute } from '@app-builder/utils/routes';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, type ButtonProps, cn } from 'ui-design-system';
+import { type ButtonProps, ButtonV2, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { casesI18n } from './cases-i18n';
 
@@ -32,9 +32,8 @@ export const CaseFile = ({ file, className, size }: CaseFileProps) => {
   });
 
   return (
-    <Button
+    <ButtonV2
       variant="secondary"
-      size={size}
       onClick={() => {
         void downloadCaseFile();
       }}
@@ -46,6 +45,6 @@ export const CaseFile = ({ file, className, size }: CaseFileProps) => {
         className={cn('size-3.5', { 'animate-spin': downloadingCaseFile })}
       />
       {file.fileName}
-    </Button>
+    </ButtonV2>
   );
 };

@@ -64,8 +64,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   );
 });
 
-const CtaV2ClassName = cva(
-  'text-default font-[500] rounded-v2-md inline-flex items-center gap-xs cursor-pointer outline-hidden transition-colors border border-solid disabled:cursor-default',
+export const CtaV2ClassName = cva(
+  'text-default font-[500] w-fit rounded-v2-md inline-flex items-center gap-xs cursor-pointer outline-hidden transition-colors border border-solid disabled:cursor-default',
   {
     variants: {
       variant: {
@@ -78,7 +78,7 @@ const CtaV2ClassName = cva(
       },
       mode: {
         normal: 'px-sm py-xs',
-        icon: 'aspect-square p-xs',
+        icon: 'aspect-square p-xs size-7 justify-center',
       },
     },
     defaultVariants: {
@@ -92,7 +92,7 @@ export type ButtonV2Props = VariantProps<typeof CtaV2ClassName> &
   React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 
 export const ButtonV2 = forwardRef<HTMLButtonElement, ButtonV2Props>(function ButtonV2(
-  { variant, mode, className, ...props },
+  { variant = 'primary', mode = 'normal', className, ...props },
   ref,
 ) {
   return (

@@ -8,7 +8,7 @@ import { useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -68,37 +68,32 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
           <div className="flex w-full flex-col gap-1">
             <div className="flex items-center gap-2">
               {!isEditing ? (
-                <Button
+                <ButtonV2
                   type="button"
                   onClick={() => setIsEditing(true)}
                   className="w-fit p-0.5"
                   variant="secondary"
-                  size="icon"
+                  mode="icon"
                 >
-                  <Icon icon="edit-square" className="text-grey-50 size-4" />
-                </Button>
+                  <Icon icon="edit-square" className="text-grey-50 size-3.5" />
+                </ButtonV2>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Button
-                    type="submit"
-                    size="small"
-                    disabled={form.state.isSubmitting}
-                    variant="primary"
-                  >
-                    <Icon icon="save" className="size-4" />
-                    <span className="text-xs">{t('common:save')}</span>
-                  </Button>
-                  <Button
+                  <ButtonV2 type="submit" disabled={form.state.isSubmitting} variant="primary">
+                    <Icon icon="save" className="size-3.5" />
+                    {t('common:save')}
+                  </ButtonV2>
+                  <ButtonV2
                     type="button"
                     onClick={() => {
                       setIsEditing(false);
                       form.reset({ name, caseId: id });
                     }}
                     variant="secondary"
-                    size="icon"
+                    mode="icon"
                   >
-                    <Icon icon="cross" className="text-grey-50 size-5" />
-                  </Button>
+                    <Icon icon="cross" className="text-grey-50 size-3.5" />
+                  </ButtonV2>
                 </div>
               )}
               <input
@@ -108,7 +103,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 onBlur={field.handleBlur}
-                className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-hidden"
+                className="text-grey-00 text-h1 w-full border-none bg-transparent font-normal outline-hidden"
                 placeholder={t('cases:case.name')}
               />
             </div>

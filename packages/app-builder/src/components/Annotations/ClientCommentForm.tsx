@@ -7,7 +7,7 @@ import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, cn } from 'ui-design-system';
+import { ButtonV2, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -62,7 +62,7 @@ export function ClientCommentForm({
   return (
     <form
       onSubmit={handleSubmit(form)}
-      className={cn('flex justify-between rounded-lg px-4 py-3', className)}
+      className={cn('flex justify-between rounded-v2-md px-4 py-3 bg-white', className)}
     >
       <form.Field
         name="payload.text"
@@ -78,25 +78,25 @@ export function ClientCommentForm({
               onChange={(e) => field.handleChange(e.currentTarget.value)}
               name={field.name}
               placeholder={t('cases:case_detail.add_a_comment.placeholder')}
-              className="form-textarea text-s max-h-40 w-full resize-none overflow-y-scroll border-none bg-transparent outline-hidden"
+              className="form-textarea text-small max-h-40 w-full resize-none overflow-y-scroll border-none bg-transparent outline-hidden"
             />
           </div>
         )}
       </form.Field>
       <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
         {([canSubmit, isSubmitting]) => (
-          <Button
+          <ButtonV2
             type="submit"
-            size="icon"
+            mode="icon"
             variant="primary"
             className="shrink-0"
             disabled={!canSubmit || isSubmitting}
           >
             <Icon
               icon={isSubmitting ? 'spinner' : 'send'}
-              className={clsx('size-4', { 'animate-spin': isSubmitting })}
+              className={clsx('size-3.5', { 'animate-spin': isSubmitting })}
             />
-          </Button>
+          </ButtonV2>
         )}
       </form.Subscribe>
     </form>
