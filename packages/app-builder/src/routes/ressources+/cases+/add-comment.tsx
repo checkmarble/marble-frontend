@@ -17,6 +17,7 @@ import {
 } from '@remix-run/node';
 import { redirect, useFetcher } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
+import { isBefore, parseISO } from 'date-fns';
 import { decode } from 'decode-formdata';
 import { serialize } from 'object-to-formdata';
 import { toggle, tryit } from 'radash';
@@ -101,6 +102,16 @@ export async function action({ request }: ActionFunctionArgs) {
         }),
       );
     }
+
+    promises.push(
+      cases
+        .getCase({ caseId: data.caseId })
+        .then(({ snoozedUntil }) =>
+          snoozedUntil && isBefore(new Date(), parseISO(snoozedUntil))
+            ? cases.unsnoozeCase({ caseId: data.caseId })
+            : Promise.resolve(),
+        ),
+    );
 
     await Promise.all(promises);
 
