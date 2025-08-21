@@ -8,7 +8,7 @@ export type ActionsMap = Map<string, WorkflowAction>;
 
 const astNodeSchema: z.ZodTypeAny = z.object({
   id: z.string().optional(),
-  name: z.string().optional(),
+  name: z.string().nullish(),
   constant: z.any().optional(),
   children: z.array(z.lazy(() => astNodeSchema)).optional(),
   namedChildren: z
