@@ -43,6 +43,7 @@ export const CtaClassName = cva(
 export type ButtonProps = VariantProps<typeof CtaClassName> &
   React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 
+// @deprecated use the new ButtonV2 instead
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   {
     variant = 'primary',
@@ -58,6 +59,47 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ref={ref}
       type="button"
       className={cn(CtaClassName({ variant, color, size }), className)}
+      {...props}
+    />
+  );
+});
+
+const CtaV2ClassName = cva(
+  'text-default font-[500] rounded-v2-md inline-flex items-center gap-xs cursor-pointer outline-hidden transition-colors border border-solid disabled:cursor-default',
+  {
+    variants: {
+      variant: {
+        primary:
+          'bg-purple-65 border-purple-65 text-white hover:bg-purple-60 hover:border-purple-60 disabled:bg-purple-82',
+        destructive:
+          'bg-red-47 border-red-47 text-white hover:bg-red-43 hover:border-red-43 disabled:bg-red-74',
+        secondary:
+          'bg-white border-grey-border text-grey-00 hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-80',
+      },
+      mode: {
+        normal: 'px-sm py-xs',
+        icon: 'aspect-square p-xs',
+      },
+    },
+    defaultVariants: {
+      variant: 'primary',
+      mode: 'normal',
+    },
+  },
+);
+
+export type ButtonV2Props = VariantProps<typeof CtaV2ClassName> &
+  React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
+
+export const ButtonV2 = forwardRef<HTMLButtonElement, ButtonV2Props>(function ButtonV2(
+  { variant, mode, className, ...props },
+  ref,
+) {
+  return (
+    <button
+      ref={ref}
+      type="button"
+      className={cn(CtaV2ClassName({ variant, mode }), className)}
       {...props}
     />
   );

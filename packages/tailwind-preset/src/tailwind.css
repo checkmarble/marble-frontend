@@ -16,6 +16,12 @@
   --color-grey-95: oklch(96.44% 0.0013 286.38);
   --color-grey-98: oklch(98.54% 0.0013 286.38);
   --color-grey-100: oklch(100% 0 0);
+  --color-black: var(--color-grey-00);
+  --color-white: var(--color-grey-100);
+
+  --color-grey-border: var(--color-grey-90);
+  --color-grey-background: var(--color-grey-95);
+  --color-grey-background-light: var(--color-grey-98);
 
   /* Purple scale */
   --color-purple-60: oklch(51.34% 0.2286 277.47);
@@ -52,6 +58,22 @@
   --color-orange-87: oklch(88.69% 0.06019174087690467 32.301452587972335);
   --color-orange-95: oklch(95.66% 0.022279930128345612 38.33533240178478);
 
+  --spacing-xxxl: 3rem;
+  --spacing-xxl: 2.5rem;
+  --spacing-xl: 2rem;
+  --spacing-l: 1.5rem;
+  --spacing-md: 1rem;
+  --spacing-sm: 0.5rem;
+  --spacing-xs: 0.25rem;
+  --spacing-xxs: 0.125rem;
+
+  --radius-v2-xxl: 1.5rem;
+  --radius-v2-xl: 1rem;
+  --radius-v2-lg: 0.75rem;
+  --radius-v2-md: 0.5rem;
+  --radius-v2-s: 0.25rem;
+  --radius-v2-xs: 0.125rem;
+
   /* Font sizes */
   --text-2xl: 28px;
   --text-2xl--line-height: 32px;
@@ -67,6 +89,17 @@
   --text-xs--line-height: 18px;
   --text-2xs: 10px;
   --text-2xs--line-height: 12px;
+
+  --text-h1: 1.25rem;
+  --text-h1--line-height: 140%;
+  --text-h2: 1rem;
+  --text-h2--line-height: 140%;
+  --text-default: 0.875rem;
+  --text-default--line-height: 140%;
+  --text-small: 0.75rem;
+  --text-small--line-height: 140%;
+  --text-tiny: 0.625rem;
+  --text-tiny--line-height: 140%;
 
   /* Font families */
   --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
@@ -288,11 +321,6 @@
 
 .animate-overflow {
   animation: overflow linear;
-}
-
-/* Custom utilities */
-.not-last > *:not(:last-child) {
-  /* This will be handled by the not-last variant */
 }
 
 /* Scrollbar styling */
