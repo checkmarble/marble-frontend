@@ -39,7 +39,7 @@ import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { match } from 'ts-pattern';
-import { Button, CtaClassName, HiddenInputs, MenuButton } from 'ui-design-system';
+import { ButtonV2, CtaV2ClassName, HiddenInputs, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 import { useCurrentScenario, useScenarioIterations } from './_layout';
@@ -164,10 +164,10 @@ export default function ScenarioHome() {
                 description: currentScenario.description,
               }}
             >
-              <Button variant="secondary" className="isolate h-10 w-fit" disabled={!hydrated}>
-                <Icon icon="edit-square" className="size-6" />
+              <ButtonV2 variant="secondary" disabled={!hydrated}>
+                <Icon icon="edit-square" className="size-3.5" />
                 <p>{t('scenarios:update_scenario.title')}</p>
-              </Button>
+              </ButtonV2>
             </UpdateScenario>
           </div>
         ) : null}
@@ -176,11 +176,11 @@ export default function ScenarioHome() {
         {currentScenario.description ? (
           <Page.Description>{currentScenario.description}</Page.Description>
         ) : null}
-        <Page.Content>
+        <Page.ContentV2 centered className="flex flex-col gap-l w-225">
           <VersionSection scenarioIterations={scenarioIterations} />
-          <section className="flex flex-col gap-4">
+          <section className="flex flex-col gap-sm">
             <h2 className="text-grey-00 text-m font-semibold">{t('scenarios:home.execution')}</h2>
-            <div className="grid max-w-[1000px] grid-cols-2 gap-8">
+            <div className="grid max-w-[1000px] grid-cols-2 gap-sm">
               <RealTimeSection
                 scenarioId={currentScenario.id}
                 liveScenarioIteration={liveScenarioIteration}
@@ -212,7 +212,7 @@ export default function ScenarioHome() {
             </div>
           </section>
           <ResourcesSection />
-        </Page.Content>
+        </Page.ContentV2>
       </Page.Container>
     </Page.Main>
   );
@@ -272,18 +272,18 @@ function VersionSection({
   );
 
   return (
-    <section className="flex flex-col gap-4">
-      <h2 className="text-grey-00 text-m font-semibold">
+    <section className="flex gap-4 justify-between items-center">
+      <h2 className="text-grey-00 text-h1 font-semibold">
         {t('scenarios:home.versions', {
           count: scenarioIterations.length,
         })}
       </h2>
-      <div className="flex flex-row gap-3">
+      <div className="flex flex-row gap-xs">
         {quickVersion ? <QuickVersionAccess scenarioIteration={quickVersion} /> : null}
         {quickDraft ? <QuickVersionAccess scenarioIteration={quickDraft} /> : null}
         {labelledOtherVersions.length > 0 ? (
           <ScenarioIterationMenu labelledScenarioIteration={labelledOtherVersions}>
-            <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 font-semibold outline-hidden transition-colors">
+            <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 bg-white border border-grey-border rounded-v2-md font-medium px-sm py-xs outline-hidden transition-colors">
               {t('scenarios:home.other_versions', {
                 count: otherVersions.length,
               })}
@@ -311,7 +311,8 @@ function QuickVersionAccess({
         scenarioId: fromUUIDtoSUUID(scenarioIteration.scenarioId),
         iterationId: fromUUIDtoSUUID(scenarioIteration.id),
       })}
-      className="bg-grey-100 border-grey-90 text-grey-00 text-s hover:bg-grey-95 active:bg-grey-90 flex min-w-24 flex-row items-center justify-center gap-1 rounded-full border py-2 transition-colors"
+      className={CtaV2ClassName({ variant: 'secondary' })}
+      // className="bg-grey-100 border-grey-90 text-grey-00 text-s hover:bg-grey-95 active:bg-grey-90 flex min-w-24 flex-row items-center justify-center gap-1 rounded-full border py-2 transition-colors"
     >
       <span className="text-grey-00 text-s font-semibold capitalize">
         {currentFormattedVersion}
@@ -344,11 +345,19 @@ function TestRunSection({
   return (
     <section
       className={clsx(
-        'bg-grey-100 border-grey-90 relative flex h-fit max-w-[500px] flex-col gap-4 rounded-lg border p-8',
+        'bg-grey-100 border-grey-90 relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-md',
         isExecutionOngoing && 'border-purple-65',
       )}
     >
-      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.testrun')}</h3>
+      <div className="flex items-center gap-md">
+        <h3 className="text-grey-00 font-medium">{t('scenarios:home.testrun')}</h3>
+        {isExecutionOngoing ? (
+          <div className="text-grey-100 text-s bg-purple-65 flex h-6 w-fit flex-row items-center gap-1 rounded-v2-md px-2 font-semibold">
+            <Spinner className="size-3" />
+            {t('scenarios:home.execution.batch.ongoing')}
+          </div>
+        ) : null}
+      </div>
 
       {access === 'test' ? (
         <Nudge
@@ -358,32 +367,22 @@ function TestRunSection({
         />
       ) : null}
 
-      {isExecutionOngoing ? (
-        <div className="text-grey-100 text-s bg-purple-65 absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t px-2 font-semibold">
-          <Spinner className="size-3" />
-          {t('scenarios:home.execution.batch.ongoing')}
-        </div>
-      ) : null}
-
       <CalloutV2>{t('scenarios:testrun.description')}</CalloutV2>
 
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-row gap-4 mt-auto">
         <CreateTestRun
           currentScenario={currentScenario}
           scenarioIterations={scenarioIterations}
           atLeastOneActiveTestRun={currentTestRun.length > 0}
         >
-          <Button variant="primary" className="isolate h-10 w-fit">
-            <Icon icon="plus" className="size-6" aria-hidden />
+          <ButtonV2 variant="primary" className="isolate">
+            <Icon icon="plus" className="size-3.5" aria-hidden />
             {t('scenarios:create_testrun.title')}
-          </Button>
+          </ButtonV2>
         </CreateTestRun>
         {currentTestRun.length > 0 ? (
           <Link
-            className={CtaClassName({
-              variant: 'secondary',
-              color: 'grey',
-            })}
+            className={CtaV2ClassName({ variant: 'secondary' })}
             to={getRoute('/scenarios/:scenarioId/test-run/:testRunId', {
               scenarioId: fromUUIDtoSUUID(scenarioId),
               testRunId: fromUUIDtoSUUID(currentTestRun[0]!.id),
@@ -395,7 +394,7 @@ function TestRunSection({
 
         {testRuns.length ? (
           <Link
-            className={CtaClassName({ variant: 'secondary', color: 'grey' })}
+            className={CtaV2ClassName({ variant: 'secondary' })}
             to={getRoute('/scenarios/:scenarioId/test-run', {
               scenarioId: fromUUIDtoSUUID(scenarioId),
             })}
@@ -419,8 +418,8 @@ function RealTimeSection({
   const isLive = liveScenarioIteration !== undefined;
 
   return (
-    <div className="bg-grey-100 border-grey-90 flex h-fit flex-1 flex-col gap-4 rounded-lg border p-8">
-      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.execution.real_time')}</h3>
+    <div className="bg-grey-100 border-grey-90 flex flex-1 flex-col gap-4 rounded-v2-lg border p-md">
+      <h3 className="text-grey-00 font-medium">{t('scenarios:home.execution.real_time')}</h3>
       <CalloutV2>
         <div className="flex flex-col gap-4">
           <span>
@@ -497,17 +496,20 @@ function BatchSection({
   return (
     <div
       className={clsx(
-        'bg-grey-100 border-grey-90 relative flex h-fit flex-1 flex-col gap-4 rounded-lg border p-8',
+        'bg-grey-100 border-grey-90 relative flex flex-1 flex-col gap-4 rounded-v2-lg border p-md',
         isExecutionOngoing && 'border-purple-65',
       )}
     >
-      {isExecutionOngoing ? (
-        <div className="text-grey-100 text-s bg-purple-65 absolute -top-6 start-8 flex h-6 w-fit flex-row items-center gap-1 rounded-t px-2 font-semibold">
-          <Spinner className="size-3" />
-          {t('scenarios:home.execution.batch.ongoing')}
-        </div>
-      ) : null}
-      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.execution.batch')}</h3>
+      <div className="flex items-center gap-md">
+        <h3 className="text-grey-00 font-medium">{t('scenarios:home.execution.batch')}</h3>
+        {isExecutionOngoing ? (
+          <div className="text-grey-100 text-s bg-purple-65 flex h-6 w-fit flex-row items-center gap-1 rounded-v2-md px-2 font-semibold">
+            <Spinner className="size-3" />
+            {t('scenarios:home.execution.batch.ongoing')}
+          </div>
+        ) : null}
+      </div>
+
       <CalloutV2>
         <div className="flex flex-col gap-4">
           <span>{t('scenarios:home.execution.batch.callout')}</span>
@@ -528,7 +530,7 @@ function BatchSection({
         </div>
       </CalloutV2>
 
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-row gap-md mt-auto">
         {isManualTriggerScenarioAvailable && isLive ? (
           <ManualTriggerScenarioExecutionForm
             iterationId={liveScenarioIteration.id}
@@ -536,7 +538,7 @@ function BatchSection({
           />
         ) : null}
         <Link
-          className={CtaClassName({ variant: 'secondary', color: 'grey' })}
+          className={CtaV2ClassName({ variant: 'secondary' })}
           to={getRoute('/scenarios/:scenarioId/scheduled-executions', {
             scenarioId: fromUUIDtoSUUID(scenarioId),
           })}
@@ -581,10 +583,10 @@ function ManualTriggerScenarioExecutionForm({
       }}
     >
       <HiddenInputs iterationId={iterationId} />
-      <Button type="submit" disabled={disabled}>
-        <Icon icon="play" className="size-6 shrink-0" aria-hidden />
+      <ButtonV2 type="submit" disabled={disabled}>
+        <Icon icon="play" className="size-3.5 shrink-0" aria-hidden />
         {t('scenarios:home.execution.batch.trigger_manual_execution')}
-      </Button>
+      </ButtonV2>
     </form>
   );
 }
@@ -606,8 +608,8 @@ function WorkflowSection({
   let tooltip: string | undefined;
 
   return (
-    <section className="bg-grey-100 border-grey-90 relative flex h-fit max-w-[500px] flex-col gap-4 rounded-lg border p-8">
-      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.workflow')}</h3>
+    <section className="bg-grey-100 border-grey-90 relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-md">
+      <h3 className="text-grey-00 font-medium">{t('scenarios:home.workflow')}</h3>
 
       {access === 'test' ? (
         <Nudge
@@ -645,21 +647,18 @@ function WorkflowSection({
         ) : null}
 
         {rulesQuery.isLoading ? (
-          <div className="bg-grey-90 h-10 w-36 animate-pulse rounded-sm flex items-center gap-2 px-4">
-            <div className="bg-grey-80 size-6 animate-pulse rounded-sm" />
+          <div className="bg-grey-90 h-7 w-30 animate-pulse rounded-v2-md flex items-center gap-xs px-sm">
+            <div className="bg-grey-80 size-3.5 animate-pulse rounded-sm" />
             <div className="bg-grey-80 h-4 w-16 animate-pulse rounded-sm" />
           </div>
         ) : (
           <Link
-            className={CtaClassName({
-              variant: isEdit ? 'secondary' : 'primary',
-              color: isEdit ? 'grey' : 'purple',
-            })}
+            className={CtaV2ClassName({ variant: isEdit ? 'secondary' : 'primary' })}
             to={getRoute('/scenarios/:scenarioId/workflow', {
               scenarioId: fromUUIDtoSUUID(scenario.id),
             })}
           >
-            <Icon icon={isEdit ? 'edit-square' : 'plus'} className="size-6" />
+            <Icon icon={isEdit ? 'edit-square' : 'plus'} className="size-3.5" />
             <p>{t(isEdit ? 'scenarios:home.workflow.edit' : 'scenarios:home.workflow.create')}</p>
           </Link>
         )}
@@ -699,21 +698,21 @@ const resources = [
 function ResourcesSection() {
   const { t } = useTranslation(handle.i18n);
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-sm">
       <h2 className="text-grey-00 text-m font-semibold">{t('scenarios:home.resources')}</h2>
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-row gap-sm">
         {resources.map(({ tKey, href, src }) => (
           <a
             key={tKey}
             href={href}
-            className="border-grey-90 hover:border-purple-65 focus:border-purple-65 group flex flex-col overflow-hidden rounded-sm border outline-hidden transition-colors"
+            className="border-grey-90 hover:border-purple-65 focus:border-purple-65 group flex flex-col overflow-hidden rounded-v2-lg border outline-hidden transition-colors"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src={src} alt="" />
-            <span className="border-grey-90 bg-grey-100 text-s group-hover:border-purple-65 group-focus:border-purple-65 flex flex-row items-center justify-between border-t p-4 font-semibold transition-colors">
+            <img src={src} alt="" className="aspect-[21/9] object-cover" />
+            <span className="border-grey-90 bg-grey-100 text-s group-hover:border-purple-65 group-focus:border-purple-65 flex flex-row items-center justify-between border-t p-sm font-medium transition-colors">
               {t(tKey)}
-              <Icon aria-hidden icon="arrow-right" className="size-6" />
+              <Icon aria-hidden icon="arrow-right" className="size-3.5" />
             </span>
           </a>
         ))}

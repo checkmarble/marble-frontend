@@ -1,5 +1,5 @@
 import { Link, useNavigate } from '@remix-run/react';
-import { cva } from 'class-variance-authority';
+import { cva, VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn, Tooltip } from 'ui-design-system';
@@ -75,6 +75,7 @@ function PageDescription({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+// @deprecated
 function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -85,6 +86,21 @@ function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
       {...props}
     />
   );
+}
+
+const PageContentV2ClassName = cva('flex flex-1 flex-col p-l text-default', {
+  variants: {
+    centered: {
+      true: 'mx-auto',
+      false: null,
+    },
+  },
+});
+
+type PageContentV2Props = React.ComponentProps<'div'> & VariantProps<typeof PageContentV2ClassName>;
+
+function PageContentV2({ className, centered, ...props }: PageContentV2Props) {
+  return <div className={PageContentV2ClassName({ centered, className })} {...props} />;
 }
 
 const pageBack = cva(
@@ -136,5 +152,6 @@ export const Page = {
   BackLink: PageBackLink,
   Container: PageContainer,
   Content: PageContent,
+  ContentV2: PageContentV2,
   Description: PageDescription,
 };

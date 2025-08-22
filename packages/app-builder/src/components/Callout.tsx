@@ -60,7 +60,7 @@ export function CalloutV2({
   return (
     <aside
       className={cn(
-        'bg-purple-98 text-s text-purple-65 flex flex-row gap-2 rounded-lg p-4 font-normal',
+        'bg-purple-98 text-s text-purple-65 flex flex-row gap-2 rounded-lg p-4 font-normal items-center',
         className,
       )}
       {...otherProps}

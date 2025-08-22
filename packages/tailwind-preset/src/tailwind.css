@@ -103,6 +103,7 @@
 
   /* Font families */
   --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  /* --font-medium: 500; */
 
   /* Box shadows */
   --shadow-sticky-bottom: 0 -8px 24px rgba(8, 5, 37, 0.06);

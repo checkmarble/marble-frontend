@@ -65,12 +65,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 });
 
 export const CtaV2ClassName = cva(
-  'text-default font-[500] w-fit rounded-v2-md inline-flex items-center gap-xs cursor-pointer outline-hidden transition-colors border border-solid disabled:cursor-default',
+  'text-default font-medium w-fit rounded-v2-md inline-flex items-center gap-xs cursor-pointer outline-hidden transition-colors border border-solid disabled:cursor-default',
   {
     variants: {
       variant: {
         primary:
-          'bg-purple-65 border-purple-65 text-white hover:bg-purple-60 hover:border-purple-60 disabled:bg-purple-82',
+          'bg-purple-65 border-purple-65 text-white hover:bg-purple-60 hover:border-purple-60 disabled:bg-purple-82 disabled:border-purple-82',
         destructive:
           'bg-red-47 border-red-47 text-white hover:bg-red-43 hover:border-red-43 disabled:bg-red-74',
         secondary:
