@@ -11,7 +11,7 @@ import {
 } from 'react-day-picker';
 import { Icon } from 'ui-icons';
 
-import { CtaClassName } from '../Button/Button';
+import { CtaV2ClassName } from '../Button/Button';
 
 export type CalendarProps = PropsBase & (PropsSingle | PropsRange);
 
@@ -35,16 +35,16 @@ export function Calendar({
           'text-grey-00 text-s font-medium capitalize items-center whitespace-nowrap h-10 flex justify-center',
         [UI.Nav]: 'absolute top-0 left-0 right-0',
         [UI.PreviousMonthButton]: clsx(
-          CtaClassName({
+          CtaV2ClassName({
             variant: 'secondary',
-            color: 'grey',
+            mode: 'icon',
           }),
           'size-10 absolute left-0',
         ),
         [UI.NextMonthButton]: clsx(
-          CtaClassName({
+          CtaV2ClassName({
             variant: 'secondary',
-            color: 'grey',
+            mode: 'icon',
           }),
           'size-10 absolute right-0',
         ),
@@ -55,13 +55,13 @@ export function Calendar({
         [UI.Weeks]: 'border-none',
         [UI.Week]: 'flex w-full',
         [UI.Day]: 'flex p-0',
-        [UI.DayButton]: 'size-12 text-s font-medium outline-1 outline-purple-65',
+        [UI.DayButton]: 'size-12 text-default font-medium',
         [SelectionState.selected]: clsx(
           'transition-colors',
-          props.mode === 'single' && 'rounded-sm bg-purple-65 text-grey-100 ',
+          props.mode === 'single' && 'rounded-v2-md bg-purple-65 text-grey-100 ',
         ),
-        [SelectionState.range_start]: 'text-grey-100 bg-purple-65 rounded-s',
-        [SelectionState.range_end]: 'text-grey-100 bg-purple-65 rounded-e',
+        [SelectionState.range_start]: 'text-grey-100 bg-purple-65 rounded-s-v2-md',
+        [SelectionState.range_end]: 'text-grey-100 bg-purple-65 rounded-e-v2-md',
         [SelectionState.range_middle]: 'text-purple-65 bg-purple-98',
         [DayFlag.outside]: 'text-grey-80',
         [DayFlag.disabled]: 'text-grey-90',
