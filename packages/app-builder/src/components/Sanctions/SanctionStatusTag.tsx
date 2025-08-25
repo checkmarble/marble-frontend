@@ -24,7 +24,7 @@ export function SanctionStatusTag({
   className,
 }: {
   status: SanctionCheckStatus;
-  border?: 'rounded' | 'square';
+  border?: 'rounded-sm' | 'square';
   className?: string;
 }) {
   const { t } = useTranslation(sanctionsI18n);

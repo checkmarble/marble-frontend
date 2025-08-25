@@ -331,7 +331,7 @@ function RuleSnoozeDetail() {
         <Icon
           icon="arrow-2-up"
           aria-hidden
-          className="-ml-2 size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180"
+          className="-ml-2 size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-initial:rotate-180"
         />
         <span className="text-s mr-1 first-letter:capitalize">
           {t('scenarios:deployment_modal.activate.with_rule_snooze')}

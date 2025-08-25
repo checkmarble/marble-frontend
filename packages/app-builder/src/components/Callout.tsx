@@ -5,7 +5,7 @@ import { Icon } from 'ui-icons';
 export const variants = ['info', 'error'] as const;
 
 const callout = cva(
-  'text-s text-grey-00 flex flex-row items-center gap-2 rounded p-2 font-normal',
+  'text-s text-grey-00 flex flex-row items-center gap-2 rounded-sm p-2 font-normal',
   {
     variants: {
       /**
@@ -60,7 +60,7 @@ export function CalloutV2({
   return (
     <aside
       className={cn(
-        'bg-purple-98 text-s text-purple-65 flex flex-row gap-2 rounded-lg p-4 font-normal',
+        'bg-purple-98 text-s text-purple-65 flex flex-row gap-2 rounded-lg p-4 font-normal items-center',
         className,
       )}
       {...otherProps}

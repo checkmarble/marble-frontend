@@ -57,7 +57,7 @@ function Content({ children }: { children: React.ReactNode }) {
   if (!isOpened) return null;
 
   return (
-    <div className="bg-grey-00/15 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm font-normal text-s">
+    <div className="bg-grey-00/15 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xs font-normal text-s">
       <div className="bg-grey-98 relative h-[80vh] w-[80vw] flex flex-col rounded-xl shadow-[0_4px_32px_rgba(0,0,0,0.2)]">
         <div className="p-2 flex justify-end">
           <Button

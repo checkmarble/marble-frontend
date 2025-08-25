@@ -39,7 +39,7 @@ export const WithIntermediate: StoryFn<typeof Checkbox> = () => {
 
   return (
     <form>
-      <fieldset className="border-grey-80 flex w-fit flex-col gap-4 rounded border p-4">
+      <fieldset className="border-grey-80 flex w-fit flex-col gap-4 rounded-sm border p-4">
         <legend className="text-grey-50 p-2">Fruits</legend>
         <div className="flex flex-row gap-2">
           <Checkbox
@@ -57,7 +57,7 @@ export const WithIntermediate: StoryFn<typeof Checkbox> = () => {
           />
           <Label.Root htmlFor="c1">All fruits</Label.Root>
         </div>
-        <ul className="flex flex-col gap-2 rounded border p-2">
+        <ul className="flex flex-col gap-2 rounded-sm border p-2">
           {fruits.map((fruit) => (
             <li key={fruit}>
               <div className="flex flex-row gap-2">

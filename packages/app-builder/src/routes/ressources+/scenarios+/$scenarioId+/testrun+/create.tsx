@@ -19,7 +19,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
-import { Button, ModalV2, Select, Tooltip } from 'ui-design-system';
+import { Button, ButtonV2, ModalV2, Select, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -131,10 +131,10 @@ export function CreateTestRun({
 
   return (
     <Tooltip.Default content={t('scenarios:testrun.not_allowed')}>
-      <Button disabled variant="primary" className="isolate h-10 w-fit cursor-not-allowed">
-        <Icon icon="plus" className="size-6" aria-hidden />
+      <ButtonV2 disabled variant="primary" className="isolate cursor-not-allowed">
+        <Icon icon="plus" className="size-3.5" aria-hidden />
         {t('scenarios:create_testrun.title')}
-      </Button>
+      </ButtonV2>
     </Tooltip.Default>
   );
 }
@@ -193,7 +193,7 @@ function CreateTestRunToContent({
       <ModalV2.Title>{t('scenarios:create_testrun.title')}</ModalV2.Title>
       <div className="flex flex-col gap-6 p-6">
         <ModalV2.Description render={<Callout variant="outlined" />}>
-          <p className="whitespace-pre text-wrap">
+          <p className="whitespace-pre-wrap">
             <Trans
               t={t}
               i18nKey="scenarios:create_testrun.callout"

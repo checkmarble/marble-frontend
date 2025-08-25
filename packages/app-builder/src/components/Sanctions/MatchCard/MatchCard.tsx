@@ -33,11 +33,11 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
       <CollapsibleV2.Provider defaultOpen={defaultOpen}>
         <div className="bg-grey-98 col-span-full grid grid-cols-subgrid rounded-md">
           <div className="col-span-full flex items-center justify-between gap-2 px-4 py-3">
-            <CollapsibleV2.Title className="focus-visible:text-purple-65 group flex grow items-center gap-2 rounded outline-none transition-colors">
+            <CollapsibleV2.Title className="focus-visible:text-purple-65 group flex grow items-center gap-2 rounded-sm outline-hidden transition-colors">
               <Icon
                 icon="smallarrow-up"
                 aria-hidden
-                className="size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-[initial]:rotate-180 rtl:-rotate-90 rtl:group-aria-expanded:-rotate-180 rtl:group-data-[initial]:-rotate-180"
+                className="size-5 rotate-90 transition-transform duration-200 group-aria-expanded:rotate-180 group-data-initial:rotate-180 rtl:-rotate-90 group-aria-expanded:rtl:-rotate-180 group-data-initial:rtl:-rotate-180"
               />
               <div className="text-s flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="font-semibold">{entity.caption}</span>
@@ -82,7 +82,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
           <CollapsibleV2.Content className="col-span-full">
             <div className="text-s flex flex-col gap-6 p-4">
               {entitySchema === 'person' && entity.datasets?.length ? (
-                <div className="grid grid-cols-[168px,_1fr] gap-2">
+                <div className="grid grid-cols-[168px_1fr] gap-2">
                   <div className="font-bold">{t('sanctions:match.datasets.title')}</div>
                   <div>
                     <ul>

@@ -4,7 +4,7 @@ import { parseUnknownData } from '@app-builder/utils/parse';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, cn } from 'ui-design-system';
+import { ButtonV2, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { FormatData } from '../FormatData';
@@ -29,7 +29,7 @@ export function ClientObjectDataList({
   const shouldShowButton = tableModel.fields.some((f) => !f.displayed);
 
   return (
-    <div className={cn('grid grid-cols-[116px,_1fr] gap-x-3 gap-y-2', className)}>
+    <div className={cn('grid grid-cols-[116px_1fr] gap-x-3 gap-y-2', className)}>
       {tableModel.options.fieldOrder.map((fieldId) => {
         const field = tableModel.fields.find((f) => f.id === fieldId);
         if (!field) return null;
@@ -46,15 +46,10 @@ export function ClientObjectDataList({
       })}
 
       {shouldShowButton && !isIncompleteObject ? (
-        <Button
-          size="small"
-          variant="secondary"
-          className="mt-3"
-          onClick={() => setIsExpanded((e) => !e)}
-        >
+        <ButtonV2 variant="secondary" className="mt-3" onClick={() => setIsExpanded((e) => !e)}>
           {t(`cases:case_detail.pivot_panel.${isExpanded ? 'less_data' : 'more_data'}`)}
-          <Icon icon={isExpanded ? 'minus' : 'plus'} className="size-4" />
-        </Button>
+          <Icon icon={isExpanded ? 'minus' : 'plus'} className="size-3.5" />
+        </ButtonV2>
       ) : null}
     </div>
   );

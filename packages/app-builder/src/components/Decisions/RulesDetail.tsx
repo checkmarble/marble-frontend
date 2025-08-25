@@ -74,7 +74,7 @@ export function RuleExecutionDetail({
 
   if (!currentRule || !currentRule.formula) {
     return (
-      <p className="bg-red-95 text-s text-red-47 flex h-8 items-center justify-center rounded px-2 py-1 font-medium">
+      <p className="bg-red-95 text-s text-red-47 flex h-8 items-center justify-center rounded-sm px-2 py-1 font-medium">
         {t('decisions:rules.error.not_found')}
       </p>
     );
@@ -83,7 +83,7 @@ export function RuleExecutionDetail({
   return (
     <>
       <div className="flex w-full items-center justify-between gap-2">
-        <div className="bg-purple-96 text-s text-purple-65 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded px-2 font-normal">
+        <div className="bg-purple-96 text-s text-purple-65 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded-sm px-2 font-normal">
           <Trans
             t={t}
             i18nKey="scenarios:rules.consequence.score_modifier"

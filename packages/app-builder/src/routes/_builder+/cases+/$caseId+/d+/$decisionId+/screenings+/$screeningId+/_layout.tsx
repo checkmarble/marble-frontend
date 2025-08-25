@@ -58,7 +58,7 @@ export const handle = {
           >
             <span className="line-clamp-2 text-start">{t('cases:case.page_title')}</span>
           </BreadCrumbLink>
-          <span className="text-s border-grey-90 text-grey-50 inline-flex gap-2 rounded border px-2 font-normal">
+          <span className="text-s border-grey-90 text-grey-50 inline-flex gap-2 rounded-sm border px-2 font-normal">
             <span className="font-medium">ID</span>
             <span className="text-rtl max-w-20 truncate">{caseDetail.id}</span>
           </span>
@@ -156,7 +156,7 @@ export default function CaseSanctionReviewPage() {
       </Page.Header>
       <div className="flex size-full flex-col overflow-hidden">
         <Page.Container>
-          <Page.Content className="max-w-screen-xl">
+          <Page.Content className="max-w-(--breakpoint-xl)">
             <nav>
               <ul className="bg-grey-100 border-grey-90 inline-flex flex-row gap-2 rounded-lg border p-1">
                 <li>

@@ -134,7 +134,7 @@ function DateRangeFilterFromNowPicker({ title, className }: { title: string; cla
               onFromNowSelect(duration);
             }}
             className={clsx(
-              'text-s bg-grey-100 text-grey-00 border-grey-100 flex h-10 items-center rounded border p-2 outline-none',
+              'text-s bg-grey-100 text-grey-00 border-grey-100 flex h-10 items-center rounded-sm border p-2 outline-hidden',
               'hover:bg-purple-98 active:bg-purple-96 hover:text-purple-65',
               fromNow === duration && 'bg-purple-96 border-purple-65 text-purple-65', // highlight the currently selected
             )}
@@ -173,7 +173,7 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
     return (
       <div className={clsx('m-4 flex h-10 w-full items-center justify-center', className)}>
         <time
-          className="text-s text-grey-00 flex h-10 items-center rounded p-2 outline-none"
+          className="text-s text-grey-00 flex h-10 items-center rounded-sm p-2 outline-hidden"
           dateTime={fromNow}
         >
           {t('filters:up_to', {
@@ -208,7 +208,7 @@ function FormatStaticDate({ date, className }: { date?: string | Date; className
     <time
       dateTime={dateTime}
       className={clsx(
-        'border-grey-90 h-10 w-fit rounded border p-2',
+        'border-grey-90 h-10 w-fit rounded-sm border p-2',
         date ? 'text-grey-00' : 'text-grey-50',
         className,
       )}

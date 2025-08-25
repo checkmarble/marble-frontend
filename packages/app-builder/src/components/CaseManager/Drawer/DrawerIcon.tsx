@@ -17,7 +17,7 @@ type DrawerIconProps = { size: 'small' | 'large' } & VariantProps<typeof drawerI
 
 export function DrawerIcon({ size, active }: DrawerIconProps) {
   return (
-    <span tabIndex={-1} className={clsx('size-5', drawerIconColorVariants({ active }))}>
+    <span tabIndex={-1} className={clsx('size-3.5', drawerIconColorVariants({ active }))}>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
         {size === 'large' ? (
           <path

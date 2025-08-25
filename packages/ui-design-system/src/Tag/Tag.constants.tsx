@@ -9,4 +9,4 @@ export const tagColors = [
   'grey-light',
 ] as const;
 export const tagSize = ['small', 'big'] as const;
-export const tagBorder = ['rounded', 'square'] as const;
+export const tagBorder = ['rounded-sm', 'square'] as const;

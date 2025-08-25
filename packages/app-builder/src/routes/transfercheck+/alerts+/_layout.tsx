@@ -22,7 +22,7 @@ export default function AlertsPage() {
 
       <Page.Container>
         <Page.Content className="max-w-3xl">
-          <nav className="bg-grey-100 border-grey-90 w-fit rounded border p-1">
+          <nav className="bg-grey-100 border-grey-90 w-fit rounded-sm border p-1">
             <ul className="flex flex-row gap-2">
               <li>
                 <TabLink

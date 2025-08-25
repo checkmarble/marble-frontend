@@ -103,13 +103,13 @@ const LoaderIcon = (
 const ErrorIcon = (
   <div
     aria-hidden
-    className="animate-circleAnimation after:animate-firstLineAnimation after:bg-grey-100 before:animate-secondLineAnimation before:bg-grey-100 bg-red-47 relative size-5 shrink-0 rotate-45 rounded-full delay-100 before:absolute before:bottom-[9px] before:left-1 before:h-[2px] before:w-3 before:rounded-lg before:delay-150 after:absolute after:bottom-[9px] after:left-1 after:h-[2px] after:w-3 after:rounded-lg after:delay-150"
+    className="animate-circle-animation after:animate-first-line-animation after:bg-grey-100 before:animate-second-line-animation before:bg-grey-100 bg-red-47 relative size-5 shrink-0 rotate-45 rounded-full delay-100 before:absolute before:bottom-[9px] before:left-1 before:h-[2px] before:w-3 before:rounded-lg before:delay-150 after:absolute after:bottom-[9px] after:left-1 after:h-[2px] after:w-3 after:rounded-lg after:delay-150"
   />
 );
 
 const SuccessIcon = (
   <div
     aria-hidden
-    className="animate-circleAnimation after:animate-checkmarkAnimation after:border-grey-100 bg-green-38 relative size-5 shrink-0 rotate-45 rounded-full delay-100 after:absolute after:bottom-[6px] after:left-[6px] after:box-border after:h-[10px] after:w-[6px] after:border-b-2 after:border-r-2 after:border-solid after:delay-200"
+    className="animate-circle-animation after:animate-checkmark-animation after:border-grey-100 bg-green-38 relative size-5 shrink-0 rotate-45 rounded-full delay-100 after:absolute after:bottom-[6px] after:left-[6px] after:box-border after:h-[10px] after:w-[6px] after:border-b-2 after:border-r-2 after:border-solid after:delay-200"
   />
 );

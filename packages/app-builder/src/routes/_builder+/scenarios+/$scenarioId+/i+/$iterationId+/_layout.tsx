@@ -205,7 +205,7 @@ export function VersionSelect({
 
   return (
     <ScenarioIterationMenu labelledScenarioIteration={labelledScenarioIteration}>
-      <MenuButton className="text-s text-grey-00 border-grey-90 focus:border-purple-65 flex min-h-10 items-center justify-between rounded-full border p-2 font-medium outline-none">
+      <MenuButton className="text-s text-grey-00 border-grey-90 focus:border-purple-65 flex min-h-10 items-center justify-between rounded-full border p-2 font-medium outline-hidden">
         <p className="text-s ml-2 flex flex-row gap-1 font-semibold">
           <span className="text-grey-00 capitalize">{currentFormattedVersion}</span>
           {currentFormattedLive ? (

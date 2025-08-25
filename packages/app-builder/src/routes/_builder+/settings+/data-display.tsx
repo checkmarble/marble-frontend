@@ -156,7 +156,7 @@ export default function DataDisplaySettings() {
 
   return (
     <Page.Container>
-      <Page.Content className="max-w-screen-xl">
+      <Page.Content className="max-w-(--breakpoint-xl)">
         <form onSubmit={handleSubmit(form)} className="contents">
           <div className="flex items-center justify-between">
             <div>{t('settings:data_display.global_explanation')}</div>
@@ -213,7 +213,7 @@ const draggableVariants = cva(
   {
     variants: {
       isDragging: {
-        true: 'bg-purple-98 rounded',
+        true: 'bg-purple-98 rounded-sm',
         false: null,
       },
     },
@@ -282,7 +282,7 @@ function TableModelFieldDnD({ options, tableModel, onChange }: TableModelFieldDn
                           className={draggableVariants({ isDragging: snapshot.isDragging })}
                         >
                           <div
-                            className="hover:bg-grey-95 flex size-6 items-center justify-center rounded"
+                            className="hover:bg-grey-95 flex size-6 items-center justify-center rounded-sm"
                             {...dragProvided.dragHandleProps}
                           >
                             <Icon icon="drag" className="text-grey-80 size-3" />

@@ -34,7 +34,7 @@ export const ViewingEvaluationErrors = memo(function ViewingEvaluationErrors({
       {errorModels.map((errorModel, i) => (
         <span
           key={i}
-          className="bg-red-95 text-s text-red-47 flex h-8 items-center justify-center rounded px-2 py-1 font-medium"
+          className="bg-red-95 text-s text-red-47 flex h-8 items-center justify-center rounded-sm px-2 py-1 font-medium"
         >
           {translateError(errorModel)}
         </span>

@@ -21,7 +21,7 @@ export function CasePivotValues({
   const { i18n } = useTranslation(casesI18n);
 
   return (
-    <div className="grid grid-cols-[repeat(2,_max-content)] items-center gap-2">
+    <div className="grid grid-cols-[repeat(2,max-content)] items-center gap-2">
       {pivotValues.map(({ pivot, value }) => {
         return (
           <React.Fragment key={pivot.id}>
@@ -50,7 +50,7 @@ export function CasePivotValues({
                 <Ariakit.Hovercard
                   portal
                   gutter={16}
-                  className="bg-grey-100 border-grey-90 flex w-fit rounded border p-2 shadow-md"
+                  className="bg-grey-100 border-grey-90 flex w-fit rounded-sm border p-2 shadow-md"
                 >
                   <PivotDetails pivot={pivot} />
                 </Ariakit.Hovercard>

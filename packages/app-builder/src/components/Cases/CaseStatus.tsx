@@ -11,7 +11,7 @@ import { casesI18n } from './cases-i18n';
 export const caseStatusBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0', {
   variants: {
     size: {
-      large: 'justify-center rounded p-2 gap-2 text-r font-medium',
+      large: 'justify-center rounded-sm p-2 gap-2 text-r font-medium',
       small: 'gap-1 rounded-full px-2 py-1 text-xs font-normal',
     },
   },

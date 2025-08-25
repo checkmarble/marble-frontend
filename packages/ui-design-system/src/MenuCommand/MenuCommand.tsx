@@ -194,7 +194,7 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
       type="button"
       className={cn(
         clsx([
-          'flex h-10 min-w-[40px] items-center justify-between gap-2 rounded border px-2 outline-none',
+          'flex h-10 min-w-[40px] items-center justify-between gap-2 rounded-sm border px-2 outline-hidden',
           'bg-grey-100 disabled:border-grey-98 disabled:bg-grey-98',
           'border-grey-90 focus:border-purple-65',
         ]),
@@ -216,8 +216,8 @@ function MenuArrow() {
 const contentClassname = cva('flex z-50 text-s', {
   variants: {
     hover: {
-      true: 'max-h-[min(var(--radix-hover-card-content-available-height),_500px)]',
-      false: 'max-h-[min(var(--radix-popover-content-available-height),_500px)]',
+      true: 'max-h-[min(var(--radix-hover-card-content-available-height),500px)]',
+      false: 'max-h-[min(var(--radix-popover-content-available-height),500px)]',
     },
   },
   defaultVariants: {
@@ -228,7 +228,7 @@ const contentClassname = cva('flex z-50 text-s', {
 const commandClassname = cva(
   [
     'flex flex-col z-50 w-full flex-1 overflow-hidden',
-    'bg-grey-100 border-grey-90 rounded border shadow-md outline-none',
+    'bg-grey-100 border-grey-90 rounded-sm border shadow-md outline-hidden',
     'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
     'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
     'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2',
@@ -237,7 +237,7 @@ const commandClassname = cva(
   {
     variants: {
       sameWidth: {
-        true: 'min-w-[var(--radix-popover-trigger-width)]',
+        true: 'min-w-(--radix-popover-trigger-width)',
         false: '',
       },
     },
@@ -364,8 +364,8 @@ const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
       ref={ref}
       className={cn(
         [
-          'aria-selected:bg-purple-98 data-[state=open]:bg-purple-98 aria-[disabled=true]:text-grey-80 outline-none',
-          'flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-sm p-2',
+          'aria-selected:bg-purple-98 data-[state=open]:bg-purple-98 aria-disabled:text-grey-80 outline-hidden',
+          'flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-xs p-2',
         ],
         { '': selected, 'cursor-pointer': props.onSelect && !props.disabled },
         className,

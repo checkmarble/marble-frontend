@@ -54,7 +54,7 @@ const DecisionRuleExecutions = ({ detail }: { detail: Detail }) => {
   }, [detail?.ruleExecutions, showHitOnly]);
 
   return (
-    <div className="flex h-fit flex-[2] flex-col gap-4">
+    <div className="flex h-fit flex-2 flex-col gap-4">
       <div className="flex items-center justify-between">
         <span className="text-m text-grey-00 font-semibold">{t('cases:decisions.rules')}</span>
         <div className="flex flex-row items-center gap-4">
@@ -160,7 +160,7 @@ const DecisionTriggerObject = ({
 
 const DecisionDetailSkeleton = () => (
   <div className="flex flex-row gap-6 p-4">
-    <div className="flex h-fit flex-[2] flex-col gap-2">
+    <div className="flex h-fit flex-2 flex-col gap-2">
       <div className="flex flex-row items-center justify-between gap-2">
         <div className="bg-grey-90 h-4 w-32 animate-pulse rounded-md" />
         <div className="bg-grey-90 h-4 w-32 animate-pulse rounded-md" />

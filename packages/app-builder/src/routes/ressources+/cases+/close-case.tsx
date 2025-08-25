@@ -14,7 +14,7 @@ import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, cn, Modal } from 'ui-design-system';
+import { Button, ButtonV2, cn, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -114,10 +114,10 @@ export const CloseCase = ({ id }: { id: string }) => {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <Button variant="primary" size="medium" className="flex-1 first-letter:capitalize">
-          <Icon icon="save" className="size-5" />
+        <ButtonV2 variant="primary" className="flex-1 first-letter:capitalize">
+          <Icon icon="save" className="size-3.5" />
           {t('cases:case.close')}
-        </Button>
+        </ButtonV2>
       </Modal.Trigger>
       <Modal.Content>
         <Modal.Title>{t('cases:case.close')}</Modal.Title>

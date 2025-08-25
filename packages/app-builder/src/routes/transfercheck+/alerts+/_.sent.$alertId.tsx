@@ -75,7 +75,7 @@ export default function SentAlertDetailPage() {
               color,
               variant: 'contained',
               className:
-                'text-s border-grey-90 flex min-h-[40px] min-w-[40px] items-center justify-between gap-2 rounded border p-2 font-medium',
+                'text-s border-grey-90 flex min-h-[40px] min-w-[40px] items-center justify-between gap-2 rounded-sm border p-2 font-medium',
             })}
           >
             {t(tKey)}

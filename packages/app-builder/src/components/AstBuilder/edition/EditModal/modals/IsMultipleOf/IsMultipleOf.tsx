@@ -55,7 +55,7 @@ export function EditIsMultipleOf(props: Omit<OperandEditModalProps, 'node'>) {
               }}
               validationStatus={getValidationStatus(evaluation, node.namedChildren.value.id)}
             />
-            <div className="border-grey-90 bg-grey-98 flex h-10 w-fit min-w-[40px] items-center justify-center rounded border p-2 text-center">
+            <div className="border-grey-90 bg-grey-98 flex h-10 w-fit min-w-[40px] items-center justify-center rounded-sm border p-2 text-center">
               <span className="text-s text-grey-00 font-medium">
                 {t('scenarios:edit_is_multiple_of.label')}
               </span>

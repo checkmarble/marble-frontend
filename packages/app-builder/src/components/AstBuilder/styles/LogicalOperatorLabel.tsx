@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { useTranslation } from 'react-i18next';
 
 const logicalOperatorClassnames = cva(
-  'flex h-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 border',
+  'flex h-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded-sm p-2 border',
   {
     variants: {
       type: {

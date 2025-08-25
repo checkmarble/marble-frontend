@@ -22,7 +22,7 @@ function SignInWithGoogleButton({ onClick, loading }: { onClick?: () => void; lo
 
   return (
     <button
-      className="relative flex h-10 w-full items-center justify-center rounded border border-grey-90 disabled:cursor-wait gap-2"
+      className="relative flex h-10 w-full items-center justify-center rounded-sm border border-grey-90 disabled:cursor-wait gap-2"
       onClick={onClick}
       disabled={loading}
     >

@@ -38,7 +38,7 @@ export const StringTemplateForm = () => {
               const variable = node.namedChildren[name];
               return (
                 <Fragment key={name}>
-                  <div className="text-s bg-grey-98 text-purple-65 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded p-2 font-semibold">
+                  <div className="text-s bg-grey-98 text-purple-65 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded-sm p-2 font-semibold">
                     <span className="max-w-[140px] truncate" title={name}>
                       {name}
                     </span>

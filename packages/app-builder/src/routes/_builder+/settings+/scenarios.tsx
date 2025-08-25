@@ -121,7 +121,7 @@ export default function Users() {
 
   return (
     <Page.Container>
-      <Page.Content className="max-w-screen-xl">
+      <Page.Content className="max-w-(--breakpoint-xl)">
         <form
           className="flex flex-col gap-8"
           onSubmit={(e) => {

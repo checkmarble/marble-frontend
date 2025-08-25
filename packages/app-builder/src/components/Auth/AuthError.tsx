@@ -16,7 +16,7 @@ export function AuthError({ error, className }: { error: AuthErrors; className?:
   const { t } = useTranslation(authI18n);
   return (
     <p
-      className={clsx('text-m bg-red-95 text-red-47 w-full rounded-sm p-2 font-normal', className)}
+      className={clsx('text-m bg-red-95 text-red-47 w-full rounded-xs p-2 font-normal', className)}
     >
       {t(errorLabels[error])}
     </p>

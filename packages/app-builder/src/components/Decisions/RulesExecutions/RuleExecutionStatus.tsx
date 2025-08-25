@@ -20,7 +20,7 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
   return (
     <div className="inline-flex h-8 gap-1">
       {isHit ? (
-        <span className="bg-purple-96 text-s text-purple-65 flex items-center justify-center rounded p-2 font-semibold">
+        <span className="bg-purple-96 text-s text-purple-65 flex items-center justify-center rounded-sm p-2 font-semibold">
           {formatNumber(ruleExecution.scoreModifier, {
             language,
             signDisplay: 'exceptZero',
@@ -29,7 +29,7 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
       ) : null}
       <span
         className={clsx(
-          'text-s flex flex-1 items-center justify-center rounded p-2 font-semibold capitalize',
+          'text-s flex flex-1 items-center justify-center rounded-sm p-2 font-semibold capitalize',
           isRuleExecutionHit(ruleExecution) && 'bg-green-94 text-green-38',
           getRuleExecutionStatusColor(ruleExecution) === 'grey' && 'bg-grey-90 text-grey-00',
           getRuleExecutionStatusColor(ruleExecution) === 'lavender' && 'text-grey-100 bg-[#AAA6CC]',

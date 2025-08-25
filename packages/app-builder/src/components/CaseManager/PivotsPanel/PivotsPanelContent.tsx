@@ -18,7 +18,7 @@ import { cva } from 'class-variance-authority';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, CtaClassName } from 'ui-design-system';
+import { ButtonV2, CtaClassName, CtaV2ClassName, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DataCard } from './DataCard';
 import { PivotAnnotations } from './PivotAnnotations';
@@ -69,7 +69,7 @@ export function PivotsPanelContent({
   return (
     <div className="flex flex-col gap-8">
       {isAllMissingPivotObject ? (
-        <div className="border-grey-90 flex h-40 flex-col items-center justify-center gap-2 rounded border p-8">
+        <div className="border-grey-90 flex h-40 flex-col items-center justify-center gap-2 rounded-sm border p-8">
           <span className="text-center">
             {isAdmin(currentUser)
               ? t('cases:case_detail.pivot_panel.missing_pivot.admin')
@@ -88,19 +88,25 @@ export function PivotsPanelContent({
       <div className="flex items-center gap-2 mt-4">
         {reviewProofs.length > 0 ? (
           <button
-            onClick={() => setIsDisplayingProofs(true)}
-            className="bg-purple-96 text-purple-65 h-7 px-4 rounded-lg flex items-center"
+            onClick={() => {
+              setIsDisplayingProofs(true);
+              setCurrentPivotObjectUniqKey(null);
+            }}
+            className={cn('h-7 px-4 rounded-lg flex items-center border', {
+              'bg-purple-96 text-purple-65 border-purple-96': isDisplayingProofs,
+              'bg-white text-grey-50 border-grey-90 cursor-pointer': !isDisplayingProofs,
+            })}
           >
             {t('cases:ai_review.proof.title')}
           </button>
         ) : null}
-        <div className="border-grey-90 flex h-12 gap-2 self-start rounded-lg border p-1">
+        <div className="border-grey-90 flex gap-2 self-start rounded-v2-lg border p-xs">
           {pivotObjects.map((pivotObject, idx) => {
             const uniqKey = pivotUniqKey(pivotObject);
             return (
               <button
                 key={uniqKey}
-                className="text-grey-50 aria-[current=true]:bg-purple-96 aria-[current=true]:text-purple-65 rounded p-1 px-4"
+                className="text-grey-50 aria-current:bg-purple-96 aria-current:text-purple-65 rounded-v2-md p-xs px-sm cursor-pointer"
                 aria-current={uniqKey === pivotUniqKey(currentPivotObject)}
                 onClick={() => {
                   setCurrentPivotObjectUniqKey(pivotUniqKey(pivotObject));
@@ -116,20 +122,27 @@ export function PivotsPanelContent({
       {!isDisplayingProofs ? (
         <>
           {currentTable && currentPivotObject ? (
-            <>
-              <PivotObjectDetails
-                tableModel={currentTable}
-                dataModel={dataModel}
-                pivotObject={currentPivotObject}
-              />
-              <PivotNavigationOptions
-                currentUser={currentUser}
-                pivotObject={currentPivotObject}
-                table={currentTable}
-                dataModel={dataModel}
-                onExplore={onExplore}
-              />
-            </>
+            <div className="flex flex-col gap-md">
+              <div className="text-h2 font-semibold">
+                {t('cases:case_detail.pivot_panel.informations')}
+              </div>
+              <div className="border-grey-90 flex flex-col gap-md border p-md bg-grey-background-light rounded-v2-lg">
+                <div className="capitalize font-semibold">{currentTable.name}</div>
+                <PivotObjectDetails
+                  tableModel={currentTable}
+                  dataModel={dataModel}
+                  pivotObject={currentPivotObject}
+                />
+                <div className="h-px bg-grey-90" />
+                <PivotNavigationOptions
+                  currentUser={currentUser}
+                  pivotObject={currentPivotObject}
+                  table={currentTable}
+                  dataModel={dataModel}
+                  onExplore={onExplore}
+                />
+              </div>
+            </div>
           ) : null}
           {currentPivotObject ? (
             <>
@@ -160,7 +173,7 @@ export function PivotsPanelContent({
                 <div className="bg-grey-100 px-4 py-2 rounded-t-xl border-b border-grey-90">
                   {t('cases:ai_review.proof.tab_title', { number: idx + 1 })}
                 </div>
-                <div className="p-4 flex flex-col gap-2">
+                <div className="p-4 flex flex-col gap-md">
                   <ClientObjectDataList tableModel={tableModel} data={proof.object.data} />
                   {navigationOptions ? (
                     <>
@@ -169,12 +182,11 @@ export function PivotsPanelContent({
                         {navigationOptions.map((navOption) => (
                           <div
                             key={navOption.targetTableName}
-                            className="grid grid-cols-[116px,_1fr] gap-x-3"
+                            className="grid grid-cols-[116px_1fr] gap-x-3 items-center"
                           >
                             <div>{navOption.targetTableName}</div>
-                            <Button
+                            <ButtonV2
                               disabled={navOption.status === 'pending'}
-                              size="small"
                               variant="secondary"
                               onClick={() => {
                                 dataModelExplorerContext.startNavigation({
@@ -198,11 +210,11 @@ export function PivotsPanelContent({
                                 ? t('cases:case_detail.pivot_panel.explore_waiting_creation')
                                 : t('cases:case_detail.pivot_panel.explore')}
                               {navOption.status === 'pending' ? (
-                                <Icon icon="spinner" className="size-4 animate-spin" />
+                                <Icon icon="spinner" className="size-3.5 animate-spin" />
                               ) : (
-                                <Icon icon="arrow-up-right" className="size-4" />
+                                <Icon icon="arrow-up-right" className="size-3.5" />
                               )}
-                            </Button>
+                            </ButtonV2>
                           </div>
                         ))}
                       </div>
@@ -245,7 +257,7 @@ function RelatedCases({
     .with({ isError: true }, () => {
       return (
         <DataCard title={t('cases:case_detail.pivot_panel.case_history')}>
-          <div className="border-red-74 bg-red-95 text-red-47 mt-3 rounded border p-2">
+          <div className="border-red-74 bg-red-95 text-red-47 mt-3 rounded-sm border p-2">
             {t('common:global_error')}
           </div>
         </DataCard>
@@ -261,7 +273,10 @@ function RelatedCases({
       }
 
       return (
-        <DataCard borderless title={t('cases:case_detail.pivot_panel.case_history')}>
+        <div className="flex flex-col gap-md">
+          <div className="text-h2 font-semibold">
+            {t('cases:case_detail.pivot_panel.case_history')}
+          </div>
           <div className="grid w-full grid-cols-[auto_1fr_auto_auto]">
             {cases.map((caseObj, idx) => {
               const isLast = idx === cases.length - 1;
@@ -290,7 +305,7 @@ function RelatedCases({
                   <div className={cellVariants({ isLast, className: 'shrink-0' })}>
                     <Link
                       to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseObj.id) })}
-                      className={CtaClassName({ size: 'small', variant: 'secondary' })}
+                      className={CtaV2ClassName({ variant: 'secondary' })}
                     >
                       Open
                     </Link>
@@ -309,7 +324,7 @@ function RelatedCases({
               );
             })}
           </div>
-        </DataCard>
+        </div>
       );
     });
 }
@@ -322,18 +337,19 @@ type PivotObjectDetailsProps = {
 function PivotObjectDetails({ tableModel, dataModel, pivotObject }: PivotObjectDetailsProps) {
   const { t } = useTranslation(['common', 'cases']);
   const { data, relatedObjects } = pivotObject.pivotObjectData;
+  const filteredRelatedObjects = relatedObjects.filter((r) => !!r.relatedObjectDetail?.metadata);
 
   return (
-    <DataCard title={t('cases:case_detail.pivot_panel.informations')} subtitle={tableModel.name}>
-      <div className="mt-3 flex flex-col gap-8">
+    <>
+      <div className="flex flex-col gap-8">
         <ClientObjectDataList
           tableModel={tableModel}
           data={data}
           isIncompleteObject={!pivotObject.isIngested}
         />
-        {relatedObjects ? (
+        {filteredRelatedObjects.length > 0 ? (
           <div className="">
-            {relatedObjects.map((relatedObject) => {
+            {filteredRelatedObjects.map((relatedObject) => {
               if (!relatedObject.relatedObjectDetail?.metadata) return null;
 
               const relatedObjectType = relatedObject.relatedObjectDetail.metadata.objectType;
@@ -357,6 +373,6 @@ function PivotObjectDetails({ tableModel, dataModel, pivotObject }: PivotObjectD
           </div>
         ) : null}
       </div>
-    </DataCard>
+    </>
   );
 }

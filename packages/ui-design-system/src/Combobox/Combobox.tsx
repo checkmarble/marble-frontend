@@ -41,7 +41,7 @@ export const ComboboxPopover = React.forwardRef<HTMLDivElement, Ariakit.Combobox
         fitViewport
         gutter={8}
         className={clsx(
-          'bg-grey-100 border-grey-90 max-h-[min(var(--popover-available-height),_300px)] -translate-y-1 rounded border opacity-0 shadow-md transition-all data-[enter]:translate-y-0 data-[enter]:opacity-100',
+          'bg-grey-100 border-grey-90 max-h-[min(var(--popover-available-height),300px)] -translate-y-1 rounded-sm border opacity-0 shadow-md transition-all data-enter:translate-y-0 data-enter:opacity-100',
           className,
         )}
         {...props}
@@ -57,7 +57,7 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, Ariakit.ComboboxIte
         ref={ref}
         {...props}
         className={clsx(
-          'data-[active-item]:bg-purple-98 hover:bg-purple-98 group flex flex-row items-center gap-2 rounded p-2',
+          'data-active-item:bg-purple-98 hover:bg-purple-98 group flex flex-row items-center gap-2 rounded-sm p-2',
           props.className,
         )}
       />

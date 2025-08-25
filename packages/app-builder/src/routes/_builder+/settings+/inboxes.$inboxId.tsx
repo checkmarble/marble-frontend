@@ -311,7 +311,7 @@ export default function Inbox() {
 
   return (
     <Page.Container>
-      <Page.Content className="max-w-screen-xl">
+      <Page.Content className="max-w-(--breakpoint-xl)">
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:inboxes.inbox_details.title')}</span>
@@ -346,7 +346,7 @@ export default function Inbox() {
                   />
                 ) : null}
               </span>
-              <span className={cn({ 'blur-sm': !isAutoAssignmentAvailable })}>
+              <span className={cn({ 'blur-xs': !isAutoAssignmentAvailable })}>
                 {inbox.autoAssignEnabled
                   ? t('settings:inboxes.inbox_details.auto_assign_enabled')
                   : t('settings:inboxes.inbox_details.auto_assign_disabled')}

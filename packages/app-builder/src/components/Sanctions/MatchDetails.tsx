@@ -53,7 +53,7 @@ export function MatchDetails({ entity }: MatchDetailsProps) {
                 {entity.properties.sanctions.map((sanction) => (
                   <div
                     key={sanction.id}
-                    className="group/sanction bg-grey-100 grid grid-cols-[1fr_20px] gap-2 rounded p-2"
+                    className="group/sanction bg-grey-100 grid grid-cols-[1fr_20px] gap-2 rounded-sm p-2"
                   >
                     <span className="truncate">{sanction.properties['authority']}</span>
                     <Modal.Trigger asChild>

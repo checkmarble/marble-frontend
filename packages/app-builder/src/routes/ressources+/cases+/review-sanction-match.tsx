@@ -122,7 +122,7 @@ export const SanctionCheckReviewModal = ({
             <span className="flex items-center gap-2">
               <Switch name="whitelist" /> {t('sanctions:review_modal.whitelist_label')}
             </span>
-            <div className="border-grey-90 bg-grey-98 flex flex-col gap-2 rounded border p-2">
+            <div className="border-grey-90 bg-grey-98 flex flex-col gap-2 rounded-sm border p-2">
               <span className="font-semibold">
                 {t('sanctions:match.unique_counterparty_identifier')}
               </span>

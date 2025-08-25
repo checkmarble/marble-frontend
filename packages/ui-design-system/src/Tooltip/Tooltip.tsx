@@ -26,8 +26,13 @@ export function DefaultTooltip({
     <TooltipPrimitive.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
       <TooltipPrimitive.Portal>
-        <TooltipPrimitive.Content side="top" align="center" className="z-50 drop-shadow" {...props}>
-          <div className={cn('bg-grey-100 max-h-40 overflow-y-auto rounded p-2', className)}>
+        <TooltipPrimitive.Content
+          side="top"
+          align="center"
+          className="z-50 drop-shadow-sm"
+          {...props}
+        >
+          <div className={cn('bg-grey-100 max-h-40 overflow-y-auto rounded-sm p-2', className)}>
             {content}
           </div>
           {arrow ? (
@@ -53,7 +58,7 @@ const TooltipContent = forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        'border-grey-90 bg-grey-100 text-grey-00 animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 origin-[--radix-tooltip-content-transform-origin] overflow-hidden rounded border p-1.5 text-xs',
+        'border-grey-90 bg-grey-100 text-grey-00 animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 origin-radix-tooltip overflow-hidden rounded-sm border p-1.5 text-xs',
         className,
       )}
       {...props}

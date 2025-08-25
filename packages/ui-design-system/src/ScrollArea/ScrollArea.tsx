@@ -65,7 +65,7 @@ const ScrollAreaViewport = forwardRef<
 >(({ className, ...props }, ref) => (
   <Viewport
     ref={ref}
-    className={clsx('overscroll-x-contain [&>:first-of-type]:!block', className)}
+    className={clsx('overscroll-x-contain [&>:first-of-type]:block!', className)}
     {...props}
   />
 ));
@@ -105,7 +105,7 @@ export const ScrollAreaV2 = forwardRef<ScrollAreaElement, ScrollAreaV2Props>(fun
         {...viewportProps}
         ref={forwardedRef}
         // Override hardcoded style to bypass https://github.com/radix-ui/primitives/issues/926
-        className="size-full overscroll-x-contain [&>:first-of-type]:!block"
+        className="size-full overscroll-x-contain [&>:first-of-type]:block!"
       />
 
       {orientation !== 'vertical' ? (

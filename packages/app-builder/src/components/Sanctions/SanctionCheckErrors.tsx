@@ -6,7 +6,7 @@ export function SanctionCheckErrors({ sanctionCheck }: { sanctionCheck: Sanction
   const { t } = useTranslation(['sanctions']);
 
   return (
-    <div className="text-s bg-red-95 text-red-47 flex items-center gap-4 rounded p-4">
+    <div className="text-s bg-red-95 text-red-47 flex items-center gap-4 rounded-sm p-4">
       <Icon icon="error" className="size-5 shrink-0" />
       <div className="flex flex-col">
         <span className="font-semibold">

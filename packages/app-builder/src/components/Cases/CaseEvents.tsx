@@ -30,7 +30,7 @@ import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { allPass, filter } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, cn } from 'ui-design-system';
+import { ButtonV2, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { casesI18n } from './cases-i18n';
 import { EntityAnnotated } from './Events/EntityAnnotated';
@@ -129,7 +129,7 @@ export function CaseEvents({
       ) : null}
       <div className="bg-grey-100 sticky left-0 top-0 z-[-15] flex w-full items-center justify-between pl-6">
         <span
-          className={cn('text-grey-50 text-xs', {
+          className={cn('text-grey-50 text-small', {
             'text-grey-100': showAll || newerEvents === 0,
           })}
         >
@@ -137,12 +137,10 @@ export function CaseEvents({
         </span>
         <div className="flex items-center gap-2">
           <CaseEventFilters filters={filters} setFilters={setFilters} />
-          <Button variant="secondary" onClick={() => setShowAll(!showAll)} size="xs">
+          <ButtonV2 variant="secondary" onClick={() => setShowAll(!showAll)}>
             <Icon icon={showAll ? 'eye-slash' : 'eye'} className="size-3.5" />
-            <span className="text-xs">
-              {showAll ? t('cases:investigation.collapse') : t('cases:investigation.expand')}
-            </span>
-          </Button>
+            {showAll ? t('cases:investigation.collapse') : t('cases:investigation.expand')}
+          </ButtonV2>
         </div>
       </div>
       <div

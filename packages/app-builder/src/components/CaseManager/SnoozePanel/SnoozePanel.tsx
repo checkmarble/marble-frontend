@@ -94,7 +94,7 @@ export const SnoozePanel = ({
                     >
                       {table && client?.pivotObjectData.data ? (
                         <ClientObjectDataList
-                          className="bg-grey-98 border-grey-95 rounded border p-2"
+                          className="bg-grey-98 border-grey-95 rounded-sm border p-2"
                           tableModel={table}
                           data={client.pivotObjectData.data}
                         />

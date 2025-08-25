@@ -63,7 +63,7 @@ export function PivotsPanel(props: PivotsPanelProps) {
       {drawerContext.isExpanded ? (
         <DataModelExplorer caseId={props.case.id} dataModel={props.dataModel} />
       ) : (
-        <div className="w-[519px] p-8 pt-0">
+        <div className="w-[519px] p-l pt-0">
           <PivotsPanelContent
             currentUser={props.currentUser}
             case={props.case}

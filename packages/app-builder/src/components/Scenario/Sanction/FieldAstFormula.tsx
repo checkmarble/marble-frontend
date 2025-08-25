@@ -63,7 +63,7 @@ export const FieldAstFormula = ({
   return (
     <div onBlur={onBlur} className="flex flex-col gap-4">
       {isAstNull ? (
-        <div className="border-blue-58 bg-blue-96 text-blue-58 text-s flex items-center rounded border p-2">
+        <div className="border-blue-58 bg-blue-96 text-blue-58 text-s flex items-center rounded-sm border p-2">
           <span>
             <Trans
               t={t}

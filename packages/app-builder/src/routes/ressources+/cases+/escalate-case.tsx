@@ -10,7 +10,7 @@ import { type ActionFunctionArgs, redirect } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Modal, Tooltip } from 'ui-design-system';
+import { Button, ButtonV2, Modal, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -121,10 +121,10 @@ export const EscalateCase = ({ id, inboxId }: { id: string; inboxId: string }) =
         }
       >
         <Modal.Trigger asChild>
-          <Button variant="secondary" size="medium" type="button" disabled={!canEscalate}>
-            <Icon icon="arrow-up" className="size-5" aria-hidden />
+          <ButtonV2 variant="secondary" disabled={!canEscalate}>
+            <Icon icon="arrow-up" className="size-3.5" aria-hidden />
             {t('cases:escalate-button.label')}
-          </Button>
+          </ButtonV2>
         </Modal.Trigger>
       </Tooltip.Default>
       <Modal.Content>

@@ -13,7 +13,7 @@ export function ViewingOperator({
 
   const _value = operator !== undefinedAstNodeName && operator !== null ? operator : null;
   return (
-    <div className="bg-grey-98 flex h-10 min-w-[40px] items-center justify-between gap-2 rounded px-2 outline-none">
+    <div className="bg-grey-98 flex h-10 min-w-[40px] items-center justify-between gap-2 rounded-sm px-2 outline-hidden">
       <span className="text-s text-grey-00 w-full text-center font-medium">
         {_value ? getOperatorName(t, _value, isFilter) : '...'}
       </span>

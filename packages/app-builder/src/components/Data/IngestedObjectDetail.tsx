@@ -62,10 +62,10 @@ export const IngestedObjectDetail = ({
       })}
     >
       <div className="text-m col-span-full flex items-center gap-2">
-        <span className="bg-grey-100 border-blue-58 text-blue-58 rounded border px-2 py-1">
+        <span className="bg-grey-100 border-blue-58 text-blue-58 rounded-sm border px-2 py-1">
           ID: {objectId}
         </span>
-        <span className="bg-grey-100 border-grey-50 text-grey-50 rounded border px-2 py-1">
+        <span className="bg-grey-100 border-grey-50 text-grey-50 rounded-sm border px-2 py-1">
           {t('data:last_ingestion_at', {
             date: formatDateTimeWithoutPresets(object.metadata.validFrom, {
               language,
@@ -75,7 +75,7 @@ export const IngestedObjectDetail = ({
           })}
         </span>
       </div>
-      <div className="text-s grid grid-cols-[max-content,_1fr] gap-x-4 gap-y-2 break-all">
+      <div className="text-s grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 break-all">
         {parsedTriggerObject.map(([property, data]) => (
           <Fragment key={property}>
             <span className="font-semibold">{property}</span>

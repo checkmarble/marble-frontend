@@ -108,7 +108,7 @@ const AddRuleOrSanction = ({
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
         align="end"
-        className="bg-grey-100 border-grey-90 z-10 mt-2 flex flex-col gap-2 rounded border p-2"
+        className="bg-grey-100 border-grey-90 z-10 mt-2 flex flex-col gap-2 rounded-sm border p-2"
       >
         <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
         <CreateSanction

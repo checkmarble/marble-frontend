@@ -126,7 +126,7 @@ export default function Tags() {
 
   return (
     <Page.Container>
-      <Page.Content className="max-w-screen-xl">
+      <Page.Content className="max-w-(--breakpoint-xl)">
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:tags')}</span>

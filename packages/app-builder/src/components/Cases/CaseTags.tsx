@@ -38,7 +38,7 @@ export function CaseTag({ tag }: { tag?: Tag }) {
 
   return (
     <div
-      className="bg-grey-95 flex h-6 items-center rounded px-2"
+      className="bg-grey-95 flex h-6 items-center rounded-sm px-2"
       style={{ backgroundColor: tag?.color }}
     >
       <span className="text-grey-00 line-clamp-1 text-xs font-normal">

@@ -156,7 +156,7 @@ export default function Lists() {
         {customList.description ? (
           <Page.Description>{customList.description}</Page.Description>
         ) : null}
-        <Page.Content className="max-w-screen-xl">
+        <Page.Content className="max-w-(--breakpoint-xl)">
           {listValues.length > 0 ? <DownloadAsCSV listId={customList.id} /> : null}
           <UploadAsCsv listId={customList.id} />
           <div className="flex flex-col gap-2 overflow-hidden lg:gap-4">
@@ -228,7 +228,7 @@ const UploadAsCsvDropzone = React.forwardRef<HTMLDivElement, React.ComponentProp
       <div
         ref={ref}
         className={clsx(
-          'text-s flex h-40 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
+          'text-s flex h-40 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
           className,
         )}
         {...props}

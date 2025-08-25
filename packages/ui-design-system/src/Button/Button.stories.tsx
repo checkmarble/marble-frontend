@@ -14,7 +14,7 @@ const Story: Meta<ButtonProps> = {
     disabled: { control: 'boolean' },
     variant: {
       control: { type: 'select' },
-      options: ['primary', 'secondary', 'tertiary', 'outline'],
+      options: ['primary', 'secondary', 'tertiary', 'outline-solid'],
       name: 'Variant',
     },
     color: {

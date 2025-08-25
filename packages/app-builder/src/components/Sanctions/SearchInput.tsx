@@ -11,7 +11,7 @@ export const SearchInputDisplay = ({ searchInput }: SearchInputProps) => {
   const searchInfos = R.map(searchInput, (input) => R.entries(input.properties));
 
   return (
-    <div className="bg-grey-100 border-grey-90 text-s flex flex-col gap-2 rounded border p-2">
+    <div className="bg-grey-100 border-grey-90 text-s flex flex-col gap-2 rounded-sm border p-2">
       {searchInfos.map((value, i) => {
         return (
           <Fragment key={i}>

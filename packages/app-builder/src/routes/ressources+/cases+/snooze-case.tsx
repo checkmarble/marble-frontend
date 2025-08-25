@@ -19,7 +19,7 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Calendar, cn, MenuCommand } from 'ui-design-system';
+import { ButtonV2, Calendar, cn, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -127,9 +127,8 @@ export function SnoozeCase({
     >
       {(field) =>
         field.state.value ? (
-          <Button
+          <ButtonV2
             variant="secondary"
-            size="medium"
             className={cn({
               'bg-purple-96': field.state.value,
             })}
@@ -140,14 +139,14 @@ export function SnoozeCase({
           >
             <Icon icon="snooze-on" className="size-5" aria-hidden />
             {t('cases:unsnooze_case.title')}
-          </Button>
+          </ButtonV2>
         ) : (
           <MenuCommand.Menu open={isOpen} onOpenChange={setIsOpen}>
             <MenuCommand.Trigger>
-              <Button variant="secondary" size="medium">
+              <ButtonV2 variant="secondary">
                 <Icon icon="snooze" className="size-5" aria-hidden />
                 {t('cases:snooze_case.title')}
-              </Button>
+              </ButtonV2>
             </MenuCommand.Trigger>
             <MenuCommand.Content className="mt-2 min-w-[264px]">
               <MenuCommand.List>

@@ -12,7 +12,7 @@ const FilterPopoverContent = forwardRef<
       <Popover.Content
         ref={ref}
         className={clsx(
-          'animate-slideUpAndFade bg-grey-100 border-grey-90 rounded border shadow-md will-change-[transform,opacity]',
+          'animate-slide-up-and-fade bg-grey-100 border-grey-90 rounded-sm border shadow-md will-change-[transform,opacity]',
           className,
         )}
         side="bottom"
@@ -40,7 +40,7 @@ const FilterItemRoot = forwardRef<HTMLDivElement, Popover.PopoverAnchorProps>(fu
   return (
     <FilterPopover.Anchor
       ref={ref}
-      className={clsx('bg-purple-98 flex h-10 flex-row items-center rounded', className)}
+      className={clsx('bg-purple-98 flex h-10 flex-row items-center rounded-sm', className)}
       {...props}
     />
   );
@@ -52,7 +52,7 @@ const FilterItemTrigger = forwardRef<HTMLButtonElement, Popover.PopoverTriggerPr
       <FilterPopover.Trigger
         ref={ref}
         className={clsx(
-          'text-purple-65 focus:border-purple-65 -mr-1 flex h-full flex-row items-center gap-1 rounded border border-solid border-transparent px-2 outline-none',
+          'text-purple-65 focus:border-purple-65 -mr-1 flex h-full flex-row items-center gap-1 rounded-sm border border-solid border-transparent px-2 outline-hidden',
           className,
         )}
         {...props}
@@ -67,7 +67,7 @@ const FilterItemClear = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<'
       <button
         ref={ref}
         className={clsx(
-          'focus:border-purple-65 -ml-1 h-full rounded border border-solid border-transparent px-2 outline-none',
+          'focus:border-purple-65 -ml-1 h-full rounded-sm border border-solid border-transparent px-2 outline-hidden',
           className,
         )}
         {...props}

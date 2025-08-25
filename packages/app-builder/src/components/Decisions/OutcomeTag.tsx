@@ -66,8 +66,8 @@ export const outcomeBadgeVariants = cva('inline-flex items-center w-fit shrink-0
   variants: {
     size: {
       sm: 'gap-1 rounded-full px-2 py-1 text-xs font-normal',
-      md: 'gap-1.5 rounded px-2 py-1.5 text-r font-medium',
-      lg: 'gap-2 rounded px-2 py-2.5 text-r font-medium',
+      md: 'gap-1.5 rounded-sm px-2 py-1.5 text-r font-medium',
+      lg: 'gap-2 rounded-sm px-2 py-2.5 text-r font-medium',
     },
   },
   defaultVariants: {

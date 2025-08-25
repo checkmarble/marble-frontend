@@ -175,13 +175,13 @@ export function DecisionsList({
             <div className="flex w-fit flex-row items-center justify-center gap-2 align-baseline">
               <CaseStatusBadge status={row.original.case.status} size="large" showText={false} />
               <Tooltip.Default content={getValue()}>
-                <div className="bg-grey-98 flex h-8 items-center justify-center rounded px-2">
+                <div className="bg-grey-98 flex h-8 items-center justify-center rounded-sm px-2">
                   <span className="text-grey-00 text-s line-clamp-1 font-normal">{getValue()}</span>
                 </div>
               </Tooltip.Default>
             </div>
           ) : (
-            <span className="bg-grey-98 text-grey-00 text-s flex size-8 items-center justify-center rounded font-normal">
+            <span className="bg-grey-98 text-grey-00 text-s flex size-8 items-center justify-center rounded-sm font-normal">
               {getValue()}
             </span>
           ),

@@ -114,7 +114,7 @@ function UploadFileContent({
         <div
           {...getRootProps()}
           className={clsx(
-            'text-s flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
+            'text-s flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
             isDragActive ? 'bg-purple-96 border-purple-82 opacity-90' : 'border-grey-50',
           )}
         >
@@ -143,7 +143,7 @@ const Loading = ({ className }: { className?: string }) => {
     <div
       className={clsx(
         className,
-        'border-grey-50 flex h-60 flex-col items-center justify-center gap-4 rounded border-2 border-dashed',
+        'border-grey-50 flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
       )}
     >
       {t('common:loading')}

@@ -27,7 +27,7 @@ export const FileAddedDetail = ({ event }: { event: FileAddedEvent }) => {
           components={{
             Actor: <span className="font-bold capitalize" />,
             File: (
-              <span className="border-grey-90 flex items-center gap-1 rounded border px-1.5 py-0.5 text-xs font-medium" />
+              <span className="border-grey-90 flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-medium" />
             ),
           }}
           values={{

@@ -118,7 +118,7 @@ function WorkflowContent() {
               <WorkflowScrollHandler />
               <Page.Main className="h-screen overflow-auto">
                 <Page.Header
-                  className={`gap-4 sticky top-0 z-20 shadow-sm transition-shadow duration-2000 ease-in-out ${scrolled ? 'shadow-md' : ''}`}
+                  className={`gap-4 sticky top-0 z-20 shadow-xs transition-shadow duration-2000 ease-in-out ${scrolled ? 'shadow-md' : ''}`}
                 >
                   <BreadCrumbs />
                 </Page.Header>

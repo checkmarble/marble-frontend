@@ -138,7 +138,7 @@ export function UpdateAlertStatus({ defaultValue }: { defaultValue: UpdateAlertS
                 <Select.Arrow />
               </Select.Trigger>
               <Select.Content
-                className="max-h-60 min-w-[var(--radix-select-trigger-width)]"
+                className="max-h-60 min-w-(--radix-select-trigger-width)"
                 align="start"
               >
                 <Select.Viewport>

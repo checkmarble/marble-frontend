@@ -64,8 +64,8 @@ export function createRightPanel(name: string) {
           ref={ref}
           {...props}
           className={clsx(
-            'bg-grey-100 absolute inset-y-0 end-0 size-full gap-4 overflow-y-scroll p-4 pe-[calc(1rem-var(--scrollbar-width))] shadow lg:gap-6 lg:p-6 lg:pe-[calc(1.5rem-var(--scrollbar-width))]',
-            'rtl:radix-state-open:animate-slideLeftAndFadeIn rtl:radix-state-closed:animate-slideLeftAndFadeOut ltr:radix-state-open:animate-slideRightAndFadeIn ltr:radix-state-closed:animate-slideRightAndFadeOut',
+            'bg-grey-100 absolute inset-y-0 end-0 size-full gap-4 overflow-y-scroll p-4 pe-[calc(1rem-var(--scrollbar-width))] shadow-sm lg:gap-6 lg:p-6 lg:pe-[calc(1.5rem-var(--scrollbar-width))]',
+            'radix-state-open:rtl:animate-slide-left-and-fade-in radix-state-closed:rtl:animate-slide-left-and-fade-out radix-state-open:ltr:animate-slide-right-and-fade-in radix-state-closed:ltr:animate-slide-right-and-fade-out',
             className,
           )}
         />

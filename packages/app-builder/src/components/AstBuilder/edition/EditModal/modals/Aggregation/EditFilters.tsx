@@ -128,7 +128,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                         trigger={
                           <div
                             className={clsx(
-                              'text-s aria-disabled:bg-grey-98 text-grey-00 flex h-10 items-center justify-between rounded border px-2',
+                              'text-s aria-disabled:bg-grey-98 text-grey-00 flex h-10 items-center justify-between rounded-sm border px-2',
                               {
                                 'border-grey-90': filteredFieldErrors.length === 0,
                                 'border-red-47': filteredFieldErrors.length > 0,

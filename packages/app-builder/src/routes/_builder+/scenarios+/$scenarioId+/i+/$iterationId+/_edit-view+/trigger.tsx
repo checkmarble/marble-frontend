@@ -197,7 +197,7 @@ export default function Trigger() {
                           ScenarioIdLabel: <code className="select-none" />,
                           ScenarioIdValue: (
                             <code
-                              className="border-grey-90 cursor-pointer select-none rounded-sm border px-1"
+                              className="border-grey-90 cursor-pointer select-none rounded-xs border px-1"
                               {...getCopyToClipboardProps(scenarioIteration.scenarioId)}
                             />
                           ),
@@ -234,7 +234,7 @@ export default function Trigger() {
         <Collapsible.Title>{t('scenarios:trigger.trigger_object.title')}</Collapsible.Title>
         <Collapsible.Content>
           <Callout variant="outlined" className="mb-4 lg:mb-6">
-            <p className="whitespace-pre text-wrap">
+            <p className="whitespace-pre-wrap">
               <Trans
                 t={t}
                 i18nKey="scenarios:trigger.trigger_object.callout"
@@ -246,7 +246,7 @@ export default function Trigger() {
           </Callout>
           <div className="flex flex-col gap-2 lg:gap-4">
             {isTriggerNull ? (
-              <div className="border-blue-58 bg-blue-96 text-blue-58 flex items-center rounded border p-2">
+              <div className="border-blue-58 bg-blue-96 text-blue-58 flex items-center rounded-sm border p-2">
                 <span>
                   <Trans
                     t={t}

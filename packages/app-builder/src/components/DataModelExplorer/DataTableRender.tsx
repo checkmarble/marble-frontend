@@ -21,7 +21,7 @@ import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { match, P } from 'ts-pattern';
-import { Button, MenuCommand, Popover } from 'ui-design-system';
+import { Button, ButtonV2, MenuCommand, Popover } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { FormatData } from '../FormatData';
 import { ClientObjectAnnotationPopover } from './ClientObjectAnnotationPopover';
@@ -57,7 +57,7 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
 
   if (!currentTable) {
     return (
-      <div className="border-red-47 bg-red-95 text-red-47 mt-3 rounded border p-2">
+      <div className="border-red-47 bg-red-95 text-red-47 mt-3 rounded-sm border p-2">
         {t('common:global_error')}
       </div>
     );
@@ -72,17 +72,21 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
         {sourceTableModel ? (
           <div className="flex flex-col gap-2">
             <span className="text-s font-semibold">{item.sourceTableName}</span>
-            <ClientObjectDataList tableModel={sourceTableModel} data={item.sourceObject} />
+            <div className="bg-grey-background-light border border-grey-border rounded-v2-md p-sm">
+              <ClientObjectDataList tableModel={sourceTableModel} data={item.sourceObject} />
+            </div>
           </div>
         ) : null}
         {filterFieldValue !== item.pivotObject.pivotValue && pivotTableModel ? (
           <div className="col-start-2 flex flex-col gap-2">
             <span className="text-s font-semibold">{item.pivotObject.pivotObjectName}</span>
-            <ClientObjectDataList
-              tableModel={pivotTableModel}
-              data={item.sourceObject}
-              isIncompleteObject={!item.pivotObject.isIngested}
-            />
+            <div className="bg-grey-background-light border border-grey-border rounded-v2-md p-sm">
+              <ClientObjectDataList
+                tableModel={pivotTableModel}
+                data={item.sourceObject}
+                isIncompleteObject={!item.pivotObject.isIngested}
+              />
+            </div>
           </div>
         ) : null}
       </div>
@@ -90,7 +94,7 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
       {match(dataListQuery)
         .with({ isError: true }, () => {
           return (
-            <div className="border-red-47 bg-red-95 text-red-47 mt-3 rounded border p-2">
+            <div className="border-red-47 bg-red-95 text-red-47 mt-3 rounded-sm border p-2">
               {t('common:global_error')}
             </div>
           );
@@ -264,10 +268,10 @@ function DataTable({
         {list.length > 0 ? (
           <MenuCommand.Menu>
             <MenuCommand.Trigger>
-              <Button variant="secondary">
-                <Icon className="size-5" icon="column" />
+              <ButtonV2 variant="secondary">
+                <Icon className="size-3.5" icon="column" />
                 {t('cases:data_explorer.columns')}
-              </Button>
+              </ButtonV2>
             </MenuCommand.Trigger>
             <MenuCommand.Content sideOffset={4} align="start" sameWidth>
               <MenuCommand.List>
@@ -313,7 +317,7 @@ function DataTable({
                     return (
                       <th
                         key={header.id}
-                        className="border-grey-90 border-y px-2 font-normal [&:not(:last-child)]:border-r box-border"
+                        className="border-grey-90 border-y px-2 font-normal not-last:border-r box-border"
                         style={getHeaderStyle(fieldStatistic)}
                       >
                         {header.isPlaceholder
@@ -357,7 +361,7 @@ function DataTable({
                     </td>
                     {row.getVisibleCells().map((cell) => (
                       <td
-                        className="border-grey-90 group-hover:bg-grey-98 border-b [&:not(:last-child)]:border-r"
+                        className="border-grey-90 group-hover:bg-grey-98 border-b not-last:border-r"
                         key={cell.id}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -369,7 +373,7 @@ function DataTable({
             </tbody>
           </table>
         ) : (
-          <div className="border-grey-90 rounded border p-2 text-center">
+          <div className="border-grey-90 rounded-sm border p-2 text-center">
             {t('cases:data_explorer.no_table_data', { tableName: table.name })}
           </div>
         )}
@@ -438,9 +442,9 @@ function DataTableActionsButton({
           </Popover.Content>
           <MenuCommand.Menu>
             <MenuCommand.Trigger>
-              <Button
+              <ButtonV2
                 variant="secondary"
-                size="small"
+                mode={showCommentAction ? 'normal' : 'icon'}
                 className={clsx(
                   'hover:border-purple-65 data-[state=open]:border-purple-65 hover:z-10 data-[state=open]:z-10',
                   {
@@ -448,8 +452,8 @@ function DataTableActionsButton({
                   },
                 )}
               >
-                <Icon icon="more-menu" className="size-4" />
-              </Button>
+                <Icon icon="more-menu" className="size-3.5" />
+              </ButtonV2>
             </MenuCommand.Trigger>
             <MenuCommand.Content
               side="right"

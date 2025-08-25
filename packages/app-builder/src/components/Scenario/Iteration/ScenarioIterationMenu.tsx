@@ -68,7 +68,7 @@ export function ScenarioIterationMenu({
   return (
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue} rtl={i18n.dir() === 'rtl'}>
       {children}
-      <MenuPopover className="flex max-h-[min(400px,_var(--popover-available-height))] flex-col">
+      <MenuPopover className="flex max-h-[min(400px,var(--popover-available-height))] flex-col">
         <ScenarioIterationContent
           searchValue={deferredSearchValue}
           labelledScenarioIteration={scenarioIterations}
@@ -112,7 +112,7 @@ function ScenarioIterationContent({
           {matches.map((iteration) => (
             <MenuItem
               key={iteration.id}
-              className="border-grey-95 bg-grey-100 data-[active-item]:bg-purple-98 data-[active-item]:border-purple-65 flex scroll-my-2 flex-row items-center justify-between gap-2 rounded border p-2 outline-none"
+              className="border-grey-95 bg-grey-100 data-active-item:bg-purple-98 data-active-item:border-purple-65 flex scroll-my-2 flex-row items-center justify-between gap-2 rounded-sm border p-2 outline-hidden"
               render={<Link to={iteration.linkTo} />}
             >
               <span className="text-s flex flex-row gap-1 font-semibold">

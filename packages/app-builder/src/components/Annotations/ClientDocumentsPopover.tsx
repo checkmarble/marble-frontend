@@ -105,7 +105,7 @@ export function ClientDocumentsPopover({
                     {field.state.value.map((file) => (
                       <div
                         key={file.name}
-                        className="border-grey-90 flex max-w-24 items-center gap-1 rounded border px-1.5 py-0.5"
+                        className="border-grey-90 flex max-w-24 items-center gap-1 rounded-sm border px-1.5 py-0.5"
                       >
                         <span className="truncate text-xs font-medium">{file.name}</span>
                         <Icon
@@ -150,7 +150,7 @@ export function ClientDocumentsPopover({
 
               return (
                 <div key={document.id} className="flex flex-col">
-                  <div className="has-[button[data-delete]:hover]:bg-red-95 relative z-0 flex flex-col rounded">
+                  <div className="has-[button[data-delete]:hover]:bg-red-95 relative z-0 flex flex-col rounded-sm">
                     {files.map((file, idx) => (
                       <div
                         key={file.id}

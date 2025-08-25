@@ -161,7 +161,7 @@ export function ErrorBoundary() {
   captureRemixErrorBoundaryError(error);
 
   return (
-    <div className="from-purple-96 to-grey-98 flex size-full flex-col items-center bg-gradient-to-r">
+    <div className="from-purple-96 to-grey-98 flex size-full flex-col items-center bg-linear-to-r">
       <div className="flex size-full flex-col items-center bg-no-repeat">
         <div className="flex h-full max-h-80 flex-col justify-center">
           <Link to={getRoute('/sign-in')}>

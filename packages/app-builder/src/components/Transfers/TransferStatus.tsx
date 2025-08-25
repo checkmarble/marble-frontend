@@ -19,7 +19,7 @@ interface TransferStatusButtonProps {
 }
 
 const transferStatusRadioButtonVariants = cva(
-  'border-grey-90 flex cursor-pointer rounded border p-4 font-medium transition peer-focus:outline peer-focus:outline-2 peer-focus:outline-purple-65',
+  'border-grey-90 flex cursor-pointer rounded-sm border p-4 font-medium transition peer-focus:outline-solid peer-focus:outline-2 peer-focus:outline-purple-65',
   {
     variants: {
       status: {
@@ -55,7 +55,7 @@ export function TransferStatusRadioButton({
       <label htmlFor={value} className={transferStatusRadioButtonVariants({ status: value })}>
         {t(`transfercheck:transfer_detail.status.${value}`)}
       </label>
-      <span className="peer-checked:border-purple-65 pointer-events-none absolute -inset-px rounded border-2 border-transparent transition-colors" />
+      <span className="peer-checked:border-purple-65 pointer-events-none absolute -inset-px rounded-sm border-2 border-transparent transition-colors" />
       <Icon
         icon="tick"
         className="text-grey-100 bg-purple-65 absolute right-0 top-0 hidden size-4 -translate-y-1/2 translate-x-1/2 rounded-full peer-checked:block"

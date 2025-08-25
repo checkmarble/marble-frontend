@@ -22,7 +22,7 @@ import { serialize } from 'object-to-formdata';
 import { toggle, tryit } from 'radash';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
@@ -174,7 +174,7 @@ export function AddComment({ caseId }: { caseId: string }) {
               onBlur={field.handleBlur}
               name={field.name}
               placeholder={t('cases:case_detail.add_a_comment.placeholder')}
-              className="form-textarea text-s w-full resize-none border-none bg-transparent outline-none"
+              className="form-textarea text-s w-full resize-none border-none bg-transparent outline-hidden"
             />
           )}
         </form.Field>
@@ -183,13 +183,13 @@ export function AddComment({ caseId }: { caseId: string }) {
             <div>
               <input {...getInputProps()} />
               <div className="flex items-center gap-2">
-                <Button type="button" variant="secondary" size="icon" {...getRootProps()}>
-                  <Icon icon="attachment" className="text-grey-50 size-5" />
-                </Button>
+                <ButtonV2 type="button" variant="secondary" mode="icon" {...getRootProps()}>
+                  <Icon icon="attachment" className="text-grey-50 size-3.5" />
+                </ButtonV2>
                 {field.state.value.map((file) => (
                   <div
                     key={file.name}
-                    className="border-grey-90 flex items-center gap-1 rounded border px-1.5 py-0.5"
+                    className="border-grey-90 flex items-center gap-1 rounded-sm border px-1.5 py-0.5"
                   >
                     <span className="text-xs font-medium">{file.name}</span>
                     <Icon
@@ -210,19 +210,19 @@ export function AddComment({ caseId }: { caseId: string }) {
       </div>
       <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitSuccessful]}>
         {([canSubmit, isSubmitSuccessful]) => (
-          <Button
+          <ButtonV2
             type="submit"
             variant="primary"
-            size="medium"
+            mode="icon"
             aria-label={t('cases:case_detail.add_a_comment.post')}
             disabled={!canSubmit || isSubmitSuccessful}
           >
             {isSubmitSuccessful ? (
-              <Icon icon="spinner" className="size-5 animate-spin" />
+              <Icon icon="spinner" className="size-3.5 animate-spin" />
             ) : (
-              <Icon icon="send" className="size-5" />
+              <Icon icon="send" className="size-3.5" />
             )}
-          </Button>
+          </ButtonV2>
         )}
       </form.Subscribe>
     </form>

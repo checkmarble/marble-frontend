@@ -77,7 +77,7 @@ export default function Cases() {
           <NavLink
             className={({ isActive }) =>
               clsx(
-                'border-grey-90 my-6 flex w-full cursor-pointer flex-row items-center justify-center gap-2 rounded border p-2',
+                'border-grey-90 my-6 flex w-full cursor-pointer flex-row items-center justify-center gap-2 rounded-sm border p-2',
                 isActive
                   ? 'bg-purple-96 text-purple-65'
                   : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
@@ -100,7 +100,7 @@ export default function Cases() {
                     <NavLink
                       className={({ isActive }) =>
                         clsx(
-                          'text-s flex w-full cursor-pointer flex-row items-center rounded p-2 font-medium',
+                          'text-s flex w-full cursor-pointer flex-row items-center rounded-sm p-2 font-medium',
                           isActive
                             ? 'bg-purple-96 text-purple-65'
                             : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',

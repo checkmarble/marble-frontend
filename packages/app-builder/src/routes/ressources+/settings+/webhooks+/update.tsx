@@ -184,7 +184,7 @@ function UpdateWebhookContent({
               <FormErrorOrDescription
                 errors={getFieldErrors(field.state.meta.errors)}
                 description={
-                  <span className="whitespace-pre text-wrap">
+                  <span className="whitespace-pre-wrap">
                     <Trans
                       t={t}
                       i18nKey="settings:webhooks.events_documentation"

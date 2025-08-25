@@ -71,7 +71,7 @@ export function EntityAnnotated({ event }: EntityAnnotatedProps) {
             })
             .with({ type: 'file' }, (annotation) => {
               return (
-                <span className="border-grey-90 ms-2 flex items-center gap-1 rounded border px-1.5 py-0.5 text-xs font-medium">
+                <span className="border-grey-90 ms-2 flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
                   {annotation.payload.files[0]?.filename}
                 </span>
               );

@@ -45,7 +45,7 @@ export function TransferData(props: TransferDataProps) {
               TransferIdLabel: <code className="select-none" />,
               TransferIdValue: (
                 <code
-                  className="border-grey-90 cursor-pointer select-none rounded-sm border px-1"
+                  className="border-grey-90 cursor-pointer select-none rounded-xs border px-1"
                   {...getCopyToClipboardProps(props.partnerTransferId)}
                 />
               ),

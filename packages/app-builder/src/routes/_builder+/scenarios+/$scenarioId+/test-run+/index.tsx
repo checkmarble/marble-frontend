@@ -102,7 +102,7 @@ export default function TestRuns() {
       </Page.Header>
 
       <Page.Container>
-        <Page.Content className="max-w-screen-lg">
+        <Page.Content className="max-w-(--breakpoint-lg)">
           <div className="flex flex-col gap-4">
             <TestRunsFiltersProvider submitTestRunsFilters={setFilters} filterValues={filters}>
               <div className="flex flex-row items-center justify-between">

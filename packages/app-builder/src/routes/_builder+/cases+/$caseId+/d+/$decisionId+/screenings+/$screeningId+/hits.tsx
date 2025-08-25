@@ -29,7 +29,7 @@ export default function CaseSanctionsHitsPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-grey-100 border-grey-90 grid grid-cols-[max-content_2fr_1fr_repeat(3,_max-content)] gap-x-6 gap-y-2 rounded-md border">
+    <div className="bg-grey-100 border-grey-90 grid grid-cols-[max-content_2fr_1fr_repeat(3,max-content)] gap-x-6 gap-y-2 rounded-md border">
       <div className="col-span-full flex flex-row gap-12 p-4">
         <SanctionReviewSection
           sanctionCheck={sanctionCheck}

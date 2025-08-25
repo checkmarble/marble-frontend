@@ -51,7 +51,7 @@ export function EditTimeAdd(props: Omit<OperandEditModalProps, 'node'>) {
   return (
     <OperandEditModalContainer {...props} title={t('scenarios:edit_date.title')} size="small">
       <Callout variant="outlined">
-        <Modal.Description className="whitespace-pre text-wrap">
+        <Modal.Description className="whitespace-pre-wrap">
           <Trans
             t={t}
             i18nKey="scenarios:edit_date.description"

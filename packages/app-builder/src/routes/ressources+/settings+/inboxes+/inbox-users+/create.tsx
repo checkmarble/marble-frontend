@@ -214,7 +214,7 @@ export function CreateInboxUserContent({
                 <MenuCommand.Content
                   sameWidth
                   align="start"
-                  className="min-w-[var(--radix-popover-trigger-width)]"
+                  className="min-w-(--radix-popover-trigger-width)"
                 >
                   <MenuCommand.Combobox
                     placeholder={t('common:search')}
@@ -278,7 +278,7 @@ export function CreateInboxUserContent({
                 <MenuCommand.Content
                   sameWidth
                   align="start"
-                  className="min-w-[var(--radix-popover-trigger-width)]"
+                  className="min-w-(--radix-popover-trigger-width)"
                 >
                   <MenuCommand.List>
                     {inboxUserRoles.map((role) => (

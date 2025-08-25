@@ -336,7 +336,7 @@ export default function SanctionDetail() {
                       defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
-                      className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-none"
+                      className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-hidden"
                       placeholder={t('scenarios:sanction_name_placeholder')}
                     />
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -380,7 +380,7 @@ export default function SanctionDetail() {
                         disabled={editor === 'view'}
                         onChange={(e) => field.handleChange(e.currentTarget.value)}
                         onBlur={field.handleBlur}
-                        className="form-textarea text-grey-50 text-r w-full resize-none border-none bg-transparent font-medium outline-none"
+                        className="form-textarea text-grey-50 text-r w-full resize-none border-none bg-transparent font-medium outline-hidden"
                         placeholder={t('scenarios:sanction_description_placeholder')}
                       />
                       <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -515,7 +515,7 @@ export default function SanctionDetail() {
                 </span>
                 <form.Field name="counterPartyId">
                   {(field) => (
-                    <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded border p-4">
+                    <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
                       <AstBuilder.Provider
                         scenarioId={scenario.id}
                         initialData={options}
@@ -539,9 +539,9 @@ export default function SanctionDetail() {
                   <span className="text-s font-semibold">
                     {t('scenarios:sanction.match_settings.title')}
                   </span>
-                  <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded border p-4">
+                  <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
                     <Callout variant="outlined">
-                      <p className="whitespace-pre text-wrap">
+                      <p className="whitespace-pre-wrap">
                         {t('scenarios:sanction.match_settings.callout')}
                       </p>
                     </Callout>
@@ -559,7 +559,7 @@ export default function SanctionDetail() {
                       </form.Field>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <div className="bg-grey-98 flex flex-col gap-2 rounded p-2">
+                      <div className="bg-grey-98 flex flex-col gap-2 rounded-sm p-2">
                         <form.Field name="query.name">
                           {(field) => {
                             const value = sanctionCheckConfig?.query?.name;
