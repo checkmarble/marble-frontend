@@ -1,14 +1,11 @@
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { CreateListPayload } from '@app-builder/schemas/lists';
+import { useRedirectedMutation } from '@app-builder/utils/redirect/useRedirectedMutation';
 import { getRoute } from '@app-builder/utils/routes';
-import { useMutation } from '@tanstack/react-query';
 
 const endpoint = getRoute('/ressources/lists/create');
 
 export const useCreateListMutation = () => {
-  const navigate = useAgnosticNavigation();
-
-  return useMutation({
+  return useRedirectedMutation({
     mutationKey: ['lists', 'create'],
     mutationFn: async (data: CreateListPayload) => {
       const response = await fetch(endpoint, {
@@ -16,14 +13,7 @@ export const useCreateListMutation = () => {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
-
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
-        return;
-      }
-
-      return result;
+      return response.json();
     },
   });
 };

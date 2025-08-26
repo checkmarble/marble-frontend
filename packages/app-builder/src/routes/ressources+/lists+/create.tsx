@@ -2,12 +2,13 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { createListPayloadSchema } from '@app-builder/schemas/lists';
 import { initServerServices } from '@app-builder/services/init.server';
+import { makeAgnosticAction } from '@app-builder/utils/redirect/agnostic-action';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
+import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import { z } from 'zod/v4';
 
-export async function action({ request }: ActionFunctionArgs) {
+export const action = makeAgnosticAction(async ({ request }: ActionFunctionArgs) => {
   const {
     authService,
     toastSessionService: { getSession, commitSession },
@@ -28,7 +29,7 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     const result = await customListsRepository.createCustomList(data);
 
-    return { redirectTo: getRoute('/lists/:listId', { listId: fromUUIDtoSUUID(result.id) }) };
+    return redirect(getRoute('/lists/:listId', { listId: fromUUIDtoSUUID(result.id) }));
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
@@ -42,4 +43,4 @@ export async function action({ request }: ActionFunctionArgs) {
       { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   }
-}
+});
