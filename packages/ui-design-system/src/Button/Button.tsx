@@ -65,7 +65,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 });
 
 export const CtaV2ClassName = cva(
-  'text-default font-medium w-fit rounded-v2-md inline-flex items-center gap-xs cursor-pointer outline-hidden transition-colors border border-solid disabled:cursor-default',
+  'text-default font-medium w-fit rounded-v2-md inline-flex items-center gap-v2-xs cursor-pointer outline-hidden transition-colors border border-solid disabled:cursor-default',
   {
     variants: {
       variant: {
@@ -77,8 +77,8 @@ export const CtaV2ClassName = cva(
           'bg-white border-grey-border text-grey-00 hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-80',
       },
       mode: {
-        normal: 'px-sm py-xs',
-        icon: 'aspect-square p-xs size-7 justify-center',
+        normal: 'px-v2-sm py-v2-xs',
+        icon: 'aspect-square p-v2-xs size-7 justify-center',
       },
     },
     defaultVariants: {

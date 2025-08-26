@@ -72,7 +72,7 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
         {sourceTableModel ? (
           <div className="flex flex-col gap-2">
             <span className="text-s font-semibold">{item.sourceTableName}</span>
-            <div className="bg-grey-background-light border border-grey-border rounded-v2-md p-sm">
+            <div className="bg-grey-background-light border border-grey-border rounded-v2-md p-v2-sm">
               <ClientObjectDataList tableModel={sourceTableModel} data={item.sourceObject} />
             </div>
           </div>
@@ -80,7 +80,7 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
         {filterFieldValue !== item.pivotObject.pivotValue && pivotTableModel ? (
           <div className="col-start-2 flex flex-col gap-2">
             <span className="text-s font-semibold">{item.pivotObject.pivotObjectName}</span>
-            <div className="bg-grey-background-light border border-grey-border rounded-v2-md p-sm">
+            <div className="bg-grey-background-light border border-grey-border rounded-v2-md p-v2-sm">
               <ClientObjectDataList
                 tableModel={pivotTableModel}
                 data={item.sourceObject}

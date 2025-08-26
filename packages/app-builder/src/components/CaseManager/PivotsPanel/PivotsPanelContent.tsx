@@ -100,13 +100,13 @@ export function PivotsPanelContent({
             {t('cases:ai_review.proof.title')}
           </button>
         ) : null}
-        <div className="border-grey-90 flex gap-2 self-start rounded-v2-lg border p-xs">
+        <div className="border-grey-90 flex gap-2 self-start rounded-v2-lg border p-v2-xs">
           {pivotObjects.map((pivotObject, idx) => {
             const uniqKey = pivotUniqKey(pivotObject);
             return (
               <button
                 key={uniqKey}
-                className="text-grey-50 aria-current:bg-purple-96 aria-current:text-purple-65 rounded-v2-md p-xs px-sm cursor-pointer"
+                className="text-grey-50 aria-current:bg-purple-96 aria-current:text-purple-65 rounded-v2-md p-v2-xs px-v2-sm cursor-pointer"
                 aria-current={uniqKey === pivotUniqKey(currentPivotObject)}
                 onClick={() => {
                   setCurrentPivotObjectUniqKey(pivotUniqKey(pivotObject));
@@ -122,11 +122,11 @@ export function PivotsPanelContent({
       {!isDisplayingProofs ? (
         <>
           {currentTable && currentPivotObject ? (
-            <div className="flex flex-col gap-md">
+            <div className="flex flex-col gap-v2-md">
               <div className="text-h2 font-semibold">
                 {t('cases:case_detail.pivot_panel.informations')}
               </div>
-              <div className="border-grey-90 flex flex-col gap-md border p-md bg-grey-background-light rounded-v2-lg">
+              <div className="border-grey-90 flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
                 <div className="capitalize font-semibold">{currentTable.name}</div>
                 <PivotObjectDetails
                   tableModel={currentTable}
@@ -173,7 +173,7 @@ export function PivotsPanelContent({
                 <div className="bg-grey-100 px-4 py-2 rounded-t-xl border-b border-grey-90">
                   {t('cases:ai_review.proof.tab_title', { number: idx + 1 })}
                 </div>
-                <div className="p-4 flex flex-col gap-md">
+                <div className="p-4 flex flex-col gap-v2-md">
                   <ClientObjectDataList tableModel={tableModel} data={proof.object.data} />
                   {navigationOptions ? (
                     <>
@@ -273,7 +273,7 @@ function RelatedCases({
       }
 
       return (
-        <div className="flex flex-col gap-md">
+        <div className="flex flex-col gap-v2-md">
           <div className="text-h2 font-semibold">
             {t('cases:case_detail.pivot_panel.case_history')}
           </div>
