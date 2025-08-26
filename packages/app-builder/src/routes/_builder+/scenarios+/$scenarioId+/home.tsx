@@ -176,11 +176,11 @@ export default function ScenarioHome() {
         {currentScenario.description ? (
           <Page.Description>{currentScenario.description}</Page.Description>
         ) : null}
-        <Page.ContentV2 centered className="flex flex-col gap-l w-225">
+        <Page.ContentV2 centered className="flex flex-col gap-v2-lg w-225">
           <VersionSection scenarioIterations={scenarioIterations} />
-          <section className="flex flex-col gap-sm">
+          <section className="flex flex-col gap-v2-sm">
             <h2 className="text-grey-00 text-m font-semibold">{t('scenarios:home.execution')}</h2>
-            <div className="grid max-w-[1000px] grid-cols-2 gap-sm">
+            <div className="grid max-w-[1000px] grid-cols-2 gap-v2-sm">
               <RealTimeSection
                 scenarioId={currentScenario.id}
                 liveScenarioIteration={liveScenarioIteration}
@@ -278,12 +278,12 @@ function VersionSection({
           count: scenarioIterations.length,
         })}
       </h2>
-      <div className="flex flex-row gap-xs">
+      <div className="flex flex-row gap-v2-xs">
         {quickVersion ? <QuickVersionAccess scenarioIteration={quickVersion} /> : null}
         {quickDraft ? <QuickVersionAccess scenarioIteration={quickDraft} /> : null}
         {labelledOtherVersions.length > 0 ? (
           <ScenarioIterationMenu labelledScenarioIteration={labelledOtherVersions}>
-            <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 bg-white border border-grey-border rounded-v2-md font-medium px-sm py-xs outline-hidden transition-colors">
+            <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 bg-white border border-grey-border rounded-v2-md font-medium px-v2-sm py-v2-xs outline-hidden transition-colors">
               {t('scenarios:home.other_versions', {
                 count: otherVersions.length,
               })}
@@ -345,11 +345,11 @@ function TestRunSection({
   return (
     <section
       className={clsx(
-        'bg-grey-100 border-grey-90 relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-md',
+        'bg-grey-100 border-grey-90 relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-v2-md',
         isExecutionOngoing && 'border-purple-65',
       )}
     >
-      <div className="flex items-center gap-md">
+      <div className="flex items-center gap-v2-md">
         <h3 className="text-grey-00 font-medium">{t('scenarios:home.testrun')}</h3>
         {isExecutionOngoing ? (
           <div className="text-grey-100 text-s bg-purple-65 flex h-6 w-fit flex-row items-center gap-1 rounded-v2-md px-2 font-semibold">
@@ -418,7 +418,7 @@ function RealTimeSection({
   const isLive = liveScenarioIteration !== undefined;
 
   return (
-    <div className="bg-grey-100 border-grey-90 flex flex-1 flex-col gap-4 rounded-v2-lg border p-md">
+    <div className="bg-grey-100 border-grey-90 flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md">
       <h3 className="text-grey-00 font-medium">{t('scenarios:home.execution.real_time')}</h3>
       <CalloutV2>
         <div className="flex flex-col gap-4">
@@ -496,11 +496,11 @@ function BatchSection({
   return (
     <div
       className={clsx(
-        'bg-grey-100 border-grey-90 relative flex flex-1 flex-col gap-4 rounded-v2-lg border p-md',
+        'bg-grey-100 border-grey-90 relative flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md',
         isExecutionOngoing && 'border-purple-65',
       )}
     >
-      <div className="flex items-center gap-md">
+      <div className="flex items-center gap-v2-md">
         <h3 className="text-grey-00 font-medium">{t('scenarios:home.execution.batch')}</h3>
         {isExecutionOngoing ? (
           <div className="text-grey-100 text-s bg-purple-65 flex h-6 w-fit flex-row items-center gap-1 rounded-v2-md px-2 font-semibold">
@@ -530,7 +530,7 @@ function BatchSection({
         </div>
       </CalloutV2>
 
-      <div className="flex flex-row gap-md mt-auto">
+      <div className="flex flex-row gap-v2-md mt-auto">
         {isManualTriggerScenarioAvailable && isLive ? (
           <ManualTriggerScenarioExecutionForm
             iterationId={liveScenarioIteration.id}
@@ -608,7 +608,7 @@ function WorkflowSection({
   let tooltip: string | undefined;
 
   return (
-    <section className="bg-grey-100 border-grey-90 relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-md">
+    <section className="bg-grey-100 border-grey-90 relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-v2-md">
       <h3 className="text-grey-00 font-medium">{t('scenarios:home.workflow')}</h3>
 
       {access === 'test' ? (
@@ -647,7 +647,7 @@ function WorkflowSection({
         ) : null}
 
         {rulesQuery.isLoading ? (
-          <div className="bg-grey-90 h-7 w-30 animate-pulse rounded-v2-md flex items-center gap-xs px-sm">
+          <div className="bg-grey-90 h-7 w-30 animate-pulse rounded-v2-md flex items-center gap-v2-xs px-v2-sm">
             <div className="bg-grey-80 size-3.5 animate-pulse rounded-sm" />
             <div className="bg-grey-80 h-4 w-16 animate-pulse rounded-sm" />
           </div>
@@ -698,9 +698,9 @@ const resources = [
 function ResourcesSection() {
   const { t } = useTranslation(handle.i18n);
   return (
-    <section className="flex flex-col gap-sm">
+    <section className="flex flex-col gap-v2-sm">
       <h2 className="text-grey-00 text-m font-semibold">{t('scenarios:home.resources')}</h2>
-      <div className="flex flex-row gap-sm">
+      <div className="flex flex-row gap-v2-sm">
         {resources.map(({ tKey, href, src }) => (
           <a
             key={tKey}
@@ -710,7 +710,7 @@ function ResourcesSection() {
             rel="noopener noreferrer"
           >
             <img src={src} alt="" className="aspect-[21/9] object-cover" />
-            <span className="border-grey-90 bg-grey-100 text-s group-hover:border-purple-65 group-focus:border-purple-65 flex flex-row items-center justify-between border-t p-sm font-medium transition-colors">
+            <span className="border-grey-90 bg-grey-100 text-s group-hover:border-purple-65 group-focus:border-purple-65 flex flex-row items-center justify-between border-t p-v2-sm font-medium transition-colors">
               {t(tKey)}
               <Icon aria-hidden icon="arrow-right" className="size-3.5" />
             </span>

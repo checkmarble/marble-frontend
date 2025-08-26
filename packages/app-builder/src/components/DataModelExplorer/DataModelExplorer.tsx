@@ -183,7 +183,7 @@ function DataModelExplorerTab(props: {
     <button
       aria-current={props.current}
       type="button"
-      className="group/tab text-default text-grey-50 aria-current:bg-purple-96 aria-current:text-purple-65 relative inline-flex items-center gap-2 rounded-v2-md px-sm py-xs"
+      className="group/tab text-default text-grey-50 aria-current:bg-purple-96 aria-current:text-purple-65 relative inline-flex items-center gap-2 rounded-v2-md px-v2-sm py-v2-xs"
       onClick={props.onClick}
     >
       {props.label}

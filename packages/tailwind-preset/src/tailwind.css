@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@plugin "tailwindcss-radix";
+
 @theme {
   /* Reset all default colors from tailwind */
   --color-*: initial;
@@ -58,14 +60,14 @@
   --color-orange-87: oklch(88.69% 0.06019174087690467 32.301452587972335);
   --color-orange-95: oklch(95.66% 0.022279930128345612 38.33533240178478);
 
-  --spacing-xxxl: 3rem;
-  --spacing-xxl: 2.5rem;
-  --spacing-xl: 2rem;
-  --spacing-l: 1.5rem;
-  --spacing-md: 1rem;
-  --spacing-sm: 0.5rem;
-  --spacing-xs: 0.25rem;
-  --spacing-xxs: 0.125rem;
+  --spacing-v2-xxxl: 3rem;
+  --spacing-v2-xxl: 2.5rem;
+  --spacing-v2-xl: 2rem;
+  --spacing-v2-lg: 1.5rem;
+  --spacing-v2-md: 1rem;
+  --spacing-v2-sm: 0.5rem;
+  --spacing-v2-xs: 0.25rem;
+  --spacing-v2-xxs: 0.125rem;
 
   --radius-v2-xxl: 1.5rem;
   --radius-v2-xl: 1rem;

@@ -79,15 +79,15 @@ export const CaseDetails = ({
   return (
     <div
       ref={containerRef}
-      className="relative flex w-full min-w-0 flex-col gap-l overflow-y-scroll bg-white pb-l"
+      className="relative flex w-full min-w-0 flex-col gap-v2-lg overflow-y-scroll bg-white pb-v2-lg"
     >
       <div ref={sentinelRef} className="absolute left-0 top-0" />
       <div
-        className={cn('bg-inherit sticky top-0 z-10 flex flex-col gap-4 px-l pt-l', {
+        className={cn('bg-inherit sticky top-0 z-10 flex flex-col gap-4 px-v2-lg pt-v2-lg', {
           'border-b-grey-90 border-b': !intersection?.isIntersecting,
         })}
       >
-        <div className="flex shrink-0 justify-between gap-xs">
+        <div className="flex shrink-0 justify-between gap-v2-xs">
           <EditCaseName name={detail.name} id={detail.id} />
           <div className="flex shrink-0 items-center gap-2">
             {detail.status !== 'closed' ? (
@@ -131,11 +131,11 @@ export const CaseDetails = ({
         ) : null}
       </div>
 
-      <div className="px-l flex flex-col gap-l">
+      <div className="px-v2-lg flex flex-col gap-v2-lg">
         {selectedTab === 'caseDetails' ? (
           <>
             {/* Case details */}
-            <div className="border-grey-90 text-small flex flex-col gap-2 border p-md bg-grey-background-light rounded-v2-lg">
+            <div className="border-grey-90 text-small flex flex-col gap-2 border p-v2-md bg-grey-background-light rounded-v2-lg">
               <div className="grid grid-cols-[170px_1fr] items-center">
                 <span className="text-grey-50 font-normal">{t('cases:case.status')}</span>
                 <CaseStatusBadge status={detail.status} outcome={detail.outcome} />
@@ -212,7 +212,7 @@ export const CaseDetails = ({
             </UploadFile> */}
                 </div>
 
-                <div className="border-grey-90 bg-grey-100 flex flex-wrap gap-sm rounded-v2-lg border p-md">
+                <div className="border-grey-90 bg-grey-100 flex flex-wrap gap-v2-sm rounded-v2-lg border p-v2-md">
                   {detail.files.map((file) => (
                     <CaseFile key={file.id} file={file} />
                   ))}

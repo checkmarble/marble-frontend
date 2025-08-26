@@ -32,7 +32,7 @@ function PageHeader({ className, children, ...props }: React.ComponentProps<'div
   return (
     <div
       className={cn(
-        'border-b-grey-90 bg-grey-100 text-l text-grey-00 relative flex shrink-0 flex-row items-center border-b font-bold px-md',
+        'border-b-grey-90 bg-grey-100 text-l text-grey-00 relative flex shrink-0 flex-row items-center border-b font-bold px-v2-md',
         headerHeight({ type: 'height' }),
         className,
       )}
@@ -88,7 +88,7 @@ function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-const PageContentV2ClassName = cva('flex flex-1 flex-col p-l text-default', {
+const PageContentV2ClassName = cva('flex flex-1 flex-col p-v2-lg text-default', {
   variants: {
     centered: {
       true: 'mx-auto',

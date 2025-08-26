@@ -40,10 +40,10 @@ export const CaseAlerts = ({
           decisions ? (
             <div className="text-small border-grey-90 bg-grey-100 rounded-lg border">
               <div className="text-default text-grey-50 grid grid-cols-[82px_2fr_1.3fr_1fr] font-normal">
-                <span className="p-sm">{t('cases:decisions.date')}</span>
-                <span className="p-sm">{t('cases:decisions.alert')}</span>
-                <span className="p-sm">{t('cases:decisions.trigger_object')}</span>
-                <span className="p-sm">{t('cases:decisions.rule_hits')}</span>
+                <span className="p-v2-sm">{t('cases:decisions.date')}</span>
+                <span className="p-v2-sm">{t('cases:decisions.alert')}</span>
+                <span className="p-v2-sm">{t('cases:decisions.trigger_object')}</span>
+                <span className="p-v2-sm">{t('cases:decisions.rule_hits')}</span>
               </div>
               {decisions.map((decision) => {
                 const triggerObjectOptions = dataModelWithTableOptions.find(
