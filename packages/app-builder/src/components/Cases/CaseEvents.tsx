@@ -5,6 +5,7 @@ import { CaseUnsnoozedDetail } from '@app-builder/components/Cases/Events/CaseUn
 import { CommentAddedDetail } from '@app-builder/components/Cases/Events/CommentAdded';
 import { DecisionAddedDetail } from '@app-builder/components/Cases/Events/DecisionAdded';
 import { DecisionReviewedDetail } from '@app-builder/components/Cases/Events/DecisionReviewed';
+import { EntityAnnotated } from '@app-builder/components/Cases/Events/EntityAnnotated';
 import { FileAddedDetail } from '@app-builder/components/Cases/Events/FileAdded';
 import {
   CaseEventFilters,
@@ -14,6 +15,7 @@ import { InboxChangedDetail } from '@app-builder/components/Cases/Events/InboxCh
 import { NameUpdatedDetail } from '@app-builder/components/Cases/Events/NameUpdated';
 import { OutcomeUpdatedDetail } from '@app-builder/components/Cases/Events/OutcomeUpdated';
 import { RuleSnoozeCreatedDetail } from '@app-builder/components/Cases/Events/RuleSnoozed';
+import { SarCreatedDetail } from '@app-builder/components/Cases/Events/SarCreated';
 import { SarDeletedDetail } from '@app-builder/components/Cases/Events/SarDeleted';
 import { SarFileUploadedDetail } from '@app-builder/components/Cases/Events/SarFileUploaded';
 import { SarStatusChangedDetail } from '@app-builder/components/Cases/Events/SarStatusChanged';
@@ -32,9 +34,6 @@ import { allPass, filter } from 'remeda';
 import { match } from 'ts-pattern';
 import { ButtonV2, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { casesI18n } from './cases-i18n';
-import { EntityAnnotated } from './Events/EntityAnnotated';
-import { SarCreatedDetail } from './Events/SarCreated';
 
 const MAX_EVENTS_BEFORE_DEBOUNCE = 60;
 const EVENT_DELAY = 100;
@@ -48,7 +47,7 @@ export function CaseEvents({
   inboxes: Inbox[];
   root: RefObject<HTMLDivElement>;
 }) {
-  const { t } = useTranslation(casesI18n);
+  const { t } = useTranslation(['common', 'cases']);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showAll, setShowAll] = useState(false);
   const [olderEvents, setOlderEventsCount] = useState(0);

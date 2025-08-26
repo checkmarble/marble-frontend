@@ -1,19 +1,12 @@
+import { AddComment } from '@app-builder/components/Cases/AddComment';
+import { CloseCase } from '@app-builder/components/Cases/CloseCase';
+import { OpenCase } from '@app-builder/components/Cases/OpenCase';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type CurrentUser } from '@app-builder/models';
 import { CaseReview } from '@app-builder/models/cases';
 import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-review-to-case-comments';
 import { useCaseReviewFeedbackMutation } from '@app-builder/queries/case-review-feedback';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
-import { AddComment } from '@app-builder/routes/ressources+/cases+/add-comment';
-import { CloseCase } from '@app-builder/routes/ressources+/cases+/close-case';
-import { EditCaseAssignee } from '@app-builder/routes/ressources+/cases+/edit-assignee';
-import { EditCaseInbox } from '@app-builder/routes/ressources+/cases+/edit-inbox';
-import { EditCaseName } from '@app-builder/routes/ressources+/cases+/edit-name';
-import { EditCaseSuspicion } from '@app-builder/routes/ressources+/cases+/edit-suspicion';
-import { EditCaseTags } from '@app-builder/routes/ressources+/cases+/edit-tags';
-import { EscalateCase } from '@app-builder/routes/ressources+/cases+/escalate-case';
-import { OpenCase } from '@app-builder/routes/ressources+/cases+/open-case';
-import { SnoozeCase } from '@app-builder/routes/ressources+/cases+/snooze-case';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { useLoaderData, useRevalidator } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
@@ -25,7 +18,13 @@ import { CaseAlerts } from './CaseAlerts';
 import { CaseEvents } from './CaseEvents';
 import { CaseFile } from './CaseFile';
 import { CaseStatusBadge } from './CaseStatus';
-import { casesI18n } from './cases-i18n';
+import { EditCaseAssignee } from './EditAssignee';
+import { EditCaseInbox } from './EditCaseInbox';
+import { EditCaseName } from './EditCaseName';
+import { EditCaseSuspicion } from './EditCaseSuspicion';
+import { EditCaseTags } from './EditTags';
+import { EscalateCase } from './EscalateCase';
+import { SnoozeCase } from './SnoozeCase';
 
 const tabCva = cva('px-4 py-2 border-b -mb-px flex items-center gap-2 transition-colors', {
   variants: {
@@ -53,7 +52,7 @@ export const CaseDetails = ({
   caseReview: CaseReview | null;
 }) => {
   const { case: detail, inboxes, reports } = useLoaderData<typeof loader>();
-  const { t } = useTranslation(casesI18n);
+  const { t } = useTranslation(['common', 'cases']);
   const language = useFormatLanguage();
   const sentinelRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
