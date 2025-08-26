@@ -1,24 +1,9 @@
-import { Callout, casesI18n } from '@app-builder/components';
-import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { openCasePayloadSchema } from '@app-builder/queries/cases/open-case';
 import { initServerServices } from '@app-builder/services/init.server';
-import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
-import { useForm } from '@tanstack/react-form';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ButtonV2, Modal } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
-
-const schema = z.object({
-  caseId: z.string(),
-  comment: z.string(),
-});
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
@@ -36,7 +21,7 @@ export async function action({ request }: ActionFunctionArgs) {
     }),
   ]);
 
-  const { data, success, error } = schema.safeParse(rawData);
+  const { data, success, error } = openCasePayloadSchema.safeParse(rawData);
 
   if (!success) return Response.json({ sucess: false, errors: z.treeifyError(error) });
 
@@ -74,70 +59,3 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   }
 }
-
-export const OpenCase = ({ id }: { id: string }) => {
-  const { t } = useTranslation(casesI18n);
-  const fetcher = useFetcher<typeof action>();
-  const [open, setOpen] = useState(false);
-
-  const form = useForm({
-    onSubmit: ({ value }) => {
-      setOpen(false);
-      fetcher.submit(value, {
-        method: 'POST',
-        action: getRoute('/ressources/cases/open-case'),
-        encType: 'application/json',
-      });
-    },
-    defaultValues: { caseId: id, comment: '' },
-    validators: {
-      onSubmit: schema,
-    },
-  });
-
-  return (
-    <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild>
-        <ButtonV2 variant="primary" className="flex-1 first-letter:capitalize">
-          <Icon icon="save" className="size-3.5" />
-          {t('cases:case.reopen')}
-        </ButtonV2>
-      </Modal.Trigger>
-      <Modal.Content>
-        <Modal.Title>{t('cases:case.reopen')}</Modal.Title>
-        <form onSubmit={handleSubmit(form)} className="flex flex-col gap-8 p-8">
-          <Callout>Are you sure you want to re-open the case ?</Callout>
-          <form.Field
-            name="comment"
-            validators={{ onChange: schema.shape.comment, onBlur: schema.shape.comment }}
-          >
-            {(field) => (
-              <div className="flex flex-col gap-2">
-                <FormLabel name={field.name}>Add a comment</FormLabel>
-                <FormTextArea
-                  name={field.name}
-                  defaultValue={field.state.value}
-                  placeholder="Input your comment here"
-                  valid={field.state.meta.errors.length === 0}
-                  onChange={(e) => field.handleChange(e.currentTarget.value)}
-                />
-                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
-              </div>
-            )}
-          </form.Field>
-          <div className="flex w-full flex-row gap-2">
-            <Modal.Close asChild>
-              <ButtonV2 variant="secondary" className="flex-1 first-letter:capitalize">
-                {t('common:cancel')}
-              </ButtonV2>
-            </Modal.Close>
-
-            <ButtonV2 type="submit" className="flex-1 first-letter:capitalize">
-              Re-Open
-            </ButtonV2>
-          </div>
-        </form>
-      </Modal.Content>
-    </Modal.Root>
-  );
-};

@@ -439,6 +439,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/escalate-case.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/get-inboxes",
+        "path": "ressources/cases/get-inboxes",
+        "file": "routes/ressources+/cases+/get-inboxes.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/open-case",
         "path": "ressources/cases/open-case",
         "file": "routes/ressources+/cases+/open-case.tsx"
@@ -523,11 +528,6 @@ export const routes = [
         "id": "routes/ressources+/decisions+/list-scheduled-execution",
         "path": "ressources/decisions/list-scheduled-execution",
         "file": "routes/ressources+/decisions+/list-scheduled-execution.tsx"
-      },
-      {
-        "id": "routes/ressources+/files+/upload-file",
-        "path": "ressources/files/upload-file",
-        "file": "routes/ressources+/files+/upload-file.tsx"
       },
       {
         "id": "routes/ressources+/ingestion+/upload.$objectType",

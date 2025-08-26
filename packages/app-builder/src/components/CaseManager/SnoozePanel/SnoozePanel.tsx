@@ -1,4 +1,5 @@
 import { casesI18n } from '@app-builder/components/Cases';
+import { AddRuleSnooze } from '@app-builder/components/Cases/AddRuleSnooze';
 import { ClientObjectDataList } from '@app-builder/components/DataModelExplorer/ClientObjectDataList';
 import { OutcomeBadge } from '@app-builder/components/Decisions';
 import { Nudge } from '@app-builder/components/Nudge';
@@ -6,7 +7,6 @@ import { RuleGroup } from '@app-builder/components/Scenario/Rules/RuleGroup';
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
 import { type PivotObject } from '@app-builder/models/cases';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
-import { AddRuleSnooze } from '@app-builder/routes/ressources+/cases+/add-rule-snooze';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { Await, useLoaderData } from '@remix-run/react';

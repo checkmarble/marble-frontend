@@ -1,11 +1,11 @@
 import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
-import { SanctionCheckReviewModal } from '@app-builder/routes/ressources+/cases+/review-sanction-match';
 import { EnrichMatchButton } from '@app-builder/routes/ressources+/sanction-check+/enrich-match.$matchId';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CollapsibleV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { MatchDetails } from '../MatchDetails';
+import { ReviewScreeningMatch } from '../ReviewScreeningMatch';
 import { StatusTag } from '../StatusTag';
 import { sanctionsI18n } from '../sanctions-i18n';
 import { TopicTag } from '../TopicTag';
@@ -104,7 +104,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
           </CollapsibleV2.Content>
         </div>
       </CollapsibleV2.Provider>
-      <SanctionCheckReviewModal
+      <ReviewScreeningMatch
         open={isInReview}
         onClose={() => setIsInReview(false)}
         sanctionMatch={match}

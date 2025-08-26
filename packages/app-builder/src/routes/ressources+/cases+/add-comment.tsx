@@ -1,40 +1,19 @@
-import { casesI18n } from '@app-builder/components';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import {
-  MAX_FILE_SIZE,
-  MAX_FILE_SIZE_MB,
-  useFormDropzone,
-} from '@app-builder/hooks/useFormDropzone';
+import { MAX_FILE_SIZE, MAX_FILE_SIZE_MB } from '@app-builder/hooks/useFormDropzone';
+import { addCommentPayloadSchema } from '@app-builder/queries/cases/add-comment';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getCaseFileUploadEndpoint } from '@app-builder/utils/files';
-import { handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import {
   type ActionFunctionArgs,
   unstable_createMemoryUploadHandler,
   unstable_parseMultipartFormData,
 } from '@remix-run/node';
-import { redirect, useFetcher } from '@remix-run/react';
-import { useForm } from '@tanstack/react-form';
+import { redirect } from '@remix-run/react';
 import { decode } from 'decode-formdata';
-import { serialize } from 'object-to-formdata';
-import { toggle, tryit } from 'radash';
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { ButtonV2 } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { tryit } from 'radash';
 import { z } from 'zod/v4';
-
-const schema = z
-  .object({
-    caseId: z.uuid().nonempty(),
-    comment: z.string(),
-    files: z.array(z.instanceof(File)),
-  })
-  .refine((data) => data.comment.trim() !== '' || data.files.length > 0);
-
-type CaseCommentForm = z.infer<typeof schema>;
 
 export async function action({ request }: ActionFunctionArgs) {
   const {
@@ -76,7 +55,9 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (!token) return redirect(getRoute('/sign-in'));
 
-  const { data, success, error } = schema.safeParse(decode(raw, { arrays: ['files'] }));
+  const { data, success, error } = addCommentPayloadSchema.safeParse(
+    decode(raw, { arrays: ['files'] }),
+  );
 
   if (!success) return Response.json({ success, errors: z.treeifyError(error) });
 
@@ -119,112 +100,4 @@ export async function action({ request }: ActionFunctionArgs) {
       { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   }
-}
-
-export function AddComment({ caseId }: { caseId: string }) {
-  const { t } = useTranslation(casesI18n);
-  const { data, submit } = useFetcher<typeof action>();
-  const lastData = data as
-    | {
-        success: boolean;
-        errors?: ReturnType<z.ZodError<z.output<typeof schema>>['flatten']>;
-      }
-    | undefined;
-
-  const form = useForm({
-    defaultValues: { caseId, comment: '', files: [] } as CaseCommentForm,
-    onSubmit: ({ value }) => {
-      submit(serialize(value, { indices: true }), {
-        method: 'POST',
-        action: getRoute('/ressources/cases/add-comment'),
-        encType: 'multipart/form-data',
-      });
-    },
-    validators: {
-      onSubmit: schema,
-    },
-  });
-
-  useEffect(() => {
-    if (lastData?.success) {
-      form.reset();
-      form.validate('mount');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastData]);
-
-  const { getInputProps, getRootProps } = useFormDropzone({
-    onDrop: (acceptedFiles) => {
-      form.setFieldValue('files', (prev) => [...prev, ...acceptedFiles]);
-      form.validate('change');
-    },
-  });
-
-  return (
-    <form
-      onSubmit={handleSubmit(form)}
-      className="border-grey-90 flex grow items-end gap-4 border-t p-4"
-    >
-      <div className="flex grow flex-col items-start gap-2.5">
-        <form.Field name="comment">
-          {(field) => (
-            <textarea
-              value={field.state.value}
-              onChange={(e) => field.handleChange(e.currentTarget.value)}
-              onBlur={field.handleBlur}
-              name={field.name}
-              placeholder={t('cases:case_detail.add_a_comment.placeholder')}
-              className="form-textarea text-s w-full resize-none border-none bg-transparent outline-hidden"
-            />
-          )}
-        </form.Field>
-        <form.Field name="files">
-          {(field) => (
-            <div>
-              <input {...getInputProps()} />
-              <div className="flex items-center gap-2">
-                <ButtonV2 type="button" variant="secondary" mode="icon" {...getRootProps()}>
-                  <Icon icon="attachment" className="text-grey-50 size-3.5" />
-                </ButtonV2>
-                {field.state.value.map((file) => (
-                  <div
-                    key={file.name}
-                    className="border-grey-90 flex items-center gap-1 rounded-sm border px-1.5 py-0.5"
-                  >
-                    <span className="text-xs font-medium">{file.name}</span>
-                    <Icon
-                      icon="cross"
-                      className="text-grey-50 hover:text-grey-00 size-4 cursor-pointer"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        field.handleChange((prev) => toggle(prev, file));
-                        form.validate('change');
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </form.Field>
-      </div>
-      <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitSuccessful]}>
-        {([canSubmit, isSubmitSuccessful]) => (
-          <ButtonV2
-            type="submit"
-            variant="primary"
-            mode="icon"
-            aria-label={t('cases:case_detail.add_a_comment.post')}
-            disabled={!canSubmit || isSubmitSuccessful}
-          >
-            {isSubmitSuccessful ? (
-              <Icon icon="spinner" className="size-3.5 animate-spin" />
-            ) : (
-              <Icon icon="send" className="size-3.5" />
-            )}
-          </ButtonV2>
-        )}
-      </form.Subscribe>
-    </form>
-  );
 }

@@ -1,9 +1,8 @@
 import { createRightPanel, type RightPanelRootProps } from '@app-builder/components/RightPanel';
-import { AddToCase } from '@app-builder/routes/ressources+/cases+/add-to-case';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-
+import { AddToCase } from './AddToCase';
 import { decisionsI18n } from './decisions-i18n';
 
 type Data = {
