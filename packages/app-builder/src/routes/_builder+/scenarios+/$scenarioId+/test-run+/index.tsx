@@ -1,6 +1,7 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { CreateTestRun } from '@app-builder/components/Scenario/Actions/CreateTestRun';
 import {
   type TestRunsFilters,
   TestRunsFiltersBar,
@@ -11,7 +12,6 @@ import { testRunsFilterNames } from '@app-builder/components/Scenario/TestRun/Fi
 import { TestRunSelector } from '@app-builder/components/Scenario/TestRun/TestRunSelector';
 import { isForbiddenHttpError, isNotFoundHttpError, type User } from '@app-builder/models';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
-import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
