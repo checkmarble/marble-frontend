@@ -5,7 +5,7 @@
   "sideEffect": false,
   "type": "module",
   "devDependencies": {
-    "@types/node": "22.13.10"
+    "@types/node": "24.3.0"
   },
   "scripts": {
     "lint": "biome lint",
