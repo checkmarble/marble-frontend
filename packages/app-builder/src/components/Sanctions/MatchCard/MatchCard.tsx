@@ -1,5 +1,5 @@
+import { EnrichMatchButton } from '@app-builder/components/Sanctions/EnrichMatchButton';
 import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
-import { EnrichMatchButton } from '@app-builder/routes/ressources+/sanction-check+/enrich-match.$matchId';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CollapsibleV2, Tag } from 'ui-design-system';
