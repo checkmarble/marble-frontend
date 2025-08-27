@@ -1,6 +1,6 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
-import { CreateScenario } from '@app-builder/routes/ressources+/scenarios+/create';
+import { CreateScenario } from '@app-builder/components/Scenario/Actions/CreateScenario';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';

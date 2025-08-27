@@ -5,6 +5,7 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
 import { Page } from '@app-builder/components/Page';
+import { UpdateScenario } from '@app-builder/components/Scenario/Actions/UpdateScenario';
 import {
   getFormattedLive,
   getFormattedVersion,
@@ -18,7 +19,6 @@ import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import { useListRulesQuery } from '@app-builder/queries/Workflows';
 import { CreateTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/create';
-import { UpdateScenario } from '@app-builder/routes/ressources+/scenarios+/update';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';
 import {
   isEditScenarioAvailable,

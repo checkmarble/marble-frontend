@@ -510,6 +510,11 @@ export const routes = [
         "file": "routes/ressources+/data+/createTable.tsx"
       },
       {
+        "id": "routes/ressources+/data+/data-model",
+        "path": "ressources/data/data-model",
+        "file": "routes/ressources+/data+/data-model.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/delete-annotation.$annotationId",
         "path": "ressources/data/delete-annotation/:annotationId",
         "file": "routes/ressources+/data+/delete-annotation.$annotationId.tsx"
