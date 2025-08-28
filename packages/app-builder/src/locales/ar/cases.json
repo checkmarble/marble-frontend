@@ -144,6 +144,7 @@
   "case.outcome.valuable_alert": "تنبيه قيمة",
   "case.page_title": "قضية",
   "case.reopen": "إعادة فتح القضية",
+  "case.snoozed_until": "حتى {{date}}",
   "case.status": "الحالة",
   "case.status.closed": "حل",
   "case.status.discarded": "تجاهل",

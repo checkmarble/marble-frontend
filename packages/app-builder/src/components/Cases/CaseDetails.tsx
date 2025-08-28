@@ -137,7 +137,19 @@ export const CaseDetails = ({
             <div className="border-grey-90 text-small flex flex-col gap-2 border p-v2-md bg-grey-background-light rounded-v2-lg">
               <div className="grid grid-cols-[170px_1fr] items-center">
                 <span className="text-grey-50 font-normal">{t('cases:case.status')}</span>
-                <CaseStatusBadge status={detail.status} outcome={detail.outcome} />
+                <span className="flex items-center gap-2">
+                  <CaseStatusBadge status={detail.status} outcome={detail.outcome} />
+                  {detail.snoozedUntil ? (
+                    <span className="font-medium text-grey-00">
+                      {t('cases:case.snoozed_until', {
+                        date: formatDateTimeWithoutPresets(detail.snoozedUntil, {
+                          language,
+                          dateStyle: 'short',
+                        }),
+                      })}
+                    </span>
+                  ) : null}
+                </span>
               </div>
               <div className="grid grid-cols-[170px_1fr] items-center">
                 <span className="text-grey-50 font-normal">{t('cases:creation_date')}</span>
