@@ -28,9 +28,9 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     if (data.newCase) {
       const createdCase = await cases.createCase(data);
-      return {
+      return Response.json({
         redirectTo: getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(createdCase.id) }),
-      };
+      });
     } else {
       await cases.addDecisionsToCase(data);
 
@@ -39,7 +39,10 @@ export async function action({ request }: ActionFunctionArgs) {
         messageKey: 'common:success.add_to_case',
       });
 
-      return json({ success: 'true' }, { headers: { 'Set-Cookie': await commitSession(session) } });
+      return Response.json(
+        { success: true },
+        { headers: { 'Set-Cookie': await commitSession(session) } },
+      );
     }
   } catch (error) {
     setToastMessage(session, {
@@ -49,8 +52,8 @@ export async function action({ request }: ActionFunctionArgs) {
         : 'common:errors.unknown',
     });
 
-    return json(
-      { success: 'false', errors: [] },
+    return Response.json(
+      { success: false, errors: [] },
       { headers: { 'Set-Cookie': await commitSession(session) } },
     );
   }
