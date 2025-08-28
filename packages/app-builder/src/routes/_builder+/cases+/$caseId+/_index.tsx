@@ -171,20 +171,22 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
               map(details, (d) =>
                 pipe(
                   d.rules,
-                  map((r) => ({
-                    ...omit(r, ['evaluation']),
-                    isSnoozed: snoozes.find(
-                      (s) => s.pivotValue === pivotValue && r.ruleId === s.ruleId,
-                    )
-                      ? true
-                      : false,
-                    hitAt: d.createdAt,
-                    decisionId: d.id,
-                    ruleGroup: scenarioRules.find((sr) => sr.id === r.ruleId)?.ruleGroup,
-                    start: snoozes.find((s) => s.ruleId === r.ruleId)?.startsAt as string,
-                    end: snoozes.find((s) => s.ruleId === r.ruleId)?.endsAt as string,
-                    scoreModifier: isRuleExecutionHit(r) ? r.scoreModifier : 0,
-                  })),
+                  map((r) => {
+                    const snooze = snoozes.find(
+                      (s) => s.pivotValue === pivotValue && s.ruleId === r.ruleId,
+                    );
+
+                    return {
+                      ...omit(r, ['evaluation']),
+                      isSnoozed: !!snooze,
+                      hitAt: d.createdAt,
+                      decisionId: d.id,
+                      ruleGroup: scenarioRules.find((sr) => sr.id === r.ruleId)?.ruleGroup,
+                      start: snooze?.startsAt,
+                      end: snooze?.endsAt,
+                      scoreModifier: isRuleExecutionHit(r) ? r.scoreModifier : 0,
+                    };
+                  }),
                 ),
               ),
               flat(),

@@ -72,7 +72,6 @@ export const SnoozePanel = ({
                 </TabsList>
                 {Dict.entries(rulesByPivot).map(([pivotValue, rules]) => {
                   const client = findDataFromPivotValue(pivotObjects ?? [], pivotValue);
-                  console.log('client', client);
                   const table = dataModelWithTableOptions.find(
                     (t) => t.name === client?.pivotObjectName,
                   );
@@ -120,7 +119,6 @@ export const SnoozePanel = ({
                           <span className="p-2">{t('cases:decisions.rule.snooze_until')}</span>
                         </div>
                         {rules.map((r) => {
-                          console.log(r);
                           const formattedHitAt = (
                             <span
                               className={cn('text-grey-50 text-xs', { 'opacity-30': r.isSnoozed })}
@@ -190,7 +188,7 @@ export const SnoozePanel = ({
                                 ) : null}
                               </div>
                               <div className="flex min-h-full items-center p-2">
-                                {r.isSnoozed ? (
+                                {r.isSnoozed && r.end ? (
                                   <span className="opacity-30">
                                     {formatRelative(r.end, new Date(), {
                                       locale: getDateFnsLocale(language),
