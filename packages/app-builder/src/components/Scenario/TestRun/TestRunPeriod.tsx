@@ -1,4 +1,4 @@
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTimeString } from '@app-builder/utils/format';
 import clsx from 'clsx';
 import { type ComponentProps } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ export const TestRunPeriod = ({
   endDate: string;
 } & ComponentProps<'span'>) => {
   const { t } = useTranslation(['common', 'scenarios']);
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
 
   return (
     <span
@@ -28,14 +28,8 @@ export const TestRunPeriod = ({
           Date: <time suppressHydrationWarning className="font-semibold" />,
         }}
         values={{
-          start_date: formatDateTimeWithoutPresets(startDate, {
-            language,
-            dateStyle: 'short',
-          }),
-          end_date: formatDateTimeWithoutPresets(endDate, {
-            language,
-            dateStyle: 'short',
-          }),
+          start_date: formatDateTime(startDate, { dateStyle: 'short' }),
+          end_date: formatDateTime(endDate, { dateStyle: 'short' }),
         }}
       />
     </span>

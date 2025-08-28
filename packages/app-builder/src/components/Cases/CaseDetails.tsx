@@ -7,7 +7,7 @@ import { CaseReview } from '@app-builder/models/cases';
 import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-review-to-case-comments';
 import { useCaseReviewFeedbackMutation } from '@app-builder/queries/case-review-feedback';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTimeString } from '@app-builder/utils/format';
 import { useLoaderData, useRevalidator } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
 import { useRef, useState } from 'react';
@@ -53,7 +53,8 @@ export const CaseDetails = ({
 }) => {
   const { case: detail, inboxes, reports } = useLoaderData<typeof loader>();
   const { t } = useTranslation(['common', 'cases']);
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
+
   const sentinelRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const intersection = useIntersection(sentinelRef, {
@@ -142,8 +143,7 @@ export const CaseDetails = ({
                   {detail.snoozedUntil ? (
                     <span className="font-medium text-grey-00">
                       {t('cases:case.snoozed_until', {
-                        date: formatDateTimeWithoutPresets(detail.snoozedUntil, {
-                          language,
+                        date: formatDateTime(detail.snoozedUntil, {
                           dateStyle: 'short',
                         }),
                       })}
@@ -154,8 +154,7 @@ export const CaseDetails = ({
               <div className="grid grid-cols-[170px_1fr] items-center">
                 <span className="text-grey-50 font-normal">{t('cases:creation_date')}</span>
                 <time className="font-medium" dateTime={detail.createdAt}>
-                  {formatDateTimeWithoutPresets(detail.createdAt, {
-                    language,
+                  {formatDateTime(detail.createdAt, {
                     dateStyle: 'short',
                   })}
                 </time>

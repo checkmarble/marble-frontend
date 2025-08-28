@@ -29,8 +29,8 @@ import { makeGetScenarioRepository } from './ScenarioRepository';
 import {
   getAuthStorageRepository,
   getCsrfCookie,
-  getLngStorageRepository,
   getToastStorageRepository,
+  getUserPreferencesStorageRepository,
   type SessionStorageRepositoryOptions,
 } from './SessionStorageRepositories';
 import { makeGetTestRunRepository } from './TestRunRepository';
@@ -58,7 +58,7 @@ export function makeServerRepositories({
     authStorageRepository: getAuthStorageRepository(sessionStorageRepositoryOptions),
     csrfCookie: getCsrfCookie(sessionStorageRepositoryOptions),
     toastStorageRepository: getToastStorageRepository(sessionStorageRepositoryOptions),
-    lngStorageRepository: getLngStorageRepository(sessionStorageRepositoryOptions),
+    lngStorageRepository: getUserPreferencesStorageRepository(sessionStorageRepositoryOptions),
     getFeatureAccessApiClientWithoutAuth,
     getFeatureAccessAPIClientWithAuth,
     marbleCoreApiClient,

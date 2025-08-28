@@ -2,7 +2,7 @@ import { CaseStatusBadge, decisionsI18n, OutcomeBadge } from '@app-builder/compo
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTimeString, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
@@ -90,6 +90,7 @@ export function DecisionsList({
 }: DecisionsListProps) {
   const { t } = useTranslation(decisionsI18n);
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
 
   const columns = useMemo(
     () => [
@@ -132,9 +133,7 @@ export function DecisionsList({
         cell: ({ getValue }) => {
           const dateTime = getValue();
           return (
-            <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
-            </time>
+            <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short' })}</time>
           );
         },
       }),
@@ -223,7 +222,7 @@ export function DecisionsList({
         },
       }),
     ],
-    [t, selectable, language],
+    [t, selectable, language, formatDateTime],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({

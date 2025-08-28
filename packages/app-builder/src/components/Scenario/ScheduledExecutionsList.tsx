@@ -1,7 +1,7 @@
 import { type ScheduledExecution } from '@app-builder/models/decision';
 import {
-  formatDateTimeWithoutPresets,
   formatNumber,
+  useFormatDateTimeString,
   useFormatLanguage,
 } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -26,6 +26,7 @@ export function ScheduledExecutionsList({
 }) {
   const { t } = useTranslation(scenarioI18n);
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
 
   const columns = useMemo(
     () => [
@@ -101,8 +102,7 @@ export function ScheduledExecutionsList({
       }),
       columnHelper.accessor(
         (s) =>
-          formatDateTimeWithoutPresets(s.startedAt, {
-            language,
+          formatDateTime(s.startedAt, {
             dateStyle: 'short',
             timeStyle: 'short',
           }),

@@ -2,7 +2,7 @@ import { type Case } from '@app-builder/models/cases';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import {
   formatDateRelative,
-  formatDateTimeWithoutPresets,
+  useFormatDateTimeString,
   useFormatLanguage,
 } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -36,6 +36,7 @@ export function CasesList({
 }) {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
   const [sorting, setSorting] = useState<SortingState>(initSorting);
   const { orgTags } = useOrganizationTags();
 
@@ -83,19 +84,14 @@ export function CasesList({
         cell: ({ getValue }) => {
           const dateTime = getValue();
           return Math.abs(differenceInDays(new Date(), dateTime)) > 1 ? (
-            <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
-            </time>
+            <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short' })}</time>
           ) : (
             <Tooltip.Default
               arrow={false}
               className="border-grey-90 flex items-center border px-1.5 py-1"
               content={
                 <span className="text-2xs font-normal">
-                  {formatDateTimeWithoutPresets(dateTime, {
-                    language,
-                    dateStyle: 'short',
-                  })}
+                  {formatDateTime(dateTime, { dateStyle: 'short' })}
                 </span>
               }
             >

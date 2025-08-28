@@ -1,4 +1,4 @@
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTimeString } from '@app-builder/utils/format';
 import { Popover, PopoverDisclosure, PopoverProvider } from '@ariakit/react';
 import clsx from 'clsx';
 import { type ElementRef, forwardRef, useState } from 'react';
@@ -17,7 +17,7 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
   function DateSelector({ name, description, ...props }, ref) {
     const [selectedDate, selectDate] = useState<Date | undefined>(props.defaultValue);
     const [open, setOpen] = useState(false);
-    const language = useFormatLanguage();
+    const formatDateTime = useFormatDateTimeString();
 
     return (
       <div ref={ref} className="flex flex-row items-center gap-2">
@@ -37,10 +37,7 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
               })}
             >
               {selectedDate
-                ? formatDateTimeWithoutPresets(selectedDate, {
-                    language,
-                    dateStyle: 'short',
-                  })
+                ? formatDateTime(selectedDate, { dateStyle: 'short' })
                 : props.placeholder}
             </span>
           </PopoverDisclosure>

@@ -1,7 +1,7 @@
 import { type TransferAlertStatus } from '@app-builder/models/transfer-alert';
 import {
   formatDateRelative,
-  formatDateTimeWithoutPresets,
+  useFormatDateTimeString,
   useFormatLanguage,
 } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ interface AlertDataProps {
 export function AlertData({ alert }: AlertDataProps) {
   const { t } = useTranslation(alertsI18n);
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
 
   return (
     <div className="flex flex-col gap-8">
@@ -32,11 +33,7 @@ export function AlertData({ alert }: AlertDataProps) {
           <Tooltip.Default
             content={
               <span className="text-grey-00 text-s">
-                {formatDateTimeWithoutPresets(alert.createdAt, {
-                  language,
-                  dateStyle: 'short',
-                  timeStyle: 'short',
-                })}
+                {formatDateTime(alert.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
               </span>
             }
           >

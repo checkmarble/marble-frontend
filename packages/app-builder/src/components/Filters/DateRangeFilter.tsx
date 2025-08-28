@@ -1,8 +1,8 @@
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import {
-  formatDateTimeWithoutPresets,
   formatDuration,
+  useFormatDateTimeString,
   useFormatLanguage,
 } from '@app-builder/utils/format';
 import { clsx } from 'clsx';
@@ -194,15 +194,10 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
 }
 
 function FormatStaticDate({ date, className }: { date?: string | Date; className?: string }) {
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
 
   const dateTime = typeof date === 'string' ? date : date?.toDateString();
-  const formattedDate = date
-    ? formatDateTimeWithoutPresets(date, {
-        language,
-        dateStyle: 'short',
-      })
-    : '--/--/----';
+  const formattedDate = date ? formatDateTime(date, { dateStyle: 'short' }) : '--/--/----';
 
   return (
     <time
