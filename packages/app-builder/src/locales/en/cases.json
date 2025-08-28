@@ -144,6 +144,7 @@
   "case.outcome.valuable_alert": "Valuable alert",
   "case.page_title": "Case",
   "case.reopen": "Reopen case",
+  "case.snoozed_until": "Until {{date}}",
   "case.status": "Status",
   "case.status.closed": "Resolved",
   "case.status.discarded": "(deprecated) discarded",
