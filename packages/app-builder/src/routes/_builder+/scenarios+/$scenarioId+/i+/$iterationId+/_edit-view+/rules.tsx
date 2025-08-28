@@ -2,7 +2,7 @@ import { OutcomeBadge } from '@app-builder/components';
 import { FiltersButton } from '@app-builder/components/Filters/FiltersButton';
 import { Highlight } from '@app-builder/components/Highlight';
 import { Ping } from '@app-builder/components/Ping';
-import { CreateRule } from '@app-builder/components/Scenario/Iteration/Actions/CreateRule';
+import { CreateRule } from '@app-builder/components/Scenario/Rules/Actions/CreateRule';
 import { rulesFilterNames } from '@app-builder/components/Scenario/Rules/Filters/filters';
 import { RulesFiltersBar } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersBar';
 import {
