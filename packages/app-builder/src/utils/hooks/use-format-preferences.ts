@@ -19,8 +19,6 @@ export function useFormatPreferences() {
     // Get user preferences from server
     const userPreferences = rootLoaderData?.userPreferences;
 
-    console.log('userPreferences', userPreferences);
-
     // Determine fallback language (only used when no user preference exists)
     const fallbackLanguage =
       typeof window !== 'undefined'

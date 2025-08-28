@@ -28,7 +28,6 @@ import { useFormatPreferences } from './hooks/use-format-preferences';
  */
 export function useFormatLanguage() {
   const { language } = useFormatPreferences();
-  console.log('language in useFormatLanguage', language);
   return language;
 }
 
@@ -376,10 +375,8 @@ export function formatDateTimeWithUserPreferences(
 export function useFormatDateTimeString() {
   const preferences = useFormatPreferences();
   return useCallback(
-    (timestamp: string | Date, options?: Intl.DateTimeFormatOptions) => {
-      console.log('timestamp', timestamp, preferences, options);
-      return formatDateTimeWithoutPresets(timestamp, preferences, options);
-    },
+    (timestamp: string | Date, options?: Intl.DateTimeFormatOptions) =>
+      formatDateTimeWithoutPresets(timestamp, preferences, options),
     [preferences.language, preferences.dateFormat, preferences.hoursFormat],
   );
 }

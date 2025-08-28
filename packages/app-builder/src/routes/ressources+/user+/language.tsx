@@ -98,7 +98,6 @@ export function LanguagePicker() {
 
   if (supportedLngs.every((lng: string) => lng.startsWith('en'))) return null;
 
-  console.log('language', language);
   return (
     <div className="flex flex-col gap-2">
       <MenuCommand.Menu>
