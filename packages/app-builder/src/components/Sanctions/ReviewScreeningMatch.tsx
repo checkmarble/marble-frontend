@@ -64,7 +64,11 @@ export const ReviewScreeningMatch = ({
       size="small"
     >
       <ModalV2.Title>{t('sanctions:review_modal.title')}</ModalV2.Title>
-      <form className="flex flex-col gap-8 p-8" onSubmit={handleSubmit(form)}>
+      <form
+        className="flex flex-col gap-8 p-8"
+        onSubmit={handleSubmit(form)}
+        id="review-screening-match"
+      >
         <input name="matchId" type="hidden" value={sanctionMatch.id} />
         <form.Field name="status">
           {(field) => {
@@ -146,7 +150,14 @@ export const ReviewScreeningMatch = ({
                 >
                   {t('common:cancel')}
                 </ModalV2.Close>
-                <Button disabled={!currentStatus} className="flex-1" variant="primary" name="save">
+                <Button
+                  disabled={!currentStatus}
+                  className="flex-1"
+                  variant="primary"
+                  name="save"
+                  form="review-screening-match"
+                  type="submit"
+                >
                   {t('common:save')}
                 </Button>
               </div>

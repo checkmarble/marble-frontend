@@ -30,7 +30,7 @@ export function AddToCase() {
     } as AddToCasePayload,
     onSubmit: ({ value }) => {
       addToCaseMutation.mutateAsync(value).then((res) => {
-        if (res.success) {
+        if (res?.success) {
           closePanel();
         }
         revalidate();
