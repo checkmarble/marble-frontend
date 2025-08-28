@@ -2,7 +2,11 @@ name: E2E tests
 
 on:
   push:
-    branches: [poc/playwright]
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   e2e:
