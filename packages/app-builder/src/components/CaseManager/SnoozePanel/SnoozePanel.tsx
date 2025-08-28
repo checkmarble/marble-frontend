@@ -1,7 +1,5 @@
 import { casesI18n } from '@app-builder/components/Cases';
 import { AddRuleSnooze } from '@app-builder/components/Cases/AddRuleSnooze';
-import { ClientObjectDataList } from '@app-builder/components/DataModelExplorer/ClientObjectDataList';
-import { OutcomeBadge } from '@app-builder/components/Decisions';
 import { Nudge } from '@app-builder/components/Nudge';
 import { RuleGroup } from '@app-builder/components/Scenario/Rules/RuleGroup';
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
@@ -18,6 +16,7 @@ import { Button, cn, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui-design-
 import { Icon } from 'ui-icons';
 
 import { DrawerContext } from '../Drawer/Drawer';
+import { PivotObjectDetails } from '../PivotsPanel/PivotsPanelContent';
 
 const findDataFromPivotValue = (pivots: PivotObject[], pivotValue: string) => {
   return pivots.find((p) => p.pivotValue === pivotValue);
@@ -60,28 +59,20 @@ export const SnoozePanel = ({
               <Tabs className="flex w-full flex-col" defaultValue={Object.keys(rulesByPivot)[0]}>
                 <TabsList className="mb-6 w-fit">
                   {Object.keys(rulesByPivot).map((pivotValue) => {
-                    const client = findDataFromPivotValue(pivotObjects ?? [], pivotValue);
-
-                    const clientName =
-                      client?.pivotObjectData.data &&
-                      'name' in client.pivotObjectData.data &&
-                      typeof client.pivotObjectData.data['name'] === 'string'
-                        ? client.pivotObjectData.data['name']
-                        : pivotValue;
-
                     return (
                       <TabsTrigger
                         key={`trigger-${pivotValue}`}
                         value={pivotValue}
                         className="gap-2"
                       >
-                        <span className="font-medium">{clientName}</span>
+                        <span className="font-medium">{pivotValue}</span>
                       </TabsTrigger>
                     );
                   })}
                 </TabsList>
                 {Dict.entries(rulesByPivot).map(([pivotValue, rules]) => {
                   const client = findDataFromPivotValue(pivotObjects ?? [], pivotValue);
+                  console.log('client', client);
                   const table = dataModelWithTableOptions.find(
                     (t) => t.name === client?.pivotObjectName,
                   );
@@ -92,12 +83,15 @@ export const SnoozePanel = ({
                       key={`content-${pivotValue}`}
                       value={pivotValue}
                     >
-                      {table && client?.pivotObjectData.data ? (
-                        <ClientObjectDataList
-                          className="bg-grey-98 border-grey-95 rounded-sm border p-2"
-                          tableModel={table}
-                          data={client.pivotObjectData.data}
-                        />
+                      {table && client ? (
+                        <div className="border-grey-90 flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
+                          <div className="capitalize font-semibold">{table.name}</div>
+                          <PivotObjectDetails
+                            tableModel={table}
+                            dataModel={dataModelWithTableOptions}
+                            pivotObject={client}
+                          />
+                        </div>
                       ) : null}
                       <div className="border-grey-90 bg-grey-100 relative w-full rounded-lg border">
                         <div className="text-2xs text-grey-50 relative grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] font-normal">
@@ -123,10 +117,10 @@ export const SnoozePanel = ({
                           <span className="p-2">{t('cases:decisions.rule.name_and_score')}</span>
                           <span className="p-2">{t('cases:decisions.rule.description')}</span>
                           <span className="p-2">{t('cases:decisions.rule.rule_group')}</span>
-                          <span className="p-2">{t('cases:decisions.outcome')}</span>
                           <span className="p-2">{t('cases:decisions.rule.snooze_until')}</span>
                         </div>
                         {rules.map((r) => {
+                          console.log(r);
                           const formattedHitAt = (
                             <span
                               className={cn('text-grey-50 text-xs', { 'opacity-30': r.isSnoozed })}
@@ -194,12 +188,6 @@ export const SnoozePanel = ({
                                     ruleGroup={r.ruleGroup}
                                   />
                                 ) : null}
-                              </div>
-                              <div className="border-grey-90 flex min-h-full items-center border-r p-2">
-                                <OutcomeBadge
-                                  className={cn({ 'opacity-30': r.isSnoozed })}
-                                  outcome={r.outcome}
-                                />
                               </div>
                               <div className="flex min-h-full items-center p-2">
                                 {r.isSnoozed ? (

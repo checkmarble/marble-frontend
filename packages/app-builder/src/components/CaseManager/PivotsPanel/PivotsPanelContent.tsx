@@ -334,7 +334,11 @@ type PivotObjectDetailsProps = {
   dataModel: DataModelWithTableOptions;
   pivotObject: PivotObject;
 };
-function PivotObjectDetails({ tableModel, dataModel, pivotObject }: PivotObjectDetailsProps) {
+export function PivotObjectDetails({
+  tableModel,
+  dataModel,
+  pivotObject,
+}: PivotObjectDetailsProps) {
   const { t } = useTranslation(['common', 'cases']);
   const { data, relatedObjects } = pivotObject.pivotObjectData;
   const filteredRelatedObjects = relatedObjects.filter((r) => !!r.relatedObjectDetail?.metadata);
