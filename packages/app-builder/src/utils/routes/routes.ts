@@ -615,14 +615,19 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/commit.tsx"
       },
       {
-        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/create_draft",
-        "path": "ressources/scenarios/:scenarioId/:iterationId/create_draft",
-        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/create_draft.tsx"
+        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/create-draft",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/create-draft",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/create-draft.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/deactivate",
         "path": "ressources/scenarios/:scenarioId/:iterationId/deactivate",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/deactivate.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/get-rule-snoozes",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/get-rule-snoozes",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/get-rule-snoozes.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/prepare",
@@ -653,11 +658,6 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create",
         "path": "ressources/scenarios/:scenarioId/:iterationId/sanctions/create",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create.tsx"
-      },
-      {
-        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule",
-        "path": "ressources/scenarios/:scenarioId/:iterationId/validate-with-given-trigger-or-rule",
-        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/validate-with-given-trigger-or-rule.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/builder-options",
