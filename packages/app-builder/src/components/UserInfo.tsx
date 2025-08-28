@@ -1,5 +1,4 @@
 import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
-import { LanguagePicker } from '@app-builder/routes/ressources+/user+/language';
 import { segment } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
 import { getRoute } from '@app-builder/utils/routes';
@@ -8,6 +7,7 @@ import { Form } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Tag } from 'ui-design-system';
 import { Icon, Logo } from 'ui-icons';
+import { LanguagePicker } from './LanguagePicker';
 import { UserAvailabilityStatus } from './Settings/UserAvailabilityStatus';
 
 interface UserInfoProps {

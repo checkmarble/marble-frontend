@@ -1,8 +1,8 @@
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
+import { LanguagePicker } from '@app-builder/components/LanguagePicker';
 import { Outlet, useMatches } from '@remix-run/react';
 import { cva } from 'class-variance-authority';
 import { Logo } from 'ui-icons';
-import { LanguagePicker } from '../ressources+/user+/language';
 
 export type AuthPageHandle = {
   alignment?: 'reverse' | 'default';
