@@ -170,24 +170,21 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
                 pipe(
                   d.rules,
                   filter((r) => r.outcome === 'hit'),
-                  map((r) => ({
-                    ...omit(r, ['outcome', 'evaluation']),
-                    isSnoozed: snoozes.find(
-                      (s) => s.pivotValue === pivotValue && r.ruleId === s.ruleId,
-                    )
-                      ? true
-                      : false,
-                    hitAt: d.createdAt,
-                    decisionId: d.id,
-                    ruleGroup: scenarioRules.find((sr) => sr.id === r.ruleId)?.ruleGroup,
-                    outcome: d.outcome,
-                    start: snoozes.find(
-                      (s) => s.ruleId === r.ruleId && s.createdFromDecisionId === d.id,
-                    )?.startsAt as string,
-                    end: snoozes.find(
-                      (s) => s.ruleId === r.ruleId && s.createdFromDecisionId === d.id,
-                    )?.endsAt as string,
-                  })),
+                  map((r) => {
+                    const snooze = snoozes.find(
+                      (s) => s.pivotValue === pivotValue && s.ruleId === r.ruleId,
+                    );
+                    return {
+                      ...omit(r, ['outcome', 'evaluation']),
+                      isSnoozed: !!snooze,
+                      hitAt: d.createdAt,
+                      decisionId: d.id,
+                      ruleGroup: scenarioRules.find((sr) => sr.id === r.ruleId)?.ruleGroup,
+                      outcome: d.outcome,
+                      start: snooze?.startsAt,
+                      end: snooze?.endsAt,
+                    };
+                  }),
                 ),
               ),
               flat(),

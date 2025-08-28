@@ -202,7 +202,7 @@ export const SnoozePanel = ({
                                 />
                               </div>
                               <div className="flex min-h-full items-center p-2">
-                                {r.isSnoozed ? (
+                                {r.isSnoozed && r.end ? (
                                   <span className="opacity-30">
                                     {formatRelative(r.end, new Date(), {
                                       locale: getDateFnsLocale(language),
