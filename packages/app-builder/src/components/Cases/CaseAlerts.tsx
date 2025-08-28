@@ -1,5 +1,5 @@
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTimeString, useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Suspense, useState } from 'react';
@@ -31,6 +31,7 @@ export const CaseAlerts = ({
     dataModelWithTableOptions,
   } = useLoaderData<typeof loader>();
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
   const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
 
   return (
@@ -63,10 +64,7 @@ export const CaseAlerts = ({
                   >
                     <div className="flex min-h-full flex-col items-center p-2">
                       <span className="text-grey-50 text-xs font-normal">
-                        {formatDateTimeWithoutPresets(decision.createdAt, {
-                          language,
-                          dateStyle: 'short',
-                        })}
+                        {formatDateTime(decision.createdAt, { dateStyle: 'short' })}
                       </span>
                     </div>
                     <div className="border-grey-90 flex min-h-full flex-col gap-2 border-x p-2">

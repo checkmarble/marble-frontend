@@ -5,6 +5,7 @@ import { add } from 'date-fns/add';
 import { formatDistanceStrict } from 'date-fns/formatDistanceStrict';
 import { formatRelative } from 'date-fns/formatRelative';
 import { type Currency, dinero, toDecimal } from 'dinero.js';
+import { useCallback } from 'react';
 import { Temporal } from 'temporal-polyfill';
 
 import { useFormatPreferences } from './hooks/use-format-preferences';
@@ -102,6 +103,88 @@ function getTimeFormatOptions(format: string): Intl.DateTimeFormatOptions {
   }
 }
 
+// Helpers for mapping date order across locales and preferences
+function getDefaultDateFormatForLanguage(language: string): string {
+  const parts = new Intl.DateTimeFormat(language, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).formatToParts(new Date(2025, 7, 21));
+
+  const order = parts
+    .map((p) => p.type)
+    .filter((t): t is 'day' | 'month' | 'year' => t === 'day' || t === 'month' || t === 'year');
+
+  const key = order.join('-');
+  switch (key) {
+    case 'day-month-year':
+      return 'dd/MM/yyyy';
+    case 'month-day-year':
+      return 'MM/dd/yyyy';
+    case 'year-month-day':
+      return 'yyyy-MM-dd';
+    default:
+      return 'dd/MM/yyyy';
+  }
+}
+
+function formatDateWithPatternFromParts(
+  date: Date,
+  language: string,
+  pattern: string,
+  timeZone?: string,
+): string {
+  const parts = new Intl.DateTimeFormat(language, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone,
+  }).formatToParts(date);
+
+  const day = parts.find((p) => p.type === 'day')?.value ?? '';
+  const month = parts.find((p) => p.type === 'month')?.value ?? '';
+  const year = parts.find((p) => p.type === 'year')?.value ?? '';
+
+  switch (pattern) {
+    case 'dd/MM/yyyy':
+      return `${day}/${month}/${year}`;
+    case 'MM/dd/yyyy':
+      return `${month}/${day}/${year}`;
+    case 'yyyy-MM-dd':
+      return `${year}-${month}-${day}`;
+    default:
+      return `${day}/${month}/${year}`;
+  }
+}
+
+function pickDateOptions(
+  options: Intl.DateTimeFormatOptions | undefined,
+): Intl.DateTimeFormatOptions {
+  if (!options) return {};
+  const { year, month, day, timeZone } = options;
+  const picked: Intl.DateTimeFormatOptions = {};
+  if (year !== undefined) picked.year = year;
+  if (month !== undefined) picked.month = month;
+  if (day !== undefined) picked.day = day;
+  if (timeZone !== undefined) picked.timeZone = timeZone;
+  return picked;
+}
+
+function pickTimeOptions(
+  options: Intl.DateTimeFormatOptions | undefined,
+): Intl.DateTimeFormatOptions {
+  if (!options) return {};
+  const { hour, minute, second, hour12, hourCycle, timeZone } = options;
+  const picked: Intl.DateTimeFormatOptions = {};
+  if (hour !== undefined) picked.hour = hour;
+  if (minute !== undefined) picked.minute = minute;
+  if (second !== undefined) picked.second = second;
+  if (hour12 !== undefined) picked.hour12 = hour12;
+  if (hourCycle !== undefined) picked.hourCycle = hourCycle;
+  if (timeZone !== undefined) picked.timeZone = timeZone;
+  return picked;
+}
+
 /**
  * Format date/time using user's preferred formats and language.
  * This is the new preferred way to format dates that respects user preferences.
@@ -145,33 +228,53 @@ export function formatDateTime(
   );
 }
 
+/**
+ * Formats a date/time value using Intl.DateTimeFormat without applying project-specific
+ * date or time "presets". You must provide the user's preferences (language, dateFormat, hoursFormat)
+ * explicitly. The function applies user preferences to the provided Intl.DateTimeFormatOptions
+ * only for the relevant date or time components, without overriding explicit options.
+ *
+ * - If date/time components are specified in options, user preferences for those components are applied.
+ * - If no dateStyle/timeStyle is set, user preferences for date/time format are used where appropriate.
+ *
+ * @param timestamp - The date/time value to format (string or Date)
+ * @param userPreferences - Object containing user's language, dateFormat, and hoursFormat
+ * @param options - Intl.DateTimeFormatOptions to customize formatting
+ * @returns The formatted date/time string
+ */
 export function formatDateTimeWithoutPresets(
   timestamp: string | Date,
-  options?: { language?: string } & Intl.DateTimeFormatOptions,
+  userPreferences: {
+    language: string;
+    dateFormat: string;
+    hoursFormat: string;
+  },
+  options?: Intl.DateTimeFormatOptions,
 ): string;
 export function formatDateTimeWithoutPresets(
   timestamp: string | Date,
-  { language, ...options }: { language: string } & Intl.DateTimeFormatOptions,
+  options: { language: string } & Intl.DateTimeFormatOptions,
 ): string;
 export function formatDateTimeWithoutPresets(
   timestamp: string | Date,
-  optionsParam?:
-    | ({ language?: string } & Intl.DateTimeFormatOptions)
+  a:
+    | { language: string; dateFormat: string; hoursFormat: string }
     | ({ language: string } & Intl.DateTimeFormatOptions),
+  b?: Intl.DateTimeFormatOptions,
 ): string {
-  const { language, ...options } = optionsParam ?? {};
+  const dateObj = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
 
-  console.log('language in formatDateTimeWithoutPresets', language);
+  if ('dateFormat' in a && 'hoursFormat' in a) {
+    const { language, dateFormat, hoursFormat } = a;
+    const enhancedOptions: Intl.DateTimeFormatOptions = { ...(b ?? {}) };
 
-  // If no language is provided, use user preferences
-  if (!language) {
-    const formatPreferences = useFormatPreferences();
-    const userLanguage = formatPreferences.language;
+    // Override dateStyle: 'short' with specific format when user preferences are provided
+    if (enhancedOptions.dateStyle === 'short') {
+      delete enhancedOptions.dateStyle;
+      Object.assign(enhancedOptions, { year: 'numeric', month: '2-digit', day: '2-digit' });
+    }
 
     // Apply user's format preferences intelligently based on the options provided
-    const enhancedOptions = { ...options };
-
-    // If using dateStyle/timeStyle, respect those over user preferences
     if (!enhancedOptions.dateStyle && !enhancedOptions.timeStyle) {
       // If specific date/time components are requested, apply user preferences
       const hasDateComponents =
@@ -185,7 +288,7 @@ export function formatDateTimeWithoutPresets(
 
       if (hasDateComponents) {
         // Apply user's date format for specific date components
-        const dateOptions = getDateTimeFormatOptions(formatPreferences.dateFormat);
+        const dateOptions = getDateTimeFormatOptions(dateFormat);
         if (enhancedOptions.year !== undefined) enhancedOptions.year = dateOptions.year;
         if (enhancedOptions.month !== undefined) enhancedOptions.month = dateOptions.month;
         if (enhancedOptions.day !== undefined) enhancedOptions.day = dateOptions.day;
@@ -193,20 +296,63 @@ export function formatDateTimeWithoutPresets(
 
       if (hasTimeComponents) {
         // Apply user's hours format for time components
-        const timeOptions = getTimeFormatOptions(formatPreferences.hoursFormat);
+        const timeOptions = getTimeFormatOptions(hoursFormat);
         Object.assign(enhancedOptions, timeOptions);
       }
     }
 
-    return Intl.DateTimeFormat(userLanguage, enhancedOptions).format(
-      typeof timestamp === 'string' ? new Date(timestamp) : timestamp,
-    );
+    const includeDate =
+      enhancedOptions.year !== undefined ||
+      enhancedOptions.month !== undefined ||
+      enhancedOptions.day !== undefined;
+    const includeTime =
+      enhancedOptions.hour !== undefined ||
+      enhancedOptions.minute !== undefined ||
+      enhancedOptions.second !== undefined;
+
+    if (includeDate) {
+      const defaultFormat = getDefaultDateFormatForLanguage(language);
+      let dateString: string;
+
+      if (dateFormat !== defaultFormat) {
+        // Remap date order using localized parts to desired user preference
+        dateString = formatDateWithPatternFromParts(
+          dateObj,
+          language,
+          dateFormat,
+          enhancedOptions.timeZone,
+        );
+      } else {
+        const dateOpts = pickDateOptions(enhancedOptions);
+        const finalDateOpts = Object.keys(dateOpts).length
+          ? dateOpts
+          : getDateTimeFormatOptions(dateFormat);
+        // include timezone if provided
+        if (enhancedOptions.timeZone && !finalDateOpts.timeZone) {
+          finalDateOpts.timeZone = enhancedOptions.timeZone;
+        }
+        dateString = new Intl.DateTimeFormat(language, finalDateOpts).format(dateObj);
+      }
+
+      if (includeTime) {
+        const timeOpts = pickTimeOptions(enhancedOptions);
+        const timeString = new Intl.DateTimeFormat(language, timeOpts).format(dateObj);
+        return `${dateString} ${timeString}`;
+      }
+
+      return dateString;
+    }
+
+    if (includeTime) {
+      return new Intl.DateTimeFormat(language, pickTimeOptions(enhancedOptions)).format(dateObj);
+    }
+
+    return Intl.DateTimeFormat(language, enhancedOptions).format(dateObj);
   }
 
-  // Backward compatibility: when language is provided, use it directly
-  return Intl.DateTimeFormat(language, options).format(
-    typeof timestamp === 'string' ? new Date(timestamp) : timestamp,
-  );
+  // Backward-compatible signature: second argument is Intl options including language
+  const { language, ...intlOptions } = a;
+  return new Intl.DateTimeFormat(language, intlOptions).format(dateObj);
 }
 
 /**
@@ -216,11 +362,26 @@ export function formatDateTimeWithoutPresets(
  * @param timestamp - Date string or Date object to format
  * @param options - Optional Intl.DateTimeFormatOptions (user preferences will be applied when possible)
  */
+/**
+ * @deprecated Use useFormatDateTimeString hook instead.
+ */
 export function formatDateTimeWithUserPreferences(
   timestamp: string | Date,
   options?: Intl.DateTimeFormatOptions,
 ): string {
-  return formatDateTimeWithoutPresets(timestamp, options);
+  const formatPreferences = useFormatPreferences();
+  return formatDateTimeWithoutPresets(timestamp, formatPreferences, options);
+}
+
+export function useFormatDateTimeString() {
+  const preferences = useFormatPreferences();
+  return useCallback(
+    (timestamp: string | Date, options?: Intl.DateTimeFormatOptions) => {
+      console.log('timestamp', timestamp, preferences, options);
+      return formatDateTimeWithoutPresets(timestamp, preferences, options);
+    },
+    [preferences.language, preferences.dateFormat, preferences.hoursFormat],
+  );
 }
 
 export function formatNumber(

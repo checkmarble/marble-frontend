@@ -1,6 +1,6 @@
 import {
   formatCurrency,
-  formatDateTimeWithoutPresets,
+  useFormatDateTimeString,
   useFormatLanguage,
 } from '@app-builder/utils/format';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
@@ -32,6 +32,7 @@ interface TransferDataProps {
 export function TransferData(props: TransferDataProps) {
   const { t } = useTranslation(transfersI18n);
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
   const getCopyToClipboardProps = useGetCopyToClipboard();
 
   return (
@@ -81,8 +82,7 @@ export function TransferData(props: TransferDataProps) {
           {t('transfercheck:transfer_detail.transfer_data.requested_at')}
         </span>
         <span className="text-grey-00 text-s">
-          {formatDateTimeWithoutPresets(props.transferRequestedAt, {
-            language,
+          {formatDateTime(props.transferRequestedAt, {
             dateStyle: 'short',
             timeStyle: 'short',
             timeZone: props.timezone,
@@ -93,11 +93,10 @@ export function TransferData(props: TransferDataProps) {
           {t('transfercheck:transfer_detail.transfer_data.created_at')}
         </span>
         <span className="text-grey-00 text-s">
-          {formatDateTimeWithoutPresets(props.createdAt, {
-            language,
-            timeZone: props.timezone,
+          {formatDateTime(props.createdAt, {
             dateStyle: 'short',
             timeStyle: 'short',
+            timeZone: props.timezone,
           })}
         </span>
 
@@ -105,11 +104,10 @@ export function TransferData(props: TransferDataProps) {
           {t('transfercheck:transfer_detail.transfer_data.updated_at')}
         </span>
         <span className="text-grey-00 text-s">
-          {formatDateTimeWithoutPresets(props.updatedAt, {
-            language,
-            timeZone: props.timezone,
+          {formatDateTime(props.updatedAt, {
             dateStyle: 'short',
             timeStyle: 'short',
+            timeZone: props.timezone,
           })}
         </span>
       </div>

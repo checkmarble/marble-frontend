@@ -8,7 +8,7 @@ import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModif
 import { type PivotObject } from '@app-builder/models/cases';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTimeString, useFormatLanguage } from '@app-builder/utils/format';
 import { Await, useLoaderData } from '@remix-run/react';
 import { Dict } from '@swan-io/boxed';
 import { formatRelative } from 'date-fns';
@@ -30,6 +30,7 @@ export const SnoozePanel = ({
 }) => {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
   const { rulesByPivotPromise, dataModelWithTableOptions, pivotObjects, entitlements } =
     useLoaderData<typeof loader>();
   const { setExpanded } = DrawerContext.useValue();
@@ -131,10 +132,7 @@ export const SnoozePanel = ({
                             <span
                               className={cn('text-grey-50 text-xs', { 'opacity-30': r.isSnoozed })}
                             >
-                              {formatDateTimeWithoutPresets(r.hitAt, {
-                                language,
-                                dateStyle: 'short',
-                              })}
+                              {formatDateTime(r.hitAt, { dateStyle: 'short' })}
                             </span>
                           );
 

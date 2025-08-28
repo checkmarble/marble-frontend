@@ -11,8 +11,9 @@ import {
 } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatPreferences } from '@app-builder/utils/hooks/use-format-preferences';
 import { getRoute } from '@app-builder/utils/routes';
-import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
@@ -38,7 +39,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   invariant(webhookId, `webhookId is required`);
   const webhook = await webhookRepository.getWebhook({ webhookId });
 
-  return json({
+  return Response.json({
     webhook,
     isEditWebhookAvailable: isEditWebhookAvailable(user),
     isDeleteWebhookAvailable: isDeleteWebhookAvailable(user),
@@ -132,6 +133,7 @@ const columnHelper = createColumnHelper<WebhookSecret>();
 function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
   const { t } = useTranslation(['settings']);
   const language = useFormatLanguage();
+  const formatPreferences = useFormatPreferences();
 
   const columns = React.useMemo(() => {
     return [
@@ -153,7 +155,7 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
           const dateTime = getValue();
           return (
             <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
+              {formatDateTimeWithoutPresets(dateTime, formatPreferences, { dateStyle: 'short' })}
             </time>
           );
         },
@@ -169,7 +171,7 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
           }
           return (
             <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
+              {formatDateTimeWithoutPresets(dateTime, formatPreferences, { dateStyle: 'short' })}
             </time>
           );
         },
@@ -185,13 +187,13 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
           }
           return (
             <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
+              {formatDateTimeWithoutPresets(dateTime, formatPreferences, { dateStyle: 'short' })}
             </time>
           );
         },
       }),
     ];
-  }, [language, t]);
+  }, [language, t, formatPreferences]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: secrets,

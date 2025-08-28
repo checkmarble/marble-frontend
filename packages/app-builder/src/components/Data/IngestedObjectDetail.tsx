@@ -1,5 +1,5 @@
 import { type DataModelObject, type TableModel } from '@app-builder/models';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTimeString, useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
@@ -44,8 +44,8 @@ export const IngestedObjectDetail = ({
 }: IngestedObjectDetailProps) => {
   const { t } = useTranslation(['data']);
   const parsedTriggerObject = useParsedTriggerObject(object.data) ?? [];
+  const formatDateTime = useFormatDateTimeString();
   const language = useFormatLanguage();
-
   const dataModelTable = dataModel.find((table) => table.name === tableName);
   const links = R.pipe(
     dataModelTable?.linksToSingle ?? [],
@@ -67,8 +67,7 @@ export const IngestedObjectDetail = ({
         </span>
         <span className="bg-grey-100 border-grey-50 text-grey-50 rounded-sm border px-2 py-1">
           {t('data:last_ingestion_at', {
-            date: formatDateTimeWithoutPresets(object.metadata.validFrom, {
-              language,
+            date: formatDateTime(object.metadata.validFrom, {
               dateStyle: 'short',
               timeStyle: 'short',
             }),

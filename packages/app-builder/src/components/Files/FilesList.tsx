@@ -3,7 +3,7 @@ import {
   AuthRequestError,
   useDownloadFile,
 } from '@app-builder/services/DownloadFilesService';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTimeString, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
@@ -55,6 +55,7 @@ export function FilesListTable({
 }: Omit<FilesListProps, 'uploadEndpoint'>) {
   const { t } = useTranslation(['cases']);
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
 
   const columns = useMemo(() => {
     const columns = [
@@ -78,9 +79,7 @@ export function FilesListTable({
         cell: ({ getValue }) => {
           const dateTime = getValue();
           return (
-            <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
-            </time>
+            <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short' })}</time>
           );
         },
       }),

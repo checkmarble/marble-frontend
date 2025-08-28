@@ -3,7 +3,7 @@ import {
   type PaginatedResponse,
   type PaginationParams,
 } from '@app-builder/models/pagination';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTimeString, useFormatLanguage } from '@app-builder/utils/format';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -40,6 +40,7 @@ function FormattedDatesRange({
   language: string;
 }) {
   const { t } = useTranslation(['common']);
+  const formatDateTime = useFormatDateTimeString();
   if (!startTs || !endTs) {
     return null;
   }
@@ -64,14 +65,8 @@ function FormattedDatesRange({
         i18nKey="common:items_displayed_same_datetime"
         components={{ emph: <span className="font-bold" /> }}
         values={{
-          date: formatDateTimeWithoutPresets(start, {
-            language,
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-          }),
-          time: formatDateTimeWithoutPresets(start, {
-            language,
+          date: formatDateTime(start, { dateStyle: 'short' }),
+          time: formatDateTime(start, {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
@@ -81,11 +76,6 @@ function FormattedDatesRange({
     );
 
   if (isSameLocalDay) {
-    const dateFormatOpts = {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    } as Intl.DateTimeFormatOptions;
     const timeFormatOpts = {
       hour: '2-digit',
       minute: '2-digit',
@@ -100,16 +90,11 @@ function FormattedDatesRange({
         i18nKey={'common:items_displayed_same_date'}
         components={{ emph: <span className="font-bold" /> }}
         values={{
-          date: formatDateTimeWithoutPresets(start, {
-            language,
-            ...dateFormatOpts,
-          }),
-          start: formatDateTimeWithoutPresets(start, {
-            language,
+          date: formatDateTime(start, { dateStyle: 'short' }),
+          start: formatDateTime(start, {
             ...timeFormatOpts,
           }),
-          end: formatDateTimeWithoutPresets(end, {
-            language,
+          end: formatDateTime(end, {
             ...timeFormatOpts,
           }),
         }}
@@ -118,9 +103,7 @@ function FormattedDatesRange({
   }
 
   const dtFormatOpts = {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+    dateStyle: 'short',
     hour: '2-digit',
     minute: '2-digit',
   } as Intl.DateTimeFormatOptions;
@@ -130,12 +113,10 @@ function FormattedDatesRange({
       i18nKey={'common:items_displayed_dates'}
       components={{ emph: <span className="font-bold" /> }}
       values={{
-        start: formatDateTimeWithoutPresets(start, {
-          language,
+        start: formatDateTime(start, {
           ...dtFormatOpts,
         }),
-        end: formatDateTimeWithoutPresets(end, {
-          language,
+        end: formatDateTime(end, {
           ...dtFormatOpts,
         }),
       }}

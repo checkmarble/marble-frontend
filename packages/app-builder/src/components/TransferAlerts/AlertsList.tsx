@@ -3,7 +3,7 @@ import {
   type TransferAlertStatus,
   transferAlerStatusesWithoutArchived,
 } from '@app-builder/models/transfer-alert';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTimeString, useFormatLanguage } from '@app-builder/utils/format';
 import { type DateRangeFilter } from '@app-builder/utils/schema/filterSchema';
 import { arrIncludesExactSome, dateRangeFilterFn } from '@app-builder/utils/table-filter-fn';
 import {
@@ -125,6 +125,7 @@ function AlertsListTable({
 }: AlertsListTableProps) {
   const { t } = useTranslation(alertsI18n);
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
 
   const columns = React.useMemo(
     () => [
@@ -161,9 +162,7 @@ function AlertsListTable({
         cell: ({ getValue }) => {
           const dateTime = getValue();
           return (
-            <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
-            </time>
+            <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short' })}</time>
           );
         },
       }),

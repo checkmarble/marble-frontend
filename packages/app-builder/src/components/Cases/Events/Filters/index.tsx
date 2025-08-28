@@ -3,7 +3,7 @@ import {
   DEFAULT_CASE_EVENT_CATEGORIES_FILTER,
 } from '@app-builder/constants/cases';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTimeString, useFormatLanguage } from '@app-builder/utils/format';
 import { endOfDay, startOfDay } from 'date-fns';
 import { diff, toggle } from 'radash';
 import { type ComponentProps, type Dispatch, type SetStateAction, useMemo } from 'react';
@@ -34,6 +34,7 @@ export type CaseEventFiltersProps = {
 export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps) => {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
   const isDirty = useMemo(
     () =>
       diff(filters.types, DEFAULT_CASE_EVENT_CATEGORIES_FILTER).length !== 0 ||
@@ -120,8 +121,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
             {filters.startDate ? (
               <Badge>
                 {t('common:from', {
-                  input: formatDateTimeWithoutPresets(filters.startDate, {
-                    language,
+                  input: formatDateTime(filters.startDate, {
                     dateStyle: 'short',
                     timeStyle: 'short',
                   }),
@@ -131,8 +131,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
             {filters.endDate ? (
               <Badge>
                 {t('common:to', {
-                  input: formatDateTimeWithoutPresets(filters.endDate, {
-                    language,
+                  input: formatDateTime(filters.endDate, {
                     dateStyle: 'short',
                     timeStyle: 'short',
                   }),

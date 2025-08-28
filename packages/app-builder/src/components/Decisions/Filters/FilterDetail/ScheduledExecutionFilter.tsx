@@ -1,6 +1,6 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { type ScheduledExecutionsLoader } from '@app-builder/routes/ressources+/decisions+/list-scheduled-execution';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTimeString, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { useFetcher } from '@remix-run/react';
 import { matchSorter } from 'match-sorter';
@@ -15,6 +15,7 @@ import { useScheduledExecutionFilter } from '../DecisionFiltersContext';
 export function ScheduledExecutionFilter() {
   const { t } = useTranslation(decisionsI18n);
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTimeString();
 
   const loadFetcher = useFetcher<ScheduledExecutionsLoader>();
   React.useEffect(() => {
@@ -31,8 +32,7 @@ export function ScheduledExecutionFilter() {
           scenarioName: scheduledExecution.scenarioName,
           startedAt: {
             dateTime: scheduledExecution.startedAt,
-            formattedDateTime: formatDateTimeWithoutPresets(scheduledExecution.startedAt, {
-              language,
+            formattedDateTime: formatDateTime(scheduledExecution.startedAt, {
               dateStyle: 'short',
               timeStyle: 'short',
             }),
