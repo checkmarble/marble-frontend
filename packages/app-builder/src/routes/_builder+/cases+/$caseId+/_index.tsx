@@ -17,6 +17,7 @@ import {
   mergeDataModelWithTableOptions,
   type TableModelWithOptions,
 } from '@app-builder/models';
+import { isRuleExecutionHit } from '@app-builder/models/decision';
 import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
@@ -99,13 +100,14 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     cases.getMostRecentCaseReview({ caseId }),
   ]);
 
-  const dataModelWithTableOptions = (await Promise.all(
+  const dataModelWithTableOptionsRaw = (await Promise.all(
     dataModel.map<Promise<TableModelWithOptions>>((table) =>
       dataModelRepository.getDataModelTableOptions(table.id).then((options) => {
         return mergeDataModelWithTableOptions(table, options);
       }),
     ),
   )) satisfies DataModelWithTableOptions;
+  const dataModelWithTableOptions = dataModelWithTableOptionsRaw as DataModelWithTableOptions;
 
   const decisionsPromise = Promise.all(
     currentCase.decisions.map(async (d) => ({
@@ -169,9 +171,8 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
               map(details, (d) =>
                 pipe(
                   d.rules,
-                  filter((r) => r.outcome === 'hit'),
                   map((r) => ({
-                    ...omit(r, ['outcome', 'evaluation']),
+                    ...omit(r, ['evaluation']),
                     isSnoozed: snoozes.find(
                       (s) => s.pivotValue === pivotValue && r.ruleId === s.ruleId,
                     )
@@ -180,13 +181,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
                     hitAt: d.createdAt,
                     decisionId: d.id,
                     ruleGroup: scenarioRules.find((sr) => sr.id === r.ruleId)?.ruleGroup,
-                    outcome: d.outcome,
-                    start: snoozes.find(
-                      (s) => s.ruleId === r.ruleId && s.createdFromDecisionId === d.id,
-                    )?.startsAt as string,
-                    end: snoozes.find(
-                      (s) => s.ruleId === r.ruleId && s.createdFromDecisionId === d.id,
-                    )?.endsAt as string,
+                    start: snoozes.find((s) => s.ruleId === r.ruleId)?.startsAt as string,
+                    end: snoozes.find((s) => s.ruleId === r.ruleId)?.endsAt as string,
+                    scoreModifier: isRuleExecutionHit(r) ? r.scoreModifier : 0,
                   })),
                 ),
               ),
