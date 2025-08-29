@@ -5,12 +5,15 @@
   "private": true,
   "type": "module",
   "sideEffect": false,
-  "packageManager": "pnpm@10.15.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "packageManager": "bun@1.2.21",
   "scripts": {
     "format:write": "biome format . --write",
     "format:check": "biome format .",
     "test:all": "vitest",
-    "update-deps": "pnpm update -i -r --latest;clear; pnpm licenses ls --json > packages-licenses.json"
+    "update-deps": "bun update --latest -r -i; clear; bun pm ls --all > packages-licenses.txt"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.2",
@@ -40,5 +43,11 @@
       "lefthook",
       "protobufjs"
     ]
-  }
+  },
+  "trustedDependencies": [
+    "@firebase/util",
+    "@sentry/cli",
+    "@tailwindcss/oxide",
+    "protobufjs"
+  ]
 }
