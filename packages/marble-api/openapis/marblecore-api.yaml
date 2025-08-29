@@ -346,6 +346,11 @@ paths:
   /settings/me/unavailable:
     $ref: ./marblecore-api/users.yml#/~1settings~1me~1unavailable
 
+  # AI
+
+  /settings/ai:
+    $ref: ./marblecore-api/ai.yml#/~1settings~1ai
+
 components:
   securitySchemes:
     $ref: marblecore-api/_common.yml#/securitySchemes
