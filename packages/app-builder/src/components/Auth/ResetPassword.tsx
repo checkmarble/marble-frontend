@@ -17,7 +17,7 @@ import { FormInput } from '../Form/Tanstack/FormInput';
 import { FormLabel } from '../Form/Tanstack/FormLabel';
 
 const resetPasswordFormSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
 });
 
 type ResetPasswordForm = z.infer<typeof resetPasswordFormSchema>;
