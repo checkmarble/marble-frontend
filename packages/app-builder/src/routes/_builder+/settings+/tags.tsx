@@ -1,9 +1,9 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
+import { CreateTag } from '@app-builder/components/Settings/Tags/CreateTag';
+import { DeleteTag } from '@app-builder/components/Settings/Tags/DeleteTag';
+import { UpdateTag } from '@app-builder/components/Settings/Tags/UpdateTag';
 import { ColorPreview } from '@app-builder/components/Tags/ColorPreview';
 import { type TagColor } from '@app-builder/models/tags';
-import { CreateTag } from '@app-builder/routes/ressources+/settings+/tags+/create';
-import { DeleteTag } from '@app-builder/routes/ressources+/settings+/tags+/delete';
-import { UpdateTag } from '@app-builder/routes/ressources+/settings+/tags+/update';
 import {
   isCreateTagAvailable,
   isDeleteTagAvailable,
