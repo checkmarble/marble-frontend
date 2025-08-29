@@ -9,6 +9,7 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { DeleteScreeningRule } from '@app-builder/components/Scenario/Sanction/Actions/DeleteScreeningRule';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
 import { FieldDataset } from '@app-builder/components/Scenario/Sanction/FieldDataset';
 import { FieldEntityType } from '@app-builder/components/Scenario/Sanction/FieldEntityType';
@@ -24,7 +25,6 @@ import useIntersection from '@app-builder/hooks/useIntersection';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { knownOutcomes, type SanctionOutcome } from '@app-builder/models/outcome';
-import { DeleteSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/$sanctionId+/delete';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { isAccessible } from '@app-builder/services/feature-access';
@@ -345,7 +345,7 @@ export default function SanctionDetail() {
               </form.Field>
               {editor === 'edit' ? (
                 <div className="flex items-center gap-2">
-                  <DeleteSanction
+                  <DeleteScreeningRule
                     iterationId={iterationId}
                     scenarioId={scenario.id}
                     sanctionId={configId}
@@ -354,7 +354,7 @@ export default function SanctionDetail() {
                       <Icon icon="delete" className="size-4" aria-hidden />
                       {t('common:delete')}
                     </Button>
-                  </DeleteSanction>
+                  </DeleteScreeningRule>
 
                   <Button type="submit" className="flex-1" size="small">
                     <Icon icon="save" className="size-4" aria-hidden />

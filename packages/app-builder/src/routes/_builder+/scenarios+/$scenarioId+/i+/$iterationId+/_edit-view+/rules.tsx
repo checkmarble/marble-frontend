@@ -2,6 +2,7 @@ import { OutcomeBadge } from '@app-builder/components';
 import { FiltersButton } from '@app-builder/components/Filters/FiltersButton';
 import { Highlight } from '@app-builder/components/Highlight';
 import { Ping } from '@app-builder/components/Ping';
+import { CreateRule } from '@app-builder/components/Scenario/Rules/Actions/CreateRule';
 import { rulesFilterNames } from '@app-builder/components/Scenario/Rules/Filters/filters';
 import { RulesFiltersBar } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersBar';
 import {
@@ -12,7 +13,6 @@ import { RulesFiltersMenu } from '@app-builder/components/Scenario/Rules/Filters
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { type SanctionCheckConfig } from '@app-builder/models/sanction-check-config';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
-import { CreateRule } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/create';
 import { CreateSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';

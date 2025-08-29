@@ -4,6 +4,7 @@ import {
   type BreadCrumbProps,
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
+import { CancelTestRun } from '@app-builder/components/Scenario/TestRun/Actions/CancelTestRun';
 import { DistributionOfDecisionChart } from '@app-builder/components/Scenario/TestRun/Graphs/DistributionOfDecisionChart';
 import { FilterTransactionByDecision } from '@app-builder/components/Scenario/TestRun/Graphs/FilterTransactionByDecision';
 import { type Versions } from '@app-builder/components/Scenario/TestRun/Graphs/HamburgerGraph';
@@ -11,7 +12,6 @@ import { DistributionOfDecisionChartSkeleton } from '@app-builder/components/Sce
 import { FilterTransactionByDecisionSkeleton } from '@app-builder/components/Scenario/TestRun/Skeletons/FilterTransactionByDecicionSkeleton';
 import { TestRunDetails } from '@app-builder/components/Scenario/TestRun/TestRunDetails';
 import { adaptScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
-import { CancelTestRun } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/testrun+/$testRunId+/cancel';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
@@ -109,7 +109,7 @@ export default function TestRun() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
         {run.status === 'up' ? (
-          <CancelTestRun testRunId={run.id}>
+          <CancelTestRun currentScenario={currentScenario} testRunId={run.id}>
             <Button variant="secondary" color="red" className="isolate h-10 w-fit">
               <Icon icon="stop" className="text-grey-100 size-6" />
               <span className="text-grey-100">{t('scenarios:testrun.cancel')}</span>

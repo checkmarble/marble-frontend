@@ -1,15 +1,15 @@
 import { navigationI18n, Page, TabLink } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CornerPing } from '@app-builder/components/Ping';
+import { ActivateScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/ActivateScenarioVersion';
+import { CommitIterationDraft } from '@app-builder/components/Scenario/Iteration/Actions/CommitIterationDraft';
+import { CreateDraftIteration } from '@app-builder/components/Scenario/Iteration/Actions/CreateDraft';
+import { DeactivateScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/DeactivateScenarioVersion';
+import { PrepareScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/PrepareScenarioVersion';
 import {
   useCurrentScenario,
   useScenarioIterations,
 } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
-import { ActivateScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate';
-import { CommitScenarioDraft } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/commit';
-import { CreateDraftIteration } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/create_draft';
-import { DeactivateScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/deactivate';
-import { PrepareScenarioVersion } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/prepare';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import {
   isCreateDraftAvailable,
@@ -31,7 +31,6 @@ import { useTranslation } from 'react-i18next';
 import invariant from 'tiny-invariant';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { useCurrentScenarioValidation } from '../_layout';
 
 export const handle = {
@@ -219,7 +218,7 @@ function DeploymentActions({
 }) {
   switch (iteration.type) {
     case 'draft':
-      return <CommitScenarioDraft scenarioId={scenario.id} iteration={iteration} />;
+      return <CommitIterationDraft scenarioId={scenario.id} iteration={iteration} />;
     case 'version':
       if (iteration.status === 'ready_to_activate') {
         return <ActivateScenarioVersion scenario={scenario} iteration={iteration} />;

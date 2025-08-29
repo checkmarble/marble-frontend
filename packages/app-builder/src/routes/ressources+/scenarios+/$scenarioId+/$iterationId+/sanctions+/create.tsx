@@ -1,10 +1,11 @@
 import { Nudge } from '@app-builder/components/Nudge';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { useCreateScreeningRuleMutation } from '@app-builder/queries/scenarios/create-screening-rule';
 import { isAccessible } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type ActionFunctionArgs, json, redirect } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
+import { type ActionFunctionArgs } from '@remix-run/node';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
@@ -22,7 +23,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const { scenarioIterationSanctionRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  const t = await i18nextService.getFixedT(request, 'scenarios');
+  const t = await i18nextService.getFixedT(request, ['scenarios']);
   const scenarioId = fromParams(params, 'scenarioId');
   const iterationId = fromParams(params, 'iterationId');
 
@@ -30,24 +31,21 @@ export async function action({ request, params }: ActionFunctionArgs) {
     const config = await scenarioIterationSanctionRepository.createSanctionCheckConfig({
       iterationId,
       changes: {
-        name: t('create_sanction.default_name'),
+        name: t('scenarios:create_sanction.default_name'),
         ruleGroup: 'Screening',
         forcedOutcome: 'block_and_review',
       },
     });
 
-    return redirect(
-      getRoute('/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId', {
+    return Response.json({
+      redirectTo: getRoute('/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId', {
         scenarioId: fromUUIDtoSUUID(scenarioId),
         iterationId: fromUUIDtoSUUID(iterationId),
         sanctionId: fromUUIDtoSUUID(config.id as string),
       }),
-    );
-  } catch (error) {
-    return json({
-      success: false as const,
-      error: error,
     });
+  } catch (error) {
+    return Response.json({ success: false, error: error });
   }
 }
 
@@ -61,45 +59,41 @@ export function CreateSanction({
   isSanctionAvailable: FeatureAccessLevelDto;
 }) {
   const { t } = useTranslation(['scenarios']);
-  const fetcher = useFetcher<typeof action>();
+  const createScreeningRuleMutation = useCreateScreeningRuleMutation(scenarioId, iterationId);
   const disabled = useMemo(() => !isAccessible(isSanctionAvailable), [isSanctionAvailable]);
+  const revalidate = useLoaderRevalidator();
+
+  const handleCreateScreeningRule = () => {
+    createScreeningRuleMutation.mutateAsync().then(() => {
+      revalidate();
+    });
+  };
 
   return (
-    <fetcher.Form
-      method="POST"
-      action={getRoute('/ressources/scenarios/:scenarioId/:iterationId/sanctions/create', {
-        scenarioId: fromUUIDtoSUUID(scenarioId),
-        iterationId: fromUUIDtoSUUID(iterationId),
-      })}
+    <Button
+      type="submit"
+      variant="dropdown"
+      size="dropdown"
+      disabled={disabled}
+      className="w-full"
+      onClick={handleCreateScreeningRule}
     >
-      <Button
-        type="submit"
-        variant="dropdown"
-        size="dropdown"
-        disabled={disabled}
-        className="w-full"
-      >
-        <div className="flex items-center gap-4">
-          <Icon icon="plus" className="size-5" />
-          <div className="flex w-full flex-col items-start">
-            <span className="font-normal">{t('scenarios:create_sanction.title')}</span>
-            <span
-              className={clsx('text-s text-grey-50 font-normal', {
-                'text-grey-80': disabled,
-              })}
-            >
-              {t('scenarios:create_sanction.description')}
-            </span>
-          </div>
+      <div className="flex items-center gap-4">
+        <Icon icon="plus" className="size-5" />
+        <div className="flex w-full flex-col items-start">
+          <span className="font-normal">{t('scenarios:create_sanction.title')}</span>
+          <span
+            className={clsx('text-s text-grey-50 font-normal', {
+              'text-grey-80': disabled,
+            })}
+          >
+            {t('scenarios:create_sanction.description')}
+          </span>
         </div>
-        {isSanctionAvailable !== 'allowed' ? (
-          <Nudge
-            kind={isSanctionAvailable}
-            content={t('scenarios:sanction.nudge')}
-            className="p-1"
-          />
-        ) : null}
-      </Button>
-    </fetcher.Form>
+      </div>
+      {isSanctionAvailable !== 'allowed' ? (
+        <Nudge kind={isSanctionAvailable} content={t('scenarios:sanction.nudge')} className="p-1" />
+      ) : null}
+    </Button>
   );
 }
