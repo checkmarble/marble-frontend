@@ -730,14 +730,14 @@ export const routes = [
         "file": "routes/ressources+/settings+/inboxes+/inbox-users+/delete.tsx"
       },
       {
+        "id": "routes/ressources+/settings+/inboxes+/inbox-users+/edit-auto-assign",
+        "path": "ressources/settings/inboxes/inbox-users/edit-auto-assign",
+        "file": "routes/ressources+/settings+/inboxes+/inbox-users+/edit-auto-assign.tsx"
+      },
+      {
         "id": "routes/ressources+/settings+/inboxes+/inbox-users+/update",
         "path": "ressources/settings/inboxes/inbox-users/update",
         "file": "routes/ressources+/settings+/inboxes+/inbox-users+/update.tsx"
-      },
-      {
-        "id": "routes/ressources+/settings+/inboxes+/inboxusers+/$id",
-        "path": "ressources/settings/inboxes/inboxusers/:id",
-        "file": "routes/ressources+/settings+/inboxes+/inboxusers+/$id.ts"
       },
       {
         "id": "routes/ressources+/settings+/inboxes+/update",
