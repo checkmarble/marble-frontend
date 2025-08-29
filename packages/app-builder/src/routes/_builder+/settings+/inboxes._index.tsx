@@ -45,7 +45,7 @@ export async function loader({ request }: LoaderFunctionArgs): Promise<Response>
   ]);
 
   const inboxes = allInboxes.filter((inbox) => isAdmin(user) || isInboxAdmin(user, inbox));
-  if (inboxes.length === 0) {
+  if (inboxes.length === 0 && !isAdmin(user)) {
     return redirect(getRoute('/'));
   }
 
