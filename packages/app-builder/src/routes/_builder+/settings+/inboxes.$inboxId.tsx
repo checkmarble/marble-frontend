@@ -3,7 +3,9 @@ import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Br
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
 import { CreateInboxUser } from '@app-builder/components/Settings/Inboxes/CreateInboxUser';
+import { DeleteInbox } from '@app-builder/components/Settings/Inboxes/DeleteInbox';
 import { DeleteInboxUser } from '@app-builder/components/Settings/Inboxes/DeleteInboxUser';
+import { UpdateInbox } from '@app-builder/components/Settings/Inboxes/UpdateInbox';
 import { UpdateInboxUser } from '@app-builder/components/Settings/Inboxes/UpdateInboxUser';
 import { isAdmin } from '@app-builder/models';
 import { type FeatureAccesses } from '@app-builder/models/feature-access';
@@ -14,8 +16,6 @@ import {
   tKeyForInboxUserRole,
 } from '@app-builder/models/inbox';
 import { useEditInboxUserAutoAssignMutation } from '@app-builder/queries/settings/inboxes/edit-inbox-user-auto-assign';
-import { DeleteInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/delete';
-import { UpdateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/update';
 import {
   getInboxUserRoles,
   isAutoAssignmentAvailable,

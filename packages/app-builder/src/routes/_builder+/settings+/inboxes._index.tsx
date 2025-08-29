@@ -1,8 +1,8 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { Nudge } from '@app-builder/components/Nudge';
+import { CreateInbox } from '@app-builder/components/Settings/Inboxes/CreateInbox';
 import { isAdmin } from '@app-builder/models';
 import { type InboxWithCasesCount, tKeyForInboxUserRole } from '@app-builder/models/inbox';
-import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { UpdateOrganizationSettings } from '@app-builder/routes/ressources+/settings+/organization+/update';
 import {
   isAutoAssignmentAvailable,

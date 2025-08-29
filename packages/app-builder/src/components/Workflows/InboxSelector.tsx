@@ -1,6 +1,6 @@
 import { Highlight } from '@app-builder/components/Highlight';
+import { CreateInbox } from '@app-builder/components/Settings/Inboxes/CreateInbox';
 import { type InboxMetadata } from '@app-builder/models/inbox';
-import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

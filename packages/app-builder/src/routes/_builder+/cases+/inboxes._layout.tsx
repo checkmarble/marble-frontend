@@ -5,7 +5,7 @@ import {
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
 import { casesI18n } from '@app-builder/components/Cases';
-import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
+import { CreateInbox } from '@app-builder/components/Settings/Inboxes/CreateInbox';
 import {
   canAccessInboxesSettings,
   isCreateInboxAvailable,

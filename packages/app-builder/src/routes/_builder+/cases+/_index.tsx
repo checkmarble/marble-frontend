@@ -1,5 +1,5 @@
 import { Page } from '@app-builder/components';
-import { CreateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/create';
+import { CreateInbox } from '@app-builder/components/Settings/Inboxes/CreateInbox';
 import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
