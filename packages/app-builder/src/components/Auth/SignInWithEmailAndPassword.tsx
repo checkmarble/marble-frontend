@@ -26,7 +26,7 @@ import { Spinner } from '../Spinner';
 
 const emailAndPasswordFormSchema = z.object({
   credentials: z.object({
-    email: z.string().email(),
+    email: z.email(),
     password: z.string().min(1, 'Required'),
   }),
 });
