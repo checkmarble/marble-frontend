@@ -45,10 +45,10 @@ export function coerceToConstantAstNode(
 }
 
 const isNumberArray = /^\[(\s*(\d+(\.\d+)?)\s*,?)*(\s*|\])$/;
-const isStringArray = /^\[(\s*"?(\w+)"?\s*,?)*(\s*|\])$/;
+const isStringArray = /^\[(\s*"?([^",[\]]+)"?\s*,?)*\s*\]?$/;
 
 const captureNumbers = /(?:\s*(?<numbers>\d+(\.\d+)?)\s*,?)/g;
-const captureStrings = /(?:\s*"?(?<strings>(\w|\s)*\w)"?\s*,?)/g;
+const captureStrings = /(?:\s*"?(?<strings>[^",[\]]*[^",[\]\s])"?\s*,?)/g;
 
 function coerceToConstantArray(search: string): ConstantAstNode[] {
   const trimSearch = search.trim();
