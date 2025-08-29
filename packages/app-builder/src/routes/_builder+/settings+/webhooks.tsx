@@ -1,8 +1,8 @@
 import { Callout, CollapsiblePaper, Page } from '@app-builder/components';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
+import { CreateWebhook } from '@app-builder/components/Settings/Webhooks/CreateWebhook';
 import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
 import { type Webhook } from '@app-builder/models/webhook';
-import { CreateWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/create';
 import { webhooksSetupDocHref } from '@app-builder/services/documentation-href';
 import {
   isCreateWebhookAvailable,
