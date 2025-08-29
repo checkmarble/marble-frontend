@@ -1,15 +1,9 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { sanctionsI18n } from '@app-builder/components/Sanctions/sanctions-i18n';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
-import { useCallbackRef } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { fromParams } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
-import { useTranslation } from 'react-i18next';
-import { Button } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const {
@@ -26,7 +20,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const t = await getFixedT(request, ['common', 'sanctions']);
 
   try {
-    const match = await sanctionCheck.enrichMatch({ matchId });
+    await sanctionCheck.enrichMatch({ matchId });
 
     setToastMessage(session, {
       type: 'success',
@@ -34,9 +28,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return Response.json(
-      {
-        match,
-      },
+      {},
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
@@ -55,33 +47,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return Response.json(
-      { match: null },
+      {},
       {
         headers: { 'Set-Cookie': await commitSession(session) },
       },
     );
   }
-}
-
-export function EnrichMatchButton({ matchId }: { matchId: string }) {
-  const { t } = useTranslation(sanctionsI18n);
-  const fetcher = useFetcher<typeof action>();
-  const handleButtonClick = useCallbackRef(() => {
-    fetcher.submit(
-      {},
-      {
-        method: 'POST',
-        action: getRoute('/ressources/sanction-check/enrich-match/:matchId', {
-          matchId: fromUUIDtoSUUID(matchId),
-        }),
-      },
-    );
-  });
-
-  return (
-    <Button type="button" variant="secondary" className="h-8" onClick={handleButtonClick}>
-      <Icon icon="download" className="size-5" />
-      {t('sanctions:enrich_button')}
-    </Button>
-  );
 }
