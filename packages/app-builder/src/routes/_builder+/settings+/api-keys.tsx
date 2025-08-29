@@ -1,7 +1,7 @@
 import { Callout, CollapsiblePaper, CopyToClipboardButton, Page } from '@app-builder/components';
+import { CreateApiKey } from '@app-builder/components/Settings/ApiKey/CreateApiKey';
+import { DeleteApiKey } from '@app-builder/components/Settings/ApiKey/DeleteApiKey';
 import { type ApiKey, type CreatedApiKey } from '@app-builder/models/api-keys';
-import { CreateApiKey } from '@app-builder/routes/ressources+/settings+/api-keys+/create';
-import { DeleteApiKey } from '@app-builder/routes/ressources+/settings+/api-keys+/delete';
 import {
   isCreateApiKeyAvailable,
   isDeleteApiKeyAvailable,

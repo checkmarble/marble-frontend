@@ -2,6 +2,11 @@ import { CollapsiblePaper, Page } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { Nudge } from '@app-builder/components/Nudge';
+import { CreateInboxUser } from '@app-builder/components/Settings/Inboxes/CreateInboxUser';
+import { DeleteInbox } from '@app-builder/components/Settings/Inboxes/DeleteInbox';
+import { DeleteInboxUser } from '@app-builder/components/Settings/Inboxes/DeleteInboxUser';
+import { UpdateInbox } from '@app-builder/components/Settings/Inboxes/UpdateInbox';
+import { UpdateInboxUser } from '@app-builder/components/Settings/Inboxes/UpdateInboxUser';
 import { isAdmin } from '@app-builder/models';
 import { type FeatureAccesses } from '@app-builder/models/feature-access';
 import {
@@ -10,12 +15,7 @@ import {
   InboxWithCasesCount,
   tKeyForInboxUserRole,
 } from '@app-builder/models/inbox';
-import { useEditAutoAssignMutation } from '@app-builder/queries/InboxUsers/edit-auto-assign';
-import { DeleteInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/delete';
-import { CreateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users+/create';
-import { DeleteInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users+/delete';
-import { UpdateInboxUser } from '@app-builder/routes/ressources+/settings+/inboxes+/inbox-users+/update';
-import { UpdateInbox } from '@app-builder/routes/ressources+/settings+/inboxes+/update';
+import { useEditInboxUserAutoAssignMutation } from '@app-builder/queries/settings/inboxes/edit-inbox-user-auto-assign';
 import {
   getInboxUserRoles,
   isAutoAssignmentAvailable,
@@ -82,7 +82,7 @@ type LoaderData = {
   escalationInbox: InboxMetadata | null;
   caseCount: number;
   entitlements: FeatureAccesses;
-  inboxUserRoles: readonly [string, ...string[]];
+  inboxUserRoles: ReturnType<typeof getInboxUserRoles>;
   isEditInboxAvailable: boolean;
   isDeleteInboxAvailable: boolean;
   isCreateInboxUserAvailable: boolean;
@@ -206,6 +206,7 @@ export default function Inbox() {
   } = useLoaderData<LoaderData>();
   const { t } = useTranslation(handle.i18n);
   const { orgUsers } = useOrganizationUsers();
+  const editAutoAssignMutation = useEditInboxUserAutoAssignMutation();
 
   const columns = useMemo(() => {
     return [
@@ -233,10 +234,9 @@ export default function Inbox() {
               size: 150,
               cell: ({ getValue, row }) => {
                 const [value, setValue] = useState(getValue());
-                const editAutoAssignMutation = useEditAutoAssignMutation();
                 const handleChange = (checked: boolean) => {
                   setValue(checked);
-                  editAutoAssignMutation.mutate({
+                  editAutoAssignMutation.mutateAsync({
                     id: row.original.id,
                     autoAssignable: checked,
                   });

@@ -1,9 +1,9 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { SecretValue } from '@app-builder/components/SecretValue';
+import { DeleteWebhook } from '@app-builder/components/Settings/Webhooks/DeleteWebhook';
+import { UpdateWebhook } from '@app-builder/components/Settings/Webhooks/UpdateWebhook';
 import { EventTypes } from '@app-builder/components/Webhooks/EventTypes';
 import { type WebhookSecret } from '@app-builder/models/webhook';
-import { DeleteWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/delete';
-import { UpdateWebhook } from '@app-builder/routes/ressources+/settings+/webhooks+/update';
 import {
   isDeleteWebhookAvailable,
   isEditWebhookAvailable,
