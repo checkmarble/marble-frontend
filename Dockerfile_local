@@ -1,13 +1,15 @@
 FROM node:22-slim AS build
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN apt-get update && apt-get -y install curl ca-certificates
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:$PATH"
 
 COPY . /usr/src/app
 WORKDIR /usr/src/app
-RUN pnpm install --frozen-lockfile
-RUN pnpm --filter=app-builder run build
-RUN pnpm --legacy --filter=app-builder --prod deploy /prod/app-builder
+RUN bun install --frozen-lockfile
+RUN bun run -F app-builder build
+RUN mkdir -p /prod/app-builder && \
+    cp -R packages/app-builder/build /prod/app-builder/build && \
+    cp -R packages/app-builder/node_modules /prod/app-builder/node_modules
 
 FROM gcr.io/distroless/nodejs22-debian12 AS app-builder
 ENV PORT=${PORT:-8080}
