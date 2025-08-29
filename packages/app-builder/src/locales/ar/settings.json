@@ -18,6 +18,7 @@
   "data_display.global_explanation": "اسحب الحقول وإسقاطها لتعيين ترتيب العرض ، واستخدم Toggle لإخفاء تلك التي لا تحتاجها افتراضيًا في مدير الحالة.",
   "global_settings.auto_assign_queue_limit": "حد التعيين التلقائي",
   "global_settings.title": "الإعدادات العامة",
+  "ia_case_review": "مراجعة الحالات بالذكاء الاصطناعي",
   "inboxes": "صناديق البريدالوارد",
   "inboxes.auto_assign_queue_limit.nudge": "يسمح التعيين التلقائي بتوزيع الحالات بين المستخدمين.",
   "inboxes.cases": "الحالات",

@@ -93,11 +93,29 @@ export function getSettings(user: CurrentUser, appConfig: AppConfig, inboxes: In
     });
   }
   if (isAdmin(user) && appConfig.isManagedMarble) {
-    settings.push({
+    settings.push(
+      {
+        section: 'case_manager' as const,
+        title: 'ia_case_review' as const,
+        to: getRoute('/settings/ia-case-review'),
+      },{
       section: 'case_manager' as const,
       title: 'data_display' as const,
       to: getRoute('/settings/data-display'),
     });
+  if (isAdmin(user)) {
+    settings.push(
+      {
+        section: 'case_manager' as const,
+        title: 'ia_case_review' as const,
+        to: getRoute('/settings/ia-case-review'),
+      },
+      {
+        section: 'case_manager' as const,
+        title: 'data_display' as const,
+        to: getRoute('/settings/data-display'),
+      },
+    );
   }
   return settings;
 }
