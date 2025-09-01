@@ -23,6 +23,8 @@
   "error_other": "erreurs",
   "errors.account_exists_with_different_credential": "Il existe déjà un compte avec la même adresse e-mail mais des identifiants de connexion différents. \nConnectez-vous en utilisant un fournisseur associé à cette adresse e-mail.",
   "errors.add_to_case.invalid": "Une des décisions sélectionnées appartient déjà à une autre investigation",
+  "errors.backend_global_error.disallowed-network": "Vous n'êtes pas autorisé à accéder à cette page depuis ce réseau",
+  "errors.backend_global_error.unknown": "Une erreur inconnue s'est produite",
   "errors.backend_unvailable": "L'application Marble ne peut pas communiquer avec le backend Marble. \nVérifiez votre configuration ou réessayez ultérieurement.",
   "errors.data.duplicate_field_name": "Un champ portant ce nom existe déjà",
   "errors.data.duplicate_link_name": "Un lien avec ce nom existe déjà",

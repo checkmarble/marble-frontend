@@ -1,3 +1,4 @@
+import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type GetFeatureAccessAPIClientWithAuth } from '@app-builder/infra/feature-access-api';
 import {
   type GetMarbleCoreAPIClientWithAuth,
@@ -14,6 +15,7 @@ import {
   type CurrentUser,
 } from '@app-builder/models';
 import { emptyFeatureAccesses, type FeatureAccesses } from '@app-builder/models/feature-access';
+import { ToastFlashData } from '@app-builder/models/toast-session';
 import { type AnalyticsRepository } from '@app-builder/repositories/AnalyticsRepository';
 import { type ApiKeyRepository } from '@app-builder/repositories/ApiKeyRepository';
 import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
@@ -40,7 +42,7 @@ import { getServerEnv } from '@app-builder/utils/environment';
 import { parseForm } from '@app-builder/utils/input-validation';
 import { json, redirect } from '@remix-run/node';
 import { captureRemixServerException } from '@sentry/remix';
-import { marblecoreApi, TokenService } from 'marble-api';
+import { BackendGlobalError, marblecoreApi, TokenService } from 'marble-api';
 import { type CSRF, CSRFError } from 'remix-utils/csrf/server';
 import * as z from 'zod/v4';
 import { getRoute } from '../../utils/routes';
@@ -156,6 +158,7 @@ interface MakeAuthenticationServerServiceArgs {
   getFeatureAccessRepository: ReturnType<typeof makeGetFeatureAccessRepository>;
   getPersonalSettingsRepository: (marbleCoreApiClient: MarbleCoreApi) => PersonalSettingsRepository;
   authSessionService: SessionService<AuthData, AuthFlashData>;
+  toastSessionService: SessionService<void, ToastFlashData>;
   csrfService: CSRF;
 }
 
@@ -190,6 +193,7 @@ export function makeAuthenticationServerService({
   getFeatureAccessRepository,
   getPersonalSettingsRepository,
   authSessionService,
+  toastSessionService,
   csrfService,
 }: MakeAuthenticationServerServiceArgs) {
   function getTokenService(marbleAccessToken: string) {
@@ -317,6 +321,7 @@ export function makeAuthenticationServerService({
       | { successRedirect: string; failureRedirect: string } = {},
   ): Promise<AuthenticatedInfo | null> {
     const authSession = await authSessionService.getSession(request);
+    const toastSession = await toastSessionService.getSession(request);
 
     const marbleToken = authSession.get('authToken');
 
@@ -340,8 +345,18 @@ export function makeAuthenticationServerService({
         ? await getFeatureAccessRepository(featureAccessApiClient).getEntitlements()
         : emptyFeatureAccesses();
     } catch (err) {
+      let headers = new Headers();
+      if (err instanceof BackendGlobalError) {
+        setToastMessage(toastSession, {
+          type: 'error',
+          messageKey: `common:errors.backend_global_error.${err.code}`,
+        });
+
+        headers.set('Set-Cookie', await toastSessionService.commitSession(toastSession));
+      }
+
       captureRemixServerException(err, 'remix.server', request);
-      if (options.failureRedirect) throw redirect(options.failureRedirect);
+      if (options.failureRedirect) throw redirect(options.failureRedirect, { headers });
       else return null;
     }
 

@@ -23,6 +23,8 @@
   "error_other": "{{count}} errors",
   "errors.account_exists_with_different_credential": "An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.",
   "errors.add_to_case.invalid": "A decision already belongs to a case",
+  "errors.backend_global_error.disallowed-network": "You are not allowed to access this page from this network",
+  "errors.backend_global_error.unknown": "An unknown error has occurred",
   "errors.backend_unvailable": "The Marble app cannot communicate with the Marble backend. Either check your configuration or try again later.",
   "errors.data.duplicate_field_name": "A field with this name already exist",
   "errors.data.duplicate_link_name": "A link with this name already exist",
