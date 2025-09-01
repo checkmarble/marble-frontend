@@ -23,7 +23,7 @@ jobs:
             ~/.bun/install/cache
             node_modules
             packages/*/node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          key: ${{ runner.os }}-bun-${{ hashFiles('/bun.lock') }}
           restore-keys: |
             ${{ runner.os }}-bun-
       - name: Set up Node
@@ -32,8 +32,8 @@ jobs:
           node-version-file: '.tool-versions'
       - name: Install dependencies
         run: bun install --frozen-lockfile
-      - run: bun --filter tests x playwright install chromium-headless-shell
-      - run: bun --filter tests run test
+      - run: bun run -F tests test:install
+      - run: bun run -F tests test
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
