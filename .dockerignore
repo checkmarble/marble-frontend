@@ -1,19 +1,38 @@
-node_modules
+# VCS
+.git
+.gitignore
 
-**/.github
-**/.gitignore
-**/.vscode
-**/coverage
-**/.env
-**/.aws
-**/.ssh
-Dockerfile
-Dockerfile_local
-.dockerignore
-README.md
-docker-compose.yml
-**/.DS_Store
-**/venv
-**/env
-**/dist
+# Node/Bun deps in context (use layer caching instead)
+node_modules
+**/node_modules
+
+# Build outputs
 **/build
+**/dist
+packages/app-builder/build
+
+# Caches and tooling
+**/.cache
+**/.turbo
+**/.next
+**/.vite
+**/.eslintcache
+
+# Tests, reports, and stories
+packages/tests
+**/__tests__
+**/*.test.*
+**/test-results
+**/playwright-report
+**/storybook-static
+
+# Local and misc
+Dockerfile_local
+.env
+.env.*
+*.log
+*.local
+
+# IDE
+.vscode
+.idea
