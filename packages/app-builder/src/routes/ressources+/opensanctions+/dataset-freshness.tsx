@@ -33,9 +33,11 @@ async function getDatasetFreshnessInfo(
           : null;
       }),
     ),
-    R.flat(),
-    R.filter((iteration) => (iteration?.sanctionCheckConfigs.length ?? 0) > 0),
-  ) as ScenarioIteration[];
+    R.filter(
+      (iteration): iteration is ScenarioIteration =>
+        !!iteration && iteration.sanctionCheckConfigs.length > 0,
+    ),
+  );
 
   if (iterationsWithSanctionCheck.length > 0) {
     return { lastExport: datasetFreshness.upstream.lastExport };
