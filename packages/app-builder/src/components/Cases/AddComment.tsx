@@ -16,7 +16,7 @@ import { Icon } from 'ui-icons';
 export function AddComment({ caseId }: { caseId: string }) {
   const { t } = useTranslation(casesI18n);
   const addCommentMutation = useAddCommentMutation();
-  const revalidate = useLoaderRevalidator;
+  const revalidate = useLoaderRevalidator();
 
   const form = useForm({
     defaultValues: { caseId, comment: '', files: [] } as AddCommentPayload,
