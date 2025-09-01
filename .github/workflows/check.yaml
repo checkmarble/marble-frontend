@@ -25,7 +25,7 @@ jobs:
             ~/.bun/install/cache
             node_modules
             packages/*/node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          key: ${{ runner.os }}-bun-${{ hashFiles('/bun.lock') }}
           restore-keys: |
             ${{ runner.os }}-bun-
       - name: Set up Node
