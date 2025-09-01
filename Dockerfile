@@ -1,6 +1,4 @@
-FROM node:22-slim AS build
-RUN apt-get update && apt-get -y install curl ca-certificates
-RUN curl -fsSL https://bun.sh/install | bash
+FROM oven/bun:alpine AS build
 ENV PATH="/root/.bun/bin:$PATH"
 
 ARG SENTRY_ORG
@@ -19,7 +17,7 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
 ENV NODE_ENV=production
 RUN mkdir -p /prod/app-builder && \
     cp -R packages/app-builder/build /prod/app-builder/build && \
-    cp -R -L packages/app-builder/node_modules /prod/app-builder/node_modules
+    cp -R -L node_modules /prod/app-builder/node_modules
 
 FROM gcr.io/distroless/nodejs22-debian12 AS app-builder
 ENV NODE_ENV=production
