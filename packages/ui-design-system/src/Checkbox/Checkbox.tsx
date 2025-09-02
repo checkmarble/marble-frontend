@@ -1,10 +1,8 @@
-import { type CheckboxProps, Indicator, Root } from '@radix-ui/react-checkbox';
 import { cva } from 'class-variance-authority';
+import { Checkbox as RadixCheckbox } from 'radix-ui';
 import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
-
-export type { CheckedState } from '@radix-ui/react-checkbox';
-
+export type CheckedState = RadixCheckbox.CheckedState;
 const checkbox = cva(
   [
     'flex shrink-0 items-center justify-center rounded-sm border outline-hidden',
@@ -34,7 +32,7 @@ const checkbox = cva(
 
 export const Checkbox = forwardRef<
   HTMLButtonElement,
-  Omit<CheckboxProps, 'asChild'> & {
+  Omit<RadixCheckbox.CheckboxProps, 'asChild'> & {
     color?: 'purple' | 'red';
     circle?: boolean;
     size?: 'small' | 'default';
@@ -44,14 +42,14 @@ export const Checkbox = forwardRef<
   ref,
 ) {
   return (
-    <Root
+    <RadixCheckbox.Root
       ref={ref}
       id={props.name}
       className={checkbox({ color, circle, size, className: `group ${className}` })}
       checked={checked}
       {...props}
     >
-      <Indicator asChild>
+      <RadixCheckbox.Indicator asChild>
         {checked === undefined ? (
           <Icon icon="tick" className="text-grey-100 group-disabled:text-grey-50" />
         ) : checked === true ? (
@@ -62,7 +60,7 @@ export const Checkbox = forwardRef<
             className="group-disabled:text-grey-50 text-purple-65"
           />
         ) : null}
-      </Indicator>
-    </Root>
+      </RadixCheckbox.Indicator>
+    </RadixCheckbox.Root>
   );
 });

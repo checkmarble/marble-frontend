@@ -27,13 +27,8 @@ import {
   type OperandType,
 } from '@app-builder/models/operand-type';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardPortal,
-  HoverCardTrigger,
-} from '@radix-ui/react-hover-card';
 import clsx from 'clsx';
+import { HoverCard } from 'radix-ui';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
@@ -59,15 +54,15 @@ const contentClassnames = clsx([
 
 export function OperandInfos(props: OperandInfosProps) {
   return (
-    <HoverCard openDelay={50} closeDelay={200}>
-      <HoverCardTrigger asChild>
+    <HoverCard.Root openDelay={50} closeDelay={200}>
+      <HoverCard.Trigger asChild>
         <Icon
           icon="tip"
           className="hover:group-hover:text-purple-65 group-hover:text-purple-82 data-[state=open]:text-purple-65 size-5 shrink-0 text-transparent"
         />
-      </HoverCardTrigger>
-      <HoverCardPortal>
-        <HoverCardContent
+      </HoverCard.Trigger>
+      <HoverCard.Portal>
+        <HoverCard.Content
           side="right"
           align="start"
           sideOffset={20}
@@ -83,9 +78,9 @@ export function OperandInfos(props: OperandInfosProps) {
             </div>
             <OperandDescription node={props.node} />
           </div>
-        </HoverCardContent>
-      </HoverCardPortal>
-    </HoverCard>
+        </HoverCard.Content>
+      </HoverCard.Portal>
+    </HoverCard.Root>
   );
 }
 

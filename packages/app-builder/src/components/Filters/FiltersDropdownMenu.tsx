@@ -1,5 +1,5 @@
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import clsx from 'clsx';
+import { DropdownMenu } from 'radix-ui';
 import { forwardRef } from 'react';
 
 const FiltersDropdownMenuContent = forwardRef<

@@ -1,5 +1,5 @@
-import { Fallback, Image, Root, type AvatarProps as RootAvatarProps } from '@radix-ui/react-avatar';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { Avatar as RadixAvatar } from 'radix-ui';
 
 const avatar = cva(
   'inline-flex select-none items-center justify-center overflow-hidden rounded-full shrink-0',
@@ -25,7 +25,7 @@ const avatar = cva(
   },
 );
 
-export type AvatarProps = Omit<RootAvatarProps, 'asChild'> &
+export type AvatarProps = Omit<RadixAvatar.AvatarProps, 'asChild'> &
   VariantProps<typeof avatar> & {
     firstName?: string;
     lastName?: string;
@@ -42,7 +42,7 @@ export function Avatar({
   ...props
 }: AvatarProps) {
   return (
-    <Root
+    <RadixAvatar.Root
       className={avatar({
         size,
         color,
@@ -50,18 +50,18 @@ export function Avatar({
       })}
       {...props}
     >
-      <Image
+      <RadixAvatar.Image
         referrerPolicy="no-referrer"
         className="size-full object-cover"
         src={src}
         alt={firstName || lastName ? `${firstName ?? ''} ${lastName ?? ''}` : 'Unknown user'}
       />
-      <Fallback
+      <RadixAvatar.Fallback
         className="text-grey-00 flex size-full items-center justify-center text-center font-normal uppercase"
         delayMs={src ? 400 : 0}
       >
         {`${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}` || '👤'}
-      </Fallback>
-    </Root>
+      </RadixAvatar.Fallback>
+    </RadixAvatar.Root>
   );
 }

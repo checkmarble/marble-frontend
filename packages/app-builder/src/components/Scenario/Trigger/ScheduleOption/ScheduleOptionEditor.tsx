@@ -1,6 +1,6 @@
 import { useFormatLanguage } from '@app-builder/utils/format';
-import { Label } from '@radix-ui/react-label';
 import { type ParseKeys } from 'i18next';
+import { Label } from 'radix-ui';
 import { Trans, useTranslation } from 'react-i18next';
 import { Checkbox, Select } from 'ui-design-system';
 
@@ -37,7 +37,9 @@ export function ScheduleOptionEditor({
             })
           }
         />
-        <Label htmlFor="scheduleScenario">{t('scenarios:trigger.schedule_scenario.option')}</Label>
+        <Label.Root htmlFor="scheduleScenario">
+          {t('scenarios:trigger.schedule_scenario.option')}
+        </Label.Root>
       </div>
       {scheduleOption.isScenarioScheduled ? (
         <>

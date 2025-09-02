@@ -1,6 +1,6 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import * as Dialog from '@radix-ui/react-dialog';
 import clsx from 'clsx';
+import { Dialog } from 'radix-ui';
 import { forwardRef } from 'react';
 import { noop } from 'typescript-utils';
 import { Icon } from 'ui-icons';

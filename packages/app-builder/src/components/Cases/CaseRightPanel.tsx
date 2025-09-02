@@ -1,6 +1,6 @@
 import { createRightPanel, type RightPanelRootProps } from '@app-builder/components/RightPanel';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import { type DialogTriggerProps } from '@radix-ui/react-dialog';
+import { Dialog } from 'radix-ui';
 import { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CreateCase } from './CreateCase';
@@ -91,7 +91,7 @@ function CaseRightPanelTrigger({
   ...otherProps
 }: {
   data: Data;
-} & DialogTriggerProps) {
+} & Dialog.DialogTriggerProps) {
   const { onTriggerClick } = useCaseRightPanelContext();
 
   return (

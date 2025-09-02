@@ -2,8 +2,8 @@ import { useUnavailabilitySettings } from '@app-builder/queries/personal-setting
 import { segment } from '@app-builder/services/segment';
 import { getFullName } from '@app-builder/services/user';
 import { getRoute } from '@app-builder/utils/routes';
-import * as Popover from '@radix-ui/react-popover';
 import { Form } from '@remix-run/react';
+import { Popover } from 'radix-ui';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Tag } from 'ui-design-system';
 import { Icon, Logo } from 'ui-icons';

@@ -1,24 +1,6 @@
-import {
-  Content,
-  Item,
-  ItemText,
-  Portal,
-  type SelectTriggerProps as PrimitiveSelectTriggerProps,
-  type SelectProps as RawSelectProps,
-  Root,
-  ScrollDownButton,
-  ScrollUpButton,
-  type SelectContentProps,
-  Icon as SelectIcon,
-  type SelectItemProps,
-  type SelectValueProps,
-  type SelectViewportProps,
-  Trigger,
-  Value,
-  Viewport,
-} from '@radix-ui/react-select';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
+import { Select as RadixSelect } from 'radix-ui';
 import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 
@@ -26,10 +8,10 @@ function SelectContent({
   children,
   className,
   ...props
-}: React.PropsWithChildren<SelectContentProps>) {
+}: React.PropsWithChildren<RadixSelect.SelectContentProps>) {
   return (
-    <Portal>
-      <Content
+    <RadixSelect.Portal>
+      <RadixSelect.Content
         className={clsx(
           'bg-grey-100 border-grey-90 z-50 mt-2 rounded-sm border shadow-md',
           className,
@@ -37,15 +19,15 @@ function SelectContent({
         position="popper"
         {...props}
       >
-        <ScrollUpButton className="flex h-6 justify-center">
+        <RadixSelect.ScrollUpButton className="flex h-6 justify-center">
           <Icon icon="arrow-2-up" />
-        </ScrollUpButton>
+        </RadixSelect.ScrollUpButton>
         {children}
-        <ScrollDownButton className="flex h-6 justify-center">
+        <RadixSelect.ScrollDownButton className="flex h-6 justify-center">
           <Icon icon="arrow-2-down" />
-        </ScrollDownButton>
-      </Content>
-    </Portal>
+        </RadixSelect.ScrollDownButton>
+      </RadixSelect.Content>
+    </RadixSelect.Portal>
   );
 }
 
@@ -53,11 +35,11 @@ function SelectViewport({
   children,
   className,
   ...props
-}: React.PropsWithChildren<SelectViewportProps>) {
+}: React.PropsWithChildren<RadixSelect.SelectViewportProps>) {
   return (
-    <Viewport className={clsx('flex flex-col gap-2 p-2', className)} {...props}>
+    <RadixSelect.Viewport className={clsx('flex flex-col gap-2 p-2', className)} {...props}>
       {children}
-    </Viewport>
+    </RadixSelect.Viewport>
   );
 }
 
@@ -83,7 +65,7 @@ export const selectTrigger = cva(
 );
 
 export interface SelectTriggerProps
-  extends PrimitiveSelectTriggerProps,
+  extends RadixSelect.SelectTriggerProps,
     VariantProps<typeof selectTrigger> {}
 
 const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(function SelectTrigger(
@@ -91,7 +73,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(function
   ref,
 ) {
   return (
-    <Trigger
+    <RadixSelect.Trigger
       ref={ref}
       data-border={border}
       data-border-color={borderColor}
@@ -108,16 +90,16 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(function
       {...props}
     >
       {children}
-    </Trigger>
+    </RadixSelect.Trigger>
   );
 });
 
-const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectItem(
+const SelectItem = forwardRef<HTMLDivElement, RadixSelect.SelectItemProps>(function SelectItem(
   { children, className, ...props },
   ref,
 ) {
   return (
-    <Item
+    <RadixSelect.Item
       ref={ref}
       className={clsx(
         'text-s rounded-xs p-2 font-medium outline-hidden',
@@ -127,34 +109,38 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectIt
       {...props}
     >
       {children}
-    </Item>
+    </RadixSelect.Item>
   );
 });
 
-const SelectValue = forwardRef<HTMLDivElement, SelectValueProps & { align?: 'center' | 'start' }>(
-  function SelectValue({ className, align = 'center', ...props }, ref) {
-    return (
-      <span
-        className={clsx(
-          'w-full group-data-[border=rounded]/trigger:px-2',
-          { 'text-center': align === 'center', 'text-start': align === 'start' },
-          className,
-        )}
-      >
-        <Value ref={ref} {...props} />
-      </span>
-    );
-  },
-);
+const SelectValue = forwardRef<
+  HTMLDivElement,
+  RadixSelect.SelectValueProps & { align?: 'center' | 'start' }
+>(function SelectValue({ className, align = 'center', ...props }, ref) {
+  return (
+    <span
+      className={clsx(
+        'w-full group-data-[border=rounded]/trigger:px-2',
+        { 'text-center': align === 'center', 'text-start': align === 'start' },
+        className,
+      )}
+    >
+      <RadixSelect.Value ref={ref} {...props} />
+    </span>
+  );
+});
 
 const SelectArrow = () => (
-  <SelectIcon className="group-radix-state-open:rotate-180 text-grey-00 size-6 shrink-0" asChild>
+  <RadixSelect.Icon
+    className="group-radix-state-open:rotate-180 text-grey-00 size-6 shrink-0"
+    asChild
+  >
     <Icon icon="arrow-2-down" />
-  </SelectIcon>
+  </RadixSelect.Icon>
 );
 
-export type SelectProps = RawSelectProps &
-  Pick<SelectValueProps, 'placeholder'> &
+export type SelectProps = RadixSelect.SelectProps &
+  Pick<RadixSelect.SelectValueProps, 'placeholder'> &
   Pick<SelectTriggerProps, 'border' | 'borderColor' | 'className'>;
 
 const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(function SelectDefault(
@@ -162,49 +148,48 @@ const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(function Select
   triggerRef,
 ) {
   return (
-    <Root {...props}>
-      <Select.Trigger
+    <RadixSelect.Root {...props}>
+      <RadixSelect.Trigger
         ref={triggerRef}
-        border={border}
-        borderColor={borderColor}
+        data-border={border}
+        data-border-color={borderColor}
         className={className}
       >
-        <Select.Value placeholder={placeholder} />
-        <Select.Arrow />
-      </Select.Trigger>
-      <Select.Content
+        <RadixSelect.Value placeholder={placeholder} />
+        <RadixSelect.Arrow />
+      </RadixSelect.Trigger>
+      <RadixSelect.Content
         className="z-50 max-h-60 min-w-(--radix-select-trigger-width)"
         align={border === 'rounded' ? 'center' : 'start'}
       >
-        <Select.Viewport>{children}</Select.Viewport>
-      </Select.Content>
-    </Root>
+        <RadixSelect.Viewport>{children}</RadixSelect.Viewport>
+      </RadixSelect.Content>
+    </RadixSelect.Root>
   );
 });
 
-const SelectDefaultItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectDefaultItem(
-  { children, className, ...props },
-  ref,
-) {
-  return (
-    <SelectItem ref={ref} className={clsx('min-h-10', className)} {...props}>
-      <Select.ItemText>{children}</Select.ItemText>
-    </SelectItem>
-  );
-});
+const SelectDefaultItem = forwardRef<HTMLDivElement, RadixSelect.SelectItemProps>(
+  function SelectDefaultItem({ children, className, ...props }, ref) {
+    return (
+      <RadixSelect.Item ref={ref} className={clsx('min-h-10', className)} {...props}>
+        <RadixSelect.ItemText>{children}</RadixSelect.ItemText>
+      </RadixSelect.Item>
+    );
+  },
+);
 /**
  * @deprecated This Select component is deprecated and will be removed in a future release.
  * Please migrate to the new MenuCommand component as soon as possible.
  */
 export const Select = {
   Default: SelectDefault,
-  Root,
+  Root: RadixSelect.Root,
   Trigger: SelectTrigger,
   Arrow: SelectArrow,
   Content: SelectContent,
   Viewport: SelectViewport,
   Item: SelectItem,
   DefaultItem: SelectDefaultItem,
-  ItemText,
+  ItemText: RadixSelect.ItemText,
   Value: SelectValue,
 };

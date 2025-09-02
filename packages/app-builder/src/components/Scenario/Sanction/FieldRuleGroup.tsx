@@ -1,5 +1,5 @@
-import { Content, Root, Trigger } from '@radix-ui/react-popover';
 import clsx from 'clsx';
+import { Popover } from 'radix-ui';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { unique } from 'remeda';
@@ -39,7 +39,7 @@ export const FieldRuleGroup = ({
   );
 
   return (
-    <Root
+    <Popover.Root
       defaultOpen={false}
       onOpenChange={(open) => {
         if (open === false) {
@@ -50,7 +50,7 @@ export const FieldRuleGroup = ({
     >
       <div className="flex items-center gap-2">
         {selectedRuleGroup ? <RuleGroup ruleGroup={selectedRuleGroup} /> : null}
-        <Trigger asChild>
+        <Popover.Trigger asChild>
           <Button
             disabled={disabled}
             variant="secondary"
@@ -63,9 +63,9 @@ export const FieldRuleGroup = ({
             />
             {!selectedRuleGroup ? <span>{t('scenarios:rules.add_group')}</span> : null}
           </Button>
-        </Trigger>
+        </Popover.Trigger>
       </div>
-      <Content className="mt-1 min-w-[280px] shadow-md" align="start">
+      <Popover.Content className="mt-1 min-w-[280px] shadow-md" align="start">
         <Command className="flex flex-col gap-2 p-2">
           <div className="border-grey-90 flex items-center gap-2 border-b p-2 pb-3">
             {selectedRuleGroup ? (
@@ -123,7 +123,7 @@ export const FieldRuleGroup = ({
             ) : null}
           </CommandList>
         </Command>
-      </Content>
-    </Root>
+      </Popover.Content>
+    </Popover.Root>
   );
 };

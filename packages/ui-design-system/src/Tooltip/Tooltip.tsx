@@ -1,12 +1,11 @@
-import * as TooltipPrimitive from '@radix-ui/react-tooltip';
-import { type TooltipContentProps, type TooltipProps } from '@radix-ui/react-tooltip';
+import { Tooltip as RadixTooltip } from 'radix-ui';
 import { forwardRef } from 'react';
 
 import { cn } from '../utils';
 
 interface DefaultTooltipProps
-  extends Pick<TooltipProps, 'open' | 'defaultOpen' | 'onOpenChange'>,
-    Omit<TooltipContentProps, 'content'> {
+  extends Pick<RadixTooltip.TooltipProps, 'open' | 'defaultOpen' | 'onOpenChange'>,
+    Omit<RadixTooltip.TooltipContentProps, 'content'> {
   children: React.ReactNode;
   content: React.ReactNode;
   arrow?: boolean;
@@ -23,38 +22,31 @@ export function DefaultTooltip({
   ...props
 }: DefaultTooltipProps) {
   return (
-    <TooltipPrimitive.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
-      <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
-      <TooltipPrimitive.Portal>
-        <TooltipPrimitive.Content
-          side="top"
-          align="center"
-          className="z-50 drop-shadow-sm"
-          {...props}
-        >
+    <RadixTooltip.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+      <RadixTooltip.Trigger asChild>{children}</RadixTooltip.Trigger>
+      <RadixTooltip.Portal>
+        <RadixTooltip.Content side="top" align="center" className="z-50 drop-shadow-sm" {...props}>
           <div className={cn('bg-grey-100 max-h-40 overflow-y-auto rounded-sm p-2', className)}>
             {content}
           </div>
-          {arrow ? (
-            <TooltipPrimitive.Arrow width={11} height={5} className="fill-grey-100" />
-          ) : null}
-        </TooltipPrimitive.Content>
-      </TooltipPrimitive.Portal>
-    </TooltipPrimitive.Root>
+          {arrow ? <RadixTooltip.Arrow width={11} height={5} className="fill-grey-100" /> : null}
+        </RadixTooltip.Content>
+      </RadixTooltip.Portal>
+    </RadixTooltip.Root>
   );
 }
 
 export const Tooltip = {
   Default: DefaultTooltip,
-  Provider: TooltipPrimitive.Provider,
+  Provider: RadixTooltip.Provider,
 };
 
 const TooltipContent = forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
+  React.ElementRef<typeof RadixTooltip.Content>,
+  React.ComponentPropsWithoutRef<typeof RadixTooltip.Content>
 >(({ className, sideOffset = 4, ...props }, ref) => (
-  <TooltipPrimitive.Portal>
-    <TooltipPrimitive.Content
+  <RadixTooltip.Portal>
+    <RadixTooltip.Content
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
@@ -63,14 +55,14 @@ const TooltipContent = forwardRef<
       )}
       {...props}
     />
-  </TooltipPrimitive.Portal>
+  </RadixTooltip.Portal>
 ));
 
-TooltipContent.displayName = TooltipPrimitive.Content.displayName;
+TooltipContent.displayName = RadixTooltip.Content.displayName;
 
 export const TooltipV2 = {
-  Provider: TooltipPrimitive.Provider,
-  Tooltip: TooltipPrimitive.Root,
-  TooltipTrigger: TooltipPrimitive.Trigger,
+  Provider: RadixTooltip.Provider,
+  Tooltip: RadixTooltip.Root,
+  TooltipTrigger: RadixTooltip.Trigger,
   TooltipContent,
 };

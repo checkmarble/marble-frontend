@@ -1,9 +1,8 @@
 import { useCallbackRef } from '@marble/shared';
-import * as HoverCard from '@radix-ui/react-hover-card';
-import * as Popover from '@radix-ui/react-popover';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
 import { Command } from 'cmdk';
+import { HoverCard, Popover } from 'radix-ui';
 import * as React from 'react';
 import { createSharpFactory } from 'sharpstate';
 import { Icon } from 'ui-icons';

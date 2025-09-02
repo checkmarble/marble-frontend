@@ -10,8 +10,8 @@ import {
   useCloseCaseMutation,
 } from '@app-builder/queries/cases/close-case';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
-import { RadioGroup, RadioGroupItem } from '@radix-ui/react-radio-group';
 import { useForm } from '@tanstack/react-form';
+import { RadioGroup } from 'radix-ui';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -64,7 +64,7 @@ export const CloseCase = ({ id }: { id: string }) => {
             {(field) => (
               <div className="flex flex-col gap-2">
                 <FormLabel name={field.name}>Choose a status</FormLabel>
-                <RadioGroup
+                <RadioGroup.Root
                   name={field.name}
                   onValueChange={(v) => field.handleChange(v as FinalOutcome)}
                   onBlur={field.handleBlur}
@@ -72,7 +72,7 @@ export const CloseCase = ({ id }: { id: string }) => {
                 >
                   {finalOutcomes.map((s) => {
                     return (
-                      <RadioGroupItem
+                      <RadioGroup.Item
                         key={s}
                         value={s}
                         className="border-grey-90 data-[state=checked]:border-purple-60 flex items-center justify-center rounded-[20px] border bg-transparent p-1.5"
@@ -90,10 +90,10 @@ export const CloseCase = ({ id }: { id: string }) => {
                             .with('false_positive', () => 'False positive')
                             .exhaustive()}
                         </span>
-                      </RadioGroupItem>
+                      </RadioGroup.Item>
                     );
                   })}
-                </RadioGroup>
+                </RadioGroup.Root>
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>
             )}
