@@ -85,29 +85,16 @@ components:
       type: object
       required:
         - org_id
-        - created_at
-        - updated_at
-        - kyc_enrichment_setting
-        - case_review_setting
       properties:
         org_id:
           type: string
           format: uuid
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
         kyc_enrichment_setting:
           $ref: "#/components/schemas/KycEnrichmentSettingDto"
         case_review_setting:
           $ref: "#/components/schemas/CaseReviewSettingDto"
     UpsertAISettingsDto:
       type: object
-      required:
-        - kyc_enrichment_setting
-        - case_review_setting
       properties:
         kyc_enrichment_setting:
           $ref: "#/components/schemas/KycEnrichmentSettingDto"

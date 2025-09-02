@@ -1325,14 +1325,12 @@ export type CaseReviewSettingDto = {
 };
 export type AiSettingsDto = {
     org_id: string;
-    created_at: string;
-    updated_at: string;
-    kyc_enrichment_setting: KycEnrichmentSettingDto;
-    case_review_setting: CaseReviewSettingDto;
+    kyc_enrichment_setting?: KycEnrichmentSettingDto;
+    case_review_setting?: CaseReviewSettingDto;
 };
 export type UpsertAiSettingsDto = {
-    kyc_enrichment_setting: KycEnrichmentSettingDto;
-    case_review_setting: CaseReviewSettingDto;
+    kyc_enrichment_setting?: KycEnrichmentSettingDto;
+    case_review_setting?: CaseReviewSettingDto;
 };
 /**
  * Get an access token
