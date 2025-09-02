@@ -1,4 +1,9 @@
-import { Hovercard, HovercardAnchor, HovercardProvider } from '@ariakit/react/hovercard';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardPortal,
+  HoverCardTrigger,
+} from '@radix-ui/react-hover-card';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -17,8 +22,8 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
   const { t } = useTranslation(['common']);
 
   return (
-    <HovercardProvider showTimeout={0} hideTimeout={0} placement="right">
-      <HovercardAnchor
+    <HoverCard>
+      <HoverCardTrigger
         tabIndex={-1}
         className={cn(
           'text-grey-100 flex flex-row items-center justify-center rounded-sm',
@@ -27,7 +32,6 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
           { 'bg-yellow-50': kind === 'missing_configuration' },
           className,
         )}
-        render={<div />}
       >
         <Icon
           icon={match<typeof kind, IconName>(kind)
@@ -38,55 +42,59 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
           className={cn('size-3.5', iconClass)}
           aria-hidden
         />
-      </HovercardAnchor>
-      <Hovercard
-        portal
-        gutter={8}
-        className={cn(
-          'bg-grey-100 z-50 flex w-60 flex-col items-center gap-6 rounded-sm border p-4 shadow-lg',
-          {
-            'border-purple-82': kind !== 'missing_configuration',
-            'border-yellow-50': kind === 'missing_configuration',
-          },
-        )}
-      >
-        <span className="text-m font-bold">
-          {match<typeof kind, string>(kind)
-            .with('missing_configuration', () => t('common:missing_configuration_title'))
-            .otherwise(() => t('common:premium'))}
-        </span>
-        <div className="flex w-full flex-col items-center gap-2">
-          <p className="text-s w-full text-center font-medium">
+      </HoverCardTrigger>
+      <HoverCardPortal>
+        <HoverCardContent
+          side="right"
+          align="start"
+          sideOffset={8}
+          alignOffset={-8}
+          className={cn(
+            'bg-grey-100 z-50 flex w-60 flex-col items-center gap-6 rounded-sm border p-4 shadow-lg',
+            {
+              'border-purple-82': kind !== 'missing_configuration',
+              'border-yellow-50': kind === 'missing_configuration',
+            },
+          )}
+        >
+          <span className="text-m font-bold">
             {match<typeof kind, string>(kind)
-              .with('missing_configuration', () => t('common:missing_configuration'))
-              .otherwise(() => content)}
-          </p>
-          {link ? (
+              .with('missing_configuration', () => t('common:missing_configuration_title'))
+              .otherwise(() => t('common:premium'))}
+          </span>
+          <div className="flex w-full flex-col items-center gap-2">
+            <p className="text-s w-full text-center font-medium">
+              {match<typeof kind, string>(kind)
+                .with('missing_configuration', () => t('common:missing_configuration'))
+                .otherwise(() => content)}
+            </p>
+            {link ? (
+              <a
+                className="text-s text-purple-65 inline-block w-full text-center hover:underline"
+                target="_blank"
+                rel="noreferrer"
+                href={link}
+              >
+                {t('common:check_on_docs')}
+              </a>
+            ) : null}
+          </div>
+          {kind !== 'missing_configuration' ? (
             <a
-              className="text-s text-purple-65 inline-block w-full text-center hover:underline"
+              className={CtaClassName({
+                variant: 'primary',
+                color: 'purple',
+                className: 'mt-4 text-center',
+              })}
+              href="https://checkmarble.com/upgrade"
               target="_blank"
               rel="noreferrer"
-              href={link}
             >
-              {t('common:check_on_docs')}
+              {t('common:upgrade')}
             </a>
           ) : null}
-        </div>
-        {kind !== 'missing_configuration' ? (
-          <a
-            className={CtaClassName({
-              variant: 'primary',
-              color: 'purple',
-              className: 'mt-4 text-center',
-            })}
-            href="https://checkmarble.com/upgrade"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {t('common:upgrade')}
-          </a>
-        ) : null}
-      </Hovercard>
-    </HovercardProvider>
+        </HoverCardContent>
+      </HoverCardPortal>
+    </HoverCard>
   );
 };
