@@ -35,6 +35,7 @@
   "errors.firebase_network_error": "Marble a quelques difficultés à se connecter à Firebase. \nVérifiez la configuration de Firebase ou réessayez ultérieurement.",
   "errors.forbidden.subtitle": "Vous n'êtes pas autorisé à accéder à cette page",
   "errors.forbidden.title": "Accès interdit",
+  "errors.forms.duplicate_value": "Cette valeur est déjà utilisée",
   "errors.list.duplicate_email": "Cet email est déjà utilisé",
   "errors.list.duplicate_list_name": "Une liste avec ce nom existe déjà",
   "errors.not_found": "Cette page est introuvable.",

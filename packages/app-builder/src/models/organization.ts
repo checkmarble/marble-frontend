@@ -7,6 +7,7 @@ export interface Organization {
   sanctionThreshold?: number;
   sanctionLimit?: number;
   autoAssignQueueLimit?: number;
+  allowedNetworks: string[];
 }
 
 export const adaptOrganizationDto = (organizationDto: OrganizationDto): Organization => ({
@@ -18,6 +19,7 @@ export const adaptOrganizationDto = (organizationDto: OrganizationDto): Organiza
   sanctionLimit: organizationDto.sanctions_limit,
   sanctionThreshold: organizationDto.sanctions_threshold,
   autoAssignQueueLimit: organizationDto.auto_assign_queue_limit,
+  allowedNetworks: organizationDto.allowed_networks,
 });
 
 export interface OrganizationUpdateInput {

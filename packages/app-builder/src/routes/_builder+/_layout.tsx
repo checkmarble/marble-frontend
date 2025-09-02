@@ -55,7 +55,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       inbox.listInboxes(),
     ]);
 
-  const firstSettings = getSettings(user, inboxes)[0];
+  const firstSettings = getSettings(user, appConfig, inboxes)[0];
   return {
     user,
     orgUsers,

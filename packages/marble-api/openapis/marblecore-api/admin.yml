@@ -487,6 +487,7 @@ components:
         - name
         - sanction_threshold
         - sanction_limit
+        - allowed_networks
       properties:
         id:
           type: string

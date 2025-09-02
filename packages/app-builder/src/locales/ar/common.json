@@ -35,6 +35,7 @@
   "errors.firebase_network_error": "يواجه الرخام بعض الصعوبات في الاتصال بـ Firebase. \nقم إما بالتحقق من تكوين Firebase أو حاول مرة أخرى لاحقًا.",
   "errors.forbidden.subtitle": "لا تملك صلاحيات الوصول إلى هذه الصفحة.",
   "errors.forbidden.title": "غير مُتاح",
+  "errors.forms.duplicate_value": "هذه القيمة موجودة مسبقًا.",
   "errors.list.duplicate_email": "هذا البريد الإلكتروني موجود مسبقًا.",
   "errors.list.duplicate_list_name": "هذا الاسم  موجود مسبقًا.",
   "errors.not_found": "لم يتم العثور على هذه الصفحة.",

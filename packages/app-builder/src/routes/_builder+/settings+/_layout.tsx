@@ -6,6 +6,7 @@ import {
 } from '@app-builder/components/Breadcrumbs';
 import { Nudge } from '@app-builder/components/Nudge';
 import { type CurrentUser, isAdmin } from '@app-builder/models';
+import { AppConfig } from '@app-builder/models/app-config';
 import { type Inbox } from '@app-builder/models/inbox';
 import {
   canAccessInboxesSettings,
@@ -40,7 +41,7 @@ export const handle = {
   ],
 };
 
-export function getSettings(user: CurrentUser, inboxes: Inbox[]) {
+export function getSettings(user: CurrentUser, appConfig: AppConfig, inboxes: Inbox[]) {
   const settings = [];
   if (isReadUserAvailable(user)) {
     settings.push({
@@ -77,6 +78,13 @@ export function getSettings(user: CurrentUser, inboxes: Inbox[]) {
       to: getRoute('/settings/api-keys'),
     });
   }
+  if (isAdmin(user)) {
+    settings.push({
+      section: 'ip_whitelisting' as const,
+      title: 'ip_whitelisting' as const,
+      to: getRoute('/settings/ip-whitelisting'),
+    });
+  }
   if (user.permissions.canManageWebhooks) {
     settings.push({
       section: 'api' as const,
@@ -84,7 +92,7 @@ export function getSettings(user: CurrentUser, inboxes: Inbox[]) {
       to: getRoute('/settings/webhooks'),
     });
   }
-  if (isAdmin(user)) {
+  if (isAdmin(user) && appConfig.isManagedMarble) {
     settings.push({
       section: 'case_manager' as const,
       title: 'data_display' as const,
@@ -95,13 +103,14 @@ export function getSettings(user: CurrentUser, inboxes: Inbox[]) {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
+  const { authService, appConfigRepository } = initServerServices(request);
   const { user, entitlements, inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
+  const appConfig = await appConfigRepository.getAppConfig();
   const inboxes = await inbox.listInboxes();
-  const settings = getSettings(user, inboxes);
+  const settings = getSettings(user, appConfig, inboxes);
 
   const sections = R.pipe(
     settings,

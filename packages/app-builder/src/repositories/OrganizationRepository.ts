@@ -15,6 +15,7 @@ export interface OrganizationRepository {
     organizationId: string;
     changes: OrganizationUpdateInput;
   }): Promise<Organization>;
+  updateAllowedNetworks(organizationId: string, allowedNetworks: string[]): Promise<void>;
 }
 
 export function makeGetOrganizationRepository() {
@@ -50,6 +51,11 @@ export function makeGetOrganizationRepository() {
       });
 
       return adaptOrganizationDto(organization);
+    },
+    updateAllowedNetworks: async (organizationId: string, allowedNetworks: string[]) => {
+      await marbleCoreApiClient.updateOrganizationSubnets(organizationId, {
+        subnets: allowedNetworks,
+      });
     },
   });
 }

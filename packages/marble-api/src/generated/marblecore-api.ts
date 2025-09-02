@@ -1143,7 +1143,7 @@ export type OrganizationDto = {
     sanctions_limit?: number;
     /** Maximum number of assignable cases for a user */
     auto_assign_queue_limit?: number;
-    allowed_networks?: string[];
+    allowed_networks: string[];
 };
 export type CreateOrganizationBodyDto = {
     name: string;

@@ -295,6 +295,11 @@ export const routes = [
                 "file": "routes/_builder+/settings+/inboxes._index.tsx"
               },
               {
+                "id": "routes/_builder+/settings+/ip-whitelisting",
+                "path": "ip-whitelisting",
+                "file": "routes/_builder+/settings+/ip-whitelisting.tsx"
+              },
+              {
                 "id": "routes/_builder+/settings+/scenarios",
                 "path": "scenarios",
                 "file": "routes/_builder+/settings+/scenarios.tsx"
@@ -743,6 +748,11 @@ export const routes = [
         "id": "routes/ressources+/settings+/inboxes+/update",
         "path": "ressources/settings/inboxes/update",
         "file": "routes/ressources+/settings+/inboxes+/update.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/organization+/$organizationId.update-allowed-networks",
+        "path": "ressources/settings/organization/:organizationId/update-allowed-networks",
+        "file": "routes/ressources+/settings+/organization+/$organizationId.update-allowed-networks.tsx"
       },
       {
         "id": "routes/ressources+/settings+/organization+/update",

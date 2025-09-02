@@ -1,3 +1,4 @@
+import { AnyFormApi, StandardSchemaV1Issue } from '@tanstack/react-form';
 import { select } from 'radash';
 import type { FormEvent, LegacyRef, MutableRefObject, RefCallback } from 'react';
 
@@ -19,7 +20,7 @@ export function adaptToStringArray(value: string | (string | undefined)[] | unde
   return value.filter((val) => val !== undefined);
 }
 
-export function handleSubmit(form: { handleSubmit: () => void }) {
+export function handleSubmit(form: AnyFormApi) {
   return (e: FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -47,3 +48,13 @@ export const mergeRefs = <T>(
     });
   };
 };
+
+export function getFieldErrorObjects(
+  errors: (Record<string, StandardSchemaV1Issue[]> | undefined)[],
+  fieldName: string,
+): StandardSchemaV1Issue[] {
+  return errors
+    .map((errorObj) => errorObj?.[fieldName])
+    .flat()
+    .filter((error) => error !== undefined);
+}

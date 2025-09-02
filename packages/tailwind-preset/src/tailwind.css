@@ -25,6 +25,9 @@
   --color-grey-background: var(--color-grey-95);
   --color-grey-background-light: var(--color-grey-98);
 
+  --color-red-base: var(--color-red-47);
+  --color-red-background: var(--color-red-95);
+
   /* Purple scale */
   --color-purple-60: oklch(51.34% 0.2286 277.47);
   --color-purple-65: oklch(55.15% 0.2424 277.49);
