@@ -471,6 +471,10 @@ components:
         auto_assign_queue_limit:
           type: number
           description: Maximum number of assignable cases for a user
+        allowed_networks:
+          type: array
+          items:
+            type: string
     CreateOrganizationBodyDto:
       type: object
       required:
