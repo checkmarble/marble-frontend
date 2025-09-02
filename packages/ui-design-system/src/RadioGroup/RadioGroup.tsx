@@ -1,23 +1,16 @@
-import {
-  Indicator,
-  Item,
-  type RadioGroupIndicatorProps as RadixRadioGroupIndicatorProps,
-  type RadioGroupItemProps as RadixRadioGroupItemProps,
-  type RadioGroupProps as RadixRadioGroupsProps,
-  Root,
-} from '@radix-ui/react-radio-group';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { RadioGroup as RadixRadioGroup } from 'radix-ui';
 import { type ComponentProps, forwardRef } from 'react';
 
 export const radioGroup = cva(['flex flex-row w-fit', 'p-1', 'rounded-lg', 'bg-purple-98']);
 
-export type RadioGroupProps = VariantProps<typeof radioGroup> & RadixRadioGroupsProps;
+export type RadioGroupProps = VariantProps<typeof radioGroup> & RadixRadioGroup.RadioGroupProps;
 
 export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(function RadioGroup(
   { className, ...props },
   ref,
 ) {
-  return <Root {...props} ref={ref} className={radioGroup({ className })} />;
+  return <RadixRadioGroup.Root {...props} ref={ref} className={radioGroup({ className })} />;
 });
 
 export const radioGroupItem = cva([
@@ -34,22 +27,29 @@ export const radioGroupItem = cva([
   'rounded-[4px]',
 ]);
 
-export type RadioGroupItem = VariantProps<typeof radioGroupItem> & RadixRadioGroupItemProps;
+export type RadioGroupItem = VariantProps<typeof radioGroupItem> &
+  RadixRadioGroup.RadioGroupItemProps;
 
 export const RadioGroupItem = forwardRef<
   HTMLButtonElement,
   RadioGroupItem & ComponentProps<'button'>
 >(function RadioGroupItem({ className, ...props }, ref) {
-  return <Item {...props} className={radioGroupItem({ className })} ref={ref} />;
+  return <RadixRadioGroup.Item {...props} className={radioGroupItem({ className })} ref={ref} />;
 });
 
 export const radioGroupIndicator = cva(['']);
 
 export type RadioGroupIndicator = VariantProps<typeof radioGroupIndicator> &
-  RadixRadioGroupIndicatorProps;
+  RadixRadioGroup.RadioGroupIndicatorProps;
 
 export const RadioGroupIndicator = forwardRef<HTMLDivElement, RadioGroupIndicator>(
   function RadioGroupIndicator({ className, ...props }, ref) {
-    return <Indicator {...props} className={radioGroupIndicator({ className })} ref={ref} />;
+    return (
+      <RadixRadioGroup.Indicator
+        {...props}
+        className={radioGroupIndicator({ className })}
+        ref={ref}
+      />
+    );
   },
 );

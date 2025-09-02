@@ -24,7 +24,6 @@ import {
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import {
@@ -36,6 +35,7 @@ import {
 } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
+import { DropdownMenu } from 'radix-ui';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';

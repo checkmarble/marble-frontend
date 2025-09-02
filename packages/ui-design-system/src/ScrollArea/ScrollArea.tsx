@@ -1,30 +1,20 @@
-import {
-  Corner,
-  Root,
-  type ScrollAreaCornerProps,
-  type ScrollAreaProps,
-  type ScrollAreaScrollbarProps,
-  type ScrollAreaThumbProps,
-  type ScrollAreaViewportProps,
-  Scrollbar,
-  Thumb,
-  Viewport,
-} from '@radix-ui/react-scroll-area';
 import clsx from 'clsx';
+import { ScrollArea as RadixScrollArea } from 'radix-ui';
 import { forwardRef, type RefAttributes } from 'react';
 
-const ScrollAreaRoot = forwardRef<HTMLDivElement, ScrollAreaProps & RefAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <Root ref={ref} className={clsx('overflow-hidden', className)} {...props} />
-  ),
-);
-ScrollAreaRoot.displayName = Root?.displayName;
+const ScrollAreaRoot = forwardRef<
+  HTMLDivElement,
+  RadixScrollArea.ScrollAreaProps & RefAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <RadixScrollArea.Root ref={ref} className={clsx('overflow-hidden', className)} {...props} />
+));
+ScrollAreaRoot.displayName = RadixScrollArea.Root?.displayName;
 
 const ScrollAreaScrollbar = forwardRef<
   HTMLDivElement,
-  ScrollAreaScrollbarProps & RefAttributes<HTMLDivElement>
+  RadixScrollArea.ScrollAreaScrollbarProps & RefAttributes<HTMLDivElement>
 >(({ className, orientation = 'vertical', ...props }, ref) => (
-  <Scrollbar
+  <RadixScrollArea.Scrollbar
     ref={ref}
     className={clsx(
       'bg-grey-98 radix-orientation-horizontal:h-2 radix-orientation-vertical:w-2 hover:bg-grey-95 radix-orientation-horizontal:flex-col flex touch-none select-none p-0.5 transition',
@@ -34,42 +24,42 @@ const ScrollAreaScrollbar = forwardRef<
     {...props}
   />
 ));
-ScrollAreaScrollbar.displayName = Scrollbar?.displayName;
+ScrollAreaScrollbar.displayName = RadixScrollArea.Scrollbar?.displayName;
 
 const ScrollAreaThumb = forwardRef<
   HTMLDivElement,
-  ScrollAreaThumbProps & RefAttributes<HTMLDivElement>
+  RadixScrollArea.ScrollAreaThumbProps & RefAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <Thumb
+  <RadixScrollArea.Thumb
     ref={ref}
     className={clsx('bg-grey-80 relative flex-1 rounded-lg', className)}
     {...props}
   />
 ));
-ScrollAreaThumb.displayName = Thumb?.displayName;
+ScrollAreaThumb.displayName = RadixScrollArea.Thumb?.displayName;
 
 const ScrollAreaCorner = forwardRef<
   HTMLDivElement,
-  ScrollAreaCornerProps & RefAttributes<HTMLDivElement>
+  RadixScrollArea.ScrollAreaCornerProps & RefAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <Corner ref={ref} className={clsx('bg-grey-95', className)} {...props} />
+  <RadixScrollArea.Corner ref={ref} className={clsx('bg-grey-95', className)} {...props} />
 ));
-ScrollAreaCorner.displayName = Corner?.displayName;
+ScrollAreaCorner.displayName = RadixScrollArea.Corner?.displayName;
 
 /**
  * Override hardcoded style to bypass https://github.com/radix-ui/primitives/issues/926
  */
 const ScrollAreaViewport = forwardRef<
   HTMLDivElement,
-  ScrollAreaViewportProps & RefAttributes<HTMLDivElement>
+  RadixScrollArea.ScrollAreaViewportProps & RefAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <Viewport
+  <RadixScrollArea.Viewport
     ref={ref}
     className={clsx('overscroll-x-contain [&>:first-of-type]:block!', className)}
     {...props}
   />
 ));
-ScrollAreaViewport.displayName = Viewport?.displayName;
+ScrollAreaViewport.displayName = RadixScrollArea.Viewport?.displayName;
 
 export const ScrollArea = {
   Root: ScrollAreaRoot,
@@ -83,10 +73,10 @@ export const ScrollArea = {
  * New ScrollArea with better DX
  */
 
-type ScrollAreaElement = React.ElementRef<typeof Viewport>;
+type ScrollAreaElement = React.ElementRef<typeof RadixScrollArea.Viewport>;
 interface ScrollAreaV2Props
-  extends React.ComponentPropsWithRef<typeof Root>,
-    Omit<React.ComponentPropsWithRef<typeof Viewport>, 'dir'> {
+  extends React.ComponentPropsWithRef<typeof RadixScrollArea.Root>,
+    Omit<React.ComponentPropsWithRef<typeof RadixScrollArea.Viewport>, 'dir'> {
   orientation?: 'vertical' | 'horizontal' | 'both';
 }
 
@@ -95,13 +85,13 @@ export const ScrollAreaV2 = forwardRef<ScrollAreaElement, ScrollAreaV2Props>(fun
   forwardedRef,
 ) {
   return (
-    <Root
+    <RadixScrollArea.Root
       type={type}
       scrollHideDelay={scrollHideDelay}
       dir={dir}
       className={clsx('flex flex-col overflow-hidden', className)}
     >
-      <Viewport
+      <RadixScrollArea.Viewport
         {...viewportProps}
         ref={forwardedRef}
         // Override hardcoded style to bypass https://github.com/radix-ui/primitives/issues/926
@@ -109,24 +99,24 @@ export const ScrollAreaV2 = forwardRef<ScrollAreaElement, ScrollAreaV2Props>(fun
       />
 
       {orientation !== 'vertical' ? (
-        <Scrollbar
+        <RadixScrollArea.Scrollbar
           orientation="horizontal"
           className="hover:bg-grey-90 m-px flex h-1 touch-none select-none flex-col rounded-full transition-colors"
         >
-          <Thumb className="bg-grey-80 hover:bg-grey-50 flex-1 rounded-full" />
-        </Scrollbar>
+          <RadixScrollArea.Thumb className="bg-grey-80 hover:bg-grey-50 flex-1 rounded-full" />
+        </RadixScrollArea.Scrollbar>
       ) : null}
 
       {orientation !== 'horizontal' ? (
-        <Scrollbar
+        <RadixScrollArea.Scrollbar
           orientation="vertical"
           className="hover:bg-grey-90 m-px flex w-1 touch-none select-none flex-row rounded-full transition-colors"
         >
-          <Thumb className="bg-grey-80 hover:bg-grey-50 flex-1 rounded-full" />
-        </Scrollbar>
+          <RadixScrollArea.Thumb className="bg-grey-80 hover:bg-grey-50 flex-1 rounded-full" />
+        </RadixScrollArea.Scrollbar>
       ) : null}
 
-      {orientation === 'both' ? <Corner className="rounded-full" /> : null}
-    </Root>
+      {orientation === 'both' ? <RadixScrollArea.Corner className="rounded-full" /> : null}
+    </RadixScrollArea.Root>
   );
 });

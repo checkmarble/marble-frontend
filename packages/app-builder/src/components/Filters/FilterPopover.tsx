@@ -1,5 +1,5 @@
-import * as Popover from '@radix-ui/react-popover';
 import clsx from 'clsx';
+import { Popover } from 'radix-ui';
 import { type ComponentPropsWithoutRef, forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 

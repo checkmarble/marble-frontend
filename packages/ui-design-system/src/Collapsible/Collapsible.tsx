@@ -1,22 +1,15 @@
 import * as Ariakit from '@ariakit/react';
-import {
-  type CollapsibleContentProps,
-  type CollapsibleProps,
-  Content,
-  type CollapsibleTriggerProps as RadixCollapsibleProps,
-  Root,
-  Trigger,
-} from '@radix-ui/react-collapsible';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
+import { Collapsible as RadixCollapsible } from 'radix-ui';
 import * as React from 'react';
 import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 
-const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(
+const CollapsibleContainer = forwardRef<HTMLDivElement, RadixCollapsible.CollapsibleProps>(
   function CollapsibleContainer({ className, ...props }, ref) {
     return (
-      <Root
+      <RadixCollapsible.Root
         defaultOpen={true}
         ref={ref}
         className={clsx(
@@ -44,12 +37,18 @@ const collapsibleTitle = cva(
   },
 );
 
-export type CollapsibleTriggerProps = VariantProps<typeof collapsibleTitle> & RadixCollapsibleProps;
+export type CollapsibleTriggerProps = VariantProps<typeof collapsibleTitle> &
+  RadixCollapsible.CollapsibleTriggerProps;
 
 const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
   function CollapsibleTitle({ className, children, size, ...props }, ref) {
     return (
-      <Trigger ref={ref} className={collapsibleTitle({ size, className })} asChild {...props}>
+      <RadixCollapsible.Trigger
+        ref={ref}
+        className={collapsibleTitle({ size, className })}
+        asChild
+        {...props}
+      >
         <div>
           {children}
           <Icon
@@ -58,7 +57,7 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
             className="border-grey-90 group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
           />
         </div>
-      </Trigger>
+      </RadixCollapsible.Trigger>
     );
   },
 );
@@ -66,12 +65,12 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
 const content =
   'border-grey-90 border-t radix-state-open:animate-slide-down radix-state-closed:animate-slide-up overflow-hidden';
 
-const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
+const CollapsibleContent = forwardRef<HTMLDivElement, RadixCollapsible.CollapsibleContentProps>(
   function CollapsibleContent({ children, className, ...props }, ref) {
     return (
-      <Content className={clsx(content, className)} {...props} ref={ref}>
+      <RadixCollapsible.Content className={clsx(content, className)} {...props} ref={ref}>
         <div className="text-s p-4 lg:p-6">{children}</div>
-      </Content>
+      </RadixCollapsible.Content>
     );
   },
 );

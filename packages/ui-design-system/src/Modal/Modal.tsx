@@ -1,7 +1,7 @@
 import * as Ariakit from '@ariakit/react';
-import * as Dialog from '@radix-ui/react-dialog';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
+import { Dialog } from 'radix-ui';
 import { forwardRef, type ReactNode } from 'react';
 
 const modalContentClassnames = cva(
