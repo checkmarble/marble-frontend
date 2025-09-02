@@ -10,17 +10,17 @@
     "generate-icons": "tsx scripts/generate.ts && biome check --write ./src/generated"
   },
   "devDependencies": {
-    "@types/node": "22.13.10",
-    "@types/react": "18.3.11",
+    "@types/node": "24.3.0",
+    "@types/react": "19.1.12",
     "@types/svg-sprite": "^0.0.39",
     "ora": "^8.2.0",
-    "react": "18.3.1",
+    "react": "19.1.1",
     "svg-sprite": "^2.0.4",
-    "tsx": "^4.19.3"
+    "tsx": "^4.20.5"
   },
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "react": "18.3.1"
+    "react": "19.1.1"
   }
 }
