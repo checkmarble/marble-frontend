@@ -1,0 +1,88 @@
+import { type AppConfig } from '@app-builder/models/app-config';
+import { type Inbox } from '@app-builder/models/inbox';
+import { type CurrentUser, isAdmin } from '@app-builder/models/user';
+import {
+  canAccessInboxesSettings,
+  isReadApiKeyAvailable,
+  isReadTagAvailable,
+  isReadUserAvailable,
+} from '@app-builder/services/feature-access';
+import { type IconName } from 'ui-icons';
+import { getRoute } from '../utils/routes';
+
+export type SettingEntry = {
+  title: string;
+  to: string;
+};
+
+export type Section = {
+  icon: IconName;
+  settings: SettingEntry[];
+};
+
+export type Sections = {
+  users: Section;
+  scenarios: Section;
+  case_manager: Section;
+  ia_assist: Section;
+  api: Section;
+  ip_whitelisting: Section;
+};
+
+export function getSettingsAccess(
+  user: CurrentUser,
+  appConfig: AppConfig,
+  inboxes: Inbox[],
+): Sections {
+  const sections: Sections = {
+    users: {
+      icon: 'users',
+      settings: [
+        ...(isReadUserAvailable(user) ? [{ title: 'users', to: getRoute('/settings/users') }] : []),
+      ],
+    },
+    scenarios: {
+      icon: 'world',
+      settings: [
+        ...(isAdmin(user) ? [{ title: 'scenarios', to: getRoute('/settings/scenarios') }] : []),
+      ],
+    },
+    case_manager: {
+      icon: 'case-manager',
+      settings: [
+        ...(canAccessInboxesSettings(user, inboxes)
+          ? [{ title: 'inboxes', to: getRoute('/settings/inboxes') }]
+          : []),
+        ...(isReadTagAvailable(user) ? [{ title: 'tags', to: getRoute('/settings/tags') }] : []),
+        ...(isAdmin(user)
+          ? [{ title: 'ia_case_review', to: getRoute('/settings/ia-case-review') }]
+          : []),
+        ...(isAdmin(user) && appConfig.isManagedMarble
+          ? [{ title: 'data_display', to: getRoute('/settings/data-display') }]
+          : []),
+      ],
+    },
+    ia_assist: { icon: 'ai-review', settings: [] },
+    api: {
+      icon: 'world',
+      settings: [
+        ...(isReadApiKeyAvailable(user)
+          ? [{ title: 'api', to: getRoute('/settings/api-keys') }]
+          : []),
+        ...(user.permissions.canManageWebhooks
+          ? [{ title: 'webhooks', to: getRoute('/settings/webhooks') }]
+          : []),
+      ],
+    },
+    ip_whitelisting: {
+      icon: 'world',
+      settings: [
+        ...(isAdmin(user)
+          ? [{ title: 'ip_whitelisting', to: getRoute('/settings/ip-whitelisting') }]
+          : []),
+      ],
+    },
+  };
+
+  return sections;
+}
