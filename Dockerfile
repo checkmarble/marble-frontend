@@ -11,6 +11,7 @@ COPY packages/typescript-utils/package.json ./packages/typescript-utils/
 COPY packages/ui-design-system/package.json ./packages/ui-design-system/
 COPY packages/ui-icons/package.json ./packages/ui-icons/
 COPY packages/tailwind-preset/package.json ./packages/tailwind-preset/
+COPY packages/tests/package.json ./packages/tests/
 
 # Avoid frozen lockfile errors in CI and install dev deps for build tooling
 ENV BUN_INSTALL_FROZEN_LOCKFILE=0

@@ -19,7 +19,6 @@ packages/app-builder/build
 **/.eslintcache
 
 # Tests, reports, and stories
-packages/tests
 **/__tests__
 **/*.test.*
 **/test-results
