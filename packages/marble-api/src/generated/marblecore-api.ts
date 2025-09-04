@@ -38,8 +38,6 @@ export type OutcomeDto = "approve" | "review" | "decline" | "block_and_review" |
 export type ReviewStatusDto = "pending" | "approve" | "decline";
 export type Pagination = {
     has_next_page: boolean;
-    start_index: number;
-    end_index: number;
 };
 export type CaseStatusDto = "pending" | "investigating" | "closed" | "waiting_for_action" | "snoozed";
 export type CaseContributorDto = {

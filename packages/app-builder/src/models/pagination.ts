@@ -4,8 +4,6 @@ export const defaultPaginationSize = 25;
 
 export type Pagination = {
   hasNextPage: boolean;
-  startIndex: number;
-  endIndex: number;
 };
 
 export type PaginatedResponse<T> = {
@@ -18,8 +16,6 @@ export type PaginatedResponse<T> = {
 export function adaptPagination(paginationDto: PaginationDto): Pagination {
   return {
     hasNextPage: paginationDto.has_next_page,
-    startIndex: paginationDto.start_index,
-    endIndex: paginationDto.end_index,
   };
 }
 
