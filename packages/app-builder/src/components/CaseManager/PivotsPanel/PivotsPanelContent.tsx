@@ -169,7 +169,10 @@ export function PivotsPanelContent({
             const navigationOptions = tableModel.navigationOptions;
 
             return (
-              <div key={proof.type} className="rounded-xl border border-grey-90 bg-grey-98">
+              <div
+                key={`${proof.type}-${proof.object.data['object_id']}`}
+                className="rounded-xl border border-grey-90 bg-grey-98"
+              >
                 <div className="bg-grey-100 px-4 py-2 rounded-t-xl border-b border-grey-90">
                   {t('cases:ai_review.proof.tab_title', { number: idx + 1 })}
                 </div>
