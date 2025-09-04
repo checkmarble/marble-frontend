@@ -1,37 +1,52 @@
 # VCS
 .git
 .gitignore
+**/.gitignore
+**/.github
+
+# IDE
+.idea
+.vscode
+**/.vscode
 
 # Node/Bun deps in context (use layer caching instead)
-node_modules
 **/node_modules
+node_modules
 
 # Build outputs
+packages/app-builder/build
 **/build
 **/dist
-packages/app-builder/build
 
 # Caches and tooling
 **/.cache
-**/.turbo
-**/.next
-**/.vite
 **/.eslintcache
+**/.next
+**/.turbo
+**/.vite
+**/coverage
 
 # Tests, reports, and stories
-**/__tests__
 **/*.test.*
-**/test-results
+**/__tests__
 **/playwright-report
 **/storybook-static
+**/test-results
 
 # Local and misc
-Dockerfile_local
 .env
 .env.*
-*.log
+**/.env
+**/.aws
+**/.ssh
+**/.DS_Store
 *.local
+*.log
+**/env
+**/venv
 
-# IDE
-.vscode
-.idea
+# Project files (root)
+.dockerignore
+Dockerfile
+README.md
+docker-compose.yml
