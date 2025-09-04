@@ -16,7 +16,7 @@ COPY packages/tailwind-preset/package.json ./packages/tailwind-preset/
 ENV BUN_INSTALL_FROZEN_LOCKFILE=0
 # Install with dev dependencies for build tooling (cache modules between builds)
 RUN --mount=type=cache,target=/root/.bun \
-    bun install
+    bun ci
 
 # ---- Build stage ----
 FROM oven/bun:alpine AS build
