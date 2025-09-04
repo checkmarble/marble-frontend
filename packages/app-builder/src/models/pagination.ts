@@ -9,8 +9,6 @@ export type Pagination = {
 export type PaginatedResponse<T> = {
   items: T[];
   hasNextPage: boolean;
-  startIndex: number;
-  endIndex: number;
 };
 
 export function adaptPagination(paginationDto: PaginationDto): Pagination {
