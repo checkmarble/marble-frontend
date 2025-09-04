@@ -86,7 +86,7 @@ export const CaseDetails = ({
           'border-b-grey-90 border-b': !intersection?.isIntersecting,
         })}
       >
-        <div className="flex shrink-0 justify-between gap-v2-xs">
+        <div className={cn('flex shrink-0 justify-between gap-v2-xs', { 'pb-v2-lg': !caseReview })}>
           <EditCaseName name={detail.name} id={detail.id} />
           <div className="flex shrink-0 items-center gap-2">
             {detail.status !== 'closed' ? (
