@@ -14,15 +14,9 @@ Pagination:
   type: object
   required:
     - has_next_page
-    - start_index
-    - end_index
   properties:
     has_next_page:
       type: boolean
-    start_index:
-      type: integer
-    end_index:
-      type: integer
 
 # ANNOTATIONS
 
