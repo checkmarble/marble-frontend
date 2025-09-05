@@ -1,6 +1,6 @@
 # Add files here to ignore them from prettier formatting
 /.vscode/
-pnpm-lock.yaml
+bun.lock
 packages-licenses.json
 
 # app-builder

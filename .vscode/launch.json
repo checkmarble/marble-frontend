@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "pnpm --filter app-builder run dev",
+      "command": "bun -F app-builder dev",
       "name": "Launch app-builder",
       "request": "launch",
       "type": "node-terminal"

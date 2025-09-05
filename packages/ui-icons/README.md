@@ -27,9 +27,9 @@ I personally use `developer2006.svg-gallery` extension in VSCode to quickly chec
 
 > Favour kebab-case file name & keep the exported name from the source to make it easier to find already imported assets.
 
-3. Run `pnpm --filter ui-icons run generate-icons`
+1. Run `bun -F ui-icons generate-icons`
 
-4. Commit your changes
+2. Commit your changes
 
 ## Integration
 
@@ -61,7 +61,7 @@ I personally use `developer2006.svg-gallery` extension in VSCode to quickly chec
 
 - Ensure you use the `Icon` component (not the `Logo` one)
 - Ensure the generated svg sprite is using the `currentColor` css property for the fill
-  - If not, you can manually update the svg fill attribute to #000000 (or any color already used in other working svgs) and re-run `pnpm --filter ui-icons run generate-icons`
+  - If not, you can manually update the svg fill attribute to #000000 (or any color already used in other working svgs) and re-run `bun -F ui-icons generate-icons`
 
 ### My icon is compressed/shrinked
 
