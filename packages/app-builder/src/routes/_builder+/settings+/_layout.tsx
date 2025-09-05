@@ -9,7 +9,6 @@ import { type CurrentUser, isAdmin } from '@app-builder/models';
 import { type Inbox } from '@app-builder/models/inbox';
 import {
   canAccessInboxesSettings,
-  isAccessible,
   isReadApiKeyAvailable,
   isReadTagAvailable,
   isReadUserAvailable,
@@ -22,6 +21,7 @@ import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
+import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -141,18 +141,85 @@ export default function Settings() {
                     <p className="font-bold">{t(`settings:${section}`)}</p>
                   </div>
                   <ul className="flex flex-col gap-1 pb-6">
-                    {settings.map((setting) =>
-                      setting.title === 'webhooks' && !isAccessible(entitlements.webhooks) ? (
-                        <span
-                          key={setting.title}
-                          className="text-s bg-grey-100 text-grey-80 inline-flex w-full gap-2 p-2 font-medium first-letter:capitalize"
-                        >
-                          {t(`settings:${setting.title}`)}
-                          {entitlements.webhooks !== 'allowed' ? (
-                            <Nudge content="" kind="restricted" className="size-5" />
-                          ) : null}
-                        </span>
-                      ) : (
+                    {settings.map((setting) => {
+                      if (setting.title === 'webhooks') {
+                        return match(entitlements.webhooks)
+                          .with('allowed', () => (
+                            <NavLink
+                              key={setting.title}
+                              className={({ isActive }) =>
+                                clsx(
+                                  'text-s flex w-full cursor-pointer flex-row rounded-sm p-2 font-medium first-letter:capitalize',
+                                  isActive
+                                    ? 'bg-purple-96 text-purple-65'
+                                    : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+                                )
+                              }
+                              to={setting.to}
+                            >
+                              {t(`settings:${setting.title}`)}
+                            </NavLink>
+                          ))
+                          .with('restricted', () => (
+                            <div
+                              key={setting.title}
+                              className="text-s bg-grey-100 text-grey-80 relative flex w-full justify-between items-center p-2 font-medium first-letter:capitalize min-w-full"
+                            >
+                              <span className="flex-shrink-0">
+                                {t(`settings:${setting.title}`)}
+                              </span>
+                              <div className="flex-1"></div>
+                              <Nudge
+                                className="size-6 flex-shrink-0"
+                                content={t('settings:webhooks.nudge')}
+                              />
+                            </div>
+                          ))
+                          .with('missing_configuration', () => (
+                            <div
+                              key={setting.title}
+                              className="text-s bg-grey-100 text-grey-80 relative flex w-full justify-between items-center p-2 font-medium first-letter:capitalize min-w-full"
+                            >
+                              <span className="flex-shrink-0">
+                                {t(`settings:${setting.title}`)}
+                              </span>
+                              <div className="flex-1"></div>
+                              <Nudge
+                                kind="missing_configuration"
+                                className="size-6 flex-shrink-0"
+                                content=""
+                              />
+                            </div>
+                          ))
+                          .with('test', () => (
+                            <div className="relative">
+                              <NavLink
+                                key={setting.title}
+                                to={setting.to}
+                                className={({ isActive }) =>
+                                  clsx(
+                                    'text-s relative flex w-full justify-between items-center p-2 font-medium first-letter:capitalize min-w-full cursor-pointer rounded-sm transition-colors',
+                                    isActive
+                                      ? 'bg-purple-96 text-purple-65'
+                                      : 'bg-grey-100 text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+                                  )
+                                }
+                              >
+                                <span className="flex-shrink-0">
+                                  {t(`settings:${setting.title}`)}
+                                </span>
+                                <Nudge
+                                  className="size-6 shrink-0"
+                                  content={t('settings:webhooks.nudge')}
+                                  kind="test"
+                                />
+                              </NavLink>
+                            </div>
+                          ))
+                          .exhaustive();
+                      }
+
+                      return (
                         <NavLink
                           key={setting.title}
                           className={({ isActive }) =>
@@ -167,8 +234,8 @@ export default function Settings() {
                         >
                           {t(`settings:${setting.title}`)}
                         </NavLink>
-                      ),
-                    )}
+                      );
+                    })}
                   </ul>
                 </nav>
               );

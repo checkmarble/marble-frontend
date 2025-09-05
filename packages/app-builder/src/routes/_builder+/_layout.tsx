@@ -169,50 +169,29 @@ export default function Builder() {
                               )
                               .with('restricted', () => (
                                 <div className="text-grey-80 relative flex gap-2 p-2">
-                                  <div className="relative">
-                                    <Icon icon="analytics" className="size-6 shrink-0" />
-                                    {!leftSidebarSharp.value.expanded && (
-                                      <Nudge
-                                        collapsed
-                                        className="size-6"
-                                        content={t('navigation:analytics.nudge')}
-                                      />
-                                    )}
-                                  </div>
+                                  <Icon icon="analytics" className="size-6 shrink-0" />
                                   <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
                                     {t('navigation:analytics')}
                                   </span>
-                                  {leftSidebarSharp.value.expanded && (
-                                    <Nudge
-                                      className="size-6"
-                                      content={t('navigation:analytics.nudge')}
-                                    />
-                                  )}
+                                  <Nudge
+                                    collapsed={!leftSidebarSharp.value.expanded}
+                                    className="size-6"
+                                    content={t('navigation:analytics.nudge')}
+                                  />
                                 </div>
                               ))
                               .with('missing_configuration', () => (
                                 <div className="text-grey-80 relative flex gap-2 p-2">
-                                  <div className="relative">
-                                    <Icon icon="analytics" className="size-6 shrink-0" />
-                                    {!leftSidebarSharp.value.expanded && (
-                                      <Nudge
-                                        collapsed
-                                        kind="missing_configuration"
-                                        className="size-6"
-                                        content={t('navigation:analytics.nudge')}
-                                      />
-                                    )}
-                                  </div>
+                                  <Icon icon="analytics" className="size-6 shrink-0" />
                                   <span className="text-s line-clamp-1 text-start font-medium opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
                                     {t('navigation:analytics')}
                                   </span>
-                                  {leftSidebarSharp.value.expanded && (
-                                    <Nudge
-                                      kind="missing_configuration"
-                                      className="size-6"
-                                      content={t('navigation:analytics.nudge')}
-                                    />
-                                  )}
+                                  <Nudge
+                                    collapsed={!leftSidebarSharp.value.expanded}
+                                    kind="missing_configuration"
+                                    className="size-6"
+                                    content={t('navigation:analytics.nudge')}
+                                  />
                                 </div>
                               ))
                               .with('test', () =>
@@ -220,27 +199,15 @@ export default function Builder() {
                                   <SidebarLink
                                     labelTKey="navigation:analytics"
                                     to={getRoute('/analytics')}
-                                    Icon={(props) => (
-                                      <div className="relative">
-                                        <Icon icon="analytics" {...props} />
-                                        {!leftSidebarSharp.value.expanded && (
-                                          <Nudge
-                                            collapsed
-                                            className="size-6"
-                                            content={t('navigation:analytics.nudge')}
-                                            kind="test"
-                                          />
-                                        )}
-                                      </div>
-                                    )}
+                                    className="relative"
+                                    Icon={(props) => <Icon icon="analytics" {...props} />}
                                   >
-                                    {leftSidebarSharp.value.expanded && (
-                                      <Nudge
-                                        className="size-6"
-                                        content={t('navigation:analytics.nudge')}
-                                        kind="test"
-                                      />
-                                    )}
+                                    <Nudge
+                                      collapsed={!leftSidebarSharp.value.expanded}
+                                      className="size-6"
+                                      content={t('navigation:analytics.nudge')}
+                                      kind="test"
+                                    />
                                   </SidebarLink>
                                 ) : null,
                               )
