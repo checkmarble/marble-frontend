@@ -405,6 +405,41 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/organizations/{organizationId}/subnets:
+  put:
+    tags:
+      - Admin
+      - Organizations
+    summary: Update organization subnets
+    operationId: updateOrganizationSubnets
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: organizationId
+        description: ID of the organization
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      description: Object containing the list of subnets to allow
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/OrganizationSubnetsDto'
+      required: true
+    responses:
+      '200':
+        description: The list of users of the organization
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrganizationSubnetsDto"
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '422':
+        $ref: 'components.yml#/responses/422'
 /organizations/{organizationId}/users:
   get:
     tags:
@@ -493,6 +528,14 @@ components:
           type: number
         auto_assign_queue_limit:
           type: number
+    OrganizationSubnetsDto:
+      type: object
+      properties:
+        subnets:
+          description: List of CIDR subnets (x.x.x.x/yy)
+          type: array
+          items:
+            type: string
     UserDto:
       type: object
       required:

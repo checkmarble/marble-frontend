@@ -273,6 +273,8 @@ paths:
     $ref: ./marblecore-api/admin.yml#/~1organizations
   /organizations/{organizationId}:
     $ref: ./marblecore-api/admin.yml#/~1organizations~1{organizationId}
+  /organizations/{organizationId}/subnets:
+    $ref: ./marblecore-api/admin.yml#/~1organizations~1{organizationId}~1subnets
   /organizations/{organizationId}/users:
     $ref: ./marblecore-api/admin.yml#/~1organizations~1{organizationId}~1users
   /editor/{scenarioId}/identifiers:

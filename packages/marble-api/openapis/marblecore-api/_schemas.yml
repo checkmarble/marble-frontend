@@ -348,6 +348,8 @@ CreateOrganizationBodyDto:
   $ref: admin.yml#/components/schemas/CreateOrganizationBodyDto
 UpdateOrganizationBodyDto:
   $ref: admin.yml#/components/schemas/UpdateOrganizationBodyDto
+OrganizationSubnetsDto:
+  $ref: admin.yml#/components/schemas/OrganizationSubnetsDto
 UserDto:
   $ref: admin.yml#/components/schemas/UserDto
 CreateUser:
