@@ -16,11 +16,102 @@ type NudgeProps = {
   iconClass?: string;
   link?: string;
   kind?: Exclude<FeatureAccessLevelDto, 'allowed'>;
+  collapsed?: boolean;
 };
 
-export const Nudge = ({ content, link, className, kind = 'restricted', iconClass }: NudgeProps) => {
+export const Nudge = ({
+  content,
+  link,
+  className,
+  kind = 'restricted',
+  iconClass,
+  collapsed = false,
+}: NudgeProps) => {
   const { t } = useTranslation(['common']);
 
+  // When collapsed, render a small circular indicator
+  if (collapsed) {
+    return (
+      <HoverCard>
+        <HoverCardTrigger
+          tabIndex={-1}
+          className={cn(
+            'absolute -top-0.5 -right-0.5 flex h-1 w-1 items-center justify-center rounded-full',
+            { 'bg-purple-65': kind === 'test' },
+            { 'bg-purple-82': kind === 'restricted' },
+            { 'bg-yellow-50': kind === 'missing_configuration' },
+            className,
+          )}
+        >
+          <Icon
+            icon={match<typeof kind, IconName>(kind)
+              .with('restricted', () => 'lock')
+              .with('test', () => 'unlock-right')
+              .with('missing_configuration', () => 'warning')
+              .exhaustive()}
+            className="size-2 text-white"
+            aria-hidden
+          />
+        </HoverCardTrigger>
+        <HoverCardPortal>
+          <HoverCardContent
+            side="right"
+            align="start"
+            sideOffset={8}
+            alignOffset={-8}
+            className={cn(
+              'bg-grey-100 z-50 flex w-60 flex-col items-center gap-6 rounded-sm border p-4 pointer-events-auto shadow-lg',
+              {
+                'border-purple-82': kind !== 'missing_configuration',
+                'border-yellow-50': kind === 'missing_configuration',
+              },
+            )}
+          >
+            <span className="text-m font-bold">
+              {match<typeof kind, string>(kind)
+                .with('missing_configuration', () => t('common:missing_configuration_title'))
+                .otherwise(() => t('common:premium'))}
+            </span>
+            <div className="flex w-full flex-col items-center gap-2">
+              <p className="text-s w-full text-center font-medium">
+                {match<typeof kind, string>(kind)
+                  .with('missing_configuration', () => t('common:missing_configuration'))
+                  .otherwise(() => content)}
+              </p>
+              {link ? (
+                <a
+                  className="text-s text-purple-65 inline-block w-full text-center hover:underline"
+                  target="_blank"
+                  rel="noreferrer"
+                  href={link}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {t('common:check_on_docs')}
+                </a>
+              ) : null}
+            </div>
+            {kind !== 'missing_configuration' ? (
+              <a
+                className={CtaClassName({
+                  variant: 'primary',
+                  color: 'purple',
+                  className: 'mt-4 text-center',
+                })}
+                href="https://checkmarble.com/upgrade"
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {t('common:upgrade')}
+              </a>
+            ) : null}
+          </HoverCardContent>
+        </HoverCardPortal>
+      </HoverCard>
+    );
+  }
+
+  // Default expanded state
   return (
     <HoverCard>
       <HoverCardTrigger
