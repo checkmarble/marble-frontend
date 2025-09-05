@@ -101,6 +101,8 @@ paths:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1review~1{reviewId}~1feedback
   /cases/{caseId}/data_for_investigation:
     $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1data_for_investigation
+  /cases/{caseId}/enrich_kyc:
+    $ref: ./marblecore-api/cases.yml#/~1cases~1{caseId}~1enrich_kyc
 
   # SUSPICIOUS ACTIVITY REPORTS
 
