@@ -12,6 +12,7 @@ import { SnoozePanel } from '@app-builder/components/CaseManager/SnoozePanel/Sno
 import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import {
   type DataModelWithTableOptions,
   mergeDataModelWithTableOptions,
@@ -314,7 +315,7 @@ export default function CaseManagerIndexPage() {
     mostRecentReview,
   } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
   const [selectedDecision, selectDecision] = useState<string | null>(null);
   const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision' | 'snooze'>(

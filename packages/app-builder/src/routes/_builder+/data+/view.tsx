@@ -1,10 +1,11 @@
 import { Page, TabLink } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { dataI18n } from '@app-builder/components/Data/data-i18n';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { getRoute } from '@app-builder/utils/routes';
 import { type RoutePath } from '@app-builder/utils/routes/types';
-import { Outlet, useMatch, useNavigate } from '@remix-run/react';
+import { Outlet, useMatch } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +31,7 @@ export default function DataSearchPage() {
   const { t } = useTranslation(handle.i18n);
   const dataModel = useDataModel();
   const match = useMatch('/data/view/:tableName/:objectId' as RoutePath);
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
 
   const [tableName, setTableName] = useState(match?.params.tableName ?? '');
   const [objectId, setObjectId] = useState(match?.params.objectId ?? '');
