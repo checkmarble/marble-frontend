@@ -22,6 +22,8 @@ const oldToastMessageSchema = z.object({
     'common:errors.add_to_case.invalid',
     'common:success.save',
     'common:success.add_to_case',
+    'common:errors.backend_global_error.disallowed-network',
+    'common:errors.backend_global_error.unknown',
   ]),
 });
 

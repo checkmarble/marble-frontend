@@ -35,6 +35,7 @@ function makeServerServices(repositories: ServerRepositories) {
     authService: makeAuthenticationServerService({
       ...repositories,
       authSessionService,
+      toastSessionService,
       csrfService,
     }),
     i18nextService: makeI18nextServerService(repositories.lngStorageRepository),

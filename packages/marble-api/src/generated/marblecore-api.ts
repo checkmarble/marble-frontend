@@ -1143,7 +1143,7 @@ export type OrganizationDto = {
     sanctions_limit?: number;
     /** Maximum number of assignable cases for a user */
     auto_assign_queue_limit?: number;
-    allowed_networks?: string[];
+    allowed_networks: string[];
 };
 export type CreateOrganizationBodyDto = {
     name: string;
@@ -1153,6 +1153,10 @@ export type UpdateOrganizationBodyDto = {
     sanctions_threshold?: number;
     sanctions_limit?: number;
     auto_assign_queue_limit?: number;
+};
+export type OrganizationSubnetsDto = {
+    /** List of CIDR subnets (x.x.x.x/yy) */
+    subnets?: string[];
 };
 export type InboxUserDto = {
     id: string;
@@ -3873,6 +3877,25 @@ export function deleteOrganization(organizationId: string, opts?: Oazapfts.Reque
         ...opts,
         method: "DELETE"
     }));
+}
+/**
+ * Update organization subnets
+ */
+export function updateOrganizationSubnets(organizationId: string, organizationSubnetsDto: OrganizationSubnetsDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: OrganizationSubnetsDto;
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 422;
+        data: object;
+    }>(`/organizations/${encodeURIComponent(organizationId)}/subnets`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body: organizationSubnetsDto
+    })));
 }
 /**
  * List all users of an organization
