@@ -13,13 +13,11 @@ COPY packages/ui-icons/package.json ./packages/ui-icons/
 COPY packages/tailwind-preset/package.json ./packages/tailwind-preset/
 COPY packages/tests/package.json ./packages/tests/
 
-# Avoid frozen lockfile errors in CI and install dev deps for build tooling
-ENV BUN_INSTALL_FROZEN_LOCKFILE=0
-# Install with dev dependencies for build tooling (cache modules between builds)
+# Install WITH dev dependencies (needed for build stage)
 RUN --mount=type=cache,target=/root/.bun \
     bun ci
 
-# ---- Build stage ----
+# ---- Build stage ---- (uses dev deps from above)
 FROM oven/bun:alpine AS build
 WORKDIR /usr/src/app
 
@@ -44,11 +42,28 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
 
 # Collect build artifacts and dependencies for runtime
 RUN mkdir -p /prod/app-builder && \
-    cp -R packages/app-builder/build /prod/app-builder/build && \
-    cp -R -L node_modules /prod/app-builder/node_modules
+    cp -R packages/app-builder/build /prod/app-builder/build
 
+# ---- Production Dependencies stage ----
+FROM oven/bun:alpine AS deps-prod
+WORKDIR /usr/src/app
 
-# ---- Runtime stage ----
+# Copy only workspace manifests to maximize install cache hits
+COPY package.json bun.lock ./
+COPY packages/app-builder/package.json ./packages/app-builder/
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/marble-api/package.json ./packages/marble-api/
+COPY packages/typescript-utils/package.json ./packages/typescript-utils/
+COPY packages/ui-design-system/package.json ./packages/ui-design-system/
+COPY packages/ui-icons/package.json ./packages/ui-icons/
+COPY packages/tailwind-preset/package.json ./packages/tailwind-preset/
+COPY packages/tests/package.json ./packages/tests/
+
+# Install ONLY production dependencies
+RUN --mount=type=cache,target=/root/.bun \
+    bun install --production --frozen-lockfile
+
+# ---- Runtime stage ---- (uses prod deps)
 FROM gcr.io/distroless/nodejs22-debian12:nonroot AS app-builder
 WORKDIR /prod/app-builder
 
@@ -63,10 +78,11 @@ ARG SEGMENT_WRITE_KEY_OPENSOURCE=""
 ARG SEGMENT_WRITE_KEY=""
 ENV SEGMENT_WRITE_KEY=${SEGMENT_WRITE_KEY_OPENSOURCE:-""}
 
-# Copy dependencies and build output from build stage
-COPY --from=build /prod/app-builder/node_modules ./node_modules
-COPY --from=build /prod/app-builder/build ./build
+# Copy build output
+COPY --from=build /usr/src/app/packages/app-builder/build ./build
+
+# Copy ONLY production dependencies
+COPY --from=deps-prod /usr/src/app/node_modules ./node_modules
 
 EXPOSE $PORT
-
 CMD ["./node_modules/@remix-run/serve/dist/cli.js", "./build/server/index.js"]
