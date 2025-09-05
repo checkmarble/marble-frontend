@@ -82,5 +82,5 @@ When available, you can use VSCode launch configuration to run the package scrip
 #### How to check the code locally like the CI
 
 ```bash
-bun run -F "*" type-check && bun x biome check
+bun run -F "*" type-check && bunx biome check
 ```
