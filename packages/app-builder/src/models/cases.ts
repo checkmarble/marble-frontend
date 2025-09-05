@@ -433,7 +433,6 @@ export interface CaseDetail extends Case {
     scenario: {
       id: string;
       name: string;
-      description: string;
       scenarioIterationId: string;
       version: number;
     };
@@ -464,7 +463,6 @@ export async function adaptCaseDetail(
       scenario: {
         id: decisionDto.scenario.id,
         name: decisionDto.scenario.name,
-        description: decisionDto.scenario.description,
         scenarioIterationId: decisionDto.scenario.scenario_iteration_id,
         version: decisionDto.scenario.version,
       },

@@ -285,8 +285,6 @@ components:
             id:
               type: string
               format: uuid
-            description:
-              type: string
             name:
               type: string
             scenario_iteration_id:
@@ -296,7 +294,6 @@ components:
               type: integer
           required:
             - id
-            - description
             - name
             - scenario_iteration_id
             - version
