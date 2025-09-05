@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "lint": "biome lint",
-    "type-check": "pnpm exec tsc --noEmit",
+    "type-check": "tsc --noEmit",
     "test": "vitest"
   },
   "author": "",
@@ -17,7 +17,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "16.2.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/react": "18.3.11",
+    "@types/react": "18.3.24",
     "@types/react-dom": "18.3.1",
     "jsdom": "26.0.0",
     "jsdom-testing-mocks": "^1.13.1",

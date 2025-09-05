@@ -1,6 +1,6 @@
 # Marble Frontend Monorepo
 
-This is the frontend marble monorepo. We use `pnpm` to handle dependancies.
+This is the frontend marble monorepo. We use `bun` as the package manager and keep Node.js for runtime.
 
 ## Getting started
 
@@ -16,44 +16,20 @@ This README is a global README for the monorepo. Each package may have its own R
 
 ### Installations
 
-#### Install pnpm
+#### Install Bun
 
-[Install mise-en-place](https://mise.jdx.dev/getting-started.html) or alternatively install pnpm independently
-
-```bash
-brew install pnpm
-```
-
-> NB: more installation options [here](https://pnpm.io/installation)
-
-To enable shell autocompletion, run:
-(Bash)
+[Install mise-en-place](https://mise.jdx.dev/getting-started.html) or alternatively install Bun independently
 
 ```bash
-pnpm completion bash > ~/completion-for-pnpm.bash
-echo 'source ~/completion-for-pnpm.bash' >> ~/.bashrc
-
+curl -fsSL https://bun.sh/install | bash
 ```
 
-(zsh)
-
-```bash
-pnpm completion zsh > ~/completion-for-pnpm.zsh
-echo 'source ~/completion-for-pnpm.zsh' >> ~/.zshrc
-```
-
-(Fish)
-
-```bash
-pnpm completion fish > ~/.config/fish/completions/pnpm.fish
-```
-
-More info at https://pnpm.io/completion
+To enable shell autocompletion, see `bun completion --help`.
 
 #### Install dependencies
 
 ```bash
-pnpm install
+bun install
 ```
 
 ##### (VSCode) Install recommended VSCode extensions
@@ -65,7 +41,7 @@ Recommended settings are in the `.vscode/.user-settings.sample.json` file. Cherr
 
 ### Launch
 
-All packages are located in the `packages` folder. To work in a package, you can use the `--filter` option of `pnpm` to trigger the dedicated scripts present in each `packages/*/package.json`. Example to start the app builder in dev mode:
+All packages are located in the `packages` folder. To work in a package, you can use Bun's workspace `--filter` to trigger scripts in `packages/*/package.json`. Example to start the app builder in dev mode:
 
 > **Before first launch.**
 >
@@ -73,28 +49,28 @@ All packages are located in the `packages` folder. To work in a package, you can
 
 ```bash
 # This will run the dev script in the ./packages/app-builder/package.json
-pnpm --filter app-builder run dev
+bun run -F app-builder dev
 ```
 
-> We use `pnpm` monorepo capabilities. More informations :
+> We use Bun workspaces. More information:
 >
-> - [filtering](https://pnpm.io/filtering)
-> - [workspace](https://pnpm.io/workspaces)
+> - [run](https://bun.com/docs/cli/run)
+> - [install](https://bun.com/docs/cli/install)
 
 #### Some usefull commands
 
 ```bash
 # Start the builder app in dev mode
-pnpm --filter app-builder run dev
+bun run -F app-builder dev
 
 # Generate the marble-api client
-pnpm --filter marble-api run generate-api
+bun run -F marble-api generate-api
 
 # Start the storybook in dev mode
-pnpm --filter ui-design-system run storybook
+bun run -F ui-design-system storybook
 
 # Generate icons from svg files
-pnpm --filter ui-icons run generate-icons
+bun run -F ui-icons generate-icons
 ```
 
 #### (VSCode) Use launch configuration
@@ -106,5 +82,5 @@ When available, you can use VSCode launch configuration to run the package scrip
 #### How to check the code locally like the CI
 
 ```bash
-pnpm run -r type-check && pnpm biome check
+bun run -F "*" type-check && bunx biome check
 ```

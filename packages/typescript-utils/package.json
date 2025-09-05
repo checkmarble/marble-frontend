@@ -9,7 +9,7 @@
   },
   "scripts": {
     "lint": "biome lint",
-    "type-check": "pnpm exec tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "author": "",
   "license": "ISC"

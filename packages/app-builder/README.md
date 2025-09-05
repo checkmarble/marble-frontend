@@ -22,7 +22,7 @@ The application is built using the Remix framework. You can find the documentati
 
    ```bash
    # Start the builder app in dev mode
-   pnpm --filter app-builder run dev
+   bun -F app-builder dev
    ```
 
 #### Add a new route
@@ -32,7 +32,7 @@ The app uses the [flat routes convention](https://github.com/kiliman/remix-flat-
 When adding a new route you need to run :
 
 ```bash
-pnpm --filter app-builder run generate-routes
+bun -F app-builder generate-routes
 ```
 
 This script help you generate a type-safe `getRoute` function that you can use to navigate between routes in the app.

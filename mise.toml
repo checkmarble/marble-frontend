@@ -1,0 +1,58 @@
+[tools]
+node = "22"
+
+[tasks.app-dev]
+description = "Run dev mode for app-builder"
+run = "bun run -F app-builder dev"
+
+[tasks.app-lint]
+description = "Lint code for app-builder"
+run = "bun run -F app-builder lint"
+
+[tasks.app-type-check]
+description = "Type check code for app-builder"
+run = "bun run -F app-builder type-check"
+
+[tasks.app-build]
+description = "Build code for app-builder"
+run = "bun run -F app-builder build"
+
+[tasks.app-start]
+description = "Start app-builder"
+run = "bun run -F app-builder start"
+
+[tasks.app-generate-routes]
+description = "Generate routes for app-builder"
+run = "bun run -F app-builder generate-routes"
+
+[tasks.api-gen]
+description = "Generate API for api package"
+run = "bun run -F marble-api generate-api"
+
+[tasks.api-lint]
+description = "Lint code for api package"
+run = "bun run -F marble-api lint"
+
+[tasks.api-type-check]
+description = "Type check code for api package"
+run = "bun run -F marble-api type-check"
+
+[tasks.shared-test]
+description = "Test code for shared package"
+run = "bun run -F shared test"
+
+[tasks.shared-lint]
+description = "Lint code for shared package"
+run = "bun run -F shared lint"
+
+[tasks.shared-type-check]
+description = "Type check code for shared package"
+run = "bun run -F shared type-check"
+
+[tasks.tailwind-preset-lint]
+description = "Lint code for tailwind-preset package"
+run = "bun run -F tailwind-preset lint"
+
+[tasks.tailwind-preset-type-check]
+description = "Type check code for tailwind-preset package"
+run = "bun run -F tailwind-preset type-check"
