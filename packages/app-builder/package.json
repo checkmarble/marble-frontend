@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "lint": "biome lint",
-    "type-check": "tsc --noEmit",
+    "type-check": "pnpm exec tsc --noEmit",
     "dev": "remix vite:dev",
     "build": "remix vite:build",
     "start": "remix-serve ./build/server/index.js",
@@ -25,7 +25,7 @@
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/js-cookie": "^3.0.6",
     "@types/qs": "^6.9.18",
-    "@types/react": "18.3.24",
+    "@types/react": "18.3.11",
     "@types/react-dom": "18.3.1",
     "jsdom": "26.0.0",
     "ora": "^8.2.0",

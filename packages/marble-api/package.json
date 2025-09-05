@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "lint": "biome lint",
-    "type-check": "tsc --noEmit",
-    "generate-api": "bunx swagger-cli validate openapis/marblecore-api.yaml && tsx scripts/generate.ts"
+    "type-check": "pnpm exec tsc --noEmit",
+    "generate-api": "swagger-cli validate openapis/marblecore-api.yaml && tsx scripts/generate.ts"
   },
   "devDependencies": {
     "@types/node": "22.13.10",

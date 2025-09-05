@@ -36,7 +36,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'bun run -F app-builder dev',
+    command: 'pnpm --filter app-builder run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: false,
     env: {

@@ -15,49 +15,26 @@ jobs:
       actions: read
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.2.21
-      - name: Cache Bun
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.bun/install/cache
-            node_modules
-            packages/*/node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('/bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
+      - uses: pnpm/action-setup@v4
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version-file: '.tool-versions'
+          cache: 'pnpm'
       - name: Setup Biome
         uses: biomejs/setup-biome@v2
       - name: Run Biome
         run: biome ci .
 
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
-      - name: Validate OpenAPI specs
-        run: |
-          bunx swagger-cli validate openapis/marblecore-api.yaml
-          bunx swagger-cli validate openapis/feature-access-api.yaml
-          bunx swagger-cli validate openapis/transfercheck-api.yaml
-        working-directory: packages/marble-api
-
-      - name: Generate API client and verify diff
-        run: |
-          bun run generate-api
+      - run: |
+          pnpm --filter marble-api exec swagger-cli validate openapis/marblecore-api.yaml
+          pnpm --filter marble-api exec swagger-cli validate openapis/feature-access-api.yaml
+          pnpm --filter marble-api exec swagger-cli validate openapis/transfercheck-api.yaml
+          pnpm --filter marble-api run generate-api
           git diff --exit-code || (echo 'Generated API stubs not up to date with OpenAPI specification.' && exit 1)
-        working-directory: packages/marble-api
 
-      - name: Type check (all workspaces)
-        run: bun run -F "*" type-check
-
-      - name: Tests
-        run: bun run test:all
-
-      - name: Build app-builder
-        run: bun run -F app-builder build
+      - run: pnpm run -r type-check
+      - run: pnpm run test:all
+      - run: pnpm run -r build
