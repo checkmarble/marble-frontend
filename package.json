@@ -16,15 +16,15 @@
     "update-deps": "bun update --latest -r -i; clear; bun pm ls --all > packages-licenses.txt"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
-    "@vitejs/plugin-react": "4.3.4",
+    "@biomejs/biome": "2.2.3",
+    "@vitejs/plugin-react": "5.0.2",
     "@vitest/coverage-v8": "^3.0.9",
-    "@vitest/ui": "3.0.9",
+    "@vitest/ui": "3.2.4",
     "lefthook": "^1.11.14",
-    "react-refresh": "^0.16.0",
-    "typescript": "5.8.2",
+    "react-refresh": "^0.17.0",
+    "typescript": "5.9.2",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "3.0.9"
+    "vitest": "3.2.4"
   },
   "overrides": {
     "cookie": "^0.7.2",
