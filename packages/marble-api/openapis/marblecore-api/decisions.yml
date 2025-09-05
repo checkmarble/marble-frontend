@@ -1,4 +1,4 @@
-/decisions/with-ranks:
+/decisions:
   get:
     tags:
       - Decisions
@@ -110,31 +110,6 @@
                       type: array
                       items:
                         $ref: '#/components/schemas/DecisionDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-  post:
-    tags:
-      - Decisions
-    summary: Create a decision
-    operationId: createDecision
-    security:
-      - bearerAuth: []
-    requestBody:
-      description: 'Payload object used to be trigger the decision engine'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/CreateDecisionBody'
-      required: true
-    responses:
-      '200':
-        description: The decision corresponding to the provided payload
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DecisionDetailDto'
       '401':
         $ref: 'components.yml#/responses/401'
       '403':
