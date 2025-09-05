@@ -1,7 +1,7 @@
 version: 2
 updates:
   # Root workspace dependencies
-  - package-ecosystem: "bun"
+  - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
@@ -14,7 +14,7 @@ updates:
       prefix: "chore(deps):"
 
   # App Builder package
-  - package-ecosystem: "bun"
+  - package-ecosystem: "npm"
     directory: "/packages/app-builder"
     schedule:
       interval: "weekly"
@@ -31,7 +31,7 @@ updates:
       prefix: "chore(app-builder):"
 
   # Marble API package
-  - package-ecosystem: "bun"
+  - package-ecosystem: "npm"
     directory: "/packages/marble-api"
     schedule:
       interval: "weekly"
@@ -44,7 +44,7 @@ updates:
       prefix: "chore(marble-api):"
 
   # Shared package
-  - package-ecosystem: "bun"
+  - package-ecosystem: "npm"
     directory: "/packages/shared"
     schedule:
       interval: "weekly"
@@ -57,7 +57,7 @@ updates:
       prefix: "chore(shared):"
 
   # Tailwind Preset package
-  - package-ecosystem: "bun"
+  - package-ecosystem: "npm"
     directory: "/packages/tailwind-preset"
     schedule:
       interval: "weekly"
@@ -70,7 +70,7 @@ updates:
       prefix: "chore(tailwind-preset):"
 
   # Tests package
-  - package-ecosystem: "bun"
+  - package-ecosystem: "npm"
     directory: "/packages/tests"
     schedule:
       interval: "weekly"
@@ -83,7 +83,7 @@ updates:
       prefix: "chore(tests):"
 
   # TypeScript Utils package
-  - package-ecosystem: "bun"
+  - package-ecosystem: "npm"
     directory: "/packages/typescript-utils"
     schedule:
       interval: "weekly"
@@ -96,7 +96,7 @@ updates:
       prefix: "chore(typescript-utils):"
 
   # UI Design System package
-  - package-ecosystem: "bun"
+  - package-ecosystem: "npm"
     directory: "/packages/ui-design-system"
     schedule:
       interval: "weekly"
@@ -113,7 +113,7 @@ updates:
       prefix: "chore(ui-design-system):"
 
   # UI Icons package
-  - package-ecosystem: "bun"
+  - package-ecosystem: "npm"
     directory: "/packages/ui-icons"
     schedule:
       interval: "weekly"

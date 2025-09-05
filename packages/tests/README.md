@@ -11,7 +11,7 @@ To get started with running the tests in this package, follow these steps:
 1. Install Playwright (if you have not already done so):
 
    ```bash
-   bunx -F tests playwright install
+   pnpm --filter tests exec playwright install
    ```
 
 2. Create the test organisation (if it does not already exist):
@@ -23,8 +23,8 @@ To get started with running the tests in this package, follow these steps:
    2. start the backend normally
    3. start the front-end application normally
 4. Run the tests using :
-   1. the command `bun -F tests test`, for cmd line "fast" run
-   2. the command `bun -F tests test:ui`, to open the browser and see the tests running
+   1. the command `pnpm --filter tests test`, for cmd line "fast" run
+   2. the command `pnpm --filter tests test:ui`, to open the browser and see the tests running
 
 > **Note:** The tests in this package are designed to be run against a local test environment. Steps 2 and 3 are manual steps that will be automated in the future.
 

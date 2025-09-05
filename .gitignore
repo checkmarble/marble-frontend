@@ -16,7 +16,6 @@ node_modules
 *.launch
 .settings/
 *.sublime-workspace
-/.cursor/rules
 
 # IDE - VSCode
 .vscode/*
