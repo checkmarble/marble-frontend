@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "lint": "biome lint",
-    "type-check": "bunx tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "@tailwindcss/container-queries": "^0.1.1",

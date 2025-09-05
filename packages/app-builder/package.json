@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "lint": "biome lint",
-    "type-check": "bunx tsc --noEmit",
+    "type-check": "tsc --noEmit",
     "dev": "remix vite:dev",
     "build": "remix vite:build",
     "start": "remix-serve ./build/server/index.js",

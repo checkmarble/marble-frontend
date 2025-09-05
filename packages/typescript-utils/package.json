@@ -9,7 +9,7 @@
   },
   "scripts": {
     "lint": "biome lint",
-    "type-check": "bunx tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "author": "",
   "license": "ISC"

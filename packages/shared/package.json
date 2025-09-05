@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "lint": "biome lint",
-    "type-check": "bunx tsc --noEmit",
+    "type-check": "tsc --noEmit",
     "test": "vitest"
   },
   "author": "",

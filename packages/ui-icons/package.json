@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "lint": "biome lint",
-    "type-check": "bunx tsc --noEmit",
+    "type-check": "tsc --noEmit",
     "generate-icons": "tsx scripts/generate.ts && biome check --write ./src/generated"
   },
   "devDependencies": {
