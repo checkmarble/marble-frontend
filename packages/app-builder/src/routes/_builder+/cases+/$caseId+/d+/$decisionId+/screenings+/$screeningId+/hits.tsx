@@ -5,13 +5,13 @@ import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/Trigg
 import { FormatData } from '@app-builder/components/FormatData';
 import { SanctionReviewSection } from '@app-builder/components/Sanctions/SanctionReview';
 import { sanctionsI18n } from '@app-builder/components/Sanctions/sanctions-i18n';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { usePivotValues } from '@app-builder/hooks/decisions/usePivotValues';
 import { type SanctionCheck, SanctionCheckQuery } from '@app-builder/models/sanction-check';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { useNavigate } from '@remix-run/react';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -26,7 +26,7 @@ export default function CaseSanctionsHitsPage() {
     tableName: string;
     objectId: string;
   } | null>(null);
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
 
   return (
     <div className="bg-grey-100 border-grey-90 grid grid-cols-[max-content_2fr_1fr_repeat(3,max-content)] gap-x-6 gap-y-2 rounded-md border">
