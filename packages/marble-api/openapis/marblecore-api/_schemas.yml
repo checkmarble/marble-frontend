@@ -151,6 +151,10 @@ FloatFieldStatisticsDto:
   $ref: ingestion.yml#/components/schemas/FloatFieldStatisticsDto
 TimestampFieldStatisticsDto:
   $ref: ingestion.yml#/components/schemas/TimestampFieldStatisticsDto
+KYCAnalysisDto:
+  $ref: cases.yml#/components/schemas/KYCAnalysisDto
+GroundingCitationDto:
+  $ref: cases.yml#/components/schemas/GroundingCitationDto
 
 # SUSPICIOUS ACTIVITY REPORTS
 
