@@ -1,6 +1,6 @@
 # Marble Frontend Monorepo
 
-This is the frontend marble monorepo. We use `bun` as the package manager and keep Node.js for servers.
+This is the frontend marble monorepo. We use `bun` as the package manager and keep Node.js for runtime.
 
 ## Getting started
 
