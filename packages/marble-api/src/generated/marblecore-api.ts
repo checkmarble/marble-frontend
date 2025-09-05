@@ -38,8 +38,6 @@ export type OutcomeDto = "approve" | "review" | "decline" | "block_and_review" |
 export type ReviewStatusDto = "pending" | "approve" | "decline";
 export type Pagination = {
     has_next_page: boolean;
-    start_index: number;
-    end_index: number;
 };
 export type CaseStatusDto = "pending" | "investigating" | "closed" | "waiting_for_action" | "snoozed";
 export type CaseContributorDto = {
@@ -85,7 +83,6 @@ export type DecisionDto = {
     review_status?: ReviewStatusDto;
     scenario: {
         id: string;
-        description: string;
         name: string;
         scenario_iteration_id: string;
         version: number;
@@ -96,46 +93,6 @@ export type DecisionDto = {
     };
     trigger_object_type: string;
     scheduled_execution_id?: string;
-};
-export type CreateDecisionBody = {
-    scenario_id: string;
-    trigger_object: object;
-    object_type: string;
-};
-export type ConstantDto = ((string | null) | (number | null) | (boolean | null) | (ConstantDto[] | null) | ({
-    [key: string]: ConstantDto;
-} | null)) | null;
-export type EvaluationErrorCodeDto = "UNEXPECTED_ERROR" | "UNDEFINED_FUNCTION" | "WRONG_NUMBER_OF_ARGUMENTS" | "MISSING_NAMED_ARGUMENT" | "ARGUMENTS_MUST_BE_INT_OR_FLOAT" | "ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME" | "ARGUMENT_MUST_BE_INTEGER" | "ARGUMENT_MUST_BE_STRING" | "ARGUMENT_MUST_BE_BOOLEAN" | "ARGUMENT_MUST_BE_LIST" | "ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION" | "ARGUMENT_MUST_BE_TIME" | "ARGUMENT_REQUIRED" | "ARGUMENT_INVALID_TYPE" | "LIST_NOT_FOUND" | "DATABASE_ACCESS_NOT_FOUND" | "PAYLOAD_FIELD_NOT_FOUND" | "NULL_FIELD_READ" | "NO_ROWS_READ" | "DIVISION_BY_ZERO" | "PAYLOAD_FIELD_NOT_FOUND" | "RUNTIME_EXPRESSION_ERROR";
-export type EvaluationErrorDto = {
-    error: EvaluationErrorCodeDto;
-    message: string;
-    argument_index?: number;
-    argument_name?: string;
-};
-export type NodeEvaluationDto = {
-    return_value: {
-        value?: ConstantDto;
-        is_omitted: boolean;
-    };
-    errors: EvaluationErrorDto[] | null;
-    children?: NodeEvaluationDto[];
-    named_children?: {
-        [key: string]: NodeEvaluationDto;
-    };
-    skipped?: boolean;
-};
-export type RuleExecutionDto = {
-    error?: Error;
-    description: string;
-    name: string;
-    outcome: "hit" | "no_hit" | "snoozed" | "error";
-    result: boolean;
-    rule_id: string;
-    score_modifier: number;
-    rule_evaluation?: NodeEvaluationDto;
-};
-export type DecisionDetailDto = DecisionDto & {
-    rules: RuleExecutionDto[];
 };
 export type ComponentsSchemasTagEntityAnnotationDtoAllOf0 = {
     id: string;
@@ -193,7 +150,6 @@ export type CaseDecisionDto = {
     scenario: {
         id: string;
         name: string;
-        description: string;
         scenario_iteration_id: string;
         version: number;
     };
@@ -491,6 +447,41 @@ export type ScheduledExecutionDto = {
     scenario_trigger_object_type: string;
     started_at: string;
     status: "pending" | "processing" | "success" | "failure" | "partial_failure";
+};
+export type ConstantDto = ((string | null) | (number | null) | (boolean | null) | (ConstantDto[] | null) | ({
+    [key: string]: ConstantDto;
+} | null)) | null;
+export type EvaluationErrorCodeDto = "UNEXPECTED_ERROR" | "UNDEFINED_FUNCTION" | "WRONG_NUMBER_OF_ARGUMENTS" | "MISSING_NAMED_ARGUMENT" | "ARGUMENTS_MUST_BE_INT_OR_FLOAT" | "ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME" | "ARGUMENT_MUST_BE_INTEGER" | "ARGUMENT_MUST_BE_STRING" | "ARGUMENT_MUST_BE_BOOLEAN" | "ARGUMENT_MUST_BE_LIST" | "ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION" | "ARGUMENT_MUST_BE_TIME" | "ARGUMENT_REQUIRED" | "ARGUMENT_INVALID_TYPE" | "LIST_NOT_FOUND" | "DATABASE_ACCESS_NOT_FOUND" | "PAYLOAD_FIELD_NOT_FOUND" | "NULL_FIELD_READ" | "NO_ROWS_READ" | "DIVISION_BY_ZERO" | "PAYLOAD_FIELD_NOT_FOUND" | "RUNTIME_EXPRESSION_ERROR";
+export type EvaluationErrorDto = {
+    error: EvaluationErrorCodeDto;
+    message: string;
+    argument_index?: number;
+    argument_name?: string;
+};
+export type NodeEvaluationDto = {
+    return_value: {
+        value?: ConstantDto;
+        is_omitted: boolean;
+    };
+    errors: EvaluationErrorDto[] | null;
+    children?: NodeEvaluationDto[];
+    named_children?: {
+        [key: string]: NodeEvaluationDto;
+    };
+    skipped?: boolean;
+};
+export type RuleExecutionDto = {
+    error?: Error;
+    description: string;
+    name: string;
+    outcome: "hit" | "no_hit" | "snoozed" | "error";
+    result: boolean;
+    rule_id: string;
+    score_modifier: number;
+    rule_evaluation?: NodeEvaluationDto;
+};
+export type DecisionDetailDto = DecisionDto & {
+    rules: RuleExecutionDto[];
 };
 export type RuleSnoozeDto = {
     id: string;
@@ -1377,7 +1368,7 @@ export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, s
     } | {
         status: 403;
         data: string;
-    }>(`/decisions/with-ranks${QS.query(QS.explode({
+    }>(`/decisions${QS.query(QS.explode({
         "case_id[]": caseId,
         end_date: endDate,
         has_case: hasCase,
@@ -1396,25 +1387,6 @@ export function listDecisions({ caseId, endDate, hasCase, outcome, pivotValue, s
     }))}`, {
         ...opts
     }));
-}
-/**
- * Create a decision
- */
-export function createDecision(createDecisionBody: CreateDecisionBody, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: DecisionDetailDto;
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    }>("/decisions/with-ranks", oazapfts.json({
-        ...opts,
-        method: "POST",
-        body: createDecisionBody
-    })));
 }
 /**
  * Get an annotation by ID

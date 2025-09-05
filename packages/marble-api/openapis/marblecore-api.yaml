@@ -57,8 +57,8 @@ paths:
   /credentials:
     $ref: ./marblecore-api/authorization.yml#/~1credentials
 
-  /decisions/with-ranks: # For ordering, should go down within decisions
-    $ref: ./marblecore-api/decisions.yml#/~1decisions~1with-ranks
+  /decisions: # For ordering, should go down within decisions
+    $ref: ./marblecore-api/decisions.yml#/~1decisions
 
   # ANNOTATIONS
 
