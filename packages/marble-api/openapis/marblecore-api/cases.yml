@@ -972,7 +972,6 @@ components:
           required:
             - id
             - name
-            - description
             - scenario_iteration_id
             - version
           properties:
@@ -980,8 +979,6 @@ components:
               type: string
               format: uuid
             name:
-              type: string
-            description:
               type: string
             scenario_iteration_id:
               type: string

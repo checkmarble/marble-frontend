@@ -31,7 +31,6 @@ export interface Decision {
   scenario: {
     id: string;
     name: string;
-    description: string;
     scenarioIterationId: string;
     version: number;
   };
@@ -166,7 +165,6 @@ export function adaptDecision(dto: DecisionDto): Decision {
     scenario: {
       id: dto.scenario.id,
       name: dto.scenario.name,
-      description: dto.scenario.description,
       scenarioIterationId: dto.scenario.scenario_iteration_id,
       version: dto.scenario.version,
     },
