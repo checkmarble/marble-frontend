@@ -4,6 +4,7 @@ import {
   HoverCardPortal,
   HoverCardTrigger,
 } from '@radix-ui/react-hover-card';
+import { cva } from 'class-variance-authority';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
@@ -16,32 +17,61 @@ type NudgeProps = {
   iconClass?: string;
   link?: string;
   kind?: Exclude<FeatureAccessLevelDto, 'allowed'>;
+  collapsed?: boolean;
 };
 
-export const Nudge = ({ content, link, className, kind = 'restricted', iconClass }: NudgeProps) => {
-  const { t } = useTranslation(['common']);
+const triggerClassName = cva('flex items-center justify-center text-white ', {
+  variants: {
+    kind: {
+      test: 'bg-purple-65',
+      restricted: 'bg-purple-82',
+      missing_configuration: 'bg-yellow-50',
+    },
+    collapsed: {
+      true: 'absolute top-v2-sm right-v2-sm translate-x-[50%] -translate-y-[50%] rounded-full',
+      false: 'rounded-sm size-6',
+    },
+  },
+  defaultVariants: {
+    collapsed: false,
+  },
+});
 
+const iconClassName = cva('', {
+  variants: {
+    collapsed: {
+      true: 'size-2.5',
+      false: 'size-3',
+    },
+  },
+  defaultVariants: {
+    collapsed: false,
+  },
+});
+
+export const Nudge = ({
+  content,
+  link,
+  className,
+  kind = 'restricted',
+  iconClass,
+  collapsed = false,
+}: NudgeProps) => {
+  const { t } = useTranslation(['common']);
   return (
     <HoverCard>
-      <HoverCardTrigger
-        tabIndex={-1}
-        className={cn(
-          'text-grey-100 flex flex-row items-center justify-center rounded-sm',
-          { 'bg-purple-65': kind === 'test' },
-          { 'bg-purple-82': kind === 'restricted' },
-          { 'bg-yellow-50': kind === 'missing_configuration' },
-          className,
-        )}
-      >
-        <Icon
-          icon={match<typeof kind, IconName>(kind)
-            .with('restricted', () => 'lock')
-            .with('test', () => 'unlock-right')
-            .with('missing_configuration', () => 'warning')
-            .exhaustive()}
-          className={cn('size-3.5', iconClass)}
-          aria-hidden
-        />
+      <HoverCardTrigger tabIndex={-1} asChild>
+        <span className={triggerClassName({ kind, collapsed, className })}>
+          <Icon
+            icon={match<typeof kind, IconName>(kind)
+              .with('restricted', () => 'lock')
+              .with('test', () => 'unlock-right')
+              .with('missing_configuration', () => 'warning')
+              .exhaustive()}
+            className={iconClassName({ collapsed, className: iconClass })}
+            aria-hidden
+          />
+        </span>
       </HoverCardTrigger>
       <HoverCardPortal>
         <HoverCardContent
@@ -56,6 +86,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
               'border-yellow-50': kind === 'missing_configuration',
             },
           )}
+          onClick={(e) => e.stopPropagation()}
         >
           <span className="text-m font-bold">
             {match<typeof kind, string>(kind)

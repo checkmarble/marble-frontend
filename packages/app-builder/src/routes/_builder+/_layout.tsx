@@ -122,7 +122,7 @@ export default function Builder() {
                           role={user.role}
                           orgOrPartnerName={organization.name}
                           isAutoAssignmentAvailable={featuresAccess.isAutoAssignmentAvailable}
-                        ></UserInfo>
+                        />
                       </div>
                       <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-2">
                         <ul className="flex flex-col gap-2">
@@ -174,6 +174,7 @@ export default function Builder() {
                                     {t('navigation:analytics')}
                                   </span>
                                   <Nudge
+                                    collapsed={!leftSidebarSharp.value.expanded}
                                     className="size-6"
                                     content={t('navigation:analytics.nudge')}
                                   />
@@ -186,6 +187,7 @@ export default function Builder() {
                                     {t('navigation:analytics')}
                                   </span>
                                   <Nudge
+                                    collapsed={!leftSidebarSharp.value.expanded}
                                     kind="missing_configuration"
                                     className="size-6"
                                     content={t('navigation:analytics.nudge')}
@@ -197,9 +199,11 @@ export default function Builder() {
                                   <SidebarLink
                                     labelTKey="navigation:analytics"
                                     to={getRoute('/analytics')}
+                                    className="relative"
                                     Icon={(props) => <Icon icon="analytics" {...props} />}
                                   >
                                     <Nudge
+                                      collapsed={!leftSidebarSharp.value.expanded}
                                       className="size-6"
                                       content={t('navigation:analytics.nudge')}
                                       kind="test"

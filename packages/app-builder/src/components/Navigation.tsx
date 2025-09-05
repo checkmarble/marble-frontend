@@ -14,6 +14,7 @@ export interface SidebarLinkProps {
   labelTKey: ParseKeys<['navigation']>;
   to: string;
   children?: React.ReactNode;
+  className?: string;
 }
 
 export const sidebarLink = cva(
@@ -31,11 +32,11 @@ export const sidebarLink = cva(
   },
 );
 
-export function SidebarLink({ Icon, labelTKey, to, children }: SidebarLinkProps) {
+export function SidebarLink({ Icon, labelTKey, to, children, className }: SidebarLinkProps) {
   const { t } = useTranslation(navigationI18n);
 
   return (
-    <NavLink className={({ isActive }) => sidebarLink({ isActive })} to={to}>
+    <NavLink className={({ isActive }) => sidebarLink({ isActive, className })} to={to}>
       <Icon className="size-6 shrink-0" />
       <span className="line-clamp-1 text-start opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
         {t(labelTKey)}
