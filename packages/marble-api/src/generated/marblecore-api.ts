@@ -83,7 +83,6 @@ export type DecisionDto = {
     review_status?: ReviewStatusDto;
     scenario: {
         id: string;
-        description: string;
         name: string;
         scenario_iteration_id: string;
         version: number;
@@ -151,7 +150,6 @@ export type CaseDecisionDto = {
     scenario: {
         id: string;
         name: string;
-        description: string;
         scenario_iteration_id: string;
         version: number;
     };
