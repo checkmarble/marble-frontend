@@ -29,37 +29,41 @@ export function PrepareScenarioVersion({
     setOpen(false);
   };
 
-  const button = (
-    <Button className="flex-1" variant="primary" disabled={!iteration.isValid}>
-      <Icon icon="queue-list" className="size-6" />
-      {t('scenarios:deployment_modal.prepare.button')}
-    </Button>
-  );
-
   if (!iteration.isValid) {
     return (
       <Tooltip.Default
         className="text-xs"
         content={t('scenarios:deployment_modal.prepare.validation_error')}
       >
-        {button}
+        <Button className="flex-1" variant="primary" disabled color="red">
+          <Icon icon="queue-list" className="size-6" />
+          {t('scenarios:deployment_modal.prepare.button')}
+        </Button>
       </Tooltip.Default>
     );
   }
-  if (isPreparationServiceOccupied) {
+  if (!isPreparationServiceOccupied) {
     return (
       <Tooltip.Default
         className="text-xs"
         content={t('scenarios:deployment_modal.prepare.preparation_service_occupied')}
       >
-        {button}
+        <Button className="flex-1" variant="primary" disabled>
+          <Icon icon="queue-list" className="size-6" />
+          {t('scenarios:deployment_modal.prepare.button')}
+        </Button>
       </Tooltip.Default>
     );
   }
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger asChild>{button}</Modal.Trigger>
+      <Modal.Trigger asChild>
+        <Button className="flex-1" variant="primary">
+          <Icon icon="queue-list" className="size-6" />
+          {t('scenarios:deployment_modal.prepare.button')}
+        </Button>
+      </Modal.Trigger>
       <Modal.Content>
         <PrepareScenarioVersionContent
           scenarioId={scenarioId}
