@@ -7,7 +7,7 @@ import {
   type MarbleCoreApi,
 } from '@app-builder/infra/marblecore-api';
 import { type GetTransfercheckAPIClientWithAuth } from '@app-builder/infra/transfercheck-api';
-
+import { makeGetAiAssistSettingsRepository } from './AiAssistRepository';
 import { makeGetAnalyticsRepository } from './AnalyticsRepository';
 import { makeGetApiKeyRepository } from './ApiKeyRepository';
 import { makeGetAppConfigRepository } from './AppConfigRepository';
@@ -87,6 +87,7 @@ export function makeServerRepositories({
     getAppConfigRepository: makeGetAppConfigRepository(),
     getFeatureAccessRepository: makeGetFeatureAccessRepository(),
     getPersonalSettingsRepository: makeGetPersonalSettingsRepository(),
+    getAiAssistSettingsRepository: makeGetAiAssistSettingsRepository(),
   };
 }
 

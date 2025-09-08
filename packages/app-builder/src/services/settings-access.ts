@@ -24,7 +24,7 @@ export type Sections = {
   users: Section;
   scenarios: Section;
   case_manager: Section;
-  ia_assist: Section;
+  ai_assist: Section;
   api: Section;
   ip_whitelisting: Section;
 };
@@ -34,6 +34,7 @@ export function getSettingsAccess(
   appConfig: AppConfig,
   inboxes: Inbox[],
 ): Sections {
+  // Define all sections with their icon and settings, Order of the sections and settings is important
   const sections: Sections = {
     users: {
       icon: 'users',
@@ -54,15 +55,15 @@ export function getSettingsAccess(
           ? [{ title: 'inboxes', to: getRoute('/settings/inboxes') }]
           : []),
         ...(isReadTagAvailable(user) ? [{ title: 'tags', to: getRoute('/settings/tags') }] : []),
-        ...(isAdmin(user)
-          ? [{ title: 'ia_case_review', to: getRoute('/settings/ia-case-review') }]
-          : []),
         ...(isAdmin(user) && appConfig.isManagedMarble
           ? [{ title: 'data_display', to: getRoute('/settings/data-display') }]
           : []),
       ],
     },
-    ia_assist: { icon: 'ai-review', settings: [] },
+    ai_assist: {
+      icon: 'ai-review',
+      settings: [{ title: 'ai_case_review', to: getRoute('/settings/ai-case-review') }],
+    },
     api: {
       icon: 'world',
       settings: [

@@ -5,16 +5,7 @@ import {
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
 import { Nudge } from '@app-builder/components/Nudge';
-import { type CurrentUser, isAdmin } from '@app-builder/models';
-import { AppConfig } from '@app-builder/models/app-config';
-import { type Inbox } from '@app-builder/models/inbox';
-import {
-  canAccessInboxesSettings,
-  isAccessible,
-  isReadApiKeyAvailable,
-  isReadTagAvailable,
-  isReadUserAvailable,
-} from '@app-builder/services/feature-access';
+import { isAccessible } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
 import { getRoute } from '@app-builder/utils/routes';
@@ -23,8 +14,6 @@ import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
-import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
 export const handle = {
@@ -81,7 +70,7 @@ export default function Settings() {
                   <ul className="flex flex-col gap-1 pb-6">
                     {settings.map((setting) =>
                       setting.title === 'webhooks' && !isAccessible(entitlements.webhooks) ? (
-                        <span 
+                        <span
                           key={setting.title}
                           className="text-s bg-grey-100 text-grey-80 inline-flex w-full gap-2 p-2 font-medium first-letter:capitalize"
                         >
@@ -105,8 +94,8 @@ export default function Settings() {
                         >
                           {t(`settings:${setting.title}` as any)}
                         </NavLink>
-                      );
-                    })}
+                      ),
+                    )}
                   </ul>
                 </nav>
               );
