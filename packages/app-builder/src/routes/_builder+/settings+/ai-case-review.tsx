@@ -1,0 +1,26 @@
+import { LlumberJackSettingsPage } from '@app-builder/components/Settings/LlumberJack/LlumberJackSettingsPage';
+import { isAdmin } from '@app-builder/models';
+import { initServerServices } from '@app-builder/services/init.server';
+import { getRoute } from '@app-builder/utils/routes';
+import { type LoaderFunctionArgs } from '@remix-run/node';
+import { redirect, useLoaderData } from '@remix-run/react';
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const { authService } = initServerServices(request);
+  const { user, aiAssistSettings } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
+
+  if (!isAdmin(user)) {
+    return redirect(getRoute('/'));
+  }
+  const settings = await aiAssistSettings.getAiAssistSettings();
+
+  return { settings };
+}
+
+export default function AICaseReviewSettings() {
+  const { settings } = useLoaderData<typeof loader>();
+
+  return <LlumberJackSettingsPage settings={settings} />;
+}
