@@ -86,6 +86,11 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                         onBlur={field.handleBlur}
                         defaultValue={field.state.value}
                         valid={field.state.meta.errors.length === 0}
+                        resize="vertical"
+                        className="min-h-24"
+                        placeholder={t(
+                          'settings:ai_assist.case_manager.general.org_description.field.placeholder',
+                        )}
                       />
                     </div>
                   )}
@@ -178,6 +183,11 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                         onBlur={field.handleBlur}
                         defaultValue={field.state.value}
                         valid={field.state.meta.errors.length === 0}
+                        resize="vertical"
+                        className="min-h-24"
+                        placeholder={t(
+                          'settings:ai_assist.case_manager.general.structure.field.placeholder',
+                        )}
                       />
                     </div>
                   )}

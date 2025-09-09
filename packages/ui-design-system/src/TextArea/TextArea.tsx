@@ -11,9 +11,16 @@ export const textarea = cva(
         'redfigma-87': 'border-red-87',
         'redfigma-47': 'border-red-47',
       },
+      resize: {
+        none: 'resize-none',
+        both: 'resize',
+        horizontal: 'resize-x',
+        vertical: 'resize-y',
+      },
     },
     defaultVariants: {
       borderColor: 'greyfigma-90',
+      resize: 'none',
     },
   },
 );
@@ -32,13 +39,13 @@ export interface TextAreaProps
  * Adapted from this nice article: https://css-tricks.com/the-cleanest-trick-for-autogrowing-textareas/
  */
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function TextArea(
-  { className, borderColor, ...props },
+  { className, borderColor, resize, ...props },
   ref,
 ) {
   // Used to trigger a rerender
   const [_, setValue] = useState(props?.value?.toString() || '');
 
-  const sharedClassNames = textarea({ borderColor, className });
+  const sharedClassNames = textarea({ borderColor, resize, className });
 
   const internalRef = useRef<HTMLTextAreaElement>(null);
   useImperativeHandle(ref, () => internalRef.current!);
@@ -51,7 +58,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function 
       <textarea
         ref={internalRef}
         placeholder="Write a note"
-        className={clsx('resize-none overflow-hidden', sharedClassNames)}
+        className={clsx('overflow-hidden', sharedClassNames)}
         onChangeCapture={(e) => {
           setValue(e.currentTarget.value);
         }}
