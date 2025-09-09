@@ -82,6 +82,7 @@
   "llumber_jack.kyc_enrichment_callout": "Liste de domaines utilisée pour enrichir les données KYC",
   "llumber_jack.kyc_enrichment.add_new.button": "Ajouter un nouveau domaine",
   "llumber_jack.kyc_enrichment.domains_filter.add_new.error": "Veuillez entrer un domaine, par exemple https://www.google.com",
+  "llumber_jack.kyc_enrichment.enabled.field.label": "Activer l'enrichissement KYC",
   "llumber_jack.kyc_enrichment.title": "Enrichissement KYC",
   "offline_mode_description": "Vous serez marqué comme indisponible jusqu'au {{date}}.",
   "offline_mode.title": "Définir comme indisponible",

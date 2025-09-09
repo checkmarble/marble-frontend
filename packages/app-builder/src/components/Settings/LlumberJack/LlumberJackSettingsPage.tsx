@@ -11,7 +11,7 @@ import { languages, useUpdateLumberJack } from '@app-builder/queries/settings/ll
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2, Input, MenuCommand, TooltipV2 } from 'ui-design-system';
+import { ButtonV2, Input, MenuCommand, Switch, TooltipV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function LlumberJackSettingsPage({ settings }: { settings: AiSettingSchema }) {
@@ -42,6 +42,7 @@ export function LlumberJackSettingsPage({ settings }: { settings: AiSettingSchem
         orgDescription: settings.caseReviewSetting.orgDescription || '',
       },
       kycEnrichmentSetting: {
+        enabled: settings.kycEnrichmentSetting.enabled,
         domainsFilter: settings.kycEnrichmentSetting.domainsFilter || [],
       },
     },
@@ -180,6 +181,20 @@ export function LlumberJackSettingsPage({ settings }: { settings: AiSettingSchem
             </CollapsiblePaper.Title>
             <CollapsiblePaper.Content>
               <div className="flex flex-col gap-8">
+                <form.Field name="kycEnrichmentSetting.enabled">
+                  {(field) => (
+                    <>
+                      <div className="group flex w-full flex-col gap-2">
+                        <FormLabel name={field.name}>
+                          {t('settings:llumber_jack.kyc_enrichment.enabled.field.label')}
+                        </FormLabel>
+                      </div>
+                      <div className="group flex w-full flex-col gap-2">
+                        <Switch checked={field.state.value} onCheckedChange={field.handleChange} />
+                      </div>
+                    </>
+                  )}
+                </form.Field>
                 <CalloutV2>{t('settings:llumber_jack.kyc_enrichment_callout')}</CalloutV2>
                 <form.Field name="kycEnrichmentSetting.domainsFilter" mode="array">
                   {(domainsFilterField) => (
