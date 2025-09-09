@@ -1,6 +1,5 @@
 {
   "ai_assist": "Assistance IA",
-  "ai_assist.case_manager": "LlumberJack",
   "ai_assist.case_manager.domains_filter.delete": "Supprimer le domaine",
   "ai_assist.case_manager.domains_filter.placeholder": "Entrez un domaine, par exemple checkmarble.com",
   "ai_assist.case_manager.general.language.field.label": "Langue de sortie",

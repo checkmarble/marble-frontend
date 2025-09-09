@@ -7,7 +7,7 @@ import { Page } from '@app-builder/components/Page';
 import { CollapsiblePaper } from '@app-builder/components/Paper';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type AiSettingSchema, aiSettingSchema, languages } from '@app-builder/models/ai-settings';
-import { useUpdateLumberJack } from '@app-builder/queries/settings/llumber-jack/update';
+import { useUpdateAiSettings } from '@app-builder/queries/settings/ai/update';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -17,12 +17,12 @@ import { Icon } from 'ui-icons';
 export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }) {
   const { t } = useTranslation(['settings', 'common']);
 
-  const updateLumberJackMutation = useUpdateLumberJack();
+  const updateAiSettingsMutation = useUpdateAiSettings();
   const revalidate = useLoaderRevalidator();
 
   const form = useForm({
     onSubmit: ({ value }) => {
-      return updateLumberJackMutation
+      return updateAiSettingsMutation
         .mutateAsync(value)
         .then(() => {
           revalidate();
@@ -49,7 +49,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
   return (
     <Page.Container>
       <Page.Content className="max-w-(--breakpoint-xl)">
-        <form id="lumber-jack-form" className="flex flex-col gap-4" onSubmit={handleSubmit(form)}>
+        <form id="ai-settings-form" className="flex flex-col gap-4" onSubmit={handleSubmit(form)}>
           <CollapsiblePaper.Container>
             <CollapsiblePaper.Title>
               <span className="flex-1">{t('settings:ai_assist.case_manager.general.title')}</span>
@@ -300,8 +300,8 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                 <ButtonV2
                   type="submit"
                   variant="primary"
-                  form="lumber-jack-form"
-                  disabled={!isDirty || isSubmitting || updateLumberJackMutation.isPending}
+                  form="ai-settings-form"
+                  disabled={!isDirty || isSubmitting || updateAiSettingsMutation.isPending}
                 >
                   {t('common:save')}
                 </ButtonV2>

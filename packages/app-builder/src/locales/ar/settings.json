@@ -1,6 +1,5 @@
 {
   "ai_assist": "المساعدة الذكاء الاصطناعي",
-  "ai_assist.case_manager": "LlumberJack",
   "ai_assist.case_manager.domains_filter.delete": "حذف النطاق",
   "ai_assist.case_manager.domains_filter.placeholder": "أدخل نطاق، على سبيل المثال checkmarble.com",
   "ai_assist.case_manager.general.language.field.label": "لغة الإخراج",

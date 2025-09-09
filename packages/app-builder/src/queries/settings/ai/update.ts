@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 
 const endpoint = () => getRoute('/ressources/settings/ai-review');
 
-export const useUpdateLumberJack = () => {
+export const useUpdateAiSettings = () => {
   return useMutation({
     mutationKey: ['settings', 'llumber-jack', 'update'],
     mutationFn: async (payload: AiSettingSchema) => {
