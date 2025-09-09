@@ -72,15 +72,7 @@ export function LlumberJackSettingsPage({ settings }: { settings: AiSettingSchem
                             </TooltipV2.TooltipTrigger>
                             <TooltipV2.TooltipContent>
                               <span className="font-normal">
-                                <Trans
-                                  t={t}
-                                  i18nKey="llumber_jack.general.org_description.field.tooltip"
-                                  components={{
-                                    DocLink: (
-                                      <ExternalLink href="https://www.markdownguide.org/basic-syntax/" />
-                                    ),
-                                  }}
-                                />
+                                {t('settings:llumber_jack.general.org_description.field.tooltip')}
                               </span>
                             </TooltipV2.TooltipContent>
                           </TooltipV2.Tooltip>
@@ -101,8 +93,23 @@ export function LlumberJackSettingsPage({ settings }: { settings: AiSettingSchem
                 <form.Field name="caseReviewSetting.language">
                   {(field) => (
                     <div className="group flex w-full flex-col gap-2">
-                      <FormLabel name={field.name}>
+                      <FormLabel name={field.name} className="flex items-center gap-2">
                         {t('settings:llumber_jack.general.language.field.label')}
+                        <TooltipV2.Provider>
+                          <TooltipV2.Tooltip>
+                            <TooltipV2.TooltipTrigger asChild>
+                              <Icon
+                                icon="tip"
+                                className="size-4 shrink-0 cursor-pointer text-purple-65"
+                              />
+                            </TooltipV2.TooltipTrigger>
+                            <TooltipV2.TooltipContent>
+                              <span className="font-normal">
+                                {t('settings:llumber_jack.general.language.field.tooltip')}
+                              </span>
+                            </TooltipV2.TooltipContent>
+                          </TooltipV2.Tooltip>
+                        </TooltipV2.Provider>
                       </FormLabel>
                       <MenuCommand.Menu>
                         <MenuCommand.Trigger>
@@ -186,7 +193,13 @@ export function LlumberJackSettingsPage({ settings }: { settings: AiSettingSchem
                     <>
                       <div className="group flex w-full flex-col gap-2">
                         <FormLabel name={field.name}>
-                          {t('settings:llumber_jack.kyc_enrichment.enabled.field.label')}
+                          <Trans
+                            t={t}
+                            i18nKey="llumber_jack.kyc_enrichment.enabled.field.label"
+                            components={{
+                              bold: <span className="font-bold" />,
+                            }}
+                          />
                         </FormLabel>
                       </div>
                       <div className="group flex w-full flex-col gap-2">

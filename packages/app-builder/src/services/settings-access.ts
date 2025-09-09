@@ -62,7 +62,7 @@ export function getSettingsAccess(
     },
     ai_assist: {
       icon: 'ai-review',
-      settings: [{ title: 'ai_case_review', to: getRoute('/settings/ai-case-review') }],
+      settings: [{ title: 'ai_case_manager', to: getRoute('/settings/ai-case-review') }],
     },
     api: {
       icon: 'world',
