@@ -4,6 +4,7 @@ import {
   KYCEnrichmentSetting,
   transformCaseReviewSetting,
 } from '@app-builder/models/ai-settings';
+import * as Sentry from '@sentry/remix';
 
 export interface AiAssistRepository {
   getAiAssistSettings(): Promise<{
@@ -24,18 +25,7 @@ export const makeGetAiAssistSettingsRepository =
         const settings = await client.getAiSettings();
         return transformCaseReviewSetting.decode(settings);
       } catch (error: unknown) {
-        if ((error as { status?: number })?.status === 404) {
-          return transformCaseReviewSetting.decode({
-            case_review_setting: {
-              language: 'en-US',
-              structure: null,
-              org_description: null,
-            },
-            kyc_enrichment_setting: {
-              domain_filter: [],
-            },
-          });
-        }
+        Sentry.captureException(error);
         throw error;
       }
     },
@@ -43,6 +33,6 @@ export const makeGetAiAssistSettingsRepository =
       caseReviewSetting: CaseReviewSetting;
       kycEnrichmentSetting: KYCEnrichmentSetting;
     }) => {
-      await client.updateAiSettings(transformCaseReviewSetting.encode(settings));
+      await client.upsertAiSettings(transformCaseReviewSetting.encode(settings));
     },
   });
