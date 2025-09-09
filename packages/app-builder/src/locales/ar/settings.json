@@ -80,6 +80,7 @@
   "llumber_jack.kyc_enrichment_callout": "قائمة النطاقات المستخدمة لتعزيز بيانات KYC",
   "llumber_jack.kyc_enrichment.add_new.button": "إضافة نطاق جديد",
   "llumber_jack.kyc_enrichment.domains_filter.add_new.error": "يرجى إدخال نطاق، على سبيل المثال https://www.google.com",
+  "llumber_jack.kyc_enrichment.enabled.field.label": "تمكين ميزة تعزيز KYC",
   "llumber_jack.kyc_enrichment.title": "تخصيب KYC",
   "llumberJack.domain_filter": "مرشح النطاق",
   "offline_mode_description": "سيتم تحديثك فورا كمتاح.",
