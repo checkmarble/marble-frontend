@@ -260,6 +260,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                       ))}
                       <div className="flex gap-v2-md items-center col-span-full">
                         <ButtonV2
+                          disabled={domainsFilterField.state.value.length >= 10}
                           className="w-fit"
                           onClick={() => domainsFilterField.pushValue('')}
                         >
