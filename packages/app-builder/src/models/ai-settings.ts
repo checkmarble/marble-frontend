@@ -8,16 +8,18 @@ export const caseReviewSettingSchema = z.object({
 });
 
 export const caseReviewSettingDtoSchema = z.object({
-  language: z.string().nullable(),
+  language: z.string(),
   structure: z.string().nullable(),
   org_description: z.string().nullable(),
 });
 
 export const kycEnrichmentSettingDtoSchema = z.object({
+  enabled: z.boolean(),
   domain_filter: z.array(z.string()),
 });
 
 export const kycEnrichmentSettingSchema = z.object({
+  enabled: z.boolean(),
   domainsFilter: uniqueBy(z.array(z.url()), (s) => s).max(10),
 });
 
@@ -34,22 +36,24 @@ export const aiSettingDtoSchema = z.object({
 export const transformCaseReviewSetting = z.codec(aiSettingDtoSchema, aiSettingSchema, {
   encode: ({ caseReviewSetting, kycEnrichmentSetting }) => ({
     case_review_setting: {
-      language: caseReviewSetting.language ?? null,
-      structure: caseReviewSetting.structure ?? null,
-      org_description: caseReviewSetting.orgDescription ?? null,
+      language: caseReviewSetting.language,
+      structure: caseReviewSetting.structure,
+      org_description: caseReviewSetting.orgDescription,
     },
     kyc_enrichment_setting: {
-      domain_filter: kycEnrichmentSetting.domainsFilter ?? [],
+      enabled: kycEnrichmentSetting.enabled,
+      domain_filter: kycEnrichmentSetting.domainsFilter,
     },
   }),
   decode: ({ case_review_setting, kyc_enrichment_setting }) => ({
     caseReviewSetting: {
-      language: case_review_setting.language ?? 'en-US',
+      language: case_review_setting.language,
       structure: case_review_setting.structure ?? '',
       orgDescription: case_review_setting.org_description ?? '',
     },
     kycEnrichmentSetting: {
-      domainsFilter: kyc_enrichment_setting.domain_filter ?? [],
+      enabled: kyc_enrichment_setting.enabled,
+      domainsFilter: kyc_enrichment_setting.domain_filter,
     },
   }),
 });

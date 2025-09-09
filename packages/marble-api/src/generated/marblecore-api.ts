@@ -1309,30 +1309,29 @@ export type PersonalSettingsUnavailableDto = {
 };
 export type KycEnrichmentSettingDto = {
     /** The model to use for KYC enrichment (sonar or sonar-pro) */
-    model?: string;
+    model?: string | null;
     /** The domains to filter the KYC enrichment for, we can filter in or out (by adding - to the domain) by providing a list of domains or a list of domains to exclude, but can not mix both. */
-    domain_filter?: string[];
+    domain_filter: string[];
     /** The search context for Perplexity */
-    search_context_size?: "low" | "medium" | "high";
+    search_context_size?: ("low" | "medium" | "high") | null;
     /** By default, the KYC enrichment is disabled and the user has to enable it manually. */
-    enabled?: boolean;
+    enabled: boolean;
 };
 export type CaseReviewSettingDto = {
     /** The description of the organization to give more context to the AI case review */
-    org_description?: string;
+    org_description: string | null;
     /** The language of the report to be generated */
-    language?: string;
+    language: string;
     /** Instruction for the AI to follow when generating the report */
-    structure?: string;
+    structure: string | null;
 };
 export type AiSettingsDto = {
-    org_id: string;
-    kyc_enrichment_setting?: KycEnrichmentSettingDto;
-    case_review_setting?: CaseReviewSettingDto;
+    kyc_enrichment_setting: KycEnrichmentSettingDto;
+    case_review_setting: CaseReviewSettingDto;
 };
 export type UpsertAiSettingsDto = {
-    kyc_enrichment_setting?: KycEnrichmentSettingDto;
-    case_review_setting?: CaseReviewSettingDto;
+    kyc_enrichment_setting: KycEnrichmentSettingDto;
+    case_review_setting: CaseReviewSettingDto;
 };
 /**
  * Get an access token
@@ -4776,8 +4775,6 @@ export function getAiSettings(opts?: Oazapfts.RequestOpts) {
     } | {
         status: 403;
         data: string;
-    } | {
-        status: 404;
     }>("/settings/ai", {
         ...opts
     }));
