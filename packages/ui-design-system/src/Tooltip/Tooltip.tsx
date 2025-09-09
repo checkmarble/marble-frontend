@@ -5,7 +5,7 @@ import { forwardRef } from 'react';
 import { cn } from '../utils';
 
 interface DefaultTooltipProps
-  extends Pick<TooltipProps, 'open' | 'defaultOpen' | 'onOpenChange'>,
+  extends Pick<TooltipProps, 'open' | 'defaultOpen' | 'onOpenChange' | 'delayDuration'>,
     Omit<TooltipContentProps, 'content'> {
   children: React.ReactNode;
   content: React.ReactNode;
@@ -13,6 +13,7 @@ interface DefaultTooltipProps
 }
 
 export function DefaultTooltip({
+  delayDuration = 700,
   arrow = true,
   children,
   content,
@@ -23,7 +24,12 @@ export function DefaultTooltip({
   ...props
 }: DefaultTooltipProps) {
   return (
-    <TooltipPrimitive.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+    <TooltipPrimitive.Root
+      open={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={onOpenChange}
+      delayDuration={delayDuration}
+    >
       <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
       <TooltipPrimitive.Portal>
         <TooltipPrimitive.Content

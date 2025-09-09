@@ -62,6 +62,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                       <FormLabel name={field.name} className="flex items-center gap-2">
                         {t('settings:ai_assist.case_manager.general.org_description.field.label')}
                         <Tooltip.Default
+                          delayDuration={300}
                           className="max-w-96"
                           content={
                             <span className="font-normal text-pretty">
@@ -100,6 +101,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                       <FormLabel name={field.name} className="flex items-center gap-2">
                         {t('settings:ai_assist.case_manager.general.language.field.label')}
                         <Tooltip.Default
+                          delayDuration={300}
                           className="max-w-96"
                           content={
                             <span className="font-normal">
@@ -148,6 +150,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                       <FormLabel name={field.name} className="flex items-center gap-2">
                         {t('settings:ai_assist.case_manager.general.structure.field.label')}
                         <Tooltip.Default
+                          delayDuration={300}
                           className="max-w-96"
                           content={
                             <span className="font-normal">
