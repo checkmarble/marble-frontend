@@ -1,0 +1,105 @@
+/settings/ai:
+  get:
+    tags:
+      - AI settings
+    summary: Get the current AI settings
+    operationId: getAISettings
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: Current AI settings for an organization
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AISettingsDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        description: The organization has no AI settings
+  put:
+    tags:
+      - AI settings
+    summary: Upsert AI settings for an organization
+    operationId: upsertAISettings
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpsertAISettingsDto"
+    responses:
+      "200":
+        description: AI settings upserted
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AISettingsDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+
+components:
+  schemas:
+    KycEnrichmentSettingDto:
+      type: object
+      properties:
+        model:
+          type: string
+          description: The model to use for KYC enrichment (sonar or sonar-pro)
+        domain_filter:
+          type: array
+          description: The domains to filter the KYC enrichment for, we can filter in or out (by adding - to the domain) by providing a list of domains or a list of domains to exclude, but can not mix both.
+          example:
+            - "societe.com"
+            - "google.org"
+            - "wikipedia.org"
+          items:
+            type: string
+        search_context_size:
+          type: string
+          description: The search context for Perplexity
+          enum:
+            - low
+            - medium
+            - high
+        enabled:
+          type: boolean
+          description: By default, the KYC enrichment is disabled and the user has to enable it manually.
+    CaseReviewSettingDto:
+      type: object
+      properties:
+        org_description:
+          type: string
+          description: The description of the organization to give more context to the AI case review
+        language:
+          type: string
+          description: The language of the report to be generated
+        structure:
+          type: string
+          description: Instruction for the AI to follow when generating the report
+
+    AISettingsDto:
+      type: object
+      required:
+        - org_id
+      properties:
+        org_id:
+          type: string
+          format: uuid
+        kyc_enrichment_setting:
+          $ref: "#/components/schemas/KycEnrichmentSettingDto"
+        case_review_setting:
+          $ref: "#/components/schemas/CaseReviewSettingDto"
+    UpsertAISettingsDto:
+      type: object
+      properties:
+        kyc_enrichment_setting:
+          $ref: "#/components/schemas/KycEnrichmentSettingDto"
+        case_review_setting:
+          $ref: "#/components/schemas/CaseReviewSettingDto"

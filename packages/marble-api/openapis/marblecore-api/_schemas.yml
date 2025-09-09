@@ -448,3 +448,14 @@ WorkflowActionCase:
 
 PersonalSettingsUnavailableDto:
   $ref: users.yml#/components/schemas/PersonalSettingsUnavailableDto
+
+# AI
+
+KycEnrichmentSettingDto:
+  $ref: ai.yml#/components/schemas/KycEnrichmentSettingDto
+CaseReviewSettingDto:
+  $ref: ai.yml#/components/schemas/CaseReviewSettingDto
+AISettingsDto:
+  $ref: ai.yml#/components/schemas/AISettingsDto
+UpsertAISettingsDto:
+  $ref: ai.yml#/components/schemas/UpsertAISettingsDto
