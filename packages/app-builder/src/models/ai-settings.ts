@@ -1,14 +1,30 @@
 import { uniqueBy } from '@app-builder/utils/schema/helpers/unique-array';
 import { z } from 'zod';
 
+export const languages = new Map([
+  ['fr', 'French'],
+  ['en', 'English'],
+  ['ar', 'Arabic'],
+  ['bn', 'Bengali'],
+  ['zh', 'Chinese'],
+  ['hi', 'Hindi'],
+  ['ja', 'Japanese'],
+  ['pa', 'Lahnda Punjabi'],
+  ['pt', 'Portuguese'],
+  ['ru', 'Russian'],
+  ['es', 'Spanish'],
+]);
+
+export const languageCodeSchema = z.enum(Array.from(languages.keys()));
+
 export const caseReviewSettingSchema = z.object({
-  language: z.string(),
+  language: languageCodeSchema,
   structure: z.string(),
   orgDescription: z.string(),
 });
 
 export const caseReviewSettingDtoSchema = z.object({
-  language: z.string(),
+  language: languageCodeSchema,
   structure: z.string().nullable(),
   org_description: z.string().nullable(),
 });
