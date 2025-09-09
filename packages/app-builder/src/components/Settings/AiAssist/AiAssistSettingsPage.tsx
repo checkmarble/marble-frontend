@@ -53,7 +53,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
         <form id="lumber-jack-form" className="flex flex-col gap-4" onSubmit={handleSubmit(form)}>
           <CollapsiblePaper.Container>
             <CollapsiblePaper.Title>
-              <span className="flex-1">{t('settings:llumber_jack.general.title')}</span>
+              <span className="flex-1">{t('settings:ai_assist.case_manager.general.title')}</span>
             </CollapsiblePaper.Title>
             <CollapsiblePaper.Content>
               <div className="flex flex-col gap-8">
@@ -61,7 +61,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                   {(field) => (
                     <div className="group flex w-full flex-col gap-2">
                       <FormLabel name={field.name} className="flex items-center gap-2">
-                        {t('settings:llumber_jack.general.org_description.field.label')}
+                        {t('settings:ai_assist.case_manager.general.org_description.field.label')}
                         <TooltipV2.Provider>
                           <TooltipV2.Tooltip>
                             <TooltipV2.TooltipTrigger asChild>
@@ -72,7 +72,9 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                             </TooltipV2.TooltipTrigger>
                             <TooltipV2.TooltipContent>
                               <span className="font-normal">
-                                {t('settings:llumber_jack.general.org_description.field.tooltip')}
+                                {t(
+                                  'settings:ai_assist.case_manager.general.org_description.field.tooltip',
+                                )}
                               </span>
                             </TooltipV2.TooltipContent>
                           </TooltipV2.Tooltip>
@@ -94,7 +96,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                   {(field) => (
                     <div className="group flex w-full flex-col gap-2">
                       <FormLabel name={field.name} className="flex items-center gap-2">
-                        {t('settings:llumber_jack.general.language.field.label')}
+                        {t('settings:ai_assist.case_manager.general.language.field.label')}
                         <TooltipV2.Provider>
                           <TooltipV2.Tooltip>
                             <TooltipV2.TooltipTrigger asChild>
@@ -105,7 +107,9 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                             </TooltipV2.TooltipTrigger>
                             <TooltipV2.TooltipContent>
                               <span className="font-normal">
-                                {t('settings:llumber_jack.general.language.field.tooltip')}
+                                {t(
+                                  'settings:ai_assist.case_manager.general.language.field.tooltip',
+                                )}
                               </span>
                             </TooltipV2.TooltipContent>
                           </TooltipV2.Tooltip>
@@ -144,7 +148,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                   {(field) => (
                     <div className="group flex w-full flex-col gap-2">
                       <FormLabel name={field.name} className="flex items-center gap-2">
-                        {t('settings:llumber_jack.general.structure.field.label')}
+                        {t('settings:ai_assist.case_manager.general.structure.field.label')}
                         <TooltipV2.Provider>
                           <TooltipV2.Tooltip>
                             <TooltipV2.TooltipTrigger asChild>
@@ -157,7 +161,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                               <span className="font-normal">
                                 <Trans
                                   t={t}
-                                  i18nKey="llumber_jack.general.structure.field.tooltip"
+                                  i18nKey="ai_assist.case_manager.general.structure.field.tooltip"
                                   components={{
                                     DocLink: (
                                       <ExternalLink href="https://www.markdownguide.org/basic-syntax/" />
@@ -184,7 +188,9 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
           </CollapsiblePaper.Container>
           <CollapsiblePaper.Container>
             <CollapsiblePaper.Title>
-              <span className="flex-1">{t('settings:llumber_jack.kyc_enrichment.title')}</span>
+              <span className="flex-1">
+                {t('settings:ai_assist.case_manager.kyc_enrichment.title')}
+              </span>
             </CollapsiblePaper.Title>
             <CollapsiblePaper.Content>
               <div className="flex flex-col gap-8">
@@ -195,7 +201,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                         <FormLabel name={field.name}>
                           <Trans
                             t={t}
-                            i18nKey="llumber_jack.kyc_enrichment.enabled.field.label"
+                            i18nKey="ai_assist.case_manager.kyc_enrichment.enabled.field.label"
                             components={{
                               bold: <span className="font-bold" />,
                             }}
@@ -208,7 +214,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                     </>
                   )}
                 </form.Field>
-                <CalloutV2>{t('settings:llumber_jack.kyc_enrichment_callout')}</CalloutV2>
+                <CalloutV2>{t('settings:ai_assist.case_manager.kyc_enrichment_callout')}</CalloutV2>
                 <form.Field name="kycEnrichmentSetting.domainsFilter" mode="array">
                   {(domainsFilterField) => (
                     <>
@@ -222,7 +228,9 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                                   field.handleChange(e.target.value);
                                   domainsFilterField.validate('change');
                                 }}
-                                placeholder={t('settings:llumber_jack.domains_filter.placeholder')}
+                                placeholder={t(
+                                  'settings:ai_assist.case_manager.domains_filter.placeholder',
+                                )}
                               />
                               <ButtonV2
                                 mode="icon"
@@ -232,7 +240,9 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                                 <Icon
                                   icon="delete"
                                   className={'size-3.5 shrink-0 cursor-pointer'}
-                                  aria-label={t('settings:llumber_jack.domains_filter.delete')}
+                                  aria-label={t(
+                                    'settings:ai_assist.case_manager.domains_filter.delete',
+                                  )}
                                 />
                               </ButtonV2>
                               <FormError
@@ -240,7 +250,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                                 asString
                                 translations={{
                                   invalid_union: t(
-                                    'settings:llumber_jack.kyc_enrichment.domains_filter.add_new.error',
+                                    'settings:ai_assist.case_manager.kyc_enrichment.domains_filter.add_new.error',
                                   ),
                                 }}
                               />
@@ -254,7 +264,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                           onClick={() => domainsFilterField.pushValue('')}
                         >
                           <Icon icon="plus" className="size-3.5 shrink-0 cursor-pointer" />
-                          {t('settings:llumber_jack.kyc_enrichment.add_new.button')}
+                          {t('settings:ai_assist.case_manager.kyc_enrichment.add_new.button')}
                         </ButtonV2>
                       </div>
                       <FormError field={domainsFilterField} className="col-span-full" />
