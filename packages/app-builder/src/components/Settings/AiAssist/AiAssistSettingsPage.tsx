@@ -11,7 +11,7 @@ import { useUpdateAiSettings } from '@app-builder/queries/settings/ai/update';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2, Input, MenuCommand, Switch, TooltipV2 } from 'ui-design-system';
+import { ButtonV2, Input, MenuCommand, Switch, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }) {
@@ -61,23 +61,21 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                     <div className="group flex w-full flex-col gap-2">
                       <FormLabel name={field.name} className="flex items-center gap-2">
                         {t('settings:ai_assist.case_manager.general.org_description.field.label')}
-                        <TooltipV2.Provider>
-                          <TooltipV2.Tooltip>
-                            <TooltipV2.TooltipTrigger asChild>
-                              <Icon
-                                icon="tip"
-                                className="size-4 shrink-0 cursor-pointer text-purple-65"
-                              />
-                            </TooltipV2.TooltipTrigger>
-                            <TooltipV2.TooltipContent>
-                              <span className="font-normal">
-                                {t(
-                                  'settings:ai_assist.case_manager.general.org_description.field.tooltip',
-                                )}
-                              </span>
-                            </TooltipV2.TooltipContent>
-                          </TooltipV2.Tooltip>
-                        </TooltipV2.Provider>
+                        <Tooltip.Default
+                          className="max-w-96"
+                          content={
+                            <span className="font-normal text-pretty">
+                              {t(
+                                'settings:ai_assist.case_manager.general.org_description.field.tooltip',
+                              )}
+                            </span>
+                          }
+                        >
+                          <Icon
+                            icon="tip"
+                            className="size-4 shrink-0 cursor-pointer text-purple-65"
+                          />
+                        </Tooltip.Default>
                       </FormLabel>
 
                       <FormTextArea
@@ -101,23 +99,19 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                     <div className="group flex w-full flex-col gap-2">
                       <FormLabel name={field.name} className="flex items-center gap-2">
                         {t('settings:ai_assist.case_manager.general.language.field.label')}
-                        <TooltipV2.Provider>
-                          <TooltipV2.Tooltip>
-                            <TooltipV2.TooltipTrigger asChild>
-                              <Icon
-                                icon="tip"
-                                className="size-4 shrink-0 cursor-pointer text-purple-65"
-                              />
-                            </TooltipV2.TooltipTrigger>
-                            <TooltipV2.TooltipContent>
-                              <span className="font-normal">
-                                {t(
-                                  'settings:ai_assist.case_manager.general.language.field.tooltip',
-                                )}
-                              </span>
-                            </TooltipV2.TooltipContent>
-                          </TooltipV2.Tooltip>
-                        </TooltipV2.Provider>
+                        <Tooltip.Default
+                          className="max-w-96"
+                          content={
+                            <span className="font-normal">
+                              {t('settings:ai_assist.case_manager.general.language.field.tooltip')}
+                            </span>
+                          }
+                        >
+                          <Icon
+                            icon="tip"
+                            className="size-4 shrink-0 cursor-pointer text-purple-65"
+                          />
+                        </Tooltip.Default>
                       </FormLabel>
                       <MenuCommand.Menu>
                         <MenuCommand.Trigger>
@@ -153,29 +147,27 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                     <div className="group flex w-full flex-col gap-2">
                       <FormLabel name={field.name} className="flex items-center gap-2">
                         {t('settings:ai_assist.case_manager.general.structure.field.label')}
-                        <TooltipV2.Provider>
-                          <TooltipV2.Tooltip>
-                            <TooltipV2.TooltipTrigger asChild>
-                              <Icon
-                                icon="tip"
-                                className="size-4 shrink-0 cursor-pointer text-purple-65"
+                        <Tooltip.Default
+                          className="max-w-96"
+                          content={
+                            <span className="font-normal">
+                              <Trans
+                                t={t}
+                                i18nKey="ai_assist.case_manager.general.structure.field.tooltip"
+                                components={{
+                                  DocLink: (
+                                    <ExternalLink href="https://www.markdownguide.org/basic-syntax/" />
+                                  ),
+                                }}
                               />
-                            </TooltipV2.TooltipTrigger>
-                            <TooltipV2.TooltipContent>
-                              <span className="font-normal">
-                                <Trans
-                                  t={t}
-                                  i18nKey="ai_assist.case_manager.general.structure.field.tooltip"
-                                  components={{
-                                    DocLink: (
-                                      <ExternalLink href="https://www.markdownguide.org/basic-syntax/" />
-                                    ),
-                                  }}
-                                />
-                              </span>
-                            </TooltipV2.TooltipContent>
-                          </TooltipV2.Tooltip>
-                        </TooltipV2.Provider>
+                            </span>
+                          }
+                        >
+                          <Icon
+                            icon="tip"
+                            className="size-4 shrink-0 cursor-pointer text-purple-65"
+                          />
+                        </Tooltip.Default>
                       </FormLabel>
                       <FormTextArea
                         name={field.name}
