@@ -6,8 +6,8 @@ import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea
 import { Page } from '@app-builder/components/Page';
 import { CollapsiblePaper } from '@app-builder/components/Paper';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { type AiSettingSchema, aiSettingSchema } from '@app-builder/models/ai-settings';
-import { languages, useUpdateLumberJack } from '@app-builder/queries/settings/llumber-jack/update';
+import { type AiSettingSchema, aiSettingSchema, languages } from '@app-builder/models/ai-settings';
+import { useUpdateLumberJack } from '@app-builder/queries/settings/llumber-jack/update';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
