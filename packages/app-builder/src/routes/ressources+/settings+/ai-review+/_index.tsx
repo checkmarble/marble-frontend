@@ -1,7 +1,7 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { isAdmin } from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
-import { badRequest, forbidden } from '@app-builder/utils/http/http-responses';
+import { forbidden } from '@app-builder/utils/http/http-responses';
 import { getRoute } from '@app-builder/utils/routes';
 
 import { ActionFunctionArgs } from '@remix-run/node';
@@ -33,8 +33,14 @@ export async function action({ request }: ActionFunctionArgs) {
       messageKey: 'common:errors.unknown',
     });
     Sentry.captureException(error);
-    return badRequest(error);
+    return Response.json(
+      { success: false, errors: [] },
+      { headers: { 'Set-Cookie': await toastSessionService.commitSession(toastSession) } },
+    );
   }
 
-  return Response.json({ success: true });
+  return Response.json(
+    { success: true },
+    { headers: { 'Set-Cookie': await toastSessionService.commitSession(toastSession) } },
+  );
 }

@@ -36,6 +36,7 @@
   "errors.forbidden.subtitle": "Vous n'êtes pas autorisé à accéder à cette page",
   "errors.forbidden.title": "Accès interdit",
   "errors.forms.duplicate_value": "Cette valeur est déjà utilisée",
+  "errors.forms.invalid_domain": "Le domaine est invalide",
   "errors.list.duplicate_email": "Cet email est déjà utilisé",
   "errors.list.duplicate_list_name": "Une liste avec ce nom existe déjà",
   "errors.not_found": "Cette page est introuvable.",

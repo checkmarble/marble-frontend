@@ -17,6 +17,44 @@ export const languages = new Map([
 
 export const languageCodeSchema = z.enum(Array.from(languages.keys()));
 
+const httpUrlValidationSchema = z.string().superRefine((val, ctx) => {
+  const url = val.startsWith('http://') || val.startsWith('https://') ? val : `https://${val}`;
+  try {
+    const urlObj = new URL(url);
+    const isValid =
+      (urlObj.protocol === 'https:' || urlObj.protocol === 'http:') &&
+      urlObj.hostname.includes('.') &&
+      !urlObj.hostname.startsWith('.') &&
+      !urlObj.hostname.endsWith('.') &&
+      urlObj.hostname.length > 3;
+
+    if (!isValid) {
+      ctx.addIssue({
+        code: 'custom',
+        params: {
+          code: 'invalid_domain',
+        },
+      });
+    }
+  } catch {
+    ctx.addIssue({
+      code: 'custom',
+      params: {
+        code: 'invalid_domain',
+      },
+    });
+  }
+});
+
+const httpUrlSchema = httpUrlValidationSchema;
+
+// Helper function to extract domain from URL
+const extractDomain = (val: string): string => {
+  const url = val.startsWith('http://') || val.startsWith('https://') ? val : `https://${val}`;
+  const urlObj = new URL(url);
+  return urlObj.hostname;
+};
+
 export const caseReviewSettingSchema = z.object({
   language: languageCodeSchema,
   structure: z.string(),
@@ -36,7 +74,8 @@ export const kycEnrichmentSettingDtoSchema = z.object({
 
 export const kycEnrichmentSettingSchema = z.object({
   enabled: z.boolean(),
-  domainsFilter: uniqueBy(z.array(z.url()), (s) => s).max(10),
+  domainsFilter: uniqueBy(z.array(httpUrlSchema), (s) => s).max(10),
+  // domainsFilter: z.array(httpUrlSchema).max(10),
 });
 
 export const aiSettingSchema = z.object({
@@ -58,7 +97,7 @@ export const transformCaseReviewSetting = z.codec(aiSettingDtoSchema, aiSettingS
     },
     kyc_enrichment_setting: {
       enabled: kycEnrichmentSetting.enabled,
-      domain_filter: kycEnrichmentSetting.domainsFilter,
+      domain_filter: kycEnrichmentSetting.domainsFilter.map(extractDomain),
     },
   }),
   decode: ({ case_review_setting, kyc_enrichment_setting }) => ({

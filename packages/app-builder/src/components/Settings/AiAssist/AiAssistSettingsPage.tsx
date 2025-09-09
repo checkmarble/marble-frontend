@@ -32,7 +32,6 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
         });
     },
     validators: {
-      onBlur: aiSettingSchema,
       onSubmit: aiSettingSchema,
     },
     defaultValues: {
@@ -197,7 +196,8 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                 <form.Field name="kycEnrichmentSetting.enabled">
                   {(field) => (
                     <>
-                      <div className="group flex w-full flex-col gap-2">
+                      <div className="group flex w-full flex-row gap-4 text-pretty">
+                        <Switch checked={field.state.value} onCheckedChange={field.handleChange} />
                         <FormLabel name={field.name}>
                           <Trans
                             t={t}
@@ -208,77 +208,95 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                           />
                         </FormLabel>
                       </div>
-                      <div className="group flex w-full flex-col gap-2">
-                        <Switch checked={field.state.value} onCheckedChange={field.handleChange} />
-                      </div>
                     </>
                   )}
                 </form.Field>
+
                 <CalloutV2>{t('settings:ai_assist.case_manager.kyc_enrichment_callout')}</CalloutV2>
                 <form.Field name="kycEnrichmentSetting.domainsFilter" mode="array">
                   {(domainsFilterField) => (
-                    <>
-                      {domainsFilterField.state.value.map((_, idx) => (
-                        <form.Field key={idx} name={`kycEnrichmentSetting.domainsFilter[${idx}]`}>
-                          {(field) => (
-                            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-v2-sm">
-                              <Input
-                                value={field.state.value}
-                                onChange={(e) => {
-                                  field.handleChange(e.target.value);
-                                  domainsFilterField.validate('change');
-                                }}
-                                placeholder={t(
-                                  'settings:ai_assist.case_manager.domains_filter.placeholder',
-                                )}
-                              />
-                              <ButtonV2
-                                mode="icon"
-                                variant="secondary"
-                                onClick={() => domainsFilterField.removeValue(idx)}
-                              >
-                                <Icon
-                                  icon="delete"
-                                  className={'size-3.5 shrink-0 cursor-pointer'}
-                                  aria-label={t(
-                                    'settings:ai_assist.case_manager.domains_filter.delete',
-                                  )}
-                                />
-                              </ButtonV2>
-                              <FormError
-                                field={field}
-                                asString
-                                translations={{
-                                  invalid_union: t(
-                                    'settings:ai_assist.case_manager.kyc_enrichment.domains_filter.add_new.error',
-                                  ),
-                                }}
-                              />
-                            </div>
-                          )}
-                        </form.Field>
-                      ))}
-                      <div className="flex gap-v2-md items-center col-span-full">
-                        <ButtonV2
-                          disabled={domainsFilterField.state.value.length >= 10}
-                          className="w-fit"
-                          onClick={() => domainsFilterField.pushValue('')}
-                        >
-                          <Icon icon="plus" className="size-3.5 shrink-0 cursor-pointer" />
-                          {t('settings:ai_assist.case_manager.kyc_enrichment.add_new.button')}
-                        </ButtonV2>
-                      </div>
-                      <FormError field={domainsFilterField} className="col-span-full" />
-                    </>
+                    <form.Subscribe selector={(state) => state.values.kycEnrichmentSetting.enabled}>
+                      {(isEnabled) => (
+                        <>
+                          {domainsFilterField.state.value.map((_, idx) => (
+                            <form.Field
+                              key={idx}
+                              name={`kycEnrichmentSetting.domainsFilter[${idx}]`}
+                            >
+                              {(field) => (
+                                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-v2-sm">
+                                  <Input
+                                    value={field.state.value}
+                                    onChange={(e) => {
+                                      field.handleChange(e.target.value);
+                                      domainsFilterField.validate('change');
+                                    }}
+                                    placeholder={t(
+                                      'settings:ai_assist.case_manager.domains_filter.placeholder',
+                                    )}
+                                    disabled={!isEnabled}
+                                  />
+                                  <ButtonV2
+                                    mode="icon"
+                                    variant="secondary"
+                                    onClick={() => domainsFilterField.removeValue(idx)}
+                                    disabled={!isEnabled}
+                                  >
+                                    <Icon
+                                      icon="delete"
+                                      className={'size-3.5 shrink-0 cursor-pointer'}
+                                      aria-label={t(
+                                        'settings:ai_assist.case_manager.domains_filter.delete',
+                                      )}
+                                    />
+                                  </ButtonV2>
+                                  <FormError
+                                    field={field}
+                                    asString
+                                    translations={{
+                                      invalid_union: t(
+                                        'settings:ai_assist.case_manager.kyc_enrichment.domains_filter.add_new.error',
+                                      ),
+                                    }}
+                                  />
+                                </div>
+                              )}
+                            </form.Field>
+                          ))}
+                          <div className="flex gap-v2-md items-center col-span-full">
+                            <ButtonV2
+                              disabled={!isEnabled || domainsFilterField.state.value.length >= 10}
+                              className="w-fit"
+                              onClick={() => domainsFilterField.pushValue('')}
+                            >
+                              <Icon icon="plus" className="size-3.5 shrink-0 cursor-pointer" />
+                              {t('settings:ai_assist.case_manager.kyc_enrichment.add_new.button')}
+                            </ButtonV2>
+                          </div>
+                          <FormError field={domainsFilterField} className="col-span-full" />
+                        </>
+                      )}
+                    </form.Subscribe>
                   )}
                 </form.Field>
               </div>
             </CollapsiblePaper.Content>
           </CollapsiblePaper.Container>
           <div className="flex justify-end">
-            <ButtonV2 type="submit" variant="primary" form="lumber-jack-form">
-              {t('common:save')}
-            </ButtonV2>
+            <form.Subscribe
+              selector={(state) => ({ isDirty: state.isDirty, isSubmitting: state.isSubmitting })}
+            >
+              {({ isDirty, isSubmitting }) => (
+                <ButtonV2
+                  type="submit"
+                  variant="primary"
+                  form="lumber-jack-form"
+                  disabled={!isDirty || isSubmitting || updateLumberJackMutation.isPending}
+                >
+                  {t('common:save')}
+                </ButtonV2>
+              )}
+            </form.Subscribe>
           </div>
         </form>
       </Page.Content>
