@@ -1,4 +1,4 @@
-import { LlumberJackSettingsPage } from '@app-builder/components/Settings/LlumberJack/LlumberJackSettingsPage';
+import { AiAssistSettingsPage } from '@app-builder/components/Settings/AiAssist/AiAssistSettingsPage';
 import { isAdmin } from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -22,5 +22,5 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function AICaseReviewSettings() {
   const { settings } = useLoaderData<typeof loader>();
 
-  return <LlumberJackSettingsPage settings={settings} />;
+  return <AiAssistSettingsPage settings={settings} />;
 }

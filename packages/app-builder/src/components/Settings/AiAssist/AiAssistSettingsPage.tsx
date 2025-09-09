@@ -14,7 +14,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { ButtonV2, Input, MenuCommand, Switch, TooltipV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function LlumberJackSettingsPage({ settings }: { settings: AiSettingSchema }) {
+export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }) {
   const { t } = useTranslation(['settings', 'common']);
 
   const updateLumberJackMutation = useUpdateLumberJack();
