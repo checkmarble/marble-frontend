@@ -1314,6 +1314,8 @@ export type KycEnrichmentSettingDto = {
     domain_filter?: string[];
     /** The search context for Perplexity */
     search_context_size?: "low" | "medium" | "high";
+    /** By default, the KYC enrichment is disabled and the user has to enable it manually. */
+    enabled?: boolean;
 };
 export type CaseReviewSettingDto = {
     /** The description of the organization to give more context to the AI case review */

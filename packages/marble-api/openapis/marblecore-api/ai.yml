@@ -68,6 +68,9 @@ components:
             - low
             - medium
             - high
+        enabled:
+          type: boolean
+          description: By default, the KYC enrichment is disabled and the user has to enable it manually.
     CaseReviewSettingDto:
       type: object
       properties:
