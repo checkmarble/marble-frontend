@@ -5,7 +5,7 @@
   "ai_assist.case_manager.general.language.field.label": "Output language",
   "ai_assist.case_manager.general.language.field.tooltip": "Output language for the AI assistant. The quality of translation may vary depending on the requested language and the model that is used.",
   "ai_assist.case_manager.general.org_description.field.label": "Organization description",
-  "ai_assist.case_manager.general.org_description.field.placeholder": "",
+  "ai_assist.case_manager.general.org_description.field.placeholder": "ACME Corp. is a banking corporation present in every continent, that issues bank transfers for their customers and...",
   "ai_assist.case_manager.general.org_description.field.tooltip": "Description of the organization, as free text. This is used by the case review AI assistant to include the context of your organization when reviewing alerts.",
   "ai_assist.case_manager.general.structure.field.label": "Case review output structure",
   "ai_assist.case_manager.general.structure.field.placeholder": "",
