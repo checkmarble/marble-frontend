@@ -76,7 +76,7 @@ export default function Settings() {
                         >
                           {t(`settings:${setting.title}` as any)}
                           {entitlements.webhooks !== 'allowed' ? (
-                            <Nudge content="" kind="restricted" className="size-5" />
+                            <Nudge content="" kind={entitlements.webhooks} className="size-5" />
                           ) : null}
                         </span>
                       ) : (
