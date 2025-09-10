@@ -1534,6 +1534,8 @@ components:
               type: string
             pivot_enrichments:
               type: object
+              description: The enrichments of the pivot objects (null if the feature is disabled)
+              nullable: true
               properties:
                 results:
                   type: array

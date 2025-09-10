@@ -422,9 +422,10 @@ export type CaseReviewContentDto = {
     output: string;
     proofs: CaseReviewProofDto[];
     thought?: string;
+    /** The enrichments of the pivot objects (null if the feature is disabled) */
     pivot_enrichments?: {
         results?: KycAnalysisDto[];
-    };
+    } | null;
 } & (CaseReviewOkDto | CaseReviewNotOkDto);
 export type CaseReviewDto = {
     id: string;
