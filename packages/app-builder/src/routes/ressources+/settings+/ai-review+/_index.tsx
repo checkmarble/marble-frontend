@@ -1,7 +1,5 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { isAdmin } from '@app-builder/models';
 import { initServerServices } from '@app-builder/services/init.server';
-import { forbidden } from '@app-builder/utils/http/http-responses';
 import { getRoute } from '@app-builder/utils/routes';
 
 import { ActionFunctionArgs } from '@remix-run/node';
@@ -9,12 +7,9 @@ import * as Sentry from '@sentry/remix';
 
 export async function action({ request }: ActionFunctionArgs) {
   const { authService, toastSessionService } = initServerServices(request);
-  const { aiAssistSettings, user } = await authService.isAuthenticated(request, {
+  const { aiAssistSettings } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  if (!isAdmin(user)) {
-    return forbidden('Only admins can update AI settings');
-  }
 
   const [rawData, toastSession] = await Promise.all([
     request.json(),
