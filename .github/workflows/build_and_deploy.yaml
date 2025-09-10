@@ -75,7 +75,6 @@ jobs:
           tags: ${{ env.IMAGE }}
           file: ./Dockerfile
           build-args: |
-            SENTRY_ORG=checkmarble
             SENTRY_PROJECT=marble-frontend
             SENTRY_RELEASE=${{ inputs.SENTRY_RELEASE }}
             APP_VERSION=${{ steps.version.outputs.MARBLE_VERSION }}
