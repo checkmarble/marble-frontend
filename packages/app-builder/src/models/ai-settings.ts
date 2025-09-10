@@ -75,7 +75,6 @@ export const kycEnrichmentSettingDtoSchema = z.object({
 export const kycEnrichmentSettingSchema = z.object({
   enabled: z.boolean(),
   domainsFilter: uniqueBy(z.array(httpUrlSchema), (s) => s).max(10),
-  // domainsFilter: z.array(httpUrlSchema).max(10),
 });
 
 export const aiSettingSchema = z.object({
