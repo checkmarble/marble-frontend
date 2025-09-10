@@ -1532,6 +1532,13 @@ components:
                 $ref: '#/components/schemas/CaseReviewProofDto'
             thought:
               type: string
+            pivot_enrichments:
+              type: object
+              properties:
+                results:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/KYCAnalysisDto'
         - anyOf:
           - $ref: '#/components/schemas/CaseReviewOkDto'
           - $ref: '#/components/schemas/CaseReviewNotOkDto'
