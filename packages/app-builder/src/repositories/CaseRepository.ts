@@ -17,6 +17,10 @@ import {
 } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import {
+  adaptKycCaseEnrichment,
+  type KycCaseEnrichment,
+} from '@app-builder/models/kyc-case-enrichment';
+import {
   adaptPagination,
   defaultPaginationSize,
   type FiltersWithPagination,
@@ -101,6 +105,7 @@ export interface CaseRepository {
     reviewId: string;
     reaction: 'ok' | 'ko';
   }): Promise<void>;
+  enrichPivotObjectOfCaseWithKyc(args: { caseId: string }): Promise<KycCaseEnrichment[]>;
 }
 
 export function makeGetCaseRepository() {
@@ -211,6 +216,10 @@ export function makeGetCaseRepository() {
     },
     addCaseReviewFeedback: async ({ caseId, reviewId, reaction }) => {
       await marbleCoreApiClient.addOrUpdateCaseReviewFeedback(caseId, reviewId, { reaction });
+    },
+    enrichPivotObjectOfCaseWithKyc: async ({ caseId }) => {
+      const result = await marbleCoreApiClient.enrichPivotObjectOfCaseWithKyc(caseId);
+      return result.results?.map(adaptKycCaseEnrichment) ?? [];
     },
   });
 }

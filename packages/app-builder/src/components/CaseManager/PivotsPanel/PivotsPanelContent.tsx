@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2, CtaClassName, CtaV2ClassName, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { KycEnrichment } from '../KycEnrichment';
 import { DataCard } from './DataCard';
 import { PivotAnnotations } from './PivotAnnotations';
 import { PivotNavigationOptions } from './PivotNavigationOptions';
@@ -123,9 +124,13 @@ export function PivotsPanelContent({
         <>
           {currentTable && currentPivotObject ? (
             <div className="flex flex-col gap-v2-md">
-              <div className="text-h2 font-semibold">
-                {t('cases:case_detail.pivot_panel.informations')}
+              <div className="flex flex-row gap-v2-md">
+                <div className="text-h2 font-semibold">
+                  {t('cases:case_detail.pivot_panel.informations')}
+                </div>
+                <KycEnrichment caseId={caseObj.id} />
               </div>
+
               <div className="border-grey-90 flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
                 <div className="capitalize font-semibold">{currentTable.name}</div>
                 <PivotObjectDetails
