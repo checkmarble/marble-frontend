@@ -6,7 +6,7 @@ const endpoint = () => getRoute('/ressources/settings/ai-review');
 
 export const useUpdateAiSettings = () => {
   return useMutation({
-    mutationKey: ['settings', 'llumber-jack', 'update'],
+    mutationKey: ['settings', 'ai-review', 'update'],
     mutationFn: async (payload: AiSettingSchema) => {
       const response = await fetch(endpoint(), {
         method: 'PATCH',
