@@ -455,6 +455,24 @@ export type CaseReviewDto = {
     version: string;
     review: CaseReviewContentDto;
 };
+export type GroundingCitationDto = {
+    /** Title of the source */
+    title: string;
+    /** Domain of the source (not used for now) */
+    domain: string;
+    /** URL of the source */
+    url: string;
+    /** Date of the source */
+    date: string;
+};
+export type KycAnalysisDto = {
+    /** Output of LLM analysis on a pivot object */
+    analysis: string;
+    /** Name of the entity on which the pivot value is found. */
+    entity_name: string;
+    /** List of source used in the analysis. The analysis uses anchors ([1][2]), these anchors are used to justify the analysis and the index follow the list order */
+    citations: GroundingCitationDto[];
+};
 export type SuspiciousActivityReportDto = {
     id: string;
     status: "pending" | "completed";
@@ -1969,6 +1987,26 @@ export function downloadCaseData(caseId: string, opts?: Oazapfts.RequestOpts) {
         data: string;
     }>(`/cases/${encodeURIComponent(caseId)}/data_for_investigation`, {
         ...opts
+    }));
+}
+/**
+ * Enrich the pivot object of the case with KYC data (if present)
+ */
+export function enrichPivotObjectOfCaseWithKyc(caseId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            results?: KycAnalysisDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/cases/${encodeURIComponent(caseId)}/enrich_kyc`, {
+        ...opts,
+        method: "POST"
     }));
 }
 /**

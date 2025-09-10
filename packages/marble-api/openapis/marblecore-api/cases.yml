@@ -834,6 +834,38 @@
               format: binary
       '401':
         $ref: 'components.yml#/responses/401'
+/cases/{caseId}/enrich_kyc:
+  post:
+    tags:
+      - Cases
+    summary: Enrich the pivot object of the case with KYC data (if present)
+    operationId: enrichPivotObjectOfCaseWithKyc
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: caseId
+        description: ID of the case
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Analysis of the pivot object of the case with KYC data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                results:
+                  type: array
+                  items: 
+                    $ref: '#/components/schemas/KYCAnalysisDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
 
 components:
   schemas:
@@ -1553,3 +1585,43 @@ components:
       enum: ['ok', 'ko']
       description: The reaction to the review, can be null if not set or removed
       nullable: true
+
+    GroundingCitationDto:
+      type: object
+      required:
+        - title
+        - domain
+        - url
+        - date
+      properties:
+        title:
+          type: string
+          description: Title of the source
+        domain:
+          type: string
+          description: Domain of the source (not used for now)
+        url:
+          type: string
+          description: URL of the source
+        date:
+          type: string
+          format: date-time
+          description: Date of the source
+    KYCAnalysisDto:
+      type: object
+      required:
+        - analysis
+        - entity_name
+        - citations
+      properties:
+        analysis:
+          type: string
+          description: Output of LLM analysis on a pivot object
+        entity_name:
+          type: string
+          description: Name of the entity on which the pivot value is found.
+        citations:
+          type: array
+          description: List of source used in the analysis. The analysis uses anchors ([1][2]), these anchors are used to justify the analysis and the index follow the list order
+          items:
+            $ref: '#/components/schemas/GroundingCitationDto'
