@@ -16,6 +16,7 @@ import {
 } from '@app-builder/models';
 import { emptyFeatureAccesses, type FeatureAccesses } from '@app-builder/models/feature-access';
 import { ToastFlashData } from '@app-builder/models/toast-session';
+import { type AiAssistRepository } from '@app-builder/repositories/AiAssistRepository';
 import { type AnalyticsRepository } from '@app-builder/repositories/AnalyticsRepository';
 import { type ApiKeyRepository } from '@app-builder/repositories/ApiKeyRepository';
 import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
@@ -77,6 +78,7 @@ interface AuthenticatedInfo {
   entitlements: FeatureAccesses;
   inbox: InboxRepository;
   personalSettings: PersonalSettingsRepository;
+  aiAssistSettings: AiAssistRepository;
 }
 
 export interface AuthenticationServerService {
@@ -157,6 +159,7 @@ interface MakeAuthenticationServerServiceArgs {
   getRuleSnoozeRepository: (marbleCoreApiClient: MarbleCoreApi) => RuleSnoozeRepository;
   getFeatureAccessRepository: ReturnType<typeof makeGetFeatureAccessRepository>;
   getPersonalSettingsRepository: (marbleCoreApiClient: MarbleCoreApi) => PersonalSettingsRepository;
+  getAiAssistSettingsRepository: (marbleCoreApiClient: MarbleCoreApi) => AiAssistRepository;
   authSessionService: SessionService<AuthData, AuthFlashData>;
   toastSessionService: SessionService<void, ToastFlashData>;
   csrfService: CSRF;
@@ -195,6 +198,7 @@ export function makeAuthenticationServerService({
   authSessionService,
   toastSessionService,
   csrfService,
+  getAiAssistSettingsRepository,
 }: MakeAuthenticationServerServiceArgs) {
   function getTokenService(marbleAccessToken: string) {
     return {
@@ -388,6 +392,7 @@ export function makeAuthenticationServerService({
       entitlements,
       inbox: getInboxRepository(marbleCoreApiClient),
       personalSettings: getPersonalSettingsRepository(marbleCoreApiClient),
+      aiAssistSettings: getAiAssistSettingsRepository(marbleCoreApiClient),
     };
   }
 

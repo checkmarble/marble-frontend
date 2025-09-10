@@ -274,6 +274,11 @@ export const routes = [
                 "file": "routes/_builder+/settings+/_index.tsx"
               },
               {
+                "id": "routes/_builder+/settings+/ai-case-review",
+                "path": "ai-case-review",
+                "file": "routes/_builder+/settings+/ai-case-review.tsx"
+              },
+              {
                 "id": "routes/_builder+/settings+/api-keys",
                 "path": "api-keys",
                 "file": "routes/_builder+/settings+/api-keys.tsx"
@@ -703,6 +708,12 @@ export const routes = [
         "id": "routes/ressources+/screenings+/upload.$screeningId",
         "path": "ressources/screenings/upload/:screeningId",
         "file": "routes/ressources+/screenings+/upload.$screeningId.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/ai-review+/_index",
+        "index": true,
+        "path": "ressources/settings/ai-review",
+        "file": "routes/ressources+/settings+/ai-review+/_index.tsx"
       },
       {
         "id": "routes/ressources+/settings+/api-keys+/create",
