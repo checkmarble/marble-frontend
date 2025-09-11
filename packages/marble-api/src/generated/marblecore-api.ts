@@ -1325,6 +1325,8 @@ export type KycEnrichmentSettingDto = {
     search_context_size?: ("low" | "medium" | "high") | null;
     /** By default, the KYC enrichment is disabled and the user has to enable it manually. */
     enabled: boolean;
+    /** Organization specific instructions for the KYC enrichment (guideline, format, etc.). Null if there is no instruction. */
+    custom_instructions?: string | null;
 };
 export type CaseReviewSettingDto = {
     /** The description of the organization to give more context to the AI case review */
