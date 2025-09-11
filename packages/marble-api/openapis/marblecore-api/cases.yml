@@ -1539,7 +1539,7 @@ components:
               properties:
                 results:
                   type: array
-                  items: 
+                  items:
                     $ref: '#/components/schemas/KYCAnalysisDto'
         - anyOf:
           - $ref: '#/components/schemas/CaseReviewOkDto'
