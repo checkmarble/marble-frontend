@@ -22,7 +22,7 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
 
   useEffect(() => {
     if (error && open) {
-      toast.error('Failed to load KYC enrichment data');
+      toast.error(t('cases:kyc_enrichment.loading.toaster.error'));
       setOpen(false);
     }
   }, [error, open]);

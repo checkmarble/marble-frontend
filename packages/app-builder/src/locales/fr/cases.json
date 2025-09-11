@@ -198,6 +198,7 @@
   "kyc_enrichment.comment_added.toaster.success": "Commentaire ajouté",
   "kyc_enrichment.for": "Enrichissement KYC pour",
   "kyc_enrichment.loading": "Chargement de l'enrichissement KYC... (peut prendre jusqu'à une minute)",
+  "kyc_enrichment.loading.toaster.error": "Échec du chargement de l'enrichissement KYC",
   "kyc_enrichment.title": "KYC Enrichment",
   "next_unassigned_case": "Aller à la prochaine investigation non-affectée",
   "pick_file_cta": "Choisissez un fichier",

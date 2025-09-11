@@ -198,6 +198,7 @@
   "kyc_enrichment.comment_added.toaster.success": "Comment added",
   "kyc_enrichment.for": "KYC enrichment for",
   "kyc_enrichment.loading": "Loading KYC enrichment...(can take up to a minute)",
+  "kyc_enrichment.loading.toaster.error": "Failed to load KYC enrichment data",
   "kyc_enrichment.title": "KYC Enrichment",
   "next_unassigned_case": "Go to the next unassigned case",
   "pick_file_cta": "Pick a file",
