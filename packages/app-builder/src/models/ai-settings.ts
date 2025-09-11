@@ -69,7 +69,7 @@ export const caseReviewSettingSchema = z.object({
 
 export const kycEnrichmentSettingDtoSchema = z.object({
   enabled: z.boolean(),
-  custom_instructions: z.string().nullable(),
+  custom_instructions: z.string().optional().nullable(),
   domain_filter: z.array(z.string()),
 });
 
