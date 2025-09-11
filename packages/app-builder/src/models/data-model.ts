@@ -247,6 +247,7 @@ export interface UpdateFieldInput {
   description?: string;
   isEnum?: boolean;
   isUnique?: boolean;
+  isNullable?: boolean;
 }
 
 export function adaptUpdateFieldDto(updateFieldInput: UpdateFieldInput): UpdateTableFieldDto {
@@ -254,6 +255,7 @@ export function adaptUpdateFieldDto(updateFieldInput: UpdateFieldInput): UpdateT
     description: updateFieldInput.description,
     is_enum: updateFieldInput.isEnum,
     is_unique: updateFieldInput.isUnique,
+    is_nullable: updateFieldInput.isNullable,
   };
 }
 

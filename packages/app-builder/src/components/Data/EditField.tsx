@@ -17,7 +17,12 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, Modal } from 'ui-design-system';
+import { Button, Checkbox, Modal, Select } from 'ui-design-system';
+
+const REQUIRED_OPTIONS = [
+  { value: 'optional', display: 'data:create_field.option_optional' },
+  { value: 'required', display: 'data:create_field.option_required' },
+] as const;
 
 function disableEditUnique({
   field,
@@ -79,6 +84,7 @@ export function EditField({
       fieldId: inputField.id,
       isEnum: inputField.isEnum,
       isUnique: inputField.unicityConstraint !== 'no_unicity_constraint',
+      required: inputField.nullable ? 'optional' : 'required',
     } as EditFieldPayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
@@ -135,6 +141,36 @@ export function EditField({
                       valid={field.state.meta.errors.length === 0}
                       placeholder={t('data:create_field.description_placeholder')}
                     />
+                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
+                  </div>
+                )}
+              </form.Field>
+              <form.Field
+                name="required"
+                validators={{
+                  onChange: editFieldPayloadSchema.shape.required,
+                }}
+              >
+                {(field) => (
+                  <div className="flex flex-col gap-2">
+                    <FormLabel name={field.name}>
+                      {t('data:create_field.option_required')}
+                    </FormLabel>
+                    <Select.Default
+                      className="w-full overflow-hidden"
+                      defaultValue={field.state.value}
+                      onValueChange={(value) => {
+                        field.handleChange(value as 'optional' | 'required');
+                      }}
+                    >
+                      {REQUIRED_OPTIONS.map(({ value, display }) => {
+                        return (
+                          <Select.DefaultItem key={value} value={value}>
+                            {t(display)}
+                          </Select.DefaultItem>
+                        );
+                      })}
+                    </Select.Default>
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                   </div>
                 )}

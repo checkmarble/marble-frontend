@@ -169,7 +169,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             >
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
-                  <FormLabel name={field.name}>{t('data:create_field.required')}</FormLabel>
+                  <FormLabel name={field.name}>{t('data:create_field.option_required')}</FormLabel>
                   <Select.Default
                     className="w-full overflow-hidden"
                     defaultValue={field.state.value}
