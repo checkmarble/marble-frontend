@@ -28,7 +28,7 @@ export function Markdown({ children }: { children: string }) {
                 align="start"
                 alignOffset={-16}
                 sideOffset={12}
-                className="bg-grey-100 p-4 flex flex-col gap-2 items-center border border-grey-90 rounded-sm shadow-md"
+                className="bg-grey-100 p-4 flex flex-col gap-2 items-center border border-grey-90 rounded-sm shadow-md z-50"
               >
                 <HoverCardArrow className="fill-grey-100" />
 
