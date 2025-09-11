@@ -74,6 +74,10 @@ components:
         enabled:
           type: boolean
           description: By default, the KYC enrichment is disabled and the user has to enable it manually.
+        custom_instructions:
+          type: string
+          nullable: true
+          description: Organization specific instructions for the KYC enrichment (guideline, format, etc.). Null if there is no instruction.
     CaseReviewSettingDto:
       type: object
       required:
