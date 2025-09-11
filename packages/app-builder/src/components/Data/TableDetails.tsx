@@ -211,7 +211,9 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
         size: 100,
         header: t('data:field_required'),
         cell: ({ getValue }) => {
-          return getValue() ? t('data:nullable') : t('data:required');
+          return getValue()
+            ? t('data:create_field.option_optional')
+            : t('data:create_field.option_required');
         },
       }),
       fieldsColumnHelper.accessor('unicityConstraint', {
