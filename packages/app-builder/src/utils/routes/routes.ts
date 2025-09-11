@@ -369,6 +369,11 @@ export const routes = [
         "file": "routes/ressources+/auth+/refresh.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/$caseId+/enrich-kyc",
+        "path": "ressources/cases/:caseId/enrich-kyc",
+        "file": "routes/ressources+/cases+/$caseId+/enrich-kyc.ts"
+      },
+      {
         "id": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments",
         "path": "ressources/cases/:caseId/review/:reviewId/add-to-case-comments",
         "file": "routes/ressources+/cases+/$caseId+/review.$reviewId.add-to-case-comments.tsx"

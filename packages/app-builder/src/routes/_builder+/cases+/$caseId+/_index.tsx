@@ -61,6 +61,7 @@ import { Icon } from 'ui-icons';
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { authService } = initServerServices(request);
   const {
+    aiAssistSettings,
     cases,
     inbox,
     user,
@@ -89,6 +90,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     dataModel,
     pivots,
     mostRecentReviews,
+    settings,
   ] = await Promise.all([
     cases.getCase({ caseId }),
     cases.getNextUnassignedCaseId({ caseId }),
@@ -98,6 +100,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     dataModelRepository.getDataModel(),
     dataModelRepository.listPivots({}),
     cases.getMostRecentCaseReview({ caseId }),
+    aiAssistSettings.getAiAssistSettings(),
   ]);
 
   const dataModelWithTableOptionsRaw = (await Promise.all(
@@ -251,6 +254,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     entitlements,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
     mostRecentReview: review,
+    isKycEnrichmentEnabled: settings.kycEnrichmentSetting.enabled,
   });
 };
 
@@ -312,6 +316,7 @@ export default function CaseManagerIndexPage() {
     entitlements: { AiAssist: aiAssistEnabled },
     isMenuExpanded,
     mostRecentReview,
+    isKycEnrichmentEnabled,
   } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
   const navigate = useNavigate();
@@ -461,6 +466,7 @@ export default function CaseManagerIndexPage() {
                     dataModel={dataModelWithTableOptions}
                     pivotObjects={pivotObjects ?? []}
                     reviewProofs={mostRecentReview?.proofs ?? []}
+                    isKycEnrichmentEnabled={isKycEnrichmentEnabled}
                   />
                 );
               })

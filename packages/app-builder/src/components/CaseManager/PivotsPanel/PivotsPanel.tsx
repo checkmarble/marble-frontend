@@ -20,6 +20,7 @@ type PivotsPanelProps = {
   pivotObjects: PivotObject[];
   dataModel: DataModelWithTableOptions;
   reviewProofs: { type: string; object: DataModelObject }[];
+  isKycEnrichmentEnabled: boolean;
 };
 
 export function PivotsPanel(props: PivotsPanelProps) {
@@ -70,6 +71,7 @@ export function PivotsPanel(props: PivotsPanelProps) {
             pivotObjects={props.pivotObjects}
             reviewProofs={props.reviewProofs}
             dataModel={props.dataModel}
+            isKycEnrichmentEnabled={props.isKycEnrichmentEnabled}
             onExplore={() => {
               drawerContext.setExpanded(true);
             }}
