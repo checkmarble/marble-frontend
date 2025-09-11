@@ -193,7 +193,7 @@
   "investigation.more_recent": "{{number}} أكثر حداثة",
   "investigation.no_older": "لا الأحداث القديمة",
   "investigation.older": "{{number}} أقدم",
-  "kyc_enrichment.attach_to_case": "أضف إلى الحالة",
+  "kyc_enrichment.attach_to_case": "أضف إلى التعليقات",
   "kyc_enrichment.comment_added.toaster.error": "فشل إضافة التعليق",
   "kyc_enrichment.comment_added.toaster.success": "تمت إضافة التعليق",
   "kyc_enrichment.for": "تعزيز KYC ل",
