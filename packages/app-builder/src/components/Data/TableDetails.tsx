@@ -245,18 +245,22 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
         size: 400,
         cell: ({ cell }) => {
           return (
-            <div className="flex flex-row items-center justify-between gap-1">
-              <FormatDescription description={cell.row.original.description} />
+            <div className="flex flex-row items-center gap-2">
+              <div className="min-w-0 flex-1">
+                <FormatDescription description={cell.row.original.description} />
+              </div>
               {isEditDataModelFieldAvailable ? (
-                <EditField
-                  key={cell.row.original.id}
-                  field={cell.row.original}
-                  linksToThisTable={linksToThisTable}
-                >
-                  <div className="group-hover:text-grey-00 group-hover:bg-grey-98 group-hover:border-grey-50 hover:group-hover:bg-grey-95 active:group-hover:bg-grey-90 relative cursor-pointer rounded-sm border p-2 text-transparent transition-colors ease-in-out">
-                    <Icon icon="edit-square" className="size-6" />
-                  </div>
-                </EditField>
+                <div className="flex-shrink-0">
+                  <EditField
+                    key={cell.row.original.id}
+                    field={cell.row.original}
+                    linksToThisTable={linksToThisTable}
+                  >
+                    <div className="group-hover:text-grey-00 group-hover:bg-grey-98 group-hover:border-grey-50 hover:group-hover:bg-grey-95 active:group-hover:bg-grey-90 relative cursor-pointer rounded-sm border p-2 text-transparent transition-colors ease-in-out">
+                      <Icon icon="edit-square" className="size-6" />
+                    </div>
+                  </EditField>
+                </div>
               ) : null}
             </div>
           );
@@ -356,9 +360,10 @@ function FormatDescription({ description }: { description: string }) {
   return (
     <span
       className={clsx(
-        'relative first-letter:capitalize',
+        'relative first-letter:capitalize truncate block',
         description ? 'text-grey-00' : 'text-grey-80',
       )}
+      title={description || t('data:empty_description')}
     >
       {description || t('data:empty_description')}
     </span>
