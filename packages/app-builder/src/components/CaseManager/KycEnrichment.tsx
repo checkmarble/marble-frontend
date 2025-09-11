@@ -81,9 +81,9 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
           <Icon icon="ai-review" className="size-5" /> {t('cases:kyc_enrichment.title')}
         </ButtonV2>
       </Modal.Trigger>
-      <Modal.Content size="xlarge">
+      <Modal.Content size="xlarge" className="h-[90vh] flex flex-col">
         <Modal.Title>{t('cases:kyc_enrichment.title')}</Modal.Title>
-        <div className="flex flex-col gap-4 py-8 px-4">
+        <div className="flex flex-col gap-4 py-8 px-4 flex-1 min-h-0">
           {isPending && (
             <div className="flex flex-col gap-4">
               <div className="flex justify-center gap-2">
@@ -95,27 +95,29 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
           )}
           {error && <Callout variant="outlined">{error.message}</Callout>}
           {isSuccess && data ? (
-            <div className="h-full flex flex-col gap-4">
+            <div className="flex flex-col gap-4 flex-1 min-h-0">
               <Callout variant="outlined">
                 {t('cases:kyc_enrichment.for')}{' '}
                 <strong>{data.kycCaseEnrichments[0].entityName}</strong>
               </Callout>
-              <ScrollAreaV2 orientation="vertical" className="h-full">
-                <Markdown>{data.kycCaseEnrichments[0].analysis}</Markdown>
-                <div>
-                  {data.kycCaseEnrichments[0].citations.map((citation: any, index: number) => (
-                    <div key={`citation.${index}`}>
-                      <span>[{index + 1}]</span>
-                      <span>
-                        <a
-                          className="text-purple-65 hover:bg-purple-96 hover:text-grey-50"
-                          href={citation.url}
-                        >
-                          {citation.title}
-                        </a>
-                      </span>
-                    </div>
-                  ))}
+              <ScrollAreaV2 orientation="vertical" className="flex-1 min-h-0">
+                <div className="p-4">
+                  <Markdown>{data.kycCaseEnrichments[0].analysis}</Markdown>
+                  <div className="mt-4">
+                    {data.kycCaseEnrichments[0].citations.map((citation: any, index: number) => (
+                      <div key={`citation.${index}`} className="mb-2">
+                        <span>[{index + 1}]</span>
+                        <span>
+                          <a
+                            className="text-purple-65 hover:bg-purple-96 hover:text-grey-50"
+                            href={citation.url}
+                          >
+                            {citation.title}
+                          </a>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </ScrollAreaV2>
             </div>
