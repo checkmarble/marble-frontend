@@ -38,6 +38,7 @@ export function PivotsPanelContent({
   reviewProofs,
   dataModel,
   onExplore,
+  isKycEnrichmentEnabled,
 }: {
   currentUser: CurrentUser;
   case: CaseDetail;
@@ -45,6 +46,7 @@ export function PivotsPanelContent({
   reviewProofs: { type: string; object: DataModelObject }[];
   dataModel: DataModelWithTableOptions;
   onExplore: () => void;
+  isKycEnrichmentEnabled: boolean;
 }) {
   const { t } = useTranslation(['cases']);
 
@@ -128,7 +130,7 @@ export function PivotsPanelContent({
                 <div className="text-h2 font-semibold">
                   {t('cases:case_detail.pivot_panel.informations')}
                 </div>
-                <KycEnrichment caseId={caseObj.id} />
+                {isKycEnrichmentEnabled ? <KycEnrichment caseId={caseObj.id} /> : null}
               </div>
 
               <div className="border-grey-90 flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
