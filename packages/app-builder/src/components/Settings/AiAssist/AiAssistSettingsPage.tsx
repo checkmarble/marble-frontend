@@ -10,6 +10,7 @@ import { type AiSettingSchema, aiSettingSchema, languages } from '@app-builder/m
 import { useUpdateAiSettings } from '@app-builder/queries/settings/ai/update';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ButtonV2, Input, MenuCommand, Switch, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -42,10 +43,12 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
       },
       kycEnrichmentSetting: {
         enabled: settings.kycEnrichmentSetting.enabled,
+        customInstructions: settings.kycEnrichmentSetting.customInstructions || '',
         domainsFilter: settings.kycEnrichmentSetting.domainsFilter || [],
       },
     },
   });
+  const [kycOpen, setKycOpen] = useState(settings.kycEnrichmentSetting.enabled);
   return (
     <Page.Container>
       <Page.Content className="max-w-(--breakpoint-xl)">
@@ -190,39 +193,95 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
               </div>
             </CollapsiblePaper.Content>
           </CollapsiblePaper.Container>
-          <CollapsiblePaper.Container>
-            <CollapsiblePaper.Title>
-              <span className="flex-1">
-                {t('settings:ai_assist.case_manager.kyc_enrichment.title')}
-              </span>
-            </CollapsiblePaper.Title>
-            <CollapsiblePaper.Content>
-              <div className="flex flex-col gap-8">
-                <form.Field name="kycEnrichmentSetting.enabled">
-                  {(field) => (
-                    <>
-                      <div className="group flex w-full flex-row gap-4 text-pretty">
-                        <Switch checked={field.state.value} onCheckedChange={field.handleChange} />
-                        <FormLabel name={field.name}>
+          <form.Subscribe selector={(state) => state.values.kycEnrichmentSetting.enabled}>
+            {(isKycEnabled) => (
+              <CollapsiblePaper.Container
+                open={kycOpen}
+                onOpenChange={(open) => {
+                  if (isKycEnabled) setKycOpen(open);
+                }}
+              >
+                <CollapsiblePaper.Title>
+                  <span className="flex-1">
+                    {t('settings:ai_assist.case_manager.kyc_enrichment.title')}
+                  </span>
+                  <form.Field name="kycEnrichmentSetting.enabled">
+                    {(field) => (
+                      <div className="flex gap-2 text-pretty" onClick={(e) => e.stopPropagation()}>
+                        <Switch
+                          checked={field.state.value}
+                          onCheckedChange={(val) => {
+                            field.handleChange(val);
+                            setKycOpen(val);
+                          }}
+                        />
+                        <div className="text-s font-normal">
                           <Trans
                             t={t}
                             i18nKey="ai_assist.case_manager.kyc_enrichment.enabled.field.label"
                             components={{
-                              bold: <span className="font-bold" />,
+                              bold: <div className="font-bold" />,
                             }}
                           />
-                        </FormLabel>
+                        </div>
                       </div>
-                    </>
-                  )}
-                </form.Field>
+                    )}
+                  </form.Field>
+                </CollapsiblePaper.Title>
+                <CollapsiblePaper.Content>
+                  <div className="flex flex-col gap-8">
+                    <form.Field name="kycEnrichmentSetting.domainsFilter" mode="array">
+                      {(domainsFilterField) => (
+                        <div className="flex flex-col gap-8 relative z-0">
+                          <form.Field name="kycEnrichmentSetting.customInstructions">
+                            {(field) => (
+                              <div className="group flex w-full flex-col gap-2">
+                                <FormLabel name={field.name} className="flex items-center gap-2">
+                                  {t(
+                                    'settings:ai_assist.case_manager.kyc_enrichment.custom_instructions.field.label',
+                                  )}
+                                  <Tooltip.Default
+                                    delayDuration={300}
+                                    className="max-w-96"
+                                    content={
+                                      <span className="font-normal">
+                                        <Trans
+                                          t={t}
+                                          i18nKey="ai_assist.case_manager.kyc_enrichment.custom_instructions.field.tooltip"
+                                          components={{
+                                            DocLink: (
+                                              <ExternalLink href="https://www.markdownguide.org/basic-syntax/" />
+                                            ),
+                                          }}
+                                        />
+                                      </span>
+                                    }
+                                  >
+                                    <Icon
+                                      icon="tip"
+                                      className="size-4 shrink-0 cursor-pointer text-purple-65"
+                                    />
+                                  </Tooltip.Default>
+                                </FormLabel>
+                                <FormTextArea
+                                  name={field.name}
+                                  onChange={(e) => field.handleChange(e.currentTarget.value)}
+                                  onBlur={field.handleBlur}
+                                  defaultValue={field.state.value}
+                                  valid={field.state.meta.errors.length === 0}
+                                  resize="vertical"
+                                  className="min-h-24"
+                                  placeholder={t(
+                                    'settings:ai_assist.case_manager.kyc_enrichment.custom_instructions.field.placeholder',
+                                  )}
+                                />
+                              </div>
+                            )}
+                          </form.Field>
+                          <CalloutV2>
+                            {t('settings:ai_assist.case_manager.kyc_enrichment_callout')}
+                          </CalloutV2>
 
-                <CalloutV2>{t('settings:ai_assist.case_manager.kyc_enrichment_callout')}</CalloutV2>
-                <form.Field name="kycEnrichmentSetting.domainsFilter" mode="array">
-                  {(domainsFilterField) => (
-                    <form.Subscribe selector={(state) => state.values.kycEnrichmentSetting.enabled}>
-                      {(isEnabled) => (
-                        <>
                           {domainsFilterField.state.value.map((_, idx) => (
                             <form.Field
                               key={idx}
@@ -239,13 +298,11 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                                     placeholder={t(
                                       'settings:ai_assist.case_manager.domains_filter.placeholder',
                                     )}
-                                    disabled={!isEnabled}
                                   />
                                   <ButtonV2
                                     mode="icon"
                                     variant="secondary"
                                     onClick={() => domainsFilterField.removeValue(idx)}
-                                    disabled={!isEnabled}
                                   >
                                     <Icon
                                       icon="delete"
@@ -270,7 +327,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                           ))}
                           <div className="flex gap-v2-md items-center col-span-full">
                             <ButtonV2
-                              disabled={!isEnabled || domainsFilterField.state.value.length >= 10}
+                              disabled={domainsFilterField.state.value.length >= 10}
                               className="w-fit"
                               onClick={() => domainsFilterField.pushValue('')}
                             >
@@ -279,14 +336,14 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                             </ButtonV2>
                           </div>
                           <FormError field={domainsFilterField} className="col-span-full" />
-                        </>
+                        </div>
                       )}
-                    </form.Subscribe>
-                  )}
-                </form.Field>
-              </div>
-            </CollapsiblePaper.Content>
-          </CollapsiblePaper.Container>
+                    </form.Field>
+                  </div>
+                </CollapsiblePaper.Content>
+              </CollapsiblePaper.Container>
+            )}
+          </form.Subscribe>
           <div className="flex justify-end">
             <form.Subscribe
               selector={(state) => ({ isDirty: state.isDirty, isSubmitting: state.isSubmitting })}

@@ -55,25 +55,27 @@ const extractDomain = (val: string): string => {
   return urlObj.hostname;
 };
 
-export const caseReviewSettingSchema = z.object({
-  language: languageCodeSchema,
-  structure: z.string(),
-  orgDescription: z.string(),
-});
-
 export const caseReviewSettingDtoSchema = z.object({
   language: languageCodeSchema,
   structure: z.string().nullable(),
   org_description: z.string().nullable(),
 });
 
+export const caseReviewSettingSchema = z.object({
+  language: languageCodeSchema,
+  structure: z.string(),
+  orgDescription: z.string(),
+});
+
 export const kycEnrichmentSettingDtoSchema = z.object({
   enabled: z.boolean(),
+  custom_instructions: z.string().optional().nullable(),
   domain_filter: z.array(z.string()),
 });
 
 export const kycEnrichmentSettingSchema = z.object({
   enabled: z.boolean(),
+  customInstructions: z.string(),
   domainsFilter: uniqueBy(z.array(httpUrlSchema), (s) => s).max(10),
 });
 
@@ -96,6 +98,7 @@ export const transformCaseReviewSetting = z.codec(aiSettingDtoSchema, aiSettingS
     },
     kyc_enrichment_setting: {
       enabled: kycEnrichmentSetting.enabled,
+      custom_instructions: kycEnrichmentSetting.customInstructions,
       domain_filter: kycEnrichmentSetting.domainsFilter.map(extractDomain),
     },
   }),
@@ -107,6 +110,7 @@ export const transformCaseReviewSetting = z.codec(aiSettingDtoSchema, aiSettingS
     },
     kycEnrichmentSetting: {
       enabled: kyc_enrichment_setting.enabled,
+      customInstructions: kyc_enrichment_setting.custom_instructions ?? '',
       domainsFilter: kyc_enrichment_setting.domain_filter,
     },
   }),
