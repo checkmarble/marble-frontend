@@ -11,6 +11,7 @@
   "create_field.name_reserved_error": "The name \"id\" is reserved",
   "create_field.option_optional": "Optional",
   "create_field.option_required": "Required",
+  "create_field.option_required_warning": "Be careful when adding a required field on an active table. If you are already ingesting data or creating decisions via API, they will fail when you add a required field. We recommend you first create the field as optional, add it to your ingestion pipeline, and then mark it as required.",
   "create_field.title": "Create a new field",
   "create_field.type": "Type",
   "create_field.type_bool": "Boolean",
