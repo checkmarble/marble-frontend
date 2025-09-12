@@ -15,6 +15,7 @@
   "ai_assist.case_manager.kyc_enrichment.add_new.button": "إضافة نطاق جديد",
   "ai_assist.case_manager.kyc_enrichment.custom_instructions.field.label": "تعليمات خاصة بالمؤسسة (اختياري)",
   "ai_assist.case_manager.kyc_enrichment.custom_instructions.field.placeholder": "قدّم إرشادات أو تنسيق مفضل لمخرجات إثراء KYC…",
+  "ai_assist.case_manager.kyc_enrichment.custom_instructions.field.tooltip": "اكتب هنا التعليمات لما تريد البحث عنه عند إثراء بيانات العملاء بالبحث عبر الإنترنت: طبيعة المعلومات التي تريد البحث عنها، تنسيق الإخراج المطلوب...<br/>التعليمات يجب أن تكون متسقة مع قائمة النطاقات المسموح بها، إذا كنت قد قمت بتكوين واحد أسفله.",
   "ai_assist.case_manager.kyc_enrichment.domains_filter.add_new.error": "يرجى إدخال نطاق صحيح، على سبيل المثال checkmarble.com",
   "ai_assist.case_manager.kyc_enrichment.enabled.field.label": "تمكين ميزة إثراء KYC. <bold>تستدعي هذه الميزة واجهات برمجة التطبيقات الخارجية التي تعالج البيانات المستلمة في الولايات المتحدة.</bold>",
   "ai_assist.case_manager.kyc_enrichment.title": "إثراء KYC",
