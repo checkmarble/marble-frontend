@@ -36,11 +36,13 @@ export type AppConfig = {
     segment: boolean;
   };
   isManagedMarble: boolean;
+  isProduction: boolean;
 };
 
 export function adaptAppConfig(
   dto: AppConfigDto,
   appVersion: string,
+  environment: string,
   firebaseConfig: FirebaseConfig,
 ): AppConfig {
   const fbConfig = dto.auth.firebase;
@@ -81,5 +83,6 @@ export function adaptAppConfig(
       segment: dto.features.segment,
     },
     isManagedMarble: dto.is_managed_marble,
+    isProduction: environment === 'production',
   };
 }

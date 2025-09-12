@@ -24,7 +24,7 @@ export type Sections = {
   users: Section;
   scenarios: Section;
   case_manager: Section;
-  ai_assist: Section;
+  ai_assist?: Section;
   api: Section;
   ip_whitelisting: Section;
 };
@@ -60,10 +60,12 @@ export function getSettingsAccess(
           : []),
       ],
     },
-    ai_assist: {
-      icon: 'ai-review',
-      settings: [{ title: 'ai_case_manager', to: getRoute('/settings/ai-case-review') }],
-    },
+    ...((!appConfig.isProduction || appConfig.isManagedMarble) && {
+      ai_assist: {
+        icon: 'ai-review',
+        settings: [{ title: 'ai_case_manager', to: getRoute('/settings/ai-case-review') }],
+      },
+    }),
     api: {
       icon: 'world',
       settings: [
