@@ -13,7 +13,7 @@
   "ai_assist.case_manager.general.title": "General",
   "ai_assist.case_manager.kyc_enrichment_callout": "Configure up to 10 domains to help enrich customer data. The agent can use these domains to search online and find relevant information about your customer.",
   "ai_assist.case_manager.kyc_enrichment.add_new.button": "Add a new domain",
-  "ai_assist.case_manager.kyc_enrichment.custom_instructions.field.label": "Organization-specific instructions (optional)",
+  "ai_assist.case_manager.kyc_enrichment.custom_instructions.field.label": "Custom instructions (optional)",
   "ai_assist.case_manager.kyc_enrichment.custom_instructions.field.placeholder": "Provide guidelines or a preferred output format for KYC enrichment…",
   "ai_assist.case_manager.kyc_enrichment.domains_filter.add_new.error": "Please enter a valid domain, for example checkmarble.com",
   "ai_assist.case_manager.kyc_enrichment.enabled.field.label": "Enable the KYC enrichment feature. <bold>This feature calls external APIs that treat any data received in the United States.</bold>",
