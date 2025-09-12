@@ -11,6 +11,7 @@
   "create_field.name_reserved_error": "Le nom \"id\" est réservé",
   "create_field.option_optional": "Facultatif",
   "create_field.option_required": "Requis",
+  "create_field.option_required_warning": "Faites attention lors de l'ajout d'un champ requis sur une table déjà utilisée. Si vous ingérez déjà des données ou créez des décisions par API, celles-ci échoueront si vous ajoutez un champ requis. Nous vous recommandons de créer d'abord le champ comme facultatif, de l'ajouter à votre pipeline d'ingestion, puise de le marquer comme requis.",
   "create_field.title": "Créer un nouveau champ",
   "create_field.type": "Type",
   "create_field.type_bool": "Booléen",
