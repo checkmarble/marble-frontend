@@ -1,3 +1,4 @@
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import {
   NetworkRequestFailed,
   TooManyRequest,
@@ -5,7 +6,6 @@ import {
 } from '@app-builder/services/auth/auth.client';
 import { useClientServices } from '@app-builder/services/init.client';
 import { getRoute } from '@app-builder/utils/routes';
-import { useNavigate } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
@@ -44,7 +44,7 @@ function ClientSendEmailVerificationButton() {
     clientServices.authenticationClientService,
   );
 
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
   async function onSendClick() {
     try {
       const logout = () => navigate(getRoute('/ressources/auth/logout'));
