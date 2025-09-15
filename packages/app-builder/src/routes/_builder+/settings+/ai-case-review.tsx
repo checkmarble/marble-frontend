@@ -11,15 +11,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  if (!isAdmin(user)) {
-    return redirect(getRoute('/'));
-  }
   const [appConfig, settings] = await Promise.all([
     appConfigRepository.getAppConfig(),
     aiAssistSettings.getAiAssistSettings(),
   ]);
 
-  if (!appConfig.isManagedMarble) {
+  if (!isAdmin(user) || !appConfig.isManagedMarble) {
     return redirect(getRoute('/'));
   }
   return { settings };
