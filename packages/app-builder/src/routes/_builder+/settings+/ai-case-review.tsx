@@ -6,16 +6,19 @@ import { type LoaderFunctionArgs } from '@remix-run/node';
 import { redirect, useLoaderData } from '@remix-run/react';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
+  const { authService, appConfigRepository } = initServerServices(request);
   const { user, aiAssistSettings } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  if (!isAdmin(user)) {
+  const [appConfig, settings] = await Promise.all([
+    appConfigRepository.getAppConfig(),
+    aiAssistSettings.getAiAssistSettings(),
+  ]);
+
+  if (!isAdmin(user) || !appConfig.isManagedMarble) {
     return redirect(getRoute('/'));
   }
-  const settings = await aiAssistSettings.getAiAssistSettings();
-
   return { settings };
 }
 
