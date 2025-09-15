@@ -23,13 +23,14 @@ export async function action({ request }: ActionFunctionArgs) {
   const { success, error, data } = editFieldPayloadSchema.safeParse(raw);
 
   if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
-  const { description, fieldId, isEnum, isUnique } = data;
+  const { description, fieldId, isEnum, isUnique, required } = data;
 
   try {
     await dataModelRepository.patchDataModelField(fieldId, {
       description,
       isEnum,
       isUnique,
+      isNullable: required === 'optional',
     });
 
     return json({ success: 'true', errors: [] });

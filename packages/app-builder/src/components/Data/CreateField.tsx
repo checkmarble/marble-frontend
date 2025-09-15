@@ -100,6 +100,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
   const selectedType = useStore(form.store, (state) => state.values.type);
   const selectedEnum = useStore(form.store, (state) => state.values.isEnum);
   const selectedUnique = useStore(form.store, (state) => state.values.isUnique);
+  const selectedRequired = useStore(form.store, (state) => state.values.required);
 
   return (
     <form
@@ -169,7 +170,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             >
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
-                  <FormLabel name={field.name}>{t('data:create_field.required')}</FormLabel>
+                  <FormLabel name={field.name}>{t('data:create_field.option_required')}</FormLabel>
                   <Select.Default
                     className="w-full overflow-hidden"
                     defaultValue={field.state.value}
@@ -222,6 +223,11 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
               )}
             </form.Field>
           </div>
+          {selectedRequired === 'required' ? (
+            <span className="text-red-47 text-s">
+              {t('data:create_field.option_required_warning')}
+            </span>
+          ) : null}
           {EnumDataTypes.includes(selectedType) ? (
             <form.Field
               name="isEnum"

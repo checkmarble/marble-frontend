@@ -7,6 +7,7 @@ export const editFieldPayloadSchema = z.object({
   fieldId: z.uuid(),
   isEnum: z.boolean(),
   isUnique: z.boolean(),
+  required: z.enum(['optional', 'required']),
 });
 
 export type EditFieldPayload = z.infer<typeof editFieldPayloadSchema>;

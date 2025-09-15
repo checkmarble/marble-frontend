@@ -1020,6 +1020,7 @@ export type UpdateTableFieldDto = {
     description?: string;
     is_enum?: boolean;
     is_unique?: boolean;
+    is_nullable?: boolean;
 };
 export type CreateTableLinkBody = {
     name: string;

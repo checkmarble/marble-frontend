@@ -6,12 +6,13 @@ import { useLoaderData } from '@remix-run/react';
 import { LoaderFunctionArgs, redirect } from '@remix-run/server-runtime';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { authService } = initServerServices(request);
+  const { authService, appConfigRepository } = initServerServices(request);
   const { organization: orgRepo, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
+  const appConfig = await appConfigRepository.getAppConfig();
 
-  if (!isAdmin(user)) {
+  if (!isAdmin(user) || !appConfig.isManagedMarble) {
     return redirect(getRoute('/'));
   }
 
