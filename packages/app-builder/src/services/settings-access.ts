@@ -60,7 +60,7 @@ export function getSettingsAccess(
           : []),
       ],
     },
-    ...((!appConfig.isProduction || appConfig.isManagedMarble) && {
+    ...((appConfig.versions.appVersion === 'dev' || appConfig.isManagedMarble) && {
       ai_assist: {
         icon: 'ai-review',
         settings: [{ title: 'ai_case_manager', to: getRoute('/settings/ai-case-review') }],
