@@ -19,7 +19,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     aiAssistSettings.getAiAssistSettings(),
   ]);
 
-  if (appConfig.versions.appVersion !== 'dev' && !appConfig.isManagedMarble) {
+  if (!appConfig.isManagedMarble) {
     return redirect(getRoute('/'));
   }
   return { settings };

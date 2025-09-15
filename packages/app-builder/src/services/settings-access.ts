@@ -60,12 +60,13 @@ export function getSettingsAccess(
           : []),
       ],
     },
-    ...((appConfig.versions.appVersion === 'dev' || appConfig.isManagedMarble) && {
-      ai_assist: {
-        icon: 'ai-review',
-        settings: [{ title: 'ai_case_manager', to: getRoute('/settings/ai-case-review') }],
-      },
-    }),
+    ...(isAdmin(user) &&
+      appConfig.isManagedMarble && {
+        ai_assist: {
+          icon: 'ai-review',
+          settings: [{ title: 'ai_case_manager', to: getRoute('/settings/ai-case-review') }],
+        },
+      }),
     api: {
       icon: 'world',
       settings: [
