@@ -80,6 +80,6 @@ export function adaptAppConfig(
       sso: dto.features.sso,
       segment: dto.features.segment,
     },
-    isManagedMarble: dto.is_managed_marble,
+    isManagedMarble: process.env['NODE_ENV'] === 'development' ? true : dto.is_managed_marble,
   };
 }

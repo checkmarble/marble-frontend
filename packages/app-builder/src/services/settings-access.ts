@@ -55,7 +55,7 @@ export function getSettingsAccess(
           ? [{ title: 'inboxes', to: getRoute('/settings/inboxes') }]
           : []),
         ...(isReadTagAvailable(user) ? [{ title: 'tags', to: getRoute('/settings/tags') }] : []),
-        ...(isAdmin(user) && appConfig.isManagedMarble
+        ...(isAdmin(user)
           ? [{ title: 'data_display', to: getRoute('/settings/data-display') }]
           : []),
       ],
@@ -78,7 +78,7 @@ export function getSettingsAccess(
     ip_whitelisting: {
       icon: 'world',
       settings: [
-        ...(isAdmin(user)
+        ...(isAdmin(user) && appConfig.isManagedMarble
           ? [{ title: 'ip_whitelisting', to: getRoute('/settings/ip-whitelisting') }]
           : []),
       ],
