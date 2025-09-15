@@ -333,8 +333,8 @@ SetDataModelTableOptionsBodyDto:
 
 # MISC
 
-AnalyticsDto:
-  $ref: misc.yml#/components/schemas/AnalyticsDto
+LegacyAnalyticsDto:
+  $ref: misc.yml#/components/schemas/LegacyAnalyticsDto
 AppConfigDto:
   $ref: misc.yml#/components/schemas/AppConfigDto
 
@@ -457,3 +457,12 @@ AISettingsDto:
   $ref: ai.yml#/components/schemas/AISettingsDto
 UpsertAISettingsDto:
   $ref: ai.yml#/components/schemas/UpsertAISettingsDto
+
+  # ANALYTICS
+
+DecisionOutcomesPerDayQueryDto:
+  $ref: analytics.yml#/components/schemas/DecisionOutcomesPerDayQueryDto
+DecisionOutcomesPerDayResponseDto:
+  $ref: analytics.yml#/components/schemas/DecisionOutcomesPerDayResponseDto
+DecisionOutcomesPerDayTriggerDto:
+  $ref: analytics.yml#/components/schemas/DecisionOutcomesPerDayTriggerDto
