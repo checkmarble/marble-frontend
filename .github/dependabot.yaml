@@ -1,5 +1,4 @@
 version: 2
-enable-beta-ecosystems: true
 updates:
   # Root workspace dependencies
   - package-ecosystem: "bun"
