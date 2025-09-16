@@ -42,7 +42,7 @@ export function PrepareScenarioVersion({
       </Tooltip.Default>
     );
   }
-  if (!isPreparationServiceOccupied) {
+  if (isPreparationServiceOccupied) {
     return (
       <Tooltip.Default
         className="text-xs"
