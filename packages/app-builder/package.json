@@ -109,7 +109,7 @@
     "react-i18next": "^15.4.1",
     "reactflow": "^11.11.4",
     "remeda": "^2.21.2",
-    "remix-i18next": "^6.4.1",
+    "remix-i18next": "^7.3.0",
     "remix-utils": "^7.7.0",
     "sharpstate": "^0.0.13",
     "short-uuid": "^5.2.0",

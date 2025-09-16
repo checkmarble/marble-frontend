@@ -91,7 +91,7 @@
         "react-i18next": "^15.4.1",
         "reactflow": "^11.11.4",
         "remeda": "^2.21.2",
-        "remix-i18next": "^6.4.1",
+        "remix-i18next": "^7.3.0",
         "remix-utils": "^7.7.0",
         "sharpstate": "^0.0.13",
         "short-uuid": "^5.2.0",
@@ -2758,7 +2758,7 @@
 
     "remix-flat-routes": ["remix-flat-routes@0.8.5", "", { "dependencies": { "fs-extra": "^11.2.0", "minimatch": "^10.0.1" }, "bin": { "migrate-flat-routes": "dist/cli.cjs" } }, "sha512-30GcEpvwqFXCyTKiCTeqI3QSNyTg+f0qLGeIc95y6o3gaOEIhbC37qWpe8HrVEkdnj48xUyaUK03jm1zYFkhfA=="],
 
-    "remix-i18next": ["remix-i18next@6.4.1", "", { "peerDependencies": { "@remix-run/cloudflare": "^2.0.0", "@remix-run/deno": "^2.0.0", "@remix-run/node": "^2.0.0", "@remix-run/react": "^2.0.0", "i18next": "^23.1.0", "react": "^16.8.0 || ^17.0.0 || ^18.0.0", "react-i18next": "^13.0.0 || ^14.0.0 || ^15.0.0" }, "optionalPeers": ["@remix-run/cloudflare", "@remix-run/deno", "@remix-run/node"] }, "sha512-Ma4ESNj8uZmm/Fjq2ZHEbsGvYYO2rV1BtqwIFPAYUeitBaED+r0pNXktUzvsHEanvbFOZPAhEcp5f17vDslmeA=="],
+    "remix-i18next": ["remix-i18next@7.3.0", "", { "peerDependencies": { "i18next": "^24.0.0 || ^25.0.0", "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-i18next": "^13.0.0 || ^14.0.0 || ^15.0.0", "react-router": "^7.0.0" } }, "sha512-KbuOTr5G7+GYZRgXfd/ugpT0gw0kCN+ESbLrPyTrKKQfMY/s/y5ejAjXYK94ODsO9stuVh8AAchQ60uoA4EUJA=="],
 
     "remix-utils": ["remix-utils@7.7.0", "", { "dependencies": { "type-fest": "^4.18.1" }, "peerDependencies": { "@remix-run/cloudflare": "^2.0.0", "@remix-run/node": "^2.0.0", "@remix-run/react": "^2.0.0", "@remix-run/router": "^1.7.2", "crypto-js": "^4.1.1", "intl-parse-accept-language": "^1.0.0", "is-ip": "^5.0.1", "react": "^18.0.0", "zod": "^3.22.4" }, "optionalPeers": ["@remix-run/cloudflare", "@remix-run/node", "@remix-run/react", "@remix-run/router", "crypto-js", "intl-parse-accept-language", "is-ip", "react", "zod"] }, "sha512-J8NhP044nrNIam/xOT1L9a4RQ9FSaA2wyrUwmN8ZT+c/+CdAAf70yfaLnvMyKcV5U+8BcURQ/aVbth77sT6jGA=="],
 
