@@ -28,7 +28,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   try {
-    await organization.updateAllowedNetworks(organizationId, payload.data.allowedNetworks);
+    const subnets = await organization.updateAllowedNetworks(
+      organizationId,
+      payload.data.allowedNetworks,
+    );
 
     setToastMessage(toastSession, {
       type: 'success',
@@ -36,7 +39,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return Response.json(
-      { success: true },
+      { success: true, data: { subnets } },
       { headers: { 'Set-Cookie': await toastSessionService.commitSession(toastSession) } },
     );
   } catch (error) {

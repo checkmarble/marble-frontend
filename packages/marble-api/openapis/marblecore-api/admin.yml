@@ -435,7 +435,9 @@
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/OrganizationSubnetsDto"
+              type: array
+              items:
+                type: string
       '400':
         $ref: 'components.yml#/responses/400'
       '422':
