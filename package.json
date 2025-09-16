@@ -16,7 +16,7 @@
     "update-deps": "bun update --latest -r -i; clear; bun pm ls --all > packages-licenses.txt"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
+    "@biomejs/biome": "2.2.4",
     "@vitejs/plugin-react": "4.3.4",
     "@vitest/coverage-v8": "^3.0.9",
     "@vitest/ui": "3.0.9",
