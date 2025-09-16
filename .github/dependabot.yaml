@@ -5,4 +5,7 @@ updates:
     directories: ["/", "packages/*"]
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 3
+    groups:
+      patch:
+        update-types:
+          - "patch"
