@@ -21,7 +21,7 @@
     "@segment/analytics-next": "^1.78.1",
     "@sentry/cli": "^2.42.3",
     "@sentry/vite-plugin": "^3.2.2",
-    "@tailwindcss/postcss": "^4.1.12",
+    "@tailwindcss/postcss": "^4.1.13",
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/js-cookie": "^3.0.6",
     "@types/qs": "^6.9.18",
@@ -32,7 +32,7 @@
     "postcss": "^8.5.3",
     "remix-development-tools": "^4.7.7",
     "remix-flat-routes": "^0.8.5",
-    "tailwindcss": "4.1.12",
+    "tailwindcss": "4.1.13",
     "tsx": "^4.19.3",
     "vite": "^6.2.7"
   },
@@ -75,7 +75,7 @@
     "@tanstack/react-query": "^5.84.1",
     "@tanstack/react-query-devtools": "5.83.1",
     "@tanstack/react-table": "^8.21.2",
-    "@tanstack/react-virtual": "3.13.4",
+    "@tanstack/react-virtual": "3.13.12",
     "autosuggest-highlight": "^3.3.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -122,7 +122,7 @@
     "ui-design-system": "workspace:*",
     "ui-icons": "workspace:*",
     "uuid": "^11.1.0",
-    "zod": "^4.1.4",
+    "zod": "^4.1.8",
     "zustand": "^5.0.3"
   }
 }
