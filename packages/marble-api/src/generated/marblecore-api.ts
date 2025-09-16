@@ -3923,7 +3923,7 @@ export function deleteOrganization(organizationId: string, opts?: Oazapfts.Reque
 export function updateOrganizationSubnets(organizationId: string, organizationSubnetsDto: OrganizationSubnetsDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: OrganizationSubnetsDto;
+        data: string[];
     } | {
         status: 400;
         data: string;
