@@ -65,12 +65,9 @@ export function CasesList({
 
           return (
             <Tooltip.Default content={caseName}>
-              <Link
-                className="text-purple-65 text-s line-clamp-2 w-fit font-normal underline"
-                to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(row.original.id) })}
-              >
+              <span className="text-s line-clamp-2 w-fit font-normal group-hover/row-link:text-purple-65 group-hover/row-link:underline">
                 {caseName}
-              </Link>
+              </span>
             </Tooltip.Default>
           );
         },

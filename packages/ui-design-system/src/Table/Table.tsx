@@ -249,14 +249,15 @@ function Row<TData extends RowData>({
         if (withRowLink) {
           const rowLink = e.currentTarget.querySelector('[data-column-id="__internal-row-link"]');
           if (rowLink && rowLink !== e.target && rowLink instanceof HTMLAnchorElement) {
-            rowLink.click();
+            // Use dispatchEvent rather than click() to keep base event properties (ie: meta key pressed)
+            rowLink.dispatchEvent(new MouseEvent(e.type, e.nativeEvent));
           }
         }
         onClick?.(e);
       }}
       className={clsx(
         'even:bg-grey-98 h-12',
-        withRowLink && 'hover:bg-purple-98 focus-within:bg-purple-98 cursor-pointer',
+        withRowLink && 'hover:bg-purple-98 focus-within:bg-purple-98 cursor-pointer group/row-link',
         className,
       )}
       {...props}
