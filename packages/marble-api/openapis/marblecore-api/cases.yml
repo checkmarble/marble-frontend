@@ -335,14 +335,14 @@
                 decisions:
                   type: array
                   items:
-                    $ref: '#/components/schemas/CaseDecisionDto'
+                    $ref: '#/components/schemas/DetailedCaseDecisionDto'
                 pagination:
                   type: object
-                  required: [has_more cursor_id]
+                  required: [has_more next_cursor_id]
                   properties:
                     has_more:
                       type: boolean
-                    cursor_id:
+                    next_cursor_id:
                       type: string
       '401':
         $ref: 'components.yml#/responses/401'
@@ -860,7 +860,7 @@
               properties:
                 results:
                   type: array
-                  items: 
+                  items:
                     $ref: '#/components/schemas/KYCAnalysisDto'
       '401':
         $ref: 'components.yml#/responses/401'
@@ -998,6 +998,40 @@ components:
         - pivot_values
         - scenario
         - score
+    DetailedCaseDecisionDto:
+      allOf:
+        - $ref: '#/components/schemas/CaseDecisionDto'
+        - type: object
+          required:
+            - rules
+          properties:
+            rules:
+              type: array
+              items:
+                $ref: 'decisions.yml#/components/schemas/RuleExecutionDto'
+            sanction_checks:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - status
+                  - partial
+                  - count
+                  - name
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: ['in_review', 'confirmed_hit']
+                  name:
+                    type: string
+                  partial:
+                    type: boolean
+                  count:
+                    type: integer
     NextCaseIdDto:
       type: object
       required:
@@ -1585,7 +1619,7 @@ components:
           enum: [false]
         sanity_check:
           type: string
-    
+
     CaseReviewFeedbackDto:
       type: string
       enum: ['ok', 'ko']

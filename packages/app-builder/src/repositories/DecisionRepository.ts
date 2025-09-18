@@ -51,7 +51,7 @@ export type DecisionFiltersWithPagination = FiltersWithPagination<DecisionFilter
 export interface DecisionRepository {
   listDecisions(args: DecisionFiltersWithPagination): Promise<PaginatedResponse<Decision>>;
   listScheduledExecutions(args?: { scenarioId?: string }): Promise<ScheduledExecution[]>;
-  getDecisionById(id: string): Promise<DecisionDetails>;
+  getDecisionById(id: string, args?: { includeRuleEvaluation?: boolean }): Promise<DecisionDetails>;
   getDecisionActiveSnoozes(decisionId: string): Promise<SnoozesOfDecision>;
   createSnoozeForDecision(
     decisionId: string,
@@ -107,9 +107,9 @@ export function makeGetDecisionRepository() {
         ...adaptPagination(pagination),
       };
     },
-    getDecisionById: async (id) => {
-      const decisionDetailDto = await marbleCoreApiClient.getDecision(id);
-      const decision = adaptDecisionDetail(decisionDetailDto);
+    getDecisionById: async (id, args) => {
+      const decisionDetailDto = await marbleCoreApiClient.getDecision(id /*, args*/);
+      const decision = adaptDecisionDetail(decisionDetailDto, args?.includeRuleEvaluation ?? true);
       decision.rules = decision.rules.sort((lhs, rhs) => lhs.name.localeCompare(rhs.name));
       return decision;
     },

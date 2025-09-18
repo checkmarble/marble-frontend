@@ -173,6 +173,7 @@
   "decisions.trigger_object": "كائن الزناد",
   "drop_file_accepted_types": "jpg, png, pdf, zip, doc, docx, xls, xlsx",
   "drop_file_cta": "قم بسحب أي ملف هنا لإرفاقه بالحالة. الصيغ المدعومة هي:",
+  "errors.case_not_found": "لم يتم العثور على الحالة",
   "escalate-button.forbidden.hint": "لا يوجد مجموعة الوارد الوارد. \nيرجى الاتصال بمسؤولك.",
   "escalate-button.forbidden.hint.admin": "لا يوجد مجموعة الوارد الوارد.",
   "escalate-button.hint": "تصعيد القضية إلى {{InboxName}}.",

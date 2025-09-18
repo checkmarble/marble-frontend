@@ -28,7 +28,7 @@ import {
 import { type CaseEvent, CaseEventType } from '@app-builder/models/cases';
 import { type Inbox } from '@app-builder/models/inbox';
 import { debounce } from 'radash';
-import { type RefObject, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { allPass, filter } from 'remeda';
 import { match } from 'ts-pattern';
@@ -148,33 +148,37 @@ export function CaseEvents({
           'max-h-[400px] overflow-y-scroll': !showAll,
         })}
       >
-        {filteredEvents.map((event) =>
-          match(event)
-            .with({ eventType: 'case_created' }, (e) => <CaseCreatedDetail event={e} />)
-            .with({ eventType: 'status_updated' }, (e) => <StatusUpdatedDetail event={e} />)
-            .with({ eventType: 'outcome_updated' }, (e) => <OutcomeUpdatedDetail event={e} />)
-            .with({ eventType: 'decision_added' }, (e) => <DecisionAddedDetail event={e} />)
-            .with({ eventType: 'comment_added' }, (e) => <CommentAddedDetail event={e} />)
-            .with({ eventType: 'name_updated' }, (e) => <NameUpdatedDetail event={e} />)
-            .with({ eventType: 'tags_updated' }, (e) => <TagsUpdatedDetail event={e} />)
-            .with({ eventType: 'file_added' }, (e) => <FileAddedDetail event={e} />)
-            .with({ eventType: 'inbox_changed' }, (e) => (
-              <InboxChangedDetail event={e} inboxes={inboxes} />
-            ))
-            .with({ eventType: 'rule_snooze_created' }, (e) => (
-              <RuleSnoozeCreatedDetail event={e} />
-            ))
-            .with({ eventType: 'decision_reviewed' }, (e) => <DecisionReviewedDetail event={e} />)
-            .with({ eventType: 'case_snoozed' }, (e) => <CaseSnoozedDetail event={e} />)
-            .with({ eventType: 'case_unsnoozed' }, (e) => <CaseUnsnoozedDetail event={e} />)
-            .with({ eventType: 'case_assigned' }, (e) => <CaseAssignedDetail event={e} />)
-            .with({ eventType: 'sar_created' }, (e) => <SarCreatedDetail event={e} />)
-            .with({ eventType: 'sar_deleted' }, (e) => <SarDeletedDetail event={e} />)
-            .with({ eventType: 'sar_status_changed' }, (e) => <SarStatusChangedDetail event={e} />)
-            .with({ eventType: 'sar_file_uploaded' }, (e) => <SarFileUploadedDetail event={e} />)
-            .with({ eventType: 'entity_annotated' }, (e) => <EntityAnnotated event={e} />)
-            .exhaustive(),
-        )}
+        {filteredEvents.map((event) => (
+          <Fragment key={event.id}>
+            {match(event)
+              .with({ eventType: 'case_created' }, (e) => <CaseCreatedDetail event={e} />)
+              .with({ eventType: 'status_updated' }, (e) => <StatusUpdatedDetail event={e} />)
+              .with({ eventType: 'outcome_updated' }, (e) => <OutcomeUpdatedDetail event={e} />)
+              .with({ eventType: 'decision_added' }, (e) => <DecisionAddedDetail event={e} />)
+              .with({ eventType: 'comment_added' }, (e) => <CommentAddedDetail event={e} />)
+              .with({ eventType: 'name_updated' }, (e) => <NameUpdatedDetail event={e} />)
+              .with({ eventType: 'tags_updated' }, (e) => <TagsUpdatedDetail event={e} />)
+              .with({ eventType: 'file_added' }, (e) => <FileAddedDetail event={e} />)
+              .with({ eventType: 'inbox_changed' }, (e) => (
+                <InboxChangedDetail event={e} inboxes={inboxes} />
+              ))
+              .with({ eventType: 'rule_snooze_created' }, (e) => (
+                <RuleSnoozeCreatedDetail event={e} />
+              ))
+              .with({ eventType: 'decision_reviewed' }, (e) => <DecisionReviewedDetail event={e} />)
+              .with({ eventType: 'case_snoozed' }, (e) => <CaseSnoozedDetail event={e} />)
+              .with({ eventType: 'case_unsnoozed' }, (e) => <CaseUnsnoozedDetail event={e} />)
+              .with({ eventType: 'case_assigned' }, (e) => <CaseAssignedDetail event={e} />)
+              .with({ eventType: 'sar_created' }, (e) => <SarCreatedDetail event={e} />)
+              .with({ eventType: 'sar_deleted' }, (e) => <SarDeletedDetail event={e} />)
+              .with({ eventType: 'sar_status_changed' }, (e) => (
+                <SarStatusChangedDetail event={e} />
+              ))
+              .with({ eventType: 'sar_file_uploaded' }, (e) => <SarFileUploadedDetail event={e} />)
+              .with({ eventType: 'entity_annotated' }, (e) => <EntityAnnotated event={e} />)
+              .exhaustive()}
+          </Fragment>
+        ))}
       </div>
       {showAll ? null : (
         <span

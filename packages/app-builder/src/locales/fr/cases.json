@@ -173,6 +173,7 @@
   "decisions.trigger_object": "Object déclencheur",
   "drop_file_accepted_types": "jpg, png, pdf, zip, doc, docx, xls, xlsx",
   "drop_file_cta": "Déposez n’importe quel fichier ici pour le joindre à l’investigation. \nLes extensions suivantes sont prises en charge :",
+  "errors.case_not_found": "Investigation non trouvée",
   "escalate-button.forbidden.hint": "Aucune boîte de réception d’escalade n’est définie. Veuillez contacter votre administrateur.",
   "escalate-button.forbidden.hint.admin": "Vous devez configurer vers quelle boîte de réception les investigations de cette boîte sont escaladées.",
   "escalate-button.hint": "Escalader le cas vers {{inboxName}}.",
