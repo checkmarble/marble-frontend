@@ -32,7 +32,7 @@
 
 components:
   schemas:
-    DecisionOutcomesPerDayTriggerDto:
+    TriggerFilterDto:
       type: object
       required:
         - field
@@ -75,7 +75,7 @@ components:
         trigger:
           type: array
           items:
-            $ref: '#/components/schemas/DecisionOutcomesPerDayTriggerDto'
+            $ref: '#/components/schemas/TriggerFilterDto'
     DecisionOutcomesPerDayResponseDto:
       type: object
       required:
@@ -89,11 +89,11 @@ components:
           type: string
           format: date-time
         approve:
-          type: number
+          type: integer
         block_and_review:
-          type: number
+          type: integer
         decline:
-          type: number
+          type: integer
         review:
-          type: number
+          type: integer
 

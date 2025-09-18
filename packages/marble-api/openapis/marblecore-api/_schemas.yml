@@ -464,5 +464,5 @@ DecisionOutcomesPerDayQueryDto:
   $ref: analytics.yml#/components/schemas/DecisionOutcomesPerDayQueryDto
 DecisionOutcomesPerDayResponseDto:
   $ref: analytics.yml#/components/schemas/DecisionOutcomesPerDayResponseDto
-DecisionOutcomesPerDayTriggerDto:
-  $ref: analytics.yml#/components/schemas/DecisionOutcomesPerDayTriggerDto
+TriggerFilterDto:
+  $ref: analytics.yml#/components/schemas/TriggerFilterDto

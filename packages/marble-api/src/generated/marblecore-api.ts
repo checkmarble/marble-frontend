@@ -1349,7 +1349,7 @@ export type UpsertAiSettingsDto = {
     kyc_enrichment_setting: KycEnrichmentSettingDto;
     case_review_setting: CaseReviewSettingDto;
 };
-export type DecisionOutcomesPerDayTriggerDto = {
+export type TriggerFilterDto = {
     field: string;
     op: "=" | "!=" | ">" | ">=" | "<" | "<=" | "in";
     values: (string | number | boolean)[];
@@ -1359,7 +1359,7 @@ export type DecisionOutcomesPerDayQueryDto = {
     scenario_versions?: number[];
     start: string;
     end: string;
-    trigger: DecisionOutcomesPerDayTriggerDto[];
+    trigger: TriggerFilterDto[];
 };
 export type DecisionOutcomesPerDayResponseDto = {
     date: string;

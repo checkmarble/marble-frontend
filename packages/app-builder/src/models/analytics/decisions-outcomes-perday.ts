@@ -23,7 +23,7 @@ export const decisionOutcomesPerDay = z.object({
   ),
 });
 
-export const decisionOutcomesPerDayTrigger = z.object({
+export const triggerFilter = z.object({
   field: z.uuidv4(),
   op: z.enum(['=', '!=', '>', '>=', '<', '<=']),
   values: z.array(z.string()),
@@ -34,7 +34,7 @@ export const decisionOutcomesPerDayQuery = z.object({
   end: z.date(),
   scenarioId: z.uuidv4(),
   scenarioVersion: z.number().optional(),
-  trigger: z.array(decisionOutcomesPerDayTrigger),
+  trigger: z.array(triggerFilter),
 });
 
 export type DecisionOutcomesPerDay = z.infer<typeof decisionOutcomesPerDay>;
