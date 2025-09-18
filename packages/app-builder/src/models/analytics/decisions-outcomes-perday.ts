@@ -92,25 +92,19 @@ export function fillMissingDays(
   return filled;
 }
 
-export const transformDecisionOutcomesPerDayQuery = z.transform(
-  (val: DecisionOutcomesPerDayQuery): DecisionOutcomesPerDayQueryDto => {
+export const transformDecisionOutcomesPerDayQuery = decisionOutcomesPerDayQuery.transform(
+  (val): DecisionOutcomesPerDayQueryDto => {
     return {
       start: val.start.toISOString(),
       end: val.end.toISOString(),
       scenario_id: val.scenarioId,
       scenario_versions: val.scenarioVersion ? [val.scenarioVersion] : undefined,
       trigger: val.trigger,
-      // trigger: val.trigger.map((t) => ({
-      //   field: t.field,
-      //   op: t.op,
-      //   values: t.values,
-      // })),
     };
   },
 );
-//
 
-export const adaptDecisionOutcomesPerDay = z.transform(
+export const adaptDecisionOutcomesPerDay = z.array(z.any()).transform(
   (val: DecisionOutcomesPerDayResponseDto[]): DecisionOutcomesPerDay => ({
     absolute: val.map((v) => ({
       date: new Date(v.date),
