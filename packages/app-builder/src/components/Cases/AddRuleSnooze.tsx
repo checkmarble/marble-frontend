@@ -16,6 +16,7 @@ import { ruleSnoozesDocHref } from '@app-builder/services/documentation-href';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { useForm } from '@tanstack/react-form';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, ModalV2, Select, TextArea } from 'ui-design-system';
@@ -54,6 +55,7 @@ function AddRuleSnoozeContent({
   const language = useFormatLanguage();
   const addRuleSnoozeMutation = useAddRuleSnoozeMutation();
   const revalidate = useLoaderRevalidator();
+  const queryClient = useQueryClient();
   const dateTimeFieldNames = useMemo(
     () =>
       new Intl.DisplayNames(language, {
@@ -73,6 +75,7 @@ function AddRuleSnoozeContent({
       if (formApi.state.isValid) {
         addRuleSnoozeMutation.mutateAsync(value).then((res) => {
           if (res.status === 'success') {
+            queryClient.invalidateQueries({ queryKey: ['cases', 'rulesByPivot'] });
             setOpen(false);
           }
           revalidate();

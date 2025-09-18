@@ -20,7 +20,7 @@ import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModif
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type Pivot, type TableModel } from '@app-builder/models';
 import { type Decision, type RuleExecution } from '@app-builder/models/decision';
-import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
+import { useScenarioIterationRules } from '@app-builder/queries/scenarios/scenario-iteration-rules';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
 import { Await, useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
@@ -38,12 +38,12 @@ type DecisionPanelProps = {
 type Detail = Pick<Decision, 'pivotValues' | 'scenario' | 'triggerObject' | 'triggerObjectType'> & {
   pivots: Pivot[];
   ruleExecutions: RuleExecution[];
-  scenarioRules: ScenarioIterationRule[];
 };
 
 const DecisionRuleExecutions = ({ detail }: { detail: Detail }) => {
   const { t } = useTranslation(casesI18n);
   const [showHitOnly, setShowHitOnly] = useState(true);
+  const scenarioIterationRules = useScenarioIterationRules(detail.scenario.scenarioIterationId);
 
   const filteredRuleExecutions = useMemo(() => {
     if (!detail?.ruleExecutions) return [];
@@ -52,6 +52,14 @@ const DecisionRuleExecutions = ({ detail }: { detail: Detail }) => {
     }
     return detail.ruleExecutions;
   }, [detail?.ruleExecutions, showHitOnly]);
+
+  if (scenarioIterationRules.isPending) {
+    return <div>Loading...</div>;
+  }
+
+  if (scenarioIterationRules.isError) {
+    return <div>Error</div>;
+  }
 
   return (
     <div className="flex h-fit flex-2 flex-col gap-4">
@@ -77,7 +85,7 @@ const DecisionRuleExecutions = ({ detail }: { detail: Detail }) => {
                   scenarioId={detail.scenario.id}
                   key={ruleExecution.ruleId}
                   ruleExecution={ruleExecution}
-                  rules={detail.scenarioRules}
+                  rules={scenarioIterationRules.data.rules}
                 />
               </RuleExecutionContent>
             </RuleExecutionCollapsible>

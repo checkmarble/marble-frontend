@@ -389,6 +389,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/$caseId.enqueue-review.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/$caseId.rules-by-pivot",
+        "path": "ressources/cases/:caseId/rules-by-pivot",
+        "file": "routes/ressources+/cases+/$caseId.rules-by-pivot.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/add-comment",
         "path": "ressources/cases/add-comment",
         "file": "routes/ressources+/cases+/add-comment.tsx"
@@ -698,6 +703,11 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/create",
         "path": "ressources/scenarios/create",
         "file": "routes/ressources+/scenarios+/create.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/iteration+/$iterationId.get-rules",
+        "path": "ressources/scenarios/iteration/:iterationId/get-rules",
+        "file": "routes/ressources+/scenarios+/iteration+/$iterationId.get-rules.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/update",
