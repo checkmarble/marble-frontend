@@ -8,7 +8,7 @@ import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { notFound } from '@app-builder/utils/http/http-responses';
 import { getRoute } from '@app-builder/utils/routes';
-import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
@@ -41,7 +41,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(getRoute('/'));
   }
 
-  const analyticsList = await analytics.listAnalytics();
+  const analyticsList = await analytics.legacyListAnalytics();
   const globalDashbord = analyticsList.find(
     ({ embeddingType }) => embeddingType === 'global_dashboard',
   );
@@ -49,7 +49,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return notFound("Global dashboard doesn't exist");
   }
 
-  return json({
+  return Response.json({
     globalDashbord: {
       title: 'Global Dashboard',
       src: globalDashbord.signedEmbeddingUrl,

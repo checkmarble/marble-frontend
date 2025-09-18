@@ -1,8 +1,8 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import { type Analytics, adaptAnalytics } from '@app-builder/models/analytics';
+import { legacyAnalytics } from '@app-builder/models/analytics';
 
 export interface AnalyticsRepository {
-  listAnalytics(): Promise<Analytics[]>;
+  listAnalytics(): Promise<legacyAnalytics.Analytics[]>;
 }
 
 export function makeGetAnalyticsRepository() {
@@ -10,7 +10,7 @@ export function makeGetAnalyticsRepository() {
     listAnalytics: async () => {
       const { analytics } = await marbleCoreApiClient.listAnalytics();
 
-      return analytics.map(adaptAnalytics);
+      return analytics.map(legacyAnalytics.adaptAnalytics);
     },
   });
 }
