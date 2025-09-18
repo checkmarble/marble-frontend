@@ -77,7 +77,6 @@ export function fillMissingDays(
   end: Date,
 ): DecisionOutcomesPerDayResponseDto[] {
   const missing = findMissingDays(data, start, end);
-  console.log('missing', missing);
   const filled = [
     ...data,
     ...missing.map((key) => ({
