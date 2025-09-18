@@ -14,10 +14,11 @@ import { DataModelExplorerProvider } from '@app-builder/components/DataModelExpl
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
 import {
   type DataModelWithTableOptions,
+  isNotFoundHttpError,
   mergeDataModelWithTableOptions,
   type TableModelWithOptions,
 } from '@app-builder/models';
-import { isRuleExecutionHit } from '@app-builder/models/decision';
+import { DecisionDetails } from '@app-builder/models/decision';
 import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
@@ -36,13 +37,10 @@ import {
   useRouteError,
 } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { Future, Result } from '@swan-io/boxed';
 import { type Namespace } from 'i18next';
-import { pick, unique } from 'radash';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { filter, flat, groupBy, map, mapValues, omit, pipe, uniqueBy } from 'remeda';
 import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
 import {
@@ -57,6 +55,7 @@ import {
   TabsTrigger,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { MY_INBOX_ID } from '../_index';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { authService } = initServerServices(request);
@@ -66,8 +65,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     inbox,
     user,
     dataModelRepository,
-    decision,
-    scenario,
+    decision: decisionRepository,
     sanctionCheck,
     entitlements,
   } = await authService.isAuthenticated(request, {
@@ -80,137 +78,54 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   }
   const { caseId } = parsedResult.data;
 
-  // Get case by ID
-  const [
-    currentCase,
-    nextCaseId,
-    reports,
-    inboxes,
-    pivotObjects,
-    dataModel,
-    pivots,
-    mostRecentReviews,
-    settings,
-  ] = await Promise.all([
-    cases.getCase({ caseId }),
-    cases.getNextUnassignedCaseId({ caseId }),
-    cases.listSuspiciousActivityReports({ caseId }),
+  const [currentCase, inboxes] = await Promise.all([
+    cases.getCase({ caseId }).catch((err) => {
+      if (isNotFoundHttpError(err)) {
+        throw redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: MY_INBOX_ID }));
+      }
+      throw err;
+    }),
     inbox.listInboxes(),
-    cases.listPivotObjects({ caseId }),
-    dataModelRepository.getDataModel(),
-    dataModelRepository.listPivots({}),
-    cases.getMostRecentCaseReview({ caseId }),
-    aiAssistSettings.getAiAssistSettings(),
   ]);
 
-  const dataModelWithTableOptionsRaw = (await Promise.all(
+  const currentInbox = inboxes.find((inbox) => inbox.id === currentCase.inboxId);
+  if (!currentInbox) {
+    return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: MY_INBOX_ID }));
+  }
+
+  const [nextCaseId, reports, pivotObjects, dataModel, pivots, mostRecentReviews, settings] =
+    await Promise.all([
+      cases.getNextUnassignedCaseId({ caseId }),
+      cases.listSuspiciousActivityReports({ caseId }),
+      cases.listPivotObjects({ caseId }),
+      dataModelRepository.getDataModel(),
+      dataModelRepository.listPivots({}),
+      cases.getMostRecentCaseReview({ caseId }),
+      aiAssistSettings.getAiAssistSettings(),
+    ]);
+
+  const dataModelWithTableOptions: DataModelWithTableOptions = await Promise.all(
     dataModel.map<Promise<TableModelWithOptions>>((table) =>
       dataModelRepository.getDataModelTableOptions(table.id).then((options) => {
         return mergeDataModelWithTableOptions(table, options);
       }),
     ),
-  )) satisfies DataModelWithTableOptions;
-  const dataModelWithTableOptions = dataModelWithTableOptionsRaw as DataModelWithTableOptions;
-
-  const decisionsPromise = Promise.all(
-    currentCase.decisions.map(async (d) => ({
-      ...pick(d, [
-        'id',
-        'outcome',
-        'triggerObject',
-        'triggerObjectType',
-        'pivotValues',
-        'createdAt',
-        'score',
-        'scenario',
-        'reviewStatus',
-      ]),
-      ruleExecutions: await decision.getDecisionById(d.id).then((detail) => detail.rules),
-      scenarioRules: await scenario
-        .getScenarioIteration({
-          iterationId: d.scenario.scenarioIterationId,
-        })
-        .then((iteration) => iteration.rules),
-      sanctionChecks: await sanctionCheck.listSanctionChecks({
-        decisionId: d.id,
-      }),
-    })),
   );
 
-  const rulesByPivotPromise = Future.allFromDict(
-    pipe(
-      filter(currentCase.decisions, (d) => d.pivotValues.length > 0),
-      groupBy((d) => d.pivotValues[0]!.value!),
-      mapValues((decisions, pivotValue) => {
-        return Future.allFromDict({
-          scenarioRules: Future.all(
-            pipe(
-              unique(map(decisions, (d) => d.scenario.scenarioIterationId)),
-              map((id) =>
-                Future.fromPromise(
-                  scenario
-                    .getScenarioIteration({ iterationId: id })
-                    .then((iteration) => iteration.rules),
-                ),
-              ),
-            ),
-          )
-            .map(Result.all)
-            .mapOk(flat()),
-          details: Future.all(
-            map(decisions, (d) => Future.fromPromise(decision.getDecisionById(d.id))),
-          )
-            .map(Result.all)
-            .mapOk((details) => unique(flat(details), (d) => d.id)),
-          snoozes: Future.all(
-            map(decisions, (d) => Future.fromPromise(decision.getDecisionActiveSnoozes(d.id))),
-          )
-            .map(Result.all)
-            .mapOk((result) => flat(map(result, (r) => r.ruleSnoozes))),
-        })
-          .map(Result.allFromDict)
-          .mapOk(({ scenarioRules, details, snoozes }) =>
-            pipe(
-              map(details, (d) =>
-                pipe(
-                  d.rules,
-                  map((r) => {
-                    const snooze = snoozes.find(
-                      (s) => s.pivotValue === pivotValue && s.ruleId === r.ruleId,
-                    );
+  // Use a map <decisionId, Promise> to avoid duplicating backend calls
+  const requestDecisionById = (decisionId: string): Promise<DecisionDetails> => {
+    return decisionRepository.getDecisionById(decisionId, {
+      includeRuleEvaluation: false,
+    });
+  };
 
-                    return {
-                      ...omit(r, ['evaluation']),
-                      isSnoozed: !!snooze,
-                      hitAt: d.createdAt,
-                      decisionId: d.id,
-                      ruleGroup: scenarioRules.find((sr) => sr.id === r.ruleId)?.ruleGroup,
-                      start: snooze?.startsAt,
-                      end: snooze?.endsAt,
-                      scoreModifier: isRuleExecutionHit(r) ? r.scoreModifier : 0,
-                    };
-                  }),
-                ),
-              ),
-              flat(),
-              uniqueBy((r) => r.ruleId),
-            ),
-          );
-      }),
-    ),
-  )
-    .map(Result.allFromDict)
-    .resultToPromise();
-
-  if (!currentCase) {
-    return redirect(getRoute('/cases/inboxes'));
-  }
-
-  const currentInbox = inboxes.find((inbox) => inbox.id === currentCase.inboxId);
-
-  if (!currentInbox) {
-    return redirect(getRoute('/cases/inboxes'));
-  }
+  const decisionsPromise = Promise.all(
+    currentCase.decisions.map(async (decision) => ({
+      ...decision,
+      ruleExecutions: await requestDecisionById(decision.id).then((detail) => detail.rules),
+      sanctionChecks: await sanctionCheck.listSanctionChecks({ decisionId: decision.id }),
+    })),
+  );
 
   let review: any = null;
   if (mostRecentReviews.length > 0 && mostRecentReviews[0]) {
@@ -250,7 +165,6 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     inboxes,
     pivots,
     decisionsPromise,
-    rulesByPivotPromise,
     entitlements,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
     mostRecentReview: review,

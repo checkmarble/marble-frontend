@@ -30,9 +30,7 @@ export const RequiredActions = ({
   const { t } = useTranslation(casesI18n);
   const reviewDecisionModalStore = useDialogStore();
 
-  const pendingSanctionMatches =
-    decision.sanctionChecks.flatMap((s) => s.matches).filter((m) => m.status === 'pending')
-      .length ?? 0;
+  const hasPendingScreening = decision.sanctionChecks.some((s) => s.status === 'in_review');
   const isPendingDecision =
     decision.reviewStatus === 'pending' && decision.outcome === 'block_and_review';
   const isThereSanctionChecks = decision.sanctionChecks.length > 0;
@@ -43,7 +41,7 @@ export const RequiredActions = ({
       {isThereSanctionChecks ? (
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
-            <Checkbox disabled={true} size="small" checked={pendingSanctionMatches === 0} />
+            <Checkbox disabled={true} size="small" checked={!hasPendingScreening} />
             <span className="text-xs font-medium">
               {t('sanctions:required_actions.review_pending_screening_count', {
                 count: decision.sanctionChecks.length,
