@@ -354,6 +354,16 @@ export const routes = [
         "file": "routes/healthcheck.ts"
       },
       {
+        "id": "routes/oidc+/auth",
+        "path": "oidc/auth",
+        "file": "routes/oidc+/auth.ts"
+        },
+      {
+        "id": "routes/oidc+/callback",
+        "path": "oidc/callback",
+        "file": "routes/oidc+/callback.ts"
+      },
+      {
         "id": "routes/ressources+/annotations+/download-file.$annotationId.$fileId",
         "path": "ressources/annotations/download-file/:annotationId/:fileId",
         "file": "routes/ressources+/annotations+/download-file.$annotationId.$fileId.tsx"
