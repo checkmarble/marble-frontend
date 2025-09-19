@@ -47,6 +47,8 @@
     "@lottiefiles/react-lottie-player": "^3.6.0",
     "@marble/shared": "workspace:*",
     "@mcansh/http-helmet": "^0.13.0",
+    "@nivo/bar": "^0.99.0",
+    "@nivo/core": "^0.99.0",
     "@oazapfts/runtime": "^1.0.4",
     "@preact/signals-react": "^3.0.1",
     "@radix-ui/react-avatar": "^1.1.3",
