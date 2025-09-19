@@ -97,7 +97,7 @@ export const transformDecisionOutcomesPerDayQuery = decisionOutcomesPerDayQuery.
       start: val.start.toISOString(),
       end: val.end.toISOString(),
       scenario_id: val.scenarioId,
-      scenario_versions: val.scenarioVersion ? [val.scenarioVersion] : undefined,
+      scenario_versions: val.scenarioVersion ? [val.scenarioVersion] : [],
       trigger: val.trigger,
     };
   },

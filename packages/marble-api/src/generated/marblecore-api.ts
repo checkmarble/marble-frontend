@@ -1356,9 +1356,11 @@ export type TriggerFilterDto = {
 };
 export type DecisionOutcomesPerDayQueryDto = {
     scenario_id: string;
-    scenario_versions?: number[];
+    scenario_versions: number[];
+} & {
     start: string;
     end: string;
+} & {
     trigger: TriggerFilterDto[];
 };
 export type DecisionOutcomesPerDayResponseDto = {
