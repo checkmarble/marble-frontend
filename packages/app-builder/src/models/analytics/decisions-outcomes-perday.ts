@@ -4,7 +4,7 @@ import z from 'zod';
 export const decisionOutcomesPerDay = z.object({
   absolute: z.array(
     z.object({
-      date: z.date(),
+      date: z.iso.datetime(),
       approve: z.number(),
       blockAndReview: z.number(),
       decline: z.number(),
@@ -14,7 +14,7 @@ export const decisionOutcomesPerDay = z.object({
   ),
   ratio: z.array(
     z.object({
-      date: z.date(),
+      date: z.iso.datetime(),
       approve: z.number(),
       blockAndReview: z.number(),
       decline: z.number(),
@@ -106,7 +106,7 @@ export const transformDecisionOutcomesPerDayQuery = decisionOutcomesPerDayQuery.
 export const adaptDecisionOutcomesPerDay = z.array(z.any()).transform(
   (val: DecisionOutcomesPerDayResponseDto[]): DecisionOutcomesPerDay => ({
     absolute: val.map((v) => ({
-      date: new Date(v.date),
+      date: v.date,
       approve: v.approve,
       blockAndReview: v.block_and_review,
       decline: v.decline,
@@ -116,7 +116,7 @@ export const adaptDecisionOutcomesPerDay = z.array(z.any()).transform(
     ratio: val.map((v) => {
       const total = v.approve + v.block_and_review + v.decline + v.review;
       return {
-        date: new Date(v.date),
+        date: v.date,
         approve: total ? (100 * v.approve) / total : 0,
         blockAndReview: total ? (100 * v.block_and_review) / total : 0,
         decline: total ? (100 * v.decline) / total : 0,
