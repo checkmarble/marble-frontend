@@ -392,25 +392,6 @@ export type CaseReviewProofDto = {
     /** The reason why the object was used to justify the review */
     reason: string;
 };
-export type CaseReviewOkDto = {
-    ok: true;
-};
-export type CaseReviewNotOkDto = {
-    ok: false;
-    sanity_check: string;
-};
-export type CaseReviewContentDto = {
-    version: string;
-    output: string;
-    proofs: CaseReviewProofDto[];
-    thought?: string;
-} & (CaseReviewOkDto | CaseReviewNotOkDto);
-export type CaseReviewDto = {
-    id: string;
-    reaction: CaseReviewFeedbackDto;
-    version: string;
-    review: CaseReviewContentDto;
-};
 export type GroundingCitationDto = {
     /** Title of the source */
     title: string;
@@ -428,6 +409,29 @@ export type KycAnalysisDto = {
     entity_name: string;
     /** List of source used in the analysis. The analysis uses anchors ([1][2]), these anchors are used to justify the analysis and the index follow the list order */
     citations: GroundingCitationDto[];
+};
+export type CaseReviewOkDto = {
+    ok: true;
+};
+export type CaseReviewNotOkDto = {
+    ok: false;
+    sanity_check: string;
+};
+export type CaseReviewContentDto = {
+    version: string;
+    output: string;
+    proofs: CaseReviewProofDto[];
+    thought?: string;
+    /** The enrichments of the pivot objects (null if the feature is disabled) */
+    pivot_enrichments?: {
+        results?: KycAnalysisDto[];
+    } | null;
+} & (CaseReviewOkDto | CaseReviewNotOkDto);
+export type CaseReviewDto = {
+    id: string;
+    reaction: CaseReviewFeedbackDto;
+    version: string;
+    review: CaseReviewContentDto;
 };
 export type SuspiciousActivityReportDto = {
     id: string;

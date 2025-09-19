@@ -1532,6 +1532,15 @@ components:
                 $ref: '#/components/schemas/CaseReviewProofDto'
             thought:
               type: string
+            pivot_enrichments:
+              type: object
+              description: The enrichments of the pivot objects (null if the feature is disabled)
+              nullable: true
+              properties:
+                results:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/KYCAnalysisDto'
         - anyOf:
           - $ref: '#/components/schemas/CaseReviewOkDto'
           - $ref: '#/components/schemas/CaseReviewNotOkDto'
