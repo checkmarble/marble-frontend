@@ -111,6 +111,7 @@
     "react-i18next": "^15.4.1",
     "reactflow": "^11.11.4",
     "remeda": "^2.21.2",
+    "remix-auth-oauth2": "^3.4.1",
     "remix-i18next": "^6.4.1",
     "remix-utils": "^7.7.0",
     "sharpstate": "^0.0.13",

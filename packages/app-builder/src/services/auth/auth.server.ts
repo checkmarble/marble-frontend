@@ -49,6 +49,9 @@ import * as z from 'zod/v4';
 import { getRoute } from '../../utils/routes';
 import { captureUnexpectedRemixError } from '../monitoring';
 import { type SessionService } from './session.server';
+import { Tokens } from '@app-builder/routes/oidc+/auth';
+import { OIDCStrategy } from 'remix-auth-openid';
+import { AppConfigRepository } from '@app-builder/repositories/AppConfigRepository';
 
 interface AuthenticatedInfo {
   /**
@@ -163,6 +166,7 @@ interface MakeAuthenticationServerServiceArgs {
   authSessionService: SessionService<AuthData, AuthFlashData>;
   toastSessionService: SessionService<void, ToastFlashData>;
   csrfService: CSRF;
+  makeOidcService: (configRepository: AppConfigRepository) => Promise<OIDCStrategy<Tokens>>;
 }
 
 function expectedErrors(error: unknown) {
@@ -199,11 +203,12 @@ export function makeAuthenticationServerService({
   toastSessionService,
   csrfService,
   getAiAssistSettingsRepository,
+  makeOidcService,
 }: MakeAuthenticationServerServiceArgs) {
-  function getTokenService(marbleAccessToken: string) {
+  function getTokenService(marbleAccessToken: string, request: Request | undefined = undefined) {
     return {
       getToken: () => Promise.resolve(marbleAccessToken),
-      refreshToken: () => {
+      refreshToken: async () => {
         // We don't handle refresh for now, force a logout when 401 is returned instead
         throw redirect(getRoute('/ressources/auth/logout'));
       },
@@ -246,6 +251,53 @@ export function makeAuthenticationServerService({
     throw redirect(redirectUrl, {
       headers: {
         'Set-Cookie': await authSessionService.commitSession(authSession),
+      },
+    });
+  }
+
+  async function authenticateOidc(
+    request: Request,
+    tokens: Tokens,
+    options: {
+      successRedirect: string;
+      failureRedirect: string;
+    },
+  ) {
+    const authSession = await authSessionService.getSession(request);
+
+    let redirectUrl = options.failureRedirect;
+
+    try {
+      const { idToken, refreshToken } = tokens;
+
+      const marbleToken = await marblecoreApi.postToken(
+        {
+          authorization: `Bearer ${idToken}`,
+        },
+        { baseUrl: getServerEnv('MARBLE_API_URL_SERVER') },
+      );
+
+      authSession.set('authToken', marbleToken);
+
+      if (refreshToken) {
+        authSession.set('refreshToken', refreshToken);
+      }
+
+      redirectUrl = options.successRedirect;
+    } catch (error) {
+      authSession.flash('authError', { message: adaptAuthErrors(error) });
+      redirectUrl = options.failureRedirect;
+
+      if (!expectedErrors(error)) {
+        captureUnexpectedRemixError(error, 'auth.server@authenticate', request);
+      }
+    }
+
+    const session = await authSessionService.commitSession(authSession);
+
+    throw redirect(redirectUrl, {
+      headers: {
+        'Set-Cookie': session,
       },
     });
   }
@@ -407,7 +459,9 @@ export function makeAuthenticationServerService({
   }
 
   return {
+    makeOidcService,
     authenticate,
+    authenticateOidc,
     refresh,
     isAuthenticated,
     logout,

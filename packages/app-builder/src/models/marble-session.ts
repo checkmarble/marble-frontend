@@ -6,6 +6,7 @@ import { type AuthErrors } from './auth-errors';
 
 export type AuthData = {
   authToken: Token;
+  refreshToken: string;
 };
 export type AuthFlashData = {
   authError: { message: AuthErrors };

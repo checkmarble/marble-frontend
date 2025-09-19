@@ -23,7 +23,10 @@ export async function action({ request }: ActionFunctionArgs) {
 // 20 minutes seems like a good amount of time (assuming it's done in the background while the user is active)
 const REFRESH_TOKEN_INTERVAL = 1000 * 60 * 20; // 20 minutes
 
-export function useRefreshToken() {
+export function useRefreshToken(request: Request) {
+  // TODO: implement for OpenID Connect.
+  return;
+
   const refreshTokenMutation = useRefreshTokenMutation();
   const csrf = useAuthenticityToken();
   const visibilityState = useVisibilityChange();
