@@ -1078,7 +1078,7 @@ export type SetDataModelTableOptionsBodyDto = {
     /** List of field IDs in their display order */
     field_order: string[];
 };
-export type AnalyticsDto = {
+export type LegacyAnalyticsDto = {
     embedding_type: "global_dashboard" | "unknown_embedding_type";
     signed_embedding_url: string;
 };
@@ -1348,6 +1348,27 @@ export type AiSettingsDto = {
 export type UpsertAiSettingsDto = {
     kyc_enrichment_setting: KycEnrichmentSettingDto;
     case_review_setting: CaseReviewSettingDto;
+};
+export type TriggerFilterDto = {
+    field: string;
+    op: "=" | "!=" | ">" | ">=" | "<" | "<=" | "in";
+    values: (string | number | boolean)[];
+};
+export type DecisionOutcomesPerDayQueryDto = {
+    scenario_id: string;
+    scenario_versions: number[];
+} & {
+    start: string;
+    end: string;
+} & {
+    trigger: TriggerFilterDto[];
+};
+export type DecisionOutcomesPerDayResponseDto = {
+    date: string;
+    approve: number;
+    block_and_review: number;
+    decline: number;
+    review: number;
 };
 /**
  * Get an access token
@@ -3607,11 +3628,11 @@ export function setDataModelTableOptions(tableId: string, setDataModelTableOptio
 /**
  * List analytics associated with the current organization (present in the JWT)
  */
-export function listAnalytics(opts?: Oazapfts.RequestOpts) {
+export function legacyListAnalytics(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            analytics: AnalyticsDto[];
+            analytics: LegacyAnalyticsDto[];
         };
     } | {
         status: 401;
@@ -4813,5 +4834,30 @@ export function upsertAiSettings(upsertAiSettingsDto: UpsertAiSettingsDto, opts?
         ...opts,
         method: "PUT",
         body: upsertAiSettingsDto
+    })));
+}
+/**
+ * Get decision outcomes per day
+ */
+export function getDecisionOutcomesPerDay(decisionOutcomesPerDayQueryDto: DecisionOutcomesPerDayQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: DecisionOutcomesPerDayResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/analytics/query/decision_outcomes_per_day", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: decisionOutcomesPerDayQueryDto
     })));
 }

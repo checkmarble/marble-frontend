@@ -3,7 +3,7 @@
     tags:
       - Analytics
     summary: List analytics associated with the current organization (present in the JWT)
-    operationId: listAnalytics
+    operationId: legacyListAnalytics
     security:
       - bearerAuth: []
     responses:
@@ -19,7 +19,7 @@
                 analytics:
                   type: array
                   items:
-                    $ref: '#/components/schemas/AnalyticsDto'
+                    $ref: '#/components/schemas/LegacyAnalyticsDto'
       '401':
         $ref: 'components.yml#/responses/401'
       '403':
@@ -81,7 +81,7 @@
 
 components:
   schemas:
-    AnalyticsDto:
+    LegacyAnalyticsDto:
       type: object
       required:
         - embedding_type

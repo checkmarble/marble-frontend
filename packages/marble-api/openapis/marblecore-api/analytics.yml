@@ -1,0 +1,111 @@
+/analytics/query/decision_outcomes_per_day:
+  post:
+    tags:
+      - Analytics
+    summary: Get decision outcomes per day
+    operationId: getDecisionOutcomesPerDay
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DecisionOutcomesPerDayQueryDto'
+    responses:
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '200':
+        description: The decision outcomes per day
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DecisionOutcomesPerDayResponseDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+
+components:
+  schemas:
+    ScenarioFilterDto:
+      type: object
+      required:
+        - scenario_id
+        - scenario_versions
+      properties:
+        scenario_id:
+          type: string
+          format: uuid
+        scenario_versions:
+          type: array
+          items:
+            type: integer
+    DateRangeFilterDto:
+      type: object
+      required:
+        - start
+        - end
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+    TriggerFilterDto:
+      type: object
+      required:
+        - field
+        - op
+        - values
+      properties:
+        field:
+          type: string
+        op:
+          type: string
+          enum: ['=', '!=', '>', '>=', '<', '<=', 'in']
+        values:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: number
+              - type: boolean
+    DecisionOutcomesPerDayQueryDto:
+      allOf:
+        - $ref: '#/components/schemas/ScenarioFilterDto'
+        - $ref: '#/components/schemas/DateRangeFilterDto'
+        - type: object
+          required:
+            - trigger
+          properties:
+            trigger:
+              type: array
+              items:
+                $ref: '#/components/schemas/TriggerFilterDto'
+    DecisionOutcomesPerDayResponseDto:
+      type: object
+      required:
+        - date
+        - approve
+        - block_and_review
+        - decline
+        - review
+      properties:
+        date:
+          type: string
+          format: date-time
+        approve:
+          type: integer
+        block_and_review:
+          type: integer
+        decline:
+          type: integer
+        review:
+          type: integer
+
