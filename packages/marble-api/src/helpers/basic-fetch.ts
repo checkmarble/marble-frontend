@@ -33,6 +33,8 @@ export function createBasicFetch({ request }: BasicFetchParams) {
   return async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
 
+    headers.set('x-referer-app', 'marble-frontend');
+
     // forwarding trace headers
     forwardHeader(request.headers, headers, 'traceparent');
     forwardHeader(request.headers, headers, 'X-Cloud-Trace-Context');
