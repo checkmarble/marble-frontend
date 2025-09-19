@@ -118,7 +118,7 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
         },
       };
     }
-    case 'routes/_builder+/analytics': {
+    case 'routes/_builder+/_analytics+/analytics._layout': {
       return { name: 'Analytics', properties: undefined };
     }
     case 'routes/_builder+/data+/list': {

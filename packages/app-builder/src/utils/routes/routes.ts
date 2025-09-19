@@ -40,9 +40,26 @@ export const routes = [
         "file": "routes/_builder+/_layout.tsx",
         "children": [
           {
-            "id": "routes/_builder+/analytics",
+            "id": "routes/_builder+/_analytics+/analytics._layout",
             "path": "analytics",
-            "file": "routes/_builder+/analytics.tsx"
+            "file": "routes/_builder+/_analytics+/analytics._layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/_analytics+/analytics.$scenarioId",
+                "path": ":scenarioId",
+                "file": "routes/_builder+/_analytics+/analytics.$scenarioId.tsx"
+              },
+              {
+                "id": "routes/_builder+/_analytics+/analytics._index",
+                "index": true,
+                "file": "routes/_builder+/_analytics+/analytics._index.tsx"
+              }
+            ]
+          },
+          {
+            "id": "routes/_builder+/analytics-legacy",
+            "path": "analytics-legacy",
+            "file": "routes/_builder+/analytics-legacy.tsx"
           },
           {
             "id": "routes/_builder+/api",
@@ -352,6 +369,11 @@ export const routes = [
         "id": "routes/healthcheck",
         "path": "healthcheck",
         "file": "routes/healthcheck.ts"
+      },
+      {
+        "id": "routes/ressources+/analytics+/query.$queryName",
+        "path": "ressources/analytics/query/:queryName",
+        "file": "routes/ressources+/analytics+/query.$queryName.ts"
       },
       {
         "id": "routes/ressources+/annotations+/download-file.$annotationId.$fileId",
