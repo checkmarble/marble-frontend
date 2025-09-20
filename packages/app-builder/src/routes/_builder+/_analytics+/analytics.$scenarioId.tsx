@@ -9,7 +9,7 @@ import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/ut
 import { getRoute } from '@app-builder/utils/routes';
 import { ResponsiveBar } from '@nivo/bar';
 import { type LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData, useRouteError } from '@remix-run/react';
+import { useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { differenceInCalendarDays, format, startOfMonth, startOfWeek } from 'date-fns';
 import { type Namespace } from 'i18next';
@@ -45,7 +45,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { analytics, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  const scenarioId = params['scenarioId'];
+  const scenarioId = params['scenarioId']!;
 
   const scenarios = await scenario.listScenarios();
 
@@ -53,7 +53,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const end = new Date('2025-09-19');
 
   const decisionsOutcomesPerDay = await analytics.getDecisionOutcomesPerDay({
-    scenarioId: '4cc2e4f6-87d5-4782-9f8c-bc1a5ee26a66',
+    scenarioId,
     start,
     end,
     trigger: [],
@@ -71,6 +71,7 @@ export default function Analytics() {
   const { decisionsOutcomesPerDay, start, end, scenarioId, scenarios } =
     useLoaderData<typeof loader>();
   const language = useFormatLanguage();
+  const navigate = useNavigate();
 
   // Decision filter default values
   const defaultDecisions: DecisionsFilter = new Map([
@@ -191,7 +192,14 @@ export default function Analytics() {
     <>
       <div className="flex flex-row gap-4">
         <div className="flex flex-row gap-2 items-center">
-          <Filters scenarios={scenarios} selectedScenarioId={scenarioId ?? null} />
+          <Filters
+            scenarios={scenarios}
+            selectedScenarioId={scenarioId}
+            onSelectedScenarioIdChange={(scenarioId) => {
+              console.log('scenarioId changed to ', scenarioId);
+              navigate(getRoute('/analytics/:scenarioId', { scenarioId }));
+            }}
+          />
 
           <FilterPopover.Root key={'dateRange1'} onOpenChange={() => console.log('onOpenChange')}>
             <FilterItem.Root>
@@ -344,6 +352,13 @@ export function ErrorBoundary() {
   return <ErrorComponent error={error} />;
 }
 
-export function shouldRevalidate() {
-  return false;
+export function shouldRevalidate({
+  currentParams,
+  nextParams,
+}: {
+  currentParams: any;
+  nextParams: any;
+}) {
+  // Revalidate when scenarioId changes
+  return currentParams.scenarioId !== nextParams.scenarioId;
 }

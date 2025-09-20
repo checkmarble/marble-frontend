@@ -1,23 +1,17 @@
 import { type Scenario } from '@app-builder/models/scenario';
-import { useEffect, useState } from 'react';
 import { Button, MenuCommand } from 'ui-design-system';
 
 export function Filters({
-  selectedScenarioId: initialSelectedScenarioId,
+  selectedScenarioId,
   scenarios,
+  onSelectedScenarioIdChange,
 }: {
-  selectedScenarioId: string | null;
+  selectedScenarioId: string;
   scenarios: Scenario[];
+  onSelectedScenarioIdChange: (scenarioId: string) => void;
 }) {
-  const [selectedScenarioId, setSelectedScenarioId] = useState<string | null>(
-    initialSelectedScenarioId,
-  );
-
-  useEffect(() => {
-    setSelectedScenarioId(initialSelectedScenarioId);
-  }, [initialSelectedScenarioId]);
-
   const selectedScenario = scenarios.find((scenario) => scenario.id === selectedScenarioId);
+  console.log('selectedScenarioId', selectedScenarioId);
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -28,11 +22,15 @@ export function Filters({
             <span className="text-xs">{selectedScenario?.name}</span>
           </Button>
         </MenuCommand.Trigger>
-        <MenuCommand.Content>
-          <MenuCommand.Combobox autoFocus onValueChange={setSelectedScenarioId} />
+        <MenuCommand.Content sameWidth sideOffset={4} align="start" className="min-w-24">
+          <MenuCommand.Combobox autoFocus />
           <MenuCommand.List className="p-1">
             {scenarios.map((scenario) => (
-              <MenuCommand.Item key={scenario.id} value={scenario.id}>
+              <MenuCommand.Item
+                key={scenario.id}
+                value={scenario.id}
+                onSelect={() => onSelectedScenarioIdChange(scenario.id)}
+              >
                 <span className="text-xs">{scenario.name}</span>
               </MenuCommand.Item>
             ))}
