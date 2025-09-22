@@ -16,6 +16,11 @@ import { useTranslation } from 'react-i18next';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import z from 'zod';
+
+export type DateRange = {
+  start: string;
+  end: string;
+};
 export type DecisionsPerOutcome = {
   date: string;
   approve: number;
@@ -66,10 +71,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const q = url.searchParams.get('q');
 
   const redirectWithQ = (payload: {
-    start: string;
-    end: string;
-    compareStart?: string;
-    compareEnd?: string;
+    range: { start: string; end: string };
+    compareRange?: { start: string; end: string } | null;
   }) => {
     const encoded = encodeBase64Url(JSON.stringify(payload));
     url.searchParams.set('q', encoded);
@@ -82,21 +85,28 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const qSchema = z
     .object({
-      start: z.iso.datetime(),
-      end: z.iso.datetime(),
-      compareStart: z.iso.datetime().optional(),
-      compareEnd: z.iso.datetime().optional(),
+      range: z.object({ start: z.iso.datetime(), end: z.iso.datetime() }),
+      compareRange: z
+        .object({ start: z.iso.datetime(), end: z.iso.datetime() })
+        .nullable()
+        .optional(),
     })
-    .refine((v) => {
-      // both or none for compare
-      const bothOrNone = (!!v.compareStart && !!v.compareEnd) || (!v.compareStart && !v.compareEnd);
-      if (!bothOrNone) return false;
-      // start <= end
-      return new Date(v.start).getTime() <= new Date(v.end).getTime();
-    }, 'Invalid date range payload');
+    .refine((v) => new Date(v.range.start).getTime() <= new Date(v.range.end).getTime(), {
+      message: 'Invalid date range payload',
+    })
+    .refine(
+      (v) => {
+        const cr = v.compareRange;
+        if (!cr) return true;
+        return new Date(cr.start).getTime() <= new Date(cr.end).getTime();
+      },
+      { message: 'Invalid compare range payload' },
+    );
 
-  let parsed: { start: string; end: string; compareStart?: string; compareEnd?: string } | null =
-    null;
+  let parsed: {
+    range: { start: string; end: string };
+    compareRange: { start: string; end: string } | null;
+  } | null = null;
 
   if (q) {
     try {
@@ -104,7 +114,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       const obj = JSON.parse(json);
       const safe = qSchema.safeParse(obj);
       if (safe.success) {
-        parsed = safe.data;
+        parsed = { range: safe.data.range, compareRange: safe.data.compareRange ?? null };
       }
     } catch {
       // fallthrough: parsed stays null
@@ -114,44 +124,32 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!parsed) {
     const now = new Date();
     const startDefault = subMonths(now, 1).toISOString();
-    return redirectWithQ({ start: startDefault, end: now.toISOString() });
-  }
-
-  const start = new Date(parsed.start);
-  const end = new Date(parsed.end);
-
-  const decisionsOutcomesPerDay = await analytics.getDecisionOutcomesPerDay({
-    scenarioId,
-    start,
-    end,
-    trigger: [],
-  });
-
-  let decisionsOutcomesPerDayCompare: typeof decisionsOutcomesPerDay | null = null;
-  if (parsed.compareStart && parsed.compareEnd) {
-    decisionsOutcomesPerDayCompare = await analytics.getDecisionOutcomesPerDay({
-      scenarioId,
-      start: new Date(parsed.compareStart),
-      end: new Date(parsed.compareEnd),
-      trigger: [],
+    return redirectWithQ({
+      range: { start: startDefault, end: now.toISOString() },
+      compareRange: null,
     });
   }
 
+  const decisionsOutcomesPerDay = await analytics.getDecisionOutcomesPerDay({
+    scenarioId,
+    dateRange: { start: parsed.range.start, end: parsed.range.end },
+    compareDateRange: parsed.compareRange
+      ? { start: parsed.compareRange.start, end: parsed.compareRange.end }
+      : undefined,
+    trigger: [],
+  });
+
   return Response.json({
-    start: parsed.start,
-    end: parsed.end,
-    compareStart: parsed.compareStart,
-    compareEnd: parsed.compareEnd,
+    range: parsed.range,
+    compareRange: parsed.compareRange,
     decisionsOutcomesPerDay,
-    decisionsOutcomesPerDayCompare,
     scenarioId,
     scenarios,
   });
 }
 
 export default function Analytics() {
-  const { decisionsOutcomesPerDay, start, end, scenarioId, scenarios } =
-    useLoaderData<typeof loader>();
+  const { decisionsOutcomesPerDay, range, scenarioId, scenarios } = useLoaderData<typeof loader>();
   // const language = useFormatLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -258,12 +256,12 @@ export default function Analytics() {
 
   // Return the first and last day of the period and numberOfValues days in between reparted in the period
   const getGridXValues = (numberOfValues: number): string[] => {
-    if (!start || !end) return [];
-    const days = differenceInCalendarDays(new Date(end), new Date(start));
+    if (!range?.start || !range?.end) return [];
+    const days = differenceInCalendarDays(new Date(range.end), new Date(range.start));
     const daysInBetween = days / numberOfValues;
     const gridXValues: string[] = [];
-    const currentDate = new Date(start);
-    const endDate = new Date(end);
+    const currentDate = new Date(range.start);
+    const endDate = new Date(range.end);
     while (currentDate <= endDate) {
       gridXValues.push(currentDate.toISOString());
       currentDate.setDate(currentDate.getDate() + daysInBetween);
@@ -285,22 +283,6 @@ export default function Analytics() {
               navigate(qs ? `${path}?${qs}` : path);
             }}
           />
-
-          {/* <DateRangeFilter.Root
-            dateRangeFilter={{
-              type: 'static',
-              lDate: start,
-              endDate: end,
-            }}
-            setDateRangeFilter={() => console.log('setDateRangeFilter')}
-            className="grid"
-          >
-            <DateRangeFilter.FromNowPicker title={t('cases:filters.date_range.title')} />
-            <Separator className="bg-grey-90" decorative orientation="vertical" />
-            <DateRangeFilter.Calendar />
-            <Separator className="bg-grey-90 col-span-3" decorative orientation="horizontal" />
-            <DateRangeFilter.Summary className="col-span-3 row-span-1" />
-          </DateRangeFilter.Root> */}
         </div>
       </div>
       <div className="flex w-3xl h-96 p-4 flex-col items-start gap-2">

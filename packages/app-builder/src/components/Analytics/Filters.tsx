@@ -19,7 +19,7 @@ export function Filters({
   const { t } = useTranslation(['decisions', 'common']);
   const language = useFormatLanguage();
   const selectedScenario = scenarios.find((scenario) => scenario.id === selectedScenarioId);
-  const { start, end, setDateRangeFilter } = useDateRangeSearchParams();
+  const { range, compareRange, setDateRangeFilter, setCompareRange } = useDateRangeSearchParams();
 
   return (
     <div className="flex flex-row gap-2 p-2">
@@ -52,12 +52,12 @@ export function Filters({
             <Icon icon="calendar-month" className="size-5" />
             <span className="text-s font-semibold first-letter:capitalize">
               Period from{' '}
-              {formatDateTimeWithoutPresets(start, {
+              {formatDateTimeWithoutPresets(range.start, {
                 language,
                 dateStyle: 'short',
               })}{' '}
               to{' '}
-              {formatDateTimeWithoutPresets(end, {
+              {formatDateTimeWithoutPresets(range.end, {
                 language,
                 dateStyle: 'short',
               })}
@@ -67,8 +67,51 @@ export function Filters({
         </FilterItem.Root>
         <FilterPopover.Content>
           <DateRangeFilter.Root
-            dateRangeFilter={{ type: 'static', startDate: start, endDate: end }}
+            dateRangeFilter={{ type: 'static', startDate: range.start, endDate: range.end }}
             setDateRangeFilter={setDateRangeFilter}
+            className="grid"
+          >
+            <DateRangeFilter.FromNowPicker title={t('decisions:filters.date_range.title')} />
+            <Separator className="bg-grey-90" decorative orientation="vertical" />
+            <DateRangeFilter.Calendar />
+            <Separator className="bg-grey-90 col-span-3" decorative orientation="horizontal" />
+            <DateRangeFilter.Summary className="col-span-3 row-span-1" />
+          </DateRangeFilter.Root>
+        </FilterPopover.Content>
+      </FilterPopover.Root>
+      <FilterPopover.Root key={'dateRangeCompare'}>
+        <FilterItem.Root>
+          <FilterItem.Trigger>
+            <Icon icon="calendar-month" className="size-5" />
+            {compareRange ? (
+              <span className="text-s font-semibold first-letter:capitalize">
+                Period from{' '}
+                {formatDateTimeWithoutPresets(compareRange.start, {
+                  language,
+                  dateStyle: 'short',
+                })}{' '}
+                to{' '}
+                {formatDateTimeWithoutPresets(compareRange.end, {
+                  language,
+                  dateStyle: 'short',
+                })}
+              </span>
+            ) : (
+              <span className="text-s font-semibold first-letter:capitalize">
+                Add compare period
+              </span>
+            )}
+          </FilterItem.Trigger>
+          <FilterItem.Clear onClick={() => setCompareRange(null)} />
+        </FilterItem.Root>
+        <FilterPopover.Content>
+          <DateRangeFilter.Root
+            dateRangeFilter={{
+              type: 'static',
+              startDate: compareRange?.start ?? '',
+              endDate: compareRange?.end ?? '',
+            }}
+            setDateRangeFilter={setCompareRange}
             className="grid"
           >
             <DateRangeFilter.FromNowPicker title={t('decisions:filters.date_range.title')} />

@@ -1,9 +1,14 @@
 import { DecisionOutcomesPerDayQueryDto, type DecisionOutcomesPerDayResponseDto } from 'marble-api';
 import z from 'zod';
 
+export interface DecisionOutcomesPerDayEntity extends DecisionOutcomesPerDayResponseDto {
+  rangeId: 'base' | 'compare';
+}
+
 export const decisionOutcomesPerDay = z.object({
   absolute: z.array(
     z.object({
+      rangeId: z.enum(['base', 'compare']),
       date: z.iso.datetime(),
       approve: z.number(),
       blockAndReview: z.number(),
@@ -14,6 +19,7 @@ export const decisionOutcomesPerDay = z.object({
   ),
   ratio: z.array(
     z.object({
+      rangeId: z.enum(['base', 'compare']),
       date: z.iso.datetime(),
       approve: z.number(),
       blockAndReview: z.number(),
@@ -30,15 +36,24 @@ export const triggerFilter = z.object({
 });
 
 export const decisionOutcomesPerDayQuery = z.object({
-  start: z.date(),
-  end: z.date(),
+  dateRange: z.object({
+    start: z.iso.datetime(),
+    end: z.iso.datetime(),
+  }),
+  compareDateRange: z
+    .object({
+      start: z.iso.datetime(),
+      end: z.iso.datetime(),
+    })
+    .optional(),
   scenarioId: z.uuidv4(),
   scenarioVersion: z.number().optional(),
   trigger: z.array(triggerFilter),
 });
 
-export type DecisionOutcomesPerDay = z.infer<typeof decisionOutcomesPerDay>;
+export type Entity = z.infer<typeof decisionOutcomesPerDay>;
 export type DecisionOutcomesPerDayQuery = z.infer<typeof decisionOutcomesPerDayQuery>;
+export type DecisionOutcomesPerDay = z.infer<typeof decisionOutcomesPerDay>;
 
 function toUtcDayKey(date: Date): string {
   const y = date.getUTCFullYear();
@@ -53,7 +68,7 @@ function startOfUtcDay(date: Date): Date {
 }
 
 export function findMissingDays(
-  data: DecisionOutcomesPerDayResponseDto[],
+  data: DecisionOutcomesPerDayEntity[],
   start: Date,
   end: Date,
 ): string[] {
@@ -70,16 +85,33 @@ export function findMissingDays(
   return missing;
 }
 
+export const mergeDateRanges = (
+  dateRanges: DecisionOutcomesPerDayResponseDto[][],
+): DecisionOutcomesPerDayEntity[] =>
+  dateRanges
+    .flatMap((range, index) =>
+      range.map(
+        (item): DecisionOutcomesPerDayEntity => ({
+          ...item,
+          rangeId: index === 0 ? 'base' : 'compare',
+        }),
+      ),
+    )
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
 // Fill the days without data with zero values between [start, end]
-export function fillMissingDays(
-  data: DecisionOutcomesPerDayResponseDto[],
-  start: Date,
-  end: Date,
-): DecisionOutcomesPerDayResponseDto[] {
-  const missing = findMissingDays(data, start, end);
+export const fillMissingDays = (
+  data: DecisionOutcomesPerDayEntity[],
+  start: string,
+  end: string,
+): DecisionOutcomesPerDayEntity[] => {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const missing = findMissingDays(data, startDate, endDate);
   const filled = [
     ...data,
     ...missing.map((key) => ({
+      rangeId: 'base',
       date: `${key}T00:00:00.000Z`,
       approve: 0,
       block_and_review: 0,
@@ -89,23 +121,37 @@ export function fillMissingDays(
   ];
   filled.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   return filled;
-}
+};
 
 export const transformDecisionOutcomesPerDayQuery = decisionOutcomesPerDayQuery.transform(
-  (val): DecisionOutcomesPerDayQueryDto => {
-    return {
-      start: val.start.toISOString(),
-      end: val.end.toISOString(),
-      scenario_id: val.scenarioId,
-      scenario_versions: val.scenarioVersion ? [val.scenarioVersion] : [],
-      trigger: val.trigger,
-    };
+  (val): DecisionOutcomesPerDayQueryDto[] => {
+    return [
+      {
+        start: val.dateRange.start,
+        end: val.dateRange.end,
+        scenario_id: val.scenarioId,
+        scenario_versions: val.scenarioVersion ? [val.scenarioVersion] : [],
+        trigger: val.trigger,
+      },
+      ...(val.compareDateRange
+        ? [
+            {
+              start: val.compareDateRange.start,
+              end: val.compareDateRange.end,
+              scenario_id: val.scenarioId,
+              scenario_versions: val.scenarioVersion ? [val.scenarioVersion] : [],
+              trigger: val.trigger,
+            },
+          ]
+        : []),
+    ];
   },
 );
 
 export const adaptDecisionOutcomesPerDay = z.array(z.any()).transform(
-  (val: DecisionOutcomesPerDayResponseDto[]): DecisionOutcomesPerDay => ({
+  (val: DecisionOutcomesPerDayEntity[]): DecisionOutcomesPerDay => ({
     absolute: val.map((v) => ({
+      rangeId: v.rangeId,
       date: v.date,
       approve: v.approve,
       blockAndReview: v.block_and_review,
@@ -116,6 +162,7 @@ export const adaptDecisionOutcomesPerDay = z.array(z.any()).transform(
     ratio: val.map((v) => {
       const total = v.approve + v.block_and_review + v.decline + v.review;
       return {
+        rangeId: v.rangeId,
         date: v.date,
         approve: total ? (100 * v.approve) / total : 0,
         blockAndReview: total ? (100 * v.block_and_review) / total : 0,

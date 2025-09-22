@@ -27,35 +27,31 @@ export function useDateRangeSearchParams() {
     return atob(padded);
   };
 
-  const { start, end, compareStart, compareEnd } = useMemo(() => {
+  const { range, compareRange } = useMemo(() => {
     const q = searchParams.get('q');
     if (q) {
       try {
-        const parsed = JSON.parse(decodeBase64Url(q)) as {
-          start?: string;
-          end?: string;
-          compareStart?: string;
-          compareEnd?: string;
+        const obj = JSON.parse(decodeBase64Url(q)) as {
+          range?: { start?: string; end?: string } | null;
+          compareRange?: { start?: string; end?: string } | null;
         };
-        if (parsed.start && parsed.end) {
+        // New shape
+        if ('range' in obj && obj.range?.start && obj.range?.end) {
           return {
-            start: parsed.start,
-            end: parsed.end,
-            compareStart: parsed.compareStart,
-            compareEnd: parsed.compareEnd,
-          };
+            range: { start: obj.range.start, end: obj.range.end },
+            compareRange:
+              obj.compareRange?.start && obj.compareRange?.end
+                ? { start: obj.compareRange.start, end: obj.compareRange.end }
+                : null,
+          } as const;
         }
+        // otherwise fallthrough to defaults below
       } catch {
         // ignore malformed q
       }
     }
     const defaults = getDefaultRange();
-    return {
-      start: defaults.start,
-      end: defaults.end,
-      compareStart: undefined,
-      compareEnd: undefined,
-    };
+    return { range: { start: defaults.start, end: defaults.end }, compareRange: null } as const;
   }, [searchParams]);
 
   const setDateRangeFilter = useCallback(
@@ -64,41 +60,56 @@ export function useDateRangeSearchParams() {
         (prev) => {
           const params = new URLSearchParams(prev);
           const writeQ = (payload: {
-            start: string;
-            end: string;
-            compareStart?: string;
-            compareEnd?: string;
+            range: { start: string; end: string };
+            compareRange?: { start: string; end: string } | null;
           }) => {
             params.set('q', encodeBase64Url(JSON.stringify(payload)));
-            params.delete('start');
-            params.delete('end');
-            params.delete('compareStart');
-            params.delete('compareEnd');
           };
 
           if (!dateRange) {
             const d = getDefaultRange();
-            writeQ({ start: d.start, end: d.end });
+            // Clear to defaults; preserve existing compareRange if any
+            const qv = params.get('q');
+            let existingCompare: { start: string; end: string } | null = null;
+            if (qv) {
+              try {
+                const parsed = JSON.parse(decodeBase64Url(qv)) as {
+                  compareRange?: { start?: string; end?: string } | null;
+                };
+                if (parsed.compareRange?.start && parsed.compareRange?.end) {
+                  existingCompare = {
+                    start: parsed.compareRange.start,
+                    end: parsed.compareRange.end,
+                  };
+                }
+              } catch {
+                // ignore
+              }
+            }
+            writeQ({ range: { start: d.start, end: d.end }, compareRange: existingCompare });
             return params;
           }
 
           if (dateRange.type === 'static') {
-            const current = { start: dateRange.startDate, end: dateRange.endDate };
-            // retain existing compare if any
+            const current = { start: dateRange.startDate, end: dateRange.endDate } as const;
+            // retain existing compareRange if any
             const qv = params.get('q');
             if (qv) {
               try {
                 const parsed = JSON.parse(decodeBase64Url(qv)) as {
-                  compareStart?: string;
-                  compareEnd?: string;
+                  compareRange?: { start?: string; end?: string } | null;
                 };
-                writeQ({ ...current, ...parsed });
+                const compare =
+                  parsed.compareRange?.start && parsed.compareRange?.end
+                    ? { start: parsed.compareRange.start, end: parsed.compareRange.end }
+                    : null;
+                writeQ({ range: current, compareRange: compare });
                 return params;
               } catch {
                 // ignore malformed q
               }
             }
-            writeQ(current);
+            writeQ({ range: current });
             return params;
           }
 
@@ -121,10 +132,31 @@ export function useDateRangeSearchParams() {
                 computedStart = new Date(now.getTime() - ms);
               }
             }
-            writeQ({ start: computedStart.toISOString(), end: now.toISOString() });
+            // preserve existing compareRange if any
+            const qv = params.get('q');
+            let existingCompare: { start: string; end: string } | null = null;
+            if (qv) {
+              try {
+                const parsed = JSON.parse(decodeBase64Url(qv)) as {
+                  compareRange?: { start?: string; end?: string } | null;
+                };
+                if (parsed.compareRange?.start && parsed.compareRange?.end) {
+                  existingCompare = {
+                    start: parsed.compareRange.start,
+                    end: parsed.compareRange.end,
+                  };
+                }
+              } catch {
+                // ignore
+              }
+            }
+            writeQ({
+              range: { start: computedStart.toISOString(), end: now.toISOString() },
+              compareRange: existingCompare,
+            });
           } catch {
             const d = getDefaultRange();
-            writeQ({ start: d.start, end: d.end });
+            writeQ({ range: { start: d.start, end: d.end } });
           }
           return params;
         },
@@ -135,7 +167,7 @@ export function useDateRangeSearchParams() {
   );
 
   const setCompareRange = useCallback(
-    (range: { startDate: string; endDate: string } | null | undefined) => {
+    (dateRange: DateRangeFilterParam) => {
       setSearchParams(
         (prev) => {
           const params = new URLSearchParams(prev);
@@ -143,8 +175,12 @@ export function useDateRangeSearchParams() {
           const base = (() => {
             if (qv) {
               try {
-                const parsed = JSON.parse(decodeBase64Url(qv)) as { start?: string; end?: string };
-                if (parsed.start && parsed.end) return parsed;
+                const parsed = JSON.parse(decodeBase64Url(qv)) as {
+                  range?: { start?: string; end?: string } | null;
+                };
+                if (parsed.range?.start && parsed.range?.end) {
+                  return { start: parsed.range.start, end: parsed.range.end } as const;
+                }
               } catch {
                 // ignore malformed q
               }
@@ -153,11 +189,43 @@ export function useDateRangeSearchParams() {
             return { start: defaults.start, end: defaults.end };
           })();
 
-          const payload = range
-            ? { ...base, compareStart: range.startDate, compareEnd: range.endDate }
-            : { ...base, compareStart: undefined, compareEnd: undefined };
+          let compare: { start: string; end: string } | null = null;
+          if (!dateRange) {
+            compare = null;
+          } else if (dateRange.type === 'static') {
+            compare = { start: dateRange.startDate, end: dateRange.endDate };
+          } else if (dateRange.type === 'dynamic') {
+            try {
+              const now = new Date();
+              const fallback = subMonths(now, 1);
+              let computedStart = fallback;
+              if (dateRange.fromNow.includes('M')) {
+                const match = dateRange.fromNow.match(/-P(\d+)M|P-?(\d+)M/i);
+                const months = match ? Number(match[1] ?? match[2]) : undefined;
+                if (months && months > 0) {
+                  computedStart = subMonths(now, months);
+                }
+              } else if (dateRange.fromNow.includes('D')) {
+                const match = dateRange.fromNow.match(/-P(\d+)D|P-?(\d+)D/i);
+                const days = match ? Number(match[1] ?? match[2]) : undefined;
+                if (days && days > 0) {
+                  const ms = 24 * 60 * 60 * 1000 * days;
+                  computedStart = new Date(now.getTime() - ms);
+                }
+              }
+              compare = { start: computedStart.toISOString(), end: now.toISOString() };
+            } catch {
+              compare = null;
+            }
+          }
+
+          const payload = {
+            range: { start: base.start, end: base.end },
+            compareRange: compare,
+          } as const;
 
           params.set('q', encodeBase64Url(JSON.stringify(payload)));
+          // cleanup legacy flat params if present
           params.delete('compareStart');
           params.delete('compareEnd');
           params.delete('start');
@@ -171,10 +239,8 @@ export function useDateRangeSearchParams() {
   );
 
   return {
-    start,
-    end,
-    compareStart,
-    compareEnd,
+    range,
+    compareRange,
     setDateRangeFilter,
     setCompareRange,
   } as const;
