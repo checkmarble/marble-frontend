@@ -221,6 +221,8 @@ paths:
     $ref: ./marblecore-api/scenario-iteration-rules.yml#/~1scenario-iteration-rules
   /scenario-iteration-rules/{ruleId}:
     $ref: ./marblecore-api/scenario-iteration-rules.yml#/~1scenario-iteration-rules~1{ruleId}
+  /scenario-iteration-rules/{ruleId}/ai-description:
+    $ref: ./marblecore-api/scenario-iteration-rules.yml#/~1scenario-iteration-rules~1{ruleId}~1ai-description
 
   # SCENARIO PUBLICATIONS
 
