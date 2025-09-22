@@ -2,21 +2,20 @@ import { ErrorComponent } from '@app-builder/components';
 import { Filters } from '@app-builder/components/Analytics/Filters';
 import { OutcomeFilter } from '@app-builder/components/Analytics/OutcomeFilter';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
-import { FilterItem, FilterPopover } from '@app-builder/components/Filters';
 import { type DecisionsFilter, Outcome, outcomeColors } from '@app-builder/models/analytics';
 import { initServerServices } from '@app-builder/services/init.server';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { ResponsiveBar } from '@nivo/bar';
-import { type LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
+import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { useLoaderData, useNavigate, useRouteError, useSearchParams } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { differenceInCalendarDays, format, startOfMonth, startOfWeek } from 'date-fns';
+import { differenceInCalendarDays, format, startOfMonth, startOfWeek, subMonths } from 'date-fns';
 import { type Namespace } from 'i18next';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, ButtonV2 } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import z from 'zod';
 export type DecisionsPerOutcome = {
   date: string;
   approve: number;
@@ -48,9 +47,78 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = params['scenarioId']!;
 
   const scenarios = await scenario.listScenarios();
+  const url = new URL(request.url);
 
-  const start = new Date('2025-09-01');
-  const end = new Date('2025-09-19');
+  const encodeBase64Url = (value: string) =>
+    Buffer.from(value, 'utf-8')
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/g, '');
+
+  const decodeBase64Url = (value: string) => {
+    const withPadding = value.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = withPadding.length % 4 ? 4 - (withPadding.length % 4) : 0;
+    const padded = withPadding + '='.repeat(pad);
+    return Buffer.from(padded, 'base64').toString('utf-8');
+  };
+
+  const q = url.searchParams.get('q');
+
+  const redirectWithQ = (payload: {
+    start: string;
+    end: string;
+    compareStart?: string;
+    compareEnd?: string;
+  }) => {
+    const encoded = encodeBase64Url(JSON.stringify(payload));
+    url.searchParams.set('q', encoded);
+    url.searchParams.delete('start');
+    url.searchParams.delete('end');
+    url.searchParams.delete('compareStart');
+    url.searchParams.delete('compareEnd');
+    return redirect(url.toString());
+  };
+
+  const qSchema = z
+    .object({
+      start: z.iso.datetime(),
+      end: z.iso.datetime(),
+      compareStart: z.iso.datetime().optional(),
+      compareEnd: z.iso.datetime().optional(),
+    })
+    .refine((v) => {
+      // both or none for compare
+      const bothOrNone = (!!v.compareStart && !!v.compareEnd) || (!v.compareStart && !v.compareEnd);
+      if (!bothOrNone) return false;
+      // start <= end
+      return new Date(v.start).getTime() <= new Date(v.end).getTime();
+    }, 'Invalid date range payload');
+
+  let parsed: { start: string; end: string; compareStart?: string; compareEnd?: string } | null =
+    null;
+
+  if (q) {
+    try {
+      const json = decodeBase64Url(q);
+      const obj = JSON.parse(json);
+      const safe = qSchema.safeParse(obj);
+      if (safe.success) {
+        parsed = safe.data;
+      }
+    } catch {
+      // fallthrough: parsed stays null
+    }
+  }
+
+  if (!parsed) {
+    const now = new Date();
+    const startDefault = subMonths(now, 1).toISOString();
+    return redirectWithQ({ start: startDefault, end: now.toISOString() });
+  }
+
+  const start = new Date(parsed.start);
+  const end = new Date(parsed.end);
 
   const decisionsOutcomesPerDay = await analytics.getDecisionOutcomesPerDay({
     scenarioId,
@@ -58,10 +126,24 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     end,
     trigger: [],
   });
+
+  let decisionsOutcomesPerDayCompare: typeof decisionsOutcomesPerDay | null = null;
+  if (parsed.compareStart && parsed.compareEnd) {
+    decisionsOutcomesPerDayCompare = await analytics.getDecisionOutcomesPerDay({
+      scenarioId,
+      start: new Date(parsed.compareStart),
+      end: new Date(parsed.compareEnd),
+      trigger: [],
+    });
+  }
+
   return Response.json({
-    start,
-    end,
+    start: parsed.start,
+    end: parsed.end,
+    compareStart: parsed.compareStart,
+    compareEnd: parsed.compareEnd,
     decisionsOutcomesPerDay,
+    decisionsOutcomesPerDayCompare,
     scenarioId,
     scenarios,
   });
@@ -70,8 +152,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function Analytics() {
   const { decisionsOutcomesPerDay, start, end, scenarioId, scenarios } =
     useLoaderData<typeof loader>();
-  const language = useFormatLanguage();
+  // const language = useFormatLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   // Decision filter default values
   const defaultDecisions: DecisionsFilter = new Map([
@@ -176,7 +259,7 @@ export default function Analytics() {
   // Return the first and last day of the period and numberOfValues days in between reparted in the period
   const getGridXValues = (numberOfValues: number): string[] => {
     if (!start || !end) return [];
-    const days = differenceInCalendarDays(end, start);
+    const days = differenceInCalendarDays(new Date(end), new Date(start));
     const daysInBetween = days / numberOfValues;
     const gridXValues: string[] = [];
     const currentDate = new Date(start);
@@ -197,41 +280,16 @@ export default function Analytics() {
             selectedScenarioId={scenarioId}
             onSelectedScenarioIdChange={(scenarioId) => {
               console.log('scenarioId changed to ', scenarioId);
-              navigate(getRoute('/analytics/:scenarioId', { scenarioId }));
+              const qs = searchParams.toString();
+              const path = getRoute('/analytics/:scenarioId', { scenarioId });
+              navigate(qs ? `${path}?${qs}` : path);
             }}
           />
 
-          <FilterPopover.Root key={'dateRange1'} onOpenChange={() => console.log('onOpenChange')}>
-            <FilterItem.Root>
-              <FilterItem.Trigger>
-                <Icon icon="calendar-month" className="size-5" />
-                <span className="text-s font-semibold first-letter:capitalize">
-                  Period from{' '}
-                  {formatDateTimeWithoutPresets(start, {
-                    language,
-                    dateStyle: 'short',
-                  })}{' '}
-                  to{' '}
-                  {formatDateTimeWithoutPresets(end, {
-                    language,
-                    dateStyle: 'short',
-                  })}
-                </span>
-              </FilterItem.Trigger>
-              <FilterItem.Clear
-                onClick={() => {
-                  console.log('clear');
-                }}
-              />
-            </FilterItem.Root>
-            <FilterPopover.Content>
-              {/* <FilterDetail filterName={filterName} />   */}
-            </FilterPopover.Content>
-          </FilterPopover.Root>
           {/* <DateRangeFilter.Root
             dateRangeFilter={{
               type: 'static',
-              startDate: start,
+              lDate: start,
               endDate: end,
             }}
             setDateRangeFilter={() => console.log('setDateRangeFilter')}
@@ -249,9 +307,8 @@ export default function Analytics() {
         <div className="flex items-center gap-2">
           <span className="text-s">Count:</span>
           <div className="flex gap-1">
-            <Button
-              variant={percentage ? 'outline' : 'secondary'}
-              size="default"
+            <ButtonV2
+              variant="secondary"
               onClick={() => {
                 setPercentage(true);
                 setDecisions(
@@ -266,15 +323,14 @@ export default function Analytics() {
               className={percentage ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
             >
               %
-            </Button>
-            <Button
-              variant={!percentage ? 'outline' : 'secondary'}
-              size="default"
+            </ButtonV2>
+            <ButtonV2
+              variant="secondary"
               onClick={() => setPercentage(false)}
               className={!percentage ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
             >
               #
-            </Button>
+            </ButtonV2>
           </div>
         </div>
         <div className="relative flex-1 w-full">
@@ -355,10 +411,16 @@ export function ErrorBoundary() {
 export function shouldRevalidate({
   currentParams,
   nextParams,
+  currentUrl,
+  nextUrl,
 }: {
   currentParams: any;
   nextParams: any;
+  currentUrl: URL;
+  nextUrl: URL;
 }) {
-  // Revalidate when scenarioId changes
-  return currentParams.scenarioId !== nextParams.scenarioId;
+  // Revalidate when scenarioId or date range search params change
+  if (currentParams.scenarioId !== nextParams.scenarioId) return true;
+  const keys = ['q'] as const;
+  return keys.some((k) => currentUrl.searchParams.get(k) !== nextUrl.searchParams.get(k));
 }

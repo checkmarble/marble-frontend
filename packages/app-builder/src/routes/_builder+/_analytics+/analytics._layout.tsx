@@ -85,6 +85,13 @@ export function ErrorBoundary() {
   return <ErrorComponent error={error} />;
 }
 
-export function shouldRevalidate() {
-  return false;
+export function shouldRevalidate({
+  currentParams,
+  nextParams,
+}: {
+  currentParams: any;
+  nextParams: any;
+}) {
+  // Revalidate when scenarioId changes
+  return currentParams.scenarioId !== nextParams.scenarioId;
 }
