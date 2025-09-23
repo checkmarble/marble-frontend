@@ -1,4 +1,6 @@
 {
+  "access_by_id.button_label": "Accéder",
+  "access_by_id.placeholder": "Trouver une investigation par son id",
   "add_file": "Ajouter un fichier",
   "ai_review.proof.tab_title": "Onglet {{number}}",
   "ai_review.proof.title": "Preuve",

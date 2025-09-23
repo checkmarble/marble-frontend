@@ -7,6 +7,7 @@ import {
   CasesFiltersProvider,
   casesFiltersSchema,
 } from '@app-builder/components/Cases/Filters';
+import { InputWithButton } from '@app-builder/components/InputWithButton';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { type Case, type CaseStatus, caseStatuses } from '@app-builder/models/cases';
@@ -21,12 +22,12 @@ import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { omit } from 'remeda';
-import { Button, Input } from 'ui-design-system';
+import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
+import { z } from 'zod/v4';
 import { MY_INBOX_ID } from './_index';
 
 export const handle = {
@@ -117,38 +118,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 }
 
-const SearchByName = ({
-  initialValue,
-  onClear,
-  onChange,
-}: {
-  initialValue?: string;
-  onChange: (value?: string) => void;
-  onClear: () => void;
-}) => {
-  const { t } = useTranslation(['cases', 'common']);
-  const [value, setValue] = useState(initialValue);
-
-  return (
-    <div className="flex gap-1">
-      <Input
-        type="search"
-        aria-label={t('cases:search.placeholder')}
-        placeholder={t('cases:search.placeholder')}
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-          if (!e.target.value) onClear();
-        }}
-        startAdornment="search"
-      />
-      <Button onClick={() => onChange(value)} disabled={!value}>
-        {t('common:search')}
-      </Button>
-    </div>
-  );
-};
-
 export default function Cases() {
   const { t } = useTranslation(casesI18n);
   const {
@@ -229,15 +198,32 @@ export default function Cases() {
           <div className="flex flex-col gap-4">
             <CasesFiltersProvider submitCasesFilters={navigateCasesList} filterValues={filters}>
               <div className="flex justify-between">
-                <div className="flex gap-4">
-                  <SearchByName
+                <div className="flex gap-4 items-center">
+                  <InputWithButton
                     initialValue={filters.name}
+                    buttonLabel={t('common:search')}
+                    placeholder={t('cases:search.placeholder')}
+                    label={t('cases:search.placeholder')}
                     onClear={() => {
                       navigateCasesList({ ...filters, name: undefined });
                     }}
                     onChange={(value) => {
                       navigateCasesList({ ...filters, name: value });
                     }}
+                    validator={z.string().min(1)}
+                    icon="search"
+                  />
+                  {t('common:or')}
+                  <InputWithButton
+                    buttonLabel={t('cases:access_by_id.button_label')}
+                    placeholder={t('cases:access_by_id.placeholder')}
+                    label={t('cases:access_by_id.placeholder')}
+                    onChange={(value) => {
+                      navigate(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(value) }));
+                    }}
+                    validator={z.uuid()}
+                    icon="arrow-up-right"
+                    inputClassName="w-80"
                   />
                 </div>
                 <div className="flex gap-4">
