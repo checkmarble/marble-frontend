@@ -55,7 +55,7 @@
   "help_center.to_switch_tabs": "للتبديل بين التبويبات",
   "hide": "يخفي",
   "items_displayed_dates": "من <emph> {{start}} </emph> إلى <emph> {{end}} </emph>",
-  "items_displayed_ranks": "من <emph> {{start}} </emph> إلى <remphown> {{end}} </emph>",
+  "items_displayed_ranks": "من <emph> {{start}} </emph> إلى <emph> {{end}} </emph>",
   "items_displayed_same_date": "على <emph> {{date}} </emph> من <emph> {{start}} </emph> إلى <emph> {{end}} </emph>",
   "items_displayed_same_datetime": "على <emph> {{Date}} </emph> في <emph> {{time}} </emph>",
   "live": "يعيش",

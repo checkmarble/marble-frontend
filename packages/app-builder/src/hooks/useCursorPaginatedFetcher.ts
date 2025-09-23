@@ -10,6 +10,7 @@ import { useCursorPagination } from './useCursorPagination';
 type BaseUseCursorPaginatedFetcherOptions<D> = {
   resourceId: string | shortUUID.UUID;
   initialData: D;
+  itemsPerPage?: number;
   getQueryParams?: (cursor: string | null) => Record<string, unknown>;
   validateData?: (data: D) => boolean;
 };
@@ -24,6 +25,7 @@ type UseCursorPaginatedFetcherOptions<T, D> = BaseUseCursorPaginatedFetcherOptio
 export const useCursorPaginatedFetcher = <T, D = T>({
   resourceId,
   initialData,
+  itemsPerPage,
   getQueryParams,
   validateData,
   ...opts
