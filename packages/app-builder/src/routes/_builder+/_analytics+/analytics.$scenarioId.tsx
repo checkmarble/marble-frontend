@@ -2,10 +2,15 @@ import { ErrorComponent } from '@app-builder/components';
 import { Filters } from '@app-builder/components/Analytics/Filters';
 import { OutcomeFilter } from '@app-builder/components/Analytics/OutcomeFilter';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
-import { type DecisionsFilter, Outcome, outcomeColors } from '@app-builder/models/analytics';
+import {
+  type DecisionsFilter,
+  Outcome,
+  outcomeColors,
+  type RangeId,
+} from '@app-builder/models/analytics';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { ResponsiveBar } from '@nivo/bar';
+import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate, useRouteError, useSearchParams } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -269,6 +274,11 @@ export default function Analytics() {
     return gridXValues;
   };
 
+  const getBarColors = (d: ComputedDatum<{ rangeId: RangeId }>) => {
+    const id = String(d.id) as Outcome;
+    return outcomeColors[id] ?? '#9ca3af';
+  };
+
   return (
     <>
       <div className="flex flex-row gap-4">
@@ -329,7 +339,23 @@ export default function Analytics() {
             }
             padding={0.5}
             margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
-            colors={({ id }) => outcomeColors[id as Outcome] ?? '#9ca3af'}
+            colors={getBarColors}
+            defs={[
+              {
+                id: 'compareOpacity',
+                type: 'linearGradient',
+                colors: [
+                  { offset: 0, color: 'inherit', opacity: 0.5 },
+                  { offset: 100, color: 'inherit', opacity: 0.5 },
+                ],
+              },
+            ]}
+            fill={[
+              {
+                match: (n) => n.data.data.rangeId === 'compare',
+                id: 'compareOpacity',
+              },
+            ]}
             axisLeft={{ legend: 'outcome (indexBy)', legendOffset: -70 }}
             axisBottom={{
               truncateTickAt: 10,

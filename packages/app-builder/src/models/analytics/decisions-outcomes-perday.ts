@@ -1,14 +1,16 @@
 import { DecisionOutcomesPerDayQueryDto, type DecisionOutcomesPerDayResponseDto } from 'marble-api';
 import z from 'zod';
 
+export const rangeId = z.enum(['base', 'compare']);
+export type RangeId = z.infer<typeof rangeId>;
 export interface DecisionOutcomesPerDayEntity extends DecisionOutcomesPerDayResponseDto {
-  rangeId: 'base' | 'compare';
+  rangeId: RangeId;
 }
 
 export const decisionOutcomesPerDay = z.object({
   absolute: z.array(
     z.object({
-      rangeId: z.enum(['base', 'compare']),
+      rangeId: rangeId,
       date: z.iso.datetime(),
       approve: z.number(),
       blockAndReview: z.number(),
@@ -19,7 +21,7 @@ export const decisionOutcomesPerDay = z.object({
   ),
   ratio: z.array(
     z.object({
-      rangeId: z.enum(['base', 'compare']),
+      rangeId: rangeId,
       date: z.iso.datetime(),
       approve: z.number(),
       blockAndReview: z.number(),
@@ -93,7 +95,7 @@ export const mergeDateRanges = (
       range.map(
         (item): DecisionOutcomesPerDayEntity => ({
           ...item,
-          rangeId: index === 0 ? 'base' : 'compare',
+          rangeId: (index === 0 ? 'base' : 'compare') as RangeId,
         }),
       ),
     )
@@ -111,7 +113,7 @@ export const fillMissingDays = (
   const filled = [
     ...data,
     ...missing.map((key) => ({
-      rangeId: 'base',
+      rangeId: 'base' as RangeId,
       date: `${key}T00:00:00.000Z`,
       approve: 0,
       block_and_review: 0,
