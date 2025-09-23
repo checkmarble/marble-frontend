@@ -1,6 +1,6 @@
 import { type DecisionsFilter, type RangeId } from '@app-builder/models/analytics';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
-import { differenceInCalendarDays, format, startOfMonth, startOfWeek } from 'date-fns';
+import { format, startOfMonth, startOfWeek } from 'date-fns';
 import { useMemo, useState } from 'react';
 import { ButtonV2 } from 'ui-design-system';
 
@@ -23,17 +23,11 @@ interface DecisionsProps {
     ratio: DecisionsPerOutcome[];
     absolute: DecisionsPerOutcome[];
   };
-  range: DateRange;
   decisions: DecisionsFilter;
   setDecisions: (decisions: DecisionsFilter) => void;
 }
 
-export function Decisions({
-  decisionsOutcomesPerDay,
-  range,
-  decisions,
-  setDecisions,
-}: DecisionsProps) {
+export function Decisions({ decisionsOutcomesPerDay, decisions, setDecisions }: DecisionsProps) {
   // Decision filter default values
   const defaultDecisions: DecisionsFilter = new Map([
     ['decline', true],
@@ -45,49 +39,72 @@ export function Decisions({
   const [percentage, setPercentage] = useState(true);
   const [groupDate, setGroupDate] = useState<'day' | 'week' | 'month'>('day');
 
+  // TODO: Add a guard to check if the decisionsOutcomesPerDay is not empty
+  if (decisionsOutcomesPerDay.absolute.length === 0) {
+    return null;
+  }
+
   // Use the decisions prop if provided, otherwise use internal state
   const currentDecisions = decisions || decisionsState;
   const currentSetDecisions = setDecisions || setDecisionsState;
+  const TICK_VALUES = 5;
+  // Return the first and last day of the period and numberOfValues days in between reparted in the period
+  const getGridXValues = (values: DecisionsPerOutcome[]): string[] => {
+    const nbValues = values.length;
+    return nbValues <= TICK_VALUES
+      ? values.map((item) => item.date)
+      : values
+          .filter(
+            (_item, index) =>
+              index === 0 ||
+              index === nbValues - 1 ||
+              index % Math.floor(nbValues / TICK_VALUES) === 0,
+          )
+          .map((item) => item.date);
+  };
+
+  interface GroupedData {
+    values: DecisionsPerOutcome[];
+    gridXValues: string[];
+  }
 
   // Group data by day, week, or month based on groupDate state
-  const groupedData = useMemo(() => {
+  const groupedData = useMemo((): GroupedData => {
     if (groupDate === 'day') {
-      return decisionsOutcomesPerDay;
+      const dataToGroup = percentage
+        ? decisionsOutcomesPerDay.ratio
+        : decisionsOutcomesPerDay.absolute;
+      return {
+        values: dataToGroup,
+        gridXValues: getGridXValues(dataToGroup),
+      };
     }
 
-    const dataToGroup = percentage
-      ? decisionsOutcomesPerDay.ratio
-      : decisionsOutcomesPerDay.absolute;
     const grouped = new Map<string, DecisionsPerOutcome>();
 
-    dataToGroup.forEach((item) => {
-      const date = new Date(item.date);
-      let groupKey: string;
-
-      if (groupDate === 'week') {
-        const weekStart = startOfWeek(date, { weekStartsOn: 1 }); // Monday as start of week
-        groupKey = format(weekStart, 'yyyy-MM-dd');
-      } else if (groupDate === 'month') {
-        const monthStart = startOfMonth(date);
-        groupKey = format(monthStart, 'yyyy-MM-dd');
-      } else {
-        groupKey = format(date, 'yyyy-MM-dd');
-      }
+    // Always group by absolute values first to calculate correct totals
+    decisionsOutcomesPerDay.absolute.forEach((item) => {
+      const groupKey = format(
+        groupDate === 'week'
+          ? startOfWeek(new Date(item.date), { weekStartsOn: 1 })
+          : startOfMonth(new Date(item.date)),
+        'yyyy-MM-dd',
+      );
 
       if (grouped.has(groupKey)) {
         const existing = grouped.get(groupKey)!;
         grouped.set(groupKey, {
-          rangeId: item.rangeId, // Preserve the rangeId
+          rangeId: item.rangeId,
           date: groupKey,
           approve: existing.approve + item.approve,
           decline: existing.decline + item.decline,
           review: existing.review + item.review,
           blockAndReview: existing.blockAndReview + item.blockAndReview,
-          total: existing.total ? existing.total! + (item.total || 0) : item.total || 0,
+          total: existing.total! + item.total!,
         });
       } else {
         grouped.set(groupKey, {
-          rangeId: item.rangeId, // Preserve the rangeId
+          rangeId: item.rangeId,
           date: groupKey,
           approve: item.approve,
           decline: item.decline,
@@ -98,30 +115,40 @@ export function Decisions({
       }
     });
 
-    const groupedArray = Array.from(grouped.values()).sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-    );
+    // Convert to the format expected by the UI, calculating percentages if needed
+    const groupedArray = Array.from(grouped.values()).map((item) => {
+      if (percentage) {
+        // Calculate percentages based on the grouped absolute totals
+        const total = item.total!;
+        return {
+          rangeId: item.rangeId,
+          date: item.date,
+          approve: total ? (100 * item.approve) / total : 0,
+          decline: total ? (100 * item.decline) / total : 0,
+          review: total ? (100 * item.review) / total : 0,
+          blockAndReview: total ? (100 * item.blockAndReview) / total : 0,
+          total: total,
+        };
+      }
+
+      // Return absolute values
+      return {
+        rangeId: item.rangeId,
+        date: item.date,
+        approve: item.approve,
+        decline: item.decline,
+        review: item.review,
+        blockAndReview: item.blockAndReview,
+        total: item.total,
+      };
+    });
+    //   .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     return {
-      ratio: groupedArray,
-      absolute: groupedArray,
+      values: groupedArray,
+      gridXValues: getGridXValues(groupedArray),
     };
   }, [decisionsOutcomesPerDay, groupDate, percentage]);
-
-  // Return the first and last day of the period and numberOfValues days in between reparted in the period
-  const getGridXValues = (numberOfValues: number): string[] => {
-    if (!range?.start || !range?.end) return [];
-    const days = differenceInCalendarDays(new Date(range.end), new Date(range.start));
-    const daysInBetween = days / numberOfValues;
-    const gridXValues: string[] = [];
-    const currentDate = new Date(range.start);
-    const endDate = new Date(range.end);
-    while (currentDate <= endDate) {
-      gridXValues.push(currentDate.toISOString());
-      currentDate.setDate(currentDate.getDate() + daysInBetween);
-    }
-    return gridXValues;
-  };
 
   const getBarColors = (d: ComputedDatum<{ rangeId: RangeId }>) => {
     const id = String(d.id) as 'approve' | 'decline' | 'review' | 'blockAndReview';
@@ -167,7 +194,7 @@ export function Decisions({
       </div>
       <div className="relative flex-1 w-full">
         <ResponsiveBar
-          data={percentage ? groupedData.ratio : groupedData.absolute}
+          data={groupedData.values}
           indexBy="date"
           enableLabel={false}
           keys={
@@ -198,8 +225,7 @@ export function Decisions({
           ]}
           axisLeft={{ legend: 'outcome (indexBy)', legendOffset: -70 }}
           axisBottom={{
-            truncateTickAt: 10,
-            tickValues: getGridXValues(5),
+            tickValues: groupedData.gridXValues,
             format: (value: string) => {
               // Convert the ISO string to a Date object and format it
               const date = new Date(value);
@@ -210,7 +236,7 @@ export function Decisions({
             },
           }}
         />
-        <div className="absolute bottom-2 right-2 flex gap-2">
+        <div className="relative bottom-2 right-2 flex gap-2">
           <ButtonV2
             variant="secondary"
             mode="normal"

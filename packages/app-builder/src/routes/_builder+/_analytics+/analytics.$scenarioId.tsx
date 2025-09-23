@@ -128,8 +128,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   });
 
   return Response.json({
-    range: parsed.range,
-    compareRange: parsed.compareRange,
     decisionsOutcomesPerDay,
     scenarioId,
     scenarios,
@@ -137,7 +135,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Analytics() {
-  const { decisionsOutcomesPerDay, range, scenarioId, scenarios } = useLoaderData<typeof loader>();
+  const { decisionsOutcomesPerDay, scenarioId, scenarios } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -168,7 +166,6 @@ export default function Analytics() {
       </div>
       <Decisions
         decisionsOutcomesPerDay={decisionsOutcomesPerDay}
-        range={range}
         decisions={decisions}
         setDecisions={setDecisions}
       />

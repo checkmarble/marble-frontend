@@ -114,7 +114,7 @@ export const fillMissingDays = (
     ...data,
     ...missing.map((key) => ({
       rangeId: 'base' as RangeId,
-      date: `${key}T00:00:00.000Z`,
+      date: `${key}T00:00:00Z`,
       approve: 0,
       block_and_review: 0,
       decline: 0,
