@@ -210,7 +210,7 @@ export function Decisions({
             },
           }}
         />
-        <div className="flex bottom-2 gap-2" style={{ right: '130px' }}>
+        <div className="absolute bottom-2 right-2 flex gap-2">
           <ButtonV2
             variant="secondary"
             mode="normal"
