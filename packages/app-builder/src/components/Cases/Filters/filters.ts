@@ -7,6 +7,7 @@ export const casesFilterNames = [
   'statuses',
   'includeSnoozed',
   'excludeAssigned',
+  'assignee',
 ] as const;
 
 export type CasesFilterName = (typeof casesFilterNames)[number];
@@ -21,6 +22,7 @@ export const getFilterIcon = (filterName: CasesFilterName) =>
     .with('statuses', () => 'checked')
     .with('includeSnoozed', () => 'snooze')
     .with('excludeAssigned', () => 'person')
+    .with('assignee', () => 'person')
     .exhaustive();
 
 export const getFilterTKey = (filterName: CasesFilterName) =>
@@ -29,4 +31,5 @@ export const getFilterTKey = (filterName: CasesFilterName) =>
     .with('statuses', () => 'cases:filter.closed_only.label')
     .with('includeSnoozed', () => 'cases:filter.include_snoozed.label')
     .with('excludeAssigned', () => 'cases:filter.exclude_assigned.label')
+    .with('assignee', () => 'cases:filter.assignee.label')
     .exhaustive();

@@ -182,6 +182,7 @@
   "escalate-button.label": "Escalader",
   "escalate-case.modal.callout": "En procédant à l’escalade de ce cas, il ne vous sera plus affecté et vous n’y aurez plus accès si vous n'êtes pas membre de la boîte de réception cible.<br/>Vous serez redirigé vers la boîte de réception actuelle.",
   "escalate-case.modal.submit-button.label": "Escalader",
+  "filter.assignee.label": "Assigné",
   "filter.closed_only.label": "Investigations résolues",
   "filter.exclude_assigned.label": "Non assignés",
   "filter.include_snoozed.label": "Voir les rappels",

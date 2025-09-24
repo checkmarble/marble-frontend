@@ -182,6 +182,7 @@
   "escalate-button.label": "Escalate",
   "escalate-case.modal.callout": "Upon escalating this case, you will no longer be assigned to it, and you will lose access if you are not a member of the target inbox.<br/>You will be redirected to the list of cases in the current inbox.",
   "escalate-case.modal.submit-button.label": "Escalate",
+  "filter.assignee.label": "Assignee",
   "filter.closed_only.label": "Closed only",
   "filter.exclude_assigned.label": "Unassigned only",
   "filter.include_snoozed.label": "Include snoozed",

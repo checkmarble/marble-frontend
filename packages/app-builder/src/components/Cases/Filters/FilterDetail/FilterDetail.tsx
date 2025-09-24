@@ -1,6 +1,7 @@
 import { match } from 'ts-pattern';
 
 import { type CasesFilterName } from '../filters';
+import { CasesAssigneeFilter } from './CasesAssigneeFilter';
 import { CasesDateRangeFilter } from './CasesDateRangeFilter';
 import { CasesExcludeAssignedFilter } from './CasesExcludeAssignedFilter';
 import { CasesSnoozedFilter } from './CasesSnoozedFilter';
@@ -12,4 +13,5 @@ export const FilterDetail = ({ filterName }: { filterName: CasesFilterName }) =>
     .with('statuses', () => <ClosedCasesFilter />)
     .with('includeSnoozed', () => <CasesSnoozedFilter />)
     .with('excludeAssigned', () => <CasesExcludeAssignedFilter />)
+    .with('assignee', () => <CasesAssigneeFilter />)
     .exhaustive();

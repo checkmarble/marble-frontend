@@ -31,6 +31,7 @@ export const casesFiltersSchema = z.object({
     .enum(['true', 'false'])
     .transform((val) => val === 'true')
     .optional(),
+  assignee: z.uuid().optional(),
 });
 
 export type CasesFilters = z.infer<typeof casesFiltersSchema>;
@@ -49,6 +50,7 @@ export type CasesFiltersForm = {
   name?: string;
   includeSnoozed?: boolean;
   excludeAssigned?: boolean;
+  assignee?: string;
 };
 
 const emptyCasesFilters: CasesFiltersForm = {
