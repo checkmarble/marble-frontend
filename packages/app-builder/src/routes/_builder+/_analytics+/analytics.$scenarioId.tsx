@@ -39,7 +39,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   });
   const scenarioId = params['scenarioId']!;
 
-  const scenarios = await scenario.listScenarios();
   const url = new URL(request.url);
 
   const encodeBase64Url = (value: string) =>
@@ -118,24 +117,35 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     });
   }
 
-  const decisionsOutcomesPerDay = await analytics.getDecisionOutcomesPerDay({
-    scenarioId,
-    dateRange: { start: parsed.range.start, end: parsed.range.end },
-    compareDateRange: parsed.compareRange
-      ? { start: parsed.compareRange.start, end: parsed.compareRange.end }
-      : undefined,
-    trigger: [],
-  });
+  const [decisionsOutcomesPerDay, scenarios, scenarioIterations] = await Promise.all([
+    analytics.getDecisionOutcomesPerDay({
+      scenarioId,
+      dateRange: { start: parsed.range.start, end: parsed.range.end },
+      compareDateRange: parsed.compareRange
+        ? { start: parsed.compareRange.start, end: parsed.compareRange.end }
+        : undefined,
+      trigger: [],
+    }),
+    scenario.listScenarios(),
+    scenario.listScenarioIterations({ scenarioId }),
+  ]);
 
   return Response.json({
     decisionsOutcomesPerDay,
     scenarioId,
     scenarios,
+    scenarioVersions: scenarioIterations
+      .filter(({ version }) => version !== null)
+      .map(({ version, createdAt }) => ({
+        version,
+        createdAt,
+      })),
   });
 }
 
 export default function Analytics() {
-  const { decisionsOutcomesPerDay, scenarioId, scenarios } = useLoaderData<typeof loader>();
+  const { decisionsOutcomesPerDay, scenarioId, scenarios, scenarioVersions } =
+    useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -168,6 +178,7 @@ export default function Analytics() {
         decisionsOutcomesPerDay={decisionsOutcomesPerDay}
         decisions={decisions}
         setDecisions={setDecisions}
+        scenarioVersions={scenarioVersions}
       />
       <div className="flex w-full max-w-5xl ml-16">
         <OutcomeFilter decisions={decisions} onChange={setDecisions} />
