@@ -1,4 +1,6 @@
 {
+  "access_by_id.button_label": "Go to case",
+  "access_by_id.placeholder": "Go to a case by id",
   "add_file": "Add a file",
   "ai_review.proof.tab_title": "Tab {{number}}",
   "ai_review.proof.title": "Proof",

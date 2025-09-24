@@ -1,4 +1,6 @@
 {
+  "access_by_id.button_label": "انتقل إلى حالة",
+  "access_by_id.placeholder": "انتقل إلى حالة بواسطة المعرف",
   "add_file": "أضف ملفًا",
   "ai_review.proof.tab_title": "Tab {{number}}",
   "ai_review.proof.title": "Preuve",
