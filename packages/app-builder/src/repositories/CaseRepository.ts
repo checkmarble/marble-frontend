@@ -4,6 +4,7 @@ import {
   adaptCaseCreateBody,
   adaptCaseDetail,
   adaptCaseReview,
+  adaptDetailedCaseDecision,
   adaptPivotObject,
   adaptSuspiciousActivityReport,
   adaptUpdateCaseBodyDto,
@@ -12,6 +13,7 @@ import {
   CaseReview,
   type CaseStatus,
   type CaseUpdateBody,
+  DetailedCaseDecision,
   type PivotObject,
   type SuspiciousActivityReport,
 } from '@app-builder/models/cases';
@@ -106,6 +108,15 @@ export interface CaseRepository {
     reaction: 'ok' | 'ko';
   }): Promise<void>;
   enrichPivotObjectOfCaseWithKyc(args: { caseId: string }): Promise<KycCaseEnrichment[]>;
+  listCaseDecisions(
+    args: {
+      caseId: string;
+    },
+    options?: { limit?: number; cursorId?: string },
+  ): Promise<{
+    decisions: DetailedCaseDecision[];
+    pagination: { hasMore: boolean; cursorId: string | null };
+  }>;
 }
 
 export function makeGetCaseRepository() {
@@ -220,6 +231,17 @@ export function makeGetCaseRepository() {
     enrichPivotObjectOfCaseWithKyc: async ({ caseId }) => {
       const result = await marbleCoreApiClient.enrichPivotObjectOfCaseWithKyc(caseId);
       return result.results?.map(adaptKycCaseEnrichment) ?? [];
+    },
+    listCaseDecisions: async ({ caseId }, options = {}) => {
+      const result = await marbleCoreApiClient.getPaginatedCaseDecisions(caseId, options);
+
+      return {
+        decisions: result.decisions.map(adaptDetailedCaseDecision),
+        pagination: {
+          hasMore: result.pagination.has_more ?? false,
+          cursorId: result.pagination.next_cursor_id ?? null,
+        },
+      };
     },
   });
 }

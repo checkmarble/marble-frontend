@@ -3,7 +3,7 @@ import { CloseCase } from '@app-builder/components/Cases/CloseCase';
 import { OpenCase } from '@app-builder/components/Cases/OpenCase';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type CurrentUser } from '@app-builder/models';
-import { CaseReview } from '@app-builder/models/cases';
+import { CaseReview, DetailedCaseDecision } from '@app-builder/models/cases';
 import { useAddReviewToCaseCommentsMutation } from '@app-builder/queries/add-review-to-case-comments';
 import { useCaseReviewFeedbackMutation } from '@app-builder/queries/case-review-feedback';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
@@ -46,7 +46,7 @@ export const CaseDetails = ({
   caseReview,
 }: {
   currentUser: CurrentUser;
-  selectDecision: (id: string) => void;
+  selectDecision: (decision: DetailedCaseDecision) => void;
   drawerContentMode: 'pivot' | 'decision' | 'snooze';
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
   caseReview: CaseReview | null;

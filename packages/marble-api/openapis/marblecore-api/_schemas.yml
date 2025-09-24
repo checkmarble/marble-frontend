@@ -67,6 +67,8 @@ CaseDetailDto:
   $ref: cases.yml#/components/schemas/CaseDetailDto
 CaseDecisionDto:
   $ref: cases.yml#/components/schemas/CaseDecisionDto
+DetailedCaseDecisionDto:
+  $ref: cases.yml#/components/schemas/DetailedCaseDecisionDto
 NextCaseIdDto:
   $ref: cases.yml#/components/schemas/NextCaseIdDto
 CaseFileDto:

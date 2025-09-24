@@ -369,6 +369,11 @@ export const routes = [
         "file": "routes/ressources+/auth+/refresh.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/$caseId+/decisions",
+        "path": "ressources/cases/:caseId/decisions",
+        "file": "routes/ressources+/cases+/$caseId+/decisions.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/$caseId+/enrich-kyc",
         "path": "ressources/cases/:caseId/enrich-kyc",
         "file": "routes/ressources+/cases+/$caseId+/enrich-kyc.ts"
@@ -387,6 +392,11 @@ export const routes = [
         "id": "routes/ressources+/cases+/$caseId.enqueue-review",
         "path": "ressources/cases/:caseId/enqueue-review",
         "file": "routes/ressources+/cases+/$caseId.enqueue-review.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/$caseId.rules-by-pivot",
+        "path": "ressources/cases/:caseId/rules-by-pivot",
+        "file": "routes/ressources+/cases+/$caseId.rules-by-pivot.tsx"
       },
       {
         "id": "routes/ressources+/cases+/add-comment",
@@ -545,6 +555,11 @@ export const routes = [
         "file": "routes/ressources+/data+/editTable.tsx"
       },
       {
+        "id": "routes/ressources+/decisions+/$decisionId",
+        "path": "ressources/decisions/:decisionId",
+        "file": "routes/ressources+/decisions+/$decisionId.tsx"
+      },
+      {
         "id": "routes/ressources+/decisions+/list-scheduled-execution",
         "path": "ressources/decisions/list-scheduled-execution",
         "file": "routes/ressources+/decisions+/list-scheduled-execution.tsx"
@@ -698,6 +713,11 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/create",
         "path": "ressources/scenarios/create",
         "file": "routes/ressources+/scenarios+/create.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/iteration+/$iterationId.get-rules",
+        "path": "ressources/scenarios/iteration/:iterationId/get-rules",
+        "file": "routes/ressources+/scenarios+/iteration+/$iterationId.get-rules.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/update",

@@ -19,39 +19,49 @@ import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/Trigg
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type Pivot, type TableModel } from '@app-builder/models';
-import { type Decision, type RuleExecution } from '@app-builder/models/decision';
-import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
+import { DetailedCaseDecision } from '@app-builder/models/cases';
+import { DecisionDetails } from '@app-builder/models/decision';
+import { useDetailDecisionQuery } from '@app-builder/queries/decisions/detail-decision';
+import { useScenarioIterationRules } from '@app-builder/queries/scenarios/scenario-iteration-rules';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
-import { Await, useLoaderData } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
 import clsx from 'clsx';
-import { Suspense, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter, isNonNullish, map, pipe } from 'remeda';
+import { match } from 'ts-pattern';
 import { Button, Switch, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type DecisionPanelProps = {
-  decisionId: string;
   setDrawerContentMode: (mode: 'pivot' | 'decision' | 'snooze') => void;
+  decision: DetailedCaseDecision;
 };
 
-type Detail = Pick<Decision, 'pivotValues' | 'scenario' | 'triggerObject' | 'triggerObjectType'> & {
+type DetailProps = {
+  decision: DecisionDetails;
   pivots: Pivot[];
-  ruleExecutions: RuleExecution[];
-  scenarioRules: ScenarioIterationRule[];
 };
 
-const DecisionRuleExecutions = ({ detail }: { detail: Detail }) => {
+const DecisionRuleExecutions = ({ decision }: { decision: DecisionDetails }) => {
   const { t } = useTranslation(casesI18n);
   const [showHitOnly, setShowHitOnly] = useState(true);
+  const scenarioIterationRules = useScenarioIterationRules(decision.scenario.scenarioIterationId);
 
   const filteredRuleExecutions = useMemo(() => {
-    if (!detail?.ruleExecutions) return [];
     if (showHitOnly) {
-      return detail.ruleExecutions.filter((ruleExecution) => ruleExecution.outcome === 'hit');
+      return decision.rules.filter((ruleExecution) => ruleExecution.outcome === 'hit');
     }
-    return detail.ruleExecutions;
-  }, [detail?.ruleExecutions, showHitOnly]);
+    return decision.rules;
+  }, [decision.rules, showHitOnly]);
+
+  if (scenarioIterationRules.isPending) {
+    return <div>Loading...</div>;
+  }
+
+  if (scenarioIterationRules.isError) {
+    return <div>Error</div>;
+  }
 
   return (
     <div className="flex h-fit flex-2 flex-col gap-4">
@@ -74,10 +84,10 @@ const DecisionRuleExecutions = ({ detail }: { detail: Detail }) => {
                 <RuleExecutionDescription description={ruleExecution.description} />
 
                 <RuleExecutionDetail
-                  scenarioId={detail.scenario.id}
+                  scenarioId={decision.scenario.id}
                   key={ruleExecution.ruleId}
                   ruleExecution={ruleExecution}
-                  rules={detail.scenarioRules}
+                  rules={scenarioIterationRules.data.rules}
                 />
               </RuleExecutionContent>
             </RuleExecutionCollapsible>
@@ -89,12 +99,10 @@ const DecisionRuleExecutions = ({ detail }: { detail: Detail }) => {
 };
 
 const DecisionTriggerObject = ({
-  detail,
+  decision,
+  pivots,
   dataModel,
-}: {
-  detail: Pick<Decision, 'pivotValues' | 'triggerObject' | 'triggerObjectType'> & {
-    pivots: Pivot[];
-  };
+}: DetailProps & {
   dataModel: TableModel[];
 }) => {
   const { t } = useTranslation(casesI18n);
@@ -106,10 +114,10 @@ const DecisionTriggerObject = ({
 
   const pivotValues = useMemo(() => {
     return pipe(
-      detail.pivotValues,
+      decision.pivotValues,
       map(({ id, value }) => {
         if (!id || !value) return null;
-        const pivot = detail?.pivots.find((p) => p.id === id);
+        const pivot = pivots.find((p) => p.id === id);
         if (!pivot) return null;
         return {
           pivot,
@@ -118,7 +126,7 @@ const DecisionTriggerObject = ({
       }),
       filter(isNonNullish),
     );
-  }, [detail.pivotValues, detail.pivots]);
+  }, [decision.pivotValues, pivots]);
 
   return (
     <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
@@ -141,8 +149,8 @@ const DecisionTriggerObject = ({
         <CaseDetailTriggerObject
           className="h-fit max-h-[50dvh] overflow-auto"
           dataModel={dataModel}
-          triggerObject={detail.triggerObject}
-          triggerObjectType={detail.triggerObjectType}
+          triggerObject={decision.triggerObject}
+          triggerObjectType={decision.triggerObjectType}
           onLinkClicked={(tableName, objectId) => setObjectLink({ tableName, objectId })}
         />
         {objectLink ? (
@@ -158,46 +166,44 @@ const DecisionTriggerObject = ({
   );
 };
 
-const DecisionDetailSkeleton = () => (
-  <div className="flex flex-row gap-6 p-4">
-    <div className="flex h-fit flex-2 flex-col gap-2">
-      <div className="flex flex-row items-center justify-between gap-2">
-        <div className="bg-grey-90 h-4 w-32 animate-pulse rounded-md" />
-        <div className="bg-grey-90 h-4 w-32 animate-pulse rounded-md" />
-      </div>
-      <div className="bg-grey-90 h-12 animate-pulse rounded-lg" />
-      <div className="bg-grey-90 h-12 animate-pulse rounded-lg" />
-      <div className="bg-grey-90 h-12 animate-pulse rounded-lg" />
+const DecisionDetailSkeleton = ({ isExpanded }: { isExpanded: boolean }) => (
+  <div className="flex h-fit flex-col gap-6">
+    <div className="flex flex-row items-center justify-between gap-2">
+      <div className="bg-grey-90 h-8 w-46 animate-pulse rounded-md" />
     </div>
-
-    <div className="flex h-fit flex-1 flex-col gap-6">
-      <div className="flex h-fit flex-col gap-2">
-        <div className="col-start-2 row-start-1 flex flex-row items-center justify-between gap-2">
-          <div className="bg-grey-90 h-4 w-32 animate-pulse rounded-md" />
+    <div className="flex gap-6 flex-1">
+      <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-row justify-between gap-2">
+          <div className="bg-grey-90 h-6 w-32 animate-pulse rounded-md" />
+          <div className="bg-grey-90 h-6 w-32 animate-pulse rounded-md" />
         </div>
-        <div className="bg-grey-90 h-8 w-full animate-pulse rounded-md" />
+        <div className="bg-grey-90 h-30 w-full animate-pulse rounded-md" />
       </div>
-
-      <div className="flex h-fit flex-col gap-2">
-        <div className="flex flex-row items-center justify-between gap-2">
-          <div className="bg-grey-90 h-4 w-32 animate-pulse rounded-md" />
-        </div>
-        <div className="bg-grey-90 h-60 w-full animate-pulse rounded-md" />
-      </div>
+      {isExpanded ? (
+        <div className="bg-grey-90 h-60 w-115 shrink-0 animate-pulse rounded-md" />
+      ) : null}
     </div>
   </div>
 );
 
-const ExpandedDetail = ({ detail, dataModel }: { detail: Detail; dataModel: TableModel[] }) => {
+const ExpandedDetail = ({
+  decision,
+  pivots,
+  dataModel,
+}: DetailProps & { dataModel: TableModel[] }) => {
   return (
     <div className="flex flex-row gap-6">
-      <DecisionRuleExecutions detail={detail} />
-      <DecisionTriggerObject detail={detail} dataModel={dataModel} />
+      <DecisionRuleExecutions decision={decision} />
+      <DecisionTriggerObject decision={decision} pivots={pivots} dataModel={dataModel} />
     </div>
   );
 };
 
-const CollapsedDetail = ({ detail, dataModel }: { detail: Detail; dataModel: TableModel[] }) => {
+const CollapsedDetail = ({
+  decision,
+  pivots,
+  dataModel,
+}: DetailProps & { dataModel: TableModel[] }) => {
   const { t } = useTranslation(casesI18n);
   return (
     <Tabs defaultValue="hits" className="flex flex-col items-start gap-6">
@@ -206,23 +212,18 @@ const CollapsedDetail = ({ detail, dataModel }: { detail: Detail; dataModel: Tab
         <TabsTrigger value="trigger">{t('cases:case_detail.trigger_object')}</TabsTrigger>
       </TabsList>
       <TabsContent value="hits" className="w-full">
-        <DecisionRuleExecutions detail={detail} />
+        <DecisionRuleExecutions decision={decision} />
       </TabsContent>
       <TabsContent value="trigger" className="w-full">
-        <DecisionTriggerObject detail={detail} dataModel={dataModel} />
+        <DecisionTriggerObject decision={decision} pivots={pivots} dataModel={dataModel} />
       </TabsContent>
     </Tabs>
   );
 };
 
-export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPanelProps) {
+export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelProps) {
   const { t } = useTranslation(casesI18n);
-  const {
-    pivots,
-    dataModelWithTableOptions,
-    decisionsPromise,
-    case: caseDetail,
-  } = useLoaderData<typeof loader>();
+  const { pivots, dataModelWithTableOptions, case: caseDetail } = useLoaderData<typeof loader>();
   const { isExpanded, setExpanded, container } = DrawerContext.useValue();
   const sentinelRef = useRef<HTMLDivElement>(null);
   const intersection = useIntersection(sentinelRef, {
@@ -230,6 +231,19 @@ export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPane
     rootMargin: '1px',
     threshold: 1,
   });
+  const detailDecisionQuery = useDetailDecisionQuery(decision.id);
+  const [shouldDisplaySkeleton, setShouldDisplaySkeleton] = useState(false);
+
+  useEffect(() => {
+    setShouldDisplaySkeleton(false);
+    const timeout = setTimeout(() => {
+      setShouldDisplaySkeleton(true);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [decision.id]);
 
   return (
     <>
@@ -252,55 +266,45 @@ export function DecisionPanel({ setDrawerContentMode, decisionId }: DecisionPane
         <CaseManagerDrawerButtons expandable={true} />
       </div>
       <div className="flex flex-col pl-4 pr-2">
-        <Suspense fallback={<DecisionDetailSkeleton />}>
-          <Await resolve={decisionsPromise}>
-            {(decisions) => {
-              const decision = decisions.find((d) => d.id === decisionId);
-
-              if (!decision) return <DecisionDetailSkeleton />;
-
-              return (
-                <div className="flex flex-col gap-6">
-                  <div className="flex items-center gap-3">
-                    <span className="text-l text-grey-00 font-semibold">
-                      {decision.scenario.name}
-                    </span>
-                    <ScoreModifier score={decision.score} />
-                  </div>
-                  <div className="flex flex-col items-start gap-2">
-                    <div className="grid grid-cols-[60px_1fr] items-center">
-                      <span className="text-grey-50 text-xs">Id</span>
-                      <CopyToClipboardButton size="sm" toCopy={decision.id}>
-                        <span className="line-clamp-1 max-w-40 text-xs font-normal">
-                          {decision.id}
-                        </span>
-                      </CopyToClipboardButton>
-                    </div>
-                    <div className="grid grid-cols-[60px_1fr] items-center">
-                      <span className="text-grey-50 text-xs">{t('cases:decisions.outcome')}</span>
-                      <OutcomeBadge
-                        outcome={decision.outcome}
-                        reviewStatus={decision.reviewStatus}
-                      />
-                    </div>
-                    <RequiredActions decision={decision} caseId={caseDetail.id} />
-                  </div>
-                  {isExpanded ? (
-                    <ExpandedDetail
-                      detail={{ ...decision, pivots }}
-                      dataModel={dataModelWithTableOptions}
-                    />
-                  ) : (
-                    <CollapsedDetail
-                      detail={{ ...decision, pivots }}
-                      dataModel={dataModelWithTableOptions}
-                    />
-                  )}
-                </div>
-              );
-            }}
-          </Await>
-        </Suspense>
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center gap-3">
+            <span className="text-l text-grey-00 font-semibold">{decision.scenario.name}</span>
+            <ScoreModifier score={decision.score} />
+          </div>
+          <div className="flex flex-col items-start gap-2">
+            <div className="grid grid-cols-[60px_1fr] items-center">
+              <span className="text-grey-50 text-xs">Id</span>
+              <CopyToClipboardButton size="sm" toCopy={decision.id}>
+                <span className="line-clamp-1 max-w-40 text-xs font-normal">{decision.id}</span>
+              </CopyToClipboardButton>
+            </div>
+            <div className="grid grid-cols-[60px_1fr] items-center">
+              <span className="text-grey-50 text-xs">{t('cases:decisions.outcome')}</span>
+              <OutcomeBadge outcome={decision.outcome} reviewStatus={decision.reviewStatus} />
+            </div>
+            <RequiredActions decision={decision} caseId={caseDetail.id} />
+          </div>
+          {match(detailDecisionQuery)
+            .with({ isPending: true }, () =>
+              shouldDisplaySkeleton ? <DecisionDetailSkeleton isExpanded={isExpanded} /> : null,
+            )
+            .with({ isError: true }, () => <div>Error</div>)
+            .otherwise(({ data: decisionWithRules }) =>
+              isExpanded ? (
+                <ExpandedDetail
+                  decision={decisionWithRules.decision}
+                  pivots={pivots}
+                  dataModel={dataModelWithTableOptions}
+                />
+              ) : (
+                <CollapsedDetail
+                  decision={decisionWithRules.decision}
+                  pivots={pivots}
+                  dataModel={dataModelWithTableOptions}
+                />
+              ),
+            )}
+        </div>
       </div>
     </>
   );

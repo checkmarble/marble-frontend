@@ -7,7 +7,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { nonPendingReviewStatuses } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
-import { type SanctionCheck } from '@app-builder/models/sanction-check';
+import { SanctionCheckStatus } from '@app-builder/models/sanction-check';
 import { blockingReviewDocHref } from '@app-builder/services/documentation-href';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
@@ -91,7 +91,7 @@ export function ReviewDecisionModal({
   store,
 }: {
   decisionId: string;
-  sanctionCheck: SanctionCheck | undefined;
+  sanctionCheck: { status: SanctionCheckStatus } | undefined;
   store: Ariakit.DialogStore;
 }) {
   return (
@@ -111,7 +111,7 @@ function ReviewDecisionContent({
   setOpen,
 }: {
   decisionId: string;
-  sanctionCheck: SanctionCheck | undefined;
+  sanctionCheck: { status: SanctionCheckStatus } | undefined;
   setOpen: (open: boolean) => void;
 }) {
   const { t } = useTranslation(['common', 'cases']);

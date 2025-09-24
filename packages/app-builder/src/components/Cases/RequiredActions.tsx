@@ -1,5 +1,4 @@
-import { type DecisionDetails } from '@app-builder/models/decision';
-import { type SanctionCheck } from '@app-builder/models/sanction-check';
+import { DetailedCaseDecision } from '@app-builder/models/cases';
 import { ReviewDecisionModal } from '@app-builder/routes/ressources+/cases+/review-decision';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -7,7 +6,6 @@ import { DialogDisclosure, useDialogStore } from '@ariakit/react/dialog';
 import { Link } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, cn } from 'ui-design-system';
-
 import { casesI18n } from './cases-i18n';
 
 const Divider = ({ isLast = false }: { isLast?: boolean }) => (
@@ -23,16 +21,12 @@ export const RequiredActions = ({
   caseId,
 }: {
   caseId: string;
-  decision: Pick<DecisionDetails, 'id' | 'outcome' | 'reviewStatus'> & {
-    sanctionChecks: SanctionCheck[];
-  };
+  decision: Pick<DetailedCaseDecision, 'id' | 'outcome' | 'reviewStatus' | 'sanctionChecks'>;
 }) => {
   const { t } = useTranslation(casesI18n);
   const reviewDecisionModalStore = useDialogStore();
 
-  const pendingSanctionMatches =
-    decision.sanctionChecks.flatMap((s) => s.matches).filter((m) => m.status === 'pending')
-      .length ?? 0;
+  const hasPendingScreening = decision.sanctionChecks.some((s) => s.status === 'in_review');
   const isPendingDecision =
     decision.reviewStatus === 'pending' && decision.outcome === 'block_and_review';
   const isThereSanctionChecks = decision.sanctionChecks.length > 0;
@@ -43,11 +37,9 @@ export const RequiredActions = ({
       {isThereSanctionChecks ? (
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
-            <Checkbox disabled={true} size="small" checked={pendingSanctionMatches === 0} />
+            <Checkbox disabled={true} size="small" checked={!hasPendingScreening} />
             <span className="text-xs font-medium">
-              {t('sanctions:required_actions.review_pending_screening_count', {
-                count: decision.sanctionChecks.length,
-              })}
+              {t('sanctions:required_actions.review_pending_screening_count')}
             </span>
           </div>
           <div className="flex flex-col">
@@ -60,7 +52,7 @@ export const RequiredActions = ({
                       'text-red-43': s.status === 'error',
                     })}
                   >
-                    <span>{`${s.config.name} (${s.matches.length})`}</span>
+                    <span>{s.name}</span>
                     <Link
                       className="underline"
                       to={getRoute('/cases/:caseId/d/:decisionId/screenings/:screeningId', {

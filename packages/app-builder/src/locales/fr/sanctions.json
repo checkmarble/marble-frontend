@@ -162,7 +162,7 @@
   "relative.maleThirdCousin.label": "Cousin masculin de troisième degré",
   "required_actions.match_to_review": "Correspondances à examiner ({{count}})",
   "required_actions.review": "Examiner",
-  "required_actions.review_pending_screening_count": "Signalements à examiner ({{count}})",
+  "required_actions.review_pending_screening_count": "Signalements à examiner",
   "required_actions.title": "Actions requises",
   "required_actions.view": "Voir",
   "required_actions.view_error": "Afficher l'erreur",

@@ -174,12 +174,19 @@ export function adaptDecision(dto: DecisionDto): Decision {
   };
 }
 
-function adaptRuleExecutionDto(dto: RuleExecutionDto): RuleExecution {
+export function adaptRuleExecutionDto(
+  dto: RuleExecutionDto,
+  includeRuleEvaluation: boolean,
+): RuleExecution {
   const ruleExecution: RuleExecutionCore = {
     name: dto.name,
     ruleId: dto.rule_id,
     description: dto.description || undefined,
-    evaluation: dto.rule_evaluation ? adaptNodeEvaluation(dto.rule_evaluation) : undefined,
+    evaluation: !includeRuleEvaluation
+      ? undefined
+      : dto.rule_evaluation
+        ? adaptNodeEvaluation(dto.rule_evaluation)
+        : undefined,
   };
   switch (dto.outcome) {
     case 'hit': {
@@ -214,9 +221,12 @@ function adaptRuleExecutionDto(dto: RuleExecutionDto): RuleExecution {
   }
 }
 
-export function adaptDecisionDetail(dto: DecisionDetailDto): DecisionDetails {
+export function adaptDecisionDetail(
+  dto: DecisionDetailDto,
+  includeRuleEvaluation: boolean,
+): DecisionDetails {
   return {
     ...adaptDecision(dto),
-    rules: dto.rules.map(adaptRuleExecutionDto),
+    rules: dto.rules.map((r) => adaptRuleExecutionDto(r, includeRuleEvaluation)),
   };
 }

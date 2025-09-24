@@ -13,6 +13,7 @@ import {
   type CaseTagDto,
   type CommentEntityAnnotationDto,
   type CreateCaseBodyDto,
+  DetailedCaseDecisionDto,
   // biome-ignore lint/suspicious/noShadowRestrictedNames: <TBD>
   type Error,
   type FileEntityAnnotationDto,
@@ -25,8 +26,9 @@ import {
 import { match } from 'ts-pattern';
 
 import { adaptClientObjectDetail, type ClientObjectDetail } from './data-model';
-import { type ReviewStatus } from './decision';
+import { adaptRuleExecutionDto, type ReviewStatus, RuleExecution } from './decision';
 import { type Outcome as DecisionOutcome } from './outcome';
+import { SanctionCheckStatus } from './sanction-check';
 
 export interface CaseContributor {
   id: string;
@@ -626,5 +628,57 @@ export function adaptCaseReview(dto: CaseReviewDto): CaseReview {
   return {
     ...review,
     review: { ...baseCaseContentReview, ok: true },
+  };
+}
+
+export type DetailedCaseDecision = {
+  id: string;
+  createdAt: string;
+  triggerObject: Record<string, unknown>;
+  triggerObjectType: string;
+  outcome: DecisionOutcome;
+  pivotValues: {
+    id?: string;
+    value?: string;
+  }[];
+  reviewStatus?: ReviewStatus;
+  scenario: {
+    id: string;
+    name: string;
+    scenarioIterationId: string;
+    version: number;
+  };
+  score: number;
+  rules: RuleExecution[];
+  sanctionChecks: {
+    id: string;
+    status: SanctionCheckStatus;
+    partial: boolean;
+    count: number;
+    name: string;
+  }[];
+};
+
+export function adaptDetailedCaseDecision(dto: DetailedCaseDecisionDto): DetailedCaseDecision {
+  return {
+    id: dto.id,
+    createdAt: dto.created_at,
+    triggerObject: dto.trigger_object,
+    triggerObjectType: dto.trigger_object_type,
+    outcome: dto.outcome,
+    pivotValues: dto.pivot_values.map(({ pivot_id, pivot_value }) => ({
+      id: pivot_id ?? undefined,
+      value: pivot_value ?? undefined,
+    })),
+    reviewStatus: dto.review_status,
+    scenario: {
+      id: dto.scenario.id,
+      name: dto.scenario.name,
+      scenarioIterationId: dto.scenario.scenario_iteration_id,
+      version: dto.scenario.version,
+    },
+    score: dto.score,
+    rules: dto.rules.map((r) => adaptRuleExecutionDto(r, false)),
+    sanctionChecks: dto.sanction_checks ?? [],
   };
 }
