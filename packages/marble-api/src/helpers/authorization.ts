@@ -26,6 +26,9 @@ export function createFetchWithAuthMiddleware<Token>({
     const response = await basicFetch(input, { ...init, headers });
 
     if (response.status === 401) {
+      // TODO: here, we use the new tokens for the current request, but it is
+      // not persisted in the browser, so we are going to be refreshing
+      // constantly.
       const token = await tokenService.refreshToken();
       const { name, value } = getAuthorizationHeader(token);
       headers.set(name, value);
