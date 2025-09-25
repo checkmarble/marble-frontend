@@ -8,6 +8,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const oidc = await authService.makeOidcService(appConfigRepository);
   const tokens = await oidc.authenticate(request);
 
+  console.debug(tokens);
+
   const response = await authService.authenticateOidc(request, tokens, {
     successRedirect: getRoute('/app-router'),
     failureRedirect: getRoute('/oidc/auth'),
