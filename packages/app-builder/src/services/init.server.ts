@@ -60,6 +60,7 @@ export function initServerServices(request: Request) {
     baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
   });
 
+  const proto = request.headers.get('x-forwarded-proto') ?? new URL(request.url).protocol;
   const serverRepositories = makeServerRepositories({
     getFeatureAccessApiClientWithoutAuth: () => featureAccessApi,
     getFeatureAccessAPIClientWithAuth,
@@ -69,12 +70,7 @@ export function initServerServices(request: Request) {
     sessionStorageRepositoryOptions: {
       maxAge: Number(getServerEnv('SESSION_MAX_AGE')) || 43200,
       secrets: [getServerEnv('SESSION_SECRET')],
-      secure:
-        getServerEnv('ENV') !== 'development'
-          ? // Outside of development, we always want to set secure cookies
-            true
-          : // User agent only allows secure cookies to be set on secure connections (useful for people deploying Docker compose outside localhost and whithout SSL)
-            new URL(getServerEnv('MARBLE_APP_URL')).protocol === 'https:',
+      secure: proto === 'https:',
     },
   });
 
