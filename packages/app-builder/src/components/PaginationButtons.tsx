@@ -13,7 +13,7 @@ export const paginationSchema = z.object({
   offsetId: z.string().optional(),
   next: z.coerce.boolean().optional(),
   previous: z.coerce.boolean().optional(),
-  limit: z.number().optional(),
+  limit: z.coerce.number().optional(),
   order: z.enum(['ASC', 'DESC']).optional(),
   sorting: z.enum(['created_at']).optional(),
 });
@@ -28,6 +28,7 @@ type CursorPaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
   hasPreviousPage: boolean;
   boundariesDisplay: 'ranks' | 'dates';
   pageNb: number;
+  itemsPerPage?: number;
 };
 
 function FormattedDatesRange({
@@ -143,13 +144,21 @@ function FormattedDatesRange({
   );
 }
 
-function RankNumberRange({ pageNb, nbInPage }: { pageNb: number; nbInPage: number }) {
+function RankNumberRange({
+  pageNumber,
+  currentPageItemCount,
+  itemsPerPage,
+}: {
+  pageNumber: number;
+  currentPageItemCount: number;
+  itemsPerPage: number;
+}) {
   const { t } = useTranslation(['common']);
 
-  const start = pageNb * defaultPaginationSize + 1;
-  const end = nbInPage > 0 ? pageNb * defaultPaginationSize + nbInPage : 0;
+  const start = pageNumber * itemsPerPage + 1;
+  const end = currentPageItemCount > 0 ? pageNumber * itemsPerPage + currentPageItemCount : 0;
 
-  if (pageNb === 0 && nbInPage === 0) {
+  if (pageNumber === 0 && currentPageItemCount === 0) {
     return null;
   }
 
@@ -170,6 +179,7 @@ export function CursorPaginationButtons({
   onPaginationChange,
   boundariesDisplay,
   pageNb,
+  itemsPerPage = defaultPaginationSize,
 }: CursorPaginationsButtonsProps) {
   const language = useFormatLanguage();
 
@@ -198,7 +208,11 @@ export function CursorPaginationButtons({
   return (
     <div className="flex items-center justify-end gap-2">
       {boundariesDisplay === 'ranks' ? (
-        <RankNumberRange pageNb={pageNb} nbInPage={items.length} />
+        <RankNumberRange
+          pageNumber={pageNb}
+          currentPageItemCount={items.length}
+          itemsPerPage={itemsPerPage}
+        />
       ) : (
         <FormattedDatesRange {...{ startTs, endTs, language }} />
       )}

@@ -12,7 +12,10 @@ import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginated
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { type Case, type CaseStatus, caseStatuses } from '@app-builder/models/cases';
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
-import { type CaseFilters } from '@app-builder/repositories/CaseRepository';
+import {
+  type CaseFilters,
+  DEFAULT_CASE_PAGINATION_SIZE,
+} from '@app-builder/repositories/CaseRepository';
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseIdParamSafe, parseQuerySafe } from '@app-builder/utils/input-validation';
@@ -25,7 +28,7 @@ import qs from 'qs';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { omit } from 'remeda';
-import { Button } from 'ui-design-system';
+import { Button, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 import { MY_INBOX_ID } from './_index';
@@ -37,6 +40,7 @@ export const handle = {
 export const buildQueryParams = (
   filters: CasesFilters,
   offsetId: string | null,
+  limit: number | null,
   order: 'ASC' | 'DESC' | null,
 ) => {
   return {
@@ -57,6 +61,7 @@ export const buildQueryParams = (
           }
       : {},
     offsetId,
+    ...(limit && { limit }),
     ...(order && { order }),
   };
 };
@@ -86,6 +91,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   // Force the order to be ASC if not provided
   if (!parsedPaginationQuery.data.order) {
     parsedPaginationQuery.data.order = 'ASC';
+  }
+
+  if (!parsedPaginationQuery.data.limit) {
+    parsedPaginationQuery.data.limit = DEFAULT_CASE_PAGINATION_SIZE;
   }
 
   const filtersForBackend: CaseFilters = {
@@ -134,7 +143,13 @@ export default function Cases() {
     resourceId: inboxId ?? MY_INBOX_ID,
     transform: (fetcherData) => fetcherData.casesData,
     initialData: initialCasesData,
-    getQueryParams: (cursor) => buildQueryParams(filters, cursor, initialPagination.order ?? null),
+    getQueryParams: (cursor) =>
+      buildQueryParams(
+        filters,
+        cursor,
+        initialPagination.limit ?? null,
+        initialPagination.order ?? null,
+      ),
     validateData: (data) => data.items.length > 0,
   });
 
@@ -151,7 +166,7 @@ export default function Cases() {
         const pathname = getRoute('/cases/inboxes/:inboxId', {
           inboxId: inboxId ? fromUUIDtoSUUID(inboxId) : MY_INBOX_ID,
         });
-        const search = qs.stringify(buildQueryParams(casesFilters, null, null), {
+        const search = qs.stringify(buildQueryParams(casesFilters, null, null, null), {
           addQueryPrefix: true,
           skipNulls: true,
         });
@@ -172,17 +187,20 @@ export default function Cases() {
         reset();
         return;
       }
-      if (pagination.order) {
+      if (pagination.order || pagination.limit) {
         reset();
         navigate(
           {
             pathname: getRoute('/cases/inboxes/:inboxId', {
               inboxId: inboxId ? fromUUIDtoSUUID(inboxId) : MY_INBOX_ID,
             }),
-            search: qs.stringify(buildQueryParams(casesFilters, null, pagination.order), {
-              addQueryPrefix: true,
-              skipNulls: true,
-            }),
+            search: qs.stringify(
+              buildQueryParams(casesFilters, null, pagination.limit ?? null, pagination.order),
+              {
+                addQueryPrefix: true,
+                skipNulls: true,
+              },
+            ),
           },
           { replace: true },
         );
@@ -256,16 +274,39 @@ export default function Cases() {
                   hasAlreadyOrdered = true;
                 }}
               />
-              <CursorPaginationButtons
-                items={cases}
-                onPaginationChange={(paginationParams: PaginationParams) =>
-                  navigateCasesList(filters, paginationParams)
-                }
-                boundariesDisplay="ranks"
-                hasPreviousPage={hasPreviousPage}
-                pageNb={pageNb}
-                {...pagination}
-              />
+              <div className="flex justify-between gap-8">
+                <div className="flex gap-2 items-center">
+                  <span>{t('cases:list.results_per_page')}</span>
+                  {[25, 50, 100].map((limit) => {
+                    const isActive = limit === initialPagination.limit;
+                    return (
+                      <Button
+                        key={`pagination-limit-${limit}`}
+                        variant="secondary"
+                        className={cn(isActive && 'border-purple-65 text-purple-65')}
+                        onClick={() => {
+                          if (!isActive) {
+                            navigateCasesList(filters, { ...initialPagination, limit });
+                          }
+                        }}
+                      >
+                        {limit}
+                      </Button>
+                    );
+                  })}
+                </div>
+                <CursorPaginationButtons
+                  items={cases}
+                  onPaginationChange={(paginationParams: PaginationParams) =>
+                    navigateCasesList(filters, paginationParams)
+                  }
+                  boundariesDisplay="ranks"
+                  hasPreviousPage={hasPreviousPage}
+                  pageNb={pageNb}
+                  itemsPerPage={initialPagination.limit ?? DEFAULT_CASE_PAGINATION_SIZE}
+                  {...pagination}
+                />
+              </div>
             </CasesFiltersProvider>
           </div>
         </Page.Content>

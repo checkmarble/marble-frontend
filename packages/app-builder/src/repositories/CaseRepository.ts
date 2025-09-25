@@ -24,13 +24,14 @@ import {
 } from '@app-builder/models/kyc-case-enrichment';
 import {
   adaptPagination,
-  defaultPaginationSize,
   type FiltersWithPagination,
   type PaginatedResponse,
 } from '@app-builder/models/pagination';
 import { add } from 'date-fns/add';
 import { map } from 'remeda';
 import { Temporal } from 'temporal-polyfill';
+
+export const DEFAULT_CASE_PAGINATION_SIZE = 50;
 
 export type CaseFilters = {
   snoozed?: boolean;
@@ -140,7 +141,7 @@ export function makeGetCaseRepository() {
         inboxId: inboxIds,
         status: statuses,
         includeSnoozed: rest.snoozed,
-        limit: defaultPaginationSize,
+        limit: DEFAULT_CASE_PAGINATION_SIZE,
         ...rest,
       });
 

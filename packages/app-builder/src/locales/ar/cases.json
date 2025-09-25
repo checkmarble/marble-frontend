@@ -203,6 +203,7 @@
   "kyc_enrichment.loading": "تحميل التعزيز KYC... (يمكن أن يستغرق ذلك دقيقة واحدة)",
   "kyc_enrichment.loading.toaster.error": "فشل تحميل التعزيز KYC",
   "kyc_enrichment.title": "KYC Enrichment",
+  "list.results_per_page": "حالات لكل صفحة",
   "next_unassigned_case": "انتقل إلى القضية غير المعينة التالية",
   "pick_file_cta": "اختر ملفًا",
   "required_actions.decide_final_status": "تقرر الوضع النهائي",
