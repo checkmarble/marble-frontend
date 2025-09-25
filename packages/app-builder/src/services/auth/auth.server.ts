@@ -52,6 +52,7 @@ import { type SessionService } from './session.server';
 import { Tokens } from '@app-builder/routes/oidc+/auth';
 import { OIDCStrategy } from 'remix-auth-openid';
 import { AppConfigRepository } from '@app-builder/repositories/AppConfigRepository';
+import { MarbleOidcStrategy } from './oidc.server';
 
 interface AuthenticatedInfo {
   /**
@@ -130,6 +131,7 @@ interface MakeAuthenticationServerServiceArgs {
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
   getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
   getFeatureAccessAPIClientWithAuth: GetFeatureAccessAPIClientWithAuth;
+  getAppConfigRepository: (marbleCoreApiClient: MarbleCoreApi) => AppConfigRepository;
   getUserRepository: (marbleCoreApiClient: MarbleCoreApi) => UserRepository;
   getInboxRepository: (marbleCoreApiClient: MarbleCoreApi) => InboxRepository;
   getEditorRepository: (marbleCoreApiClient: MarbleCoreApi) => EditorRepository;
@@ -166,7 +168,7 @@ interface MakeAuthenticationServerServiceArgs {
   authSessionService: SessionService<AuthData, AuthFlashData>;
   toastSessionService: SessionService<void, ToastFlashData>;
   csrfService: CSRF;
-  makeOidcService: (configRepository: AppConfigRepository) => Promise<OIDCStrategy<Tokens>>;
+  makeOidcService: (configRepository: AppConfigRepository) => Promise<MarbleOidcStrategy<Tokens>>;
 }
 
 function expectedErrors(error: unknown) {
@@ -177,6 +179,7 @@ export function makeAuthenticationServerService({
   getMarbleCoreAPIClientWithAuth,
   getTransfercheckAPIClientWithAuth,
   getFeatureAccessAPIClientWithAuth,
+  getAppConfigRepository,
   getUserRepository,
   getInboxRepository,
   getEditorRepository,
@@ -209,6 +212,36 @@ export function makeAuthenticationServerService({
     return {
       getToken: () => Promise.resolve(marbleAccessToken),
       refreshToken: async () => {
+        const appConfigRepository = getAppConfigRepository(marblecoreApi);
+        const appConfig = await appConfigRepository.getAppConfig();
+
+        if (appConfig.auth.provider == 'oidc') {
+          const oidc = await makeOidcService(appConfigRepository);
+
+          if (request) {
+            const authSession = await authSessionService.getSession(request);
+
+            if (authSession.data.refreshToken) {
+              const response = await oidc.refreshToken(authSession.data.refreshToken);
+
+              const marbleToken = await marblecoreApi.postToken(
+                {
+                  authorization: `Bearer ${response.idToken()}`,
+                },
+                { baseUrl: getServerEnv('MARBLE_API_URL_SERVER') },
+              );
+
+              authSession.set('authToken', marbleToken);
+
+              if (response.hasRefreshToken()) {
+                authSession.set('refreshToken', response.refreshToken());
+              }
+
+              return marbleToken.access_token;
+            }
+          }
+        }
+
         // We don't handle refresh for now, force a logout when 401 is returned instead
         throw redirect(getRoute('/ressources/auth/logout'));
       },
@@ -386,10 +419,10 @@ export function makeAuthenticationServerService({
       else return null;
     }
 
-    const tokenService = getTokenService(marbleToken.access_token);
+    const tokenService = getTokenService(marbleToken.access_token, request);
     const marbleCoreApiClient = getMarbleCoreAPIClientWithAuth(tokenService);
     const featureAccessApiClient = getFeatureAccessAPIClientWithAuth(
-      getTokenService(marbleToken.access_token),
+      getTokenService(marbleToken.access_token, request),
     );
     const transfercheckAPIClient = getTransfercheckAPIClientWithAuth(tokenService);
 

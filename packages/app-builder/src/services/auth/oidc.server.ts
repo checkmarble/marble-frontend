@@ -5,7 +5,7 @@ import { OAuth2Strategy } from 'remix-auth-oauth2';
 
 let oidcStrategy: MarbleOidcStrategy<Tokens> | undefined = undefined;
 
-class MarbleOidcStrategy<U> extends OAuth2Strategy<U> {
+export class MarbleOidcStrategy<U> extends OAuth2Strategy<U> {
   extraParams: { [key: string]: string } = {};
 
   override authorizationParams(searchParams: URLSearchParams, request: Request) {
