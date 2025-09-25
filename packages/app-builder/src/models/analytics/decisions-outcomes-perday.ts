@@ -9,6 +9,7 @@ import {
   getMonth,
   isAfter,
   isBefore,
+  startOfDay,
   startOfMonth,
   startOfWeek,
 } from 'date-fns';
@@ -160,8 +161,8 @@ export const transformDecisionOutcomesPerDayQuery = decisionOutcomesPerDayQuery.
   (val): DecisionOutcomesPerDayQueryDto[] => {
     return [
       {
-        start: val.dateRange.start,
-        end: val.dateRange.end,
+        start: startOfDay(val.dateRange.start).toISOString(),
+        end: startOfDay(val.dateRange.end).toISOString(),
         scenario_id: val.scenarioId,
         scenario_versions: val.scenarioVersion ? [val.scenarioVersion] : [],
         trigger: val.trigger,
@@ -169,8 +170,8 @@ export const transformDecisionOutcomesPerDayQuery = decisionOutcomesPerDayQuery.
       ...(val.compareDateRange
         ? [
             {
-              start: val.compareDateRange.start,
-              end: val.compareDateRange.end,
+              start: startOfDay(val.compareDateRange.start).toISOString(),
+              end: startOfDay(val.compareDateRange.end).toISOString(),
               scenario_id: val.scenarioId,
               scenario_versions: val.scenarioVersion ? [val.scenarioVersion] : [],
               trigger: val.trigger,
@@ -181,6 +182,12 @@ export const transformDecisionOutcomesPerDayQuery = decisionOutcomesPerDayQuery.
   },
 );
 
+const MAX_TICKS = 12;
+const limitTicks = (data: DecisionOutcomesAbsolute[]): DecisionOutcomesAbsolute[] =>
+  data.filter(
+    (_, i, arr) =>
+      arr.length <= MAX_TICKS || i % Math.round((arr.length - 1) / (MAX_TICKS - 1)) === 0,
+  );
 const getGridXValues = (
   data: DecisionOutcomesAbsolute[],
   start: Date,
@@ -189,7 +196,6 @@ const getGridXValues = (
 ): string[] => {
   if (mode === 'day') {
     if (isBefore(end, addWeeks(start, 2))) {
-      // return mondays
       return data.filter((day) => getDay(day.date) === 1).map((v) => v.date);
     }
 
@@ -203,10 +209,12 @@ const getGridXValues = (
     // return 1st of the month
     return data.filter((day) => getDay(day.date) === 1).map((v) => v.date);
   }
+
   if (mode === 'week') {
-    return data.map((v) => startOfWeek(v.date, { weekStartsOn: 1 }).toISOString());
+    return limitTicks(data).map((v) => startOfWeek(v.date, { weekStartsOn: 1 }).toISOString());
   }
-  return data.map((v) => startOfMonth(v.date).toISOString());
+  // mode === 'month'
+  return limitTicks(data).map((v) => startOfMonth(v.date).toISOString());
 };
 
 const getRatio = (item: DecisionOutcomesAbsolute): DecisionOutcomes => ({
@@ -270,6 +278,9 @@ export const adaptDecisionOutcomesPerDay = (
     appendToAbsoluteCounts(absoluteCountsByMonth, item, 'month');
   });
 
+  const absoluteCountsByWeekArray = Array.from(absoluteCountsByWeek.values());
+  const absoluteCountsByMonthArray = Array.from(absoluteCountsByMonth.values());
+
   return {
     daily: isAfter(end, addMonths(start, 6))
       ? null
@@ -282,17 +293,17 @@ export const adaptDecisionOutcomesPerDay = (
         },
     weekly: {
       data: {
-        absolute: Array.from(absoluteCountsByWeek.values()),
-        ratio: Array.from(absoluteCountsByWeek.values()).map((item) => getRatio(item)),
+        absolute: absoluteCountsByWeekArray,
+        ratio: absoluteCountsByWeekArray.map((item) => getRatio(item)),
       },
-      gridXValues: getGridXValues(absoluteDailyData, start, end, 'week'),
+      gridXValues: getGridXValues(absoluteCountsByWeekArray, start, end, 'week'),
     },
     monthly: {
       data: {
-        absolute: Array.from(absoluteCountsByMonth.values()),
-        ratio: Array.from(absoluteCountsByMonth.values()).map((item) => getRatio(item)),
+        absolute: absoluteCountsByMonthArray,
+        ratio: absoluteCountsByMonthArray.map((item) => getRatio(item)),
       },
-      gridXValues: getGridXValues(absoluteDailyData, start, end, 'month'),
+      gridXValues: getGridXValues(absoluteCountsByMonthArray, start, end, 'month'),
     },
   };
 };
