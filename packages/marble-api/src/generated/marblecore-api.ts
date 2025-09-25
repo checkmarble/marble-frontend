@@ -334,6 +334,48 @@ export type UpdateCaseBodyDto = {
 export type AssignCaseBodyDto = {
     user_id: string;
 };
+export type ConstantDto = ((string | null) | (number | null) | (boolean | null) | (ConstantDto[] | null) | ({
+    [key: string]: ConstantDto;
+} | null)) | null;
+export type EvaluationErrorCodeDto = "UNEXPECTED_ERROR" | "UNDEFINED_FUNCTION" | "WRONG_NUMBER_OF_ARGUMENTS" | "MISSING_NAMED_ARGUMENT" | "ARGUMENTS_MUST_BE_INT_OR_FLOAT" | "ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME" | "ARGUMENT_MUST_BE_INTEGER" | "ARGUMENT_MUST_BE_STRING" | "ARGUMENT_MUST_BE_BOOLEAN" | "ARGUMENT_MUST_BE_LIST" | "ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION" | "ARGUMENT_MUST_BE_TIME" | "ARGUMENT_REQUIRED" | "ARGUMENT_INVALID_TYPE" | "LIST_NOT_FOUND" | "DATABASE_ACCESS_NOT_FOUND" | "PAYLOAD_FIELD_NOT_FOUND" | "NULL_FIELD_READ" | "NO_ROWS_READ" | "DIVISION_BY_ZERO" | "PAYLOAD_FIELD_NOT_FOUND" | "RUNTIME_EXPRESSION_ERROR";
+export type EvaluationErrorDto = {
+    error: EvaluationErrorCodeDto;
+    message: string;
+    argument_index?: number;
+    argument_name?: string;
+};
+export type NodeEvaluationDto = {
+    return_value: {
+        value?: ConstantDto;
+        is_omitted: boolean;
+    };
+    errors: EvaluationErrorDto[] | null;
+    children?: NodeEvaluationDto[];
+    named_children?: {
+        [key: string]: NodeEvaluationDto;
+    };
+    skipped?: boolean;
+};
+export type RuleExecutionDto = {
+    error?: Error;
+    description: string;
+    name: string;
+    outcome: "hit" | "no_hit" | "snoozed" | "error";
+    result: boolean;
+    rule_id: string;
+    score_modifier: number;
+    rule_evaluation?: NodeEvaluationDto;
+};
+export type DetailedCaseDecisionDto = CaseDecisionDto & {
+    rules: RuleExecutionDto[];
+    sanction_checks?: {
+        id: string;
+        status: "in_review" | "confirmed_hit";
+        name: string;
+        partial: boolean;
+        count: number;
+    }[];
+};
 export type GroupedAnnotations = {
     comments: CommentEntityAnnotationDto[];
     tags: TagEntityAnnotationDto[];
@@ -469,38 +511,6 @@ export type ScheduledExecutionDto = {
     scenario_trigger_object_type: string;
     started_at: string;
     status: "pending" | "processing" | "success" | "failure" | "partial_failure";
-};
-export type ConstantDto = ((string | null) | (number | null) | (boolean | null) | (ConstantDto[] | null) | ({
-    [key: string]: ConstantDto;
-} | null)) | null;
-export type EvaluationErrorCodeDto = "UNEXPECTED_ERROR" | "UNDEFINED_FUNCTION" | "WRONG_NUMBER_OF_ARGUMENTS" | "MISSING_NAMED_ARGUMENT" | "ARGUMENTS_MUST_BE_INT_OR_FLOAT" | "ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME" | "ARGUMENT_MUST_BE_INTEGER" | "ARGUMENT_MUST_BE_STRING" | "ARGUMENT_MUST_BE_BOOLEAN" | "ARGUMENT_MUST_BE_LIST" | "ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION" | "ARGUMENT_MUST_BE_TIME" | "ARGUMENT_REQUIRED" | "ARGUMENT_INVALID_TYPE" | "LIST_NOT_FOUND" | "DATABASE_ACCESS_NOT_FOUND" | "PAYLOAD_FIELD_NOT_FOUND" | "NULL_FIELD_READ" | "NO_ROWS_READ" | "DIVISION_BY_ZERO" | "PAYLOAD_FIELD_NOT_FOUND" | "RUNTIME_EXPRESSION_ERROR";
-export type EvaluationErrorDto = {
-    error: EvaluationErrorCodeDto;
-    message: string;
-    argument_index?: number;
-    argument_name?: string;
-};
-export type NodeEvaluationDto = {
-    return_value: {
-        value?: ConstantDto;
-        is_omitted: boolean;
-    };
-    errors: EvaluationErrorDto[] | null;
-    children?: NodeEvaluationDto[];
-    named_children?: {
-        [key: string]: NodeEvaluationDto;
-    };
-    skipped?: boolean;
-};
-export type RuleExecutionDto = {
-    error?: Error;
-    description: string;
-    name: string;
-    outcome: "hit" | "no_hit" | "snoozed" | "error";
-    result: boolean;
-    rule_id: string;
-    score_modifier: number;
-    rule_evaluation?: NodeEvaluationDto;
 };
 export type DecisionDetailDto = DecisionDto & {
     rules: RuleExecutionDto[];
@@ -1638,10 +1648,10 @@ export function getPaginatedCaseDecisions(caseId: string, { cursorId, limit }: {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: {
-            decisions: CaseDecisionDto[];
+            decisions: DetailedCaseDecisionDto[];
             pagination: {
                 has_more?: boolean;
-                cursor_id?: string;
+                next_cursor_id?: string;
             };
         };
     } | {

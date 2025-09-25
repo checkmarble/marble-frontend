@@ -162,7 +162,7 @@
   "relative.maleThirdCousin.label": "Male third cousin",
   "required_actions.match_to_review": "Match to review ({{count}})",
   "required_actions.review": "Review",
-  "required_actions.review_pending_screening_count": "Review pending screening ({{count}})",
+  "required_actions.review_pending_screening_count": "Review pending screening",
   "required_actions.title": "Required actions",
   "required_actions.view": "View",
   "required_actions.view_error": "View error",

@@ -30,8 +30,10 @@ function forwardHeader(
 export type BasicFetchParams = { request: Request };
 
 export function createBasicFetch({ request }: BasicFetchParams) {
-  return async (input: RequestInfo | URL, init?: RequestInit) => {
+  return async function basicFetch(input: RequestInfo | URL, init?: RequestInit) {
     const headers = new Headers(init?.headers);
+
+    headers.set('x-referer-app', 'marble-frontend');
 
     // forwarding trace headers
     forwardHeader(request.headers, headers, 'traceparent');

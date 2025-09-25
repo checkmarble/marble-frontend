@@ -1,4 +1,6 @@
 {
+  "access_by_id.button_label": "Go to case",
+  "access_by_id.placeholder": "Go to a case by id",
   "add_file": "Add a file",
   "ai_review.proof.tab_title": "Tab {{number}}",
   "ai_review.proof.title": "Proof",
@@ -173,6 +175,7 @@
   "decisions.trigger_object": "Trigger object",
   "drop_file_accepted_types": "jpg, png, pdf, zip, doc, docx, xls, xlsx",
   "drop_file_cta": "Drop any file here to attach it to the case. The following extensions are supported:",
+  "errors.case_not_found": "Case not found",
   "escalate-button.forbidden.hint": "There is no escalation inbox set. Please contact your administrator.",
   "escalate-button.forbidden.hint.admin": "There is no escalation inbox set.",
   "escalate-button.hint": "Escalate the case to {{inboxName}}.",

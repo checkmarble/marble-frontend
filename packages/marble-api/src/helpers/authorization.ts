@@ -14,7 +14,7 @@ export function createFetchWithAuthMiddleware<Token>({
   tokenService,
   getAuthorizationHeader,
 }: FetchWithAuthMiddlewareParam<Token>) {
-  return async (input: RequestInfo | URL, init?: RequestInit) => {
+  return async function authFetch(input: RequestInfo | URL, init?: RequestInit) {
     const headers = new Headers(init?.headers);
     const basicFetch = createBasicFetch({ request });
 
