@@ -182,6 +182,7 @@
   "escalate-button.label": "تصاعد",
   "escalate-case.modal.callout": "عند تصعيد هذه الحالة ، لن يتم تخصيصها لها ، وسوف تفقد الوصول إذا لم تكن عضوًا في صندوق الوارد المستهدف. <br/> سيتم إعادة توجيهك إلى قائمة الحالات في صندوق الوارد الحالي.",
   "escalate-case.modal.submit-button.label": "تصاعد",
+  "filter.assignee.label": "مكلّف",
   "filter.closed_only.label": "المغلقة فقط",
   "filter.exclude_assigned.label": "غير المكلّفين فقط",
   "filter.include_snoozed.label": "تضمين المؤجّلين",

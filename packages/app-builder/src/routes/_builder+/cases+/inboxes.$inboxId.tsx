@@ -60,6 +60,7 @@ export const buildQueryParams = (
             fromNow: filters.dateRange.fromNow,
           }
       : {},
+    assignee: filters.assignee,
     offsetId,
     ...(limit && { limit }),
     ...(order && { order }),
@@ -105,7 +106,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     statuses:
       (parsedQuery.data.statuses as CaseStatus[]) ??
       caseStatuses.filter((status) => status !== 'closed'),
-    ...(!inboxId && { assigneeId: user.actorIdentity.userId }),
+    ...(!inboxId
+      ? { assigneeId: user.actorIdentity.userId }
+      : { assigneeId: parsedQuery.data.assignee }),
   };
 
   try {
@@ -253,7 +256,9 @@ export default function Cases() {
                   </CaseRightPanel.Trigger>
                 </div>
               </div>
-              <CasesFiltersBar excludedFilters={!inboxId ? ['excludeAssigned'] : undefined} />
+              <CasesFiltersBar
+                excludedFilters={!inboxId ? ['excludeAssigned', 'assignee'] : undefined}
+              />
               <CasesList
                 key={inboxId}
                 cases={cases}
