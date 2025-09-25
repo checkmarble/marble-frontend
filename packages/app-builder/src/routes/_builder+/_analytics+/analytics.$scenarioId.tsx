@@ -110,9 +110,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   if (!parsed) {
     const now = new Date();
-    const startDefault = subMonths(now, 1).toISOString();
+    now.setUTCHours(0, 0, 0, 0);
+    const startDefault = subMonths(now, 1);
+    startDefault.setUTCHours(0, 0, 0, 0);
     return redirectWithQ({
-      range: { start: startDefault, end: now.toISOString() },
+      range: { start: startDefault.toISOString(), end: now.toISOString() },
       compareRange: null,
     });
   }
@@ -129,6 +131,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     scenario.listScenarios(),
     scenario.listScenarioIterations({ scenarioId }),
   ]);
+
+  console.log('decisionsOutcomesPerDay', JSON.stringify(decisionsOutcomesPerDay, null, 2));
 
   return Response.json({
     decisionsOutcomesPerDay,
@@ -175,7 +179,7 @@ export default function Analytics() {
         </div>
       </div>
       <Decisions
-        decisionsOutcomesPerDay={decisionsOutcomesPerDay}
+        data={decisionsOutcomesPerDay}
         decisions={decisions}
         setDecisions={setDecisions}
         scenarioVersions={scenarioVersions}
