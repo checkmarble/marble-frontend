@@ -10,6 +10,7 @@ import {
   adaptUpdateCaseBodyDto,
   type Case,
   type CaseDetail,
+  CaseMassUpdateBodyDto,
   CaseReview,
   type CaseStatus,
   type CaseUpdateBody,
@@ -118,6 +119,7 @@ export interface CaseRepository {
     decisions: DetailedCaseDecision[];
     pagination: { hasMore: boolean; cursorId: string | null };
   }>;
+  massUpdateCases(args: { body: CaseMassUpdateBodyDto }): Promise<void>;
 }
 
 export function makeGetCaseRepository() {
@@ -243,6 +245,9 @@ export function makeGetCaseRepository() {
           cursorId: result.pagination.next_cursor_id ?? null,
         },
       };
+    },
+    massUpdateCases: async ({ body }) => {
+      await marbleCoreApiClient.massUpdateCases(body);
     },
   });
 }

@@ -682,3 +682,29 @@ export function adaptDetailedCaseDecision(dto: DetailedCaseDecisionDto): Detaile
     screenings: dto.screenings ?? [],
   };
 }
+
+export type CaseMassUpdateChangeStatusDto = {
+  case_ids: string[];
+  action: 'close' | 'reopen';
+};
+
+export type CaseMassUpdateAssignDto = {
+  case_ids: string[];
+  action: 'assign';
+  assign: {
+    assignee_id: string;
+  };
+};
+
+export type CaseMassUpdateMoveToInboxDto = {
+  case_ids: string[];
+  action: 'move_to_inbox';
+  move_to_inbox: {
+    inbox_id: string;
+  };
+};
+
+export type CaseMassUpdateBodyDto =
+  | CaseMassUpdateChangeStatusDto
+  | CaseMassUpdateAssignDto
+  | CaseMassUpdateMoveToInboxDto;

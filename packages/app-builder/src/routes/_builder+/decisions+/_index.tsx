@@ -6,18 +6,19 @@ import {
   DecisionFiltersProvider,
   DecisionRightPanel,
   DecisionsList,
+  DecisionViewModel,
   decisionFiltersSchema,
   decisionsI18n,
   ErrorComponent,
   Page,
   paginationSchema,
   useDecisionRightPanelContext,
-  useSelectedDecisionIds,
 } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
+import { useListSelection } from '@app-builder/hooks/useListSelection';
 import { type Decision } from '@app-builder/models/decision';
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -153,7 +154,8 @@ export default function Decisions() {
     [navigate, next, previous, reset],
   );
 
-  const { hasSelection, getSelectedDecisions, selectionProps } = useSelectedDecisionIds();
+  const { hasSelectedRows, getSelectedRows, selectionProps, tableProps } =
+    useListSelection<DecisionViewModel>(decisions, (row) => row.id);
 
   return (
     <DecisionRightPanel.Root>
@@ -179,8 +181,8 @@ export default function Decisions() {
                       <FiltersButton />
                     </DecisionFiltersMenu>
                     <AddToCase
-                      hasSelection={hasSelection}
-                      getSelectedDecisions={getSelectedDecisions}
+                      hasSelection={hasSelectedRows}
+                      getSelectedDecisions={getSelectedRows}
                     />
                   </div>
                 </div>
@@ -190,6 +192,7 @@ export default function Decisions() {
                   decisions={decisions}
                   selectable
                   selectionProps={selectionProps}
+                  tableProps={tableProps}
                   columnVisibility={{
                     pivot_value: false,
                   }}
@@ -230,6 +233,8 @@ function AddToCase({
       onTriggerClick({ decisionIds: selectedDecisions.map(({ id }) => id) });
     }
   };
+
+  console.log(hasSelection);
   return (
     <DecisionRightPanel.Trigger asChild onClick={getDecisionIds}>
       <Button disabled={!hasSelection}>

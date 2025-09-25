@@ -1,5 +1,6 @@
 import { Page } from '@app-builder/components';
 import { CreateInbox } from '@app-builder/components/Settings/Inboxes/CreateInbox';
+import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { isCreateInboxAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -8,8 +9,6 @@ import { useLoaderData } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import { hasAtLeast } from 'remeda';
 import { Icon } from 'ui-icons';
-
-export const MY_INBOX_ID = 'my-inbox';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
