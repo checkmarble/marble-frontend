@@ -81,7 +81,7 @@ export function Filters({
       </FilterPopover.Root>
       <FilterPopover.Root key={'dateRangeCompare'}>
         <FilterItem.Root>
-          <FilterItem.Trigger>
+          <FilterItem.Trigger className={!compareRange ? 'opacity-50' : ''}>
             <Icon icon="calendar-month" className="size-5" />
             {compareRange ? (
               <span className="text-s font-semibold first-letter:capitalize">

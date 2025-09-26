@@ -3,9 +3,12 @@ import {
   type DecisionsFilter,
   type RangeId,
 } from '@app-builder/models/analytics';
+import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { useMemo, useState } from 'react';
 import { ButtonV2 } from 'ui-design-system';
+import { Icon } from 'ui-icons';
+import { OutcomeFilter } from './OutcomeFilter';
 
 export type DateRange = {
   start: string;
@@ -23,12 +26,12 @@ export type DecisionsPerOutcome = {
 
 interface DecisionsProps {
   data: DecisionOutcomesPerPeriod | null;
-  decisions: DecisionsFilter;
-  setDecisions: (decisions: DecisionsFilter) => void;
   scenarioVersions: { version: number; createdAt: string }[];
 }
 
-export function Decisions({ data, decisions, setDecisions, scenarioVersions }: DecisionsProps) {
+export function Decisions({ data, scenarioVersions }: DecisionsProps) {
+  const language = useFormatLanguage();
+
   // Decision filter default values
   const defaultDecisions: DecisionsFilter = new Map([
     ['decline', true],
@@ -36,7 +39,7 @@ export function Decisions({ data, decisions, setDecisions, scenarioVersions }: D
     ['review', true],
     ['approve', false],
   ]);
-  const [decisionsState, setDecisionsState] = useState<DecisionsFilter>(defaultDecisions);
+  const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
   const [percentage, setPercentage] = useState(true);
   const [groupDate, setGroupDate] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
 
@@ -90,116 +93,138 @@ export function Decisions({ data, decisions, setDecisions, scenarioVersions }: D
     return colors[id] ?? '#9ca3af';
   };
 
-  if (!data) {
-    return null;
-  }
+  //   if (!data) {
+  //     return null;
+  //   }
   return (
-    <div className="flex w-3xl h-96 p-4 flex-col items-start gap-2">
-      <div className="flex items-center gap-2">
-        <span className="text-s">Count:</span>
-        <div className="flex gap-1">
-          <ButtonV2
-            variant="secondary"
-            onClick={() => {
-              setPercentage(true);
-              setDecisionsState(
-                new Map([
-                  ['decline', true],
-                  ['blockAndReview', true],
-                  ['review', true],
-                  ['approve', true],
-                ]),
-              );
-            }}
-            className={percentage ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
-          >
-            %
-          </ButtonV2>
-          <ButtonV2
-            variant="secondary"
-            onClick={() => setPercentage(false)}
-            className={!percentage ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
-          >
-            #
+    <div className="bg-white border border-grey-90 rounded-lg p-4 shadow-sm">
+      <div className="flex w-full h-[500px] flex-col items-start gap-4">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2">
+            <span className="text-s">Count:</span>
+            <div className="flex gap-1">
+              <ButtonV2
+                variant="secondary"
+                onClick={() => {
+                  setPercentage(true);
+                  setDecisions(
+                    new Map([
+                      ['decline', true],
+                      ['blockAndReview', true],
+                      ['review', true],
+                      ['approve', true],
+                    ]),
+                  );
+                }}
+                className={percentage ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
+              >
+                %
+              </ButtonV2>
+              <ButtonV2
+                variant="secondary"
+                onClick={() => setPercentage(false)}
+                className={!percentage ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
+              >
+                #
+              </ButtonV2>
+            </div>
+          </div>
+          <ButtonV2 variant="secondary" className="flex items-center gap-2">
+            <Icon icon="download" className="size-4" />
+            Export
           </ButtonV2>
         </div>
-      </div>
-      <div className="relative flex-1 w-full">
-        <ResponsiveBar
-          data={
-            percentage
-              ? (currentDataGroup?.data.ratio ?? [])
-              : (currentDataGroup?.data.absolute ?? [])
-          }
-          indexBy="date"
-          enableLabel={false}
-          keys={
-            percentage
-              ? ['decline', 'blockAndReview', 'review', 'approve']
-              : Array.from(decisionsState)
-                  .filter(([_, value]) => value)
-                  .map(([key]) => key)
-          }
-          padding={0.5}
-          margin={{ top: 80, right: 130, bottom: 50, left: 60 }}
-          colors={getBarColors}
-          defs={[
-            {
-              id: 'compareOpacity',
-              type: 'linearGradient',
-              colors: [
-                { offset: 0, color: 'inherit', opacity: 0.5 },
-                { offset: 100, color: 'inherit', opacity: 0.5 },
-              ],
-            },
-          ]}
-          fill={[
-            {
-              match: (n) => n.data.data['rangeId'] === 'compare',
-              id: 'compareOpacity',
-            },
-          ]}
-          axisLeft={{ legend: 'outcome (indexBy)', legendOffset: -70 }}
-          axisBottom={{
-            tickValues: currentDataGroup?.gridXValues,
-            format: (value: string) => {
-              // Convert the ISO string to a Date object and format it
-              const date = new Date(value);
-              return date.toLocaleDateString('fr-FR', {
-                month: 'short',
-                day: 'numeric',
-              });
-            },
-          }}
-          //   markers={currentDataGroup?.scenarioVersionsXMarkers}
-        />
-        <div className="relative bottom-2 right-2 flex gap-2">
-          <ButtonV2
-            variant="secondary"
-            mode="normal"
-            onClick={() => setGroupDate('daily')}
-            className={groupDate === 'daily' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
-          >
-            Day
-          </ButtonV2>
-          <ButtonV2
-            variant="secondary"
-            mode="normal"
-            onClick={() => setGroupDate('weekly')}
-            className={groupDate === 'weekly' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
-          >
-            Week
-          </ButtonV2>
-          <ButtonV2
-            variant="secondary"
-            mode="normal"
-            onClick={() => setGroupDate('monthly')}
-            className={
-              groupDate === 'monthly' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''
+        <div className="flex-1 w-full">
+          <ResponsiveBar
+            data={
+              percentage
+                ? (currentDataGroup?.data.ratio ?? [])
+                : (currentDataGroup?.data.absolute ?? [])
             }
-          >
-            Month
-          </ButtonV2>
+            indexBy="date"
+            enableLabel={false}
+            keys={
+              // percentage
+              //   ? ['decline', 'blockAndReview', 'review', 'approve']
+              //   :
+              Array.from(decisions)
+                .filter(([_, value]) => value)
+                .map(([key]) => key)
+            }
+            padding={0.5}
+            margin={{ top: 20, right: 0, bottom: 20, left: 60 }}
+            colors={getBarColors}
+            defs={[
+              {
+                id: 'compareOpacity',
+                type: 'linearGradient',
+                colors: [
+                  { offset: 0, color: 'inherit', opacity: 0.5 },
+                  { offset: 100, color: 'inherit', opacity: 0.5 },
+                ],
+              },
+            ]}
+            fill={[
+              {
+                match: (n) => n.data.data['rangeId'] === 'compare',
+                id: 'compareOpacity',
+              },
+            ]}
+            axisLeft={{ legend: 'outcome (indexBy)', legendOffset: -70 }}
+            axisBottom={{
+              tickValues: currentDataGroup?.gridXValues,
+              format: (value: string) => {
+                // Convert the ISO string to a Date object and format it
+                const date = new Date(value);
+                return date.toLocaleDateString(language, {
+                  month: 'short',
+                  day: 'numeric',
+                });
+              },
+            }}
+            layout="vertical"
+            motionConfig="stiff"
+
+            //   markers={currentDataGroup?.scenarioVersionsXMarkers}
+          />
+        </div>
+        <div className="flex w-full justify-end mt-2">
+          <div className="flex gap-2">
+            <ButtonV2
+              disabled={!data?.daily}
+              variant="secondary"
+              mode="normal"
+              onClick={() => setGroupDate('daily')}
+              className={
+                groupDate === 'daily' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''
+              }
+            >
+              Day
+            </ButtonV2>
+            <ButtonV2
+              variant="secondary"
+              mode="normal"
+              onClick={() => setGroupDate('weekly')}
+              className={
+                groupDate === 'weekly' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''
+              }
+            >
+              Week
+            </ButtonV2>
+            <ButtonV2
+              variant="secondary"
+              mode="normal"
+              onClick={() => setGroupDate('monthly')}
+              className={
+                groupDate === 'monthly' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''
+              }
+            >
+              Month
+            </ButtonV2>
+          </div>
+        </div>
+        <div className="flex w-full justify-center mt-4">
+          <OutcomeFilter decisions={decisions} onChange={setDecisions} />
         </div>
       </div>
     </div>
