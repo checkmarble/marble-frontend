@@ -34,35 +34,42 @@ export function makeGetAnalyticsRepository() {
       const parsed = transformDecisionOutcomesPerDayQuery.parse(args);
       if (!parsed.length) throw new Error('No date range provided');
 
-      const [raw, rawCompare] = await Promise.all([
-        client.getDecisionOutcomesPerDay(parsed[0]!),
-        ...(parsed[1] ? [client.getDecisionOutcomesPerDay(parsed[1])] : []),
-      ]);
-      const merged = mergeDateRanges([raw, ...(rawCompare ? [rawCompare] : [])]);
+      console.log('parsed', parsed);
+      try {
+        const [raw, rawCompare] = await Promise.all([
+          client.getDecisionOutcomesPerDay(parsed[0]!),
+          ...(parsed[1] ? [client.getDecisionOutcomesPerDay(parsed[1])] : []),
+        ]);
 
-      const start = args.compareDateRange
-        ? [args.dateRange.start, args.compareDateRange.start].sort(compareAsc)[0]!
-        : args.dateRange.start;
-      const end = args.compareDateRange
-        ? [args.dateRange.end, args.compareDateRange.end].sort(compareDesc)[0]!
-        : args.dateRange.end;
+        const merged = mergeDateRanges([raw, ...(rawCompare ? [rawCompare] : [])]);
 
-      const startDate: LimitDate = {
-        date: start,
-        rangeId: start === args.dateRange.start ? 'base' : 'compare',
-      };
-      const endDate: LimitDate = {
-        date: end,
-        rangeId: end === args.dateRange.end ? 'base' : 'compare',
-      };
+        const start = args.compareDateRange
+          ? [args.dateRange.start, args.compareDateRange.start].sort(compareAsc)[0]!
+          : args.dateRange.start;
+        const end = args.compareDateRange
+          ? [args.dateRange.end, args.compareDateRange.end].sort(compareDesc)[0]!
+          : args.dateRange.end;
 
-      const rangeSize = differenceInDays(end, start);
-      if (!merged.length) return null;
+        const startDate: LimitDate = {
+          date: start,
+          rangeId: start === args.dateRange.start ? 'base' : 'compare',
+        };
+        const endDate: LimitDate = {
+          date: end,
+          rangeId: end === args.dateRange.end ? 'base' : 'compare',
+        };
 
-      if (rangeSize !== merged.length) {
-        return adaptDecisionOutcomesPerDay(fillMissingDays(merged, startDate, endDate));
+        const rangeSize = differenceInDays(end, start);
+        if (!merged.length) return null;
+
+        if (rangeSize !== merged.length) {
+          return adaptDecisionOutcomesPerDay(fillMissingDays(merged, startDate, endDate));
+        }
+        return adaptDecisionOutcomesPerDay(merged);
+      } catch (error) {
+        console.error(error);
+        return null;
       }
-      return adaptDecisionOutcomesPerDay(merged);
     },
   });
 }
