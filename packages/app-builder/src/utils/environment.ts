@@ -1,4 +1,3 @@
-import { type FirebaseOptions } from 'firebase/app';
 import * as z from 'zod/v4';
 
 /**
@@ -27,11 +26,6 @@ const PublicEnvVarsSchema = z.object({
   MARBLE_APP_URL: z.string(),
 
   METABASE_URL: z.string().optional(),
-
-  FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
-  FIREBASE_API_KEY: z.string().optional(),
-  FIREBASE_AUTH_DOMAIN: z.string().optional(),
-  FIREBASE_PROJECT_ID: z.string().optional(),
 
   SENTRY_DSN: z.string().optional(),
   SENTRY_ENVIRONMENT: z.string().optional(),
@@ -89,7 +83,6 @@ interface ServerEnvVars {
   SESSION_MAX_AGE?: string;
   MARBLE_API_URL_SERVER: string;
   MARBLE_APP_URL: string;
-  FIREBASE_CONFIG: FirebaseConfig;
   METABASE_URL?: string;
   SENTRY_DSN?: string;
   SENTRY_ENVIRONMENT?: string;
@@ -103,10 +96,6 @@ interface ServerEnvVars {
  * Used to access env vars inside loaders/actions code
  */
 export function getServerEnv<K extends keyof ServerEnvVars>(serverEnvVarName: K) {
-  if (serverEnvVarName === 'FIREBASE_CONFIG') {
-    return parseFirebaseConfigFromEnv() as ServerEnvVars[K];
-  }
-
   return getEnv(serverEnvVarName) as ServerEnvVars[K];
 }
 
@@ -148,22 +137,4 @@ export function getClientEnv<K extends keyof ClientEnvVars>(clientEnvVarName: K)
   }
 
   return clientEnv[clientEnvVarName];
-}
-
-export type FirebaseConfig = {
-  emulatorHost?: string;
-  options: FirebaseOptions;
-};
-
-function parseFirebaseConfigFromEnv(): FirebaseConfig {
-  const options: FirebaseOptions = {
-    apiKey: getEnv('FIREBASE_API_KEY'),
-    authDomain: getEnv('FIREBASE_AUTH_DOMAIN'),
-    projectId: getEnv('FIREBASE_PROJECT_ID'),
-  };
-
-  return {
-    emulatorHost: getEnv('FIREBASE_AUTH_EMULATOR_HOST'),
-    options,
-  };
 }
