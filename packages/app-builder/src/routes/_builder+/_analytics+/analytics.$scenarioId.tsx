@@ -1,9 +1,7 @@
 import { ErrorComponent } from '@app-builder/components';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
 import { Filters } from '@app-builder/components/Analytics/Filters';
-import { OutcomeFilter } from '@app-builder/components/Analytics/OutcomeFilter';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
-import { type DecisionsFilter } from '@app-builder/models/analytics';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -11,7 +9,6 @@ import { useLoaderData, useNavigate, useRouteError, useSearchParams } from '@rem
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { subMonths } from 'date-fns';
 import { type Namespace } from 'i18next';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 import z from 'zod';
@@ -113,6 +110,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     now.setUTCHours(0, 0, 0, 0);
     const startDefault = subMonths(now, 1);
     startDefault.setUTCHours(0, 0, 0, 0);
+
+    console.log('startDefault', startDefault.toISOString());
+    console.log('now', now.toISOString());
     return redirectWithQ({
       range: { start: startDefault.toISOString(), end: now.toISOString() },
       compareRange: null,
@@ -131,8 +131,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     scenario.listScenarios(),
     scenario.listScenarioIterations({ scenarioId }),
   ]);
-
-  console.log('decisionsOutcomesPerDay', JSON.stringify(decisionsOutcomesPerDay, null, 2));
 
   return Response.json({
     decisionsOutcomesPerDay,
@@ -153,41 +151,25 @@ export default function Analytics() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Decision filter default values
-  const defaultDecisions: DecisionsFilter = new Map([
-    ['decline', true],
-    ['blockAndReview', true],
-    ['review', true],
-    ['approve', false],
-  ]);
-  const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
+  const onScenariochange = (scenarioId: string) => {
+    const qs = searchParams.toString();
+    const path = getRoute('/analytics/:scenarioId', { scenarioId });
+    navigate(qs ? `${path}?${qs}` : path);
+  };
 
   return (
-    <>
-      <div className="flex flex-row gap-4">
+    <div className="max-w-6xl p-6">
+      <div className="flex flex-row gap-4 mb-6">
         <div className="flex flex-row gap-2 items-center">
           <Filters
             scenarios={scenarios}
             selectedScenarioId={scenarioId}
-            onSelectedScenarioIdChange={(scenarioId) => {
-              console.log('scenarioId changed to ', scenarioId);
-              const qs = searchParams.toString();
-              const path = getRoute('/analytics/:scenarioId', { scenarioId });
-              navigate(qs ? `${path}?${qs}` : path);
-            }}
+            onSelectedScenarioIdChange={onScenariochange}
           />
         </div>
       </div>
-      <Decisions
-        data={decisionsOutcomesPerDay}
-        decisions={decisions}
-        setDecisions={setDecisions}
-        scenarioVersions={scenarioVersions}
-      />
-      <div className="flex w-full max-w-5xl ml-16">
-        <OutcomeFilter decisions={decisions} onChange={setDecisions} />
-      </div>
-    </>
+      <Decisions data={decisionsOutcomesPerDay} scenarioVersions={scenarioVersions} />
+    </div>
   );
 }
 
