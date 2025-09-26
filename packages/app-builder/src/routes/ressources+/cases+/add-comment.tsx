@@ -75,7 +75,7 @@ export async function action({ request }: ActionFunctionArgs) {
       });
 
       promises.push(
-        fetch(`${getServerEnv('MARBLE_API_URL_SERVER')}${getCaseFileUploadEndpoint(data.caseId)}`, {
+        fetch(`${getServerEnv('MARBLE_API_URL')}${getCaseFileUploadEndpoint(data.caseId)}`, {
           method: 'POST',
           body,
           headers: { Authorization: `Bearer ${token}` },

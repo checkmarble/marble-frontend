@@ -47,17 +47,17 @@ export function initServerServices(request: Request) {
 
   const { getMarbleCoreAPIClientWithAuth, marbleCoreApiClient } = initializeMarbleCoreAPIClient({
     request,
-    baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
+    baseUrl: getServerEnv('MARBLE_API_URL'),
   });
 
   const { getTransfercheckAPIClientWithAuth } = initializeTransfercheckAPIClient({
     request,
-    baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
+    baseUrl: getServerEnv('MARBLE_API_URL'),
   });
 
   const { getFeatureAccessAPIClientWithAuth, featureAccessApi } = initializeFeatureAccessAPIClient({
     request,
-    baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
+    baseUrl: getServerEnv('MARBLE_API_URL'),
   });
 
   const proto = request.headers.get('x-forwarded-proto') ?? new URL(request.url).protocol;

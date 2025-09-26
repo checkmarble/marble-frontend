@@ -122,7 +122,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
           const endpoint = getClientAnnotationFileUploadEndpoint(data.tableName, data.objectId);
           promises.push(
-            fetch(`${getServerEnv('MARBLE_API_URL_SERVER')}${endpoint}`, {
+            fetch(`${getServerEnv('MARBLE_API_URL')}${endpoint}`, {
               method: 'POST',
               body,
               headers: { Authorization: `Bearer ${token}` },

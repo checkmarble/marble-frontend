@@ -33,16 +33,13 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     return;
   }
 
-  await fetch(
-    `${getServerEnv('MARBLE_API_URL_SERVER')}${getScreeningFileUploadEndpoint(screeningId)}`,
-    {
-      body: raw,
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${await tokenService.getToken()}`,
-      },
+  await fetch(`${getServerEnv('MARBLE_API_URL')}${getScreeningFileUploadEndpoint(screeningId)}`, {
+    body: raw,
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${await tokenService.getToken()}`,
     },
-  );
+  });
 
   return null;
 };
