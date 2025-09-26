@@ -1,4 +1,3 @@
-import { FirebaseConfig } from '@app-builder/utils/environment';
 import { type AppConfigDto } from 'marble-api';
 
 export type AppConfig = {
@@ -38,17 +37,9 @@ export type AppConfig = {
   isManagedMarble: boolean;
 };
 
-export function adaptAppConfig(
-  dto: AppConfigDto,
-  appVersion: string,
-  firebaseConfig: FirebaseConfig,
-): AppConfig {
+export function adaptAppConfig(dto: AppConfigDto, appVersion: string): AppConfig {
   const fbConfig = dto.auth.firebase;
-  const emulatorUrl =
-    firebaseConfig.emulatorHost || fbConfig.emulator_host
-      ? `http://${firebaseConfig.emulatorHost || fbConfig.emulator_host}`
-      : undefined;
-  const firebaseOptions = firebaseConfig.options;
+  const emulatorUrl = fbConfig.emulator_host ? `http://${fbConfig.emulator_host}` : undefined;
 
   return {
     versions: {
@@ -68,12 +59,9 @@ export function adaptAppConfig(
       firebase: {
         isEmulator: dto.auth.firebase.is_emulator,
         emulatorUrl,
-        projectId: firebaseOptions.projectId ?? dto.auth.firebase.project_id,
-        apiKey: firebaseOptions.apiKey ?? dto.auth.firebase.api_key,
-        authDomain:
-          firebaseOptions.authDomain ??
-          dto.auth.firebase.auth_domain ??
-          dto.auth.firebase.emulator_host,
+        projectId: dto.auth.firebase.project_id,
+        apiKey: dto.auth.firebase.api_key,
+        authDomain: dto.auth.firebase.auth_domain ?? dto.auth.firebase.emulator_host,
       } as AppConfig['auth']['firebase'],
     },
     features: {
