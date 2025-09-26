@@ -47,7 +47,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return redirect(getRoute('/'));
   }
 
-  if (!getServerEnv('ANALYTICS_V2').split(',').includes(user.organizationId)) {
+  if (!getServerEnv('ANALYTICS_V2')?.split(',').includes(user.organizationId)) {
     return redirect(getRoute('/analytics-legacy'));
   }
 
