@@ -209,7 +209,14 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
               },
             }}
             layout="vertical"
-            motionConfig="stiff"
+            motionConfig={{
+              mass: 1,
+              tension: 170,
+              friction: 8,
+              clamp: true,
+              precision: 0.01,
+              velocity: 0,
+            }}
 
             //   markers={currentDataGroup?.scenarioVersionsXMarkers}
           />
