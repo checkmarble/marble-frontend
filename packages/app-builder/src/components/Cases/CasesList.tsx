@@ -13,7 +13,7 @@ import clsx from 'clsx';
 import { differenceInDays } from 'date-fns/differenceInDays';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, Tooltip, useVirtualTable } from 'ui-design-system';
+import { Table, Tooltip, useTable } from 'ui-design-system';
 
 import { CaseAssignedTo } from './CaseAssignedTo';
 import { CaseContributors } from './CaseContributors';
@@ -139,7 +139,7 @@ export function CasesList({
     [language, t, orgTags],
   );
 
-  const { table, getBodyProps, rows, getContainerProps, scrollToTop } = useVirtualTable({
+  const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: cases,
     columns,
     columnResizeMode: 'onChange',
@@ -150,10 +150,6 @@ export function CasesList({
     onSortingChange: setSorting,
     rowLink: ({ id }) => <Link to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(id) })} />,
   });
-
-  useEffect(() => {
-    scrollToTop();
-  }, [cases]);
 
   return (
     <Table.Container {...getContainerProps()} className={clsx('bg-grey-100', className)}>
