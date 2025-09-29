@@ -81,7 +81,7 @@
   "upload_data": "Téléverser des données",
   "view_pivot.button": "Regroupement des décisions",
   "view_pivot.definition": "Définition",
-  "view_pivot.field.description": "Les décisions sur les entités du type <Code> {{Table}} </Code> sont regroupées par le champ <Dode> {{champ}} </Code>, ce qui permet de mettre en pause des règles et de regrouper les décisions en dossiers.",
+  "view_pivot.field.description": "Les décisions sur les entités du type <Code> {{Table}} </Code> sont regroupées par le champ <Code> {{champ}} </Code>, ce qui permet de mettre en pause des règles et de regrouper les décisions en dossiers.",
   "view_pivot.link.description": "Recherchez l'entité <Code> {{parent}} </Code> correspondant à une entité <Code> {{enfant}} </Code> en suivant le lien <Code> {{link}} </Code>.",
   "view_pivot.self_link.description": "Les décisions sont regroupées avec celles d'autres entités configurées pour être regrouper au niveau de <Code> {{table}} </Code>",
   "view_pivot.table": "Table",
