@@ -368,7 +368,7 @@ export type RuleExecutionDto = {
 };
 export type DetailedCaseDecisionDto = CaseDecisionDto & {
     rules: RuleExecutionDto[];
-    sanction_checks?: {
+    screenings?: {
         id: string;
         status: "in_review" | "confirmed_hit";
         name: string;

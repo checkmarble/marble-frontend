@@ -1009,7 +1009,7 @@ components:
               type: array
               items:
                 $ref: 'decisions.yml#/components/schemas/RuleExecutionDto'
-            sanction_checks:
+            screenings:
               type: array
               items:
                 type: object

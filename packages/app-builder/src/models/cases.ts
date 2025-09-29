@@ -679,6 +679,6 @@ export function adaptDetailedCaseDecision(dto: DetailedCaseDecisionDto): Detaile
     },
     score: dto.score,
     rules: dto.rules.map((r) => adaptRuleExecutionDto(r, false)),
-    sanctionChecks: dto.sanction_checks ?? [],
+    sanctionChecks: dto.screenings ?? [],
   };
 }
