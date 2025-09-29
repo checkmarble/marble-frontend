@@ -7,11 +7,17 @@ import { CasesExcludeAssignedFilter } from './CasesExcludeAssignedFilter';
 import { CasesSnoozedFilter } from './CasesSnoozedFilter';
 import { ClosedCasesFilter } from './ClosedCasesFilter';
 
-export const FilterDetail = ({ filterName }: { filterName: CasesFilterName }) =>
+export const FilterDetail = ({
+  filterName,
+  close,
+}: {
+  filterName: CasesFilterName;
+  close: () => void;
+}) =>
   match(filterName)
     .with('dateRange', () => <CasesDateRangeFilter />)
-    .with('statuses', () => <ClosedCasesFilter />)
-    .with('includeSnoozed', () => <CasesSnoozedFilter />)
-    .with('excludeAssigned', () => <CasesExcludeAssignedFilter />)
-    .with('assignee', () => <CasesAssigneeFilter />)
+    .with('statuses', () => <ClosedCasesFilter close={close} />)
+    .with('includeSnoozed', () => <CasesSnoozedFilter close={close} />)
+    .with('excludeAssigned', () => <CasesExcludeAssignedFilter close={close} />)
+    .with('assignee', () => <CasesAssigneeFilter close={close} />)
     .exhaustive();

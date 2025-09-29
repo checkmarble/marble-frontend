@@ -4,13 +4,14 @@ import { useFormContext } from 'react-hook-form';
 
 import { type CasesFiltersForm, useCasesFiltersContext } from '../CasesFiltersContext';
 
-export function CasesExcludeAssignedFilter() {
+export function CasesExcludeAssignedFilter({ close }: { close: () => void }) {
   const { submitCasesFilters } = useCasesFiltersContext();
   const { setValue } = useFormContext<CasesFiltersForm>();
 
   useMemo(() => {
     setValue('excludeAssigned', true);
     submitCasesFilters();
+    close();
   }, []);
   return null;
 }

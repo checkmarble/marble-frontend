@@ -5,13 +5,14 @@ import { useFormContext } from 'react-hook-form';
 
 import { type CasesFiltersForm, useCasesFiltersContext } from '../CasesFiltersContext';
 
-export function ClosedCasesFilter() {
+export function ClosedCasesFilter({ close }: { close: () => void }) {
   const { submitCasesFilters } = useCasesFiltersContext();
   const { setValue } = useFormContext<CasesFiltersForm>();
 
   useMemo(() => {
     setValue('statuses', ['closed']);
     submitCasesFilters();
+    close();
   }, []);
 
   return null;

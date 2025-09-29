@@ -139,7 +139,7 @@ export function CasesList({
     [language, t, orgTags],
   );
 
-  const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
+  const { table, getBodyProps, rows, getContainerProps, scrollToTop } = useVirtualTable({
     data: cases,
     columns,
     columnResizeMode: 'onChange',
@@ -150,6 +150,10 @@ export function CasesList({
     onSortingChange: setSorting,
     rowLink: ({ id }) => <Link to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(id) })} />,
   });
+
+  useEffect(() => {
+    scrollToTop();
+  }, [cases]);
 
   return (
     <Table.Container {...getContainerProps()} className={clsx('bg-grey-100', className)}>

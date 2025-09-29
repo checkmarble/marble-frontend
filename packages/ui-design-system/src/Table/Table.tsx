@@ -186,6 +186,9 @@ export function useVirtualTable<TData extends RowData>(options: TableProps<TData
         // Safe to cast as virtualRows is built from rows
         rows[virtualRow.index] as Row<TData>,
     ),
+    scrollToTop: () => {
+      rowVirtualizer.scrollToIndex(0);
+    },
   };
 }
 
