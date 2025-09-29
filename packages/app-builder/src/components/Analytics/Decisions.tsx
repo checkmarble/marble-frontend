@@ -1,6 +1,7 @@
 import {
   DecisionOutcomesPerPeriod,
   type DecisionsFilter,
+  outcomeColors,
   type RangeId,
 } from '@app-builder/models/analytics';
 import { useFormatLanguage } from '@app-builder/utils/format';
@@ -93,13 +94,13 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
 
   const getBarColors = (d: ComputedDatum<{ rangeId: RangeId }>) => {
     const id = String(d.id) as 'approve' | 'decline' | 'review' | 'blockAndReview';
-    const colors = {
-      approve: '#10b981',
-      decline: '#ef4444',
-      review: '#f59e0b',
-      blockAndReview: '#ffab73',
-    };
-    return colors[id] ?? '#9ca3af';
+    // const colors = {
+    // approve: '#10b981',
+    // decline: '#ef4444',
+    // review: '#f59e0b',
+    // blockAndReview: '#ffab73',
+    // };
+    return outcomeColors[id] ?? '#9ca3af';
   };
 
   //   if (!data) {
