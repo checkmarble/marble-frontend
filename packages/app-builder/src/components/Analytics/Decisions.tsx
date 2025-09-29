@@ -204,7 +204,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
                       ? 'numeric'
                       : undefined,
                   month: 'short',
-                  day: 'numeric',
+                  day: groupDate !== 'monthly' ? 'numeric' : undefined,
                 });
               },
             }}
