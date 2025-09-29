@@ -6,8 +6,9 @@ import {
 } from '@app-builder/models/analytics';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
-import { getYear } from 'date-fns';
+import { getWeek, getYear } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
+import { Trans } from 'react-i18next';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OutcomeFilter } from './OutcomeFilter';
@@ -46,6 +47,8 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
   const [groupDate, setGroupDate] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
 
   const currentDataGroup = useMemo(() => data?.[groupDate], [data, groupDate]);
+
+  const isSameYear: boolean = getYear(data?.metadata.start!) === getYear(data?.metadata.end!);
 
   useEffect(() => {
     if (!data?.metadata.totalDecisions) {
@@ -93,7 +96,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
   //       .filter((v) => v !== undefined);
   //   };
 
-  const getBarColors = (d: ComputedDatum<{ rangeId: RangeId }>) => {
+  const getBarColors = (d: ComputedDatum<DecisionsPerOutcome>) => {
     const id = String(d.id) as 'approve' | 'decline' | 'review' | 'blockAndReview';
     // const colors = {
     // approve: '#10b981',
@@ -102,6 +105,55 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
     // blockAndReview: '#ffab73',
     // };
     return outcomeColors[id] ?? '#9ca3af';
+  };
+
+  const getTootlipDateFormat = (date: string) => {
+    const dateObj = new Date(date);
+    switch (groupDate) {
+      case 'monthly':
+        return (
+          <Trans
+            i18nKey="analytics:decisions.tooltip.monthly"
+            values={{
+              date: dateObj.toLocaleDateString(language, {
+                month: 'short',
+                year: isSameYear ? undefined : 'numeric',
+              }),
+            }}
+          />
+        );
+      case 'weekly':
+        return (
+          <Trans
+            i18nKey="analytics:decisions.tooltip.weekly"
+            values={{
+              date: dateObj.toLocaleDateString(language, {
+                day: 'numeric',
+                month: 'short',
+                year: isSameYear ? undefined : 'numeric',
+              }),
+              weekNumber: getWeek(dateObj),
+            }}
+            components={{
+              Br: <br />,
+            }}
+          />
+        );
+
+      case 'daily':
+        return (
+          <Trans
+            i18nKey="analytics:decisions.tooltip.daily"
+            values={{
+              date: dateObj.toLocaleDateString(language, {
+                day: 'numeric',
+                month: 'short',
+                year: isSameYear ? undefined : 'numeric',
+              }),
+            }}
+          />
+        );
+    }
   };
 
   //   if (!data) {
@@ -146,7 +198,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
           </ButtonV2>
         </div>
         <div className="flex-1 w-full">
-          <ResponsiveBar
+          <ResponsiveBar<DecisionsPerOutcome>
             data={
               percentage
                 ? (currentDataGroup?.data.ratio ?? [])
@@ -163,7 +215,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
                 .map(([key]) => key)
             }
             padding={0.5}
-            margin={{ top: 20, right: 0, bottom: 20, left: 60 }}
+            margin={{ top: 5, right: 0, bottom: 24, left: 60 }}
             colors={getBarColors}
             defs={[
               {
@@ -177,7 +229,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
             ]}
             fill={[
               {
-                match: (n) => n.data.data['rangeId'] === 'compare',
+                match: (n) => n.data.data.rangeId === 'compare',
                 id: 'compareOpacity',
               },
             ]}
@@ -199,15 +251,22 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
                 // Convert the ISO string to a Date object and format it
                 const date = new Date(value);
                 return date.toLocaleDateString(language, {
-                  year:
-                    getYear(data?.metadata.start!) !== getYear(data?.metadata.end!)
-                      ? 'numeric'
-                      : undefined,
+                  year: !isSameYear ? 'numeric' : undefined,
                   month: 'short',
                   day: groupDate !== 'monthly' ? 'numeric' : undefined,
                 });
               },
             }}
+            tooltip={({ id, value, data }) => (
+              <div className="flex flex-col gap-1 w-auto max-w-max bg-white p-2 rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
+                <div className="flex items-center gap-2">
+                  <strong className="text-grey-00 font-semibold">
+                    {id}: {percentage ? `${value.toFixed(1)}%` : value}
+                  </strong>
+                </div>
+                <div className="text-s text-grey-60">{getTootlipDateFormat(data?.date)}</div>
+              </div>
+            )}
             layout="vertical"
             motionConfig={{
               mass: 1,

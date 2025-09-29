@@ -1,5 +1,6 @@
 {
   "decisions.tooltip.daily": "date: {{date}}",
   "decisions.tooltip.monthly": "month of {{date}}",
-  "decisions.tooltip.weekly": "week of {{date}}"
+  "decisions.tooltip.weekly": "week of {{date}} <Br/>(Week {{weekNumber}})",
+  "filters.add_compare_period": "Add compare period"
 }

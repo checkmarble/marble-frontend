@@ -16,7 +16,7 @@ export function Filters({
   scenarios: Scenario[];
   onSelectedScenarioIdChange: (scenarioId: string) => void;
 }) {
-  const { t } = useTranslation(['decisions', 'common']);
+  const { t } = useTranslation(['decisions', 'common', 'analytics']);
   const language = useFormatLanguage();
   const selectedScenario = scenarios.find((scenario) => scenario.id === selectedScenarioId);
   const { range, compareRange, setDateRangeFilter, setCompareRange } = useDateRangeSearchParams();
@@ -98,7 +98,7 @@ export function Filters({
               </span>
             ) : (
               <span className="text-s font-semibold first-letter:capitalize">
-                Add compare period
+                {t('analytics:filters.add_compare_period')}
               </span>
             )}
           </FilterItem.Trigger>
