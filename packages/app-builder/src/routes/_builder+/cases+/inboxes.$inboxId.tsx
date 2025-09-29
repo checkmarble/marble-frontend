@@ -9,6 +9,7 @@ import {
 } from '@app-builder/components/Cases/Filters';
 import { InputWithButton } from '@app-builder/components/InputWithButton';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
+import useIntersection from '@app-builder/hooks/useIntersection';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { type Case, type CaseStatus, caseStatuses } from '@app-builder/models/cases';
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
@@ -25,7 +26,7 @@ import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { omit } from 'remeda';
 import { Button, cn } from 'ui-design-system';
@@ -212,11 +213,23 @@ export default function Cases() {
     [navigate, inboxId, next, previous, reset],
   );
 
+  const paginationSentinelRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const paginationIntersection = useIntersection(paginationSentinelRef, {
+    root: containerRef.current,
+    rootMargin: '-24px',
+    threshold: 0,
+  });
+
+  useEffect(() => {
+    containerRef.current?.scrollTo({ top: 0 });
+  }, [cases]);
+
   return (
     <CaseRightPanel.Root>
-      <Page.Container>
-        <Page.Content>
-          <div className="flex flex-col gap-4">
+      <Page.Container ref={containerRef}>
+        <Page.ContentV2>
+          <div className="flex flex-col gap-4 relative">
             <CasesFiltersProvider submitCasesFilters={navigateCasesList} filterValues={filters}>
               <div className="flex justify-between">
                 <div className="flex gap-4 items-center">
@@ -262,7 +275,6 @@ export default function Cases() {
               <CasesList
                 key={inboxId}
                 cases={cases}
-                className="max-h-[60dvh]"
                 initSorting={[
                   {
                     id: initialPagination.sorting ?? 'created_at',
@@ -279,7 +291,15 @@ export default function Cases() {
                   hasAlreadyOrdered = true;
                 }}
               />
-              <div className="flex justify-between gap-8">
+              <div
+                className={cn(
+                  'flex justify-between gap-8 sticky bottom-0 z-10 bg-purple-99 -mb-v2-lg -mx-v2-lg p-v2-lg pt-v2-md border-t border-purple-99',
+                  {
+                    'shadow-sticky-bottom border-t-grey-95':
+                      !paginationIntersection?.isIntersecting,
+                  },
+                )}
+              >
                 <div className="flex gap-2 items-center">
                   <span>{t('cases:list.results_per_page')}</span>
                   {[25, 50, 100].map((limit) => {
@@ -313,8 +333,9 @@ export default function Cases() {
                 />
               </div>
             </CasesFiltersProvider>
+            <div ref={paginationSentinelRef} className="absolute left-0 bottom-0" />
           </div>
-        </Page.Content>
+        </Page.ContentV2>
       </Page.Container>
     </CaseRightPanel.Root>
   );
