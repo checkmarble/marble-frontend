@@ -41,19 +41,19 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const url = new URL(request.url);
 
-  const encodeBase64Url = (value: string) =>
-    Buffer.from(value, 'utf-8')
-      .toString('base64')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/g, '');
+  // const encodeBase64Url = (value: string) =>
+  //   Buffer.from(value, 'utf-8')
+  //     .toString('base64')
+  //     .replace(/\+/g, '-')
+  //     .replace(/\//g, '_')
+  //     .replace(/=+$/g, '');
 
-  const decodeBase64Url = (value: string) => {
-    const withPadding = value.replace(/-/g, '+').replace(/_/g, '/');
-    const pad = withPadding.length % 4 ? 4 - (withPadding.length % 4) : 0;
-    const padded = withPadding + '='.repeat(pad);
-    return Buffer.from(padded, 'base64').toString('utf-8');
-  };
+  // const decodeBase64Url = (value: string) => {
+  //   const withPadding = value.replace(/-/g, '+').replace(/_/g, '/');
+  //   const pad = withPadding.length % 4 ? 4 - (withPadding.length % 4) : 0;
+  //   const padded = withPadding + '='.repeat(pad);
+  //   return Buffer.from(padded, 'base64').toString('utf-8');
+  // };
 
   const q = url.searchParams.get('q');
 
@@ -61,8 +61,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     range: { start: string; end: string };
     compareRange?: { start: string; end: string } | null;
   }) => {
-    const encoded = encodeBase64Url(JSON.stringify(payload));
-    url.searchParams.set('q', encoded);
+    // const encoded = encodeBase64Url(JSON.stringify(payload));
+    url.searchParams.set('q', JSON.stringify(payload));
     url.searchParams.delete('start');
     url.searchParams.delete('end');
     url.searchParams.delete('compareStart');
@@ -97,8 +97,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   if (q) {
     try {
-      const json = decodeBase64Url(q);
-      const obj = JSON.parse(json);
+      // const json = decodeBase64Url(q);
+      const obj = JSON.parse(q);
       const safe = qSchema.safeParse(obj);
       if (safe.success) {
         parsed = { range: safe.data.range, compareRange: safe.data.compareRange ?? null };
