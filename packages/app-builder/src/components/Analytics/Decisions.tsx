@@ -46,10 +46,11 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
   const currentDataGroup = useMemo(() => data?.[groupDate], [data, groupDate]);
 
   useEffect(() => {
-    if (data?.metadata.totalDecisions) {
-      setGroupDate('weekly');
-    } else {
-      setGroupDate('daily');
+    if (!data?.metadata.totalDecisions) {
+      return setGroupDate('daily');
+    }
+    if (!data?.daily && groupDate === 'daily') {
+      return setGroupDate('weekly');
     }
   }, [data?.metadata.totalDecisions]);
 
