@@ -5,7 +5,7 @@ import {
 } from '@app-builder/models/analytics';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OutcomeFilter } from './OutcomeFilter';
@@ -44,6 +44,14 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
   const [groupDate, setGroupDate] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
 
   const currentDataGroup = useMemo(() => data?.[groupDate], [data, groupDate]);
+
+  useEffect(() => {
+    if (data?.metadata.totalDecisions) {
+      setGroupDate('weekly');
+    } else {
+      setGroupDate('daily');
+    }
+  }, [data?.metadata.totalDecisions]);
 
   // for future use
 
@@ -129,7 +137,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
               </ButtonV2>
             </div>
           </div>
-          <ButtonV2 variant="secondary" className="flex items-center gap-2">
+          <ButtonV2 variant="secondary" className="flex items-center gap-2" disabled={true}>
             <Icon icon="download" className="size-4" />
             Export
           </ButtonV2>
@@ -170,9 +178,20 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
                 id: 'compareOpacity',
               },
             ]}
-            axisLeft={{ legend: 'outcome (indexBy)', legendOffset: -70 }}
+            valueScale={
+              !data?.metadata.totalDecisions ? { type: 'linear', min: 0, max: 1000 } : undefined
+            }
+            axisLeft={{
+              legend: 'outcome (indexBy)',
+              legendOffset: -70,
+              tickValues: !data?.metadata.totalDecisions
+                ? [0, 200, 400, 600, 800, 1000]
+                : undefined,
+            }}
             axisBottom={{
-              tickValues: currentDataGroup?.gridXValues,
+              tickValues: data?.metadata.totalDecisions
+                ? currentDataGroup?.gridXValues
+                : [data?.metadata.start, data?.metadata.end],
               format: (value: string) => {
                 // Convert the ISO string to a Date object and format it
                 const date = new Date(value);
@@ -191,7 +210,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
         <div className="flex w-full justify-end mt-2">
           <div className="flex gap-2">
             <ButtonV2
-              disabled={!data?.daily}
+              disabled={!data?.daily || !data?.metadata.totalDecisions}
               variant="secondary"
               mode="normal"
               onClick={() => setGroupDate('daily')}
@@ -202,6 +221,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
               Day
             </ButtonV2>
             <ButtonV2
+              disabled={!data?.weekly || !data?.metadata.totalDecisions}
               variant="secondary"
               mode="normal"
               onClick={() => setGroupDate('weekly')}
@@ -212,6 +232,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
               Week
             </ButtonV2>
             <ButtonV2
+              disabled={!data?.monthly || !data?.metadata.totalDecisions}
               variant="secondary"
               mode="normal"
               onClick={() => setGroupDate('monthly')}

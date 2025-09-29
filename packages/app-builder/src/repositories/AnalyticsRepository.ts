@@ -59,13 +59,27 @@ export function makeGetAnalyticsRepository() {
           rangeId: end === args.dateRange.end ? 'base' : 'compare',
         };
 
-        const rangeSize = differenceInDays(end, start);
-        if (!merged.length) return null;
-
-        if (rangeSize !== merged.length) {
-          return adaptDecisionOutcomesPerDay(fillMissingDays(merged, startDate, endDate));
+        if (!merged.length) {
+          merged.push({
+            ...startDate,
+            approve: 0,
+            block_and_review: 0,
+            decline: 0,
+            review: 0,
+          });
+          merged.push({
+            ...endDate,
+            approve: 0,
+            block_and_review: 0,
+            decline: 0,
+            review: 0,
+          });
         }
-        return adaptDecisionOutcomesPerDay(merged);
+        const rangeSize = differenceInDays(end, start);
+
+        return adaptDecisionOutcomesPerDay(
+          rangeSize === merged.length ? merged : fillMissingDays(merged, startDate, endDate),
+        );
       } catch (error) {
         console.error(error);
         return null;
