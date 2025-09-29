@@ -41,32 +41,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const url = new URL(request.url);
 
-  // const encodeBase64Url = (value: string) =>
-  //   Buffer.from(value, 'utf-8')
-  //     .toString('base64')
-  //     .replace(/\+/g, '-')
-  //     .replace(/\//g, '_')
-  //     .replace(/=+$/g, '');
-
-  // const decodeBase64Url = (value: string) => {
-  //   const withPadding = value.replace(/-/g, '+').replace(/_/g, '/');
-  //   const pad = withPadding.length % 4 ? 4 - (withPadding.length % 4) : 0;
-  //   const padded = withPadding + '='.repeat(pad);
-  //   return Buffer.from(padded, 'base64').toString('utf-8');
-  // };
-
   const q = url.searchParams.get('q');
 
   const redirectWithQ = (payload: {
     range: { start: string; end: string };
     compareRange?: { start: string; end: string } | null;
   }) => {
-    // const encoded = encodeBase64Url(JSON.stringify(payload));
-    url.searchParams.set('q', JSON.stringify(payload));
-    url.searchParams.delete('start');
-    url.searchParams.delete('end');
-    url.searchParams.delete('compareStart');
-    url.searchParams.delete('compareEnd');
+    url.searchParams.set('q', btoa(JSON.stringify(payload)));
     return redirect(url.toString());
   };
 
@@ -97,9 +78,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   if (q) {
     try {
-      // const json = decodeBase64Url(q);
-      const obj = JSON.parse(q);
+      const obj = JSON.parse(atob(q));
       const safe = qSchema.safeParse(obj);
+      console.log('safe', safe);
       if (safe.success) {
         parsed = { range: safe.data.range, compareRange: safe.data.compareRange ?? null };
       }
@@ -107,6 +88,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       // fallthrough: parsed stays null
     }
   }
+  console.log('parsed', parsed);
 
   if (!parsed) {
     const now = new Date();
