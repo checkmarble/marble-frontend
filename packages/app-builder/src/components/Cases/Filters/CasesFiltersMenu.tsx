@@ -16,10 +16,12 @@ export function CasesFiltersMenu({
   filterNames: readonly CasesFilterName[];
 }) {
   const { onCasesFilterClose } = useCasesFiltersContext();
+  const [open, setOpen] = useState(false);
 
   const onOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
+    (state: boolean) => {
+      setOpen(state);
+      if (!state) {
         onCasesFilterClose();
       }
     },
@@ -27,10 +29,10 @@ export function CasesFiltersMenu({
   );
 
   return (
-    <FiltersDropdownMenu.Root onOpenChange={onOpenChange}>
+    <FiltersDropdownMenu.Root onOpenChange={onOpenChange} open={open}>
       <FiltersDropdownMenu.Trigger asChild>{children}</FiltersDropdownMenu.Trigger>
       <FiltersDropdownMenu.Content>
-        <FilterContent filterNames={filterNames} />
+        <FilterContent filterNames={filterNames} close={() => setOpen(false)} />
       </FiltersDropdownMenu.Content>
     </FiltersDropdownMenu.Root>
   );
@@ -55,11 +57,17 @@ const FiltersMenuItem = forwardRef<
 });
 FiltersMenuItem.displayName = 'FiltersMenuItem';
 
-function FilterContent({ filterNames }: { filterNames: readonly CasesFilterName[] }) {
+function FilterContent({
+  filterNames,
+  close,
+}: {
+  filterNames: readonly CasesFilterName[];
+  close: () => void;
+}) {
   const [selectedFilter, setSelectedFilter] = useState<CasesFilterName>();
 
   if (selectedFilter) {
-    return <FilterDetail filterName={selectedFilter} />;
+    return <FilterDetail filterName={selectedFilter} close={close} />;
   }
 
   return (

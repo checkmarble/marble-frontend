@@ -7,7 +7,7 @@ import {
 } from '@app-builder/components/Filters';
 import { SimpleFilter } from '@app-builder/components/Filters/SimpleFilter';
 import { useLocation } from '@remix-run/react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Separator } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -25,9 +25,11 @@ import { casesSimpleFilterNames, getFilterIcon, getFilterTKey } from './filters'
 export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonly string[] }) {
   const { t } = useTranslation(casesI18n);
   const { onCasesFilterClose } = useCasesFiltersContext();
+  const [open, setOpen] = useState(false);
   const onOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
+    (state: boolean) => {
+      setOpen(state);
+      if (!state) {
         onCasesFilterClose();
       }
     },
@@ -66,7 +68,7 @@ export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonl
                 />
               </SimpleFilter>
             ) : (
-              <FilterPopover.Root key={filterName} onOpenChange={onOpenChange}>
+              <FilterPopover.Root key={filterName} onOpenChange={onOpenChange} open={open}>
                 <FilterItem.Root>
                   <FilterItem.Trigger>
                     <Icon icon={icon} className="size-5" />
@@ -79,7 +81,7 @@ export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonl
                   />
                 </FilterItem.Root>
                 <FilterPopover.Content>
-                  <FilterDetail filterName={filterName} />
+                  <FilterDetail filterName={filterName} close={() => setOpen(false)} />
                 </FilterPopover.Content>
               </FilterPopover.Root>
             );

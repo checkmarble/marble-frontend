@@ -4,7 +4,7 @@ import * as R from 'remeda';
 import { Avatar } from 'ui-design-system';
 import { CasesFiltersForm, useCasesFiltersContext } from '../CasesFiltersContext';
 
-export function CasesAssigneeFilter() {
+export function CasesAssigneeFilter({ close }: { close: () => void }) {
   const { submitCasesFilters } = useCasesFiltersContext();
   const { setValue } = useFormContext<CasesFiltersForm>();
   const { orgUsers } = useOrganizationUsers();
@@ -12,6 +12,7 @@ export function CasesAssigneeFilter() {
   const handleUserSelect = (userId: string) => {
     setValue('assignee', userId);
     submitCasesFilters();
+    close();
   };
 
   return (
