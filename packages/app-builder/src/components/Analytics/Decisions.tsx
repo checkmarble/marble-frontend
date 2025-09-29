@@ -37,7 +37,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
     ['decline', true],
     ['blockAndReview', true],
     ['review', true],
-    ['approve', false],
+    ['approve', true],
   ]);
   const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
   const [percentage, setPercentage] = useState(true);
