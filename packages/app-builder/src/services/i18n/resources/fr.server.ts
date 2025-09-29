@@ -1,3 +1,4 @@
+import analytics from '@app-builder/locales/fr/analytics.json';
 import api from '@app-builder/locales/fr/api.json';
 import auth from '@app-builder/locales/fr/auth.json';
 import cases from '@app-builder/locales/fr/cases.json';
@@ -16,6 +17,7 @@ import upload from '@app-builder/locales/fr/upload.json';
 import workflows from '@app-builder/locales/fr/workflows.json';
 
 export const fr = {
+  analytics,
   api,
   cases,
   common,

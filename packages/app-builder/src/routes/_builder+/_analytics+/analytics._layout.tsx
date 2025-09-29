@@ -17,7 +17,7 @@ export type DecisionsPerOutcome = {
   blockAndReview: number;
 };
 export const handle = {
-  i18n: ['navigation', 'data'] satisfies Namespace,
+  i18n: ['navigation', 'analytics'] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {

@@ -1,0 +1,5 @@
+{
+  "decisions.tooltip.daily": "date: {{date}}",
+  "decisions.tooltip.monthly": "month of {{date}}",
+  "decisions.tooltip.weekly": "week of {{date}}"
+}
