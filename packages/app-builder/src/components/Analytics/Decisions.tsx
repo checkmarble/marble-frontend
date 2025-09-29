@@ -6,6 +6,7 @@ import {
 } from '@app-builder/models/analytics';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
+import { getYear } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -198,6 +199,10 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
                 // Convert the ISO string to a Date object and format it
                 const date = new Date(value);
                 return date.toLocaleDateString(language, {
+                  year:
+                    getYear(data?.metadata.start!) !== getYear(data?.metadata.end!)
+                      ? 'numeric'
+                      : undefined,
                   month: 'short',
                   day: 'numeric',
                 });
