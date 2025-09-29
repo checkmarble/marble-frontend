@@ -650,7 +650,7 @@ export type DetailedCaseDecision = {
   };
   score: number;
   rules: RuleExecution[];
-  sanctionChecks: {
+  screenings: {
     id: string;
     status: SanctionCheckStatus;
     partial: boolean;
@@ -679,6 +679,6 @@ export function adaptDetailedCaseDecision(dto: DetailedCaseDecisionDto): Detaile
     },
     score: dto.score,
     rules: dto.rules.map((r) => adaptRuleExecutionDto(r, false)),
-    sanctionChecks: dto.screenings ?? [],
+    screenings: dto.screenings ?? [],
   };
 }
