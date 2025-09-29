@@ -37,7 +37,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
-  console.log(scenarioId);
 
   const url = new URL(request.url);
 
@@ -80,7 +79,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     try {
       const obj = JSON.parse(atob(q));
       const safe = qSchema.safeParse(obj);
-      console.log('safe', safe);
       if (safe.success) {
         parsed = { range: safe.data.range, compareRange: safe.data.compareRange ?? null };
       }
@@ -88,7 +86,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       // fallthrough: parsed stays null
     }
   }
-  console.log('parsed', parsed);
 
   if (!parsed) {
     const now = new Date();
@@ -96,8 +93,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     const startDefault = subMonths(now, 1);
     startDefault.setUTCHours(0, 0, 0, 0);
 
-    console.log('startDefault', startDefault.toISOString());
-    console.log('now', now.toISOString());
     return redirectWithQ({
       range: { start: startDefault.toISOString(), end: now.toISOString() },
       compareRange: null,
