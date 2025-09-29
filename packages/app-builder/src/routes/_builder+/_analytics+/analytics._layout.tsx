@@ -4,6 +4,7 @@ import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getRoute } from '@app-builder/utils/routes';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Outlet, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -38,7 +39,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return redirect(
       scenarioId
         ? getRoute('/analytics/:scenarioId', {
-            scenarioId,
+            scenarioId: fromUUIDtoSUUID(scenarioId),
           })
         : getRoute('/scenarios'),
     );

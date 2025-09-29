@@ -4,6 +4,7 @@ import { Filters } from '@app-builder/components/Analytics/Filters';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate, useRouteError, useSearchParams } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
@@ -34,7 +35,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { analytics, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  const scenarioId = params['scenarioId']!;
+
+  const scenarioId = fromParams(params, 'scenarioId');
+  console.log(scenarioId);
 
   const url = new URL(request.url);
 
@@ -153,7 +156,7 @@ export default function Analytics() {
 
   const onScenariochange = (scenarioId: string) => {
     const qs = searchParams.toString();
-    const path = getRoute('/analytics/:scenarioId', { scenarioId });
+    const path = getRoute('/analytics/:scenarioId', { scenarioId: fromUUIDtoSUUID(scenarioId) });
     navigate(qs ? `${path}?${qs}` : path);
   };
 
