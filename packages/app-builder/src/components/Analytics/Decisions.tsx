@@ -42,7 +42,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
     ['approve', true],
   ]);
   const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
-  const [percentage, setPercentage] = useState(true);
+  const [percentage, setPercentage] = useState(false);
   const [groupDate, setGroupDate] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
 
   const currentDataGroup = useMemo(() => data?.[groupDate], [data, groupDate]);
