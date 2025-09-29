@@ -21,15 +21,15 @@ export const RequiredActions = ({
   caseId,
 }: {
   caseId: string;
-  decision: Pick<DetailedCaseDecision, 'id' | 'outcome' | 'reviewStatus' | 'sanctionChecks'>;
+  decision: Pick<DetailedCaseDecision, 'id' | 'outcome' | 'reviewStatus' | 'screenings'>;
 }) => {
   const { t } = useTranslation(casesI18n);
   const reviewDecisionModalStore = useDialogStore();
 
-  const hasPendingScreening = decision.sanctionChecks.some((s) => s.status === 'in_review');
+  const hasPendingScreening = decision.screenings.some((s) => s.status === 'in_review');
   const isPendingDecision =
     decision.reviewStatus === 'pending' && decision.outcome === 'block_and_review';
-  const isThereSanctionChecks = decision.sanctionChecks.length > 0;
+  const isThereSanctionChecks = decision.screenings.length > 0;
 
   return isPendingDecision || isThereSanctionChecks ? (
     <div className="bg-grey-98 group-hover:bg-grey-95 flex flex-col gap-2.5 rounded-sm p-4 transition-colors">
@@ -43,10 +43,10 @@ export const RequiredActions = ({
             </span>
           </div>
           <div className="flex flex-col">
-            {decision.sanctionChecks.map((s, i) => {
+            {decision.screenings.map((s, i) => {
               return (
                 <div key={s.id} className="flex items-center pl-6 text-xs font-medium">
-                  <Divider isLast={i === decision.sanctionChecks.length - 1} />
+                  <Divider isLast={i === decision.screenings.length - 1} />
                   <span
                     className={cn('inline-flex items-center gap-2 text-xs font-medium', {
                       'text-red-43': s.status === 'error',
@@ -96,7 +96,7 @@ export const RequiredActions = ({
           <ReviewDecisionModal
             decisionId={decision.id}
             store={reviewDecisionModalStore}
-            sanctionCheck={decision.sanctionChecks[0]}
+            sanctionCheck={decision.screenings[0]}
           />
         </div>
       ) : null}
