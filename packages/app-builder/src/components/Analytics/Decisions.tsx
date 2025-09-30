@@ -174,7 +174,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
     if (dimensions.width < 400) {
       return currentDataGroup.gridXValues.filter((_, index) => index % 4 === 0);
     }
-    if (dimensions.width < 800 && currentDataGroup.gridXValues.length > 12) {
+    if (dimensions.width < 800 && currentDataGroup.gridXValues.length >= 10) {
       return currentDataGroup?.gridXValues.filter((_, index) => index % 2 === 0);
     }
     return currentDataGroup?.gridXValues;
