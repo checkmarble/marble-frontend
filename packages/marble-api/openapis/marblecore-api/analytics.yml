@@ -30,6 +30,27 @@
       '404':
         $ref: 'components.yml#/responses/404'
 
+/analytics/available-filters:
+  post:
+    tags:
+      - Analytics
+    summary: Get available filters
+    operationId: getAvailableFilters
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AvailableFiltersRequestDto'
+    responses:
+      '200':
+        description: The available filters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailableFiltersResponseDto'
 components:
   schemas:
     ScenarioFilterDto:
@@ -108,4 +129,36 @@ components:
           type: integer
         review:
           type: integer
+    AvailableFiltersRequestDto:
+      type: object
+      required:
+        - scenario_id
+        - start
+        - end
+      properties:
+        scenario_id:
+          type: string
+          format: uuid
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+    AvailableFiltersResponseDto:
+      type: array
+      items:
+        type: object
+        required:
+          - name
+          - type
+          - source
+        properties:
+          name:
+            type: string
+          type:
+            type: string
+          source:
+            type: string
+            enum: ['trigger_object']
 

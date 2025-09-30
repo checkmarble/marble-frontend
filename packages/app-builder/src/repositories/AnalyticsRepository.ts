@@ -9,6 +9,12 @@ import {
   mergeDateRanges,
   transformDecisionOutcomesPerDayQuery,
 } from '@app-builder/models/analytics';
+import {
+  type AvailableFiltersRequest,
+  type AvailableFiltersResponse,
+  adaptAvailableFiltersResponse,
+  transformAvailableFiltersRequest,
+} from '@app-builder/models/analytics/available-filters';
 
 import { compareAsc, compareDesc, differenceInDays } from 'date-fns';
 
@@ -17,6 +23,7 @@ export interface AnalyticsRepository {
   getDecisionOutcomesPerDay(
     args: DecisionOutcomesPerDayQuery,
   ): Promise<DecisionOutcomesPerPeriod | null>;
+  getAvailableFilters(args: AvailableFiltersRequest): Promise<AvailableFiltersResponse>;
 }
 
 export function makeGetAnalyticsRepository() {
@@ -84,6 +91,14 @@ export function makeGetAnalyticsRepository() {
         console.error(error);
         return null;
       }
+    },
+
+    getAvailableFilters: async (
+      args: AvailableFiltersRequest,
+    ): Promise<AvailableFiltersResponse> => {
+      return client
+        .getAvailableFilters(transformAvailableFiltersRequest(args))
+        .then((response) => adaptAvailableFiltersResponse(response));
     },
   });
 }

@@ -69,8 +69,8 @@ export interface DecisionOutcomesPerPeriod {
 
 export const triggerFilter = z.object({
   field: z.uuidv4(),
-  op: z.enum(['=', '!=', '>', '>=', '<', '<=']),
-  values: z.array(z.string()),
+  op: z.enum(['=', '!=', '>', '>=', '<', '<=', 'in']),
+  values: z.array(z.union([z.string(), z.number(), z.boolean()])),
 });
 
 export const decisionOutcomesPerDayQuery = z.object({
