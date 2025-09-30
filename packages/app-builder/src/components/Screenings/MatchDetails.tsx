@@ -43,7 +43,7 @@ export function MatchDetails({ entity }: MatchDetailsProps) {
         after={
           entity.properties.sanctions ? (
             <Modal.Root open={isOpen} onOpenChange={setIsOpen}>
-              <span className="font-bold">{t('sanctions:entity.property.sanctions')}</span>
+              <span className="font-bold">{t('screenings:entity.property.sanctions')}</span>
               <div className="flex flex-col gap-2">
                 {entity.properties.sanctions.map((sanction) => (
                   <div
@@ -64,7 +64,7 @@ export function MatchDetails({ entity }: MatchDetailsProps) {
               </div>
               <Modal.Content size="large" className="max-h-[80vh]">
                 <div className="relative">
-                  <Modal.Title>{t('sanctions:sanction_detail.title')}</Modal.Title>
+                  <Modal.Title>{t('screenings:sanction_detail.title')}</Modal.Title>
                   <Modal.Close asChild>
                     <Button variant="ghost" className="absolute top-2 right-2">
                       <Icon icon="cross" className="size-6" />

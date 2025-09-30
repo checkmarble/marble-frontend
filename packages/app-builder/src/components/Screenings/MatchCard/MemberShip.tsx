@@ -6,7 +6,7 @@ export const MemberShip = ({
 }: {
   membershipMember: MembershipMemberEntity[];
 }) => {
-  const { t } = useTranslation(['sanctions']);
+  const { t } = useTranslation(['screenings']);
 
   return (
     <>
@@ -15,7 +15,7 @@ export const MemberShip = ({
           return (
             <div key={`membership-${membership.id}-${idx}`} className="contents">
               {idx === 0 ? (
-                <div className="font-bold">{t('sanctions:match.membership.title')}</div>
+                <div className="font-bold">{t('screenings:match.membership.title')}</div>
               ) : (
                 <div className="font-semibold"></div>
               )}
@@ -23,7 +23,7 @@ export const MemberShip = ({
                 <div className="flex flex-col gap-2">
                   <div className="col-span-full flex w-full flex-wrap gap-1">
                     <span className="font-semibold">
-                      {membership.caption || t('sanctions:match.membership.no-caption')}
+                      {membership.caption || t('screenings:match.membership.no-caption')}
                     </span>
                   </div>
                 </div>

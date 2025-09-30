@@ -33,13 +33,13 @@ export const RequiredActions = ({
 
   return isPendingDecision || areThereScreenings ? (
     <div className="bg-grey-98 group-hover:bg-grey-95 flex flex-col gap-2.5 rounded-sm p-4 transition-colors">
-      <span className="text-grey-50 text-xs">{t('sanctions:required_actions.title')}</span>
+      <span className="text-grey-50 text-xs">{t('screenings:required_actions.title')}</span>
       {areThereScreenings ? (
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
             <Checkbox disabled={true} size="small" checked={!hasPendingScreening} />
             <span className="text-xs font-medium">
-              {t('sanctions:required_actions.review_pending_screening_count')}
+              {t('screenings:required_actions.review_pending_screening_count')}
             </span>
           </div>
           <div className="flex flex-col">
@@ -62,10 +62,10 @@ export const RequiredActions = ({
                       })}
                     >
                       {s.status === 'in_review'
-                        ? t('sanctions:required_actions.review')
+                        ? t('screenings:required_actions.review')
                         : s.status === 'error'
-                          ? t('sanctions:required_actions.view_error')
-                          : t('sanctions:required_actions.view')}
+                          ? t('screenings:required_actions.view_error')
+                          : t('screenings:required_actions.view')}
                     </Link>
                     {s.status !== 'error' && s.status !== 'in_review' ? (
                       <span
@@ -74,7 +74,7 @@ export const RequiredActions = ({
                           'text-grey-50 bg-grey-90': s.status === 'no_hit',
                         })}
                       >
-                        {t(`sanctions:status.${s.status}`)}
+                        {t(`screenings:status.${s.status}`)}
                       </span>
                     ) : null}
                   </span>

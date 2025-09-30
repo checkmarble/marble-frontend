@@ -20,7 +20,7 @@ export function EnrichMatchButton({ matchId }: { matchId: string }) {
   return (
     <Button type="button" variant="secondary" className="h-8" onClick={handleButtonClick}>
       <Icon icon="download" className="size-5" />
-      {t('sanctions:enrich_button')}
+      {t('screenings:enrich_button')}
     </Button>
   );
 }

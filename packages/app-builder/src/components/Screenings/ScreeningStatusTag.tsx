@@ -6,15 +6,15 @@ import { Tag } from 'ui-design-system';
 import { sanctionsI18n } from './screenings-i18n';
 
 const screeningStatusMapping = {
-  in_review: { color: 'orange', tKey: 'sanctions:status.in_review' },
-  confirmed_hit: { color: 'red', tKey: 'sanctions:status.confirmed_hit' },
-  no_hit: { color: 'green', tKey: 'sanctions:status.no_hit' },
-  error: { color: 'red', tKey: 'sanctions:status.error' },
+  in_review: { color: 'orange', tKey: 'screenings:status.in_review' },
+  confirmed_hit: { color: 'red', tKey: 'screenings:status.confirmed_hit' },
+  no_hit: { color: 'green', tKey: 'screenings:status.no_hit' },
+  error: { color: 'red', tKey: 'screenings:status.error' },
 } satisfies Record<
   ScreeningStatus,
   {
     color: 'orange' | 'red' | 'green';
-    tKey: ParseKeys<['sanctions']>;
+    tKey: ParseKeys<['screenings']>;
   }
 >;
 

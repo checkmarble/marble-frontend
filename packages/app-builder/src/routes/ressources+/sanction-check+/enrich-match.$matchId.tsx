@@ -17,14 +17,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const matchId = fromParams(params, 'matchId');
 
   const session = await getSession(request);
-  const t = await getFixedT(request, ['common', 'sanctions']);
+  const t = await getFixedT(request, ['common', 'screenings']);
 
   try {
     await screening.enrichMatch({ matchId });
 
     setToastMessage(session, {
       type: 'success',
-      message: t('sanctions:success.match_enriched'),
+      message: t('screenings:success.match_enriched'),
     });
 
     return Response.json(
@@ -36,7 +36,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   } catch (error) {
     let message: string;
     if (isStatusConflictHttpError(error)) {
-      message = t('sanctions:error.match_already_enriched');
+      message = t('screenings:error.match_already_enriched');
     } else {
       message = t('common:errors.unknown');
     }

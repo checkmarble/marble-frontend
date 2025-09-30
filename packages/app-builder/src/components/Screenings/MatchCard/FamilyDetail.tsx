@@ -8,14 +8,14 @@ import { TopicTag } from '../TopicTag';
 export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEntity[] }) => {
   const language = useFormatLanguage();
 
-  const { t } = useTranslation(['sanctions']);
+  const { t } = useTranslation(['screenings']);
 
   return (
     <div className="grid grid-cols-[168px_1fr] gap-y-2">
-      <div className="font-bold py-6">{t('sanctions:match.family-members.title')}</div>
+      <div className="font-bold py-6">{t('screenings:match.family-members.title')}</div>
       <Collapsible.Container defaultOpen={familyMembers.length <= 3}>
         <Collapsible.Title>
-          {t('sanctions:match.family-member.count', { count: familyMembers.length })}
+          {t('screenings:match.family-member.count', { count: familyMembers.length })}
         </Collapsible.Title>
         <Collapsible.Content>
           <div className="flex flex-col gap-2">
@@ -25,11 +25,11 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
                 const rel =
                   member.properties.relationship
                     ?.map((relation) =>
-                      t(`sanctions:relation.${R.toCamelCase(relation)}.label`, {
+                      t(`screenings:relation.${R.toCamelCase(relation)}.label`, {
                         defaultValue: relation,
                       }),
                     )
-                    .join(' · ') ?? t('sanctions:match.family.unknown_relationship');
+                    .join(' · ') ?? t('screenings:match.family.unknown_relationship');
 
                 return (
                   <div key={`person-${id}-${idx}`} className="contents">

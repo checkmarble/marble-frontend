@@ -63,7 +63,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
         return (
           <Fragment key={property}>
             <span className="font-bold">
-              {t(`sanctions:entity.property.${property}`, {
+              {t(`screenings:entity.property.${property}`, {
                 defaultValue: property,
               })}
             </span>

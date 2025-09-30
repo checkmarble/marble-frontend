@@ -1,3 +1,3 @@
 import { type Namespace } from 'i18next';
 
-export const sanctionsI18n = ['common', 'sanctions'] satisfies Namespace;
+export const sanctionsI18n = ['common', 'screenings'] satisfies Namespace;

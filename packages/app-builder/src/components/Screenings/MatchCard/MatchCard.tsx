@@ -43,12 +43,12 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
                 <span className="font-semibold">{entity.caption}</span>
 
                 <span>
-                  {t(`sanctions:entity.schema.${entitySchema}`, {
+                  {t(`screenings:entity.schema.${entitySchema}`, {
                     defaultValue: entitySchema,
                   })}
                 </span>
                 <Tag color="grey">
-                  {t('sanctions:match.similarity', {
+                  {t('screenings:match.similarity', {
                     percent: Math.round(entity.score * 100),
                   })}
                 </Tag>
@@ -67,7 +67,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
             <div className="inline-flex h-8 text-nowrap">
               {unreviewable ? (
                 <Tag border="square" color="grey">
-                  {t('sanctions:match.not_reviewable')}
+                  {t('screenings:match.not_reviewable')}
                 </Tag>
               ) : (
                 <StatusTag
@@ -83,7 +83,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
             <div className="text-s flex flex-col gap-6 p-4">
               {entitySchema === 'person' && entity.datasets?.length ? (
                 <div className="grid grid-cols-[168px_1fr] gap-2">
-                  <div className="font-bold">{t('sanctions:match.datasets.title')}</div>
+                  <div className="font-bold">{t('screenings:match.datasets.title')}</div>
                   <div>
                     <ul>
                       {entity?.datasets?.map((name, index) => (

@@ -23,7 +23,7 @@ export const ReviewScreeningMatch = ({
   onClose: () => void;
   sanctionMatch: ScreeningMatch;
 }) => {
-  const { t } = useTranslation(['common', 'sanctions']);
+  const { t } = useTranslation(['common', 'screenings']);
   const onClose = useCallbackRef(_onClose);
   const [isConfirming, setIsConfirming] = useState(false);
   const reviewScreeningMatchMutation = useReviewScreeningMatchMutation();
@@ -63,7 +63,7 @@ export const ReviewScreeningMatch = ({
       onClose={onClose}
       size="small"
     >
-      <ModalV2.Title>{t('sanctions:review_modal.title')}</ModalV2.Title>
+      <ModalV2.Title>{t('screenings:review_modal.title')}</ModalV2.Title>
       <form
         className="flex flex-col gap-8 p-8"
         onSubmit={handleSubmit(form)}
@@ -74,10 +74,10 @@ export const ReviewScreeningMatch = ({
           {(field) => {
             return (
               <div className="flex flex-col gap-2">
-                <div className="text-m">{t('sanctions:review_modal.status_label')}</div>
+                <div className="text-m">{t('screenings:review_modal.status_label')}</div>
                 <StatusRadioGroup value={field.state.value} onChange={field.handleChange} />
                 {currentStatus === 'confirmed_hit' ? (
-                  <Callout>{t('sanctions:review_modal.callout_confirmed_hit')}</Callout>
+                  <Callout>{t('screenings:review_modal.callout_confirmed_hit')}</Callout>
                 ) : null}
               </div>
             );
@@ -87,7 +87,7 @@ export const ReviewScreeningMatch = ({
           {(field) => {
             return (
               <div className="flex flex-col gap-2">
-                <div className="text-m">{t('sanctions:review_modal.comment_label')}</div>
+                <div className="text-m">{t('screenings:review_modal.comment_label')}</div>
                 <TextArea
                   name={field.name}
                   value={field.state.value}
@@ -109,11 +109,11 @@ export const ReviewScreeningMatch = ({
                       checked={field.state.value}
                       onCheckedChange={field.handleChange}
                     />{' '}
-                    {t('sanctions:review_modal.whitelist_label')}
+                    {t('screenings:review_modal.whitelist_label')}
                   </span>
                   <div className="border-grey-90 bg-grey-98 flex flex-col gap-2 rounded-sm border p-2">
                     <span className="font-semibold">
-                      {t('sanctions:match.unique_counterparty_identifier')}
+                      {t('screenings:match.unique_counterparty_identifier')}
                     </span>
                     <span>{sanctionMatch.uniqueCounterpartyIdentifier}</span>
                   </div>
@@ -141,9 +141,9 @@ export const ReviewScreeningMatch = ({
             {t('common:save')}
           </Button>
           <ModalV2.Content open={isConfirming} onClose={() => setIsConfirming(false)}>
-            <ModalV2.Title>{t('sanctions:review_modal.confirmation')}</ModalV2.Title>
+            <ModalV2.Title>{t('screenings:review_modal.confirmation')}</ModalV2.Title>
             <div className="flex flex-col gap-4 p-6">
-              <div>{t('sanctions:review_modal.callout_confirmed_hit')}</div>
+              <div>{t('screenings:review_modal.callout_confirmed_hit')}</div>
               <div className="flex justify-between gap-4">
                 <ModalV2.Close
                   render={<Button className="flex-1" variant="secondary" name="cancel" />}

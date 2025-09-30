@@ -120,29 +120,29 @@ export function RefineSearchModal({
       size="medium"
       className={clsx({ 'h-[80vh]': !searchResults }, 'max-h-[80vh]')}
     >
-      <ModalV2.Title>{t('sanctions:refine_modal.title')}</ModalV2.Title>
+      <ModalV2.Title>{t('screenings:refine_modal.title')}</ModalV2.Title>
       {searchResults ? (
         <>
           <div className="flex flex-col gap-8 overflow-y-scroll p-6">
             {searchResults.length > 0 ? (
               <>
-                <Field label={t('sanctions:refine_modal.result_label')}>
+                <Field label={t('screenings:refine_modal.result_label')}>
                   <div className="flex grow flex-col gap-2">
                     {searchResults.map((match) => {
                       return <MatchResult key={match.id} entity={match} />;
                     })}
                   </div>
                 </Field>
-                <Callout bordered>{t('sanctions:refine_modal.refine_callout')}</Callout>
+                <Callout bordered>{t('screenings:refine_modal.refine_callout')}</Callout>
               </>
             ) : (
               <>
-                <span>{t('sanctions:refine_modal.no_match_label')}</span>
+                <span>{t('screenings:refine_modal.no_match_label')}</span>
                 <Callout bordered>
                   <div className="flex flex-col items-start gap-2">
                     <Trans
                       t={t}
-                      i18nKey="sanctions:refine_modal.no_match_callout"
+                      i18nKey="screenings:refine_modal.no_match_callout"
                       components={{
                         Status: <ScreeningStatusTag status="no_hit" />,
                       }}
@@ -160,7 +160,7 @@ export function RefineSearchModal({
                 name="cancel"
                 onClick={handleBackToSearch}
               >
-                {t('sanctions:refine_modal.back_search')}
+                {t('screenings:refine_modal.back_search')}
               </Button>
               <Button
                 className="flex-1"
@@ -168,7 +168,7 @@ export function RefineSearchModal({
                 onClick={handleRefine}
                 disabled={searchResults.length > (screening.request?.limit ?? Infinity)}
               >
-                {t('sanctions:refine_modal.apply_search')}
+                {t('screenings:refine_modal.apply_search')}
               </Button>
             </div>
           </ModalV2.Footer>
@@ -191,7 +191,7 @@ export function RefineSearchModal({
             {additionalFields.map((field) => (
               <form.Field key={field} name={`fields.${field}`}>
                 {(formField) => (
-                  <Field label={t(`sanctions:entity.property.${field}`)}>
+                  <Field label={t(`screenings:entity.property.${field}`)}>
                     <Input
                       name={formField.name}
                       value={formField.state.value as string}
@@ -220,7 +220,7 @@ export function RefineSearchModal({
                     className="flex-1"
                     variant="primary"
                   >
-                    {isSubmitting ? '...' : t('sanctions:refine_modal.test_search')}
+                    {isSubmitting ? '...' : t('screenings:refine_modal.test_search')}
                   </Button>
                 )}
               </form.Subscribe>
@@ -267,7 +267,7 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
     <Select.Root name={name} value={value} onValueChange={handleChange}>
       <Select.Trigger className="grow">
         <Select.Value align="start" placeholder={'Select'}>
-          {lowerCasedSchema ? t(`sanctions:refine_modal.schema.${lowerCasedSchema}`) : ''}
+          {lowerCasedSchema ? t(`screenings:refine_modal.schema.${lowerCasedSchema}`) : ''}
         </Select.Value>
         <Select.Arrow />
       </Select.Trigger>
@@ -282,10 +282,10 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
                 <div className="flex items-center gap-2 p-2">
                   <Icon icon="plus" className="size-5" />
                   <div className="flex flex-col">
-                    <span>{t(`sanctions:refine_modal.schema.${schemaKey}`)}</span>
+                    <span>{t(`screenings:refine_modal.schema.${schemaKey}`)}</span>
                     <span className="text-grey-50 text-xs">
-                      {t('sanctions:refine_modal.search_by')}{' '}
-                      {fieldForSchema.map((f) => t(`sanctions:entity.property.${f}`)).join(', ')}
+                      {t('screenings:refine_modal.search_by')}{' '}
+                      {fieldForSchema.map((f) => t(`screenings:entity.property.${f}`)).join(', ')}
                     </span>
                   </div>
                 </div>
@@ -299,7 +299,7 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
 }
 
 function SearchInput({ request }: { request: NonNullable<Screening['request']> }) {
-  const { t } = useTranslation(['sanctions']);
+  const { t } = useTranslation(['screenings']);
   const searchInputs = R.pipe(
     R.values(request.queries),
     R.flatMap((query) => R.values(query.properties)),
@@ -307,7 +307,7 @@ function SearchInput({ request }: { request: NonNullable<Screening['request']> }
   );
 
   return (
-    <Field label={t('sanctions:refine_modal.search_input_label')}>
+    <Field label={t('screenings:refine_modal.search_input_label')}>
       {searchInputs.map((input, i) => (
         <div key={i} className="border-grey-90 flex items-center gap-2 rounded-sm border p-2">
           <span className="bg-grey-95 size-6 rounded-xs p-1">

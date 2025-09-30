@@ -31,7 +31,7 @@ export function StatusTag({ status, disabled, onClick }: StatusTagProps) {
         'cursor-pointer': !!onClick && !disabled,
       })}
     >
-      {t(`sanctions:match.status.${status}`)}
+      {t(`screenings:match.status.${status}`)}
       {!disabled ? <Icon icon="caret-down" className="size-5" /> : null}
     </Tag>
   );

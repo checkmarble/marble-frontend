@@ -14,9 +14,9 @@ export function MatchResult({ entity }: { entity: ScreeningMatchPayload }) {
     <div className="text-s bg-grey-98 flex items-center rounded-sm">
       <div className="flex items-center gap-2 p-4">
         <span className="max-w-60 truncate font-semibold">{entity.caption}</span>
-        <span>{t(`sanctions:entity.schema.${entitySchema}`, { defaultValue: entitySchema })}</span>
+        <span>{t(`screenings:entity.schema.${entitySchema}`, { defaultValue: entitySchema })}</span>
         <Tag color="grey" className="shrink-0">
-          {t('sanctions:match.similarity', {
+          {t('screenings:match.similarity', {
             percent: Math.round(entity.score * 100),
           })}
         </Tag>

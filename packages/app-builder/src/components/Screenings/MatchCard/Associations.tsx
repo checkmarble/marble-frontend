@@ -4,7 +4,7 @@ import * as R from 'remeda';
 import { TopicTag } from '../TopicTag';
 
 export const Associations = ({ associations }: { associations: AssociationEntity[] }) => {
-  const { t } = useTranslation(['sanctions']);
+  const { t } = useTranslation(['screenings']);
 
   return (
     <>
@@ -16,11 +16,11 @@ export const Associations = ({ associations }: { associations: AssociationEntity
             const rel =
               association.properties.relationship
                 ?.map((relation: string) =>
-                  t(`sanctions:relation.${R.toCamelCase(relation)}.label`, {
+                  t(`screenings:relation.${R.toCamelCase(relation)}.label`, {
                     defaultValue: relation,
                   }),
                 )
-                .join(' · ') ?? t('sanctions:match.family.unknown_relationship');
+                .join(' · ') ?? t('screenings:match.family.unknown_relationship');
 
             const isFirstElement = associationIndex === 0 && idx === 0;
 
@@ -28,7 +28,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
               <div key={`person-${id}-${idx}`} className="contents">
                 <div className="font-semibold">
                   {isFirstElement && (
-                    <div className="font-bold mb-2">{t('sanctions:match.associations.title')}</div>
+                    <div className="font-bold mb-2">{t('screenings:match.associations.title')}</div>
                   )}
                 </div>
                 <div className="flex flex-row items-start gap-2 rounded-sm p-2 bg-grey-100">
@@ -52,7 +52,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
                       association.properties.sourceUrl.length > 0 && (
                         <div className="col-span-full flex w-full flex-col gap-1">
                           <div className="font-semibold">
-                            {t('sanctions:match.family.source.label')}
+                            {t('screenings:match.family.source.label')}
                           </div>
                           <ul className="list-disc list-inside pl-2">
                             {association.properties.sourceUrl.map((url, urlIdx) => (
