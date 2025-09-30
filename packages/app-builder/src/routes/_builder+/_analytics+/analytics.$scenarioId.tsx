@@ -138,9 +138,9 @@ export default function Analytics() {
   };
 
   return (
-    <div className="max-w-6xl p-6">
-      <div className="flex flex-row gap-4 mb-6">
-        <div className="flex flex-row gap-2 items-center">
+    <div className="max-w-6xl p-v2-lg">
+      <div className="flex flex-row gap-v2-md mb-v2-lg">
+        <div className="flex flex-row gap-v2-sm items-center">
           <Filters
             scenarios={scenarios}
             selectedScenarioId={scenarioId}

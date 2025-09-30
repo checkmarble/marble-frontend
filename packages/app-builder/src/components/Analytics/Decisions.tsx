@@ -178,18 +178,21 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
     <div>
       <div className="flex items-center justify-between">
         <h2 className="text-l font-semibold">{t('analytics:decisions.title')}</h2>
-        <ButtonV2 variant="secondary" className="flex items-center gap-2" disabled={true}>
+        <ButtonV2 variant="secondary" className="flex items-center gap-v2-sm" disabled={true}>
           <Icon icon="download" className="size-4" />
           {t('analytics:decisions.export.button')}
         </ButtonV2>
       </div>
 
-      <div ref={divRef} className="bg-white border border-grey-90 rounded-lg p-4 shadow-sm mt-2">
-        <div className="flex w-full h-[500px] flex-col items-start gap-4">
+      <div
+        ref={divRef}
+        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm"
+      >
+        <div className="flex w-full h-[500px] flex-col items-start gap-v2-md">
           <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-v2-sm">
               <span className="text-s">Count:</span>
-              <div className="flex gap-1">
+              <div className="flex gap-v2-sm">
                 <ButtonV2
                   variant="secondary"
                   onClick={() => {
@@ -276,8 +279,8 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
                 },
               }}
               tooltip={({ id, value, data }) => (
-                <div className="flex flex-col gap-1 w-auto max-w-max bg-white p-2 rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
+                  <div className="flex items-center gap-v2-sm">
                     <strong className="text-grey-00 font-semibold">
                       {id}: {percentage ? `${value.toFixed(1)}%` : value}
                     </strong>
@@ -298,8 +301,8 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
               //   markers={currentDataGroup?.scenarioVersionsXMarkers}
             />
           </div>
-          <div className="flex w-full justify-end mt-2">
-            <div className="flex gap-2">
+          <div className="flex w-full justify-end mt-v2-sm">
+            <div className="flex gap-v2-sm">
               <ButtonV2
                 disabled={!data?.daily || !data?.metadata.totalDecisions}
                 variant="secondary"
@@ -335,7 +338,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
               </ButtonV2>
             </div>
           </div>
-          <div className="flex w-full justify-center mt-4">
+          <div className="flex w-full justify-center">
             <OutcomeFilter decisions={decisions} onChange={setDecisions} />
           </div>
         </div>
