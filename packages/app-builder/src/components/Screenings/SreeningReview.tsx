@@ -32,9 +32,9 @@ export function SanctionReviewSection({ screening, onRefineSuccess }: SanctionRe
     <div className="flex h-fit flex-2 flex-col gap-6">
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-m font-semibold">{t('sanctions:potential_matches')}</span>
+          <span className="text-m font-semibold">{t('screenings:potential_matches')}</span>
           <span className="text-grey-50 text-s">
-            {t('sanctions:callout.needs_review', {
+            {t('screenings:callout.needs_review', {
               toReview: matchesToReviewCount,
               totalMatches: screening.matches.length,
             })}
@@ -42,7 +42,7 @@ export function SanctionReviewSection({ screening, onRefineSuccess }: SanctionRe
           {isRefinable ? (
             <Button className="ml-auto" variant="secondary" onClick={() => setIsRefining(true)}>
               <Icon icon="restart-alt" className="size-5" />
-              {t('sanctions:refine_search')}
+              {t('screenings:refine_search')}
             </Button>
           ) : null}
         </div>
@@ -53,7 +53,7 @@ export function SanctionReviewSection({ screening, onRefineSuccess }: SanctionRe
             (sc: ScreeningSuccess) => (
               <div className="text-s bg-red-95 text-red-47 flex items-center gap-2 rounded-sm p-2">
                 <Icon icon="error" className="size-5 shrink-0" />
-                {t('sanctions:callout.needs_refine', {
+                {t('screenings:callout.needs_refine', {
                   matchCount: sc.request.limit,
                 })}
               </div>
@@ -61,7 +61,7 @@ export function SanctionReviewSection({ screening, onRefineSuccess }: SanctionRe
           )
           .when(
             (sc) => sc.status === 'in_review',
-            () => <Callout bordered>{t('sanctions:callout.review')}</Callout>,
+            () => <Callout bordered>{t('screenings:callout.review')}</Callout>,
           )
           .otherwise(() => null)}
       </div>

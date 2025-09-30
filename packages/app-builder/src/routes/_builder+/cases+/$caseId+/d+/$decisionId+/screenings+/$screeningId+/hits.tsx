@@ -133,10 +133,10 @@ function ScreeningQueryDetail({
     <Tabs defaultValue="preprocessed">
       <TabsList className="mb-2">
         {hasInitialQuery && (
-          <TabsTrigger value="initial">{t('sanctions:initial_query')}</TabsTrigger>
+          <TabsTrigger value="initial">{t('screenings:initial_query')}</TabsTrigger>
         )}
         <TabsTrigger value="preprocessed">
-          {!hasInitialQuery ? t('sanctions:query') : t('sanctions:processed_query')}
+          {!hasInitialQuery ? t('screenings:query') : t('screenings:processed_query')}
         </TabsTrigger>
       </TabsList>
       {hasInitialQuery && (

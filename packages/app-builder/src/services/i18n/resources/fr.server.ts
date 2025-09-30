@@ -8,9 +8,9 @@ import decisions from '@app-builder/locales/fr/decisions.json';
 import filters from '@app-builder/locales/fr/filters.json';
 import lists from '@app-builder/locales/fr/lists.json';
 import navigation from '@app-builder/locales/fr/navigation.json';
-import sanctions from '@app-builder/locales/fr/sanctions.json';
 import scenarios from '@app-builder/locales/fr/scenarios.json';
 import screeningTopics from '@app-builder/locales/fr/screening-topics.json';
+import screenings from '@app-builder/locales/fr/screenings.json';
 import settings from '@app-builder/locales/fr/settings.json';
 import transfercheck from '@app-builder/locales/fr/transfercheck.json';
 import upload from '@app-builder/locales/fr/upload.json';
@@ -28,7 +28,7 @@ export const fr = {
   lists,
   auth,
   scenarios,
-  sanctions,
+  screenings,
   screeningTopics,
   settings,
   transfercheck,
