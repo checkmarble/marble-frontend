@@ -189,10 +189,10 @@ paths:
     $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1active-snoozes
   /scenario-iterations/{scenarioIterationId}/commit:
     $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1commit
-  /scenario-iterations/{scenarioIterationId}/sanction-check:
-    $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1sanction-check
-  /scenario-iterations/{scenarioIterationId}/sanction-check/{screeningConfigId}:
-    $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1sanction-check~1{screeningConfigId}
+  /scenario-iterations/{scenarioIterationId}/screening:
+    $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1screening
+  /scenario-iterations/{scenarioIterationId}/screening/{screeningConfigId}:
+    $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1screening~1{screeningConfigId}
 
   # SCREENINGS
 

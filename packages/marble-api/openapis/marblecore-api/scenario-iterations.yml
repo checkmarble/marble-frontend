@@ -298,7 +298,7 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
-/scenario-iterations/{scenarioIterationId}/sanction-check:
+/scenario-iterations/{scenarioIterationId}/screening:
   post:
     tags:
       - Scenario Iterations
@@ -325,7 +325,7 @@
           application/json:
             schema:
               $ref: 'screenings.yml#/components/schemas/ScreeningConfigDto'
-/scenario-iterations/{scenarioIterationId}/sanction-check/{screeningConfigId}:
+/scenario-iterations/{scenarioIterationId}/screening/{screeningConfigId}:
   delete:
     tags:
       - Scenario Iterations

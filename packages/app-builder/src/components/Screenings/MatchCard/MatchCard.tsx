@@ -107,7 +107,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
       <ReviewScreeningMatch
         open={isInReview}
         onClose={() => setIsInReview(false)}
-        sanctionMatch={match}
+        screeningMatch={match}
       />
     </div>
   );
