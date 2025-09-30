@@ -1,3 +1,4 @@
+import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
 import {
   DecisionOutcomesPerPeriod,
   type DecisionsFilter,
@@ -34,6 +35,11 @@ interface DecisionsProps {
 
 export function Decisions({ data, scenarioVersions }: DecisionsProps) {
   const language = useFormatLanguage();
+
+  const { ref: divRef, dimensions } = useResizeObserver<HTMLDivElement>({
+    throttleMs: 16,
+    observeHeight: false,
+  });
 
   // Decision filter default values
   const defaultDecisions: DecisionsFilter = new Map([
@@ -156,11 +162,25 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
     }
   };
 
-  //   if (!data) {
-  //     return null;
-  //   }
+  const getXTickValues = () => {
+    if (!currentDataGroup?.gridXValues) {
+      return [];
+    }
+    if (!data?.metadata.totalDecisions) {
+      return [data?.metadata.start, data?.metadata.end];
+    }
+
+    if (dimensions.width < 400) {
+      return currentDataGroup.gridXValues.filter((_, index) => index % 4 === 0);
+    }
+    if (dimensions.width < 800 && currentDataGroup.gridXValues.length > 12) {
+      return currentDataGroup?.gridXValues.filter((_, index) => index % 2 === 0);
+    }
+    return currentDataGroup?.gridXValues;
+  };
+
   return (
-    <div className="bg-white border border-grey-90 rounded-lg p-4 shadow-sm">
+    <div ref={divRef} className="bg-white border border-grey-90 rounded-lg p-4 shadow-sm">
       <div className="flex w-full h-[500px] flex-col items-start gap-4">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2">
@@ -215,7 +235,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
                 .map(([key]) => key)
             }
             padding={0.5}
-            margin={{ top: 5, right: 0, bottom: 24, left: 60 }}
+            margin={{ top: 5, right: 5, bottom: 24, left: 50 }}
             colors={getBarColors}
             defs={[
               {
@@ -244,9 +264,7 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
                 : undefined,
             }}
             axisBottom={{
-              tickValues: data?.metadata.totalDecisions
-                ? currentDataGroup?.gridXValues
-                : [data?.metadata.start, data?.metadata.end],
+              tickValues: getXTickValues(),
               format: (value: string) => {
                 // Convert the ISO string to a Date object and format it
                 const date = new Date(value);
