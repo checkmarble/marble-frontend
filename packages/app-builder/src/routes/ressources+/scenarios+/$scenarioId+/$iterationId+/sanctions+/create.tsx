@@ -20,7 +20,7 @@ export const handle = {
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService, i18nextService } = initServerServices(request);
-  const { scenarioIterationSanctionRepository } = await authService.isAuthenticated(request, {
+  const { scenarioIterationScreeningRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   const t = await i18nextService.getFixedT(request, ['scenarios']);
@@ -28,7 +28,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const iterationId = fromParams(params, 'iterationId');
 
   try {
-    const config = await scenarioIterationSanctionRepository.createScreeningConfig({
+    const config = await scenarioIterationScreeningRepository.createScreeningConfig({
       iterationId,
       changes: {
         name: t('scenarios:create_sanction.default_name'),
@@ -49,7 +49,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 }
 
-export function CreateSanction({
+export function CreateScreening({
   scenarioId,
   iterationId,
   isSanctionAvailable,

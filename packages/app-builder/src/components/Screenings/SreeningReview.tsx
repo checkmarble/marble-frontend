@@ -14,15 +14,18 @@ import { Icon } from 'ui-icons';
 import { MatchCard } from './MatchCard';
 import { RefineSearchModal } from './RefineSearchModal';
 import { ScreeningErrors } from './ScreeningErrors';
-import { sanctionsI18n } from './screenings-i18n';
+import { screeningsI18n } from './screenings-i18n';
 
-export type SanctionReviewSectionProps = {
+export type ScreeningReviewSectionProps = {
   screening: Screening;
   onRefineSuccess: (screeningId: string) => void;
 };
 
-export function SanctionReviewSection({ screening, onRefineSuccess }: SanctionReviewSectionProps) {
-  const { t } = useTranslation(sanctionsI18n);
+export function ScreeningReviewSection({
+  screening,
+  onRefineSuccess,
+}: ScreeningReviewSectionProps) {
+  const { t } = useTranslation(screeningsI18n);
   const [isRefining, setIsRefining] = useState(false);
   const matchesToReviewCount = filter(screening.matches, (m) => m.status === 'pending').length;
   const hasError = isScreeningError(screening);

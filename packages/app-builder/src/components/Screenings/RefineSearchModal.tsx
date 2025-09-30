@@ -22,7 +22,7 @@ import { type z } from 'zod/v4';
 
 import { MatchResult } from './MatchResult';
 import { ScreeningStatusTag } from './ScreeningStatusTag';
-import { sanctionsI18n } from './screenings-i18n';
+import { screeningsI18n } from './screenings-i18n';
 
 function setAdditionalFields(fields: string[], prev: Record<string, string>) {
   const additionalFields = {} as Record<string, string>;
@@ -47,7 +47,7 @@ export function RefineSearchModal({
   onRefineSuccess: _onRefineSuccess,
   onClose: _onClose,
 }: RefineSearchModalProps) {
-  const { t } = useTranslation(sanctionsI18n);
+  const { t } = useTranslation(screeningsI18n);
   const searchFetcher = useFetcher<typeof searchAction>();
   const refineFetcher = useFetcher<typeof refineAction>();
   const formDataRef = useRef<FormData | null>(null);
@@ -253,7 +253,7 @@ type EntitySelectProps = {
 };
 
 function EntitySelect({ name, value, onChange }: EntitySelectProps) {
-  const { t } = useTranslation(sanctionsI18n);
+  const { t } = useTranslation(screeningsI18n);
   const schemas = R.keys(SEARCH_ENTITIES);
   const lowerCasedSchema = value?.toLowerCase() as Lowercase<typeof value>;
 

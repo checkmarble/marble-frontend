@@ -3,8 +3,8 @@ import { CasePivotValues } from '@app-builder/components/Cases/CasePivotValues';
 import { IngestedObjectDetailModal } from '@app-builder/components/Data/IngestedObjectDetailModal';
 import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { FormatData } from '@app-builder/components/FormatData';
-import { SanctionReviewSection } from '@app-builder/components/Screenings/SreeningReview';
-import { sanctionsI18n } from '@app-builder/components/Screenings/screenings-i18n';
+import { ScreeningReviewSection } from '@app-builder/components/Screenings/SreeningReview';
+import { screeningsI18n } from '@app-builder/components/Screenings/screenings-i18n';
 import { usePivotValues } from '@app-builder/hooks/decisions/usePivotValues';
 import { type Screening, ScreeningQuery } from '@app-builder/models/screening';
 import { useFormatLanguage } from '@app-builder/utils/format';
@@ -31,7 +31,7 @@ export default function CaseSanctionsHitsPage() {
   return (
     <div className="bg-grey-100 border-grey-90 grid grid-cols-[max-content_2fr_1fr_repeat(3,max-content)] gap-x-6 gap-y-2 rounded-md border">
       <div className="col-span-full flex flex-row gap-12 p-4">
-        <SanctionReviewSection
+        <ScreeningReviewSection
           screening={screening}
           onRefineSuccess={(screeningId) => {
             navigate(
@@ -125,7 +125,7 @@ function ScreeningQueryDetail({
   request: NonNullable<Screening['request']>;
   initialQuery: Screening['initialQuery'];
 }) {
-  const { t } = useTranslation(sanctionsI18n);
+  const { t } = useTranslation(screeningsI18n);
   const processedQueries = Object.values(request.queries);
   const hasInitialQuery = Array.isArray(initialQuery) && initialQuery.length > 0;
 

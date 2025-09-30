@@ -24,7 +24,7 @@ import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
-import { knownOutcomes, type SanctionOutcome } from '@app-builder/models/outcome';
+import { knownOutcomes, type ScreeningOutcome } from '@app-builder/models/outcome';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { isAccessible } from '@app-builder/services/feature-access';
@@ -161,7 +161,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = initServerServices(request);
 
-  const [session, t, raw, { scenarioIterationSanctionRepository }] = await Promise.all([
+  const [session, t, raw, { scenarioIterationScreeningRepository }] = await Promise.all([
     getSession(request),
     getFixedT(request, ['common']),
     request.json(),
@@ -175,9 +175,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (!success) return json({ status: 'error', errors: z.treeifyError(error) });
 
   try {
-    await scenarioIterationSanctionRepository.updateScreeningConfig({
+    await scenarioIterationScreeningRepository.updateScreeningConfig({
       iterationId: fromParams(params, 'iterationId'),
-      sanctionId: fromParams(params, 'sanctionId'),
+      screeningId: fromParams(params, 'sanctionId'),
       changes: {
         ...data,
         counterPartyId: data.counterPartyId ?? NewUndefinedAstNode(),
@@ -258,7 +258,7 @@ export default function SanctionDetail() {
       ruleGroup: screeningConfig?.ruleGroup ?? 'Screening',
       datasets: screeningConfig?.datasets ?? [],
       threshold: screeningConfig?.threshold,
-      forcedOutcome: (screeningConfig?.forcedOutcome as SanctionOutcome) ?? 'block_and_review',
+      forcedOutcome: (screeningConfig?.forcedOutcome as ScreeningOutcome) ?? 'block_and_review',
       triggerRule: screeningConfig?.triggerRule,
       entityType: screeningConfig?.entityType,
       query: screeningConfig?.query,
@@ -347,7 +347,7 @@ export default function SanctionDetail() {
                   <DeleteScreeningRule
                     iterationId={iterationId}
                     scenarioId={scenario.id}
-                    sanctionId={configId}
+                    screeningId={configId}
                   >
                     <Button color="red" className="w-fit" size="small">
                       <Icon icon="delete" className="size-4" aria-hidden />
@@ -494,7 +494,7 @@ export default function SanctionDetail() {
                             onChange={field.handleChange}
                             onBlur={field.handleBlur}
                             selectedOutcome={field.state.value}
-                            outcomes={difference(knownOutcomes, ['approve']) as SanctionOutcome[]}
+                            outcomes={difference(knownOutcomes, ['approve']) as ScreeningOutcome[]}
                           />
                           <FormErrorOrDescription
                             errors={getFieldErrors(field.state.meta.errors)}

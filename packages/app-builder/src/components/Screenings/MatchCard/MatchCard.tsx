@@ -7,7 +7,7 @@ import { Icon } from 'ui-icons';
 import { MatchDetails } from '../MatchDetails';
 import { ReviewScreeningMatch } from '../ReviewScreeningMatch';
 import { StatusTag } from '../StatusTag';
-import { sanctionsI18n } from '../screenings-i18n';
+import { screeningsI18n } from '../screenings-i18n';
 import { TopicTag } from '../TopicTag';
 import { CommentLine } from './CommentLine';
 
@@ -19,7 +19,7 @@ type MatchCardProps = {
 };
 
 export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchCardProps) => {
-  const { t } = useTranslation(sanctionsI18n);
+  const { t } = useTranslation(screeningsI18n);
   const [isInReview, setIsInReview] = useState(false);
 
   const entity = match.payload;

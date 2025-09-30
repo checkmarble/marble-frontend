@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { sanctionsI18n } from './screenings-i18n';
+import { screeningsI18n } from './screenings-i18n';
 
 export function MatchResult({ entity }: { entity: ScreeningMatchPayload }) {
-  const { t } = useTranslation(sanctionsI18n);
+  const { t } = useTranslation(screeningsI18n);
 
   const entitySchema = entity.schema.toLowerCase() as Lowercase<typeof entity.schema>;
 

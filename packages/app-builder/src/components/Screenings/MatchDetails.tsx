@@ -9,7 +9,7 @@ import { EntityProperties } from './EntityProperties';
 import { Associations } from './MatchCard/Associations';
 import { FamilyDetail } from './MatchCard/FamilyDetail';
 import { MemberShip } from './MatchCard/MemberShip';
-import { sanctionsI18n } from './screenings-i18n';
+import { screeningsI18n } from './screenings-i18n';
 
 export type MatchDetailsProps = {
   entity: ScreeningMatch['payload'];
@@ -31,7 +31,7 @@ const sanctionProps = [
 ] satisfies PropertyForSchema<'Sanction'>[];
 
 export function MatchDetails({ entity }: MatchDetailsProps) {
-  const { t } = useTranslation(sanctionsI18n);
+  const { t } = useTranslation(screeningsI18n);
   const [selectedSanction, setSelectedSanction] = useState<ScreeningSanctionEntity | null>(null);
 
   const [isOpen, setIsOpen] = useState(false);

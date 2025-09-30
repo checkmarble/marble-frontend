@@ -8,12 +8,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const iterationId = fromParams(params, 'iterationId');
   const scenarioId = fromParams(params, 'scenarioId');
   const sanctionId = fromParams(params, 'sanctionId');
-  const { scenarioIterationSanctionRepository } = await authService.isAuthenticated(request, {
+  const { scenarioIterationScreeningRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   try {
-    await scenarioIterationSanctionRepository.deleteScreeningConfig({
+    await scenarioIterationScreeningRepository.deleteScreeningConfig({
       iterationId,
       sanctionId,
     });

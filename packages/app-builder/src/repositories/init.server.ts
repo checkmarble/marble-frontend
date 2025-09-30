@@ -23,7 +23,7 @@ import { makeGetPartnerRepository } from './PartnerRepository';
 import { makeGetPersonalSettingsRepository } from './PersonalSettingsRepository';
 import { makeGetRuleSnoozeRepository } from './RuleSnoozeRepository';
 import { makeGetScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
-import { makeGetScenarioIterationSanctionRepository } from './ScenarioIterationScreeningRepository';
+import { makeGetScenarioIterationScreeningRepository } from './ScenarioIterationScreeningRepository';
 import { makeGetScenarioRepository } from './ScenarioRepository';
 import { makeGetScreeningRepository } from './ScreeningRepository';
 import {
@@ -73,7 +73,7 @@ export function makeServerRepositories({
     getCustomListRepository: makeGetCustomListRepository(),
     getScenarioRepository: makeGetScenarioRepository(),
     getScenarioIterationRuleRepository: makeGetScenarioIterationRuleRepository(),
-    getScenarioIterationSanctionRepository: makeGetScenarioIterationSanctionRepository(),
+    getScenarioIterationScreeningRepository: makeGetScenarioIterationScreeningRepository(),
     getOrganizationRepository: makeGetOrganizationRepository(),
     getDataModelRepository: makeGetDataModelRepository(),
     getApiKeyRepository: makeGetApiKeyRepository(),

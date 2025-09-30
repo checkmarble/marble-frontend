@@ -1,4 +1,4 @@
-import { sanctionsI18n } from '@app-builder/components/Screenings/screenings-i18n';
+import { screeningsI18n } from '@app-builder/components/Screenings/screenings-i18n';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useEnrichMatchMutation } from '@app-builder/queries/screening/enrich-match';
 import { useCallbackRef } from '@app-builder/utils/hooks';
@@ -7,7 +7,7 @@ import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function EnrichMatchButton({ matchId }: { matchId: string }) {
-  const { t } = useTranslation(sanctionsI18n);
+  const { t } = useTranslation(screeningsI18n);
   const enrichMatchMutation = useEnrichMatchMutation();
   const revalidate = useLoaderRevalidator();
 

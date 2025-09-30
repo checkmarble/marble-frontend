@@ -17,11 +17,11 @@ import { Button, ModalV2, Switch, TextArea } from 'ui-design-system';
 export const ReviewScreeningMatch = ({
   open,
   onClose: _onClose,
-  sanctionMatch,
+  screeningMatch,
 }: {
   open: boolean;
   onClose: () => void;
-  sanctionMatch: ScreeningMatch;
+  screeningMatch: ScreeningMatch;
 }) => {
   const { t } = useTranslation(['common', 'screenings']);
   const onClose = useCallbackRef(_onClose);
@@ -31,7 +31,7 @@ export const ReviewScreeningMatch = ({
 
   const form = useForm({
     defaultValues: {
-      matchId: sanctionMatch.id,
+      matchId: screeningMatch.id,
       status: 'confirmed_hit',
       comment: '',
       whitelist: false,
@@ -69,7 +69,7 @@ export const ReviewScreeningMatch = ({
         onSubmit={handleSubmit(form)}
         id="review-screening-match"
       >
-        <input name="matchId" type="hidden" value={sanctionMatch.id} />
+        <input name="matchId" type="hidden" value={screeningMatch.id} />
         <form.Field name="status">
           {(field) => {
             return (
@@ -98,7 +98,7 @@ export const ReviewScreeningMatch = ({
           }}
         </form.Field>
         {/* TODO: Whitelisting */}
-        {currentStatus === 'no_hit' && !!sanctionMatch.uniqueCounterpartyIdentifier ? (
+        {currentStatus === 'no_hit' && !!screeningMatch.uniqueCounterpartyIdentifier ? (
           <form.Field name="whitelist">
             {(field) => {
               return (
@@ -115,7 +115,7 @@ export const ReviewScreeningMatch = ({
                     <span className="font-semibold">
                       {t('screenings:match.unique_counterparty_identifier')}
                     </span>
-                    <span>{sanctionMatch.uniqueCounterpartyIdentifier}</span>
+                    <span>{screeningMatch.uniqueCounterpartyIdentifier}</span>
                   </div>
                 </div>
               );

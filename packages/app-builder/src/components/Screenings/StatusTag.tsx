@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Tag, type TagProps } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { sanctionsI18n } from './screenings-i18n';
+import { screeningsI18n } from './screenings-i18n';
 
 const statusTagColors = {
   pending: 'orange',
@@ -20,7 +20,7 @@ export type StatusTagProps = {
 };
 
 export function StatusTag({ status, disabled, onClick }: StatusTagProps) {
-  const { t } = useTranslation(sanctionsI18n);
+  const { t } = useTranslation(screeningsI18n);
 
   return (
     <Tag
