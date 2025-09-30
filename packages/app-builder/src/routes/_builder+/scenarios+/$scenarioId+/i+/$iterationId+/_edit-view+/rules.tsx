@@ -13,7 +13,7 @@ import { RulesFiltersMenu } from '@app-builder/components/Scenario/Rules/Filters
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
 import { type ScreeningConfig } from '@app-builder/models/screening-config';
-import { CreateSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create';
+import { CreateScreening } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
 import {
@@ -89,7 +89,7 @@ const columnHelper = createColumnHelper<
   (ScenarioIterationRule & { type: 'rule' }) | (ScreeningConfig & { type: 'sanction' })
 >();
 
-const AddRuleOrSanction = ({
+const AddRuleOrScreening = ({
   scenarioId,
   iterationId,
   isSanctionAvailable,
@@ -111,7 +111,7 @@ const AddRuleOrSanction = ({
         className="bg-grey-100 border-grey-90 z-10 mt-2 flex flex-col gap-2 rounded-sm border p-2"
       >
         <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
-        <CreateSanction
+        <CreateScreening
           scenarioId={scenarioId}
           iterationId={iterationId}
           isSanctionAvailable={isSanctionAvailable}
@@ -295,7 +295,7 @@ export default function Rules() {
               <FiltersButton />
             </RulesFiltersMenu>
             {editorMode === 'edit' ? (
-              <AddRuleOrSanction
+              <AddRuleOrScreening
                 scenarioId={scenarioId}
                 iterationId={iterationId}
                 isSanctionAvailable={isSanctionAvailable}

@@ -9,7 +9,7 @@ import { useFormatLanguage } from '@app-builder/utils/format';
 import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { sanctionsI18n } from './screenings-i18n';
+import { screeningsI18n } from './screenings-i18n';
 
 export function EntityProperties<T extends OpenSanctionEntity>({
   entity,
@@ -29,7 +29,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
   );
 
   const displayProperties = forcedProperties ?? getSanctionEntityProperties(entity.schema);
-  const { t, i18n } = useTranslation(sanctionsI18n);
+  const { t, i18n } = useTranslation(screeningsI18n);
   const language = useFormatLanguage();
   const entityPropertyList = displayProperties
     .map((property) => {

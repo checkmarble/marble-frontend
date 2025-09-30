@@ -5,21 +5,21 @@ import {
   type ScreeningConfig,
 } from '@app-builder/models/screening-config';
 
-export interface ScenarioIterationSanctionRepository {
+export interface ScenarioIterationScreeningRepository {
   createScreeningConfig(args: {
     iterationId: string;
     changes: ScreeningConfig;
   }): Promise<ScreeningConfig>;
   updateScreeningConfig(args: {
     iterationId: string;
-    sanctionId: string;
+    screeningId: string;
     changes: ScreeningConfig;
   }): Promise<ScreeningConfig>;
   deleteScreeningConfig(args: { iterationId: string; sanctionId: string }): Promise<void>;
 }
 
-export function makeGetScenarioIterationSanctionRepository() {
-  return (client: MarbleCoreApi): ScenarioIterationSanctionRepository => ({
+export function makeGetScenarioIterationScreeningRepository() {
+  return (client: MarbleCoreApi): ScenarioIterationScreeningRepository => ({
     deleteScreeningConfig: async ({ iterationId, sanctionId }) => {
       await client.deleteScreeningConfig(iterationId, sanctionId);
     },
@@ -27,11 +27,11 @@ export function makeGetScenarioIterationSanctionRepository() {
       adaptScreeningConfig(
         await client.createScreeningConfig(iterationId, adaptScreeningConfigDto(changes)),
       ),
-    updateScreeningConfig: async ({ iterationId, sanctionId, changes }) =>
+    updateScreeningConfig: async ({ iterationId, screeningId, changes }) =>
       adaptScreeningConfig(
         await client.upsertScreeningConfig(
           iterationId,
-          sanctionId,
+          screeningId,
           adaptScreeningConfigDto(changes),
         ),
       ),

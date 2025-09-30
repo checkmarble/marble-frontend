@@ -7,12 +7,12 @@ import { Icon } from 'ui-icons';
 export function DeleteScreeningRule({
   scenarioId,
   iterationId,
-  sanctionId,
+  screeningId,
   children,
 }: {
   scenarioId: string;
   iterationId: string;
-  sanctionId: string;
+  screeningId: string;
   children: React.ReactElement;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
@@ -20,7 +20,7 @@ export function DeleteScreeningRule({
   const revalidate = useLoaderRevalidator();
 
   const handleDeleteScreeningRule = () => {
-    deleteScreeningRuleMutation.mutateAsync(sanctionId).then(() => {
+    deleteScreeningRuleMutation.mutateAsync(screeningId).then(() => {
       revalidate();
     });
   };

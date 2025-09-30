@@ -31,7 +31,7 @@ import { type PartnerRepository } from '@app-builder/repositories/PartnerReposit
 import { PersonalSettingsRepository } from '@app-builder/repositories/PersonalSettingsRepository';
 import { type RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
-import { type ScenarioIterationSanctionRepository } from '@app-builder/repositories/ScenarioIterationScreeningRepository';
+import { type ScenarioIterationScreeningRepository } from '@app-builder/repositories/ScenarioIterationScreeningRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { type ScreeningRepository } from '@app-builder/repositories/ScreeningRepository';
 import { type TestRunRepository } from '@app-builder/repositories/TestRunRepository';
@@ -73,7 +73,7 @@ interface AuthenticatedInfo {
   organization: OrganizationRepository;
   scenario: ScenarioRepository;
   scenarioIterationRuleRepository: ScenarioIterationRuleRepository;
-  scenarioIterationSanctionRepository: ScenarioIterationSanctionRepository;
+  scenarioIterationScreeningRepository: ScenarioIterationScreeningRepository;
   user: CurrentUser;
   entitlements: FeatureAccesses;
   inbox: InboxRepository;
@@ -142,9 +142,9 @@ interface MakeAuthenticationServerServiceArgs {
   getScenarioIterationRuleRepository: (
     marbleCoreApiClient: MarbleCoreApi,
   ) => ScenarioIterationRuleRepository;
-  getScenarioIterationSanctionRepository: (
+  getScenarioIterationScreeningRepository: (
     marbleCoreApiClient: MarbleCoreApi,
-  ) => ScenarioIterationSanctionRepository;
+  ) => ScenarioIterationScreeningRepository;
   getDataModelRepository: (marbleCoreApiClient: MarbleCoreApi) => DataModelRepository;
   getApiKeyRepository: (marbleCoreApiClient: MarbleCoreApi) => ApiKeyRepository;
   getAnalyticsRepository: (marbleCoreApiClient: MarbleCoreApi) => AnalyticsRepository;
@@ -183,7 +183,7 @@ export function makeAuthenticationServerService({
   getOrganizationRepository,
   getScenarioRepository,
   getScenarioIterationRuleRepository,
-  getScenarioIterationSanctionRepository,
+  getScenarioIterationScreeningRepository,
   getDataModelRepository,
   getApiKeyRepository,
   getAnalyticsRepository,
@@ -376,8 +376,8 @@ export function makeAuthenticationServerService({
       customListsRepository: getCustomListRepository(marbleCoreApiClient),
       scenario: getScenarioRepository(marbleCoreApiClient),
       scenarioIterationRuleRepository: getScenarioIterationRuleRepository(marbleCoreApiClient),
-      scenarioIterationSanctionRepository:
-        getScenarioIterationSanctionRepository(marbleCoreApiClient),
+      scenarioIterationScreeningRepository:
+        getScenarioIterationScreeningRepository(marbleCoreApiClient),
       organization: getOrganizationRepository(marbleCoreApiClient, user.organizationId),
       dataModelRepository: getDataModelRepository(marbleCoreApiClient),
       apiKey: getApiKeyRepository(marbleCoreApiClient),

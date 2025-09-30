@@ -3,7 +3,7 @@ import { type ParseKeys } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 
-import { sanctionsI18n } from './screenings-i18n';
+import { screeningsI18n } from './screenings-i18n';
 
 const screeningStatusMapping = {
   in_review: { color: 'orange', tKey: 'screenings:status.in_review' },
@@ -27,7 +27,7 @@ export function ScreeningStatusTag({
   border?: 'rounded-sm' | 'square';
   className?: string;
 }) {
-  const { t } = useTranslation(sanctionsI18n);
+  const { t } = useTranslation(screeningsI18n);
   const screeningStatus = screeningStatusMapping[status];
 
   return (

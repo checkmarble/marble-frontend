@@ -1,5 +1,5 @@
 import { OutcomeBadge } from '@app-builder/components/Decisions';
-import { type SanctionOutcome } from '@app-builder/models/outcome';
+import { type ScreeningOutcome } from '@app-builder/models/outcome';
 import { matchSorter } from 'match-sorter';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
@@ -12,11 +12,11 @@ export const FieldOutcomes = ({
   onChange,
   onBlur,
 }: {
-  selectedOutcome?: SanctionOutcome;
-  outcomes: SanctionOutcome[];
+  selectedOutcome?: ScreeningOutcome;
+  outcomes: ScreeningOutcome[];
   disabled?: boolean;
   name?: string;
-  onChange?: (value: SanctionOutcome) => void;
+  onChange?: (value: ScreeningOutcome) => void;
   onBlur?: () => void;
 }) => {
   const [searchValue, setSearchValue] = useState('');
