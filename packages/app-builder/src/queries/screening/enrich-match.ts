@@ -3,7 +3,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useMutation } from '@tanstack/react-query';
 
 const endpoint = (matchId: string) =>
-  getRoute('/ressources/sanction-check/enrich-match/:matchId', {
+  getRoute('/ressources/screenings/enrich-match/:matchId', {
     matchId: fromUUIDtoSUUID(matchId),
   });
 

@@ -7,7 +7,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const { authService } = initServerServices(request);
   const iterationId = fromParams(params, 'iterationId');
   const scenarioId = fromParams(params, 'scenarioId');
-  const sanctionId = fromParams(params, 'sanctionId');
+  const screeningId = fromParams(params, 'screeningId');
   const { scenarioIterationScreeningRepository } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -15,7 +15,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   try {
     await scenarioIterationScreeningRepository.deleteScreeningConfig({
       iterationId,
-      sanctionId,
+      screeningId,
     });
 
     return Response.json({

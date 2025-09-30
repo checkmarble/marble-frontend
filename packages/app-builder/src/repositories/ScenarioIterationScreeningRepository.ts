@@ -15,13 +15,13 @@ export interface ScenarioIterationScreeningRepository {
     screeningId: string;
     changes: ScreeningConfig;
   }): Promise<ScreeningConfig>;
-  deleteScreeningConfig(args: { iterationId: string; sanctionId: string }): Promise<void>;
+  deleteScreeningConfig(args: { iterationId: string; screeningId: string }): Promise<void>;
 }
 
 export function makeGetScenarioIterationScreeningRepository() {
   return (client: MarbleCoreApi): ScenarioIterationScreeningRepository => ({
-    deleteScreeningConfig: async ({ iterationId, sanctionId }) => {
-      await client.deleteScreeningConfig(iterationId, sanctionId);
+    deleteScreeningConfig: async ({ iterationId, screeningId }) => {
+      await client.deleteScreeningConfig(iterationId, screeningId);
     },
     createScreeningConfig: async ({ iterationId, changes }) =>
       adaptScreeningConfig(

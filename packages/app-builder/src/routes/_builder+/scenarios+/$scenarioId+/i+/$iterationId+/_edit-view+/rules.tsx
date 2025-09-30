@@ -13,7 +13,7 @@ import { RulesFiltersMenu } from '@app-builder/components/Scenario/Rules/Filters
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
 import { type ScreeningConfig } from '@app-builder/models/screening-config';
-import { CreateScreening } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create';
+import { CreateScreening } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/screenings+/create';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
 import {
@@ -255,10 +255,10 @@ export default function Rules() {
         <Link to={`./${fromUUIDtoSUUID(row.id)}`} />
       ) : (
         <Link
-          to={getRoute('/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId', {
+          to={getRoute('/scenarios/:scenarioId/i/:iterationId/screenings/:screeningId', {
             scenarioId: fromUUIDtoSUUID(scenarioId),
             iterationId: fromUUIDtoSUUID(iterationId),
-            sanctionId: fromUUIDtoSUUID(row.id as string),
+            screeningId: fromUUIDtoSUUID(row.id as string),
           })}
         />
       ),

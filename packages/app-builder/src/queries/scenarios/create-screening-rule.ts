@@ -4,7 +4,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useMutation } from '@tanstack/react-query';
 
 const endpoint = (scenarioId: string, iterationId: string) =>
-  getRoute('/ressources/scenarios/:scenarioId/:iterationId/sanctions/create', {
+  getRoute('/ressources/scenarios/:scenarioId/:iterationId/screenings/create', {
     scenarioId: fromUUIDtoSUUID(scenarioId),
     iterationId: fromUUIDtoSUUID(iterationId),
   });
