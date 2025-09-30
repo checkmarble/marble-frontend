@@ -105,12 +105,6 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
 
   const getBarColors = (d: ComputedDatum<DecisionsPerOutcome>) => {
     const id = String(d.id) as 'approve' | 'decline' | 'review' | 'blockAndReview';
-    // const colors = {
-    // approve: '#10b981',
-    // decline: '#ef4444',
-    // review: '#f59e0b',
-    // blockAndReview: '#ffab73',
-    // };
     return outcomeColors[id] ?? '#9ca3af';
   };
 
