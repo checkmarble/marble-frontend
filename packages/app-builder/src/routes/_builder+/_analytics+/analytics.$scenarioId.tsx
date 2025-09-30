@@ -1,17 +1,15 @@
 import { ErrorComponent } from '@app-builder/components';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
 import { Filters } from '@app-builder/components/Analytics/Filters';
-import { OutcomeFilter } from '@app-builder/components/Analytics/OutcomeFilter';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
-import { type DecisionsFilter } from '@app-builder/models/analytics';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
+import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate, useRouteError, useSearchParams } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { subMonths } from 'date-fns';
 import { type Namespace } from 'i18next';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 import z from 'zod';
@@ -37,23 +35,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { analytics, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  const scenarioId = params['scenarioId']!;
+
+  const scenarioId = fromParams(params, 'scenarioId');
 
   const url = new URL(request.url);
-
-  const encodeBase64Url = (value: string) =>
-    Buffer.from(value, 'utf-8')
-      .toString('base64')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/g, '');
-
-  const decodeBase64Url = (value: string) => {
-    const withPadding = value.replace(/-/g, '+').replace(/_/g, '/');
-    const pad = withPadding.length % 4 ? 4 - (withPadding.length % 4) : 0;
-    const padded = withPadding + '='.repeat(pad);
-    return Buffer.from(padded, 'base64').toString('utf-8');
-  };
 
   const q = url.searchParams.get('q');
 
@@ -61,12 +46,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     range: { start: string; end: string };
     compareRange?: { start: string; end: string } | null;
   }) => {
-    const encoded = encodeBase64Url(JSON.stringify(payload));
-    url.searchParams.set('q', encoded);
-    url.searchParams.delete('start');
-    url.searchParams.delete('end');
-    url.searchParams.delete('compareStart');
-    url.searchParams.delete('compareEnd');
+    url.searchParams.set('q', btoa(JSON.stringify(payload)));
     return redirect(url.toString());
   };
 
@@ -97,8 +77,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   if (q) {
     try {
-      const json = decodeBase64Url(q);
-      const obj = JSON.parse(json);
+      const obj = JSON.parse(atob(q));
       const safe = qSchema.safeParse(obj);
       if (safe.success) {
         parsed = { range: safe.data.range, compareRange: safe.data.compareRange ?? null };
@@ -113,6 +92,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     now.setUTCHours(0, 0, 0, 0);
     const startDefault = subMonths(now, 1);
     startDefault.setUTCHours(0, 0, 0, 0);
+
     return redirectWithQ({
       range: { start: startDefault.toISOString(), end: now.toISOString() },
       compareRange: null,
@@ -131,8 +111,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     scenario.listScenarios(),
     scenario.listScenarioIterations({ scenarioId }),
   ]);
-
-  console.log('decisionsOutcomesPerDay', JSON.stringify(decisionsOutcomesPerDay, null, 2));
 
   return Response.json({
     decisionsOutcomesPerDay,
@@ -153,41 +131,25 @@ export default function Analytics() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Decision filter default values
-  const defaultDecisions: DecisionsFilter = new Map([
-    ['decline', true],
-    ['blockAndReview', true],
-    ['review', true],
-    ['approve', false],
-  ]);
-  const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
+  const onScenariochange = (scenarioId: string) => {
+    const qs = searchParams.toString();
+    const path = getRoute('/analytics/:scenarioId', { scenarioId: fromUUIDtoSUUID(scenarioId) });
+    navigate(qs ? `${path}?${qs}` : path);
+  };
 
   return (
-    <>
-      <div className="flex flex-row gap-4">
-        <div className="flex flex-row gap-2 items-center">
+    <div className="max-w-6xl p-v2-lg">
+      <div className="flex flex-row gap-v2-md mb-v2-lg">
+        <div className="flex flex-row gap-v2-sm items-center">
           <Filters
             scenarios={scenarios}
             selectedScenarioId={scenarioId}
-            onSelectedScenarioIdChange={(scenarioId) => {
-              console.log('scenarioId changed to ', scenarioId);
-              const qs = searchParams.toString();
-              const path = getRoute('/analytics/:scenarioId', { scenarioId });
-              navigate(qs ? `${path}?${qs}` : path);
-            }}
+            onSelectedScenarioIdChange={onScenariochange}
           />
         </div>
       </div>
-      <Decisions
-        data={decisionsOutcomesPerDay}
-        decisions={decisions}
-        setDecisions={setDecisions}
-        scenarioVersions={scenarioVersions}
-      />
-      <div className="flex w-full max-w-5xl ml-16">
-        <OutcomeFilter decisions={decisions} onChange={setDecisions} />
-      </div>
-    </>
+      <Decisions data={decisionsOutcomesPerDay} scenarioVersions={scenarioVersions} />
+    </div>
   );
 }
 

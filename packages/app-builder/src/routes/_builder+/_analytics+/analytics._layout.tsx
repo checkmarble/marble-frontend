@@ -1,19 +1,14 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { getRoute } from '@app-builder/utils/routes';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Outlet, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
-import { useTranslation } from 'react-i18next';
-import { Icon } from 'ui-icons';
 export type DecisionsPerOutcome = {
   date: string;
   approve: number;
@@ -22,19 +17,7 @@ export type DecisionsPerOutcome = {
   blockAndReview: number;
 };
 export const handle = {
-  i18n: ['navigation', 'data'] satisfies Namespace,
-  BreadCrumbs: [
-    ({ isLast }: BreadCrumbProps) => {
-      const { t } = useTranslation(['navigation']);
-
-      return (
-        <BreadCrumbLink to={getRoute('/analytics')} isLast={isLast}>
-          <Icon icon="analytics" className="me-2 size-6" />
-          <span className="line-clamp-1 text-start">{t('navigation:analytics')}</span>
-        </BreadCrumbLink>
-      );
-    },
-  ],
+  i18n: ['navigation', 'analytics'] satisfies Namespace,
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -56,7 +39,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return redirect(
       scenarioId
         ? getRoute('/analytics/:scenarioId', {
-            scenarioId,
+            scenarioId: fromUUIDtoSUUID(scenarioId),
           })
         : getRoute('/scenarios'),
     );
@@ -67,7 +50,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export default function Analytics() {
   return (
-    <Page.Main>
+    <Page.Main className="bg-grey-background-light">
       <Page.Header className="justify-between">
         <BreadCrumbs />
       </Page.Header>

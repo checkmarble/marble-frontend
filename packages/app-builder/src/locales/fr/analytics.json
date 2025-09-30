@@ -1,0 +1,8 @@
+{
+  "decisions.export.button": "Exporter",
+  "decisions.title": "Décisions",
+  "decisions.tooltip.daily": "date: {{date}}",
+  "decisions.tooltip.monthly": "mois de {{date}}",
+  "decisions.tooltip.weekly": "semaine du {{date}} <Br/>(Semaine {{weekNumber}})",
+  "filters.add_compare_period": "Ajouter une période de comparaison"
+}

@@ -1,10 +1,11 @@
 import { useSearchParams } from '@remix-run/react';
-import { subMonths } from 'date-fns';
+import { subDays, subMonths } from 'date-fns';
 import { useCallback, useMemo } from 'react';
 
 type StaticDateRange = { type: 'static'; startDate: string; endDate: string };
 type DynamicDateRange = { type: 'dynamic'; fromNow: string };
 type DateRangeFilterParam = StaticDateRange | DynamicDateRange | null | undefined;
+type IsoRange = { start: string; end: string };
 
 function toIso(date: Date): string {
   return date.toISOString();
@@ -18,224 +19,107 @@ function getDefaultRange(): { start: string; end: string } {
 
 export function useDateRangeSearchParams() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const encodeBase64Url = (value: string) =>
-    btoa(value).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
-  const decodeBase64Url = (value: string) => {
-    const withPadding = value.replace(/-/g, '+').replace(/_/g, '/');
-    const pad = withPadding.length % 4 ? 4 - (withPadding.length % 4) : 0;
-    const padded = withPadding + '='.repeat(pad);
-    return atob(padded);
-  };
-
-  const { range, compareRange } = useMemo(() => {
-    const q = searchParams.get('q');
-    if (q) {
-      try {
-        const obj = JSON.parse(decodeBase64Url(q)) as {
-          range?: { start?: string; end?: string } | null;
-          compareRange?: { start?: string; end?: string } | null;
-        };
-        // New shape
-        if ('range' in obj && obj.range?.start && obj.range?.end) {
-          return {
-            range: { start: obj.range.start, end: obj.range.end },
-            compareRange:
-              obj.compareRange?.start && obj.compareRange?.end
-                ? { start: obj.compareRange.start, end: obj.compareRange.end }
-                : null,
-          } as const;
+  const parseQ = useCallback(
+    (qValue: string | null): { range: IsoRange; compareRange: IsoRange | null } => {
+      if (qValue) {
+        try {
+          const obj = JSON.parse(atob(qValue)) as {
+            range?: { start?: string; end?: string } | null;
+            compareRange?: { start?: string; end?: string } | null;
+          };
+          if (obj?.range?.start && obj?.range?.end) {
+            return {
+              range: { start: obj.range.start, end: obj.range.end },
+              compareRange:
+                obj.compareRange?.start && obj.compareRange?.end
+                  ? { start: obj.compareRange.start, end: obj.compareRange.end }
+                  : null,
+            };
+          }
+        } catch {
+          // ignore malformed q
         }
-        // otherwise fallthrough to defaults below
-      } catch {
-        // ignore malformed q
       }
-    }
-    const defaults = getDefaultRange();
-    return { range: { start: defaults.start, end: defaults.end }, compareRange: null } as const;
-  }, [searchParams]);
+      const defaults = getDefaultRange();
+      return { range: { start: defaults.start, end: defaults.end }, compareRange: null };
+    },
+    [],
+  );
+
+  const { range, compareRange } = useMemo(
+    () => parseQ(searchParams.get('q')),
+    [parseQ, searchParams],
+  );
+
+  const computeDynamicRange = useCallback((fromNow: string): IsoRange => {
+    const now = new Date();
+    const match = /-?P-?(\d+)([MD])/i.exec(fromNow);
+    const amount = match && match[1] ? Number(match[1]) : 1;
+    const unit = match && match[2] ? match[2].toUpperCase() : 'M';
+    const startDate = unit === 'D' ? subDays(now, amount) : subMonths(now, amount);
+    return { start: toIso(startDate), end: toIso(now) };
+  }, []);
+
+  const writeQ = useCallback(
+    (prevParams: URLSearchParams, next: { range?: IsoRange; compareRange?: IsoRange | null }) => {
+      const params = new URLSearchParams(prevParams);
+      const current = parseQ(params.get('q'));
+      const nextPayload = {
+        range: next.range ?? current.range,
+        compareRange: next.compareRange === undefined ? current.compareRange : next.compareRange,
+      };
+      params.set('q', btoa(JSON.stringify(nextPayload)));
+      params.delete('compareStart');
+      params.delete('compareEnd');
+      params.delete('start');
+      params.delete('end');
+      return params;
+    },
+    [parseQ],
+  );
 
   const setDateRangeFilter = useCallback(
     (dateRange: DateRangeFilterParam) => {
       setSearchParams(
         (prev) => {
-          const params = new URLSearchParams(prev);
-          const writeQ = (payload: {
-            range: { start: string; end: string };
-            compareRange?: { start: string; end: string } | null;
-          }) => {
-            params.set('q', encodeBase64Url(JSON.stringify(payload)));
-          };
-
           if (!dateRange) {
-            const d = getDefaultRange();
-            // Clear to defaults; preserve existing compareRange if any
-            const qv = params.get('q');
-            let existingCompare: { start: string; end: string } | null = null;
-            if (qv) {
-              try {
-                const parsed = JSON.parse(decodeBase64Url(qv)) as {
-                  compareRange?: { start?: string; end?: string } | null;
-                };
-                if (parsed.compareRange?.start && parsed.compareRange?.end) {
-                  existingCompare = {
-                    start: parsed.compareRange.start,
-                    end: parsed.compareRange.end,
-                  };
-                }
-              } catch {
-                // ignore
-              }
-            }
-            writeQ({ range: { start: d.start, end: d.end }, compareRange: existingCompare });
-            return params;
+            const defaults = getDefaultRange();
+            return writeQ(prev, { range: defaults, compareRange: undefined });
           }
 
           if (dateRange.type === 'static') {
-            const current = { start: dateRange.startDate, end: dateRange.endDate } as const;
-            // retain existing compareRange if any
-            const qv = params.get('q');
-            if (qv) {
-              try {
-                const parsed = JSON.parse(decodeBase64Url(qv)) as {
-                  compareRange?: { start?: string; end?: string } | null;
-                };
-                const compare =
-                  parsed.compareRange?.start && parsed.compareRange?.end
-                    ? { start: parsed.compareRange.start, end: parsed.compareRange.end }
-                    : null;
-                writeQ({ range: current, compareRange: compare });
-                return params;
-              } catch {
-                // ignore malformed q
-              }
-            }
-            writeQ({ range: current });
-            return params;
+            const nextRange = { start: dateRange.startDate, end: dateRange.endDate } as IsoRange;
+            return writeQ(prev, { range: nextRange, compareRange: undefined });
           }
 
-          // dynamic
-          try {
-            const now = new Date();
-            const fallback = subMonths(now, 1);
-            let computedStart = fallback;
-            if (dateRange.fromNow.includes('M')) {
-              const match = dateRange.fromNow.match(/-P(\d+)M|P-?(\d+)M/i);
-              const months = match ? Number(match[1] ?? match[2]) : undefined;
-              if (months && months > 0) {
-                computedStart = subMonths(now, months);
-              }
-            } else if (dateRange.fromNow.includes('D')) {
-              const match = dateRange.fromNow.match(/-P(\d+)D|P-?(\d+)D/i);
-              const days = match ? Number(match[1] ?? match[2]) : undefined;
-              if (days && days > 0) {
-                const ms = 24 * 60 * 60 * 1000 * days;
-                computedStart = new Date(now.getTime() - ms);
-              }
-            }
-            // preserve existing compareRange if any
-            const qv = params.get('q');
-            let existingCompare: { start: string; end: string } | null = null;
-            if (qv) {
-              try {
-                const parsed = JSON.parse(decodeBase64Url(qv)) as {
-                  compareRange?: { start?: string; end?: string } | null;
-                };
-                if (parsed.compareRange?.start && parsed.compareRange?.end) {
-                  existingCompare = {
-                    start: parsed.compareRange.start,
-                    end: parsed.compareRange.end,
-                  };
-                }
-              } catch {
-                // ignore
-              }
-            }
-            writeQ({
-              range: { start: computedStart.toISOString(), end: now.toISOString() },
-              compareRange: existingCompare,
-            });
-          } catch {
-            const d = getDefaultRange();
-            writeQ({ range: { start: d.start, end: d.end } });
-          }
-          return params;
+          const dynamicRange = computeDynamicRange(dateRange.fromNow);
+          return writeQ(prev, { range: dynamicRange, compareRange: undefined });
         },
         { replace: true },
       );
     },
-    [setSearchParams],
+    [computeDynamicRange, setSearchParams, writeQ],
   );
 
   const setCompareRange = useCallback(
     (dateRange: DateRangeFilterParam) => {
       setSearchParams(
         (prev) => {
-          const params = new URLSearchParams(prev);
-          const qv = params.get('q');
-          const base = (() => {
-            if (qv) {
-              try {
-                const parsed = JSON.parse(decodeBase64Url(qv)) as {
-                  range?: { start?: string; end?: string } | null;
-                };
-                if (parsed.range?.start && parsed.range?.end) {
-                  return { start: parsed.range.start, end: parsed.range.end } as const;
-                }
-              } catch {
-                // ignore malformed q
-              }
-            }
-            const defaults = getDefaultRange();
-            return { start: defaults.start, end: defaults.end };
-          })();
-
-          let compare: { start: string; end: string } | null = null;
+          let nextCompare: IsoRange | null;
           if (!dateRange) {
-            compare = null;
+            nextCompare = null;
           } else if (dateRange.type === 'static') {
-            compare = { start: dateRange.startDate, end: dateRange.endDate };
-          } else if (dateRange.type === 'dynamic') {
-            try {
-              const now = new Date();
-              const fallback = subMonths(now, 1);
-              let computedStart = fallback;
-              if (dateRange.fromNow.includes('M')) {
-                const match = dateRange.fromNow.match(/-P(\d+)M|P-?(\d+)M/i);
-                const months = match ? Number(match[1] ?? match[2]) : undefined;
-                if (months && months > 0) {
-                  computedStart = subMonths(now, months);
-                }
-              } else if (dateRange.fromNow.includes('D')) {
-                const match = dateRange.fromNow.match(/-P(\d+)D|P-?(\d+)D/i);
-                const days = match ? Number(match[1] ?? match[2]) : undefined;
-                if (days && days > 0) {
-                  const ms = 24 * 60 * 60 * 1000 * days;
-                  computedStart = new Date(now.getTime() - ms);
-                }
-              }
-              compare = { start: computedStart.toISOString(), end: now.toISOString() };
-            } catch {
-              compare = null;
-            }
+            nextCompare = { start: dateRange.startDate, end: dateRange.endDate };
+          } else {
+            nextCompare = computeDynamicRange(dateRange.fromNow);
           }
 
-          const payload = {
-            range: { start: base.start, end: base.end },
-            compareRange: compare,
-          } as const;
-
-          params.set('q', encodeBase64Url(JSON.stringify(payload)));
-          // cleanup legacy flat params if present
-          params.delete('compareStart');
-          params.delete('compareEnd');
-          params.delete('start');
-          params.delete('end');
-          return params;
+          return writeQ(prev, { compareRange: nextCompare });
         },
         { replace: true },
       );
     },
-    [setSearchParams],
+    [computeDynamicRange, setSearchParams, writeQ],
   );
 
   return {

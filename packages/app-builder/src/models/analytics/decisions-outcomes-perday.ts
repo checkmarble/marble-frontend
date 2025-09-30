@@ -58,6 +58,11 @@ export interface DecisionOutcomesPerPeriod {
     data: DecisionOutcomesGroup;
     gridXValues: string[];
   };
+  metadata: {
+    start: string;
+    end: string;
+    totalDecisions: number;
+  };
 }
 
 //TODO group by week and month server side
@@ -227,13 +232,17 @@ const getRatio = (item: DecisionOutcomesAbsolute): DecisionOutcomes => ({
 
 export const adaptDecisionOutcomesPerDay = (
   val: DecisionOutcomesPerDayEntity[],
-): DecisionOutcomesPerPeriod | null => {
-  if (!val) {
-    return null;
-  }
+): DecisionOutcomesPerPeriod => {
+  // if (!val) {
+  //   return null;
+  // }
   const start = new Date(val[0]!.date);
   const end = new Date(val[val.length - 1]!.date);
 
+  const total = val.reduce(
+    (acc, v) => acc + v.approve + v.block_and_review + v.decline + v.review,
+    0,
+  );
   const absoluteDailyData: DecisionOutcomesAbsolute[] = val.map((v) => ({
     rangeId: v.rangeId,
     date: v.date,
@@ -304,6 +313,11 @@ export const adaptDecisionOutcomesPerDay = (
         ratio: absoluteCountsByMonthArray.map((item) => getRatio(item)),
       },
       gridXValues: getGridXValues(absoluteCountsByMonthArray, start, end, 'month'),
+    },
+    metadata: {
+      start: start.toISOString(),
+      end: end.toISOString(),
+      totalDecisions: total,
     },
   };
 };
