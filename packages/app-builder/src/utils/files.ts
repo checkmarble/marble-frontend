@@ -9,6 +9,7 @@ export const getCaseSuspiciousActivityReportFileUploadEndpointById = (
   reportId: string,
 ) => `/cases/${caseId}/sar/${reportId}/file`;
 
+// TODO: Still used ???
 export const getScreeningFileUploadEndpoint = (screeningId: string) =>
   `/sanction-checks/${encodeURIComponent(screeningId)}/files`;
 
