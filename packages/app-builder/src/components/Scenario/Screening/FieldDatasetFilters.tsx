@@ -1,5 +1,5 @@
-import { DatasetTag } from '@app-builder/components/Sanctions/DatasetTag';
-import { type ScreeningCategory } from '@app-builder/models/sanction-check';
+import { DatasetTag } from '@app-builder/components/Screenings/DatasetTag';
+import { type ScreeningCategory } from '@app-builder/models/screening';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { toggle } from 'radash';
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';

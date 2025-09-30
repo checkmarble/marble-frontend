@@ -11,7 +11,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = initServerServices(request);
-  const { sanctionCheck } = await authService.isAuthenticated(request, {
+  const { screening } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
   const matchId = fromParams(params, 'matchId');
@@ -20,7 +20,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const t = await getFixedT(request, ['common', 'sanctions']);
 
   try {
-    await sanctionCheck.enrichMatch({ matchId });
+    await screening.enrichMatch({ matchId });
 
     setToastMessage(session, {
       type: 'success',

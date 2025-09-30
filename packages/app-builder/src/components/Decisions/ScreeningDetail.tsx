@@ -1,35 +1,35 @@
 import { decisionsI18n } from '@app-builder/components';
-import { isSanctionCheckError, type SanctionCheck } from '@app-builder/models/sanction-check';
+import { isScreeningError, type Screening } from '@app-builder/models/screening';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { MatchCard } from '../Sanctions/MatchCard';
-import { SanctionCheckErrors } from '../Sanctions/SanctionCheckErrors';
-import { SanctionStatusTag } from '../Sanctions/SanctionStatusTag';
+import { MatchCard } from '../Screenings/MatchCard';
+import { ScreeningErrors } from '../Screenings/ScreeningErrors';
+import { ScreeningStatusTag } from '../Screenings/ScreeningStatusTag';
 
-export function SanctionCheckDetail({ sanctionCheck }: { sanctionCheck: SanctionCheck }) {
-  const hasError = isSanctionCheckError(sanctionCheck);
+export function ScreeningDetail({ screening }: { screening: Screening }) {
+  const hasError = isScreeningError(screening);
 
   return (
     <Collapsible.Container className="bg-grey-100">
       <Collapsible.Title>
         <div className="flex grow items-center justify-between">
-          <span>{sanctionCheck.config.name}</span>
-          <SanctionStatusTag status={sanctionCheck.status} border="square" className="h-8" />
+          <span>{screening.config.name}</span>
+          <ScreeningStatusTag status={screening.status} border="square" className="h-8" />
         </div>
       </Collapsible.Title>
       <Collapsible.Content>
         <div className="flex flex-col gap-4">
-          {hasError ? <SanctionCheckErrors sanctionCheck={sanctionCheck} /> : null}
-          {sanctionCheck.request ? <SearchInput request={sanctionCheck.request} /> : null}
+          {hasError ? <ScreeningErrors screening={screening} /> : null}
+          {screening.request ? <SearchInput request={screening.request} /> : null}
           <div className="flex flex-col gap-2">
-            {sanctionCheck.matches.map((match) => (
+            {screening.matches.map((match) => (
               <MatchCard
                 readonly
                 key={match.id}
-                unreviewable={hasError || sanctionCheck.partial}
+                unreviewable={hasError || screening.partial}
                 match={match}
               />
             ))}
@@ -40,7 +40,7 @@ export function SanctionCheckDetail({ sanctionCheck }: { sanctionCheck: Sanction
   );
 }
 
-const SearchInput = ({ request }: { request: NonNullable<SanctionCheck['request']> }) => {
+const SearchInput = ({ request }: { request: NonNullable<Screening['request']> }) => {
   const { t } = useTranslation(decisionsI18n);
   const searchInputList = R.pipe(
     R.values(request.queries),

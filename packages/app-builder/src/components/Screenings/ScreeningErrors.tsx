@@ -1,8 +1,8 @@
-import { type SanctionCheckError } from '@app-builder/models/sanction-check';
+import { type ScreeningError } from '@app-builder/models/screening';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-export function SanctionCheckErrors({ sanctionCheck }: { sanctionCheck: SanctionCheckError }) {
+export function ScreeningErrors({ screening }: { screening: ScreeningError }) {
   const { t } = useTranslation(['sanctions']);
 
   return (
@@ -11,10 +11,10 @@ export function SanctionCheckErrors({ sanctionCheck }: { sanctionCheck: Sanction
       <div className="flex flex-col">
         <span className="font-semibold">
           {t('sanctions:error_label', {
-            count: sanctionCheck.errorCodes.length,
+            count: screening.errorCodes.length,
           })}
         </span>
-        {sanctionCheck.errorCodes.map((errorCode) => (
+        {screening.errorCodes.map((errorCode) => (
           <div key={errorCode}>{t(`sanctions:error.${errorCode}`)}</div>
         ))}
       </div>

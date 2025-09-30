@@ -717,7 +717,7 @@ export type ScenarioIterationDto = {
     created_at: string;
     updated_at: string;
 };
-export type SanctionCheckConfigDto = {
+export type ScreeningConfigDto = {
     id?: string;
     name?: string;
     description?: string;
@@ -758,7 +758,7 @@ export type ScenarioIterationRuleDto = {
 };
 export type ScenarioIterationWithBodyDto = ScenarioIterationDto & {
     body: {
-        sanction_check_configs?: SanctionCheckConfigDto[];
+        screening_configs?: ScreeningConfigDto[];
         trigger_condition_ast_expression?: (NodeDto) | null;
         score_review_threshold?: number;
         score_block_and_review_threshold?: number;
@@ -822,14 +822,14 @@ export type SnoozesOfIterationDto = {
     iteration_id: string;
     rule_snoozes: RuleSnoozeInformationDto[];
 };
-export type SanctionCheckEntityDto = "Thing" | "Address" | "Airplane" | "Asset" | "Associate" | "Company" | "CryptoWallet" | "Debt" | "Directorship" | "Employment" | "Family" | "Identification" | "LegalEntity" | "Membership" | "Occupancy" | "Organization" | "Ownership" | "Passport" | "Payment" | "Person" | "Position" | "PublicBody" | "Representation" | "Sanction" | "Security" | "Succession" | "UnknownLink" | "Vessel" | "Vehicle";
+export type ScreeningEntityDto = "Thing" | "Address" | "Airplane" | "Asset" | "Associate" | "Company" | "CryptoWallet" | "Debt" | "Directorship" | "Employment" | "Family" | "Identification" | "LegalEntity" | "Membership" | "Occupancy" | "Organization" | "Ownership" | "Passport" | "Payment" | "Person" | "Position" | "PublicBody" | "Representation" | "Sanction" | "Security" | "Succession" | "UnknownLink" | "Vessel" | "Vehicle";
 export type Items = {
-    schema: SanctionCheckEntityDto;
+    schema: ScreeningEntityDto;
     properties: {
         [key: string]: string[];
     };
 };
-export type SanctionCheckRequestDto = {
+export type ScreeningRequestDto = {
     threshold: number;
     limit: number;
     search_input: {
@@ -838,33 +838,33 @@ export type SanctionCheckRequestDto = {
         };
     };
 };
-export type SanctionCheckSanctionEntityDto = {
+export type ScreeningSanctionEntityDto = {
     id: string;
     schema: "Sanction";
     properties: {
         [key: string]: string[];
     };
 };
-export type SanctionCheckMatchPayloadDto = {
+export type ScreeningMatchPayloadDto = {
     id: string;
     match: boolean;
     score: number;
-    schema: SanctionCheckEntityDto;
+    schema: ScreeningEntityDto;
     caption: string;
     properties: {
-        sanctions?: SanctionCheckSanctionEntityDto[];
+        sanctions?: ScreeningSanctionEntityDto[];
     } & {
         [key: string]: string[];
     };
 };
-export type SanctionCheckMatchDto = {
+export type ScreeningMatchDto = {
     id: string;
     entity_id: string;
     query_ids: string[];
     status: "pending" | "confirmed_hit" | "no_hit" | "skipped";
     datasets: any;
     unique_counterparty_identifier?: string;
-    payload: SanctionCheckMatchPayloadDto;
+    payload: ScreeningMatchPayloadDto;
     enriched: boolean;
     comments: {
         id: string;
@@ -873,51 +873,51 @@ export type SanctionCheckMatchDto = {
         created_at: string;
     }[];
 };
-export type SanctionCheckSuccessDto = {
+export type ScreeningSuccessDto = {
     id: string;
     config: {
         name: string;
     };
     decision_id: string;
     status: "in_review" | "confirmed_hit";
-    request: SanctionCheckRequestDto;
+    request: ScreeningRequestDto;
     initial_query?: Items[];
     partial: boolean;
     is_manual: boolean;
-    matches: SanctionCheckMatchDto[];
+    matches: ScreeningMatchDto[];
 };
-export type SanctionCheckErrorDto = {
+export type ScreeningErrorDto = {
     id: string;
     config: {
         name: string;
     };
     decision_id: string;
     status: "error";
-    request?: SanctionCheckRequestDto;
+    request?: ScreeningRequestDto;
     initial_query?: {
-        schema: SanctionCheckEntityDto;
+        schema: ScreeningEntityDto;
         properties: {
             [key: string]: string[];
         };
     }[];
     partial: boolean;
     is_manual: boolean;
-    matches: SanctionCheckMatchDto[];
+    matches: ScreeningMatchDto[];
     error_codes: "all_fields_null_or_empty"[];
 };
-export type SanctionCheckDto = SanctionCheckSuccessDto | {
+export type ScreeningDto = ScreeningSuccessDto | {
     id: string;
     config: {
         name: string;
     };
     decision_id: string;
     status: "no_hit";
-    request?: SanctionCheckRequestDto;
+    request?: ScreeningRequestDto;
     initial_query?: Items[];
     partial: boolean;
     is_manual: boolean;
-    matches: SanctionCheckMatchDto[];
-} | SanctionCheckErrorDto;
+    matches: ScreeningMatchDto[];
+} | ScreeningErrorDto;
 export type OpenSanctionsCatalogDataset = {
     name: string;
     title: string;
@@ -931,17 +931,17 @@ export type OpenSanctionsCatalogSection = {
 export type OpenSanctionsCatalogDto = {
     sections: OpenSanctionsCatalogSection[];
 };
-export type SanctionCheckFileDto = {
+export type ScreeningFileDto = {
     id: string;
     filename: string;
     created_at: string;
 };
-export type UpdateSanctionCheckMatchDto = {
+export type UpdateScreeningMatchDto = {
     status: "confirmed_hit" | "no_hit";
     comment?: string;
     whitelist?: boolean;
 };
-export type SanctionCheckRefineDto = object;
+export type ScreeningRefineDto = object;
 export type OpenSanctionsUpstreamDatasetFreshnessDto = {
     version: string;
     name: string;
@@ -3005,20 +3005,20 @@ export function commitScenarioIteration(scenarioIterationId: string, opts?: Oaza
 /**
  * Create a screening for a scenario iteration
  */
-export function createSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigDto?: SanctionCheckConfigDto, opts?: Oazapfts.RequestOpts) {
+export function createScreeningConfig(scenarioIterationId: string, screeningConfigDto?: ScreeningConfigDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: SanctionCheckConfigDto;
+        data: ScreeningConfigDto;
     }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check`, oazapfts.json({
         ...opts,
         method: "POST",
-        body: sanctionCheckConfigDto
+        body: screeningConfigDto
     })));
 }
 /**
  * Delete a screening for a scenario iteration
  */
-export function deleteSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigId: string, opts?: Oazapfts.RequestOpts) {
+export function deleteScreeningConfig(scenarioIterationId: string, screeningConfigId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 204;
     } | {
@@ -3030,7 +3030,7 @@ export function deleteSanctionCheckConfig(scenarioIterationId: string, sanctionC
     } | {
         status: 404;
         data: string;
-    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check/${encodeURIComponent(sanctionCheckConfigId)}`, {
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check/${encodeURIComponent(screeningConfigId)}`, {
         ...opts,
         method: "DELETE"
     }));
@@ -3038,23 +3038,23 @@ export function deleteSanctionCheckConfig(scenarioIterationId: string, sanctionC
 /**
  * Update a screening for a scenario iteration
  */
-export function upsertSanctionCheckConfig(scenarioIterationId: string, sanctionCheckConfigId: string, sanctionCheckConfigDto?: SanctionCheckConfigDto, opts?: Oazapfts.RequestOpts) {
+export function upsertScreeningConfig(scenarioIterationId: string, screeningConfigId: string, screeningConfigDto?: ScreeningConfigDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: SanctionCheckConfigDto;
-    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check/${encodeURIComponent(sanctionCheckConfigId)}`, oazapfts.json({
+        data: ScreeningConfigDto;
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check/${encodeURIComponent(screeningConfigId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
-        body: sanctionCheckConfigDto
+        body: screeningConfigDto
     })));
 }
 /**
  * List screenings for a decision
  */
-export function listSanctionChecks(decisionId: string, opts?: Oazapfts.RequestOpts) {
+export function listScreenings(decisionId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: SanctionCheckDto[];
+        data: ScreeningDto[];
     }>(`/sanction-checks${QS.query(QS.explode({
         decision_id: decisionId
     }))}`, {
@@ -3075,10 +3075,10 @@ export function listOpenSanctionDatasets(opts?: Oazapfts.RequestOpts) {
 /**
  * List files for screening
  */
-export function listSanctionCheckFiles(screeningId: string, opts?: Oazapfts.RequestOpts) {
+export function listScreeningFiles(screeningId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: SanctionCheckFileDto[];
+        data: ScreeningFileDto[];
     }>(`/sanction-checks/${encodeURIComponent(screeningId)}/files`, {
         ...opts
     }));
@@ -3115,23 +3115,23 @@ export function downloadScreeningFile(screeningId: string, fileId: string, opts?
 /**
  * Update the status of a screening match
  */
-export function updateSanctionCheckMatch(matchId: string, updateSanctionCheckMatchDto: UpdateSanctionCheckMatchDto, opts?: Oazapfts.RequestOpts) {
+export function updateScreeningMatch(matchId: string, updateScreeningMatchDto: UpdateScreeningMatchDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: SanctionCheckMatchDto;
+        data: ScreeningMatchDto;
     }>(`/sanction-checks/matches/${encodeURIComponent(matchId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
-        body: updateSanctionCheckMatchDto
+        body: updateScreeningMatchDto
     })));
 }
 /**
  * Enrich the match payload with complete data
  */
-export function enrichSanctionCheckMatch(matchId: string, opts?: Oazapfts.RequestOpts) {
+export function enrichScreeningMatch(matchId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: SanctionCheckMatchDto;
+        data: ScreeningMatchDto;
     } | {
         status: 404;
         data: string;
@@ -3146,27 +3146,27 @@ export function enrichSanctionCheckMatch(matchId: string, opts?: Oazapfts.Reques
 /**
  * Search possible matches
  */
-export function searchSanctionCheckMatches(sanctionCheckRefineDto?: SanctionCheckRefineDto, opts?: Oazapfts.RequestOpts) {
+export function searchScreeningMatches(screeningRefineDto?: ScreeningRefineDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: SanctionCheckMatchPayloadDto[];
+        data: ScreeningMatchPayloadDto[];
     }>("/sanction-checks/search", oazapfts.json({
         ...opts,
         method: "POST",
-        body: sanctionCheckRefineDto
+        body: screeningRefineDto
     })));
 }
 /**
  * Try refine the search
  */
-export function refineSanctionCheck(sanctionCheckRefineDto?: SanctionCheckRefineDto, opts?: Oazapfts.RequestOpts) {
+export function refineScreening(screeningRefineDto?: ScreeningRefineDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: SanctionCheckDto;
+        data: ScreeningDto;
     }>("/sanction-checks/refine", oazapfts.json({
         ...opts,
         method: "POST",
-        body: sanctionCheckRefineDto
+        body: screeningRefineDto
     })));
 }
 /**

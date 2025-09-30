@@ -1,6 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
-import { DatasetTag } from '@app-builder/components/Sanctions/DatasetTag';
-import { type ScreeningCategory } from '@app-builder/models/sanction-check';
+import { DatasetTag } from '@app-builder/components/Screenings/DatasetTag';
+import { type ScreeningCategory } from '@app-builder/models/screening';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import clsx from 'clsx';
 import Fuse from 'fuse.js';

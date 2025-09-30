@@ -11,8 +11,8 @@ import {
 } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersContext';
 import { RulesFiltersMenu } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersMenu';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import { type SanctionCheckConfig } from '@app-builder/models/sanction-check-config';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
+import { type ScreeningConfig } from '@app-builder/models/screening-config';
 import { CreateSanction } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -64,11 +64,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     }),
   ]);
 
-  const sanctions = iteration.sanctionCheckConfigs ?? [];
+  const screenings = iteration.screeningConfigs ?? [];
 
   const items = [
     ...rules.map((r) => ({ ...r, type: 'rule' as const })),
-    ...sanctions.map((s) => ({ ...s, type: 'sanction' as const })),
+    ...screenings.map((s) => ({ ...s, type: 'sanction' as const })),
   ];
 
   const ruleGroups = R.pipe(
@@ -86,7 +86,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 const columnHelper = createColumnHelper<
-  (ScenarioIterationRule & { type: 'rule' }) | (SanctionCheckConfig & { type: 'sanction' })
+  (ScenarioIterationRule & { type: 'rule' }) | (ScreeningConfig & { type: 'sanction' })
 >();
 
 const AddRuleOrSanction = ({

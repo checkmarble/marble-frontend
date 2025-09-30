@@ -1,5 +1,5 @@
-import { EnrichMatchButton } from '@app-builder/components/Sanctions/EnrichMatchButton';
-import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
+import { EnrichMatchButton } from '@app-builder/components/Screenings/EnrichMatchButton';
+import { type ScreeningMatch } from '@app-builder/models/screening';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CollapsibleV2, Tag } from 'ui-design-system';
@@ -7,12 +7,12 @@ import { Icon } from 'ui-icons';
 import { MatchDetails } from '../MatchDetails';
 import { ReviewScreeningMatch } from '../ReviewScreeningMatch';
 import { StatusTag } from '../StatusTag';
-import { sanctionsI18n } from '../sanctions-i18n';
+import { sanctionsI18n } from '../screenings-i18n';
 import { TopicTag } from '../TopicTag';
 import { CommentLine } from './CommentLine';
 
 type MatchCardProps = {
-  match: SanctionCheckMatch;
+  match: ScreeningMatch;
   readonly?: boolean;
   unreviewable?: boolean;
   defaultOpen?: boolean;

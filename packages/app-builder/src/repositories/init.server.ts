@@ -22,10 +22,10 @@ import { makeGetOrganizationRepository } from './OrganizationRepository';
 import { makeGetPartnerRepository } from './PartnerRepository';
 import { makeGetPersonalSettingsRepository } from './PersonalSettingsRepository';
 import { makeGetRuleSnoozeRepository } from './RuleSnoozeRepository';
-import { makeGetSanctionCheckRepository } from './SanctionCheckRepository';
 import { makeGetScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
-import { makeGetScenarioIterationSanctionRepository } from './ScenarioIterationSanctionRepository';
+import { makeGetScenarioIterationSanctionRepository } from './ScenarioIterationScreeningRepository';
 import { makeGetScenarioRepository } from './ScenarioRepository';
+import { makeGetScreeningRepository } from './ScreeningRepository';
 import {
   getAuthStorageRepository,
   getCsrfCookie,
@@ -69,7 +69,7 @@ export function makeServerRepositories({
     getEditorRepository: makeGetEditorRepository(),
     getDecisionRepository: makeGetDecisionRepository(),
     getCaseRepository: makeGetCaseRepository(),
-    getSanctionCheckRepository: makeGetSanctionCheckRepository(),
+    getScreeningRepository: makeGetScreeningRepository(),
     getCustomListRepository: makeGetCustomListRepository(),
     getScenarioRepository: makeGetScenarioRepository(),
     getScenarioIterationRuleRepository: makeGetScenarioIterationRuleRepository(),

@@ -15,13 +15,13 @@ import {
   BreadCrumbs,
 } from '@app-builder/components/Breadcrumbs';
 import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
-import { SanctionCheckDetail } from '@app-builder/components/Decisions/SanctionCheckDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
+import { ScreeningDetail } from '@app-builder/components/Decisions/ScreeningDetail';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { isNotFoundHttpError, Pivot } from '@app-builder/models';
 import { DecisionDetails } from '@app-builder/models/decision';
-import { SanctionCheck } from '@app-builder/models/sanction-check';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
+import { Screening } from '@app-builder/models/screening';
 import { initServerServices } from '@app-builder/services/init.server';
 import { handleParseParamError } from '@app-builder/utils/http/handle-errors';
 import { notFound } from '@app-builder/utils/http/http-responses';
@@ -43,7 +43,7 @@ export type LoaderData = {
   decision: DecisionDetails;
   scenarioRules: ScenarioIterationRule[];
   pivots: Pivot[];
-  sanctionCheck: SanctionCheck[];
+  screening: Screening[];
 };
 
 export const handle = {
@@ -76,10 +76,12 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs): Promise<LoaderData> {
   const { authService } = initServerServices(request);
-  const { decision, scenario, dataModelRepository, sanctionCheck } =
-    await authService.isAuthenticated(request, {
+  const { decision, scenario, dataModelRepository, screening } = await authService.isAuthenticated(
+    request,
+    {
       failureRedirect: getRoute('/sign-in'),
-    });
+    },
+  );
   const parsedParam = await parseParamsSafe(params, z.object({ decisionId: shortUUIDSchema }));
   if (!parsedParam.success) {
     throw handleParseParamError(request, parsedParam.error);
@@ -88,8 +90,8 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
   try {
     const independentOperations = Promise.all([
       dataModelRepository.listPivots({}),
-      sanctionCheck.listSanctionChecks({ decisionId: parsedParam.data.decisionId }),
-      sanctionCheck.listDatasets(),
+      screening.listScreenings({ decisionId: parsedParam.data.decisionId }),
+      screening.listDatasets(),
     ]);
 
     const currentDecision = await decision.getDecisionById(parsedParam.data.decisionId);
@@ -99,7 +101,7 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
       })
       .then((iteration) => iteration.rules);
 
-    const [pivots, sanctionCheckResult, { sections }] = await independentOperations;
+    const [pivots, screeningResult, { sections }] = await independentOperations;
 
     const datasets: Map<string, string> = new Map(
       sections?.flatMap(
@@ -109,7 +111,7 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
 
     const sanctionsDatasets = [
       ...new Set(
-        sanctionCheckResult.flatMap(({ matches }) =>
+        screeningResult.flatMap(({ matches }) =>
           matches.flatMap(({ payload }) => payload.datasets),
         ),
       ),
@@ -119,7 +121,7 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
       decision: currentDecision,
       scenarioRules,
       pivots,
-      sanctionCheck: sanctionCheckResult.map(({ matches, ...rest }) => ({
+      screening: screeningResult.map(({ matches, ...rest }) => ({
         ...rest,
         matches: matches.map(({ payload, ...rest }) => ({
           ...rest,
@@ -142,7 +144,7 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
 }
 
 export default function DecisionPage() {
-  const { decision, pivots, scenarioRules, sanctionCheck } = useLoaderData<typeof loader>();
+  const { decision, pivots, scenarioRules, screening } = useLoaderData<typeof loader>();
 
   const pivotValues = R.pipe(
     decision.pivotValues,
@@ -183,8 +185,8 @@ export default function DecisionPage() {
                   ruleExecutions={decision.rules}
                   rules={scenarioRules}
                 />
-                {sanctionCheck.map((s) => (
-                  <SanctionCheckDetail key={s.id} sanctionCheck={s} />
+                {screening.map((s) => (
+                  <ScreeningDetail key={s.id} screening={s} />
                 ))}
               </div>
               <div className="flex flex-col gap-4 lg:gap-8">

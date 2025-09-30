@@ -13,7 +13,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   });
 
   try {
-    await scenarioIterationSanctionRepository.deleteSanctioncheckConfig({
+    await scenarioIterationSanctionRepository.deleteScreeningConfig({
       iterationId,
       sanctionId,
     });

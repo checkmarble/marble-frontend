@@ -1,4 +1,4 @@
-import { type SEARCH_ENTITIES } from '@app-builder/constants/sanction-check-entity';
+import { type SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

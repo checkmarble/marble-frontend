@@ -1,8 +1,5 @@
-import { type PropertyForSchema } from '@app-builder/constants/sanction-check-entity';
-import {
-  type SanctionCheckMatch,
-  type SanctionCheckSanctionEntity,
-} from '@app-builder/models/sanction-check';
+import { type PropertyForSchema } from '@app-builder/constants/screening-entity';
+import { type ScreeningMatch, type ScreeningSanctionEntity } from '@app-builder/models/screening';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
@@ -12,10 +9,10 @@ import { EntityProperties } from './EntityProperties';
 import { Associations } from './MatchCard/Associations';
 import { FamilyDetail } from './MatchCard/FamilyDetail';
 import { MemberShip } from './MatchCard/MemberShip';
-import { sanctionsI18n } from './sanctions-i18n';
+import { sanctionsI18n } from './screenings-i18n';
 
 export type MatchDetailsProps = {
-  entity: SanctionCheckMatch['payload'];
+  entity: ScreeningMatch['payload'];
 };
 
 const sanctionProps = [
@@ -35,9 +32,7 @@ const sanctionProps = [
 
 export function MatchDetails({ entity }: MatchDetailsProps) {
   const { t } = useTranslation(sanctionsI18n);
-  const [selectedSanction, setSelectedSanction] = useState<SanctionCheckSanctionEntity | null>(
-    null,
-  );
+  const [selectedSanction, setSelectedSanction] = useState<ScreeningSanctionEntity | null>(null);
 
   const [isOpen, setIsOpen] = useState(false);
 

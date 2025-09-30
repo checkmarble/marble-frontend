@@ -2,14 +2,14 @@ import {
   createPropertyTransformer,
   getSanctionEntityProperties,
   type PropertyForSchema,
-  type SanctionCheckEntityProperty,
-} from '@app-builder/constants/sanction-check-entity';
-import { type OpenSanctionEntity } from '@app-builder/models/sanction-check';
+  type ScreeningEntityProperty,
+} from '@app-builder/constants/screening-entity';
+import { type OpenSanctionEntity } from '@app-builder/models/screening';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { Fragment, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { sanctionsI18n } from './sanctions-i18n';
+import { sanctionsI18n } from './screenings-i18n';
 
 export function EntityProperties<T extends OpenSanctionEntity>({
   entity,
@@ -24,9 +24,9 @@ export function EntityProperties<T extends OpenSanctionEntity>({
   before?: ReactNode;
   after?: ReactNode;
 }) {
-  const [displayAll, setDisplayAll] = useState<
-    Partial<Record<SanctionCheckEntityProperty, boolean>>
-  >({});
+  const [displayAll, setDisplayAll] = useState<Partial<Record<ScreeningEntityProperty, boolean>>>(
+    {},
+  );
 
   const displayProperties = forcedProperties ?? getSanctionEntityProperties(entity.schema);
   const { t, i18n } = useTranslation(sanctionsI18n);

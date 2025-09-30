@@ -3,7 +3,7 @@
     tags:
       - Screening
     summary: List screenings for a decision
-    operationId: listSanctionChecks
+    operationId: listScreenings
     parameters:
       - name: decision_id
         description: ID of the decision
@@ -20,7 +20,7 @@
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/SanctionCheckDto'
+                $ref: '#/components/schemas/ScreeningDto'
 /sanction-checks/datasets:
   get:
     tags:
@@ -52,7 +52,7 @@
     tags:
       - Screening
     summary: List files for screening
-    operationId: listSanctionCheckFiles
+    operationId: listScreeningFiles
     parameters:
       - name: screeningId
         description: ID of the screening
@@ -69,7 +69,7 @@
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/SanctionCheckFileDto'
+                $ref: '#/components/schemas/ScreeningFileDto'
   post:
     tags:
       - Screening
@@ -142,7 +142,7 @@
     tags:
       - Screening
     summary: Update the status of a screening match
-    operationId: updateSanctionCheckMatch
+    operationId: updateScreeningMatch
     parameters:
       - name: matchId
         description: ID of the match to update
@@ -156,7 +156,7 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UpdateSanctionCheckMatchDto'
+            $ref: '#/components/schemas/updateScreeningMatchDto'
       required: true
     responses:
       '200':
@@ -164,13 +164,13 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SanctionCheckMatchDto'
+              $ref: '#/components/schemas/ScreeningMatchDto'
 /sanction-checks/matches/{matchId}/enrich:
   post:
     tags:
       - Screening
     summary: Enrich the match payload with complete data
-    operationId: enrichSanctionCheckMatch
+    operationId: enrichScreeningMatch
     parameters:
       - name: matchId
         description: ID of the match to update
@@ -185,7 +185,7 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SanctionCheckMatchDto'
+              $ref: '#/components/schemas/ScreeningMatchDto'
       '404':
         $ref: 'components.yml#/responses/404'
       '409':
@@ -195,13 +195,13 @@
     tags:
       - Screening
     summary: Search possible matches
-    operationId: searchSanctionCheckMatches
+    operationId: searchScreeningMatches
     requestBody:
       description: 'Refine query params'
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/SanctionCheckRefineDto'
+            $ref: '#/components/schemas/ScreeningRefineDto'
     responses:
       '200':
         description: The list of matches
@@ -210,26 +210,26 @@
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/SanctionCheckMatchPayloadDto'
+                $ref: '#/components/schemas/ScreeningMatchPayloadDto'
 /sanction-checks/refine:
   post:
     tags:
       - Screening
     summary: Try refine the search
-    operationId: refineSanctionCheck
+    operationId: refineScreening
     requestBody:
       description: 'Refine query'
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/SanctionCheckRefineDto'
+            $ref: '#/components/schemas/ScreeningRefineDto'
     responses:
       '200':
         description: The screening created
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SanctionCheckDto'
+              $ref: '#/components/schemas/ScreeningDto'
 
 components:
   schemas:
@@ -296,7 +296,7 @@ components:
         last_export:
           type: string
           format: date-time
-    SanctionCheckConfigDto:
+    ScreeningConfigDto:
       type: object
       properties:
         id:
@@ -357,13 +357,13 @@ components:
               description: Whether to strip items from a custom list from the counterparty name
               type: string
               format: uuid
-    SanctionCheckDto:
+    ScreeningDto:
       type: object
       anyOf:
-        - $ref: '#/components/schemas/SanctionCheckSuccessDto'
-        - $ref: '#/components/schemas/SanctionCheckNoHitDto'
-        - $ref: '#/components/schemas/SanctionCheckErrorDto'
-    SanctionCheckSuccessDto:
+        - $ref: '#/components/schemas/ScreeningSuccessDto'
+        - $ref: '#/components/schemas/ScreeningNoHitDto'
+        - $ref: '#/components/schemas/ScreeningErrorDto'
+    ScreeningSuccessDto:
       type: object
       required:
         - id
@@ -392,11 +392,11 @@ components:
           type: string
           enum: ['in_review', 'confirmed_hit']
         request:
-          $ref: '#/components/schemas/SanctionCheckRequestDto'
+          $ref: '#/components/schemas/ScreeningRequestDto'
         initial_query:
           type: array
           items:
-            $ref: '#/components/schemas/SanctionCheckQueryDto'
+            $ref: '#/components/schemas/ScreeningQueryDto'
         partial:
           type: boolean
         is_manual:
@@ -404,8 +404,8 @@ components:
         matches:
           type: array
           items:
-            $ref: '#/components/schemas/SanctionCheckMatchDto'
-    SanctionCheckNoHitDto:
+            $ref: '#/components/schemas/ScreeningMatchDto'
+    ScreeningNoHitDto:
       type: object
       required:
         - id
@@ -433,11 +433,11 @@ components:
           type: string
           enum: ['no_hit']
         request:
-          $ref: '#/components/schemas/SanctionCheckRequestDto'
+          $ref: '#/components/schemas/ScreeningRequestDto'
         initial_query:
           type: array
           items:
-            $ref: '#/components/schemas/SanctionCheckQueryDto'
+            $ref: '#/components/schemas/ScreeningQueryDto'
         partial:
           type: boolean
         is_manual:
@@ -445,8 +445,8 @@ components:
         matches:
           type: array
           items:
-            $ref: '#/components/schemas/SanctionCheckMatchDto'
-    SanctionCheckErrorDto:
+            $ref: '#/components/schemas/ScreeningMatchDto'
+    ScreeningErrorDto:
       type: object
       required:
         - id
@@ -475,11 +475,11 @@ components:
           type: string
           enum: ['error']
         request:
-          $ref: '#/components/schemas/SanctionCheckRequestDto'
+          $ref: '#/components/schemas/ScreeningRequestDto'
         initial_query:
           type: array
           items:
-            $ref: '#/components/schemas/SanctionCheckQueryDto'
+            $ref: '#/components/schemas/ScreeningQueryDto'
         partial:
           type: boolean
         is_manual:
@@ -487,13 +487,13 @@ components:
         matches:
           type: array
           items:
-            $ref: '#/components/schemas/SanctionCheckMatchDto'
+            $ref: '#/components/schemas/ScreeningMatchDto'
         error_codes:
           type: array
           items:
             type: string
             enum: ['all_fields_null_or_empty']
-    SanctionCheckFileDto:
+    ScreeningFileDto:
       type: object
       required:
         - id
@@ -508,7 +508,7 @@ components:
         created_at:
           type: string
           format: date-time
-    SanctionCheckSanctionEntityDto:
+    ScreeningSanctionEntityDto:
       type: object
       required:
         - id
@@ -527,7 +527,7 @@ components:
             items:
               type: string
 
-    SanctionCheckMatchPayloadDto:
+    ScreeningMatchPayloadDto:
       type: object
       required:
         - id
@@ -544,7 +544,7 @@ components:
         score:
           type: number
         schema:
-          $ref: '#/components/schemas/SanctionCheckEntityDto'
+          $ref: '#/components/schemas/ScreeningEntityDto'
         caption:
           type: string
         properties:
@@ -554,13 +554,13 @@ components:
                 sanctions:
                   type: array
                   items:
-                    $ref: '#/components/schemas/SanctionCheckSanctionEntityDto'
+                    $ref: '#/components/schemas/ScreeningSanctionEntityDto'
             - type: object
               additionalProperties:
                 type: array
                 items:
                   type: string
-    SanctionCheckMatchDto:
+    ScreeningMatchDto:
       type: object
       required:
         - id
@@ -588,7 +588,7 @@ components:
         unique_counterparty_identifier:
           type: string
         payload:
-          $ref: '#/components/schemas/SanctionCheckMatchPayloadDto'
+          $ref: '#/components/schemas/ScreeningMatchPayloadDto'
         enriched:
           type: boolean
         comments:
@@ -612,7 +612,7 @@ components:
               created_at:
                 type: string
                 format: date-time
-    SanctionCheckEntityDto:
+    ScreeningEntityDto:
       type: string
       enum:
         [
@@ -646,21 +646,21 @@ components:
           'Vessel',
           'Vehicle',
         ]
-    SanctionCheckQueryDto:
+    ScreeningQueryDto:
       type: object
       required:
         - schema
         - properties
       properties:
         schema:
-          $ref: '#/components/schemas/SanctionCheckEntityDto'
+          $ref: '#/components/schemas/ScreeningEntityDto'
         properties:
           type: object
           additionalProperties:
             type: array
             items:
               type: string
-    SanctionCheckRequestDto:
+    ScreeningRequestDto:
       type: object
       required:
         - threshold
@@ -679,10 +679,10 @@ components:
             queries:
               type: object
               additionalProperties:
-                $ref: '#/components/schemas/SanctionCheckQueryDto'
-    SanctionCheckRefineDto:
+                $ref: '#/components/schemas/ScreeningQueryDto'
+    ScreeningRefineDto:
       type: object
-    UpdateSanctionCheckMatchDto:
+    updateScreeningMatchDto:
       type: object
       required:
         - status

@@ -9,18 +9,18 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
-import { DeleteScreeningRule } from '@app-builder/components/Scenario/Sanction/Actions/DeleteScreeningRule';
-import { FieldAstFormula } from '@app-builder/components/Scenario/Sanction/FieldAstFormula';
-import { FieldDataset } from '@app-builder/components/Scenario/Sanction/FieldDataset';
-import { FieldEntityType } from '@app-builder/components/Scenario/Sanction/FieldEntityType';
-import { FieldNode } from '@app-builder/components/Scenario/Sanction/FieldNode';
-import { FieldNodeConcat } from '@app-builder/components/Scenario/Sanction/FieldNodeConcat';
-import { FieldOutcomes } from '@app-builder/components/Scenario/Sanction/FieldOutcomes';
-import { FieldRuleGroup } from '@app-builder/components/Scenario/Sanction/FieldRuleGroup';
-import { FieldSkipIfUnder } from '@app-builder/components/Scenario/Sanction/FieldSkipIfUnder';
-import { FieldToolTip } from '@app-builder/components/Scenario/Sanction/FieldToolTip';
-import { ScreeningTermIgnoreList } from '@app-builder/components/Scenario/Sanction/ScreeningTermIgnoreList';
-import { SEARCH_ENTITIES } from '@app-builder/constants/sanction-check-entity';
+import { DeleteScreeningRule } from '@app-builder/components/Scenario/Screening/Actions/DeleteScreeningRule';
+import { FieldAstFormula } from '@app-builder/components/Scenario/Screening/FieldAstFormula';
+import { FieldDataset } from '@app-builder/components/Scenario/Screening/FieldDataset';
+import { FieldEntityType } from '@app-builder/components/Scenario/Screening/FieldEntityType';
+import { FieldNode } from '@app-builder/components/Scenario/Screening/FieldNode';
+import { FieldNodeConcat } from '@app-builder/components/Scenario/Screening/FieldNodeConcat';
+import { FieldOutcomes } from '@app-builder/components/Scenario/Screening/FieldOutcomes';
+import { FieldRuleGroup } from '@app-builder/components/Scenario/Screening/FieldRuleGroup';
+import { FieldSkipIfUnder } from '@app-builder/components/Scenario/Screening/FieldSkipIfUnder';
+import { FieldToolTip } from '@app-builder/components/Scenario/Screening/FieldToolTip';
+import { ScreeningTermIgnoreList } from '@app-builder/components/Scenario/Screening/ScreeningTermIgnoreList';
+import { SEARCH_ENTITIES } from '@app-builder/constants/screening-entity';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { type AstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { isStringConcatAstNode } from '@app-builder/models/astNode/strings';
@@ -85,8 +85,7 @@ export const handle = {
               sanctionId: fromUUIDtoSUUID(configId),
             })}
           >
-            {iteration.sanctionCheckConfigs.find((c) => c.id === configId)?.name ??
-              t('common:no_name')}
+            {iteration.screeningConfigs.find((c) => c.id === configId)?.name ?? t('common:no_name')}
           </BreadCrumbLink>
           {editorMode === 'edit' ? (
             <Tag size="big" border="square">
@@ -102,7 +101,7 @@ export const handle = {
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const scenarioId = fromParams(params, 'scenarioId');
   const { authService } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository, sanctionCheck, entitlements } =
+  const { customListsRepository, editor, dataModelRepository, screening, entitlements } =
     await authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });
@@ -112,7 +111,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       editor.listAccessors({ scenarioId }),
       dataModelRepository.getDataModel(),
       customListsRepository.listCustomLists(),
-      sanctionCheck.listDatasets(),
+      screening.listDatasets(),
     ]);
 
   return {
@@ -176,7 +175,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (!success) return json({ status: 'error', errors: z.treeifyError(error) });
 
   try {
-    await scenarioIterationSanctionRepository.updateSanctionCheckConfig({
+    await scenarioIterationSanctionRepository.updateScreeningConfig({
       iterationId: fromParams(params, 'iterationId'),
       sanctionId: fromParams(params, 'sanctionId'),
       changes: {
@@ -232,11 +231,11 @@ export default function SanctionDetail() {
   const scenario = useCurrentScenario();
   const ruleGroups = useRuleGroups();
   const configId = useParam('sanctionId');
-  const { id: iterationId, sanctionCheckConfigs } = useCurrentScenarioIteration();
+  const { id: iterationId, screeningConfigs } = useCurrentScenarioIteration();
   const descriptionRef = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { org } = useOrganizationDetails();
-  const sanctionCheckConfig = sanctionCheckConfigs.find((c) => c.id === configId);
+  const screeningConfig = screeningConfigs.find((c) => c.id === configId);
   const intersection = useIntersection(descriptionRef, {
     root: containerRef.current,
     rootMargin: '-30px',
@@ -253,18 +252,18 @@ export default function SanctionDetail() {
       onSubmit: editSanctionFormSchema,
     },
     defaultValues: {
-      id: sanctionCheckConfig?.id,
-      name: sanctionCheckConfig?.name ?? 'Screening',
-      description: sanctionCheckConfig?.description ?? '',
-      ruleGroup: sanctionCheckConfig?.ruleGroup ?? 'Screening',
-      datasets: sanctionCheckConfig?.datasets ?? [],
-      threshold: sanctionCheckConfig?.threshold,
-      forcedOutcome: (sanctionCheckConfig?.forcedOutcome as SanctionOutcome) ?? 'block_and_review',
-      triggerRule: sanctionCheckConfig?.triggerRule,
-      entityType: sanctionCheckConfig?.entityType,
-      query: sanctionCheckConfig?.query,
-      counterPartyId: sanctionCheckConfig?.counterPartyId,
-      preprocessing: sanctionCheckConfig?.preprocessing,
+      id: screeningConfig?.id,
+      name: screeningConfig?.name ?? 'Screening',
+      description: screeningConfig?.description ?? '',
+      ruleGroup: screeningConfig?.ruleGroup ?? 'Screening',
+      datasets: screeningConfig?.datasets ?? [],
+      threshold: screeningConfig?.threshold,
+      forcedOutcome: (screeningConfig?.forcedOutcome as SanctionOutcome) ?? 'block_and_review',
+      triggerRule: screeningConfig?.triggerRule,
+      entityType: screeningConfig?.entityType,
+      query: screeningConfig?.query,
+      counterPartyId: screeningConfig?.counterPartyId,
+      preprocessing: screeningConfig?.preprocessing,
     } as EditSanctionForm,
   });
 
@@ -562,7 +561,7 @@ export default function SanctionDetail() {
                       <div className="bg-grey-98 flex flex-col gap-2 rounded-sm p-2">
                         <form.Field name="query.name">
                           {(field) => {
-                            const value = sanctionCheckConfig?.query?.name;
+                            const value = screeningConfig?.query?.name;
                             return (
                               <div className="flex flex-col gap-1">
                                 <div className="flex flex-col gap-1">
@@ -662,7 +661,7 @@ export default function SanctionDetail() {
                           <>
                             <form.Field name="query.birthDate">
                               {(field) => {
-                                const value = sanctionCheckConfig?.query?.['birthDate'];
+                                const value = screeningConfig?.query?.['birthDate'];
                                 return (
                                   <div className="flex flex-col gap-1">
                                     <div className="flex flex-col gap-1">
@@ -691,7 +690,7 @@ export default function SanctionDetail() {
                             </form.Field>
                             <form.Field name="query.nationality">
                               {(field) => {
-                                const value = sanctionCheckConfig?.query?.['nationality'];
+                                const value = screeningConfig?.query?.['nationality'];
                                 return (
                                   <div className="flex flex-col gap-1">
                                     <div className="flex flex-col gap-1">
@@ -720,7 +719,7 @@ export default function SanctionDetail() {
                             </form.Field>
                             <form.Field name="query.passportNumber">
                               {(field) => {
-                                const value = sanctionCheckConfig?.query?.['passportNumber'];
+                                const value = screeningConfig?.query?.['passportNumber'];
                                 return (
                                   <div className="flex flex-col gap-1">
                                     <div className="flex flex-col gap-1">
@@ -749,7 +748,7 @@ export default function SanctionDetail() {
                             </form.Field>
                             <form.Field name="query.address">
                               {(field) => {
-                                const value = sanctionCheckConfig?.query?.['address'];
+                                const value = screeningConfig?.query?.['address'];
                                 return (
                                   <div className="flex flex-col gap-1">
                                     <div className="flex flex-col gap-1">
@@ -782,7 +781,7 @@ export default function SanctionDetail() {
                           <>
                             <form.Field name="query.country">
                               {(field) => {
-                                const value = sanctionCheckConfig?.query?.['country'];
+                                const value = screeningConfig?.query?.['country'];
                                 return (
                                   <div className="flex flex-col gap-1">
                                     <div className="flex flex-col gap-1">
@@ -811,7 +810,7 @@ export default function SanctionDetail() {
                             </form.Field>
                             <form.Field name="query.registrationNumber">
                               {(field) => {
-                                const value = sanctionCheckConfig?.query?.['registrationNumber'];
+                                const value = screeningConfig?.query?.['registrationNumber'];
                                 return (
                                   <div className="flex flex-col gap-1">
                                     <div className="flex flex-col gap-1">
@@ -840,7 +839,7 @@ export default function SanctionDetail() {
                             </form.Field>
                             <form.Field name="query.address">
                               {(field) => {
-                                const value = sanctionCheckConfig?.query?.['address'];
+                                const value = screeningConfig?.query?.['address'];
                                 return (
                                   <div className="flex flex-col gap-1">
                                     <div className="flex flex-col gap-1">
@@ -872,7 +871,7 @@ export default function SanctionDetail() {
                         .with('Vehicle', () => (
                           <form.Field name="query.registrationNumber">
                             {(field) => {
-                              const value = sanctionCheckConfig?.query?.['registrationNumber'];
+                              const value = screeningConfig?.query?.['registrationNumber'];
                               return (
                                 <div className="flex flex-col gap-1">
                                   <div className="flex flex-col gap-1">

@@ -1,12 +1,6 @@
 import { Callout } from '@app-builder/components/Callout';
-import {
-  SEARCH_ENTITIES,
-  type SearchableSchema,
-} from '@app-builder/constants/sanction-check-entity';
-import {
-  type SanctionCheck,
-  type SanctionCheckMatchPayload,
-} from '@app-builder/models/sanction-check';
+import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
+import { type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { type action as refineAction } from '@app-builder/routes/ressources+/sanction-check+/refine';
 import {
   refineSearchSchema,
@@ -27,8 +21,8 @@ import { Icon } from 'ui-icons';
 import { type z } from 'zod/v4';
 
 import { MatchResult } from './MatchResult';
-import { SanctionStatusTag } from './SanctionStatusTag';
-import { sanctionsI18n } from './sanctions-i18n';
+import { ScreeningStatusTag } from './ScreeningStatusTag';
+import { sanctionsI18n } from './screenings-i18n';
 
 function setAdditionalFields(fields: string[], prev: Record<string, string>) {
   const additionalFields = {} as Record<string, string>;
@@ -40,16 +34,16 @@ function setAdditionalFields(fields: string[], prev: Record<string, string>) {
 
 export type RefineSearchModalProps = {
   open: boolean;
-  sanctionCheckId: string;
-  sanctionCheck: SanctionCheck;
+  screeningId: string;
+  screening: Screening;
   onRefineSuccess: (screeningId: string) => void;
   onClose: () => void;
 };
 
 export function RefineSearchModal({
   open,
-  sanctionCheckId,
-  sanctionCheck,
+  screeningId,
+  screening,
   onRefineSuccess: _onRefineSuccess,
   onClose: _onClose,
 }: RefineSearchModalProps) {
@@ -62,7 +56,7 @@ export function RefineSearchModal({
 
   const form = useForm({
     defaultValues: {
-      sanctionCheckId,
+      screeningId,
       fields: {},
     } as z.infer<typeof refineSearchSchema>,
     validators: {
@@ -80,7 +74,7 @@ export function RefineSearchModal({
     },
   });
 
-  const [searchResults, setSearchResults] = useState<SanctionCheckMatchPayload[] | null>(null);
+  const [searchResults, setSearchResults] = useState<ScreeningMatchPayload[] | null>(null);
   useEffect(() => {
     if (searchFetcher.data?.success) {
       setSearchResults(searchFetcher.data.data);
@@ -150,7 +144,7 @@ export function RefineSearchModal({
                       t={t}
                       i18nKey="sanctions:refine_modal.no_match_callout"
                       components={{
-                        Status: <SanctionStatusTag status="no_hit" />,
+                        Status: <ScreeningStatusTag status="no_hit" />,
                       }}
                     />
                   </div>
@@ -172,7 +166,7 @@ export function RefineSearchModal({
                 className="flex-1"
                 variant="primary"
                 onClick={handleRefine}
-                disabled={searchResults.length > (sanctionCheck.request?.limit ?? Infinity)}
+                disabled={searchResults.length > (screening.request?.limit ?? Infinity)}
               >
                 {t('sanctions:refine_modal.apply_search')}
               </Button>
@@ -182,7 +176,7 @@ export function RefineSearchModal({
       ) : (
         <searchFetcher.Form onSubmit={handleSubmit(form)} className="contents">
           <div className="flex h-full flex-col gap-6 overflow-y-scroll p-8">
-            {sanctionCheck.request ? <SearchInput request={sanctionCheck.request} /> : null}
+            {screening.request ? <SearchInput request={screening.request} /> : null}
             <form.Field name="entityType" listeners={{ onChange: onSearchEntityChange }}>
               {(field) => (
                 <Field label="Counterparty Entity">
@@ -304,7 +298,7 @@ function EntitySelect({ name, value, onChange }: EntitySelectProps) {
   );
 }
 
-function SearchInput({ request }: { request: NonNullable<SanctionCheck['request']> }) {
+function SearchInput({ request }: { request: NonNullable<Screening['request']> }) {
   const { t } = useTranslation(['sanctions']);
   const searchInputs = R.pipe(
     R.values(request.queries),

@@ -7,14 +7,14 @@ import { z } from 'zod/v4';
 
 export const refineSearchSchema = z.discriminatedUnion('entityType', [
   z.object({
-    sanctionCheckId: z.uuid(),
+    screeningId: z.uuid(),
     entityType: z.literal('Thing'),
     fields: z.object({
       name: z.string().optional(),
     }),
   }),
   z.object({
-    sanctionCheckId: z.uuid(),
+    screeningId: z.uuid(),
     entityType: z.literal('Person'),
     fields: z.object({
       name: z.string().optional(),
@@ -25,7 +25,7 @@ export const refineSearchSchema = z.discriminatedUnion('entityType', [
     }),
   }),
   z.object({
-    sanctionCheckId: z.uuid(),
+    screeningId: z.uuid(),
     entityType: z.literal('Organization'),
     fields: z.object({
       name: z.string().optional(),
@@ -35,7 +35,7 @@ export const refineSearchSchema = z.discriminatedUnion('entityType', [
     }),
   }),
   z.object({
-    sanctionCheckId: z.uuid(),
+    screeningId: z.uuid(),
     entityType: z.literal('Vehicle'),
     fields: z.object({
       name: z.string().optional(),
@@ -51,7 +51,7 @@ export async function action({ request }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = initServerServices(request);
 
-  const { sanctionCheck } = await authService.isAuthenticated(request, {
+  const { screening } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -62,7 +62,7 @@ export async function action({ request }: ActionFunctionArgs) {
     try {
       return {
         success: true,
-        data: await sanctionCheck.searchSanctionCheckMatches(submission.data),
+        data: await screening.searchScreeningMatches(submission.data),
       } as const;
     } catch {
       const session = await getSession(request);

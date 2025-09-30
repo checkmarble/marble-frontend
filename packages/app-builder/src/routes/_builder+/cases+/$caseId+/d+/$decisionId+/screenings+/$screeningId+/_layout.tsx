@@ -6,7 +6,7 @@ import {
 } from '@app-builder/components/Breadcrumbs';
 import { CaseStatusBadge, casesI18n } from '@app-builder/components/Cases';
 import { UploadFile } from '@app-builder/components/Files/UploadFile';
-import { SanctionStatusTag } from '@app-builder/components/Sanctions/SanctionStatusTag';
+import { ScreeningStatusTag } from '@app-builder/components/Screenings/ScreeningStatusTag';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { useUploadScreeningFile } from '@app-builder/queries/upload-screening-file';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -67,7 +67,7 @@ export const handle = {
       );
     },
     ({ isLast }: BreadCrumbProps) => {
-      const { caseDetail, decision, sanctionCheck } = useLoaderData<typeof loader>();
+      const { caseDetail, decision, screening } = useLoaderData<typeof loader>();
 
       return (
         <div className="flex items-center gap-2">
@@ -75,13 +75,13 @@ export const handle = {
             to={getRoute('/cases/:caseId/d/:decisionId/screenings/:screeningId', {
               caseId: fromUUIDtoSUUID(caseDetail.id),
               decisionId: fromUUIDtoSUUID(decision.id),
-              screeningId: fromUUIDtoSUUID(sanctionCheck.id),
+              screeningId: fromUUIDtoSUUID(screening.id),
             })}
             isLast={isLast}
           >
-            <span className="line-clamp-2 text-start">{sanctionCheck.config.name}</span>
+            <span className="line-clamp-2 text-start">{screening.config.name}</span>
           </BreadCrumbLink>
-          <SanctionStatusTag status={sanctionCheck.status} />
+          <ScreeningStatusTag status={screening.status} />
         </div>
       );
     },
@@ -96,7 +96,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     cases,
     dataModelRepository,
     inbox,
-    sanctionCheck: sanctionCheckRepository,
+    screening: screeningRepository,
   } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
@@ -108,11 +108,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   try {
     const caseDetail = await cases.getCase({ caseId });
     const decision = caseDetail.decisions.find((d) => d.id === decisionId);
-    const sanctionChecks = await sanctionCheckRepository.listSanctionChecks({ decisionId });
+    const screenings = await screeningRepository.listScreenings({ decisionId });
     const currentInbox = await inbox.getInbox(caseDetail.inboxId);
-    const sanctionCheck = sanctionChecks.find((s) => s.id === screeningId);
+    const screening = screenings.find((s) => s.id === screeningId);
 
-    if (!decision || !sanctionCheck) {
+    if (!decision || !screening) {
       throw new Response(null, { status: 404, statusText: 'Not Found' });
     }
 
@@ -122,7 +122,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       decision,
       user,
       entitlements,
-      sanctionCheck,
+      screening,
       dataModel: await dataModelRepository.getDataModel(),
       pivots: await dataModelRepository.listPivots({}),
     });
@@ -144,8 +144,8 @@ export function useCurrentCase() {
 
 export default function CaseSanctionReviewPage() {
   const { t } = useTranslation(handle.i18n);
-  const { caseDetail, sanctionCheck } = useLoaderData<typeof loader>();
-  const { mutateAsync: uploadScreeningFile } = useUploadScreeningFile(sanctionCheck.id);
+  const { caseDetail, screening } = useLoaderData<typeof loader>();
+  const { mutateAsync: uploadScreeningFile } = useUploadScreeningFile(screening.id);
 
   return (
     <Page.Main>

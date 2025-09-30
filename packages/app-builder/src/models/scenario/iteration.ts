@@ -5,7 +5,7 @@ import {
 } from 'marble-api';
 
 import { type AstNode, adaptAstNode, adaptNodeDto } from '../astNode/ast-node';
-import { adaptSanctionCheckConfig, type SanctionCheckConfig } from '../sanction-check-config';
+import { adaptScreeningConfig, type ScreeningConfig } from '../screening-config';
 import { adaptScenarioIterationRule, type ScenarioIterationRule } from './iteration-rule';
 
 export interface ScenarioIterationSummary {
@@ -28,7 +28,7 @@ export interface ScenarioIteration {
   rules: ScenarioIterationRule[];
   schedule?: string;
   trigger: AstNode | null;
-  sanctionCheckConfigs: SanctionCheckConfig[];
+  screeningConfigs: ScreeningConfig[];
 }
 
 export interface ScenarioIterationWithType extends ScenarioIteration {
@@ -78,7 +78,7 @@ export function adaptScenarioIteration(
   scenarioIterationWithBody: ScenarioIterationWithBodyDto,
 ): ScenarioIteration {
   const triggerDto = scenarioIterationWithBody.body.trigger_condition_ast_expression;
-  const configsDto = scenarioIterationWithBody.body.sanction_check_configs;
+  const configsDto = scenarioIterationWithBody.body.screening_configs;
 
   return {
     id: scenarioIterationWithBody.id,
@@ -92,7 +92,7 @@ export function adaptScenarioIteration(
     rules: scenarioIterationWithBody.body.rules.map(adaptScenarioIterationRule),
     schedule: scenarioIterationWithBody.body.schedule,
     trigger: triggerDto ? adaptAstNode(triggerDto) : null,
-    sanctionCheckConfigs: configsDto?.map(adaptSanctionCheckConfig) ?? [],
+    screeningConfigs: configsDto?.map(adaptScreeningConfig) ?? [],
   };
 }
 

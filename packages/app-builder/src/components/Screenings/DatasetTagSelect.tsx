@@ -1,4 +1,4 @@
-import { type ScreeningCategory } from '@app-builder/models/sanction-check';
+import { type ScreeningCategory } from '@app-builder/models/screening';
 import { toggle } from 'radash';
 import { type Dispatch, type SetStateAction, useMemo } from 'react';
 import { Button, Checkbox, MenuCommand } from 'ui-design-system';

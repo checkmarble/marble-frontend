@@ -1,11 +1,11 @@
 import {
-  type SanctionCheckDto,
-  type SanctionCheckEntityDto,
-  type SanctionCheckErrorDto,
-  type SanctionCheckFileDto,
-  type SanctionCheckMatchDto,
-  type SanctionCheckMatchPayloadDto,
-  type SanctionCheckRequestDto,
+  type ScreeningDto,
+  type ScreeningEntityDto,
+  type ScreeningErrorDto,
+  type ScreeningFileDto,
+  type ScreeningMatchDto,
+  type ScreeningMatchPayloadDto,
+  type ScreeningRequestDto,
 } from 'marble-api';
 import * as R from 'remeda';
 
@@ -25,8 +25,8 @@ const matchEntitySchemas = [
 const sanctionEntitySchemas = ['Sanction'] as const;
 export const openSanctionEntitySchemas = [...matchEntitySchemas, ...sanctionEntitySchemas] as const;
 
-export type SanctionCheckStatus = 'in_review' | 'confirmed_hit' | 'no_hit' | 'error';
-export type SanctionCheckMatchStatus = 'pending' | 'confirmed_hit' | 'no_hit' | 'skipped';
+export type ScreeningStatus = 'in_review' | 'confirmed_hit' | 'no_hit' | 'error';
+export type ScreeningMatchStatus = 'pending' | 'confirmed_hit' | 'no_hit' | 'skipped';
 export type OpenSanctionEntitySchema = (typeof openSanctionEntitySchemas)[number];
 
 export type OpenSanctionEntity = {
@@ -35,13 +35,13 @@ export type OpenSanctionEntity = {
   properties: Record<string, string[]>;
 };
 
-export type SanctionCheckSanctionEntity = {
+export type ScreeningSanctionEntity = {
   id: string;
   schema: 'Sanction';
   properties: Record<string, string[]>;
 };
 
-export type SanctionCheckMatchEntitySchema = Extract<
+export type ScreeningMatchEntitySchema = Extract<
   OpenSanctionEntitySchema,
   | 'Thing'
   | 'LegalEntity'
@@ -132,15 +132,15 @@ export type MembershipMemberEntity = OpenSanctionEntity & {
   } & Record<string, string[]>;
 };
 
-export type SanctionCheckMatchPayload = {
+export type ScreeningMatchPayload = {
   id: string;
   match: boolean;
   score: number;
-  schema: SanctionCheckMatchEntitySchema;
+  schema: ScreeningMatchEntitySchema;
   datasets?: string[];
   caption: string;
   properties: {
-    sanctions?: SanctionCheckSanctionEntity[];
+    sanctions?: ScreeningSanctionEntity[];
     familyPerson?: FamilyPersonEntity[];
     associations?: AssociationEntity[];
     membershipMember?: MembershipMemberEntity[];
@@ -154,24 +154,22 @@ function isKnownEntitySchema<K extends OpenSanctionEntitySchema>(
   return (schemaList as ReadonlyArray<string>).includes(schema);
 }
 
-export function adapatSanctionCheckMatchPayload(
-  dto: SanctionCheckMatchPayloadDto,
-): SanctionCheckMatchPayload {
+export function adaptScreeningMatchPayload(dto: ScreeningMatchPayloadDto): ScreeningMatchPayload {
   return {
     ...dto,
     schema: isKnownEntitySchema(dto.schema, matchEntitySchemas) ? dto.schema : 'Thing',
   };
 }
 
-export type SanctionCheckMatch = {
+export type ScreeningMatch = {
   id: string;
   entityId: string;
   queryIds: string[];
-  status: SanctionCheckMatchStatus;
+  status: ScreeningMatchStatus;
   enriched: boolean;
   // datasets: unknown[];
   uniqueCounterpartyIdentifier?: string;
-  payload: SanctionCheckMatchPayload;
+  payload: ScreeningMatchPayload;
   comments: {
     id: string;
     authorId: string;
@@ -180,14 +178,14 @@ export type SanctionCheckMatch = {
   }[];
 };
 
-export function adaptSanctionCheckMatch(dto: SanctionCheckMatchDto): SanctionCheckMatch {
+export function adaptScreeningMatch(dto: ScreeningMatchDto): ScreeningMatch {
   return {
     id: dto.id,
     entityId: dto.entity_id,
     queryIds: dto.query_ids,
     status: dto.status,
     enriched: dto.enriched,
-    payload: adapatSanctionCheckMatchPayload(dto.payload),
+    payload: adaptScreeningMatchPayload(dto.payload),
     uniqueCounterpartyIdentifier: dto.unique_counterparty_identifier,
     comments: R.map(dto.comments, (comment) => ({
       id: comment.id,
@@ -198,22 +196,22 @@ export function adaptSanctionCheckMatch(dto: SanctionCheckMatchDto): SanctionChe
   };
 }
 
-export type SanctionCheckQuery = {
+export type ScreeningQuery = {
   schema: OpenSanctionEntitySchema;
   properties: {
     [key: string]: string[];
   };
 };
 
-export type SanctionCheckRequest = {
+export type ScreeningRequest = {
   threshold: number;
   limit: number;
   queries: {
-    [key: string]: SanctionCheckQuery;
+    [key: string]: ScreeningQuery;
   };
 };
 
-function adaptQueries(dto: SanctionCheckRequestDto['search_input']['queries']) {
+function adaptQueries(dto: ScreeningRequestDto['search_input']['queries']) {
   return R.mapValues(dto, (value) => {
     return {
       schema: isKnownEntitySchema(value.schema, matchEntitySchemas) ? value.schema : 'Thing',
@@ -222,7 +220,7 @@ function adaptQueries(dto: SanctionCheckRequestDto['search_input']['queries']) {
   });
 }
 
-export function adaptSanctionCheckRequest(dto: SanctionCheckRequestDto): SanctionCheckRequest {
+export function adaptScreeningRequest(dto: ScreeningRequestDto): ScreeningRequest {
   return {
     threshold: dto.threshold,
     limit: dto.limit,
@@ -230,7 +228,7 @@ export function adaptSanctionCheckRequest(dto: SanctionCheckRequestDto): Sanctio
   };
 }
 
-type BaseSanctionCheck = {
+type BaseScreening = {
   id: string;
   config: {
     name: string;
@@ -238,64 +236,64 @@ type BaseSanctionCheck = {
   decisionId: string;
   partial: boolean;
   isManual: boolean;
-  matches: SanctionCheckMatch[];
+  matches: ScreeningMatch[];
   initialQuery: {
-    schema: SanctionCheckEntityDto;
+    schema: ScreeningEntityDto;
     properties: Record<string, string[]>;
   }[];
 };
-export type SanctionCheckError = BaseSanctionCheck & {
+export type ScreeningError = BaseScreening & {
   status: 'error';
-  request: SanctionCheckRequest | null;
-  errorCodes: SanctionCheckErrorDto['error_codes'];
+  request: ScreeningRequest | null;
+  errorCodes: ScreeningErrorDto['error_codes'];
 };
-export type SanctionCheckNoHit = BaseSanctionCheck & {
+export type ScreeningNoHit = BaseScreening & {
   status: 'no_hit';
-  request: SanctionCheckRequest | null;
+  request: ScreeningRequest | null;
 };
-export type SanctionCheckSuccess = BaseSanctionCheck & {
-  status: Exclude<SanctionCheckStatus, 'error | no_hit'>;
-  request: SanctionCheckRequest;
+export type ScreeningSuccess = BaseScreening & {
+  status: Exclude<ScreeningStatus, 'error | no_hit'>;
+  request: ScreeningRequest;
 };
 
-export type SanctionCheck = SanctionCheckError | SanctionCheckSuccess | SanctionCheckNoHit;
+export type Screening = ScreeningError | ScreeningSuccess | ScreeningNoHit;
 
-export function adaptSanctionCheck(dto: SanctionCheckDto): SanctionCheck {
-  const baseSanctionCheck: BaseSanctionCheck = {
+export function adaptScreening(dto: ScreeningDto): Screening {
+  const baseScreening: BaseScreening = {
     id: dto.id,
     decisionId: dto.decision_id,
     partial: dto.partial,
     isManual: dto.is_manual,
-    matches: R.map(dto.matches, adaptSanctionCheckMatch),
+    matches: R.map(dto.matches, adaptScreeningMatch),
     config: dto.config,
     initialQuery: dto.initial_query ?? [],
   };
 
   if (dto.status === 'error') {
     return {
-      ...baseSanctionCheck,
+      ...baseScreening,
       status: dto.status,
-      request: dto.request ? adaptSanctionCheckRequest(dto.request) : null,
+      request: dto.request ? adaptScreeningRequest(dto.request) : null,
       errorCodes: dto.error_codes,
     };
   }
 
   if (dto.status === 'no_hit') {
     return {
-      ...baseSanctionCheck,
+      ...baseScreening,
       status: dto.status,
-      request: dto.request ? adaptSanctionCheckRequest(dto.request) : null,
+      request: dto.request ? adaptScreeningRequest(dto.request) : null,
     };
   }
 
   return {
-    ...baseSanctionCheck,
+    ...baseScreening,
     status: dto.status,
-    request: adaptSanctionCheckRequest(dto.request),
+    request: adaptScreeningRequest(dto.request),
   };
 }
 
-export function adapatSanctionCheckFile(dto: SanctionCheckFileDto): SanctionCheckFile {
+export function adaptScreeningFile(dto: ScreeningFileDto): ScreeningFile {
   return {
     id: dto.id,
     fileName: dto.filename,
@@ -303,20 +301,18 @@ export function adapatSanctionCheckFile(dto: SanctionCheckFileDto): SanctionChec
   };
 }
 
-export type SanctionCheckFile = {
+export type ScreeningFile = {
   id: string;
   fileName: string;
   createdAt: string;
 };
 
-export function isSanctionCheckError(
-  sanctionCheck: SanctionCheck,
-): sanctionCheck is SanctionCheckError {
-  return sanctionCheck.status === 'error';
+export function isScreeningError(screening: Screening): screening is ScreeningError {
+  return screening.status === 'error';
 }
 
-export function isSanctionCheckReviewCompleted(sanctionCheck: SanctionCheck) {
-  return sanctionCheck.status === 'no_hit' || sanctionCheck.status === 'confirmed_hit';
+export function isScreeningReviewCompleted(screening: Screening): screening is ScreeningSuccess {
+  return screening.status === 'no_hit' || screening.status === 'confirmed_hit';
 }
 
 export type ScreeningCategory = 'sanctions' | 'peps' | 'third-parties' | 'adverse-media';

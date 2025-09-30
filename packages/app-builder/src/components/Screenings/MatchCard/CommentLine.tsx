@@ -1,10 +1,10 @@
-import { SanctionCheckMatch } from '@app-builder/models/sanction-check';
+import { ScreeningMatch } from '@app-builder/models/screening';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { Avatar } from 'ui-design-system';
 
-export const CommentLine = ({ comment }: { comment: SanctionCheckMatch['comments'][number] }) => {
+export const CommentLine = ({ comment }: { comment: ScreeningMatch['comments'][number] }) => {
   const language = useFormatLanguage();
   const { getOrgUserById } = useOrganizationUsers();
   const user = getOrgUserById(comment.authorId);
