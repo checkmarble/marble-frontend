@@ -1,4 +1,4 @@
-/sanction-checks:
+/screenings:
   get:
     tags:
       - Screening
@@ -21,7 +21,7 @@
               type: array
               items:
                 $ref: '#/components/schemas/ScreeningDto'
-/sanction-checks/datasets:
+/screenings/datasets:
   get:
     tags:
       - Screening
@@ -34,7 +34,7 @@
           application/json:
             schema:
               $ref: '#/components/schemas/OpenSanctionsCatalogDto'
-/sanction-checks/freshness:
+/screenings/freshness:
   get:
     tags:
       - Screening
@@ -47,7 +47,7 @@
           application/json:
             schema:
               $ref: '#/components/schemas/OpenSanctionsDatasetFreshnessDto'
-/sanction-checks/{screeningId}/files:
+/screenings/{screeningId}/files:
   get:
     tags:
       - Screening
@@ -98,7 +98,7 @@
     responses:
       '200':
         description: The file uploaded
-/sanction-checks/{screeningId}/files/{fileId}:
+/screenings/{screeningId}/files/{fileId}:
   get:
     tags:
       - Screening
@@ -137,7 +137,7 @@
                   description: Signed url to download the screening file's content
       '401':
         $ref: 'components.yml#/responses/401'
-/sanction-checks/matches/{matchId}:
+/screenings/matches/{matchId}:
   patch:
     tags:
       - Screening
@@ -165,7 +165,7 @@
           application/json:
             schema:
               $ref: '#/components/schemas/ScreeningMatchDto'
-/sanction-checks/matches/{matchId}/enrich:
+/screenings/matches/{matchId}/enrich:
   post:
     tags:
       - Screening
@@ -190,7 +190,7 @@
         $ref: 'components.yml#/responses/404'
       '409':
         $ref: 'components.yml#/responses/409'
-/sanction-checks/search:
+/screenings/search:
   post:
     tags:
       - Screening
@@ -211,7 +211,7 @@
               type: array
               items:
                 $ref: '#/components/schemas/ScreeningMatchPayloadDto'
-/sanction-checks/refine:
+/screenings/refine:
   post:
     tags:
       - Screening

@@ -196,24 +196,24 @@ paths:
 
   # SCREENINGS
 
-  /sanction-checks:
-    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks
-  /sanction-checks/datasets:
-    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1datasets
-  /sanction-checks/{screeningId}/files:
-    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1{screeningId}~1files
-  /sanction-checks/{screeningId}/files/{fileId}:
-    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1{screeningId}~1files~1{fileId}
-  /sanction-checks/matches/{matchId}:
-    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1matches~1{matchId}
-  /sanction-checks/matches/{matchId}/enrich:
-    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1matches~1{matchId}~1enrich
-  /sanction-checks/search:
-    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1search
-  /sanction-checks/refine:
-    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1refine
-  /sanction-checks/freshness:
-    $ref: ./marblecore-api/sanction-checks.yml#/~1sanction-checks~1freshness
+  /screenings:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings
+  /screenings/datasets:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1datasets
+  /screenings/{screeningId}/files:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1{screeningId}~1files
+  /screenings/{screeningId}/files/{fileId}:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1{screeningId}~1files~1{fileId}
+  /screenings/matches/{matchId}:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1matches~1{matchId}
+  /screenings/matches/{matchId}/enrich:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1matches~1{matchId}~1enrich
+  /screenings/search:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1search
+  /screenings/refine:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1refine
+  /screenings/freshness:
+    $ref: ./marblecore-api/screenings.yml#/~1screenings~1freshness
 
   # RULES
 
