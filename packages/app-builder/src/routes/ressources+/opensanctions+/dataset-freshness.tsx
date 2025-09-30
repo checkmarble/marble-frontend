@@ -1,7 +1,7 @@
 import { isHttpError } from '@app-builder/models';
 import { type ScenarioIteration } from '@app-builder/models/scenario/iteration';
-import { type SanctionCheckRepository } from '@app-builder/repositories/SanctionCheckRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
+import { type ScreeningRepository } from '@app-builder/repositories/ScreeningRepository';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type LoaderFunctionArgs } from '@remix-run/node';
@@ -15,17 +15,17 @@ export type OpenSanctionDatasetFreshnessInfoResource = {
 };
 
 async function getDatasetFreshnessInfo(
-  sanctionCheckRepository: SanctionCheckRepository,
+  screeningRepository: ScreeningRepository,
   scenarioRepository: ScenarioRepository,
 ): Promise<{ lastExport: string } | null> {
-  const datasetFreshness = await sanctionCheckRepository.getDatasetFreshness();
+  const datasetFreshness = await screeningRepository.getDatasetFreshness();
 
   if (datasetFreshness.upToDate) {
     return null;
   }
 
   const allScenarios = await scenarioRepository.listScenarios();
-  const iterationsWithSanctionCheck = R.pipe(
+  const iterationsWithScreening = R.pipe(
     await Promise.all(
       allScenarios.map((scenario) => {
         return scenario.liveVersionId
@@ -35,11 +35,11 @@ async function getDatasetFreshnessInfo(
     ),
     R.filter(
       (iteration): iteration is ScenarioIteration =>
-        !!iteration && iteration.sanctionCheckConfigs.length > 0,
+        !!iteration && iteration.screeningConfigs.length > 0,
     ),
   );
 
-  if (iterationsWithSanctionCheck.length > 0) {
+  if (iterationsWithScreening.length > 0) {
     return { lastExport: datasetFreshness.upstream.lastExport };
   }
 
@@ -48,13 +48,13 @@ async function getDatasetFreshnessInfo(
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { sanctionCheck, scenario } = await authService.isAuthenticated(request, {
+  const { screening, scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   let datasetFreshnessInfo: { lastExport: string } | null = null;
   try {
-    datasetFreshnessInfo = await getDatasetFreshnessInfo(sanctionCheck, scenario);
+    datasetFreshnessInfo = await getDatasetFreshnessInfo(screening, scenario);
   } catch (err) {
     if (!isHttpError(err)) {
       captureRemixServerException(err, 'remix.server', request, true);

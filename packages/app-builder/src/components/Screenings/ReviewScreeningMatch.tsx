@@ -1,7 +1,7 @@
 import { Callout } from '@app-builder/components';
-import { StatusRadioGroup } from '@app-builder/components/Sanctions/StatusRadioGroup';
+import { StatusRadioGroup } from '@app-builder/components/Screenings/StatusRadioGroup';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
+import { type ScreeningMatch } from '@app-builder/models/screening';
 import {
   ReviewScreeningMatchPayload,
   reviewScreeningMatchPayloadSchema,
@@ -21,7 +21,7 @@ export const ReviewScreeningMatch = ({
 }: {
   open: boolean;
   onClose: () => void;
-  sanctionMatch: SanctionCheckMatch;
+  sanctionMatch: ScreeningMatch;
 }) => {
   const { t } = useTranslation(['common', 'sanctions']);
   const onClose = useCallbackRef(_onClose);

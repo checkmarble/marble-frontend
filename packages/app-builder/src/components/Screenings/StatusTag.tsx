@@ -1,20 +1,20 @@
-import { type SanctionCheckMatch } from '@app-builder/models/sanction-check';
+import { type ScreeningMatch } from '@app-builder/models/screening';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { Tag, type TagProps } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { sanctionsI18n } from './sanctions-i18n';
+import { sanctionsI18n } from './screenings-i18n';
 
 const statusTagColors = {
   pending: 'orange',
   no_hit: 'grey',
   confirmed_hit: 'red',
   skipped: 'grey',
-} satisfies Record<SanctionCheckMatch['status'], TagProps['color']>;
+} satisfies Record<ScreeningMatch['status'], TagProps['color']>;
 
 export type StatusTagProps = {
-  status: SanctionCheckMatch['status'];
+  status: ScreeningMatch['status'];
   disabled?: boolean;
   onClick?: () => void;
 };

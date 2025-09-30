@@ -191,8 +191,8 @@ paths:
     $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1commit
   /scenario-iterations/{scenarioIterationId}/sanction-check:
     $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1sanction-check
-  /scenario-iterations/{scenarioIterationId}/sanction-check/{sanctionCheckConfigId}:
-    $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1sanction-check~1{sanctionCheckConfigId}
+  /scenario-iterations/{scenarioIterationId}/sanction-check/{screeningConfigId}:
+    $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}~1sanction-check~1{screeningConfigId}
 
   # SCREENINGS
 

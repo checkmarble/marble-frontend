@@ -1,10 +1,10 @@
-import { type SanctionCheckConfigDto } from 'marble-api';
+import { type ScreeningConfigDto } from 'marble-api';
 import { mapValues } from 'radash';
 
 import { type AstNode, adaptAstNode, adaptNodeDto } from './astNode/ast-node';
 import { type Outcome } from './outcome';
 
-export type SanctionCheckConfig = Partial<{
+export type ScreeningConfig = Partial<{
   id: string;
   name: string;
   description: string;
@@ -13,7 +13,7 @@ export type SanctionCheckConfig = Partial<{
   threshold: number;
   forcedOutcome: Outcome;
   triggerRule: AstNode;
-  entityType: SanctionCheckConfigDto['entity_type'];
+  entityType: ScreeningConfigDto['entity_type'];
   query: Partial<{
     name: AstNode;
     [key: string]: AstNode;
@@ -27,7 +27,7 @@ export type SanctionCheckConfig = Partial<{
   };
 }>;
 
-export function adaptSanctionCheckConfig(dto: SanctionCheckConfigDto): SanctionCheckConfig {
+export function adaptScreeningConfig(dto: ScreeningConfigDto): ScreeningConfig {
   return {
     id: dto.id,
     name: dto.name,
@@ -53,7 +53,7 @@ export function adaptSanctionCheckConfig(dto: SanctionCheckConfigDto): SanctionC
   };
 }
 
-export function adaptSanctionCheckConfigDto(config: SanctionCheckConfig): SanctionCheckConfigDto {
+export function adaptScreeningConfigDto(config: ScreeningConfig): ScreeningConfigDto {
   return {
     id: config.id,
     name: config.name,
@@ -66,7 +66,7 @@ export function adaptSanctionCheckConfigDto(config: SanctionCheckConfig): Sancti
     entity_type: config.entityType,
     query: mapValues(config.query ?? {}, (node) =>
       node ? adaptNodeDto(node) : undefined,
-    ) as SanctionCheckConfigDto['query'],
+    ) as ScreeningConfigDto['query'],
     counterparty_id_expression: config.counterPartyId
       ? adaptNodeDto(config.counterPartyId)
       : undefined,

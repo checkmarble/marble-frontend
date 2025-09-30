@@ -12,7 +12,7 @@ export async function action({ request }: ActionFunctionArgs) {
     toastSessionService: { getSession, commitSession },
   } = initServerServices(request);
 
-  const [session, t, raw, { sanctionCheck }] = await Promise.all([
+  const [session, t, raw, { screening }] = await Promise.all([
     getSession(request),
     getFixedT(request, ['common', 'cases']),
     request.json(),
@@ -28,7 +28,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   try {
-    await sanctionCheck.updateMatchStatus(data);
+    await screening.updateMatchStatus(data);
     return json({ success: true, errors: [] });
   } catch (_error) {
     setToastMessage(session, {

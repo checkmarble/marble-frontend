@@ -8,7 +8,7 @@ import { refineSearchSchema } from './search';
 export async function action({ request }: ActionFunctionArgs) {
   const { authService } = initServerServices(request);
 
-  const { sanctionCheck } = await authService.isAuthenticated(request, {
+  const { screening } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -18,7 +18,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (submission.success) {
     return {
       success: true,
-      data: await sanctionCheck.refineSanctionCheck(submission.data),
+      data: await screening.refineScreening(submission.data),
     };
   }
 

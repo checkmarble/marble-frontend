@@ -1,4 +1,4 @@
-import { AssociationEntity } from '@app-builder/models/sanction-check';
+import { AssociationEntity } from '@app-builder/models/screening';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { TopicTag } from '../TopicTag';

@@ -7,7 +7,7 @@ import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { nonPendingReviewStatuses } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
-import { SanctionCheckStatus } from '@app-builder/models/sanction-check';
+import { ScreeningStatus } from '@app-builder/models/screening';
 import { blockingReviewDocHref } from '@app-builder/services/documentation-href';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
@@ -87,11 +87,11 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export function ReviewDecisionModal({
   decisionId,
-  sanctionCheck,
+  screening,
   store,
 }: {
   decisionId: string;
-  sanctionCheck: { status: SanctionCheckStatus } | undefined;
+  screening: { status: ScreeningStatus } | undefined;
   store: Ariakit.DialogStore;
 }) {
   return (
@@ -99,7 +99,7 @@ export function ReviewDecisionModal({
       <ReviewDecisionContent
         setOpen={store.setOpen}
         decisionId={decisionId}
-        sanctionCheck={sanctionCheck}
+        screening={screening}
       />
     </ModalV2.Content>
   );
@@ -107,11 +107,11 @@ export function ReviewDecisionModal({
 
 function ReviewDecisionContent({
   decisionId,
-  sanctionCheck,
+  screening,
   setOpen,
 }: {
   decisionId: string;
-  sanctionCheck: { status: SanctionCheckStatus } | undefined;
+  screening: { status: ScreeningStatus } | undefined;
   setOpen: (open: boolean) => void;
 }) {
   const { t } = useTranslation(['common', 'cases']);
@@ -187,7 +187,7 @@ function ReviewDecisionContent({
                 //contentClassName="max-w-(--radix-select-trigger-width)"
               >
                 {nonPendingReviewStatuses.map((reviewStatus) => {
-                  const disabled = sanctionCheck && sanctionCheck.status !== 'no_hit';
+                  const disabled = screening && screening.status !== 'no_hit';
 
                   return (
                     <Select.DefaultItem key={reviewStatus} value={reviewStatus}>

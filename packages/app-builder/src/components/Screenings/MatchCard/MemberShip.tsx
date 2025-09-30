@@ -1,4 +1,4 @@
-import { MembershipMemberEntity } from '@app-builder/models/sanction-check';
+import { MembershipMemberEntity } from '@app-builder/models/screening';
 import { useTranslation } from 'react-i18next';
 
 export const MemberShip = ({

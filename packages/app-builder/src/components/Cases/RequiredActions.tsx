@@ -29,12 +29,12 @@ export const RequiredActions = ({
   const hasPendingScreening = decision.screenings.some((s) => s.status === 'in_review');
   const isPendingDecision =
     decision.reviewStatus === 'pending' && decision.outcome === 'block_and_review';
-  const isThereSanctionChecks = decision.screenings.length > 0;
+  const areThereScreenings = decision.screenings.length > 0;
 
-  return isPendingDecision || isThereSanctionChecks ? (
+  return isPendingDecision || areThereScreenings ? (
     <div className="bg-grey-98 group-hover:bg-grey-95 flex flex-col gap-2.5 rounded-sm p-4 transition-colors">
       <span className="text-grey-50 text-xs">{t('sanctions:required_actions.title')}</span>
-      {isThereSanctionChecks ? (
+      {areThereScreenings ? (
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2">
             <Checkbox disabled={true} size="small" checked={!hasPendingScreening} />
@@ -96,7 +96,7 @@ export const RequiredActions = ({
           <ReviewDecisionModal
             decisionId={decision.id}
             store={reviewDecisionModalStore}
-            sanctionCheck={decision.screenings[0]}
+            screening={decision.screenings[0]}
           />
         </div>
       ) : null}

@@ -30,10 +30,10 @@ import { type OrganizationRepository } from '@app-builder/repositories/Organizat
 import { type PartnerRepository } from '@app-builder/repositories/PartnerRepository';
 import { PersonalSettingsRepository } from '@app-builder/repositories/PersonalSettingsRepository';
 import { type RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
-import { type SanctionCheckRepository } from '@app-builder/repositories/SanctionCheckRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
-import { type ScenarioIterationSanctionRepository } from '@app-builder/repositories/ScenarioIterationSanctionRepository';
+import { type ScenarioIterationSanctionRepository } from '@app-builder/repositories/ScenarioIterationScreeningRepository';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
+import { type ScreeningRepository } from '@app-builder/repositories/ScreeningRepository';
 import { type TestRunRepository } from '@app-builder/repositories/TestRunRepository';
 import { type TransferAlertRepository } from '@app-builder/repositories/TransferAlertRepository';
 import { type TransferRepository } from '@app-builder/repositories/TransferRepository';
@@ -59,7 +59,7 @@ interface AuthenticatedInfo {
   editor: EditorRepository;
   decision: DecisionRepository;
   cases: CaseRepository;
-  sanctionCheck: SanctionCheckRepository;
+  screening: ScreeningRepository;
   customListsRepository: CustomListsRepository;
   dataModelRepository: DataModelRepository;
   apiKey: ApiKeyRepository;
@@ -132,7 +132,7 @@ interface MakeAuthenticationServerServiceArgs {
   getEditorRepository: (marbleCoreApiClient: MarbleCoreApi) => EditorRepository;
   getDecisionRepository: (marbleCoreApiClient: MarbleCoreApi) => DecisionRepository;
   getCaseRepository: (marbleCoreApiClient: MarbleCoreApi) => CaseRepository;
-  getSanctionCheckRepository: (marbleCoreApiClient: MarbleCoreApi) => SanctionCheckRepository;
+  getScreeningRepository: (marbleCoreApiClient: MarbleCoreApi) => ScreeningRepository;
   getCustomListRepository: (marbleCoreApiClient: MarbleCoreApi) => CustomListsRepository;
   getOrganizationRepository: (
     marbleCoreApiClient: MarbleCoreApi,
@@ -178,7 +178,7 @@ export function makeAuthenticationServerService({
   getEditorRepository,
   getDecisionRepository,
   getCaseRepository,
-  getSanctionCheckRepository,
+  getScreeningRepository,
   getCustomListRepository,
   getOrganizationRepository,
   getScenarioRepository,
@@ -372,7 +372,7 @@ export function makeAuthenticationServerService({
       editor: getEditorRepository(marbleCoreApiClient),
       decision: getDecisionRepository(marbleCoreApiClient),
       cases: getCaseRepository(marbleCoreApiClient),
-      sanctionCheck: getSanctionCheckRepository(marbleCoreApiClient),
+      screening: getScreeningRepository(marbleCoreApiClient),
       customListsRepository: getCustomListRepository(marbleCoreApiClient),
       scenario: getScenarioRepository(marbleCoreApiClient),
       scenarioIterationRuleRepository: getScenarioIterationRuleRepository(marbleCoreApiClient),

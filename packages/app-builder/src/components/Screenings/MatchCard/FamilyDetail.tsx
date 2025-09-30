@@ -1,4 +1,4 @@
-import { FamilyPersonEntity } from '@app-builder/models/sanction-check';
+import { FamilyPersonEntity } from '@app-builder/models/screening';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';

@@ -1,10 +1,10 @@
 import { Callout } from '@app-builder/components/Callout';
 import {
-  isSanctionCheckError,
-  isSanctionCheckReviewCompleted,
-  type SanctionCheck,
-  SanctionCheckSuccess,
-} from '@app-builder/models/sanction-check';
+  isScreeningError,
+  isScreeningReviewCompleted,
+  type Screening,
+  ScreeningSuccess,
+} from '@app-builder/models/screening';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filter } from 'remeda';
@@ -13,23 +13,20 @@ import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { MatchCard } from './MatchCard';
 import { RefineSearchModal } from './RefineSearchModal';
-import { SanctionCheckErrors } from './SanctionCheckErrors';
-import { sanctionsI18n } from './sanctions-i18n';
+import { ScreeningErrors } from './ScreeningErrors';
+import { sanctionsI18n } from './screenings-i18n';
 
 export type SanctionReviewSectionProps = {
-  sanctionCheck: SanctionCheck;
+  screening: Screening;
   onRefineSuccess: (screeningId: string) => void;
 };
 
-export function SanctionReviewSection({
-  sanctionCheck,
-  onRefineSuccess,
-}: SanctionReviewSectionProps) {
+export function SanctionReviewSection({ screening, onRefineSuccess }: SanctionReviewSectionProps) {
   const { t } = useTranslation(sanctionsI18n);
   const [isRefining, setIsRefining] = useState(false);
-  const matchesToReviewCount = filter(sanctionCheck.matches, (m) => m.status === 'pending').length;
-  const hasError = isSanctionCheckError(sanctionCheck);
-  const isRefinable = !isSanctionCheckReviewCompleted(sanctionCheck);
+  const matchesToReviewCount = filter(screening.matches, (m) => m.status === 'pending').length;
+  const hasError = isScreeningError(screening);
+  const isRefinable = !isScreeningReviewCompleted(screening);
 
   return (
     <div className="flex h-fit flex-2 flex-col gap-6">
@@ -39,7 +36,7 @@ export function SanctionReviewSection({
           <span className="text-grey-50 text-s">
             {t('sanctions:callout.needs_review', {
               toReview: matchesToReviewCount,
-              totalMatches: sanctionCheck.matches.length,
+              totalMatches: screening.matches.length,
             })}
           </span>
           {isRefinable ? (
@@ -49,11 +46,11 @@ export function SanctionReviewSection({
             </Button>
           ) : null}
         </div>
-        {match(sanctionCheck)
-          .when(isSanctionCheckError, (sc) => <SanctionCheckErrors sanctionCheck={sc} />)
+        {match(screening)
+          .when(isScreeningError, (sc) => <ScreeningErrors screening={sc} />)
           .when(
             (sc) => sc.status === 'in_review' && sc.partial,
-            (sc: SanctionCheckSuccess) => (
+            (sc: ScreeningSuccess) => (
               <div className="text-s bg-red-95 text-red-47 flex items-center gap-2 rounded-sm p-2">
                 <Icon icon="error" className="size-5 shrink-0" />
                 {t('sanctions:callout.needs_refine', {
@@ -69,19 +66,19 @@ export function SanctionReviewSection({
           .otherwise(() => null)}
       </div>
       <div className="flex flex-col gap-2">
-        {sanctionCheck.matches.map((sanctionMatch) => (
+        {screening.matches.map((screeningMatch) => (
           <MatchCard
-            key={sanctionMatch.id}
-            match={sanctionMatch}
+            key={screeningMatch.id}
+            match={screeningMatch}
             unreviewable={hasError}
-            defaultOpen={sanctionCheck.matches.length === 1}
+            defaultOpen={screening.matches.length === 1}
           />
         ))}
       </div>
       {isRefining ? (
         <RefineSearchModal
-          sanctionCheckId={sanctionCheck.id}
-          sanctionCheck={sanctionCheck}
+          screeningId={screening.id}
+          screening={screening}
           open={isRefining}
           onClose={() => setIsRefining(false)}
           onRefineSuccess={onRefineSuccess}

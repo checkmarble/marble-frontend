@@ -1,7 +1,4 @@
-import {
-  SCREENING_CATEGORY_COLORS,
-  SCREENING_TOPICS_MAP,
-} from '@app-builder/models/sanction-check';
+import { SCREENING_CATEGORY_COLORS, SCREENING_TOPICS_MAP } from '@app-builder/models/screening';
 import * as Sentry from '@sentry/remix';
 import { useTranslation } from 'react-i18next';
 import { cn } from 'ui-design-system';

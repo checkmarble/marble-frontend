@@ -1,5 +1,5 @@
 import { ExternalLink } from '@app-builder/components/ExternalLink';
-import { type OpenSanctionEntitySchema } from '@app-builder/models/sanction-check';
+import { type OpenSanctionEntitySchema } from '@app-builder/models/screening';
 
 export type PropertyDataType = 'string' | 'country' | 'url' | 'date' | 'wikidataId';
 export type PropertyForSchema<
@@ -122,7 +122,7 @@ export const schemaProperties = {
   ] as const,
 } satisfies Record<OpenSanctionEntitySchema, string[]>;
 
-export type SanctionCheckEntityProperty =
+export type ScreeningEntityProperty =
   (typeof schemaProperties)[keyof typeof schemaProperties][number];
 
 const schemaInheritence = {
@@ -214,11 +214,11 @@ const propertyMetadata = {
   programUrl: { type: 'url' },
   reason: { type: 'string' },
   listingDate: { type: 'date' },
-} satisfies Record<SanctionCheckEntityProperty, { type: PropertyDataType }>;
+} satisfies Record<ScreeningEntityProperty, { type: PropertyDataType }>;
 
 export function getSanctionEntityProperties(schema: OpenSanctionEntitySchema) {
   let currentSchema: OpenSanctionEntitySchema | null = schema;
-  const properties: SanctionCheckEntityProperty[] = [];
+  const properties: ScreeningEntityProperty[] = [];
 
   do {
     properties.push(...schemaProperties[currentSchema]);
@@ -239,7 +239,7 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
     property,
     value,
   }: {
-    property: SanctionCheckEntityProperty;
+    property: ScreeningEntityProperty;
     value: string;
   }) {
     const dataType = propertyMetadata[property].type;

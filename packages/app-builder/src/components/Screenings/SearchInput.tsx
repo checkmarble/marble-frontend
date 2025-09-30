@@ -1,10 +1,10 @@
-import { type SanctionCheckQuery } from '@app-builder/models/sanction-check';
+import { type ScreeningQuery } from '@app-builder/models/screening';
 import { Fragment } from 'react/jsx-runtime';
 import * as R from 'remeda';
 import { Separator } from 'ui-design-system';
 
 export type SearchInputProps = {
-  searchInput: SanctionCheckQuery[];
+  searchInput: ScreeningQuery[];
 };
 
 export const SearchInputDisplay = ({ searchInput }: SearchInputProps) => {

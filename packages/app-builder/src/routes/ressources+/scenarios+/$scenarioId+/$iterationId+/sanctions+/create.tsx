@@ -28,7 +28,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const iterationId = fromParams(params, 'iterationId');
 
   try {
-    const config = await scenarioIterationSanctionRepository.createSanctionCheckConfig({
+    const config = await scenarioIterationSanctionRepository.createScreeningConfig({
       iterationId,
       changes: {
         name: t('scenarios:create_sanction.default_name'),

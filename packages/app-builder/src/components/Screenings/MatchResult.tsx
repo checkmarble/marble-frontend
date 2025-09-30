@@ -1,11 +1,11 @@
-import { type SanctionCheckMatchPayload } from '@app-builder/models/sanction-check';
+import { type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { sanctionsI18n } from './sanctions-i18n';
+import { sanctionsI18n } from './screenings-i18n';
 
-export function MatchResult({ entity }: { entity: SanctionCheckMatchPayload }) {
+export function MatchResult({ entity }: { entity: ScreeningMatchPayload }) {
   const { t } = useTranslation(sanctionsI18n);
 
   const entitySchema = entity.schema.toLowerCase() as Lowercase<typeof entity.schema>;

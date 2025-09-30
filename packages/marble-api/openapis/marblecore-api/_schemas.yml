@@ -266,30 +266,30 @@ OpenSanctionsUpstreamDatasetFreshnessDto:
   $ref: sanction-checks.yml#/components/schemas/OpenSanctionsUpstreamDatasetFreshnessDto
 OpenSanctionsCatalogDto:
   $ref: sanction-checks.yml#/components/schemas/OpenSanctionsCatalogDto
-SanctionCheckConfigDto:
-  $ref: sanction-checks.yml#/components/schemas/SanctionCheckConfigDto
-SanctionCheckDto:
-  $ref: sanction-checks.yml#/components/schemas/SanctionCheckDto
-SanctionCheckSuccessDto:
-  $ref: sanction-checks.yml#/components/schemas/SanctionCheckSuccessDto
-SanctionCheckErrorDto:
-  $ref: sanction-checks.yml#/components/schemas/SanctionCheckErrorDto
-SanctionCheckFileDto:
-  $ref: sanction-checks.yml#/components/schemas/SanctionCheckFileDto
-SanctionCheckSanctionEntityDto:
-  $ref: sanction-checks.yml#/components/schemas/SanctionCheckSanctionEntityDto
-SanctionCheckMatchPayloadDto:
-  $ref: sanction-checks.yml#/components/schemas/SanctionCheckMatchPayloadDto
-SanctionCheckMatchDto:
-  $ref: sanction-checks.yml#/components/schemas/SanctionCheckMatchDto
-SanctionCheckEntityDto:
-  $ref: sanction-checks.yml#/components/schemas/SanctionCheckEntityDto
-SanctionCheckRequestDto:
-  $ref: sanction-checks.yml#/components/schemas/SanctionCheckRequestDto
-SanctionCheckRefineDto:
-  $ref: sanction-checks.yml#/components/schemas/SanctionCheckRefineDto
-UpdateSanctionCheckMatchDto:
-  $ref: sanction-checks.yml#/components/schemas/UpdateSanctionCheckMatchDto
+ScreeningConfigDto:
+  $ref: sanction-checks.yml#/components/schemas/ScreeningConfigDto
+ScreeningDto:
+  $ref: sanction-checks.yml#/components/schemas/ScreeningDto
+ScreeningSuccessDto:
+  $ref: sanction-checks.yml#/components/schemas/ScreeningSuccessDto
+ScreeningErrorDto:
+  $ref: sanction-checks.yml#/components/schemas/ScreeningErrorDto
+ScreeningFileDto:
+  $ref: sanction-checks.yml#/components/schemas/ScreeningFileDto
+ScreeningSanctionEntityDto:
+  $ref: sanction-checks.yml#/components/schemas/ScreeningSanctionEntityDto
+ScreeningMatchPayloadDto:
+  $ref: sanction-checks.yml#/components/schemas/ScreeningMatchPayloadDto
+ScreeningMatchDto:
+  $ref: sanction-checks.yml#/components/schemas/ScreeningMatchDto
+ScreeningEntityDto:
+  $ref: sanction-checks.yml#/components/schemas/ScreeningEntityDto
+ScreeningRequestDto:
+  $ref: sanction-checks.yml#/components/schemas/ScreeningRequestDto
+ScreeningRefineDto:
+  $ref: sanction-checks.yml#/components/schemas/ScreeningRefineDto
+updateScreeningMatchDto:
+  $ref: sanction-checks.yml#/components/schemas/updateScreeningMatchDto
 
 # SCENARIO PUBLICATIONS
 

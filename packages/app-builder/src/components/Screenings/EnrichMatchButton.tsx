@@ -1,4 +1,4 @@
-import { sanctionsI18n } from '@app-builder/components/Sanctions/sanctions-i18n';
+import { sanctionsI18n } from '@app-builder/components/Screenings/screenings-i18n';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useEnrichMatchMutation } from '@app-builder/queries/screening/enrich-match';
 import { useCallbackRef } from '@app-builder/utils/hooks';

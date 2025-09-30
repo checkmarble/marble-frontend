@@ -133,16 +133,16 @@ export function useCurrentScenarioIterationRule() {
 }
 
 export const useRuleGroups = () => {
-  const { rules, sanctionCheckConfigs } = useCurrentScenarioIteration();
+  const { rules, screeningConfigs } = useCurrentScenarioIteration();
 
   const configGroups = useMemo(
     () =>
       pipe(
-        sanctionCheckConfigs,
+        screeningConfigs,
         map((c) => c.ruleGroup),
         filter((group) => group !== undefined),
       ),
-    [sanctionCheckConfigs],
+    [screeningConfigs],
   );
 
   return useMemo(

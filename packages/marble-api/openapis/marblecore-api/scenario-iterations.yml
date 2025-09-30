@@ -303,7 +303,7 @@
     tags:
       - Scenario Iterations
     summary: Create a screening for a scenario iteration
-    operationId: createSanctionCheckConfig
+    operationId: createScreeningConfig
     parameters:
       - name: scenarioIterationId
         description: ID of the scenario iteration
@@ -313,24 +313,24 @@
           type: string
           format: uuid
     requestBody:
-      description: The SanctionCheckConfig to update
+      description: The screening config to update
       content:
         application/json:
           schema:
-            $ref: 'sanction-checks.yml#/components/schemas/SanctionCheckConfigDto'
+            $ref: 'sanction-checks.yml#/components/schemas/ScreeningConfigDto'
     responses:
       '200':
-        description: The upserted SanctionCheckConfig
+        description: The upserted screening config
         content:
           application/json:
             schema:
-              $ref: 'sanction-checks.yml#/components/schemas/SanctionCheckConfigDto'
-/scenario-iterations/{scenarioIterationId}/sanction-check/{sanctionCheckConfigId}:
+              $ref: 'sanction-checks.yml#/components/schemas/ScreeningConfigDto'
+/scenario-iterations/{scenarioIterationId}/sanction-check/{screeningConfigId}:
   delete:
     tags:
       - Scenario Iterations
     summary: Delete a screening for a scenario iteration
-    operationId: deleteSanctionCheckConfig
+    operationId: deleteScreeningConfig
     parameters:
       - name: scenarioIterationId
         description: ID of the scenario iteration
@@ -339,8 +339,8 @@
         schema:
           type: string
           format: uuid
-      - name: sanctionCheckConfigId
-        description: ID of the screening config to update
+      - name: screeningConfigId
+        description: ID of the screening config to delete
         in: path
         required: true
         schema:
@@ -359,7 +359,7 @@
     tags:
       - Scenario Iterations
     summary: Update a screening for a scenario iteration
-    operationId: upsertSanctionCheckConfig
+    operationId: upsertScreeningConfig
     parameters:
       - name: scenarioIterationId
         description: ID of the scenario iteration
@@ -368,7 +368,7 @@
         schema:
           type: string
           format: uuid
-      - name: sanctionCheckConfigId
+      - name: screeningConfigId
         description: ID of the screening config to update
         in: path
         required: true
@@ -376,18 +376,18 @@
           type: string
           format: uuid
     requestBody:
-      description: The SanctionCheckConfig to update
+      description: The screening config to update
       content:
         application/json:
           schema:
-            $ref: 'sanction-checks.yml#/components/schemas/SanctionCheckConfigDto'
+            $ref: 'sanction-checks.yml#/components/schemas/ScreeningConfigDto'
     responses:
       '200':
-        description: The upserted SanctionCheckConfig
+        description: The upserted screening config
         content:
           application/json:
             schema:
-              $ref: 'sanction-checks.yml#/components/schemas/SanctionCheckConfigDto'
+              $ref: 'sanction-checks.yml#/components/schemas/ScreeningConfigDto'
 
 components:
   schemas:
@@ -427,10 +427,10 @@ components:
               required:
                 - rules
               properties:
-                sanction_check_configs:
+                screening_configs:
                   type: array
                   items:
-                    $ref: 'sanction-checks.yml#/components/schemas/SanctionCheckConfigDto'
+                    $ref: 'sanction-checks.yml#/components/schemas/ScreeningConfigDto'
                 trigger_condition_ast_expression:
                   nullable: true
                   allOf:

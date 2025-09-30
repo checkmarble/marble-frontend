@@ -28,7 +28,7 @@ import { match } from 'ts-pattern';
 import { adaptClientObjectDetail, type ClientObjectDetail } from './data-model';
 import { adaptRuleExecutionDto, type ReviewStatus, RuleExecution } from './decision';
 import { type Outcome as DecisionOutcome } from './outcome';
-import { SanctionCheckStatus } from './sanction-check';
+import { ScreeningStatus } from './screening';
 
 export interface CaseContributor {
   id: string;
@@ -652,7 +652,7 @@ export type DetailedCaseDecision = {
   rules: RuleExecution[];
   screenings: {
     id: string;
-    status: SanctionCheckStatus;
+    status: ScreeningStatus;
     partial: boolean;
     count: number;
     name: string;

@@ -3,10 +3,10 @@ import { CasePivotValues } from '@app-builder/components/Cases/CasePivotValues';
 import { IngestedObjectDetailModal } from '@app-builder/components/Data/IngestedObjectDetailModal';
 import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { FormatData } from '@app-builder/components/FormatData';
-import { SanctionReviewSection } from '@app-builder/components/Sanctions/SanctionReview';
-import { sanctionsI18n } from '@app-builder/components/Sanctions/sanctions-i18n';
+import { SanctionReviewSection } from '@app-builder/components/Screenings/SreeningReview';
+import { sanctionsI18n } from '@app-builder/components/Screenings/screenings-i18n';
 import { usePivotValues } from '@app-builder/hooks/decisions/usePivotValues';
-import { type SanctionCheck, SanctionCheckQuery } from '@app-builder/models/sanction-check';
+import { type Screening, ScreeningQuery } from '@app-builder/models/screening';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { getRoute } from '@app-builder/utils/routes';
@@ -20,7 +20,7 @@ import { useCurrentCase } from './_layout';
 
 export default function CaseSanctionsHitsPage() {
   const { t } = useTranslation(casesI18n);
-  const { caseDetail, sanctionCheck, decision, dataModel, pivots } = useCurrentCase();
+  const { caseDetail, screening, decision, dataModel, pivots } = useCurrentCase();
   const pivotValues = usePivotValues(decision.pivotValues, pivots);
   const [objectLink, setObjectLink] = useState<{
     tableName: string;
@@ -32,7 +32,7 @@ export default function CaseSanctionsHitsPage() {
     <div className="bg-grey-100 border-grey-90 grid grid-cols-[max-content_2fr_1fr_repeat(3,max-content)] gap-x-6 gap-y-2 rounded-md border">
       <div className="col-span-full flex flex-row gap-12 p-4">
         <SanctionReviewSection
-          sanctionCheck={sanctionCheck}
+          screening={screening}
           onRefineSuccess={(screeningId) => {
             navigate(
               getRoute('/cases/:caseId/d/:decisionId/screenings/:screeningId', {
@@ -44,10 +44,10 @@ export default function CaseSanctionsHitsPage() {
           }}
         />
         <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
-          {sanctionCheck.request ? (
-            <SanctionCheckQueryDetail
-              request={sanctionCheck.request}
-              initialQuery={sanctionCheck.initialQuery}
+          {screening.request ? (
+            <ScreeningQueryDetail
+              request={screening.request}
+              initialQuery={screening.initialQuery}
             />
           ) : null}
           {pivotValues.length > 0 && (
@@ -89,7 +89,7 @@ export default function CaseSanctionsHitsPage() {
   );
 }
 
-const QueryObjectDetail = ({ query }: { query: SanctionCheckQuery }) => {
+const QueryObjectDetail = ({ query }: { query: ScreeningQuery }) => {
   const language = useFormatLanguage();
   const { t } = useTranslation(scenarioI18n);
   const parsed = useMemo(
@@ -118,12 +118,12 @@ const QueryObjectDetail = ({ query }: { query: SanctionCheckQuery }) => {
   );
 };
 
-function SanctionCheckQueryDetail({
+function ScreeningQueryDetail({
   request,
   initialQuery,
 }: {
-  request: NonNullable<SanctionCheck['request']>;
-  initialQuery: SanctionCheck['initialQuery'];
+  request: NonNullable<Screening['request']>;
+  initialQuery: Screening['initialQuery'];
 }) {
   const { t } = useTranslation(sanctionsI18n);
   const processedQueries = Object.values(request.queries);
@@ -142,13 +142,13 @@ function SanctionCheckQueryDetail({
       {hasInitialQuery && (
         <TabsContent value="initial">
           {initialQuery.map((q, i) => (
-            <QueryObjectDetail key={i} query={q as SanctionCheckQuery} />
+            <QueryObjectDetail key={i} query={q as ScreeningQuery} />
           ))}
         </TabsContent>
       )}
       <TabsContent value="preprocessed">
         {processedQueries.map((q, i) => (
-          <QueryObjectDetail key={i} query={q as SanctionCheckQuery} />
+          <QueryObjectDetail key={i} query={q as ScreeningQuery} />
         ))}
       </TabsContent>
     </Tabs>
