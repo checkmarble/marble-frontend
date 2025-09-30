@@ -317,14 +317,14 @@
       content:
         application/json:
           schema:
-            $ref: 'sanction-checks.yml#/components/schemas/ScreeningConfigDto'
+            $ref: 'screenings.yml#/components/schemas/ScreeningConfigDto'
     responses:
       '200':
         description: The upserted screening config
         content:
           application/json:
             schema:
-              $ref: 'sanction-checks.yml#/components/schemas/ScreeningConfigDto'
+              $ref: 'screenings.yml#/components/schemas/ScreeningConfigDto'
 /scenario-iterations/{scenarioIterationId}/sanction-check/{screeningConfigId}:
   delete:
     tags:
@@ -380,14 +380,14 @@
       content:
         application/json:
           schema:
-            $ref: 'sanction-checks.yml#/components/schemas/ScreeningConfigDto'
+            $ref: 'screenings.yml#/components/schemas/ScreeningConfigDto'
     responses:
       '200':
         description: The upserted screening config
         content:
           application/json:
             schema:
-              $ref: 'sanction-checks.yml#/components/schemas/ScreeningConfigDto'
+              $ref: 'screenings.yml#/components/schemas/ScreeningConfigDto'
 
 components:
   schemas:
@@ -430,7 +430,7 @@ components:
                 screening_configs:
                   type: array
                   items:
-                    $ref: 'sanction-checks.yml#/components/schemas/ScreeningConfigDto'
+                    $ref: 'screenings.yml#/components/schemas/ScreeningConfigDto'
                 trigger_condition_ast_expression:
                   nullable: true
                   allOf:

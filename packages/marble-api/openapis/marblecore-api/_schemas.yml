@@ -257,39 +257,39 @@ ScenarioValidationDto:
 # SCREENINGS
 
 OpenSanctionsCatalogDataset:
-  $ref: sanction-checks.yml#/components/schemas/OpenSanctionsCatalogDataset
+  $ref: screenings.yml#/components/schemas/OpenSanctionsCatalogDataset
 OpenSanctionsCatalogSection:
-  $ref: sanction-checks.yml#/components/schemas/OpenSanctionsCatalogSection
+  $ref: screenings.yml#/components/schemas/OpenSanctionsCatalogSection
 OpenSanctionsDatasetFreshnessDto:
-  $ref: sanction-checks.yml#/components/schemas/OpenSanctionsDatasetFreshnessDto
+  $ref: screenings.yml#/components/schemas/OpenSanctionsDatasetFreshnessDto
 OpenSanctionsUpstreamDatasetFreshnessDto:
-  $ref: sanction-checks.yml#/components/schemas/OpenSanctionsUpstreamDatasetFreshnessDto
+  $ref: screenings.yml#/components/schemas/OpenSanctionsUpstreamDatasetFreshnessDto
 OpenSanctionsCatalogDto:
-  $ref: sanction-checks.yml#/components/schemas/OpenSanctionsCatalogDto
+  $ref: screenings.yml#/components/schemas/OpenSanctionsCatalogDto
 ScreeningConfigDto:
-  $ref: sanction-checks.yml#/components/schemas/ScreeningConfigDto
+  $ref: screenings.yml#/components/schemas/ScreeningConfigDto
 ScreeningDto:
-  $ref: sanction-checks.yml#/components/schemas/ScreeningDto
+  $ref: screenings.yml#/components/schemas/ScreeningDto
 ScreeningSuccessDto:
-  $ref: sanction-checks.yml#/components/schemas/ScreeningSuccessDto
+  $ref: screenings.yml#/components/schemas/ScreeningSuccessDto
 ScreeningErrorDto:
-  $ref: sanction-checks.yml#/components/schemas/ScreeningErrorDto
+  $ref: screenings.yml#/components/schemas/ScreeningErrorDto
 ScreeningFileDto:
-  $ref: sanction-checks.yml#/components/schemas/ScreeningFileDto
+  $ref: screenings.yml#/components/schemas/ScreeningFileDto
 ScreeningSanctionEntityDto:
-  $ref: sanction-checks.yml#/components/schemas/ScreeningSanctionEntityDto
+  $ref: screenings.yml#/components/schemas/ScreeningSanctionEntityDto
 ScreeningMatchPayloadDto:
-  $ref: sanction-checks.yml#/components/schemas/ScreeningMatchPayloadDto
+  $ref: screenings.yml#/components/schemas/ScreeningMatchPayloadDto
 ScreeningMatchDto:
-  $ref: sanction-checks.yml#/components/schemas/ScreeningMatchDto
+  $ref: screenings.yml#/components/schemas/ScreeningMatchDto
 ScreeningEntityDto:
-  $ref: sanction-checks.yml#/components/schemas/ScreeningEntityDto
+  $ref: screenings.yml#/components/schemas/ScreeningEntityDto
 ScreeningRequestDto:
-  $ref: sanction-checks.yml#/components/schemas/ScreeningRequestDto
+  $ref: screenings.yml#/components/schemas/ScreeningRequestDto
 ScreeningRefineDto:
-  $ref: sanction-checks.yml#/components/schemas/ScreeningRefineDto
+  $ref: screenings.yml#/components/schemas/ScreeningRefineDto
 updateScreeningMatchDto:
-  $ref: sanction-checks.yml#/components/schemas/updateScreeningMatchDto
+  $ref: screenings.yml#/components/schemas/updateScreeningMatchDto
 
 # SCENARIO PUBLICATIONS
 

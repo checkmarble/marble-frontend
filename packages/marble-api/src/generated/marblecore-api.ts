@@ -3055,7 +3055,7 @@ export function listScreenings(decisionId: string, opts?: Oazapfts.RequestOpts) 
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScreeningDto[];
-    }>(`/sanction-checks${QS.query(QS.explode({
+    }>(`/screenings${QS.query(QS.explode({
         decision_id: decisionId
     }))}`, {
         ...opts
@@ -3068,7 +3068,7 @@ export function listOpenSanctionDatasets(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: OpenSanctionsCatalogDto;
-    }>("/sanction-checks/datasets", {
+    }>("/screenings/datasets", {
         ...opts
     }));
 }
@@ -3079,7 +3079,7 @@ export function listScreeningFiles(screeningId: string, opts?: Oazapfts.RequestO
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScreeningFileDto[];
-    }>(`/sanction-checks/${encodeURIComponent(screeningId)}/files`, {
+    }>(`/screenings/${encodeURIComponent(screeningId)}/files`, {
         ...opts
     }));
 }
@@ -3089,7 +3089,7 @@ export function listScreeningFiles(screeningId: string, opts?: Oazapfts.RequestO
 export function uploadScreeningFile(screeningId: string, body?: {
     file?: Blob;
 }, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchText(`/sanction-checks/${encodeURIComponent(screeningId)}/files`, oazapfts.multipart({
+    return oazapfts.ok(oazapfts.fetchText(`/screenings/${encodeURIComponent(screeningId)}/files`, oazapfts.multipart({
         ...opts,
         method: "POST",
         body
@@ -3108,7 +3108,7 @@ export function downloadScreeningFile(screeningId: string, fileId: string, opts?
     } | {
         status: 401;
         data: string;
-    }>(`/sanction-checks/${encodeURIComponent(screeningId)}/files/${encodeURIComponent(fileId)}`, {
+    }>(`/screenings/${encodeURIComponent(screeningId)}/files/${encodeURIComponent(fileId)}`, {
         ...opts
     }));
 }
@@ -3119,7 +3119,7 @@ export function updateScreeningMatch(matchId: string, updateScreeningMatchDto: U
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScreeningMatchDto;
-    }>(`/sanction-checks/matches/${encodeURIComponent(matchId)}`, oazapfts.json({
+    }>(`/screenings/matches/${encodeURIComponent(matchId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
         body: updateScreeningMatchDto
@@ -3138,7 +3138,7 @@ export function enrichScreeningMatch(matchId: string, opts?: Oazapfts.RequestOpt
     } | {
         status: 409;
         data: string;
-    }>(`/sanction-checks/matches/${encodeURIComponent(matchId)}/enrich`, {
+    }>(`/screenings/matches/${encodeURIComponent(matchId)}/enrich`, {
         ...opts,
         method: "POST"
     }));
@@ -3150,7 +3150,7 @@ export function searchScreeningMatches(screeningRefineDto?: ScreeningRefineDto, 
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScreeningMatchPayloadDto[];
-    }>("/sanction-checks/search", oazapfts.json({
+    }>("/screenings/search", oazapfts.json({
         ...opts,
         method: "POST",
         body: screeningRefineDto
@@ -3163,7 +3163,7 @@ export function refineScreening(screeningRefineDto?: ScreeningRefineDto, opts?: 
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScreeningDto;
-    }>("/sanction-checks/refine", oazapfts.json({
+    }>("/screenings/refine", oazapfts.json({
         ...opts,
         method: "POST",
         body: screeningRefineDto
@@ -3176,7 +3176,7 @@ export function getDatasetsFreshness(opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: OpenSanctionsDatasetFreshnessDto;
-    }>("/sanction-checks/freshness", {
+    }>("/screenings/freshness", {
         ...opts
     }));
 }
