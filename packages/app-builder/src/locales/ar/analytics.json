@@ -1,4 +1,6 @@
 {
+  "decisions.export.button": "تصدير",
+  "decisions.title": "القرارات",
   "decisions.tooltip.daily": "التاريخ: {{date}}",
   "decisions.tooltip.monthly": "الشهر: {{date}}",
   "decisions.tooltip.weekly": "الأسبوع: {{date}} <Br/>(الأسبوع {{weekNumber}})",
