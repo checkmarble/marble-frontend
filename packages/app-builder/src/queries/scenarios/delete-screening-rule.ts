@@ -4,10 +4,10 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useMutation } from '@tanstack/react-query';
 
 const endpoint = (scenarioId: string, iterationId: string, screeningId: string) =>
-  getRoute('/ressources/scenarios/:scenarioId/:iterationId/sanctions/:sanctionId/delete', {
+  getRoute('/ressources/scenarios/:scenarioId/:iterationId/screenings/:screeningId/delete', {
     scenarioId: fromUUIDtoSUUID(scenarioId),
     iterationId: fromUUIDtoSUUID(iterationId),
-    sanctionId: fromUUIDtoSUUID(screeningId),
+    screeningId: fromUUIDtoSUUID(screeningId),
   });
 
 export const useDeleteScreeningRuleMutation = (scenarioId: string, iterationId: string) => {

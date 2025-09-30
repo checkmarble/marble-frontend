@@ -73,16 +73,16 @@ export const handle = {
       const { t } = useTranslation(['common']);
       const iteration = useCurrentScenarioIteration();
       const editorMode = useEditorMode();
-      const configId = useParam('sanctionId');
+      const configId = useParam('screeningId');
 
       return (
         <div className="flex items-center gap-2">
           <BreadCrumbLink
             isLast={isLast}
-            to={getRoute('/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId', {
+            to={getRoute('/scenarios/:scenarioId/i/:iterationId/screenings/:screeningId', {
               scenarioId: fromUUIDtoSUUID(iteration.scenarioId),
               iterationId: fromUUIDtoSUUID(iteration.id),
-              sanctionId: fromUUIDtoSUUID(configId),
+              screeningId: fromUUIDtoSUUID(configId),
             })}
           >
             {iteration.screeningConfigs.find((c) => c.id === configId)?.name ?? t('common:no_name')}
@@ -177,7 +177,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   try {
     await scenarioIterationScreeningRepository.updateScreeningConfig({
       iterationId: fromParams(params, 'iterationId'),
-      screeningId: fromParams(params, 'sanctionId'),
+      screeningId: fromParams(params, 'screeningId'),
       changes: {
         ...data,
         counterPartyId: data.counterPartyId ?? NewUndefinedAstNode(),
@@ -230,7 +230,7 @@ export default function SanctionDetail() {
     | undefined;
   const scenario = useCurrentScenario();
   const ruleGroups = useRuleGroups();
-  const configId = useParam('sanctionId');
+  const configId = useParam('screeningId');
   const { id: iterationId, screeningConfigs } = useCurrentScenarioIteration();
   const descriptionRef = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);

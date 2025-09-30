@@ -38,10 +38,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
 
     return Response.json({
-      redirectTo: getRoute('/scenarios/:scenarioId/i/:iterationId/sanctions/:sanctionId', {
+      redirectTo: getRoute('/scenarios/:scenarioId/i/:iterationId/screenings/:screeningId', {
         scenarioId: fromUUIDtoSUUID(scenarioId),
         iterationId: fromUUIDtoSUUID(iterationId),
-        sanctionId: fromUUIDtoSUUID(config.id as string),
+        screeningId: fromUUIDtoSUUID(config.id as string),
       }),
     });
   } catch (error) {

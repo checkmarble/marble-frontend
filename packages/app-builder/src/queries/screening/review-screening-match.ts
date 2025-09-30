@@ -11,7 +11,7 @@ export const reviewScreeningMatchPayloadSchema = z.object({
 
 export type ReviewScreeningMatchPayload = z.infer<typeof reviewScreeningMatchPayloadSchema>;
 
-const endpoint = getRoute('/ressources/cases/review-sanction-match');
+const endpoint = getRoute('/ressources/cases/review-screening-match');
 
 export const useReviewScreeningMatchMutation = () => {
   return useMutation({

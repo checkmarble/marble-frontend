@@ -237,9 +237,9 @@ export const routes = [
                         "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/rules.$ruleId.tsx"
                       },
                       {
-                        "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/sanctions.$sanctionId",
-                        "path": "sanctions/:sanctionId",
-                        "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/sanctions.$sanctionId.tsx"
+                        "id": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/screenings.$screeningId",
+                        "path": "screenings/:screeningId",
+                        "file": "routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/screenings.$screeningId.tsx"
                       }
                     ]
                   },
@@ -512,9 +512,9 @@ export const routes = [
         "file": "routes/ressources+/cases+/review-decision.tsx"
       },
       {
-        "id": "routes/ressources+/cases+/review-sanction-match",
-        "path": "ressources/cases/review-sanction-match",
-        "file": "routes/ressources+/cases+/review-sanction-match.tsx"
+        "id": "routes/ressources+/cases+/review-screening-match",
+        "path": "ressources/cases/review-screening-match",
+        "file": "routes/ressources+/cases+/review-screening-match.tsx"
       },
       {
         "id": "routes/ressources+/cases+/sar+/download.$caseId.$reportId",
@@ -647,21 +647,6 @@ export const routes = [
         "file": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId.tsx"
       },
       {
-        "id": "routes/ressources+/sanction-check+/enrich-match.$matchId",
-        "path": "ressources/sanction-check/enrich-match/:matchId",
-        "file": "routes/ressources+/sanction-check+/enrich-match.$matchId.tsx"
-      },
-      {
-        "id": "routes/ressources+/sanction-check+/refine",
-        "path": "ressources/sanction-check/refine",
-        "file": "routes/ressources+/sanction-check+/refine.tsx"
-      },
-      {
-        "id": "routes/ressources+/sanction-check+/search",
-        "path": "ressources/sanction-check/search",
-        "file": "routes/ressources+/sanction-check+/search.tsx"
-      },
-      {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate",
         "path": "ressources/scenarios/:scenarioId/:iterationId/activate",
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate.tsx"
@@ -707,14 +692,14 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/rules+/duplicate.tsx"
       },
       {
-        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/$sanctionId+/delete",
-        "path": "ressources/scenarios/:scenarioId/:iterationId/sanctions/:sanctionId/delete",
-        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/$sanctionId+/delete.tsx"
+        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/screenings+/$screeningId+/delete",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/screenings/:screeningId/delete",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/screenings+/$screeningId+/delete.tsx"
       },
       {
-        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create",
-        "path": "ressources/scenarios/:scenarioId/:iterationId/sanctions/create",
-        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/sanctions+/create.tsx"
+        "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/screenings+/create",
+        "path": "ressources/scenarios/:scenarioId/:iterationId/screenings/create",
+        "file": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/screenings+/create.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/builder-options",
@@ -755,6 +740,21 @@ export const routes = [
         "id": "routes/ressources+/screenings+/download.$screeningId.$fileId",
         "path": "ressources/screenings/download/:screeningId/:fileId",
         "file": "routes/ressources+/screenings+/download.$screeningId.$fileId.tsx"
+      },
+      {
+        "id": "routes/ressources+/screenings+/enrich-match.$matchId",
+        "path": "ressources/screenings/enrich-match/:matchId",
+        "file": "routes/ressources+/screenings+/enrich-match.$matchId.tsx"
+      },
+      {
+        "id": "routes/ressources+/screenings+/refine",
+        "path": "ressources/screenings/refine",
+        "file": "routes/ressources+/screenings+/refine.tsx"
+      },
+      {
+        "id": "routes/ressources+/screenings+/search",
+        "path": "ressources/screenings/search",
+        "file": "routes/ressources+/screenings+/search.tsx"
       },
       {
         "id": "routes/ressources+/screenings+/upload.$screeningId",

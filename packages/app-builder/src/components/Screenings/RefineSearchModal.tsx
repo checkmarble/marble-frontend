@@ -1,11 +1,11 @@
 import { Callout } from '@app-builder/components/Callout';
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
 import { type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
-import { type action as refineAction } from '@app-builder/routes/ressources+/sanction-check+/refine';
+import { type action as refineAction } from '@app-builder/routes/ressources+/screenings+/refine';
 import {
   refineSearchSchema,
   type action as searchAction,
-} from '@app-builder/routes/ressources+/sanction-check+/search';
+} from '@app-builder/routes/ressources+/screenings+/search';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
@@ -69,7 +69,7 @@ export function RefineSearchModal({
 
       searchFetcher.submit(formDataRef.current, {
         method: 'POST',
-        action: getRoute('/ressources/sanction-check/search'),
+        action: getRoute('/ressources/screenings/search'),
       });
     },
   });
@@ -107,7 +107,7 @@ export function RefineSearchModal({
     if (formDataRef.current) {
       refineFetcher.submit(formDataRef.current, {
         method: 'POST',
-        action: getRoute('/ressources/sanction-check/refine'),
+        action: getRoute('/ressources/screenings/refine'),
       });
     }
   };
