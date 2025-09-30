@@ -3009,7 +3009,7 @@ export function createScreeningConfig(scenarioIterationId: string, screeningConf
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScreeningConfigDto;
-    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check`, oazapfts.json({
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/screening`, oazapfts.json({
         ...opts,
         method: "POST",
         body: screeningConfigDto
@@ -3030,7 +3030,7 @@ export function deleteScreeningConfig(scenarioIterationId: string, screeningConf
     } | {
         status: 404;
         data: string;
-    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check/${encodeURIComponent(screeningConfigId)}`, {
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/screening/${encodeURIComponent(screeningConfigId)}`, {
         ...opts,
         method: "DELETE"
     }));
@@ -3042,7 +3042,7 @@ export function upsertScreeningConfig(scenarioIterationId: string, screeningConf
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScreeningConfigDto;
-    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/sanction-check/${encodeURIComponent(screeningConfigId)}`, oazapfts.json({
+    }>(`/scenario-iterations/${encodeURIComponent(scenarioIterationId)}/screening/${encodeURIComponent(screeningConfigId)}`, oazapfts.json({
         ...opts,
         method: "PATCH",
         body: screeningConfigDto
