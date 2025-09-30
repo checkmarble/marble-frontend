@@ -32,7 +32,7 @@ export const FieldAstFormula = ({
   onBlur,
   defaultValue,
 }: {
-  type: 'rule' | 'sanction';
+  type: 'rule' | 'screening';
   astNode?: AstNode;
   onChange?: (node?: AstNode) => void;
   onBlur?: () => void;

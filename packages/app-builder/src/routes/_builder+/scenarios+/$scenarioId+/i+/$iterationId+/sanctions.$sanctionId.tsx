@@ -435,7 +435,7 @@ export default function SanctionDetail() {
                   >
                     {(field) => (
                       <FieldAstFormula
-                        type="sanction"
+                        type="screening"
                         scenarioId={scenario.id}
                         options={options}
                         onBlur={field.handleBlur}
