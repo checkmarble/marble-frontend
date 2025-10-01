@@ -75,7 +75,7 @@ function CaseRightPanelRoot({ children, ...props }: Omit<RightPanelRootProps, 'o
 const CaseRightPanelContent = () => {
   const { t } = useTranslation(casesI18n);
   return (
-    <RightPanel.Content className="flex max-w-md flex-col gap-4">
+    <RightPanel.Content className="flex max-w-md flex-col gap-4 z-10">
       <RightPanel.Title>
         <span className="w-full first-letter:capitalize">{t('cases:case.new_case')}</span>
         <RightPanel.Close />
