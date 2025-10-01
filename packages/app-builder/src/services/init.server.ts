@@ -60,6 +60,8 @@ export function initServerServices(request: Request) {
     baseUrl: getServerEnv('MARBLE_API_URL_SERVER'),
   });
 
+  console.log('[Request] proto header', request.headers.get('x-forwarded-proto'));
+
   const proto = request.headers.get('x-forwarded-proto') ?? new URL(request.url).protocol;
   const serverRepositories = makeServerRepositories({
     getFeatureAccessApiClientWithoutAuth: () => featureAccessApi,
