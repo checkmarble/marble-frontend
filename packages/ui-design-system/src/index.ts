@@ -6,6 +6,7 @@ export * from './Code/Code';
 export * from './Collapsible/Collapsible';
 export * from './Combobox/Combobox';
 export * from './Command/Command';
+export * from './FiltersBar/FiltersBar';
 export * from './HiddenInputs/HiddenInputs';
 export * from './Input/Input';
 export * from './Kbd/Kbd';
