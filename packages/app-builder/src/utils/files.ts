@@ -9,9 +9,8 @@ export const getCaseSuspiciousActivityReportFileUploadEndpointById = (
   reportId: string,
 ) => `/cases/${caseId}/sar/${reportId}/file`;
 
-// TODO: Still used ???
 export const getScreeningFileUploadEndpoint = (screeningId: string) =>
-  `/sanction-checks/${encodeURIComponent(screeningId)}/files`;
+  `/screenings/${encodeURIComponent(screeningId)}/files`;
 
 export const getClientAnnotationFileUploadEndpoint = (tableName: string, objectId: string) =>
   `/client_data/${tableName}/${objectId}/annotations/file`;
