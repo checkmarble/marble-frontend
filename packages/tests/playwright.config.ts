@@ -44,10 +44,8 @@ export default defineConfig({
       NODE_ENV: 'development',
       SESSION_SECRET: 'secret',
       SESSION_MAX_AGE: '43200',
-      MARBLE_APP_URL: 'http://localhost:3000',
-      MARBLE_API_URL_SERVER: `http://localhost:${process.env['API_PORT']}`,
-      MARBLE_API_URL_CLIENT: `http://localhost:${process.env['API_PORT']}`,
-      FIREBASE_AUTH_EMULATOR_HOST: `localhost:${process.env['FIREBASE_PORT']}`,
+      MARBLE_API_URL: `http://localhost:${process.env['API_PORT']}`,
+      TEST_FIREBASE_AUTH_EMULATOR_HOST: `localhost:${process.env['FIREBASE_PORT']}`,
     },
   },
 });

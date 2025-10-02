@@ -381,6 +381,11 @@ export const routes = [
         "file": "routes/ressources+/annotations+/download-file.$annotationId.$fileId.tsx"
       },
       {
+        "id": "routes/ressources+/app-config",
+        "path": "ressources/app-config",
+        "file": "routes/ressources+/app-config.tsx"
+      },
+      {
         "id": "routes/ressources+/auth+/logout",
         "path": "ressources/auth/logout",
         "file": "routes/ressources+/auth+/logout.tsx"

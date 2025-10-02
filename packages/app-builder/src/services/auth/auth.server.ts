@@ -229,7 +229,7 @@ export function makeAuthenticationServerService({
         {
           authorization: `Bearer ${idToken}`,
         },
-        { baseUrl: getServerEnv('MARBLE_API_URL_SERVER') },
+        { baseUrl: getServerEnv('MARBLE_API_URL') },
       );
 
       authSession.set('authToken', marbleToken);
@@ -272,7 +272,7 @@ export function makeAuthenticationServerService({
         {
           authorization: `Bearer ${idToken}`,
         },
-        { baseUrl: getServerEnv('MARBLE_API_URL_SERVER') },
+        { baseUrl: getServerEnv('MARBLE_API_URL') },
       );
 
       authSession.set('authToken', marbleToken);

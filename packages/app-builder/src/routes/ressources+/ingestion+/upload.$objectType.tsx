@@ -34,7 +34,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 
   return fetch(
-    `${getServerEnv('MARBLE_API_URL_SERVER')}${getIngestionDataBatchUploadEndpoint(objectType)}`,
+    `${getServerEnv('MARBLE_API_URL')}${getIngestionDataBatchUploadEndpoint(objectType)}`,
     {
       body: raw,
       method: 'POST',

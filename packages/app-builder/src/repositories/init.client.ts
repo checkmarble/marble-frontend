@@ -1,5 +1,5 @@
 import { type FirebaseClientWrapper } from '@app-builder/infra/firebase';
-
+import { AppConfig } from '@app-builder/models/app-config';
 import {
   type AuthenticationClientRepository,
   getAuthenticationClientRepository,
@@ -10,13 +10,15 @@ export interface ClientRepositories {
 }
 
 interface MakeClientRepositoriesArgs {
+  appConfig: AppConfig;
   firebaseClient: FirebaseClientWrapper;
 }
 
 export function makeClientRepositories({
+  appConfig,
   firebaseClient,
 }: MakeClientRepositoriesArgs): ClientRepositories {
   return {
-    authenticationClientRepository: getAuthenticationClientRepository(firebaseClient),
+    authenticationClientRepository: getAuthenticationClientRepository(appConfig, firebaseClient),
   };
 }

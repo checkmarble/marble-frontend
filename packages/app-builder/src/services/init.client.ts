@@ -21,7 +21,7 @@ export function useClientServices() {
   const appConfig = AppConfigContext.useValue();
   const clientServices = useMemo(() => {
     const firebaseClient = initializeFirebaseClient(appConfig.auth.firebase);
-    const clientRepositories = makeClientRepositories({ firebaseClient });
+    const clientRepositories = makeClientRepositories({ appConfig, firebaseClient });
     return makeClientServices(clientRepositories);
   }, [appConfig]);
 
