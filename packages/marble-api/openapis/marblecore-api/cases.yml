@@ -14,7 +14,7 @@
         schema:
           type: array
           items:
-            $ref: '#/components/schemas/CaseStatusDto'
+            $ref: "#/components/schemas/CaseStatusDto"
       - name: inbox_id[]
         description: inbox IDs used to filter the list
         in: query
@@ -24,8 +24,8 @@
           items:
             type: string
             format: uuid
-      - $ref: 'components.yml#/parameters/start_date'
-      - $ref: 'components.yml#/parameters/end_date'
+      - $ref: "components.yml#/parameters/start_date"
+      - $ref: "components.yml#/parameters/end_date"
       - name: sorting
         description: the field used to sort the items
         in: query
@@ -40,9 +40,9 @@
         required: false
         schema:
           type: string
-      - $ref: 'components.yml#/parameters/offset_id'
-      - $ref: 'components.yml#/parameters/limit'
-      - $ref: 'components.yml#/parameters/order'
+      - $ref: "components.yml#/parameters/offset_id"
+      - $ref: "components.yml#/parameters/limit"
+      - $ref: "components.yml#/parameters/order"
       - name: include_snoozed
         description: Include cases that are currently snoozed
         in: query
@@ -64,13 +64,13 @@
         schema:
           type: string
     responses:
-      '200':
+      "200":
         description: List of corresponding cases
         content:
           application/json:
             schema:
               allOf:
-                - $ref: 'components.yml#/schemas/Pagination'
+                - $ref: "components.yml#/schemas/Pagination"
                 - type: object
                   required:
                     - items
@@ -78,11 +78,11 @@
                     items:
                       type: array
                       items:
-                        $ref: '#/components/schemas/CaseDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
+                        $ref: "#/components/schemas/CaseDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
   post:
     tags:
       - Cases
@@ -91,14 +91,14 @@
     security:
       - bearerAuth: []
     requestBody:
-      description: 'Payload object used to create a case'
+      description: "Payload object used to create a case"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CreateCaseBodyDto'
+            $ref: "#/components/schemas/CreateCaseBodyDto"
       required: true
     responses:
-      '200':
+      "200":
         description: The case corresponding to the provided payload
         content:
           application/json:
@@ -108,11 +108,11 @@
                 - case
               properties:
                 case:
-                  $ref: '#/components/schemas/CaseDetailDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
+                  $ref: "#/components/schemas/CaseDetailDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
 /cases/{caseId}:
   get:
     tags:
@@ -130,18 +130,18 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: The case corresponding to the provided `caseId`
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CaseDetailDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+              $ref: "#/components/schemas/CaseDetailDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
   patch:
     tags:
       - Cases
@@ -158,14 +158,14 @@
           type: string
           format: uuid
     requestBody:
-      description: 'Updated case object'
+      description: "Updated case object"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UpdateCaseBodyDto'
+            $ref: "#/components/schemas/UpdateCaseBodyDto"
       required: true
     responses:
-      '200':
+      "200":
         description: The updated case corresponding to the provided `caseId`
         content:
           application/json:
@@ -175,13 +175,13 @@
                 - case
               properties:
                 case:
-                  $ref: '#/components/schemas/CaseDetailDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                  $ref: "#/components/schemas/CaseDetailDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /cases/{caseId}/next:
   get:
     tags:
@@ -199,18 +199,18 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: The case corresponding to the provided `caseId`
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NextCaseIdDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+              $ref: "#/components/schemas/NextCaseIdDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /cases/{caseId}/escalate:
   post:
     tags:
@@ -228,14 +228,14 @@
           type: string
           format: uuid
     responses:
-      '204':
+      "204":
         description: The case was successfully escalated
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /cases/{caseId}/assignee:
   post:
     tags:
@@ -257,19 +257,19 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/AssignCaseBodyDto'
+            $ref: "#/components/schemas/AssignCaseBodyDto"
       required: true
     responses:
-      '204':
+      "204":
         description: Case was successfully assigned to
-      '400':
-        $ref: 'components.yml#/responses/400'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
   delete:
     tags:
       - Cases
@@ -286,16 +286,16 @@
           type: string
           format: uuid
     responses:
-      '204':
+      "204":
         description: Case was successfully unassigned
-      '400':
-        $ref: 'components.yml#/responses/400'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /cases/{caseId}/decisions:
   get:
     tags:
@@ -324,7 +324,7 @@
           type: integer
           default: 50
     responses:
-      '200':
+      "200":
         description: The paginated list of decisions in the case
         content:
           application/json:
@@ -335,7 +335,7 @@
                 decisions:
                   type: array
                   items:
-                    $ref: '#/components/schemas/DetailedCaseDecisionDto'
+                    $ref: "#/components/schemas/DetailedCaseDecisionDto"
                 pagination:
                   type: object
                   required: [has_more next_cursor_id]
@@ -344,12 +344,12 @@
                       type: boolean
                     next_cursor_id:
                       type: string
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
   post:
     tags:
       - Cases
@@ -366,7 +366,7 @@
           type: string
           format: uuid
     requestBody:
-      description: 'Decision ids to add to case'
+      description: "Decision ids to add to case"
       content:
         application/json:
           schema:
@@ -382,7 +382,7 @@
                   format: uuid
       required: true
     responses:
-      '200':
+      "200":
         description: The updated case corresponding to the provided `caseId`
         content:
           application/json:
@@ -392,13 +392,13 @@
                 - case
               properties:
                 case:
-                  $ref: '#/components/schemas/CaseDetailDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                  $ref: "#/components/schemas/CaseDetailDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /cases/{caseId}/snooze:
   post:
     tags:
@@ -416,7 +416,7 @@
           type: string
           format: uuid
     requestBody:
-      description: 'Decision ids to add to case'
+      description: "Decision ids to add to case"
       content:
         application/json:
           schema:
@@ -429,16 +429,16 @@
                 format: date-time
       required: true
     responses:
-      '204':
+      "204":
         description: The case was snoozed
-      '400':
-        $ref: 'components.yml#/responses/400'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
   delete:
     tags:
       - Cases
@@ -455,16 +455,16 @@
           type: string
           format: uuid
     responses:
-      '204':
+      "204":
         description: The case was unsnoozed
-      '400':
-        $ref: 'components.yml#/responses/400'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /cases/{caseId}/comments:
   post:
     tags:
@@ -482,7 +482,7 @@
           type: string
           format: uuid
     requestBody:
-      description: 'Comment to add to the case'
+      description: "Comment to add to the case"
       required: true
       content:
         application/json:
@@ -494,7 +494,7 @@
               comment:
                 type: string
     responses:
-      '200':
+      "200":
         description: The updated case corresponding to the provided `caseId`
         content:
           application/json:
@@ -504,13 +504,13 @@
                 - case
               properties:
                 case:
-                  $ref: '#/components/schemas/CaseDetailDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                  $ref: "#/components/schemas/CaseDetailDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /cases/{caseId}/case_tags:
   post:
     tags:
@@ -543,7 +543,7 @@
                   type: string
                   format: uuid
     responses:
-      '200':
+      "200":
         description: The updated case corresponding to the provided `caseId`
         content:
           application/json:
@@ -553,13 +553,13 @@
                 - case
               properties:
                 case:
-                  $ref: '#/components/schemas/CaseDetailDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                  $ref: "#/components/schemas/CaseDetailDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /cases/{caseId}/pivot_objects:
   get:
     tags:
@@ -581,7 +581,7 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: Detailed values (depending on ingestion status) on
         content:
           application/json:
@@ -591,13 +591,13 @@
                 pivot_objects:
                   type: array
                   items:
-                    $ref: '#/components/schemas/PivotObjectDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                    $ref: "#/components/schemas/PivotObjectDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /cases/files/{caseFileId}/download_link:
   get:
     tags:
@@ -615,7 +615,7 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: Signed url to download the case file's content
         content:
           application/json:
@@ -628,10 +628,10 @@
                   type: string
                   format: uri
                   description: Signed url to download the case file's content
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
 /cases/review_decision:
   post:
     tags:
@@ -653,14 +653,14 @@
               review_comment:
                 type: string
               review_status:
-                $ref: '#/components/schemas/ReviewStatusDto'
+                $ref: "#/components/schemas/ReviewStatusDto"
             required:
               - decision_id
               - review_comment
               - review_status
       required: true
     responses:
-      '200':
+      "200":
         description: The updated case with the reviewed decision
         content:
           application/json:
@@ -670,13 +670,13 @@
                 - case
               properties:
                 case:
-                  $ref: '#/components/schemas/CaseDetailDto'
-      '400':
-        $ref: 'components.yml#/responses/400'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
+                  $ref: "#/components/schemas/CaseDetailDto"
+      "400":
+        $ref: "components.yml#/responses/400"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
 /cases/related/pivot/{pivotValue}:
   get:
     tags:
@@ -693,14 +693,14 @@
         schema:
           type: string
     responses:
-      '200':
+      "200":
         description: The list of the cases related to the pivot
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/CaseDto'
+                $ref: "#/components/schemas/CaseDto"
 /cases/{caseId}/review/enqueue:
   post:
     tags:
@@ -718,14 +718,14 @@
           type: string
           format: uuid
     responses:
-      '204':
+      "204":
         description: The review was enqueued
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 
 /cases/{caseId}/review:
   get:
@@ -744,7 +744,7 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: The most recent review output for a case
         content:
           application/json:
@@ -753,13 +753,13 @@
               minItems: 0
               maxItems: 1
               items:
-                $ref: '#/components/schemas/CaseReviewDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                $ref: "#/components/schemas/CaseReviewDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /cases/{caseId}/review/{reviewId}/feedback:
   put:
     tags:
@@ -793,21 +793,21 @@
               - reaction
             properties:
               reaction:
-                $ref: '#/components/schemas/CaseReviewFeedbackDto'
+                $ref: "#/components/schemas/CaseReviewFeedbackDto"
     responses:
-      '200':
+      "200":
         description: The updated case review
         content:
           application/json:
             schema:
               type: object
-              $ref: '#/components/schemas/CaseReviewDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+              $ref: "#/components/schemas/CaseReviewDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /cases/{caseId}/data_for_investigation:
   get:
     tags:
@@ -825,15 +825,15 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: The data of the case
         content:
           application/octet-stream:
             schema:
               type: string
               format: binary
-      '401':
-        $ref: 'components.yml#/responses/401'
+      "401":
+        $ref: "components.yml#/responses/401"
 /cases/{caseId}/enrich_kyc:
   post:
     tags:
@@ -851,7 +851,7 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: Analysis of the pivot object of the case with KYC data
         content:
           application/json:
@@ -861,26 +861,54 @@
                 results:
                   type: array
                   items:
-                    $ref: '#/components/schemas/KYCAnalysisDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
+                    $ref: "#/components/schemas/KYCAnalysisDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+/cases/mass-update:
+  post:
+    tags:
+      - Cases
+    summary: Mass update a list of cases
+    operationId: massUpdateCases
+    security:
+      - bearerAuth: []
+    requestBody:
+      description: Mass update definition
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/CaseMassUpdateChangeStatusDto"
+              - $ref: "#/components/schemas/CaseMassUpdateAssignDto"
+              - $ref: "#/components/schemas/CaseMassUpdateMoveToInboxDto"
+    responses:
+      "200":
+        description: Mass update was applied
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 
 components:
   schemas:
     ReviewStatusDto:
       type: string
-      enum: ['pending', 'approve', 'decline']
+      enum: ["pending", "approve", "decline"]
     CaseStatusDto:
       type: string
-      enum: ['pending', 'investigating', 'closed', 'waiting_for_action', 'snoozed']
+      enum:
+        ["pending", "investigating", "closed", "waiting_for_action", "snoozed"]
     CaseStatusForCaseEventDto:
       # Old statuses (open, discarded and resolved) are kept for backward compatibility with existing case events.
-      enum: ['pending', 'investigating', 'closed', 'open', 'discarded', 'resolved']
+      enum:
+        ["pending", "investigating", "closed", "open", "discarded", "resolved"]
     CaseOutcomeDto:
       type: string
-      enum: ['false_positive', 'valuable_alert', 'confirmed_risk', 'unset']
+      enum: ["false_positive", "valuable_alert", "confirmed_risk", "unset"]
     CaseDto:
       type: object
       required:
@@ -905,20 +933,20 @@ components:
         name:
           type: string
         status:
-          $ref: '#/components/schemas/CaseStatusDto'
+          $ref: "#/components/schemas/CaseStatusDto"
         outcome:
-          $ref: '#/components/schemas/CaseOutcomeDto'
+          $ref: "#/components/schemas/CaseOutcomeDto"
         inbox_id:
           type: string
           format: uuid
         contributors:
           type: array
           items:
-            $ref: '#/components/schemas/CaseContributorDto'
+            $ref: "#/components/schemas/CaseContributorDto"
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/CaseTagDto'
+            $ref: "#/components/schemas/CaseTagDto"
         snoozed_until:
           type: string
           format: date-time
@@ -927,7 +955,7 @@ components:
           format: uuid
     CaseDetailDto:
       allOf:
-        - $ref: '#/components/schemas/CaseDto'
+        - $ref: "#/components/schemas/CaseDto"
         - type: object
           required:
             - decisions
@@ -937,15 +965,15 @@ components:
             decisions:
               type: array
               items:
-                $ref: '#/components/schemas/CaseDecisionDto'
+                $ref: "#/components/schemas/CaseDecisionDto"
             events:
               type: array
               items:
-                $ref: '#/components/schemas/CaseEventDto'
+                $ref: "#/components/schemas/CaseEventDto"
             files:
               type: array
               items:
-                $ref: '#/components/schemas/CaseFileDto'
+                $ref: "#/components/schemas/CaseFileDto"
     CaseDecisionDto:
       type: object
       properties:
@@ -960,13 +988,13 @@ components:
         trigger_object_type:
           type: string
         outcome:
-          $ref: 'decisions.yml#/components/schemas/OutcomeDto'
+          $ref: "decisions.yml#/components/schemas/OutcomeDto"
         pivot_values:
           type: array
           items:
-            $ref: 'components.yml#/schemas/PivotValueDto'
+            $ref: "components.yml#/schemas/PivotValueDto"
         review_status:
-          $ref: '#/components/schemas/ReviewStatusDto'
+          $ref: "#/components/schemas/ReviewStatusDto"
         scenario:
           type: object
           required:
@@ -988,7 +1016,7 @@ components:
         score:
           type: integer
         error:
-          $ref: 'components.yml#/schemas/Error'
+          $ref: "components.yml#/schemas/Error"
       required:
         - id
         - created_at
@@ -1000,7 +1028,7 @@ components:
         - score
     DetailedCaseDecisionDto:
       allOf:
-        - $ref: '#/components/schemas/CaseDecisionDto'
+        - $ref: "#/components/schemas/CaseDecisionDto"
         - type: object
           required:
             - rules
@@ -1008,7 +1036,7 @@ components:
             rules:
               type: array
               items:
-                $ref: 'decisions.yml#/components/schemas/RuleExecutionDto'
+                $ref: "decisions.yml#/components/schemas/RuleExecutionDto"
             screenings:
               type: array
               items:
@@ -1025,7 +1053,7 @@ components:
                     format: uuid
                   status:
                     type: string
-                    enum: ['in_review', 'confirmed_hit']
+                    enum: ["in_review", "confirmed_hit"]
                   name:
                     type: string
                   partial:
@@ -1108,12 +1136,12 @@ components:
           type: string
           format: uuid
         status:
-          $ref: '#/components/schemas/CaseStatusDto'
+          $ref: "#/components/schemas/CaseStatusDto"
         outcome:
-          $ref: '#/components/schemas/CaseOutcomeDto'
+          $ref: "#/components/schemas/CaseOutcomeDto"
     AssignCaseBodyDto:
       type: object
-      required: ['user_id']
+      required: ["user_id"]
       properties:
         user_id:
           type: string
@@ -1139,25 +1167,25 @@ components:
       discriminator:
         propertyName: event_type
         mapping:
-          case_created: '#/components/schemas/CaseCreatedEventDto'
-          status_updated: '#/components/schemas/CaseStatusUpdatedEventDto'
-          outcome_updated: '#/components/schemas/CaseOutcomeUpdatedEventDto'
-          decision_added: '#/components/schemas/DecisionAddedEventDto'
-          comment_added: '#/components/schemas/CommentAddedEventDto'
-          name_updated: '#/components/schemas/NameUpdatedEventDto'
-          tags_updated: '#/components/schemas/CaseTagsUpdatedEventDto'
-          file_added: '#/components/schemas/FileAddedEventDto'
-          inbox_changed: '#/components/schemas/InboxChangedEventDto'
-          rule_snooze_created: '#/components/schemas/RuleSnoozeCreatedDto'
-          decision_reviewed: '#/components/schemas/DecisionReviewedEventDto'
-          case_snoozed: '#/components/schemas/CaseSnoozedDto'
-          case_unsnoozed: '#/components/schemas/CaseUnsnoozedDto'
-          case_assigned: '#/components/schemas/CaseAssignedEventDto'
-          sar_created: '#/components/schemas/SarCreatedEventDto'
-          sar_deleted: '#/components/schemas/SarDeletedEventDto'
-          sar_status_changed: '#/components/schemas/SarStatusChangedEventDto'
-          sar_file_uploaded: '#/components/schemas/SarFileUploadedEventDto'
-          entity_annotated: '#/components/schemas/EntityAnnotatedEventDto'
+          case_created: "#/components/schemas/CaseCreatedEventDto"
+          status_updated: "#/components/schemas/CaseStatusUpdatedEventDto"
+          outcome_updated: "#/components/schemas/CaseOutcomeUpdatedEventDto"
+          decision_added: "#/components/schemas/DecisionAddedEventDto"
+          comment_added: "#/components/schemas/CommentAddedEventDto"
+          name_updated: "#/components/schemas/NameUpdatedEventDto"
+          tags_updated: "#/components/schemas/CaseTagsUpdatedEventDto"
+          file_added: "#/components/schemas/FileAddedEventDto"
+          inbox_changed: "#/components/schemas/InboxChangedEventDto"
+          rule_snooze_created: "#/components/schemas/RuleSnoozeCreatedDto"
+          decision_reviewed: "#/components/schemas/DecisionReviewedEventDto"
+          case_snoozed: "#/components/schemas/CaseSnoozedDto"
+          case_unsnoozed: "#/components/schemas/CaseUnsnoozedDto"
+          case_assigned: "#/components/schemas/CaseAssignedEventDto"
+          sar_created: "#/components/schemas/SarCreatedEventDto"
+          sar_deleted: "#/components/schemas/SarDeletedEventDto"
+          sar_status_changed: "#/components/schemas/SarStatusChangedEventDto"
+          sar_file_uploaded: "#/components/schemas/SarFileUploadedEventDto"
+          entity_annotated: "#/components/schemas/EntityAnnotatedEventDto"
       required:
         - id
         - case_id
@@ -1177,7 +1205,7 @@ components:
           type: string
     CaseCreatedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           properties:
             user_id:
@@ -1185,33 +1213,33 @@ components:
               format: uuid
     CaseStatusUpdatedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - new_value
             - user_id
           properties:
             new_value:
-              $ref: '#/components/schemas/CaseStatusForCaseEventDto'
+              $ref: "#/components/schemas/CaseStatusForCaseEventDto"
             user_id:
               type: string
               format: uuid
     CaseOutcomeUpdatedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - new_value
             - user_id
           properties:
             new_value:
-              $ref: '#/components/schemas/CaseOutcomeDto'
+              $ref: "#/components/schemas/CaseOutcomeDto"
             user_id:
               type: string
               format: uuid
     CaseTagsUpdatedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - new_value
@@ -1225,7 +1253,7 @@ components:
               format: uuid
     DecisionAddedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           properties:
             user_id:
@@ -1233,7 +1261,7 @@ components:
               format: uuid
     CommentAddedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - additional_note
@@ -1246,7 +1274,7 @@ components:
               format: uuid
     NameUpdatedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - new_value
@@ -1259,7 +1287,7 @@ components:
               format: uuid
     FileAddedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - additional_note
@@ -1272,7 +1300,7 @@ components:
               format: uuid
     InboxChangedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - new_value
@@ -1286,7 +1314,7 @@ components:
               format: uuid
     CaseAssignedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - new_value
@@ -1300,7 +1328,7 @@ components:
               format: uuid
     SarCreatedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - resource_type
@@ -1318,7 +1346,7 @@ components:
               format: uuid
     SarDeletedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - resource_type
@@ -1336,7 +1364,7 @@ components:
               format: uuid
     SarStatusChangedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - resource_type
@@ -1358,7 +1386,7 @@ components:
               format: uuid
     SarFileUploadedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - resource_type
@@ -1380,7 +1408,7 @@ components:
               format: uuid
     EntityAnnotatedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - resource_type
@@ -1406,7 +1434,7 @@ components:
               type: string
     RuleSnoozeCreatedDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - additional_note
@@ -1426,7 +1454,7 @@ components:
               format: uuid
     DecisionReviewedEventDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - additional_note
@@ -1443,7 +1471,7 @@ components:
               type: string
               format: uuid
               description: The new review_status of the decision
-              enum: ['approve', 'decline']
+              enum: ["approve", "decline"]
             previous_value:
               type: string
               format: uuid
@@ -1454,13 +1482,13 @@ components:
               description: The id of the decision being reviewed
             resource_type:
               type: string
-              enum: ['decision']
+              enum: ["decision"]
             user_id:
               type: string
               format: uuid
     CaseSnoozedDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - new_value
@@ -1477,7 +1505,7 @@ components:
               format: date-time
     CaseUnsnoozedDto:
       allOf:
-        - $ref: '#/components/schemas/CaseEventDto'
+        - $ref: "#/components/schemas/CaseEventDto"
         - type: object
           required:
             - user_id
@@ -1508,7 +1536,7 @@ components:
           format: uuid
         pivot_type:
           type: string
-          enum: ['field', 'object']
+          enum: ["field", "object"]
         pivot_object_name:
           type: string
           description: Name of the entity on which the pivot value is found.
@@ -1519,7 +1547,7 @@ components:
           type: boolean
           description: Whether the pivot object has been ingested or not (only for pivot type "object")
         pivot_object_data:
-          $ref: 'ingestion.yml#/components/schemas/ClientObjectDetailDto'
+          $ref: "ingestion.yml#/components/schemas/ClientObjectDetailDto"
         number_of_decisions:
           type: integer
           description: Number of decisions that have this pivot value
@@ -1543,11 +1571,11 @@ components:
           type: string
           format: uuid
         reaction:
-          $ref: '#/components/schemas/CaseReviewFeedbackDto'
+          $ref: "#/components/schemas/CaseReviewFeedbackDto"
         version:
           type: string
         review:
-          $ref: '#/components/schemas/CaseReviewContentDto'
+          $ref: "#/components/schemas/CaseReviewContentDto"
     CaseReviewContentDto:
       allOf:
         - type: object
@@ -1563,7 +1591,7 @@ components:
             proofs:
               type: array
               items:
-                $ref: '#/components/schemas/CaseReviewProofDto'
+                $ref: "#/components/schemas/CaseReviewProofDto"
             thought:
               type: string
             pivot_enrichments:
@@ -1574,10 +1602,10 @@ components:
                 results:
                   type: array
                   items:
-                    $ref: '#/components/schemas/KYCAnalysisDto'
+                    $ref: "#/components/schemas/KYCAnalysisDto"
         - anyOf:
-          - $ref: '#/components/schemas/CaseReviewOkDto'
-          - $ref: '#/components/schemas/CaseReviewNotOkDto'
+            - $ref: "#/components/schemas/CaseReviewOkDto"
+            - $ref: "#/components/schemas/CaseReviewNotOkDto"
     CaseReviewProofDto:
       type: object
       required:
@@ -1595,7 +1623,7 @@ components:
         origin:
           type: string
           description: The origin of the object (organization data model object or internal object)
-          enum: ['data_model', 'internal']
+          enum: ["data_model", "internal"]
         reason:
           type: string
           description: The reason why the object was used to justify the review
@@ -1622,7 +1650,7 @@ components:
 
     CaseReviewFeedbackDto:
       type: string
-      enum: ['ok', 'ko']
+      enum: ["ok", "ko"]
       description: The reaction to the review, can be null if not set or removed
       nullable: true
 
@@ -1664,4 +1692,54 @@ components:
           type: array
           description: List of source used in the analysis. The analysis uses anchors ([1][2]), these anchors are used to justify the analysis and the index follow the list order
           items:
-            $ref: '#/components/schemas/GroundingCitationDto'
+            $ref: "#/components/schemas/GroundingCitationDto"
+    CaseMassUpdateChangeStatusDto:
+      type: object
+      required: [case_ids, action]
+      properties:
+        case_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        action:
+          type: string
+          enum: [close, reopen]
+    CaseMassUpdateAssignDto:
+      type: object
+      required: [case_ids, action, assign]
+      properties:
+        case_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        action:
+          type: string
+          enum: [assign]
+        assign:
+          type: object
+          required: [assignee_id]
+          properties:
+            assignee_id:
+              type: string
+              format: uuid
+    CaseMassUpdateMoveToInboxDto:
+      type: object
+      required: [case_ids, action, move_to_inbox]
+      properties:
+        case_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        action:
+          type: string
+          enum: [move_to_inbox]
+        move_to_inbox:
+          type: object
+          required: [inbox_id]
+          properties:
+            inbox_id:
+              type: string
+              format: uuid
