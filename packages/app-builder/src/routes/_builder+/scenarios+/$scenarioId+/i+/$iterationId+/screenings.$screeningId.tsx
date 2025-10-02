@@ -124,7 +124,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   };
 }
 
-const editSanctionFormSchema = z.object({
+const editScreeningFormSchema = z.object({
   id: z.string().nonempty(),
   name: z.string().nonempty(),
   description: z.string().optional(),
@@ -146,10 +146,10 @@ const editSanctionFormSchema = z.object({
     .optional(),
 });
 
-type EditSanctionForm = z.infer<typeof editSanctionFormSchema>;
+type EditScreeningForm = z.infer<typeof editScreeningFormSchema>;
 
 const clearQuery = (
-  entityType: EditSanctionForm['entityType'],
+  entityType: EditScreeningForm['entityType'],
   query: Record<string, unknown>,
 ): Record<string, unknown> =>
   entityType ? pick(query, SEARCH_ENTITIES[entityType].fields) : query;
@@ -170,7 +170,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }),
   ]);
 
-  const { error, data, success } = editSanctionFormSchema.safeParse(raw);
+  const { error, data, success } = editScreeningFormSchema.safeParse(raw);
 
   if (!success) return json({ status: 'error', errors: z.treeifyError(error) });
 
@@ -216,7 +216,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 }
 
-export default function SanctionDetail() {
+export default function ScreeningDetail() {
   const { t } = useTranslation(handle.i18n);
   const { databaseAccessors, payloadAccessors, dataModel, customLists, sections, entitlements } =
     useLoaderData<typeof loader>();
@@ -225,7 +225,7 @@ export default function SanctionDetail() {
   const lastData = data as
     | {
         status: 'error' | 'success';
-        errors?: ReturnType<z.ZodError<z.output<typeof editSanctionFormSchema>>['flatten']>;
+        errors?: ReturnType<z.ZodError<z.output<typeof editScreeningFormSchema>>['flatten']>;
       }
     | undefined;
   const scenario = useCurrentScenario();
@@ -249,7 +249,7 @@ export default function SanctionDetail() {
       }
     },
     validators: {
-      onSubmit: editSanctionFormSchema,
+      onSubmit: editScreeningFormSchema,
     },
     defaultValues: {
       id: screeningConfig?.id,
@@ -264,7 +264,7 @@ export default function SanctionDetail() {
       query: screeningConfig?.query,
       counterPartyId: screeningConfig?.counterPartyId,
       preprocessing: screeningConfig?.preprocessing,
-    } as EditSanctionForm,
+    } as EditScreeningForm,
   });
 
   const options: BuilderOptionsResource = {
@@ -322,8 +322,8 @@ export default function SanctionDetail() {
               <form.Field
                 name="name"
                 validators={{
-                  onChange: editSanctionFormSchema.shape.name,
-                  onBlur: editSanctionFormSchema.shape.name,
+                  onChange: editScreeningFormSchema.shape.name,
+                  onBlur: editScreeningFormSchema.shape.name,
                 }}
               >
                 {(field) => (
@@ -367,8 +367,8 @@ export default function SanctionDetail() {
                 <form.Field
                   name="description"
                   validators={{
-                    onChange: editSanctionFormSchema.shape.description,
-                    onBlur: editSanctionFormSchema.shape.description,
+                    onChange: editScreeningFormSchema.shape.description,
+                    onBlur: editScreeningFormSchema.shape.description,
                   }}
                 >
                   {(field) => (
@@ -389,8 +389,8 @@ export default function SanctionDetail() {
                 <form.Field
                   name="ruleGroup"
                   validators={{
-                    onChange: editSanctionFormSchema.shape.ruleGroup,
-                    onBlur: editSanctionFormSchema.shape.ruleGroup,
+                    onChange: editScreeningFormSchema.shape.ruleGroup,
+                    onBlur: editScreeningFormSchema.shape.ruleGroup,
                   }}
                 >
                   {(field) => (
@@ -429,8 +429,8 @@ export default function SanctionDetail() {
                   <form.Field
                     name="triggerRule"
                     validators={{
-                      onChange: editSanctionFormSchema.shape.triggerRule,
-                      onBlur: editSanctionFormSchema.shape.triggerRule,
+                      onChange: editScreeningFormSchema.shape.triggerRule,
+                      onBlur: editScreeningFormSchema.shape.triggerRule,
                     }}
                   >
                     {(field) => (
@@ -452,8 +452,8 @@ export default function SanctionDetail() {
                     <form.Field
                       name="threshold"
                       validators={{
-                        onChange: editSanctionFormSchema.shape.threshold,
-                        onBlur: editSanctionFormSchema.shape.threshold,
+                        onChange: editScreeningFormSchema.shape.threshold,
+                        onBlur: editScreeningFormSchema.shape.threshold,
                       }}
                     >
                       {(field) => (
