@@ -475,6 +475,24 @@ export type CaseReviewDto = {
     version: string;
     review: CaseReviewContentDto;
 };
+export type CaseMassUpdateChangeStatusDto = {
+    case_ids: string[];
+    action: "close" | "reopen";
+};
+export type CaseMassUpdateAssignDto = {
+    case_ids: string[];
+    action: "assign";
+    assign: {
+        assignee_id: string;
+    };
+};
+export type CaseMassUpdateMoveToInboxDto = {
+    case_ids: string[];
+    action: "move_to_inbox";
+    move_to_inbox: {
+        inbox_id: string;
+    };
+};
 export type SuspiciousActivityReportDto = {
     id: string;
     status: "pending" | "completed";
@@ -2017,6 +2035,27 @@ export function enrichPivotObjectOfCaseWithKyc(caseId: string, opts?: Oazapfts.R
         ...opts,
         method: "POST"
     }));
+}
+/**
+ * Mass update a list of cases
+ */
+export function massUpdateCases(body?: CaseMassUpdateChangeStatusDto | CaseMassUpdateAssignDto | CaseMassUpdateMoveToInboxDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/cases/mass-update", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
 }
 /**
  * List suspicious activity reports for a case

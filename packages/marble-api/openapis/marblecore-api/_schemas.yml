@@ -151,6 +151,12 @@ KYCAnalysisDto:
   $ref: cases.yml#/components/schemas/KYCAnalysisDto
 GroundingCitationDto:
   $ref: cases.yml#/components/schemas/GroundingCitationDto
+CaseMassUpdateChangeStatusDto:
+  $ref: cases.yml#/components/schemas/CaseMassUpdateChangeStatusDto
+CaseMassUpdateAssignDto:
+  $ref: cases.yml#/components/schemas/CaseMassUpdateAssignDto
+CaseMassUpdateMoveToInboxDto:
+  $ref: cases.yml#/components/schemas/CaseMassUpdateMoveToInboxDto
 
 # SUSPICIOUS ACTIVITY REPORTS
 
