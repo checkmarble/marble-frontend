@@ -33,10 +33,6 @@ const queryParamsSchema = z.object({
 
 export async function action({ params, request }: ActionFunctionArgs) {
   const { authService } = initServerServices(request);
-  await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-
   const { analytics } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });

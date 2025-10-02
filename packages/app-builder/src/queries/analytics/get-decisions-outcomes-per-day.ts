@@ -1,3 +1,4 @@
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import {
   DecisionOutcomesPerDayQuery,
   DecisionOutcomesPerPeriod,
@@ -12,6 +13,7 @@ export const useGetDecisionsOutcomesPerDay = ({
   compareDateRange,
   trigger = [],
 }: DecisionOutcomesPerDayQuery) => {
+  const navigate = useAgnosticNavigation();
   const endpoint = getRoute('/ressources/analytics/decisions_outcomes_per_day/:scenarioId', {
     scenarioId,
   });
@@ -47,7 +49,15 @@ export const useGetDecisionsOutcomesPerDay = ({
           trigger,
         }),
       });
-      return response.json() as Promise<DecisionOutcomesPerPeriod>;
+
+      const result = await response.json();
+
+      if (result.redirectTo) {
+        navigate(result.redirectTo);
+        return;
+      }
+
+      return result as Promise<DecisionOutcomesPerPeriod>;
     },
     placeholderData: keepPreviousData,
   });
