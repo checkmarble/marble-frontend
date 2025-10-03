@@ -9,7 +9,6 @@ export * from './Command/Command';
 export * from './contexts/FormattingContext';
 export * from './contexts/I18nContext';
 export * from './FiltersBar/FiltersBar';
-export * from './FiltersBar/FiltersProvider';
 export * from './HiddenInputs/HiddenInputs';
 export * from './Input/Input';
 export * from './Kbd/Kbd';

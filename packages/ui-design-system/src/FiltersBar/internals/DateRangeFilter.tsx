@@ -2,9 +2,9 @@ import { clsx } from 'clsx';
 import { add, type Locale, sub } from 'date-fns';
 import { createContext, useCallback, useContext } from 'react';
 import { Temporal } from 'temporal-polyfill';
-import { Calendar, type DateRange } from '../Calendar/Calendar';
-import { useFormatting } from '../contexts/FormattingContext';
-import { useI18n } from '../contexts/I18nContext';
+import { Calendar, type DateRange } from '../../Calendar/Calendar';
+import { useFormatting } from '../../contexts/FormattingContext';
+import { useI18n } from '../../contexts/I18nContext';
 
 interface StaticDateRangeFilterType {
   type: 'static';
@@ -17,7 +17,7 @@ interface DynamicDateRangeFilterType {
   fromNow: string;
 }
 
-type DateRangeFilterType =
+export type DateRangeFilterType =
   | StaticDateRangeFilterType
   | DynamicDateRangeFilterType
   | null

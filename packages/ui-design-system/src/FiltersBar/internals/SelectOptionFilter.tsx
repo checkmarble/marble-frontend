@@ -1,19 +1,25 @@
-import { useState } from 'react';
-import { Button } from '../Button/Button';
-import { MenuCommand } from '../MenuCommand/MenuCommand';
-import { SelectFilter as SelectFilterInterface } from './FiltersBar';
+import { useEffect, useState } from 'react';
+import { Button } from '../../Button/Button';
+import { MenuCommand } from '../../MenuCommand/MenuCommand';
+import { type SelectFilter } from '../types';
+import { useFiltersBarContext } from './FiltersBarContext';
 
-export function SelectFilter(props: SelectFilterInterface) {
-  const { options, onChange, placeholder, selectedValue } = props;
+export function SelectOptionFilter(props: SelectFilter) {
+  const { options, placeholder, selectedValue, name } = props;
+  const { emitSet } = useFiltersBarContext();
   const [internalSelectedValue, setInternalSelectedValue] = useState<string>(
     (selectedValue as string) || '',
   );
+
+  useEffect(() => {
+    setInternalSelectedValue((selectedValue as string) || '');
+  }, [selectedValue]);
 
   const hasOptions = options?.length ?? false;
 
   const handleSelect = (value: string) => {
     setInternalSelectedValue(value);
-    onChange?.(value);
+    emitSet(name, value);
   };
 
   const getOptionLabel = (option: string | { label: string; value: string }) => {
