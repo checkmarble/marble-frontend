@@ -5,6 +5,7 @@ import { type DecisionOutcomesPerPeriod } from '@app-builder/models/analytics';
 import { type Scenario } from '@app-builder/models/scenario';
 import { useGetDecisionsOutcomesPerDay } from '@app-builder/queries/analytics/get-decisions-outcomes-per-day';
 import { initServerServices } from '@app-builder/services/init.server';
+import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -16,7 +17,13 @@ import { type Namespace } from 'i18next';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UUID } from 'short-uuid';
-import { type DateRange, type Filter, FiltersBar } from 'ui-design-system';
+import {
+  type DateRange,
+  type Filter,
+  FiltersBar,
+  FormattingProvider,
+  I18nProvider,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import z from 'zod';
 
@@ -137,6 +144,7 @@ export default function Analytics() {
   const urlScenarioId = useParam('scenarioId');
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
+  const { t, i18n } = useTranslation();
 
   const [scenarioId, setScenarioId] = useState(urlScenarioId);
 
@@ -162,24 +170,26 @@ export default function Analytics() {
     }
   }
 
-  // Use default date range if no valid params found
-  const dateRange =
-    parsedDateRange?.range ||
-    (() => {
-      const now = new Date();
-      now.setUTCHours(0, 0, 0, 0);
-      const startDefault = subMonths(now, 1);
-      startDefault.setUTCHours(0, 0, 0, 0);
-      return { start: startDefault.toISOString(), end: now.toISOString() };
-    })();
-
-  const compareDateRange = parsedDateRange?.compareRange || null;
+  // Keep local state for ranges to avoid navigation on filter changes
+  const [dateRange, setDateRange] = useState(
+    parsedDateRange?.range ??
+      (() => {
+        const now = new Date();
+        now.setUTCHours(0, 0, 0, 0);
+        const startDefault = subMonths(now, 1);
+        startDefault.setUTCHours(0, 0, 0, 0);
+        return { start: startDefault.toISOString(), end: now.toISOString() };
+      })(),
+  );
+  const [compareDateRange, setCompareDateRange] = useState(
+    parsedDateRange?.compareRange ?? undefined,
+  );
 
   const { data: decisionsData } = useGetDecisionsOutcomesPerDay({
     scenarioId,
     scenarioVersion: undefined,
     dateRange,
-    compareDateRange: compareDateRange || undefined,
+    compareDateRange,
     trigger: [],
   });
 
@@ -193,15 +203,14 @@ export default function Analytics() {
 
     if (searchParamsChanged) {
       // Invalidate all analytics queries when search params change
-      queryClient.invalidateQueries({
-        queryKey: ['analytics', 'decisions'],
-      });
+      queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
     }
 
     prevSearchParamsRef.current = currentSearchParams;
   }, [searchParams, queryClient]);
 
-  const onScenariochange = (newScenarioId: string) => {
+  const onScenariochange = (newScenarioId: string | null) => {
+    if (!newScenarioId) return;
     const qs = searchParams.toString();
     const path = getRoute('/analytics/:scenarioId', { scenarioId: fromUUIDtoSUUID(newScenarioId) });
     const newUrl = qs ? `${path}?${qs}` : path;
@@ -230,35 +239,62 @@ export default function Analytics() {
       onChange: onScenariochange,
     },
     {
-      type: 'date-range-popover' as const,
+      type: 'date-range-popover',
       name: 'dateRange',
       placeholder: 'Select date range',
       selectedValue: {
         from: new Date(dateRange.start),
         to: new Date(dateRange.end),
       },
-      dateRange: {
-        from: new Date(dateRange.start),
-        to: new Date(dateRange.end),
-      },
-      onChange: (newRange: DateRange) => {
-        console.log('newRange', newRange);
-        // Update URL params when date range changes
+      onChange: (range: DateRange | null) => {
+        if (!range) return;
+        const nextRange = {
+          start: range.from?.toISOString() ?? dateRange.start,
+          end: range.to?.toISOString() ?? dateRange.end,
+        };
+        setDateRange(nextRange);
         const newParams = {
-          range: {
-            start: newRange.from?.toISOString() ?? dateRange.start,
-            end: newRange.to?.toISOString() ?? dateRange.end,
-          },
+          range: nextRange,
           compareRange: compareDateRange,
         };
         const url = new URL(window.location.href);
         url.searchParams.set('q', btoa(JSON.stringify(newParams)));
-        // window.history.replaceState({}, '', url.toString());
-        // Trigger a page reload to update the data
-        // window.location.reload();
+        window.history.replaceState({}, '', url.toString());
+        queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
+      },
+    },
+    {
+      type: 'date-range-popover' as const,
+      name: 'compareDateRange',
+      placeholder: 'Select comparison date range',
+      selectedValue: compareDateRange
+        ? {
+            from: new Date(compareDateRange.start),
+            to: new Date(compareDateRange.end),
+          }
+        : null,
+
+      onChange: (newRange: DateRange | null) => {
+        console.log('newRange', newRange);
+        if (!newRange || !newRange.from || !newRange.to) return;
+        // Update URL params when comparison date range changes
+        const nextCompare = {
+          start: newRange.from.toISOString(),
+          end: newRange.to.toISOString(),
+        };
+        setCompareDateRange(nextCompare as { start: string; end: string } | undefined);
+        const newParams = {
+          range: dateRange,
+          compareRange: nextCompare,
+        };
+        const url = new URL(window.location.href);
+        url.searchParams.set('q', btoa(JSON.stringify(newParams)));
+        window.history.replaceState({}, '', url.toString());
+        queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
       },
       onClear: () => {
-        // Clear date range filter
+        // Clear comparison date range filter
+        setCompareDateRange(undefined);
         const newParams = {
           range: dateRange,
           compareRange: null,
@@ -266,65 +302,34 @@ export default function Analytics() {
         const url = new URL(window.location.href);
         url.searchParams.set('q', btoa(JSON.stringify(newParams)));
         window.history.replaceState({}, '', url.toString());
-        // window.location.reload();
+        queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
       },
     },
   ];
 
-  // Add comparison date range filter if it exists
-  if (compareDateRange) {
-    filters.push({
-      type: 'date-range-popover' as const,
-      name: 'compareDateRange',
-      placeholder: 'Select comparison date range',
-      selectedValue: {
-        from: new Date(compareDateRange.start),
-        to: new Date(compareDateRange.end),
-      },
-      dateRange: {
-        from: new Date(compareDateRange.start),
-        to: new Date(compareDateRange.end),
-      },
-      onChange: (newRange: DateRange) => {
-        // Update URL params when comparison date range changes
-        const newParams = {
-          range: dateRange,
-          compareRange: {
-            start: newRange.from?.toISOString() ?? compareDateRange.start,
-            end: newRange.to?.toISOString() ?? compareDateRange.end,
-          },
-        };
-        const url = new URL(window.location.href);
-        url.searchParams.set('q', btoa(JSON.stringify(newParams)));
-        window.history.replaceState({}, '', url.toString());
-        window.location.reload();
-      },
-      onClear: () => {
-        // Clear comparison date range filter
-        const newParams = {
-          range: dateRange,
-          compareRange: null,
-        };
-        const url = new URL(window.location.href);
-        url.searchParams.set('q', btoa(JSON.stringify(newParams)));
-        window.history.replaceState({}, '', url.toString());
-        window.location.reload();
-      },
-    });
-  }
-
   return (
-    <div className="max-w-6xl p-v2-lg">
-      <div className="flex flex-row gap-v2-md mb-v2-lg">
-        <div className="flex flex-row gap-v2-sm items-center">
-          <FiltersBar filters={filters} />
+    <FormattingProvider
+      value={{
+        language: i18n.language,
+        formatDateTimeWithoutPresets: (d, opts) =>
+          formatDateTimeWithoutPresets(d, { language: i18n.language, ...(opts ?? {}) }),
+        formatDuration: (dur, lang) => formatDuration(dur, lang ?? i18n.language),
+      }}
+    >
+      <I18nProvider value={{ locale: i18n.language, t }}>
+        <div className="max-w-6xl p-v2-lg">
+          <div className="flex flex-row gap-v2-md mb-v2-lg">
+            <div className="flex flex-row gap-v2-sm items-center">
+              <FiltersBar filters={filters} />
+            </div>
+          </div>
+          <Decisions
+            data={decisionsData as DecisionOutcomesPerPeriod}
+            scenarioVersions={scenarioVersions}
+          />
         </div>
-      </div>
-      <Decisions
-        data={decisionsData as DecisionOutcomesPerPeriod}
-        scenarioVersions={scenarioVersions}
-      />
-    </div>
+      </I18nProvider>
+    </FormattingProvider>
   );
 }
 
