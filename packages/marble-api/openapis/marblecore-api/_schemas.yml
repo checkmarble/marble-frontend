@@ -253,6 +253,8 @@ ScenarioIterationRuleDto:
   $ref: scenario-iteration-rules.yml#/components/schemas/ScenarioIterationRuleDto
 ScenarioValidationDto:
   $ref: scenario-iterations.yml#/components/schemas/ScenarioValidationDto
+ScenarioIterationRuleAiDescriptionDto:
+  $ref: scenario-iteration-rules.yml#/components/schemas/ScenarioIterationRuleAiDescriptionDto
 
 # SCREENINGS
 
