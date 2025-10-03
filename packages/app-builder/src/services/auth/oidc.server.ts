@@ -23,11 +23,13 @@ export const makeOidcService = async (configRepository: AppConfigRepository) => 
     return oidcStrategy;
   }
 
+  const apiUrl = getServerEnv('MARBLE_API_URL');
   const config = await configRepository.getAppConfig();
 
   oidcStrategy = (await MarbleOidcStrategy.discover(
     config.auth.oidc.issuer,
     {
+      tokenEndpoint: `${apiUrl}/oidc/token`,
       cookie: 'oauth2',
       clientId: config.auth.oidc.client_id,
       clientSecret: getServerEnv('OIDC_CLIENT_SECRET'),

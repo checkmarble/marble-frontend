@@ -50,7 +50,6 @@ import { getRoute } from '../../utils/routes';
 import { captureUnexpectedRemixError } from '../monitoring';
 import { type SessionService } from './session.server';
 import { Tokens } from '@app-builder/routes/oidc+/auth';
-import { OIDCStrategy } from 'remix-auth-openid';
 import { AppConfigRepository } from '@app-builder/repositories/AppConfigRepository';
 import { MarbleOidcStrategy } from './oidc.server';
 
@@ -228,7 +227,7 @@ export function makeAuthenticationServerService({
                 {
                   authorization: `Bearer ${response.idToken()}`,
                 },
-                { baseUrl: getServerEnv('MARBLE_API_URL_SERVER') },
+                { baseUrl: getServerEnv('MARBLE_API_URL') },
               );
 
               authSession.set('authToken', marbleToken);
@@ -307,7 +306,7 @@ export function makeAuthenticationServerService({
         {
           authorization: `Bearer ${idToken}`,
         },
-        { baseUrl: getServerEnv('MARBLE_API_URL_SERVER') },
+        { baseUrl: getServerEnv('MARBLE_API_URL') },
       );
 
       authSession.set('authToken', marbleToken);
