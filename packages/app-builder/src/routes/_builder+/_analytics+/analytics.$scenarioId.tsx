@@ -1,18 +1,62 @@
 import { ErrorComponent } from '@app-builder/components';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
-import { Filters } from '@app-builder/components/Analytics/Filters';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
+import { type DecisionOutcomesPerPeriod } from '@app-builder/models/analytics';
+import { type Scenario } from '@app-builder/models/scenario';
+import { useGetDecisionsOutcomesPerDay } from '@app-builder/queries/analytics/get-decisions-outcomes-per-day';
 import { initServerServices } from '@app-builder/services/init.server';
+import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { useLoaderData, useNavigate, useRouteError, useSearchParams } from '@remix-run/react';
+import { useLoaderData, useRouteError, useSearchParams } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
+import { useQueryClient } from '@tanstack/react-query';
 import { subMonths } from 'date-fns';
 import { type Namespace } from 'i18next';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { UUID } from 'short-uuid';
+import {
+  type DateRange,
+  type Filter,
+  FiltersBar,
+  FiltersProvider,
+  FormattingProvider,
+  I18nProvider,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import z from 'zod';
+
+// Schema for parsing URL query parameters
+const qSchema = z
+  .object({
+    range: z.object({ start: z.iso.datetime(), end: z.iso.datetime() }),
+    compareRange: z
+      .object({ start: z.iso.datetime(), end: z.iso.datetime() })
+      .nullable()
+      .optional(),
+  })
+  .refine((v) => new Date(v.range.start).getTime() <= new Date(v.range.end).getTime(), {
+    message: 'Invalid date range payload',
+  })
+  .refine(
+    (v) => {
+      const cr = v.compareRange;
+      if (!cr) return true;
+      return new Date(cr.start).getTime() <= new Date(cr.end).getTime();
+    },
+    { message: 'Invalid compare range payload' },
+  );
+
+interface LoaderData {
+  scenarioId: string;
+  scenarios: Scenario[];
+  scenarioVersions: Array<{
+    version: number;
+    createdAt: string;
+  }>;
+}
 
 export const handle = {
   i18n: ['navigation', 'data'] satisfies Namespace,
@@ -30,9 +74,9 @@ export const handle = {
   ],
 };
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs): Promise<Response> {
   const { authService } = initServerServices(request);
-  const { analytics, scenario } = await authService.isAuthenticated(request, {
+  const { scenario } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -49,26 +93,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     url.searchParams.set('q', btoa(JSON.stringify(payload)));
     return redirect(url.toString());
   };
-
-  const qSchema = z
-    .object({
-      range: z.object({ start: z.iso.datetime(), end: z.iso.datetime() }),
-      compareRange: z
-        .object({ start: z.iso.datetime(), end: z.iso.datetime() })
-        .nullable()
-        .optional(),
-    })
-    .refine((v) => new Date(v.range.start).getTime() <= new Date(v.range.end).getTime(), {
-      message: 'Invalid date range payload',
-    })
-    .refine(
-      (v) => {
-        const cr = v.compareRange;
-        if (!cr) return true;
-        return new Date(cr.start).getTime() <= new Date(cr.end).getTime();
-      },
-      { message: 'Invalid compare range payload' },
-    );
 
   let parsed: {
     range: { start: string; end: string };
@@ -99,21 +123,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     });
   }
 
-  const [decisionsOutcomesPerDay, scenarios, scenarioIterations] = await Promise.all([
-    analytics.getDecisionOutcomesPerDay({
-      scenarioId,
-      dateRange: { start: parsed.range.start, end: parsed.range.end },
-      compareDateRange: parsed.compareRange
-        ? { start: parsed.compareRange.start, end: parsed.compareRange.end }
-        : undefined,
-      trigger: [],
-    }),
+  const [scenarios, scenarioIterations] = await Promise.all([
     scenario.listScenarios(),
     scenario.listScenarioIterations({ scenarioId }),
   ]);
 
   return Response.json({
-    decisionsOutcomesPerDay,
     scenarioId,
     scenarios,
     scenarioVersions: scenarioIterations
@@ -126,30 +141,200 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Analytics() {
-  const { decisionsOutcomesPerDay, scenarioId, scenarios, scenarioVersions } =
-    useLoaderData<typeof loader>();
-  const navigate = useNavigate();
+  const { scenarios, scenarioVersions } = useLoaderData<LoaderData>();
+  const urlScenarioId = useParam('scenarioId');
   const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
+  const { t, i18n } = useTranslation();
 
-  const onScenariochange = (scenarioId: string) => {
+  const [scenarioId, setScenarioId] = useState(urlScenarioId);
+
+  useEffect(() => {
+    setScenarioId(urlScenarioId);
+  }, [urlScenarioId]);
+
+  const q = searchParams.get('q');
+  let parsedDateRange: {
+    range: { start: string; end: string };
+    compareRange: { start: string; end: string } | null;
+  } | null = null;
+
+  if (q) {
+    try {
+      const obj = JSON.parse(atob(q));
+      const safe = qSchema.safeParse(obj);
+      if (safe.success) {
+        parsedDateRange = { range: safe.data.range, compareRange: safe.data.compareRange ?? null };
+      }
+    } catch {
+      // fallthrough: parsedDateRange stays null
+    }
+  }
+
+  // Keep local state for ranges to avoid navigation on filter changes
+  const [dateRange, setDateRange] = useState(
+    parsedDateRange?.range ??
+      (() => {
+        const now = new Date();
+        now.setUTCHours(0, 0, 0, 0);
+        const startDefault = subMonths(now, 1);
+        startDefault.setUTCHours(0, 0, 0, 0);
+        return { start: startDefault.toISOString(), end: now.toISOString() };
+      })(),
+  );
+  const [compareDateRange, setCompareDateRange] = useState(
+    parsedDateRange?.compareRange ?? undefined,
+  );
+
+  const { data: decisionsData } = useGetDecisionsOutcomesPerDay({
+    scenarioId,
+    scenarioVersion: undefined,
+    dateRange,
+    compareDateRange,
+    trigger: [],
+  });
+
+  // Invalidate query when URL search params change
+  const prevSearchParamsRef = useRef<string>('');
+
+  useEffect(() => {
+    const currentSearchParams = searchParams.toString();
+    const searchParamsChanged =
+      prevSearchParamsRef.current && prevSearchParamsRef.current !== currentSearchParams;
+
+    if (searchParamsChanged) {
+      // Invalidate all analytics queries when search params change
+      queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
+    }
+
+    prevSearchParamsRef.current = currentSearchParams;
+  }, [searchParams, queryClient]);
+
+  const onScenariochange = (newScenarioId: string | null) => {
+    if (!newScenarioId) return;
     const qs = searchParams.toString();
-    const path = getRoute('/analytics/:scenarioId', { scenarioId: fromUUIDtoSUUID(scenarioId) });
-    navigate(qs ? `${path}?${qs}` : path);
+    const path = getRoute('/analytics/:scenarioId', { scenarioId: fromUUIDtoSUUID(newScenarioId) });
+    const newUrl = qs ? `${path}?${qs}` : path;
+
+    window.history.replaceState({}, '', newUrl);
+    // window.history.pushState({}, '', newUrl);
+
+    setScenarioId(newScenarioId as UUID);
+
+    queryClient.invalidateQueries({
+      queryKey: ['analytics', 'decisions', newScenarioId],
+    });
   };
 
+  // Create filter configurations for FiltersBar
+  const filters: Filter[] = [
+    {
+      type: 'select' as const,
+      name: 'scenario',
+      placeholder: 'Select scenario',
+      options: scenarios.map((scenario) => ({
+        label: scenario.name,
+        value: scenario.id,
+      })),
+      selectedValue: scenarioId,
+      onChange: onScenariochange,
+      removable: false,
+    },
+    {
+      type: 'date-range-popover',
+      name: 'dateRange',
+      placeholder: 'Select date range',
+      selectedValue: {
+        from: new Date(dateRange.start),
+        to: new Date(dateRange.end),
+      },
+      onChange: (range: DateRange | null) => {
+        if (!range) return;
+        const nextRange = {
+          start: range.from?.toISOString() ?? dateRange.start,
+          end: range.to?.toISOString() ?? dateRange.end,
+        };
+        setDateRange(nextRange);
+        const newParams = {
+          range: nextRange,
+          compareRange: compareDateRange,
+        };
+        const url = new URL(window.location.href);
+        url.searchParams.set('q', btoa(JSON.stringify(newParams)));
+        window.history.replaceState({}, '', url.toString());
+        queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
+      },
+      removable: false,
+    },
+    {
+      type: 'date-range-popover' as const,
+      name: 'compareDateRange',
+      placeholder: 'Select comparison date range',
+      selectedValue: compareDateRange
+        ? {
+            from: new Date(compareDateRange.start),
+            to: new Date(compareDateRange.end),
+          }
+        : null,
+
+      onChange: (newRange: DateRange | null) => {
+        console.log('newRange', newRange);
+        if (!newRange || !newRange.from || !newRange.to) return;
+        // Update URL params when comparison date range changes
+        const nextCompare = {
+          start: newRange.from.toISOString(),
+          end: newRange.to.toISOString(),
+        };
+        setCompareDateRange(nextCompare as { start: string; end: string } | undefined);
+        const newParams = {
+          range: dateRange,
+          compareRange: nextCompare,
+        };
+        const url = new URL(window.location.href);
+        url.searchParams.set('q', btoa(JSON.stringify(newParams)));
+        window.history.replaceState({}, '', url.toString());
+        queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
+      },
+      onClear: () => {
+        // Clear comparison date range filter
+        setCompareDateRange(undefined);
+        const newParams = {
+          range: dateRange,
+          compareRange: null,
+        };
+        const url = new URL(window.location.href);
+        url.searchParams.set('q', btoa(JSON.stringify(newParams)));
+        window.history.replaceState({}, '', url.toString());
+        queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
+      },
+    },
+  ];
+
   return (
-    <div className="max-w-6xl p-v2-lg">
-      <div className="flex flex-row gap-v2-md mb-v2-lg">
-        <div className="flex flex-row gap-v2-sm items-center">
-          <Filters
-            scenarios={scenarios}
-            selectedScenarioId={scenarioId}
-            onSelectedScenarioIdChange={onScenariochange}
+    <FormattingProvider
+      value={{
+        language: i18n.language,
+        formatDateTimeWithoutPresets: (d, opts) =>
+          formatDateTimeWithoutPresets(d, { language: i18n.language, ...(opts ?? {}) }),
+        formatDuration: (dur, lang) => formatDuration(dur, lang ?? i18n.language),
+      }}
+    >
+      <I18nProvider value={{ locale: i18n.language, t }}>
+        <div className="max-w-6xl p-v2-lg">
+          <div className="flex flex-row gap-v2-md mb-v2-lg">
+            <div className="flex flex-row gap-v2-sm items-center">
+              <FiltersProvider>
+                <FiltersBar filters={filters} />
+              </FiltersProvider>
+            </div>
+          </div>
+          <Decisions
+            data={decisionsData as DecisionOutcomesPerPeriod}
+            scenarioVersions={scenarioVersions}
           />
         </div>
-      </div>
-      <Decisions data={decisionsOutcomesPerDay} scenarioVersions={scenarioVersions} />
-    </div>
+      </I18nProvider>
+    </FormattingProvider>
   );
 }
 
@@ -173,8 +358,7 @@ export function shouldRevalidate({
   currentUrl: URL;
   nextUrl: URL;
 }) {
-  // Revalidate when scenarioId or date range search params change
-  if (currentParams.scenarioId !== nextParams.scenarioId) return true;
-  const keys = ['q'] as const;
-  return keys.some((k) => currentUrl.searchParams.get(k) !== nextUrl.searchParams.get(k));
+  // Always return false to prevent full page re-renders
+  // Query invalidation is handled in the component's useEffect
+  return false;
 }
