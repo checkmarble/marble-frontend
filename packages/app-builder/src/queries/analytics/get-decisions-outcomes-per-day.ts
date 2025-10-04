@@ -10,7 +10,7 @@ export const useGetDecisionsOutcomesPerDay = ({
   scenarioId,
   scenarioVersion,
   dateRange,
-  compareDateRange,
+  compareDateRange = undefined,
   trigger = [],
 }: DecisionOutcomesPerDayQuery) => {
   const navigate = useAgnosticNavigation();

@@ -21,6 +21,7 @@ import {
   type DateRange,
   type Filter,
   FiltersBar,
+  FiltersProvider,
   FormattingProvider,
   I18nProvider,
 } from 'ui-design-system';
@@ -237,6 +238,7 @@ export default function Analytics() {
       })),
       selectedValue: scenarioId,
       onChange: onScenariochange,
+      removable: false,
     },
     {
       type: 'date-range-popover',
@@ -262,6 +264,7 @@ export default function Analytics() {
         window.history.replaceState({}, '', url.toString());
         queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
       },
+      removable: false,
     },
     {
       type: 'date-range-popover' as const,
@@ -320,7 +323,9 @@ export default function Analytics() {
         <div className="max-w-6xl p-v2-lg">
           <div className="flex flex-row gap-v2-md mb-v2-lg">
             <div className="flex flex-row gap-v2-sm items-center">
-              <FiltersBar filters={filters} />
+              <FiltersProvider>
+                <FiltersBar filters={filters} />
+              </FiltersProvider>
             </div>
           </div>
           <Decisions
