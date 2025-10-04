@@ -4,19 +4,20 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
 import { casesI18n } from '..';
-import { useCasesFiltersContext } from './CasesFiltersContext';
+import { useCasesFiltersContext, useCasesFiltersPartition } from './CasesFiltersContext';
 import { FilterDetail } from './FilterDetail';
 import { type CasesFilterName, getFilterIcon, getFilterTKey } from './filters';
 
 export function CasesFiltersMenu({
   children,
-  filterNames,
+  excludedFilters,
 }: {
   children: React.ReactNode;
-  filterNames: readonly CasesFilterName[];
+  excludedFilters?: readonly string[];
 }) {
   const { onCasesFilterClose } = useCasesFiltersContext();
   const [open, setOpen] = useState(false);
+  const { undefinedCasesFilterNames } = useCasesFiltersPartition(excludedFilters);
 
   const onOpenChange = useCallback(
     (state: boolean) => {
@@ -31,8 +32,8 @@ export function CasesFiltersMenu({
   return (
     <FiltersDropdownMenu.Root onOpenChange={onOpenChange} open={open}>
       <FiltersDropdownMenu.Trigger asChild>{children}</FiltersDropdownMenu.Trigger>
-      <FiltersDropdownMenu.Content>
-        <FilterContent filterNames={filterNames} close={() => setOpen(false)} />
+      <FiltersDropdownMenu.Content className="z-50">
+        <FilterContent filterNames={undefinedCasesFilterNames} close={() => setOpen(false)} />
       </FiltersDropdownMenu.Content>
     </FiltersDropdownMenu.Root>
   );

@@ -6,6 +6,7 @@ import {
 } from '@app-builder/components/Breadcrumbs';
 import { casesI18n } from '@app-builder/components/Cases';
 import { CreateInbox } from '@app-builder/components/Settings/Inboxes/CreateInbox';
+import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import {
   canAccessInboxesSettings,
   isCreateInboxAvailable,
@@ -20,7 +21,6 @@ import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { CtaClassName } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { MY_INBOX_ID } from './_index';
 
 export const handle = {
   i18n: ['navigation', 'cases', 'settings', ...casesI18n] satisfies Namespace,

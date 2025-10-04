@@ -1,17 +1,18 @@
 import { CaseStatusBadge, decisionsI18n, OutcomeBadge } from '@app-builder/components';
+import { SelectionProps } from '@app-builder/hooks/useListSelection';
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { getTableSelectColumn } from '@app-builder/utils/table-selection';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
-import { useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, Table, Tooltip, useTable } from 'ui-design-system';
-
+import { Table, Tooltip, useTable } from 'ui-design-system';
 import { Score } from './Score';
 
 type Column =
@@ -51,17 +52,7 @@ type DecisionsListProps = {
   className?: string;
   decisions: DecisionViewModel[];
   columnVisibility?: Partial<Record<Column, boolean>>;
-} & (WithSelectable | WithoutSelectable);
-
-type WithSelectable = {
-  selectable: true;
-  selectionProps: ReturnType<typeof useSelectedDecisionIds>['selectionProps'];
-};
-
-type WithoutSelectable = {
-  selectable?: false;
-  selectionProps?: ReturnType<typeof useSelectedDecisionIds>['selectionProps'];
-};
+} & SelectionProps<DecisionViewModel>;
 
 export function useSelectedDecisionIds() {
   const [rowSelection, setRowSelection] = useState({});
@@ -87,42 +78,14 @@ export function DecisionsList({
   columnVisibility,
   selectable,
   selectionProps,
+  tableProps,
 }: DecisionsListProps) {
   const { t } = useTranslation(decisionsI18n);
   const language = useFormatLanguage();
 
   const columns = useMemo(
     () => [
-      ...(selectable
-        ? [
-            columnHelper.display({
-              id: 'select',
-              header: ({ table }) => (
-                <Checkbox
-                  checked={
-                    table.getIsAllPageRowsSelected()
-                      ? true
-                      : table.getIsSomeRowsSelected()
-                        ? 'indeterminate'
-                        : false
-                  }
-                  onClick={table.getToggleAllRowsSelectedHandler()}
-                />
-              ),
-              cell: ({ row }) => (
-                <Checkbox
-                  checked={row.getIsSelected()}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    row.getToggleSelectedHandler()(e);
-                  }}
-                />
-              ),
-              size: 40,
-              enableResizing: false,
-            }),
-          ]
-        : []),
+      ...getTableSelectColumn(columnHelper, selectable),
 
       columnHelper.accessor((row) => row.createdAt, {
         id: 'created_at',
@@ -237,7 +200,7 @@ export function DecisionsList({
     getCoreRowModel: getCoreRowModel(),
     enableRowSelection: selectable,
     enableSorting: false,
-    onRowSelectionChange: selectionProps?.setRowSelection,
+    ...tableProps,
     rowLink: (decision) => (
       <Link
         to={getRoute('/decisions/:decisionId', {
@@ -246,11 +209,6 @@ export function DecisionsList({
       />
     ),
   });
-
-  useImperativeHandle(
-    selectionProps?.getSelectedDecisionsRef,
-    () => () => table.getSelectedRowModel().flatRows.map((row) => row.original),
-  );
 
   return (
     <Table.Container {...getContainerProps()} className={clsx('bg-grey-100', className)}>

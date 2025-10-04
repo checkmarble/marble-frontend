@@ -11,7 +11,7 @@ export const AddNewFilterButton = forwardRef<HTMLButtonElement, AddNewFilterButt
   function AddNewFilterButton(props, ref) {
     const { t } = useTranslation(filtersI18n);
     return (
-      <Button variant="tertiary" ref={ref} {...props}>
+      <Button variant="secondary" ref={ref} {...props}>
         <Icon icon="plus" className="size-5" />
         <span className="line-clamp-1 capitalize">{t('filters:new_filter')}</span>
       </Button>

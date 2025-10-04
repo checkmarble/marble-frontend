@@ -9,11 +9,9 @@ import * as React from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useCallbackRef<T extends (...args: any[]) => any>(callback: T | undefined): T {
-  const callbackRef = React.useRef(callback);
+  const callbackRef = React.useRef<T | undefined>();
 
-  React.useEffect(() => {
-    callbackRef.current = callback;
-  });
+  callbackRef.current = callback;
 
   // https://github.com/facebook/react/issues/19240
   return React.useMemo(() => ((...args) => callbackRef.current?.(...args)) as T, []);

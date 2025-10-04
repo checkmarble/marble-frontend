@@ -13,6 +13,7 @@ import { CaseDetails } from '@app-builder/components/Cases/CaseDetails';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import {
   type DataModelWithTableOptions,
   isNotFoundHttpError,
@@ -56,7 +57,6 @@ import {
   TabsTrigger,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { MY_INBOX_ID } from '../_index';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const {

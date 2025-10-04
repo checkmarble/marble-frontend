@@ -15,7 +15,7 @@ export const ClearAllFiltersLink = forwardRef<
   const { t } = useTranslation(filtersI18n);
   return (
     <Link
-      className={clsx(CtaClassName({ variant: 'tertiary', color: 'grey' }), 'shrink-0')}
+      className={clsx(CtaClassName({ variant: 'secondary', color: 'grey' }), 'shrink-0')}
       ref={ref}
       {...props}
     >
@@ -32,7 +32,7 @@ export const ClearAllFiltersButton = forwardRef<
   const { t } = useTranslation(filtersI18n);
   return (
     <button
-      className={clsx(CtaClassName({ variant: 'tertiary', color: 'grey' }), 'shrink-0')}
+      className={clsx(CtaClassName({ variant: 'secondary', color: 'grey' }), 'shrink-0')}
       ref={ref}
       {...props}
     >

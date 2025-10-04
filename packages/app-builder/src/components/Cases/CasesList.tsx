@@ -1,3 +1,4 @@
+import { SelectionProps } from '@app-builder/hooks/useListSelection';
 import { type Case } from '@app-builder/models/cases';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import {
@@ -7,6 +8,7 @@ import {
 } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
+import { getTableSelectColumn } from '@app-builder/utils/table-selection';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel, type SortingState } from '@tanstack/react-table';
 import clsx from 'clsx';
@@ -14,7 +16,6 @@ import { differenceInDays } from 'date-fns/differenceInDays';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, Tooltip, useTable } from 'ui-design-system';
-
 import { CaseAssignedTo } from './CaseAssignedTo';
 import { CaseContributors } from './CaseContributors';
 import { CaseStatusBadge } from './CaseStatus';
@@ -23,17 +24,22 @@ import { casesI18n } from './cases-i18n';
 
 const columnHelper = createColumnHelper<Case>();
 
+type CasesListProps = {
+  cases: Case[];
+  initSorting: SortingState;
+  onSortingChange: (state: SortingState) => void;
+  className?: string;
+} & SelectionProps<Case>;
+
 export function CasesList({
   className,
   initSorting,
   onSortingChange,
   cases,
-}: {
-  cases: Case[];
-  initSorting: SortingState;
-  onSortingChange: (state: SortingState) => void;
-  className?: string;
-}) {
+  selectable,
+  selectionProps,
+  tableProps,
+}: CasesListProps) {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
   const [sorting, setSorting] = useState<SortingState>(initSorting);
@@ -45,6 +51,8 @@ export function CasesList({
 
   const columns = useMemo(
     () => [
+      ...getTableSelectColumn(columnHelper, selectable),
+
       columnHelper.accessor(({ status }) => ({ status }), {
         id: 'status',
         header: t('cases:case.status'),
@@ -136,7 +144,7 @@ export function CasesList({
         cell: ({ getValue }) => <CaseContributors contributors={getValue()} />,
       }),
     ],
-    [language, t, orgTags],
+    [language, t, orgTags, selectable],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
@@ -144,10 +152,15 @@ export function CasesList({
     columns,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
-    state: { sorting },
+    state: {
+      sorting,
+      rowSelection: selectionProps?.rowSelection,
+    },
     manualSorting: true,
     enableSortingRemoval: false,
     onSortingChange: setSorting,
+    enableRowSelection: selectable,
+    ...tableProps,
     rowLink: ({ id }) => <Link to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(id) })} />,
   });
 

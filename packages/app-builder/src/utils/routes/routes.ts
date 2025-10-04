@@ -496,6 +496,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/get-inboxes.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/mass-update",
+        "path": "ressources/cases/mass-update",
+        "file": "routes/ressources+/cases+/mass-update.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/open-case",
         "path": "ressources/cases/open-case",
         "file": "routes/ressources+/cases+/open-case.tsx"
