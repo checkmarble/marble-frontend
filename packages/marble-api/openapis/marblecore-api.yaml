@@ -359,6 +359,8 @@ paths:
 
   /analytics/query/decision_outcomes_per_day:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1query~1decision_outcomes_per_day
+  /analytics/available-filters:
+    $ref: ./marblecore-api/analytics.yml#/~1analytics~1available-filters
 
 components:
   securitySchemes:

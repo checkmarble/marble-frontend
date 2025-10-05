@@ -1398,6 +1398,16 @@ export type DecisionOutcomesPerDayResponseDto = {
     decline: number;
     review: number;
 };
+export type AvailableFiltersRequestDto = {
+    scenario_id: string;
+    start: string;
+    end: string;
+};
+export type AvailableFiltersResponseDto = {
+    name: string;
+    "type": string;
+    source: "trigger_object";
+}[];
 /**
  * Get an access token
  */
@@ -4908,5 +4918,18 @@ export function getDecisionOutcomesPerDay(decisionOutcomesPerDayQueryDto: Decisi
         ...opts,
         method: "POST",
         body: decisionOutcomesPerDayQueryDto
+    })));
+}
+/**
+ * Get available filters
+ */
+export function getAvailableFilters(availableFiltersRequestDto: AvailableFiltersRequestDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: AvailableFiltersResponseDto;
+    }>("/analytics/available-filters", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: availableFiltersRequestDto
     })));
 }
