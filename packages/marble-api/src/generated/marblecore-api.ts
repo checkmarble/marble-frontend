@@ -952,6 +952,10 @@ export type OpenSanctionsDatasetFreshnessDto = {
     version: string;
     up_to_date: boolean;
 };
+export type ScenarioIterationRuleAiDescriptionDto = {
+    /** The AI description for the scenario iteration rule */
+    description: string;
+};
 export type UpdateScenarioIterationRuleBodyDto = {
     display_order?: number;
     name?: string;
@@ -959,10 +963,6 @@ export type UpdateScenarioIterationRuleBodyDto = {
     rule_group?: string;
     formula_ast_expression?: (NodeDto) | null;
     score_modifier?: number;
-};
-export type ScenarioIterationRuleAiDescriptionDto = {
-    /** The AI description for the scenario iteration rule */
-    description: string;
 };
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
@@ -3230,6 +3230,21 @@ export function createScenarioIterationRule(createScenarioIterationRuleBodyDto: 
         ...opts,
         method: "POST",
         body: createScenarioIterationRuleBodyDto
+    })));
+}
+/**
+ * Generate AI description for an AST expression
+ */
+export function generateAiDescriptionForAstExpression(body: {
+    ast_expression: NodeDto;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioIterationRuleAiDescriptionDto;
+    }>("/scenario-iteration-rules/ai-description", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
     })));
 }
 /**
