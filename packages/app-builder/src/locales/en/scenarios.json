@@ -392,7 +392,7 @@
   "testrun.filters.test_version": "Test version",
   "testrun.filters.version": "Version",
   "testrun.home": "List of comparisons",
-  "testrun.no_decisisons": "No decisions recorded yet",
+  "testrun.no_decisions": "No decisions recorded yet",
   "testrun.no_rules": "No rules already triggered",
   "testrun.not_allowed": "No live version or alternative version available",
   "testrun.nudge": "Compare a live version with a new one or an older one without compromising live data",

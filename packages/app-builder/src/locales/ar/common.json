@@ -47,7 +47,6 @@
   "false": "خطأ",
   "from": "من {{input}}",
   "from_to": "من <Date>{{start_date}}</Date> إلى <Date>{{end_date}}</Date>",
-  "github_banner": "هل أعجبك تطبيق ماربل؟ \nادعم مجهود المصدر المفتوح من خلال إعطائنا نجمة",
   "global_error": "حدث خطأ ما.",
   "go_back": "العودة للخلف",
   "help_center.chat_with_us": "تحدث معنا",
