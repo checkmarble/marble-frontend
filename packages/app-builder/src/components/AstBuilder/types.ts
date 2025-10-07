@@ -24,6 +24,7 @@ export type AstBuilderRootProps<NodeType extends AstNode = AstNode> = {
   validation?: FlatAstValidation;
   onStoreChange?: (nodeStore: InferSharpApi<typeof AstBuilderNodeSharpFactory> | null) => void;
   onValidationUpdate?: (validation: FlatAstValidation) => void;
+  onUpdate?: (node: AstNode) => void;
   returnType?: ReturnValueType;
   coerceDataType?: AstBuilderOperandProps['coerceDataType'];
   optionsDataType?: AstBuilderOperandProps['optionsDataType'];

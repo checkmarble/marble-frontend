@@ -25,10 +25,12 @@ export function EditionAstBuilderAndRoot(props: AstBuilderRootProps<AndAstNode>)
   const appendChild = () => {
     nodeStore.value.node.children.push(NewAndChild());
     nodeStore.actions.validate();
+    nodeStore.actions.triggerUpdate();
   };
   const removeChild = (index: number) => {
     nodeStore.value.node.children.splice(index, 1);
     nodeStore.actions.validate();
+    nodeStore.actions.triggerUpdate();
   };
 
   return (

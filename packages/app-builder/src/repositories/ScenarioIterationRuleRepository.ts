@@ -1,4 +1,5 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import { AstNode, adaptNodeDto } from '@app-builder/models';
 import {
   adaptCreateScenarioIterationRuleBodyDto,
   adaptScenarioIterationRule,
@@ -14,6 +15,7 @@ export interface ScenarioIterationRuleRepository {
   createRule(args: CreateScenarioIterationRuleInput): Promise<ScenarioIterationRule>;
   updateRule(args: UpdateScenarioIterationRuleInput): Promise<ScenarioIterationRule>;
   deleteRule(args: { ruleId: string }): Promise<void>;
+  getRuleDescription(args: { astNode: AstNode }): Promise<string>;
 }
 
 export function makeGetScenarioIterationRuleRepository() {
@@ -41,6 +43,12 @@ export function makeGetScenarioIterationRuleRepository() {
     },
     deleteRule: async ({ ruleId }) => {
       await marbleCoreApiClient.deleteScenarioIterationRule(ruleId);
+    },
+    getRuleDescription: async ({ astNode }) => {
+      const { description } = await marbleCoreApiClient.generateAiDescriptionForAstExpression({
+        ast_expression: adaptNodeDto(astNode),
+      });
+      return description;
     },
   });
 }

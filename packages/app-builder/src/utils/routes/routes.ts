@@ -737,6 +737,11 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/iteration+/$iterationId.get-rules.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/rule-description",
+        "path": "ressources/scenarios/rule-description",
+        "file": "routes/ressources+/scenarios+/rule-description.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/update",
         "path": "ressources/scenarios/update",
         "file": "routes/ressources+/scenarios+/update.tsx"

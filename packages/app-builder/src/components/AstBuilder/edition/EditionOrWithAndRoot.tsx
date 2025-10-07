@@ -35,10 +35,12 @@ export function EditionAstBuilderOrWithAndRoot(props: AstBuilderRootProps<OrWith
   const appendChild = () => {
     nodeStore.value.node.children.push(NewChildForOr());
     nodeStore.actions.validate();
+    nodeStore.actions.triggerUpdate();
   };
   const removeChild = (index: number) => {
     nodeStore.value.node.children.splice(index, 1);
     nodeStore.actions.validate();
+    nodeStore.actions.triggerUpdate();
   };
 
   return (
@@ -94,6 +96,7 @@ function EditionRootOrGroup({ isFirst, path, removeNode }: EditionRootOrGroupPro
 
     node.value.children.splice(index, 1);
     nodeSharp.actions.validate();
+    nodeSharp.actions.triggerUpdate();
   };
 
   return (
