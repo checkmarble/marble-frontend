@@ -108,7 +108,7 @@
   "toast.success.delete_workflow": "Workflow deleted successfully.",
   "toast.success.rule.saved": "Rule saved successfully",
   "trigger": "trigger",
-  "trigger_node.decision_created.content": "On <Scenario>{{scenarioName}}</Scenario> when outcome is :",
+  "trigger_node.decision_created.content": "On <Scenario>{{scenarioName}}</Scenario> when outcome is:",
   "trigger_node.decision_created.empty_content": "Select missing information to complete the configuration.",
   "trigger_node.decision_created.entity": "decision",
   "trigger_node.decision_created.title": "Decision created"

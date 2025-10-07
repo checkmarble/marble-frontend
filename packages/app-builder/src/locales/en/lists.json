@@ -19,7 +19,7 @@
   "edit_list.button": "Edit",
   "edit_list.title": "Edit",
   "empty_custom_list_matches": "No value matches your search.",
-  "empty_custom_list_values_list": "This list is empty. Add its first value to see it here.",
+  "empty_custom_list_values_list": "This list is empty. Add a value to get started.",
   "empty_custom_lists_list": "You do not have any list. Add your first one to see it here.",
   "errors.failure_message": "Upload failed with the following error: {{errorMessage}}",
   "errors.request_timeout": "The request timed out. Please try again.",

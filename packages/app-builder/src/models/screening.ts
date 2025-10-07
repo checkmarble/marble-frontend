@@ -342,7 +342,7 @@ export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([
   ['gov.head', 'peps'],
 
   // Third-parties
-  ['fin.adivsor', 'third-parties'],
+  ['fin.advisor', 'third-parties'],
   ['role.lawyer', 'third-parties'],
   ['role.acct', 'third-parties'],
   ['role.journo', 'third-parties'],
