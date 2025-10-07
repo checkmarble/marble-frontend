@@ -1,15 +1,9 @@
-import { CursorPaginationButtons, Page, paginationSchema } from '@app-builder/components';
-import { CasesList, casesI18n } from '@app-builder/components/Cases';
-import { CaseRightPanel } from '@app-builder/components/Cases/CaseRightPanel';
-import {
-  type CasesFilters,
-  CasesFiltersBar,
-  CasesFiltersProvider,
-  casesFiltersSchema,
-} from '@app-builder/components/Cases/Filters';
-import { InputWithButton } from '@app-builder/components/InputWithButton';
+import { paginationSchema } from '@app-builder/components';
+import { casesI18n } from '@app-builder/components/Cases';
+import { type CasesFilters, casesFiltersSchema } from '@app-builder/components/Cases/Filters';
+import { InboxPage } from '@app-builder/components/Cases/InboxPage';
+import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
-import useIntersection from '@app-builder/hooks/useIntersection';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { type Case, type CaseStatus, caseStatuses } from '@app-builder/models/cases';
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
@@ -26,13 +20,7 @@ import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData, useNavigate } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
-import { useCallback, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import { omit } from 'remeda';
-import { Button, cn } from 'ui-design-system';
-import { Icon } from 'ui-icons';
-import { z } from 'zod/v4';
-import { MY_INBOX_ID } from './_index';
+import { useCallback } from 'react';
 
 export const handle = {
   i18n: ['navigation', ...casesI18n] satisfies Namespace,
@@ -70,7 +58,11 @@ export const buildQueryParams = (
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { cases, user } = await authService.isAuthenticated(request, {
+  const {
+    cases,
+    user,
+    inbox: inboxRepository,
+  } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
@@ -88,6 +80,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return inboxId
       ? redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUIDtoSUUID(inboxId) }))
       : redirect(getRoute('/cases'));
+  }
+
+  const inboxes = await inboxRepository.listInboxes();
+  let inboxUsersIds: string[] = [];
+  if (inboxId) {
+    const inbox = await inboxRepository.getInbox(inboxId);
+    inboxUsersIds = inbox.users.map(({ userId }) => userId);
   }
 
   // Force the order to be ASC if not provided
@@ -117,6 +116,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
     return {
       inboxId,
+      inboxes,
+      inboxUsersIds,
       casesData: caseList,
       filters: parsedQuery.data,
       pagination: parsedPaginationQuery.data,
@@ -132,9 +133,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Cases() {
-  const { t } = useTranslation(casesI18n);
   const {
     inboxId,
+    inboxes,
+    inboxUsersIds,
     casesData: initialCasesData,
     filters,
     pagination: initialPagination,
@@ -156,10 +158,6 @@ export default function Cases() {
       ),
     validateData: (data) => data.items.length > 0,
   });
-
-  let hasAlreadyOrdered = false;
-
-  const { items: cases, ...pagination } = data;
 
   const navigate = useNavigate();
   const navigateCasesList = useCallback(
@@ -213,130 +211,18 @@ export default function Cases() {
     [navigate, inboxId, next, previous, reset],
   );
 
-  const paginationSentinelRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const paginationIntersection = useIntersection(paginationSentinelRef, {
-    root: containerRef.current,
-    rootMargin: '-24px',
-    threshold: 0,
-  });
-
-  useEffect(() => {
-    containerRef.current?.scrollTo({ top: 0 });
-  }, [cases]);
-
   return (
-    <CaseRightPanel.Root>
-      <Page.Container ref={containerRef}>
-        <Page.ContentV2>
-          <div className="flex flex-col gap-4 relative">
-            <CasesFiltersProvider submitCasesFilters={navigateCasesList} filterValues={filters}>
-              <div className="flex justify-between">
-                <div className="flex gap-4 items-center">
-                  <InputWithButton
-                    initialValue={filters.name}
-                    buttonLabel={t('common:search')}
-                    placeholder={t('cases:search.placeholder')}
-                    label={t('cases:search.placeholder')}
-                    onClear={() => {
-                      navigateCasesList({ ...filters, name: undefined });
-                    }}
-                    onChange={(value) => {
-                      navigateCasesList({ ...filters, name: value });
-                    }}
-                    validator={z.string().min(1)}
-                    icon="search"
-                  />
-                  {t('common:or')}
-                  <InputWithButton
-                    buttonLabel={t('cases:access_by_id.button_label')}
-                    placeholder={t('cases:access_by_id.placeholder')}
-                    label={t('cases:access_by_id.placeholder')}
-                    onChange={(value) => {
-                      navigate(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(value) }));
-                    }}
-                    validator={z.uuid()}
-                    icon="arrow-up-right"
-                    inputClassName="w-80"
-                  />
-                </div>
-                <div className="flex gap-4">
-                  <CaseRightPanel.Trigger asChild data={{ inboxId }}>
-                    <Button>
-                      <Icon icon="plus" className="size-5" />
-                      {t('cases:case.new_case')}
-                    </Button>
-                  </CaseRightPanel.Trigger>
-                </div>
-              </div>
-              <CasesFiltersBar
-                excludedFilters={!inboxId ? ['excludeAssigned', 'assignee'] : undefined}
-              />
-              <CasesList
-                key={inboxId}
-                cases={cases}
-                initSorting={[
-                  {
-                    id: initialPagination.sorting ?? 'created_at',
-                    desc: initialPagination.order === 'DESC',
-                  },
-                ]}
-                onSortingChange={(state) => {
-                  const paginationParams: PaginationParams = {
-                    ...omit(initialPagination, ['order']),
-                    order: state[0]?.desc ? 'DESC' : 'ASC',
-                  };
-
-                  if (hasAlreadyOrdered) navigateCasesList(filters, paginationParams);
-                  hasAlreadyOrdered = true;
-                }}
-              />
-              <div
-                className={cn(
-                  'flex justify-between gap-8 sticky bottom-0 z-10 bg-purple-99 -mb-v2-lg -mx-v2-lg p-v2-lg pt-v2-md border-t border-purple-99',
-                  {
-                    'shadow-sticky-bottom border-t-grey-95':
-                      !paginationIntersection?.isIntersecting,
-                  },
-                )}
-              >
-                <div className="flex gap-2 items-center">
-                  <span>{t('cases:list.results_per_page')}</span>
-                  {[25, 50, 100].map((limit) => {
-                    const isActive = limit === initialPagination.limit;
-                    return (
-                      <Button
-                        key={`pagination-limit-${limit}`}
-                        variant="secondary"
-                        className={cn(isActive && 'border-purple-65 text-purple-65')}
-                        onClick={() => {
-                          if (!isActive) {
-                            navigateCasesList(filters, { ...initialPagination, limit });
-                          }
-                        }}
-                      >
-                        {limit}
-                      </Button>
-                    );
-                  })}
-                </div>
-                <CursorPaginationButtons
-                  items={cases}
-                  onPaginationChange={(paginationParams: PaginationParams) =>
-                    navigateCasesList(filters, paginationParams)
-                  }
-                  boundariesDisplay="ranks"
-                  hasPreviousPage={hasPreviousPage}
-                  pageNb={pageNb}
-                  itemsPerPage={initialPagination.limit ?? DEFAULT_CASE_PAGINATION_SIZE}
-                  {...pagination}
-                />
-              </div>
-            </CasesFiltersProvider>
-            <div ref={paginationSentinelRef} className="absolute left-0 bottom-0" />
-          </div>
-        </Page.ContentV2>
-      </Page.Container>
-    </CaseRightPanel.Root>
+    <InboxPage
+      key={inboxId ?? MY_INBOX_ID}
+      inboxId={inboxId}
+      inboxes={inboxes}
+      inboxUsersIds={inboxUsersIds}
+      data={data}
+      filters={filters}
+      paginationParams={initialPagination}
+      hasPreviousPage={hasPreviousPage}
+      pageNb={pageNb}
+      navigateCasesList={navigateCasesList}
+    />
   );
 }
