@@ -37,7 +37,7 @@
   "case_detail.ai_review.title": "Review recap",
   "case_detail.assign_to_myself_button.label": "Assign to myself",
   "case_detail.history.event_detail.case_assigned": "<Style>{{actor}}</Style> re-assigned to <Style>{{assignee}}</Style>",
-  "case_detail.history.event_detail.case_assigned_himself": "<Style>{{actor}}</Style> assigned himself",
+  "case_detail.history.event_detail.case_assigned_himself": "<Style>{{actor}}</Style> assigned themselves",
   "case_detail.history.event_detail.case_snoozed": "Case <Style>snoozed</Style> until <Style>{{date}}</Style> by <Style>{{actor}}</Style>",
   "case_detail.history.event_detail.case_unsnoozed": "Case <Style>unsnoozed</Style> by <Style>{{actor}}</Style>",
   "case_detail.history.event_detail.created_by": "Case created by <Actor>{{actor}}</Actor>",
