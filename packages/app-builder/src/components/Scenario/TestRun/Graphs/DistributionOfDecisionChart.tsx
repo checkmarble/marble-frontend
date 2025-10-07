@@ -19,7 +19,7 @@ export const DistributionOfDecisionChart = ({
       <Collapsible.Content>
         {decisions.length === 0 ? (
           <span className="text-grey-50 inline-block w-full text-center font-semibold">
-            {t('scenarios:testrun.no_decisisons')}
+            {t('scenarios:testrun.no_decisions')}
           </span>
         ) : (
           <HamburgerChart

@@ -392,7 +392,7 @@
   "testrun.filters.test_version": "نسخة تجريبية",
   "testrun.filters.version": "إصدار",
   "testrun.home": "قائمة المقارنات",
-  "testrun.no_decisisons": "لم يتم تسجيل أي قرارات بالفعل",
+  "testrun.no_decisions": "لم يتم تسجيل أي قرارات بالفعل",
   "testrun.no_rules": "لم يتم تفعيل أي قواعد بالفعل",
   "testrun.not_allowed": "لا توجد نسخة حية أو نسخة بديلة متاحة",
   "testrun.nudge": "قارن الإصدار المباشر بإصدار جديد أو أقدم دون المساس بالبيانات المباشرة",

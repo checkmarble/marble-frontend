@@ -47,7 +47,6 @@
   "false": "False",
   "from": "From {{input}}",
   "from_to": "From <Date>{{start_date}}</Date> to <Date>{{end_date}}</Date>",
-  "github_banner": "Do you like the Marble App ? Support the Open Source effort by giving us a star on",
   "global_error": "Something went wrong.",
   "go_back": "Go back",
   "help_center.chat_with_us": "Chat with us",

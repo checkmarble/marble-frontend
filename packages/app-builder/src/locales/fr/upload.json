@@ -15,7 +15,7 @@
   "status_pending": "En attente",
   "status_processing": "En cours",
   "status_success": "Terminé",
-  "success_message": "{{linesProcessed}} {{objectType}} sera ajouté à vos données",
+  "success_message": "{{linesProcessed}} {{objectType}} seront ajoutés à vos données",
   "upload_callout_1": "Vous pouvez ajouter manuellement des {{objectType}} à votre instance Marble à partir de cette page en téléchargeant un fichier .csv ici. \n(<DocLink>en savoir plus</DocLink>)",
   "upload_callout_2": "Le fichier .csv doit suivre le même schéma que celui défini dans votre modèle de données. \nNous avons créé un modèle que vous pouvez utiliser pour démarrer rapidement.",
   "upload_cta": "Télécharger {{objectType}}",
