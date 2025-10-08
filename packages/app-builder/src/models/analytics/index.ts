@@ -1,3 +1,4 @@
+export * from './available-filters';
 export * from './decisions-outcomes-perday';
 export * as legacyAnalytics from './legacy-analytics';
 
