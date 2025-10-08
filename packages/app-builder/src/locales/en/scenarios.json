@@ -5,7 +5,6 @@
   "aggregator.max": "Max",
   "aggregator.min": "Min",
   "aggregator.sum": "Sum",
-  "already_one_sanction": "Only 1 possible per scenario iteration",
   "clone_rule.button": "Clone",
   "clone_rule.confirmation_button": "Create a copy",
   "clone_rule.content": "Do you want to create a copy of this rule in the scenario? Make sure to save your changes first as you will be redirected to the copied rule.",

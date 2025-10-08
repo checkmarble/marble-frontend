@@ -5,7 +5,6 @@
   "aggregator.max": "الحد الأقصى",
   "aggregator.min": "الحد الأدنى",
   "aggregator.sum": "المجموع",
-  "already_one_sanction": "واحد فقط ممكن لكل تكرار سيناريو",
   "clone_rule.button": "نسخ هذه الصلاحية.",
   "clone_rule.confirmation_button": "إنشاء نسخة",
   "clone_rule.content": "هل تريد إنشاء نسخة من هذه الصلاحية في السيناريو؟ تأكد من حفظ التغييرات أولاً حيث سيتم إعادة توجيهك إلى الصلاحية المنسوخة.",
