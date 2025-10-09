@@ -4,9 +4,9 @@ import { CreateListModal } from '@app-builder/components/Lists/CreateListModal';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { isCreateListAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
+import { composeMiddlewares, MiddlewareFn } from '@app-builder/utils/requests';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
@@ -15,18 +15,40 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { user, customListsRepository } = await authService.isAuthenticated(request, {
+const servicesMiddleware: MiddlewareFn<any> = async ({ request, next, context }) => {
+  console.log('servicesMiddleware', context);
+  const services = initServerServices(request);
+  return next({ services });
+};
+
+const authMiddleware: MiddlewareFn<any> = async ({ request, context, next }) => {
+  console.log('authMiddleware', context);
+  const repositories = await context.services.authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
-  });
+  })
+  return next({ repositories });
+}
+
+export const loader = composeMiddlewares([servicesMiddleware, authMiddleware], async ({ request, context }) => {
+  const { user, customListsRepository } = context.repositories;
+
   const customLists = await customListsRepository.listCustomLists();
 
-  return Response.json({
-    customLists,
-    isCreateListAvailable: isCreateListAvailable(user),
-  });
-}
+  return Response.json({ customLists, isCreateListAvailable: isCreateListAvailable(user) });
+});
+
+// export async function loader({ request }: LoaderFunctionArgs) {
+//   const { authService } = initServerServices(request);
+//   const { user, customListsRepository } = await authService.isAuthenticated(request, {
+//     failureRedirect: getRoute('/sign-in'),
+//   });
+//   const customLists = await customListsRepository.listCustomLists();
+
+//   return Response.json({
+//     customLists,
+//     isCreateListAvailable: isCreateListAvailable(user),
+//   });
+// }
 
 export const handle = {
   i18n: ['lists', 'navigation'] satisfies Namespace,
