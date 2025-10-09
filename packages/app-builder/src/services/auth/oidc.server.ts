@@ -1,4 +1,4 @@
-import { AppConfigRepository } from '@app-builder/repositories/AppConfigRepository';
+import { AppConfig } from '@app-builder/models/app-config';
 import { Tokens } from '@app-builder/routes/oidc+/auth';
 import { getServerEnv } from '@app-builder/utils/environment';
 import { OAuth2Tokens } from 'arctic';
@@ -18,13 +18,12 @@ export class MarbleOidcStrategy<U> extends OAuth2Strategy<U> {
   }
 }
 
-export const makeOidcService = async (configRepository: AppConfigRepository) => {
+export const makeOidcService = async (config: AppConfig) => {
   if (oidcStrategy) {
     return oidcStrategy;
   }
 
   const apiUrl = getServerEnv('MARBLE_API_URL');
-  const config = await configRepository.getAppConfig();
 
   oidcStrategy = (await MarbleOidcStrategy.discover(
     config.auth.oidc.issuer,

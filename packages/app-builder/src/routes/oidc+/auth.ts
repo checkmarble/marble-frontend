@@ -1,12 +1,9 @@
-import { initServerServices } from '@app-builder/services/init.server';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import { createServerFn } from '@app-builder/core/requests';
+import { oidcMiddleware } from '@app-builder/middlewares/oidc-middleware';
 import { OIDCStrategy } from 'remix-auth-openid';
 
 export interface Tokens extends OIDCStrategy.BaseUser {}
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { appConfigRepository, authService } = initServerServices(request);
-  const oidc = await authService.makeOidcService(appConfigRepository);
-
-  await oidc.authenticate(request);
-}
+export const loader = createServerFn([oidcMiddleware], async function oidcAuthLoader() {
+  return null;
+});

@@ -1,13 +1,13 @@
 import { ErrorComponent } from '@app-builder/components';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isMarbleCoreUser, isTransferCheckUser } from '@app-builder/models';
-import { initServerServices } from '@app-builder/services/init.server';
 import { segment } from '@app-builder/services/segment';
 import { forbidden } from '@app-builder/utils/http/http-responses';
 import { FORBIDDEN } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { Form, isRouteErrorResponse, useRouteError } from '@remix-run/react';
+import { Form, isRouteErrorResponse, redirect, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
@@ -25,12 +25,8 @@ export const handle = {
  * - Transfer Check: The transfer check app, with a /transfercheck sub path
  */
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-
-  const { user } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn([authMiddleware], async function appRouterLoader({ context }) {
+  const { user } = context.authInfo;
 
   if (isMarbleCoreUser(user)) {
     return redirect(getRoute('/scenarios'));
@@ -40,7 +36,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   return forbidden('You are not allowed to access any page on this application.');
-}
+});
 
 export function ErrorBoundary() {
   const error = useRouteError();
