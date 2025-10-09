@@ -1,45 +1,45 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { ServerFnResult } from '@app-builder/core/middleware-types';
+import { createServerFn, data } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import { isStatusConflictHttpError } from '@app-builder/models';
 import { createListPayloadSchema } from '@app-builder/schemas/lists';
-import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type ActionFunctionArgs, json } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { z } from 'zod/v4';
 
-export async function action({ request }: ActionFunctionArgs) {
-  const {
-    authService,
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
+type CreateListResourceActionResult = ServerFnResult<Response | { success: boolean; errors: any }>;
 
-  const [raw, session, { customListsRepository }] = await Promise.all([
-    request.json(),
-    getSession(request),
-    authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    }),
-  ]);
+export const action = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function createListResourceAction({ request, context }): CreateListResourceActionResult {
+    const { toastSessionService } = context.services;
+    const toastSession = await toastSessionService.getSession(request);
+    const rawPayload = await request.json();
 
-  const { success, error, data } = createListPayloadSchema.safeParse(raw);
+    const createListPayload = createListPayloadSchema.safeParse(rawPayload);
+    if (!createListPayload.success) {
+      return { success: false, errors: z.treeifyError(createListPayload.error) };
+    }
 
-  if (!success) return json({ success: 'false', errors: z.treeifyError(error) });
+    try {
+      const result = await context.authInfo.customListsRepository.createCustomList(
+        createListPayload.data,
+      );
+      return redirect(getRoute('/lists/:listId', { listId: fromUUIDtoSUUID(result.id) }));
+    } catch (error) {
+      setToastMessage(toastSession, {
+        type: 'error',
+        messageKey: isStatusConflictHttpError(error)
+          ? 'common:errors.list.duplicate_list_name'
+          : 'common:errors.unknown',
+      });
 
-  try {
-    const result = await customListsRepository.createCustomList(data);
-
-    return { redirectTo: getRoute('/lists/:listId', { listId: fromUUIDtoSUUID(result.id) }) };
-  } catch (error) {
-    setToastMessage(session, {
-      type: 'error',
-      messageKey: isStatusConflictHttpError(error)
-        ? 'common:errors.list.duplicate_list_name'
-        : 'common:errors.unknown',
-    });
-
-    return json(
-      { success: 'false', error: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
-  }
-}
+      return data({ success: false, errors: [] }, [
+        ['Set-Cookie', await toastSessionService.commitSession(toastSession)],
+      ]);
+    }
+  },
+);

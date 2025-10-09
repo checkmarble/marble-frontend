@@ -1,17 +1,13 @@
-import { initServerServices } from '@app-builder/services/init.server';
+import { createServerFn } from '@app-builder/core/requests';
+import { oidcMiddleware } from '@app-builder/middlewares/oidc-middleware';
 import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs } from '@remix-run/node';
 
-// TODO: this should run in the browser
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { appConfigRepository, authService } = initServerServices(request);
-  const oidc = await authService.makeOidcService(appConfigRepository);
-  const tokens = await oidc.authenticate(request);
-
-  const response = await authService.authenticateOidc(request, tokens, {
-    successRedirect: getRoute('/app-router'),
-    failureRedirect: getRoute('/oidc/auth'),
-  });
-
-  return response;
-}
+export const loader = createServerFn(
+  [oidcMiddleware],
+  async function oidcCallbackLoader({ request, context }) {
+    await context.services.authService.authenticateOidc(request, context.oidcTokens, {
+      successRedirect: getRoute('/app-router'),
+      failureRedirect: getRoute('/sign-in'),
+    });
+  },
+);

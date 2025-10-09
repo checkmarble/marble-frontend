@@ -9,23 +9,21 @@ import { Nudge } from '@app-builder/components/Nudge';
 import { DatasetFreshnessBanner } from '@app-builder/components/Screenings/DatasetFresshnessBanner';
 import { UnavailableBanner } from '@app-builder/components/Settings/UnavailableBanner';
 import { UserInfo } from '@app-builder/components/UserInfo';
-import { isMarbleCoreUser } from '@app-builder/models';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
 import {
   isAnalyticsAvailable,
   isAutoAssignmentAvailable,
 } from '@app-builder/services/feature-access';
-import { initServerServices } from '@app-builder/services/init.server';
 import { OrganizationDetailsContextProvider } from '@app-builder/services/organization/organization-detail';
 import { OrganizationObjectTagsContextProvider } from '@app-builder/services/organization/organization-object-tags';
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
 import { OrganizationUsersContextProvider } from '@app-builder/services/organization/organization-users';
 import { useSegmentIdentification } from '@app-builder/services/segment';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
-import { forbidden } from '@app-builder/utils/http/http-responses';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -33,50 +31,43 @@ import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const {
-    authService,
-    appConfigRepository: { getAppConfig },
-  } = initServerServices(request);
-  const { user, inbox, organization, entitlements } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  if (!isMarbleCoreUser(user)) {
-    throw forbidden('Only Marble Core users can access this app.');
-  }
-
-  const [organizationDetail, orgUsers, orgTags, orgObjectTags, appConfig, inboxes] =
-    await Promise.all([
+export const loader = createServerFn(
+  [authMiddleware],
+  async function appBuilderLayout({ request, context }) {
+    const { user, inbox, organization, entitlements } = context.authInfo;
+    const [organizationDetail, orgUsers, orgTags, orgObjectTags, inboxes] = await Promise.all([
       organization.getCurrentOrganization(),
       organization.listUsers(),
       organization.listTags(),
       organization.listTags({ target: 'object' }),
-      getAppConfig(),
       inbox.listInboxes(),
     ]);
 
-  const firstSetting = Object.values(getSettingsAccess(user, appConfig, inboxes)).find(
-    (s) => s.settings.length > 0,
-  )?.settings[0];
-  return {
-    user,
-    orgUsers,
-    organization: organizationDetail,
-    orgTags,
-    orgObjectTags,
-    featuresAccess: {
-      isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
-      analytics: entitlements.analytics,
-      settings: {
-        isAvailable: firstSetting !== undefined,
-        ...(firstSetting !== undefined && { to: firstSetting.to }),
+    const settingsSections = getSettingsAccess(user, context.appConfig, inboxes);
+    const firstSetting = Object.values(settingsSections).find((s) => s.settings.length > 0)
+      ?.settings[0];
+
+    return {
+      user,
+      orgUsers,
+      organization: organizationDetail,
+      orgTags,
+      orgObjectTags,
+      featuresAccess: {
+        isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
+        analytics: entitlements.analytics,
+        settings: {
+          isAvailable: firstSetting !== undefined,
+          ...(firstSetting !== undefined && { to: firstSetting.to }),
+        },
+        isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
       },
-      isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
-    },
-    versions: appConfig.versions,
-    isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
-  };
-}
+      versions: context.appConfig.versions,
+      authProvider: context.appConfig.auth.provider,
+      isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
+    };
+  },
+);
 
 export const handle = {
   i18n: ['common', ...navigationI18n] satisfies Namespace,
@@ -97,6 +88,7 @@ export default function Builder() {
     featuresAccess,
     versions,
     isMenuExpanded,
+    authProvider,
   } = useLoaderData<typeof loader>();
   useSegmentIdentification(user);
   const { t } = useTranslation(handle.i18n);
@@ -106,7 +98,7 @@ export default function Builder() {
 
   return (
     <>
-      <ClientOnly>{() => <TokenRefresher />}</ClientOnly>
+      <ClientOnly>{() => (authProvider === 'firebase' ? <TokenRefresher /> : null)}</ClientOnly>
       <OrganizationDetailsContextProvider org={organization} currentUser={user}>
         <OrganizationUsersContextProvider orgUsers={orgUsers}>
           <OrganizationTagsContextProvider orgTags={orgTags}>

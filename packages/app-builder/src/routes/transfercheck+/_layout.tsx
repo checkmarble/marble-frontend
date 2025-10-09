@@ -11,123 +11,127 @@ import {
   ToggleSidebar,
 } from '@app-builder/components/Layout/LeftSidebar';
 import { UserInfo } from '@app-builder/components/UserInfo';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isMarbleAdmin, isTransferCheckUser } from '@app-builder/models';
-import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
 import { isAutoAssignmentAvailable } from '@app-builder/services/feature-access';
-import { initServerServices } from '@app-builder/services/init.server';
 import { segment, useSegmentIdentification } from '@app-builder/services/segment';
 import { conflict, forbidden } from '@app-builder/utils/http/http-responses';
 import { CONFLICT } from '@app-builder/utils/http/http-status-codes';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Form, isRouteErrorResponse, Outlet, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import { ClientOnly } from 'remix-utils/client-only';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { useRefreshToken } from '../ressources+/auth+/refresh';
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const {
-    authService,
-    appConfigRepository: { getAppConfig },
-  } = initServerServices(request);
-  const { entitlements, user, partnerRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn(
+  [authMiddleware],
+  async function transfercheckLayoutLoader({ request, context }) {
+    const { entitlements, user, partnerRepository } = context.authInfo;
 
-  if (isMarbleAdmin(user)) {
-    throw conflict("Marble Admins can't access the app builder.");
-  }
+    if (isMarbleAdmin(user)) {
+      throw conflict("Marble Admins can't access the app builder.");
+    }
 
-  if (!isTransferCheckUser(user)) {
-    throw forbidden('Only TransferCheck users can access TransferCheck.');
-  }
+    if (!isTransferCheckUser(user)) {
+      throw forbidden('Only TransferCheck users can access TransferCheck.');
+    }
 
-  const partner = await partnerRepository.getPartner(user.partnerId);
+    const partner = await partnerRepository.getPartner(user.partnerId);
 
-  return {
-    entitlements,
-    user,
-    partner,
-    versions: (await getAppConfig()).versions,
-    isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
-  };
-}
+    return {
+      entitlements,
+      user,
+      partner,
+      versions: context.appConfig.versions,
+      authProvider: context.appConfig.auth.provider,
+      isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
+    };
+  },
+);
 
 export const handle = {
   i18n: ['common', 'transfercheck', ...navigationI18n] satisfies Namespace,
 };
 
+const TokenRefresher = () => {
+  useRefreshToken();
+  return null;
+};
+
 export default function Builder() {
-  const { entitlements, user, partner, versions, isMenuExpanded } = useLoaderData<typeof loader>();
+  const { entitlements, user, partner, versions, isMenuExpanded, authProvider } =
+    useLoaderData<typeof loader>();
   useSegmentIdentification(user);
   const leftSidebarSharp = LeftSidebarSharpFactory.createSharp(isMenuExpanded);
-
-  // Refresh is done in the JSX because it needs to be done in the browser
-  // This is only added here to prevent "auto sign-in" on /sign-in pages... (/logout do not trigger logout from Firebase)
-  useRefreshToken();
 
   const transfercheckResources = useTransfercheckResources();
 
   return (
-    <div className="flex h-full flex-1 flex-row overflow-hidden">
-      <LeftSidebarSharpFactory.Provider value={leftSidebarSharp}>
-        <LeftSidebar>
-          <div className="h-24 px-2 pt-3">
-            <UserInfo
-              email={user.actorIdentity.email}
-              firstName={user.actorIdentity.firstName}
-              lastName={user.actorIdentity.lastName}
-              role={user.role}
-              orgOrPartnerName={partner.name}
-              isAutoAssignmentAvailable={isAutoAssignmentAvailable(entitlements)}
-            />
-          </div>
-          <nav className="flex flex-1 flex-col overflow-y-auto p-2">
-            <ul className="flex flex-col gap-2">
-              <li>
-                <SidebarLink
-                  labelTKey="navigation:transfercheck.transfers"
-                  to={getRoute('/transfercheck/transfers')}
-                  Icon={(props) => <Icon icon="transfercheck" {...props} />}
-                />
-              </li>
-              <li>
-                <SidebarLink
-                  labelTKey="navigation:transfercheck.alerts"
-                  to={getRoute('/transfercheck/alerts')}
-                  Icon={(props) => <Icon icon="notifications" {...props} />}
-                />
-              </li>
-            </ul>
-          </nav>
-          <nav className="p-2 pb-4">
-            <ul className="flex flex-col gap-2">
-              <li>
-                <HelpCenter
-                  defaultTab={transfercheckResources.defaultTab}
-                  resources={transfercheckResources.resources}
-                  MenuButton={
-                    <SidebarButton
-                      labelTKey="navigation:helpCenter"
-                      Icon={(props) => <Icon icon="helpcenter" {...props} />}
-                    />
-                  }
-                  versions={versions}
-                />
-              </li>
-              <li>
-                <ToggleSidebar />
-              </li>
-            </ul>
-          </nav>
-        </LeftSidebar>
+    <>
+      <ClientOnly>{() => (authProvider === 'firebase' ? <TokenRefresher /> : null)}</ClientOnly>
+      <div className="flex h-full flex-1 flex-row overflow-hidden">
+        <LeftSidebarSharpFactory.Provider value={leftSidebarSharp}>
+          <LeftSidebar>
+            <div className="h-24 px-2 pt-3">
+              <UserInfo
+                email={user.actorIdentity.email}
+                firstName={user.actorIdentity.firstName}
+                lastName={user.actorIdentity.lastName}
+                role={user.role}
+                orgOrPartnerName={partner.name}
+                isAutoAssignmentAvailable={isAutoAssignmentAvailable(entitlements)}
+              />
+            </div>
+            <nav className="flex flex-1 flex-col overflow-y-auto p-2">
+              <ul className="flex flex-col gap-2">
+                <li>
+                  <SidebarLink
+                    labelTKey="navigation:transfercheck.transfers"
+                    to={getRoute('/transfercheck/transfers')}
+                    Icon={(props) => <Icon icon="transfercheck" {...props} />}
+                  />
+                </li>
+                <li>
+                  <SidebarLink
+                    labelTKey="navigation:transfercheck.alerts"
+                    to={getRoute('/transfercheck/alerts')}
+                    Icon={(props) => <Icon icon="notifications" {...props} />}
+                  />
+                </li>
+              </ul>
+            </nav>
+            <nav className="p-2 pb-4">
+              <ul className="flex flex-col gap-2">
+                <li>
+                  <HelpCenter
+                    defaultTab={transfercheckResources.defaultTab}
+                    resources={transfercheckResources.resources}
+                    MenuButton={
+                      <SidebarButton
+                        labelTKey="navigation:helpCenter"
+                        Icon={(props) => <Icon icon="helpcenter" {...props} />}
+                      />
+                    }
+                    versions={versions}
+                  />
+                </li>
+                <li>
+                  <ToggleSidebar />
+                </li>
+              </ul>
+            </nav>
+          </LeftSidebar>
 
-        <Outlet />
-      </LeftSidebarSharpFactory.Provider>
-    </div>
+          <Outlet />
+        </LeftSidebarSharpFactory.Provider>
+      </div>
+    </>
   );
 }
 
