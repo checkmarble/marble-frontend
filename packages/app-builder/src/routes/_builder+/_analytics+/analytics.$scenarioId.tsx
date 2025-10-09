@@ -1,8 +1,9 @@
 import { ErrorComponent } from '@app-builder/components';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
-import { type DecisionOutcomesPerPeriod } from '@app-builder/models/analytics';
+import { type DecisionOutcomesPerPeriod, FilterSource } from '@app-builder/models/analytics';
 import { type Scenario } from '@app-builder/models/scenario';
+import { useGetAvailableFilters } from '@app-builder/queries/analytics/get-available-filters';
 import { useGetDecisionsOutcomesPerDay } from '@app-builder/queries/analytics/get-decisions-outcomes-per-day';
 import { initServerServices } from '@app-builder/services/init.server';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
@@ -14,19 +15,26 @@ import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { useQueryClient } from '@tanstack/react-query';
 import { subMonths } from 'date-fns';
 import { type Namespace } from 'i18next';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UUID } from 'short-uuid';
-import {
-  type DateRange,
-  type Filter,
-  FiltersBar,
-  FiltersProvider,
-  FormattingProvider,
-  I18nProvider,
-} from 'ui-design-system';
+import { FiltersBar, FormattingProvider, I18nProvider } from 'ui-design-system';
+import type {
+  DateRangeFilterType,
+  FilterChange,
+  FilterDescriptor,
+} from 'ui-design-system/src/FiltersBar/types';
 import { Icon } from 'ui-icons';
 import z from 'zod';
+
+interface LoaderData {
+  scenarioId: string;
+  scenarios: Scenario[];
+  scenarioVersions: Array<{
+    version: number;
+    createdAt: string;
+  }>;
+}
 
 // Schema for parsing URL query parameters
 const qSchema = z
@@ -48,15 +56,6 @@ const qSchema = z
     },
     { message: 'Invalid compare range payload' },
   );
-
-interface LoaderData {
-  scenarioId: string;
-  scenarios: Scenario[];
-  scenarioVersions: Array<{
-    version: number;
-    createdAt: string;
-  }>;
-}
 
 export const handle = {
   i18n: ['navigation', 'data'] satisfies Namespace,
@@ -149,6 +148,10 @@ export default function Analytics() {
 
   const [scenarioId, setScenarioId] = useState(urlScenarioId);
 
+  type DynamicKind = 'text' | 'number' | 'boolean';
+  type DynamicMeta = Record<string, { source: FilterSource; kind: DynamicKind }>;
+  const [dynamicMeta, setDynamicMeta] = useState<DynamicMeta>({});
+
   useEffect(() => {
     setScenarioId(urlScenarioId);
   }, [urlScenarioId]);
@@ -171,27 +174,126 @@ export default function Analytics() {
     }
   }
 
-  // Keep local state for ranges to avoid navigation on filter changes
-  const [dateRange, setDateRange] = useState(
+  const initialRange =
     parsedDateRange?.range ??
-      (() => {
-        const now = new Date();
-        now.setUTCHours(0, 0, 0, 0);
-        const startDefault = subMonths(now, 1);
-        startDefault.setUTCHours(0, 0, 0, 0);
-        return { start: startDefault.toISOString(), end: now.toISOString() };
-      })(),
-  );
-  const [compareDateRange, setCompareDateRange] = useState(
-    parsedDateRange?.compareRange ?? undefined,
-  );
+    (() => {
+      const now = new Date();
+      now.setUTCHours(0, 0, 0, 0);
+      const startDefault = subMonths(now, 1);
+      startDefault.setUTCHours(0, 0, 0, 0);
+      return { start: startDefault.toISOString(), end: now.toISOString() };
+    })();
+  const initialCompare = parsedDateRange?.compareRange ?? null;
+
+  const [filtersValue, setFiltersValue] = useState<Record<string, unknown>>({
+    scenario: urlScenarioId,
+    dateRange: {
+      type: 'static',
+      startDate: initialRange.start,
+      endDate: initialRange.end,
+    } satisfies DateRangeFilterType,
+    compareDateRange: initialCompare
+      ? ({ type: 'static', startDate: initialCompare.start, endDate: initialCompare.end } as const)
+      : null,
+  });
+  const [activeDynamicFilters, setActiveDynamicFilters] = useState<string[]>([]);
+  const deriveIsoRange = (v: unknown): { start: string; end: string } | null => {
+    const r = v as DateRangeFilterType | null | undefined;
+    if (!r) return null;
+    if (r.type === 'static') return { start: String(r.startDate), end: String(r.endDate) };
+    return null; // ignore dynamic for backend queries
+  };
+
+  const currentRange = deriveIsoRange(filtersValue['dateRange']);
+  const currentCompareRange = deriveIsoRange(filtersValue['compareDateRange']);
+
+  const { data: availableFilters } = useGetAvailableFilters({
+    scenarioId,
+    dateRange: currentRange ?? initialRange,
+  });
+
+  type AvailableFiltersDescriptor = FilterDescriptor & {
+    source?: FilterSource;
+  };
+  const { dynamicDescriptors, dynamicIndex } = useMemo(() => {
+    const index: DynamicMeta = {};
+    const descriptors: AvailableFiltersDescriptor[] = (availableFilters ?? []).map((filter) => {
+      const common = {
+        name: filter.name,
+        placeholder: filter.name,
+        removable: true as const,
+        source: filter.source,
+      };
+      switch (filter.type) {
+        case 'string':
+          index[filter.name] = { source: filter.source, kind: 'text' };
+          return { ...common, type: 'text', operator: 'in' as const };
+        case 'number':
+          index[filter.name] = { source: filter.source, kind: 'number' };
+          return { ...common, type: 'number', operator: 'eq' as const };
+        case 'boolean':
+          index[filter.name] = { source: filter.source, kind: 'boolean' };
+          return { ...common, type: 'boolean' as const };
+      }
+    }) as AvailableFiltersDescriptor[];
+
+    return { dynamicDescriptors: descriptors, dynamicIndex: index };
+  }, [availableFilters]);
+
+  useEffect(() => {
+    const allowed = new Set(Object.keys(dynamicIndex));
+    setActiveDynamicFilters((prev) => prev.filter((n) => allowed.has(n)));
+    setFiltersValue((prev) => {
+      const next = { ...prev };
+      for (const key of Object.keys(prev)) {
+        if (key === 'scenario' || key === 'dateRange' || key === 'compareDateRange') continue;
+        if (!allowed.has(key)) delete next[key];
+      }
+      return next;
+    });
+    setDynamicMeta(dynamicIndex);
+    queryClient.invalidateQueries({ queryKey: ['analytics'] });
+  }, [dynamicIndex, queryClient]);
+
+  const trigger = useMemo(() => {
+    const out: {
+      field: string;
+      op: '=' | '!=' | '>' | '>=' | '<' | '<=' | 'in';
+      values: string[];
+    }[] = [];
+    for (const name of activeDynamicFilters) {
+      const meta = dynamicMeta[name];
+      if (!meta) continue;
+      const v = filtersValue[name];
+
+      if (meta.kind === 'boolean') {
+        if (typeof v === 'boolean') out.push({ field: name, op: '=', values: [String(v)] });
+        continue;
+      }
+      if (meta.kind === 'number') {
+        const c = v as {
+          operator: 'eq' | 'ne' | 'lt' | 'lte' | 'gt' | 'gte';
+          value: number;
+        } | null;
+        if (c && c.value !== undefined && c.value !== null) {
+          out.push({ field: name, op: c.operator, values: [String(c.value)] });
+        }
+        continue;
+      }
+      // text
+      const c = (v as { operator: 'in'; value: string }[] | null) ?? [];
+      const values = c.map((x) => x.value).filter(Boolean);
+      if (values.length) out.push({ field: name, op: 'in', values });
+    }
+    return out;
+  }, [activeDynamicFilters, filtersValue, dynamicMeta]);
 
   const { data: decisionsData } = useGetDecisionsOutcomesPerDay({
     scenarioId,
     scenarioVersion: undefined,
-    dateRange,
-    compareDateRange,
-    trigger: [],
+    dateRange: currentRange ?? initialRange,
+    compareDateRange: currentCompareRange ?? undefined,
+    trigger,
   });
 
   // Invalidate query when URL search params change
@@ -204,109 +306,71 @@ export default function Analytics() {
 
     if (searchParamsChanged) {
       // Invalidate all analytics queries when search params change
-      queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
+      queryClient.invalidateQueries({ queryKey: ['analytics'] });
     }
 
     prevSearchParamsRef.current = currentSearchParams;
   }, [searchParams, queryClient]);
 
-  const onScenariochange = (newScenarioId: string | null) => {
-    if (!newScenarioId) return;
-    const qs = searchParams.toString();
-    const path = getRoute('/analytics/:scenarioId', { scenarioId: fromUUIDtoSUUID(newScenarioId) });
-    const newUrl = qs ? `${path}?${qs}` : path;
+  const onFiltersChange = (
+    change: FilterChange,
+    next: { value: Record<string, unknown>; active: string[] },
+  ) => {
+    console.log('onFiltersChange', change, next);
+    console.log(next.active);
+    setFiltersValue(next.value);
+    setActiveDynamicFilters(next.active);
+    console.log(filtersValue);
 
-    window.history.replaceState({}, '', newUrl);
-    // window.history.pushState({}, '', newUrl);
+    // Handle scenario id routing
+    if (change.type === 'set' && change.name === 'scenario') {
+      const newScenarioId = change.value as string | null;
+      if (newScenarioId) {
+        const qs = searchParams.toString();
+        const path = getRoute('/analytics/:scenarioId', {
+          scenarioId: fromUUIDtoSUUID(newScenarioId as UUID),
+        });
+        const newUrl = qs ? `${path}?${qs}` : path;
+        window.history.replaceState({}, '', newUrl);
+        setScenarioId(newScenarioId as UUID);
+        return;
+      }
+    }
 
-    setScenarioId(newScenarioId as UUID);
+    // Always sync date range params in URL
+    const nextRange = deriveIsoRange(next.value['dateRange']) ?? initialRange;
+    const nextCompare = deriveIsoRange(next.value['compareDateRange']);
+    const url = new URL(window.location.href);
+    url.searchParams.set(
+      'q',
+      btoa(
+        JSON.stringify({
+          range: nextRange,
+          compareRange: nextCompare,
+        }),
+      ),
+    );
+    window.history.replaceState({}, '', url.toString());
 
-    queryClient.invalidateQueries({
-      queryKey: ['analytics', 'decisions', newScenarioId],
-    });
+    queryClient.invalidateQueries({ queryKey: ['analytics'] });
   };
-
-  // Create filter configurations for FiltersBar
-  const filters: Filter[] = [
+  const descriptors: FilterDescriptor[] = [
     {
-      type: 'select' as const,
+      type: 'select',
       name: 'scenario',
       placeholder: 'Select scenario',
-      options: scenarios.map((scenario) => ({
-        label: scenario.name,
-        value: scenario.id,
-      })),
-      selectedValue: scenarioId,
-      onChange: onScenariochange,
-      removable: false,
+      options: scenarios.map((scenario) => ({ label: scenario.name, value: scenario.id })),
     },
     {
       type: 'date-range-popover',
       name: 'dateRange',
       placeholder: 'Select date range',
-      selectedValue: {
-        from: new Date(dateRange.start),
-        to: new Date(dateRange.end),
-      },
-      onChange: (range: DateRange | null) => {
-        if (!range) return;
-        const nextRange = {
-          start: range.from?.toISOString() ?? dateRange.start,
-          end: range.to?.toISOString() ?? dateRange.end,
-        };
-        setDateRange(nextRange);
-        const newParams = {
-          range: nextRange,
-          compareRange: compareDateRange,
-        };
-        const url = new URL(window.location.href);
-        url.searchParams.set('q', btoa(JSON.stringify(newParams)));
-        window.history.replaceState({}, '', url.toString());
-        queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
-      },
-      removable: false,
     },
     {
-      type: 'date-range-popover' as const,
+      type: 'date-range-popover',
       name: 'compareDateRange',
       placeholder: 'Select comparison date range',
-      selectedValue: compareDateRange
-        ? {
-            from: new Date(compareDateRange.start),
-            to: new Date(compareDateRange.end),
-          }
-        : null,
-
-      onChange: (newRange: DateRange | null) => {
-        console.log('newRange', newRange);
-        if (!newRange || !newRange.from || !newRange.to) return;
-        // Update URL params when comparison date range changes
-        const nextCompare = {
-          start: newRange.from.toISOString(),
-          end: newRange.to.toISOString(),
-        };
-        setCompareDateRange(nextCompare as { start: string; end: string } | undefined);
-        const newParams = {
-          range: dateRange,
-          compareRange: nextCompare,
-        };
-        const url = new URL(window.location.href);
-        url.searchParams.set('q', btoa(JSON.stringify(newParams)));
-        window.history.replaceState({}, '', url.toString());
-        queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
-      },
-      onClear: () => {
-        // Clear comparison date range filter
-        setCompareDateRange(undefined);
-        const newParams = {
-          range: dateRange,
-          compareRange: null,
-        };
-        const url = new URL(window.location.href);
-        url.searchParams.set('q', btoa(JSON.stringify(newParams)));
-        window.history.replaceState({}, '', url.toString());
-        queryClient.invalidateQueries({ queryKey: ['analytics', 'decisions'] });
-      },
+      removable: true,
     },
   ];
 
@@ -323,9 +387,13 @@ export default function Analytics() {
         <div className="max-w-6xl p-v2-lg">
           <div className="flex flex-row gap-v2-md mb-v2-lg">
             <div className="flex flex-row gap-v2-sm items-center">
-              <FiltersProvider>
-                <FiltersBar filters={filters} />
-              </FiltersProvider>
+              <FiltersBar
+                descriptors={descriptors}
+                dynamicDescriptors={dynamicDescriptors}
+                value={filtersValue}
+                active={activeDynamicFilters}
+                onChange={onFiltersChange}
+              />
             </div>
           </div>
           <Decisions
@@ -347,17 +415,7 @@ export function ErrorBoundary() {
   return <ErrorComponent error={error} />;
 }
 
-export function shouldRevalidate({
-  currentParams,
-  nextParams,
-  currentUrl,
-  nextUrl,
-}: {
-  currentParams: any;
-  nextParams: any;
-  currentUrl: URL;
-  nextUrl: URL;
-}) {
+export function shouldRevalidate() {
   // Always return false to prevent full page re-renders
   // Query invalidation is handled in the component's useEffect
   return false;

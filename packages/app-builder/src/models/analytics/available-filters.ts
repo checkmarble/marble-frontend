@@ -2,7 +2,7 @@ import { type AvailableFiltersRequestDto, type AvailableFiltersResponseDto } fro
 import * as R from 'remeda';
 
 export type AvailableFilterType = 'string' | 'number' | 'boolean';
-export type FiltersTypes = 'triggerObject';
+export type FilterSource = 'triggerObject';
 
 export type AvailableFiltersRequest = {
   scenarioId: string;
@@ -13,7 +13,7 @@ export type AvailableFiltersRequest = {
 export type AvailableFiltersResponse = {
   name: string;
   type: AvailableFilterType;
-  source: FiltersTypes;
+  source: FilterSource;
 }[];
 
 export const adaptAvailableFiltersResponse = (
@@ -22,7 +22,7 @@ export const adaptAvailableFiltersResponse = (
   return response.map((item) => ({
     name: item.name,
     type: item.type as AvailableFilterType,
-    source: R.toCamelCase(item.source) as FiltersTypes,
+    source: R.toCamelCase(item.source) as FilterSource,
   }));
 };
 
