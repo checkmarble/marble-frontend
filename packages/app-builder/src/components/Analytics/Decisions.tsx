@@ -1,3 +1,4 @@
+import { Spinner } from '@app-builder/components/Spinner';
 import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
 import {
   DecisionOutcomesPerPeriod,
@@ -31,9 +32,10 @@ export type DecisionsPerOutcome = {
 interface DecisionsProps {
   data: DecisionOutcomesPerPeriod | null;
   scenarioVersions: { version: number; createdAt: string }[];
+  isLoading?: boolean;
 }
 
-export function Decisions({ data, scenarioVersions }: DecisionsProps) {
+export function Decisions({ data, scenarioVersions, isLoading = false }: DecisionsProps) {
   const { t } = useTranslation();
   const language = useFormatLanguage();
 
@@ -186,8 +188,14 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
 
       <div
         ref={divRef}
-        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm"
+        aria-busy={isLoading}
+        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative"
       >
+        {isLoading ? (
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
+            <Spinner className="size-6" />
+          </div>
+        ) : null}
         <div className="flex w-full h-[500px] flex-col items-start gap-v2-md">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-v2-sm">

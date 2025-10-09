@@ -288,7 +288,7 @@ export default function Analytics() {
     return out;
   }, [activeDynamicFilters, filtersValue, dynamicMeta]);
 
-  const { data: decisionsData } = useGetDecisionsOutcomesPerDay({
+  const { data: decisionsData, isFetching: isDecisionsPending } = useGetDecisionsOutcomesPerDay({
     scenarioId,
     scenarioVersion: undefined,
     dateRange: currentRange ?? initialRange,
@@ -399,6 +399,7 @@ export default function Analytics() {
           <Decisions
             data={decisionsData as DecisionOutcomesPerPeriod}
             scenarioVersions={scenarioVersions}
+            isLoading={isDecisionsPending}
           />
         </div>
       </I18nProvider>
