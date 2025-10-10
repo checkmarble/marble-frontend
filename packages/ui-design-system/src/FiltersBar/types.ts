@@ -1,5 +1,3 @@
-export type { DateRangeFilterType } from './internals/DateRangeFilter';
-
 export type FilterBarLevel = 'main' | 'additional';
 
 export type CommittedDynamicValues = Record<string, unknown>;
@@ -23,6 +21,23 @@ export interface ComparisonFilter<T> {
   operator: NumberOperator | TextOperator;
   value: T;
 }
+
+export interface StaticDateRangeFilterType {
+  type: 'static';
+  startDate: string;
+  endDate: string;
+}
+
+export interface DynamicDateRangeFilterType {
+  type: 'dynamic';
+  fromNow: string;
+}
+
+export type DateRangeFilterType =
+  | StaticDateRangeFilterType
+  | DynamicDateRangeFilterType
+  | null
+  | undefined;
 
 export interface NumberFilter extends BaseFilter<ComparisonFilter<number>> {
   type: 'number';

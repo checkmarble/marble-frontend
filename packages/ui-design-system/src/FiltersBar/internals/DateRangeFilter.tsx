@@ -5,23 +5,7 @@ import { Temporal } from 'temporal-polyfill';
 import { Calendar, type DateRange } from '../../Calendar/Calendar';
 import { useFormatting } from '../../contexts/FormattingContext';
 import { useI18n } from '../../contexts/I18nContext';
-
-interface StaticDateRangeFilterType {
-  type: 'static';
-  startDate: string;
-  endDate: string;
-}
-
-interface DynamicDateRangeFilterType {
-  type: 'dynamic';
-  fromNow: string;
-}
-
-export type DateRangeFilterType =
-  | StaticDateRangeFilterType
-  | DynamicDateRangeFilterType
-  | null
-  | undefined;
+import type { DateRangeFilterType, StaticDateRangeFilterType } from '../types';
 
 function adaptStaticDateRangeFilterType({ from, to }: DateRange): StaticDateRangeFilterType {
   const startDate = from?.toISOString() ?? '';

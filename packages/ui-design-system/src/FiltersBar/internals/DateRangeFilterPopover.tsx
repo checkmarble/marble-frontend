@@ -1,8 +1,8 @@
 import { ar, enUS, fr } from 'date-fns/locale';
 import { useMemo, useState } from 'react';
 import { useFormatting } from '../../contexts/FormattingContext';
-import { type DateRangePopoverFilter } from '../types';
-import { DateRangeFilter, type DateRangeFilterType } from './DateRangeFilter';
+import type { DateRangeFilterType, DateRangePopoverFilter } from '../types';
+import { DateRangeFilter } from './DateRangeFilter';
 import { FilterItem, FilterPopover } from './FilterPopover';
 import { useFiltersBarContext } from './FiltersBarContext';
 
