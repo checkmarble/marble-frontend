@@ -5,7 +5,7 @@ import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/sce
 import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 
@@ -43,21 +43,17 @@ export const FieldAstFormula = ({
   const { t } = useTranslation(['scenarios']);
   const editor = useEditorMode();
 
-  const [formula, setFormula] = useState(astNode ?? defaultValue);
+  const formula = astNode ?? defaultValue;
   const isAstNull = isUndefinedAstNode(formula);
   const nodeStoreRef = useRef<AstBuilderNodeStore | null>(null);
   const [validationErrors, setValidationErrors] = useState<FlatAstValidation['errors']>([]);
 
-  useEffect(() => {
-    onChange?.(nodeStoreRef.current ? nodeStoreRef.current.value.node : formula);
-  }, [onChange, formula]);
-
   const handleAddTrigger = () => {
-    setFormula(NewEmptyTriggerAstNode());
+    nodeStoreRef.current?.actions.setNodeAtPath('root', NewEmptyTriggerAstNode());
   };
 
   const handleDeleteTrigger = () => {
-    setFormula(defaultValue);
+    nodeStoreRef.current?.actions.setNodeAtPath('root', defaultValue);
   };
 
   return (
@@ -82,6 +78,7 @@ export const FieldAstFormula = ({
             onValidationUpdate={(validation) => {
               setValidationErrors(validation.errors);
             }}
+            onUpdate={onChange}
             returnType="bool"
           />
         </AstBuilder.Provider>

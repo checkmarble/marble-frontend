@@ -4,12 +4,17 @@ import { type AstBuilderRootProps } from '@ast-builder/types';
 import { useCallbackRef } from '@marble/shared';
 import { useEffect, useRef } from 'react';
 
-import { AstBuilderNodeSharpFactory, type AstBuilderValidationFn } from '../node-store';
+import {
+  AstBuilderNodeSharpFactory,
+  AstBuilderUpdateFn,
+  type AstBuilderValidationFn,
+} from '../node-store';
 
 export function useRoot(props: AstBuilderRootProps, autoValidate = true) {
   const scenarioId = AstBuilderDataSharpFactory.select((s) => s.scenarioId);
   const onStoreChange = useCallbackRef(props.onStoreChange);
   const onValidationUpdate = useCallbackRef(props.onValidationUpdate);
+  const onUpdate = useCallbackRef(props.onUpdate);
 
   const mutation = useValidateAstMutation({ scenarioId });
   const mutationAbortController = useRef<AbortController | null>(null);
@@ -33,11 +38,15 @@ export function useRoot(props: AstBuilderRootProps, autoValidate = true) {
 
     return result;
   });
+  const updateFn = useCallbackRef<AstBuilderUpdateFn>(async (node) => {
+    onUpdate(node);
+  });
 
   const nodeStore = AstBuilderNodeSharpFactory.createSharp({
     initialNode: props.node,
     initialValidation: props.validation ?? { errors: [], evaluation: [] },
     validationFn,
+    updateFn,
   });
 
   // Setting a validation function as we are in edit mode

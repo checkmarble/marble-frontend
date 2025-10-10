@@ -6,12 +6,14 @@ import { createSharpFactory, type InferSharpApi } from 'sharpstate';
 import { match, P } from 'ts-pattern';
 
 export type AstBuilderValidationFn = (node: AstNode) => Promise<FlatAstValidation>;
+export type AstBuilderUpdateFn = (node: AstNode) => void;
 
 export type AstBuilderNodeStoreValue = {
   node: AstNode;
   validation: FlatAstValidation;
   copiedNode: IdLessAstNode | null;
   validationFn: AstBuilderValidationFn;
+  updateFn?: AstBuilderUpdateFn;
 };
 
 export const AstBuilderNodeSharpFactory = createSharpFactory({
@@ -20,16 +22,19 @@ export const AstBuilderNodeSharpFactory = createSharpFactory({
     initialNode,
     initialValidation,
     validationFn,
+    updateFn,
   }: {
     initialNode: AstNode;
     initialValidation: FlatAstValidation;
     validationFn: AstBuilderValidationFn;
+    updateFn?: AstBuilderUpdateFn;
   }): AstBuilderNodeStoreValue {
     return {
       node: clone(initialNode),
       validation: initialValidation,
       copiedNode: null,
       validationFn,
+      updateFn,
     };
   },
 }).withActions({
@@ -52,6 +57,7 @@ export const AstBuilderNodeSharpFactory = createSharpFactory({
         })
         .exhaustive();
     }
+    api.value.updateFn?.(clone(api.value.node));
   },
   async validate(api) {
     try {
@@ -70,6 +76,9 @@ export const AstBuilderNodeSharpFactory = createSharpFactory({
   },
   copyNode(api, node: IdLessAstNode) {
     api.value.copiedNode = clone(node);
+  },
+  triggerUpdate(api) {
+    api.value.updateFn?.(clone(api.value.node));
   },
 });
 

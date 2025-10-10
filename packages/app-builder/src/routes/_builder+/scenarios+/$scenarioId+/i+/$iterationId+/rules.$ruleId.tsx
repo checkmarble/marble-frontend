@@ -9,10 +9,12 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { DeleteRule } from '@app-builder/components/Scenario/Rules/Actions/DeleteRule';
 import { DuplicateRule } from '@app-builder/components/Scenario/Rules/Actions/DuplicateRule';
+import { AiDescription } from '@app-builder/components/Scenario/Rules/AiDescription';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Screening/FieldAstFormula';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Screening/FieldRuleGroup';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { NewEmptyRuleAstNode } from '@app-builder/models';
+import { AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
+import { useRuleDescriptionMutation } from '@app-builder/queries/scenarios/rule-description';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -20,16 +22,16 @@ import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
+import { useDebouncedCallbackRef } from '@marble/shared';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, CtaClassName, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
-
 import { useCurrentScenarioIterationRule, useRuleGroups } from './_layout';
 
 export const handle = {
@@ -83,7 +85,7 @@ export const handle = {
 };
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
+  const { authService, appConfigRepository } = initServerServices(request);
   const { customListsRepository, editor, dataModelRepository } = await authService.isAuthenticated(
     request,
     {
@@ -91,17 +93,20 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     },
   );
 
-  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists] = await Promise.all([
-    editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
-    dataModelRepository.getDataModel(),
-    customListsRepository.listCustomLists(),
-  ]);
+  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, appConfig] =
+    await Promise.all([
+      editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
+      dataModelRepository.getDataModel(),
+      customListsRepository.listCustomLists(),
+      appConfigRepository.getAppConfig(),
+    ]);
 
   return {
     databaseAccessors,
     payloadAccessors,
     dataModel,
     customLists,
+    isAiRuleDescriptionEnabled: appConfig.isManagedMarble,
   };
 }
 
@@ -173,8 +178,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function RuleDetail() {
-  const { databaseAccessors, payloadAccessors, dataModel, customLists } =
-    useLoaderData<typeof loader>();
+  const {
+    databaseAccessors,
+    payloadAccessors,
+    dataModel,
+    customLists,
+    isAiRuleDescriptionEnabled,
+  } = useLoaderData<typeof loader>();
 
   const { t } = useTranslation(handle.i18n);
   const iterationId = useParam('iterationId');
@@ -205,6 +215,40 @@ export default function RuleDetail() {
     },
     defaultValues: rule as EditRuleForm,
   });
+
+  const ruleDescriptionMutation = useRuleDescriptionMutation(rule.id);
+  const [ruleDescription, setRuleDescription] = useState<string | undefined>(undefined);
+  const [isDebouncing, setIsDebouncing] = useState(false);
+
+  useEffect(() => {
+    if (!isAiRuleDescriptionEnabled) return;
+
+    setRuleDescription(undefined);
+    if (rule.formula) {
+      ruleDescriptionMutation.mutateAsync({ astNode: rule.formula }).then((res) => {
+        if (res.success && !ruleDescription) {
+          setRuleDescription(res.data);
+        }
+      });
+    }
+  }, [rule.id]);
+
+  const innerHandleFormulaChange = useDebouncedCallbackRef((value: AstNode | undefined) => {
+    setIsDebouncing(false);
+    if (value) {
+      ruleDescriptionMutation.mutateAsync({ astNode: value }).then((res) => {
+        if (res.success) {
+          setRuleDescription(res.data);
+        }
+      });
+    }
+  }, 3000);
+  const handleFormulaChange = (value: AstNode | undefined) => {
+    if (!isAiRuleDescriptionEnabled) return;
+
+    setIsDebouncing(true);
+    innerHandleFormulaChange(value);
+  };
 
   const options = {
     databaseAccessors,
@@ -359,8 +403,13 @@ export default function RuleDetail() {
                   )}
                 </form.Field>
               </div>
-
               <div className="flex flex-col gap-2">
+                {isAiRuleDescriptionEnabled ? (
+                  <AiDescription
+                    isPending={isDebouncing || ruleDescriptionMutation.isPending}
+                    description={ruleDescription}
+                  />
+                ) : null}
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
                 <div className="bg-grey-100 border-grey-90 rounded-md border p-6">
                   <form.Field
@@ -376,7 +425,10 @@ export default function RuleDetail() {
                         scenarioId={scenario.id}
                         options={options}
                         onBlur={field.handleBlur}
-                        onChange={field.handleChange}
+                        onChange={(node) => {
+                          field.handleChange(node);
+                          handleFormulaChange(node);
+                        }}
                         astNode={field.state.value}
                         defaultValue={NewEmptyRuleAstNode()}
                       />
