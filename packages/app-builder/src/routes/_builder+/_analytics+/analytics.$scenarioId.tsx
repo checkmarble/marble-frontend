@@ -61,7 +61,7 @@ export const handle = {
   i18n: ['navigation', 'data'] satisfies Namespace,
   BreadCrumbs: [
     ({ isLast }: BreadCrumbProps) => {
-      const { t } = useTranslation(['navigation']);
+      const { t } = useTranslation(['navigation', 'filters']);
 
       return (
         <BreadCrumbLink to={getRoute('/analytics')} isLast={isLast}>
@@ -144,7 +144,7 @@ export default function Analytics() {
   const urlScenarioId = useParam('scenarioId');
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['filters']);
 
   const [scenarioId, setScenarioId] = useState(urlScenarioId);
 
