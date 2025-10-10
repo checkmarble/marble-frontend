@@ -27,12 +27,14 @@ export function NumberValueFilter({ filter }: { filter: NumberFilter }) {
     setLocalValue({ operator: operator as NumberOperator, value: localValue.value });
     setOpSelectIsOpen(false);
   };
-
   if (filter.removable) {
     return (
       <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
         <FilterItem.Root>
-          <FilterItem.Trigger>{filter.placeholder}</FilterItem.Trigger>
+          <FilterItem.Trigger>
+            <strong>{filter.name}</strong> {filter.selectedValue?.operator}{' '}
+            {filter.selectedValue?.value}
+          </FilterItem.Trigger>
           {filter.removable ? (
             <FilterItem.Clear
               onClick={() => {
