@@ -952,6 +952,10 @@ export type OpenSanctionsDatasetFreshnessDto = {
     version: string;
     up_to_date: boolean;
 };
+export type ScenarioIterationRuleAiDescriptionDto = {
+    /** The AI description for the scenario iteration rule */
+    description: string;
+};
 export type UpdateScenarioIterationRuleBodyDto = {
     display_order?: number;
     name?: string;
@@ -3229,6 +3233,21 @@ export function createScenarioIterationRule(createScenarioIterationRuleBodyDto: 
     })));
 }
 /**
+ * Generate AI description for an AST expression
+ */
+export function generateAiDescriptionForAstExpression(body: {
+    ast_expression: NodeDto;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioIterationRuleAiDescriptionDto;
+    }>("/scenario-iteration-rules/ai-description", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * Get a scenario iteration rule by id
  */
 export function getScenarioIterationRule(ruleId: string, opts?: Oazapfts.RequestOpts) {
@@ -3292,6 +3311,26 @@ export function deleteScenarioIterationRule(ruleId: string, opts?: Oazapfts.Requ
     }>(`/scenario-iteration-rules/${encodeURIComponent(ruleId)}`, {
         ...opts,
         method: "DELETE"
+    }));
+}
+/**
+ * Get AI description for a scenario iteration rule
+ */
+export function getScenarioIterationRuleAiDescription(ruleId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioIterationRuleAiDescriptionDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iteration-rules/${encodeURIComponent(ruleId)}/ai-description`, {
+        ...opts
     }));
 }
 /**
