@@ -11,8 +11,5 @@ export interface FiltersBarContextValue {
 export const FiltersBarContext = createSimpleContext<FiltersBarContextValue | null>('FiltersBar');
 
 export function useFiltersBarContext(): FiltersBarContextValue {
-  const ctx = FiltersBarContext.useValue();
-  if (ctx) return ctx;
-
-  throw new Error('useFiltersBarContext must be used within FiltersBar');
+  return FiltersBarContext.useValue();
 }
