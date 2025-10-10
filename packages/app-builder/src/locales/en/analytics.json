@@ -4,5 +4,11 @@
   "decisions.tooltip.daily": "date: {{date}}",
   "decisions.tooltip.monthly": "month of {{date}}",
   "decisions.tooltip.weekly": "week of {{date}} <Br/>(Week {{weekNumber}})",
-  "filters.add_compare_period": "Add compare period"
+  "filters.add_compare_period": "Add compare period",
+  "ruleshit.columns.hit_count": "# hits",
+  "ruleshit.columns.hit_ratio": "% hits",
+  "ruleshit.columns.pivot_count": "# distinct pivots/users",
+  "ruleshit.columns.pivot_ratio": "% distinct pivots/users",
+  "ruleshit.columns.rule": "Rule",
+  "ruleshit.title": "Decisions rules"
 }

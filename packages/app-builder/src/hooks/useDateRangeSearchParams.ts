@@ -1,6 +1,6 @@
 import { useSearchParams } from '@remix-run/react';
 import { subDays, subMonths } from 'date-fns';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 type StaticDateRange = { type: 'static'; startDate: string; endDate: string };
 type DynamicDateRange = { type: 'dynamic'; fromNow: string };
@@ -17,39 +17,58 @@ function getDefaultRange(): { start: string; end: string } {
   return { start: toIso(start), end: toIso(end) };
 }
 
+function parseQ(qValue: string | null): { range: IsoRange; compareRange: IsoRange | null } {
+  if (qValue) {
+    try {
+      const obj = JSON.parse(atob(qValue)) as {
+        range?: { start?: string; end?: string } | null;
+        compareRange?: { start?: string; end?: string } | null;
+      };
+      if (obj?.range?.start && obj?.range?.end) {
+        return {
+          range: { start: obj.range.start, end: obj.range.end },
+          compareRange:
+            obj.compareRange?.start && obj.compareRange?.end
+              ? { start: obj.compareRange.start, end: obj.compareRange.end }
+              : null,
+        };
+      }
+    } catch {
+      // ignore malformed q
+    }
+  }
+  const defaults = getDefaultRange();
+  return { range: { start: defaults.start, end: defaults.end }, compareRange: null };
+}
+
 export function useDateRangeSearchParams() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const parseQ = useCallback(
-    (qValue: string | null): { range: IsoRange; compareRange: IsoRange | null } => {
-      if (qValue) {
-        try {
-          const obj = JSON.parse(atob(qValue)) as {
-            range?: { start?: string; end?: string } | null;
-            compareRange?: { start?: string; end?: string } | null;
-          };
-          if (obj?.range?.start && obj?.range?.end) {
-            return {
-              range: { start: obj.range.start, end: obj.range.end },
-              compareRange:
-                obj.compareRange?.start && obj.compareRange?.end
-                  ? { start: obj.compareRange.start, end: obj.compareRange.end }
-                  : null,
-            };
-          }
-        } catch {
-          // ignore malformed q
-        }
-      }
-      const defaults = getDefaultRange();
-      return { range: { start: defaults.start, end: defaults.end }, compareRange: null };
-    },
-    [],
-  );
+  const [dateRangeState, setDateRangeState] = useState(() => {
+    // Initialize state with parsed values
+    const qValue = searchParams.get('q');
+    return parseQ(qValue);
+  });
 
-  const { range, compareRange } = useMemo(
-    () => parseQ(searchParams.get('q')),
-    [parseQ, searchParams],
-  );
+  // Parse and update state only when the parsed values actually change
+  useEffect(() => {
+    const qValue = searchParams.get('q');
+    const parsed = parseQ(qValue);
+
+    // Only update state if values actually changed
+    setDateRangeState((current) => {
+      if (
+        current.range.start !== parsed.range.start ||
+        current.range.end !== parsed.range.end ||
+        current.compareRange?.start !== parsed.compareRange?.start ||
+        current.compareRange?.end !== parsed.compareRange?.end
+      ) {
+        return parsed;
+      }
+      return current;
+    });
+  }, [searchParams, parseQ]);
+
+  const { range, compareRange } = dateRangeState;
 
   const computeDynamicRange = useCallback((fromNow: string): IsoRange => {
     const now = new Date();
@@ -75,7 +94,7 @@ export function useDateRangeSearchParams() {
       params.delete('end');
       return params;
     },
-    [parseQ],
+    [],
   );
 
   const setDateRangeFilter = useCallback(
@@ -95,7 +114,7 @@ export function useDateRangeSearchParams() {
           const dynamicRange = computeDynamicRange(dateRange.fromNow);
           return writeQ(prev, { range: dynamicRange, compareRange: undefined });
         },
-        { replace: true },
+        { replace: false },
       );
     },
     [computeDynamicRange, setSearchParams, writeQ],
@@ -116,7 +135,7 @@ export function useDateRangeSearchParams() {
 
           return writeQ(prev, { compareRange: nextCompare });
         },
-        { replace: true },
+        { replace: false },
       );
     },
     [computeDynamicRange, setSearchParams, writeQ],

@@ -3,8 +3,11 @@ import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs } from '@remix-run/node';
 import { z } from 'zod';
 
-const queryParamsSchema = z.object({
+const urlParamsSchema = z.object({
   scenarioId: z.uuidv4(),
+});
+
+const queryParamsSchema = z.object({
   dateRange: z.object({
     start: z.iso.datetime(),
     end: z.iso.datetime(),
@@ -28,20 +31,30 @@ const queryParamsSchema = z.object({
     .default([]),
 });
 
-export async function action({ request, params }: ActionFunctionArgs) {
+export async function action({ params, request }: ActionFunctionArgs) {
   const { authService } = initServerServices(request);
-  await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-
   const { analytics } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  // Parse request body to get query parameters
+  const urlParams = urlParamsSchema.parse(params);
+
   const body = await request.json();
   const queryParams = queryParamsSchema.parse(body);
 
-  const query = await analytics.getDecisionOutcomesPerDay(queryParams);
-  return Response.json(query);
+  const [decisionOutcomesPerDay, ruleHitTable] = await Promise.all([
+    await analytics.getDecisionOutcomesPerDay({
+      ...queryParams,
+      scenarioId: urlParams.scenarioId,
+    }),
+    await analytics.getRuleHitTable({
+      ...queryParams,
+      scenarioId: urlParams.scenarioId,
+    }),
+  ]);
+
+  return Response.json({
+    decisionOutcomesPerDay,
+    ruleHitTable,
+  });
 }

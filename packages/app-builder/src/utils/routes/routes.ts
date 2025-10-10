@@ -371,6 +371,16 @@ export const routes = [
         "file": "routes/healthcheck.ts"
       },
       {
+        "id": "routes/ressources+/analytics+/available_filters.$scenarioId",
+        "path": "ressources/analytics/available_filters/:scenarioId",
+        "file": "routes/ressources+/analytics+/available_filters.$scenarioId.ts"
+      },
+      {
+        "id": "routes/ressources+/analytics+/decisions_outcomes_per_day.$scenarioId",
+        "path": "ressources/analytics/decisions_outcomes_per_day/:scenarioId",
+        "file": "routes/ressources+/analytics+/decisions_outcomes_per_day.$scenarioId.ts"
+      },
+      {
         "id": "routes/ressources+/analytics+/query.$queryName",
         "path": "ressources/analytics/query/:queryName",
         "file": "routes/ressources+/analytics+/query.$queryName.ts"
