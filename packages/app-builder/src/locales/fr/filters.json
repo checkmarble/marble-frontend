@@ -1,5 +1,8 @@
 {
   "clear_filters": "effacer les filtres",
+  "ds.addNewFilter.label": "Ajouter un nouveau filtre",
+  "ds.chooseFilter.label": "Choisir un filtre",
+  "ds.noOptionsAvailable.label": "Aucune option disponible",
   "filters": "filtres",
   "new_filter": "nouveau filtre",
   "up_to": "jusqu'à {{duration}}"

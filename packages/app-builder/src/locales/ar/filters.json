@@ -1,5 +1,8 @@
 {
   "clear_filters": "مسح الفلاتر",
+  "ds.addNewFilter.label": "إضافة فلتر جديد",
+  "ds.chooseFilter.label": "اختر فلتر",
+  "ds.noOptionsAvailable.label": "لا يوجد خيارات متاحة",
   "filters": "الفلاتر",
   "new_filter": "فلتر جدبد",
   "up_to": "حتى {{date}}"
