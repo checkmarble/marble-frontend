@@ -386,7 +386,7 @@ export default function Analytics() {
       <I18nProvider value={{ locale: i18n.language, t }}>
         <div className="max-w-6xl p-v2-lg">
           <div className="flex flex-row gap-v2-md mb-v2-lg">
-            <div className="flex flex-row gap-v2-sm items-center">
+            <div className="flex flex-row gap-v2-sm items-start min-h-[88px]">
               <FiltersBar
                 descriptors={descriptors}
                 dynamicDescriptors={dynamicDescriptors}
