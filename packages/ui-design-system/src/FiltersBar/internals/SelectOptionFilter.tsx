@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Button } from '../../Button/Button';
+import { useI18n } from '../../contexts/I18nContext';
 import { MenuCommand } from '../../MenuCommand/MenuCommand';
 import { type SelectFilter } from '../types';
 import { useFiltersBarContext } from './FiltersBarContext';
 
 export function SelectOptionFilter(props: SelectFilter) {
+  const { t } = useI18n();
   const { options, placeholder, selectedValue, name } = props;
   const { emitSet } = useFiltersBarContext();
   const [internalSelectedValue, setInternalSelectedValue] = useState<string>(
@@ -61,7 +63,7 @@ export function SelectOptionFilter(props: SelectFilter) {
                 );
               })
             ) : (
-              <MenuCommand.Empty>No options available</MenuCommand.Empty>
+              <MenuCommand.Empty>{t('filters:ds.noOptionsAvailable.label')}</MenuCommand.Empty>
             )}
           </MenuCommand.List>
         </MenuCommand.Content>

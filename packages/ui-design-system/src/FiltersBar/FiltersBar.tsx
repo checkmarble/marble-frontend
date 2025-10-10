@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from '../Button/Button';
 import { Checkbox } from '../Checkbox/Checkbox';
+import { useI18n } from '../contexts/I18nContext';
 import { Modal } from '../Modal/Modal';
 import { cn } from '../utils';
 import { BooleanValueFilter } from './internals/BooleanValueFilter';
@@ -46,6 +47,7 @@ export function FiltersBar({
   active = [],
   onChange,
 }: FiltersBarProps) {
+  const { t } = useI18n();
   const [isAddModalOpen, setAddModalOpen] = useState(false);
 
   const contextValue = useMemo<FiltersBarContextValue>(() => {
@@ -195,11 +197,11 @@ export function FiltersBar({
             {level === 'additional' && (
               <>
                 <ButtonV2 variant="secondary" onClick={() => setAddModalOpen(true)}>
-                  Add new filter
+                  {t('filters:ds.addNewFilter.label')}
                 </ButtonV2>
                 <Modal.Root open={isAddModalOpen} onOpenChange={setAddModalOpen}>
                   <Modal.Content size="small">
-                    <Modal.Title>Choose a filter</Modal.Title>
+                    <Modal.Title>{t('filters:ds.chooseFilter.label')}</Modal.Title>
                     <div className="p-4 grid grid-cols-1 gap-2">
                       {dynamicDescriptors
                         .filter((d) => !active.includes(d.name))

@@ -4,7 +4,6 @@ export type FilterBarLevel = 'main' | 'additional';
 
 export type CommittedDynamicValues = Record<string, unknown>;
 
-// Legacy internal filter data shape used for rendering
 export interface BaseFilter<T> {
   name: string;
   placeholder: string;
