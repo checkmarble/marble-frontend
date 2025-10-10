@@ -11,7 +11,7 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/DecisionOutcomesPerDayQueryDto'
+            $ref: '#/components/schemas/AnalyticsQueryDto'
     responses:
       '400':
         $ref: 'components.yml#/responses/400'
@@ -29,7 +29,37 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
-
+/analytics/query/rule_hit_table:
+  post:
+    tags:
+      - Analytics
+    summary: Get rule hit table
+    operationId: getRuleHitTable
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AnalyticsQueryDto'
+    responses:
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '200':
+        description: The rule hit table
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleHitTableResponseDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /analytics/available-filters:
   post:
     tags:
@@ -97,7 +127,7 @@ components:
               - type: string
               - type: number
               - type: boolean
-    DecisionOutcomesPerDayQueryDto:
+    AnalyticsQueryDto:
       allOf:
         - $ref: '#/components/schemas/ScenarioFilterDto'
         - $ref: '#/components/schemas/DateRangeFilterDto'
@@ -129,6 +159,25 @@ components:
           type: integer
         review:
           type: integer
+    RuleHitTableResponseDto:
+      type: object
+      required:
+        - rule_name
+        - hit_count
+        - hit_ratio
+        - pivot_count
+        - pivot_ratio
+      properties:
+        rule_name:
+          type: string
+        hit_count:
+          type: integer
+        hit_ratio:
+          type: number
+        pivot_count:
+          type: integer
+        pivot_ratio:
+          type: number
     AvailableFiltersRequestDto:
       type: object
       required:

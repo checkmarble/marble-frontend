@@ -1,8 +1,6 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import {
-  DecisionOutcomesPerDayQuery,
-  DecisionOutcomesPerPeriod,
-} from '@app-builder/models/analytics';
+import { AnalyticsQuery, DecisionOutcomesPerPeriod } from '@app-builder/models/analytics';
+import { RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 import { getRoute } from '@app-builder/utils/routes';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
@@ -12,7 +10,7 @@ export const useGetDecisionsOutcomesPerDay = ({
   dateRange,
   compareDateRange = undefined,
   trigger = [],
-}: DecisionOutcomesPerDayQuery) => {
+}: AnalyticsQuery) => {
   const navigate = useAgnosticNavigation();
   const endpoint = getRoute('/ressources/analytics/decisions_outcomes_per_day/:scenarioId', {
     scenarioId,
@@ -57,7 +55,10 @@ export const useGetDecisionsOutcomesPerDay = ({
         return;
       }
 
-      return result as Promise<DecisionOutcomesPerPeriod>;
+      return result as {
+        decisionOutcomesPerDay: DecisionOutcomesPerPeriod | null;
+        ruleHitTable: RuleHitTableResponse[] | null;
+      };
     },
     placeholderData: keepPreviousData,
   });

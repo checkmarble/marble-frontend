@@ -1,7 +1,9 @@
 import { ErrorComponent } from '@app-builder/components';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
+import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { type DecisionOutcomesPerPeriod, FilterSource } from '@app-builder/models/analytics';
+import { RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 import { type Scenario } from '@app-builder/models/scenario';
 import { useGetAvailableFilters } from '@app-builder/queries/analytics/get-available-filters';
 import { useGetDecisionsOutcomesPerDay } from '@app-builder/queries/analytics/get-decisions-outcomes-per-day';
@@ -276,7 +278,18 @@ export default function Analytics() {
           value: number;
         } | null;
         if (c && c.value !== undefined && c.value !== null) {
-          out.push({ field: name, op: c.operator, values: [String(c.value)] });
+          const opMap: Record<
+            'eq' | 'ne' | 'lt' | 'lte' | 'gt' | 'gte',
+            '=' | '!=' | '>' | '>=' | '<' | '<='
+          > = {
+            eq: '=',
+            ne: '!=',
+            lt: '<',
+            lte: '<=',
+            gt: '>',
+            gte: '>=',
+          };
+          out.push({ field: name, op: opMap[c.operator], values: [String(c.value)] });
         }
         continue;
       }
@@ -288,7 +301,13 @@ export default function Analytics() {
     return out;
   }, [activeDynamicFilters, filtersValue, dynamicMeta]);
 
-  const { data: decisionsData, isFetching: isDecisionsPending } = useGetDecisionsOutcomesPerDay({
+  const {
+    data: { decisionOutcomesPerDay: decisionsData, ruleHitTable: ruleHitTableData } = {
+      decisionOutcomesPerDay: null,
+      ruleHitTable: [],
+    },
+    isFetching: isDecisionsPending,
+  } = useGetDecisionsOutcomesPerDay({
     scenarioId,
     scenarioVersion: undefined,
     dateRange: currentRange ?? initialRange,
@@ -383,24 +402,35 @@ export default function Analytics() {
         formatDuration: (dur, lang) => formatDuration(dur, lang ?? i18n.language),
       }}
     >
-      <I18nProvider value={{ locale: i18n.language, t }}>
-        <div className="max-w-6xl p-v2-lg">
-          <div className="flex flex-row gap-v2-md mb-v2-lg">
-            <div className="flex flex-row gap-v2-sm items-start min-h-[88px]">
-              <FiltersBar
-                descriptors={descriptors}
-                dynamicDescriptors={dynamicDescriptors}
-                value={filtersValue}
-                active={activeDynamicFilters}
-                onChange={onFiltersChange}
-              />
+      <I18nProvider
+        value={{
+          locale: i18n.language,
+          t: t as (key: string, options?: Record<string, unknown>) => string,
+        }}
+      >
+        <div className="overflow-y-auto">
+          <div className="flex flex-1 flex-col overflow-y-auto max-w-6xl p-v2-lg">
+            <div className="flex flex-row gap-v2-md mb-v2-lg">
+              <div className="flex flex-row gap-v2-sm items-start min-h-[88px]">
+                <FiltersBar
+                  descriptors={descriptors}
+                  dynamicDescriptors={dynamicDescriptors}
+                  value={filtersValue}
+                  active={activeDynamicFilters}
+                  onChange={onFiltersChange}
+                />
+              </div>
             </div>
+            <Decisions
+              data={decisionsData as DecisionOutcomesPerPeriod}
+              scenarioVersions={scenarioVersions}
+              isLoading={isDecisionsPending}
+            />
+            <RulesHit
+              data={ruleHitTableData as RuleHitTableResponse[]}
+              isLoading={isDecisionsPending}
+            />
           </div>
-          <Decisions
-            data={decisionsData as DecisionOutcomesPerPeriod}
-            scenarioVersions={scenarioVersions}
-            isLoading={isDecisionsPending}
-          />
         </div>
       </I18nProvider>
     </FormattingProvider>

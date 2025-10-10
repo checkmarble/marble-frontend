@@ -1,8 +1,10 @@
 import { Spinner } from '@app-builder/components/Spinner';
 import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
 import {
+  type DecisionOutcomesAbsolute,
   DecisionOutcomesPerPeriod,
   type DecisionsFilter,
+  type Outcome,
   outcomeColors,
   type RangeId,
 } from '@app-builder/models/analytics';
@@ -176,11 +178,57 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     return currentDataGroup?.gridXValues;
   };
 
+  const handleExportCsv = () => {
+    if (!currentDataGroup) return;
+    const rows = percentage ? currentDataGroup.data.ratio : currentDataGroup.data.absolute;
+    if (!rows.length) return;
+
+    const selectedOutcomes: Outcome[] = Array.from(decisions.entries())
+      .filter(([, value]) => value)
+      .map(([key]) => key);
+
+    const includeTotal = !percentage;
+    const headers = ['date', 'rangeId', ...selectedOutcomes, ...(includeTotal ? ['total'] : [])];
+
+    const lines = rows.map((row) => {
+      const base = [row.date, row.rangeId];
+      type OutcomeValues = Pick<DecisionsPerOutcome, Outcome>;
+      const outcomeValues = selectedOutcomes.map((k) => {
+        const v = (row as OutcomeValues)[k];
+        return percentage ? v.toFixed(1) : String(v);
+      });
+      const maybeTotal = includeTotal ? [String((row as DecisionOutcomesAbsolute).total ?? 0)] : [];
+      return [...base, ...outcomeValues, ...maybeTotal].join(',');
+    });
+
+    const csv = [headers.join(','), ...lines].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8,' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `decisions_${groupDate}_${percentage ? 'percentage' : 'absolute'}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h2 className="text-l font-semibold">{t('analytics:decisions.title')}</h2>
-        <ButtonV2 variant="secondary" className="flex items-center gap-v2-sm" disabled={true}>
+        <h2 className="text-h2 font-semibold">{t('analytics:decisions.title')}</h2>
+        <ButtonV2
+          variant="secondary"
+          className="flex items-center gap-v2-sm"
+          disabled={
+            isLoading ||
+            !currentDataGroup ||
+            (percentage
+              ? (currentDataGroup.data.ratio?.length ?? 0) === 0
+              : (currentDataGroup.data.absolute?.length ?? 0) === 0)
+          }
+          onClick={handleExportCsv}
+        >
           <Icon icon="download" className="size-4" />
           {t('analytics:decisions.export.button')}
         </ButtonV2>

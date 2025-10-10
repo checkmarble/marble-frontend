@@ -470,10 +470,12 @@ UpsertAISettingsDto:
 
   # ANALYTICS
 
-DecisionOutcomesPerDayQueryDto:
-  $ref: analytics.yml#/components/schemas/DecisionOutcomesPerDayQueryDto
+AnalyticsQueryDto:
+  $ref: analytics.yml#/components/schemas/AnalyticsQueryDto
 DecisionOutcomesPerDayResponseDto:
   $ref: analytics.yml#/components/schemas/DecisionOutcomesPerDayResponseDto
+RuleHitTableResponseDto:
+  $ref: analytics.yml#/components/schemas/RuleHitTableResponseDto
 TriggerFilterDto:
   $ref: analytics.yml#/components/schemas/TriggerFilterDto
 AvailableFiltersRequestDto:

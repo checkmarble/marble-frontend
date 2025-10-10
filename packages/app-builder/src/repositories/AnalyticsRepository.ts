@@ -1,13 +1,13 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import {
+  type AnalyticsQuery,
   adaptDecisionOutcomesPerDay,
-  type DecisionOutcomesPerDayQuery,
   type DecisionOutcomesPerPeriod,
   fillMissingDays,
   LimitDate,
   legacyAnalytics,
   mergeDateRanges,
-  transformDecisionOutcomesPerDayQuery,
+  transformAnalyticsQuery,
 } from '@app-builder/models/analytics';
 import {
   type AvailableFiltersRequest,
@@ -15,14 +15,14 @@ import {
   adaptAvailableFiltersResponse,
   transformAvailableFiltersRequest,
 } from '@app-builder/models/analytics/available-filters';
+import { adaptRuleHitTable, RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 
 import { compareAsc, compareDesc, differenceInDays } from 'date-fns';
 
 export interface AnalyticsRepository {
   legacyListAnalytics(): Promise<legacyAnalytics.Analytics[]>;
-  getDecisionOutcomesPerDay(
-    args: DecisionOutcomesPerDayQuery,
-  ): Promise<DecisionOutcomesPerPeriod | null>;
+  getDecisionOutcomesPerDay(args: AnalyticsQuery): Promise<DecisionOutcomesPerPeriod | null>;
+  getRuleHitTable(args: AnalyticsQuery): Promise<RuleHitTableResponse[] | null>;
   getAvailableFilters(args: AvailableFiltersRequest): Promise<AvailableFiltersResponse>;
 }
 
@@ -36,9 +36,9 @@ export function makeGetAnalyticsRepository() {
     },
 
     getDecisionOutcomesPerDay: async (
-      args: DecisionOutcomesPerDayQuery,
+      args: AnalyticsQuery,
     ): Promise<DecisionOutcomesPerPeriod | null> => {
-      const parsed = transformDecisionOutcomesPerDayQuery.parse(args);
+      const parsed = transformAnalyticsQuery.parse(args);
       if (!parsed.length) throw new Error('No date range provided');
 
       console.log('parsed', parsed);
@@ -91,6 +91,14 @@ export function makeGetAnalyticsRepository() {
         console.error(error);
         return null;
       }
+    },
+
+    getRuleHitTable: async (args: AnalyticsQuery): Promise<RuleHitTableResponse[] | null> => {
+      const parsed = transformAnalyticsQuery.parse(args);
+      if (!parsed.length) throw new Error('No date range provided');
+
+      const raw = await client.getRuleHitTable(parsed[0]!);
+      return adaptRuleHitTable(raw);
     },
 
     getAvailableFilters: async (

@@ -1386,7 +1386,7 @@ export type TriggerFilterDto = {
     op: "=" | "!=" | ">" | ">=" | "<" | "<=" | "in";
     values: (string | number | boolean)[];
 };
-export type DecisionOutcomesPerDayQueryDto = {
+export type AnalyticsQueryDto = {
     scenario_id: string;
     scenario_versions: number[];
 } & {
@@ -1401,6 +1401,13 @@ export type DecisionOutcomesPerDayResponseDto = {
     block_and_review: number;
     decline: number;
     review: number;
+};
+export type RuleHitTableResponseDto = {
+    rule_name: string;
+    hit_count: number;
+    hit_ratio: number;
+    pivot_count: number;
+    pivot_ratio: number;
 };
 export type AvailableFiltersRequestDto = {
     scenario_id: string;
@@ -4937,7 +4944,7 @@ export function upsertAiSettings(upsertAiSettingsDto: UpsertAiSettingsDto, opts?
 /**
  * Get decision outcomes per day
  */
-export function getDecisionOutcomesPerDay(decisionOutcomesPerDayQueryDto: DecisionOutcomesPerDayQueryDto, opts?: Oazapfts.RequestOpts) {
+export function getDecisionOutcomesPerDay(analyticsQueryDto: AnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: DecisionOutcomesPerDayResponseDto[];
@@ -4956,7 +4963,32 @@ export function getDecisionOutcomesPerDay(decisionOutcomesPerDayQueryDto: Decisi
     }>("/analytics/query/decision_outcomes_per_day", oazapfts.json({
         ...opts,
         method: "POST",
-        body: decisionOutcomesPerDayQueryDto
+        body: analyticsQueryDto
+    })));
+}
+/**
+ * Get rule hit table
+ */
+export function getRuleHitTable(analyticsQueryDto: AnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: RuleHitTableResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/analytics/query/rule_hit_table", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: analyticsQueryDto
     })));
 }
 /**

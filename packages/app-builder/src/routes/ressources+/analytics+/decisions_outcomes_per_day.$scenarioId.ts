@@ -42,10 +42,19 @@ export async function action({ params, request }: ActionFunctionArgs) {
   const body = await request.json();
   const queryParams = queryParamsSchema.parse(body);
 
-  const query = await analytics.getDecisionOutcomesPerDay({
-    ...queryParams,
-    scenarioId: urlParams.scenarioId,
+  const [decisionOutcomesPerDay, ruleHitTable] = await Promise.all([
+    await analytics.getDecisionOutcomesPerDay({
+      ...queryParams,
+      scenarioId: urlParams.scenarioId,
+    }),
+    await analytics.getRuleHitTable({
+      ...queryParams,
+      scenarioId: urlParams.scenarioId,
+    }),
+  ]);
+
+  return Response.json({
+    decisionOutcomesPerDay,
+    ruleHitTable,
   });
-  //   console.log('query', JSON.stringify(query, null,  ));
-  return Response.json(query);
 }
