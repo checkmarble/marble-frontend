@@ -1,5 +1,7 @@
+ARG BUN_IMAGE=oven/bun:1.2-alpine
+ARG RUNTIME_IMAGE=gcr.io/distroless/nodejs22-debian12:nonroot
 # ---- Dependencies stage ----
-FROM oven/bun:alpine AS deps-dev
+FROM ${BUN_IMAGE} AS deps-dev
 WORKDIR /usr/src/app
 
 # Copy only workspace manifests to maximize install cache hits
@@ -18,7 +20,7 @@ RUN --mount=type=cache,target=/root/.bun \
     bun ci
 
 # ---- Build stage ---- (uses dev deps from above)
-FROM oven/bun:alpine AS build
+FROM ${BUN_IMAGE} AS build
 WORKDIR /usr/src/app
 
 # Copy full source AFTER deps to leverage layer caching
@@ -45,7 +47,7 @@ RUN mkdir -p /prod/app-builder && \
     cp -R packages/app-builder/build /prod/app-builder/build
 
 # ---- Production Dependencies stage ----
-FROM oven/bun:alpine AS deps-prod
+FROM ${BUN_IMAGE} AS deps-prod
 WORKDIR /usr/src/app
 
 # Copy only workspace manifests to maximize install cache hits
@@ -64,7 +66,7 @@ RUN --mount=type=cache,target=/root/.bun \
     bun install --production --frozen-lockfile
 
 # ---- Runtime stage ---- (uses prod deps)
-FROM gcr.io/distroless/nodejs22-debian12:nonroot AS app-builder
+FROM ${RUNTIME_IMAGE} AS app-builder
 WORKDIR /prod/app-builder
 
 ENV NODE_ENV=production
