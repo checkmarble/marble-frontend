@@ -101,7 +101,6 @@
   "case_detail.pivot_panel.more_data": "View more",
   "case_detail.pivot_panel.related_object": "Related object - {{tableName}}",
   "case_detail.pivot_values": "Pivot values",
-  "case_detail.review_decision": "Review",
   "case_detail.review_decision.callout": "Reviewing a decision will change its status and dispatch a webhook to trigger the next step in your workflow (<DocLink>learn more</DocLink>)",
   "case_detail.review_decision.comment.label": "Comment",
   "case_detail.review_decision.comment.placeholder": "Explain why you are choosing this review status",

@@ -20,7 +20,7 @@ export const ClearAllFiltersLink = forwardRef<
       {...props}
     >
       <Icon icon="cross" className="size-5" />
-      <span className="line-clamp-1 capitalize">{t('filters:clear_filters')}</span>
+      <span className="line-clamp-1">{t('filters:clear_filters')}</span>
     </Link>
   );
 });
@@ -37,7 +37,7 @@ export const ClearAllFiltersButton = forwardRef<
       {...props}
     >
       <Icon icon="cross" className="size-5" />
-      <span className="line-clamp-1 capitalize">{t('filters:clear_filters')}</span>
+      <span className="line-clamp-1">{t('filters:clear_filters')}</span>
     </button>
   );
 });

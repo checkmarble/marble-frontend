@@ -179,7 +179,7 @@ export function RefineSearchModal({
             {screening.request ? <SearchInput request={screening.request} /> : null}
             <form.Field name="entityType" listeners={{ onChange: onSearchEntityChange }}>
               {(field) => (
-                <Field label="Counterparty Entity">
+                <Field label={t('screenings:search_entity_type')}>
                   <EntitySelect
                     name={field.name}
                     value={field.state.value}

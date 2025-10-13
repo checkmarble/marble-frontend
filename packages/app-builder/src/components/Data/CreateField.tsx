@@ -308,7 +308,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
             name="create"
             disabled={form.state.isSubmitting}
           >
-            {t('data:create_field.button_accept')}
+            {t('data:create.button_accept')}
           </Button>
         </div>
       </div>

@@ -249,7 +249,7 @@ function ReviewDecisionContent({
               className="size-5"
               loading={fetcher.state === 'submitting'}
             />
-            {t('cases:case_detail.review_decision')}
+            {t('common:validate')}
           </Button>
         </div>
       </div>

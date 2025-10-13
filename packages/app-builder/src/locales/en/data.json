@@ -1,5 +1,4 @@
 {
-  "create_field.button_accept": "Create field",
   "create_field.description_placeholder": "Field description",
   "create_field.generic_error": "An error occurred while creating the field",
   "create_field.is_enum.subtitle": "It takes a limited number of distinct values, like a status code",
@@ -53,6 +52,7 @@
   "create_table.description_placeholder": "Table description",
   "create_table.name_placeholder": "Table name",
   "create_table.title": "Create a new table",
+  "create.button_accept": "Create",
   "description": "Description",
   "edit_field.button_accept": "Save changes",
   "edit_field.is_unique.cannot_toggle_index_pending": "The unicity constraint on the field is currently being created. Please wait for the operation to complete before untoggling this setting.",
@@ -87,7 +87,7 @@
   "view_pivot.table": "Table",
   "view_pivot.title": "Group details",
   "view_pivot.type": "Type",
-  "viewer.no_object_found": "No object found for id {{objectId}} in {{tableName}}",
+  "viewer.no_object_found": "No object found for id \"{{objectId}}\" in {{tableName}}",
   "viewer.object_id": "Object ID",
   "viewer.object_type": "Object type",
   "your_data_callout": "This is the list of all the objects you can send to Marble, as well as their properties. Get in touch with the Marble team if you'd like to make changes to your data model."

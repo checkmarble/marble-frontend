@@ -63,6 +63,7 @@ export const CloseCase = ({ id }: { id: string }) => {
           >
             {(field) => (
               <div className="flex flex-col gap-2">
+                {/* TODO: translation keys */}
                 <FormLabel name={field.name}>Choose a status</FormLabel>
                 <RadioGroup
                   name={field.name}

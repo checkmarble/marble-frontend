@@ -95,7 +95,7 @@
   "scenario_default_timezone.no_match": "No timezone matches your search",
   "scenario_default_timezone.not_set": "Not set",
   "scenario_sanction_callout": "Changing this value will immediately impact all live scenario versions",
-  "scenario_sanction_limit": "Limit of hit before refinement",
+  "scenario_sanction_limit": "Limit of hits above which it is necessary to refine the search",
   "scenario_sanction_limit_placeholder": "5",
   "scenario_sanction_settings": "Sanction settings",
   "scenario_sanction_threshold": "Minimum similarity score (%)",

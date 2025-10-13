@@ -1,5 +1,4 @@
 {
-  "create_field.button_accept": "إنشاء الحقل",
   "create_field.description_placeholder": "وصف الحقل",
   "create_field.generic_error": "حدث خطأ أثناء إنشاء الحقل",
   "create_field.is_enum.subtitle": "يأخذ عددًا محدودًا من القيم المميزة، مثل رمز الحالة",
@@ -53,6 +52,7 @@
   "create_table.description_placeholder": "وصف الجدول",
   "create_table.name_placeholder": "اسم الجدول",
   "create_table.title": "إنشاء جدول جديد",
+  "create.button_accept": "إنشاء الحقل",
   "description": "الوصف",
   "edit_field.button_accept": "حفظ التغييرات",
   "edit_field.is_unique.cannot_toggle_index_pending": "يتم حاليًا إنشاء قيد التفرد على هذا الحقل. يرجى الانتظار حتى تكتمل العملية قبل إلغاء تفعيل هذا الإعداد.",
@@ -87,7 +87,7 @@
   "view_pivot.table": "الجدول",
   "view_pivot.title": "تفاصيل المجموعة",
   "view_pivot.type": "النوع",
-  "viewer.no_object_found": "لم يتم العثور على كائن بالمعرف {{objectId}} في {{tableName}}",
+  "viewer.no_object_found": "لم يتم العثور على كائن بالمعرف \"{{objectId}}\" في {{tableName}}",
   "viewer.object_id": "معرف الكائن",
   "viewer.object_type": "نوع الكائن",
   "your_data_callout": "هذه قائمة بجميع الكائنات التي يمكنك إرسالها إلى Marble، إضافةً إلى خصائصها. تواصل مع فريق Marble إذا رغبت في إجراء تغييرات على نموذج بياناتك."
