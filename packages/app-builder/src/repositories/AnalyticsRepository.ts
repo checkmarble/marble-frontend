@@ -41,7 +41,6 @@ export function makeGetAnalyticsRepository() {
       const parsed = transformAnalyticsQuery.parse(args);
       if (!parsed.length) throw new Error('No date range provided');
 
-      console.log('parsed', parsed);
       try {
         const [raw, rawCompare] = await Promise.all([
           client.getDecisionOutcomesPerDay(parsed[0]!),
