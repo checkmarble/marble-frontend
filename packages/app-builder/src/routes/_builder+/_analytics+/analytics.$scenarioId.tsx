@@ -60,10 +60,10 @@ const qSchema = z
   );
 
 export const handle = {
-  i18n: ['navigation', 'data'] satisfies Namespace,
+  i18n: ['navigation', 'filters', 'analytics'] satisfies Namespace,
   BreadCrumbs: [
     ({ isLast }: BreadCrumbProps) => {
-      const { t } = useTranslation(['navigation', 'filters']);
+      const { t } = useTranslation(['navigation', 'filters', 'analytics']);
 
       return (
         <BreadCrumbLink to={getRoute('/analytics')} isLast={isLast}>
@@ -146,7 +146,7 @@ export default function Analytics() {
   const urlScenarioId = useParam('scenarioId');
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
-  const { t, i18n } = useTranslation(['filters']);
+  const { t, i18n } = useTranslation(['filters', 'analytics']);
 
   const [scenarioId, setScenarioId] = useState(urlScenarioId);
 
@@ -377,18 +377,18 @@ export default function Analytics() {
     {
       type: 'select',
       name: 'scenario',
-      placeholder: 'Select scenario',
+      placeholder: t('analytics:filters.select_scenario.placeholder'),
       options: scenarios.map((scenario) => ({ label: scenario.name, value: scenario.id })),
     },
     {
       type: 'date-range-popover',
       name: 'dateRange',
-      placeholder: 'Select date range',
+      placeholder: t('analytics:filters.select_date_range.placeholder'),
     },
     {
       type: 'date-range-popover',
       name: 'compareDateRange',
-      placeholder: 'Select comparison date range',
+      placeholder: t('analytics:filters.select_comparison_date_range.placeholder'),
       removable: true,
     },
   ];
