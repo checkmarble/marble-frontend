@@ -9,11 +9,10 @@ import {
   getMonth,
   isAfter,
   isBefore,
-  startOfDay,
   startOfMonth,
   startOfWeek,
 } from 'date-fns';
-import { DecisionOutcomesPerDayQueryDto, type DecisionOutcomesPerDayResponseDto } from 'marble-api';
+import { type DecisionOutcomesPerDayResponseDto } from 'marble-api';
 import z from 'zod';
 
 export type RangeId = 'base' | 'compare';
@@ -69,27 +68,9 @@ export interface DecisionOutcomesPerPeriod {
 
 export const triggerFilter = z.object({
   field: z.uuidv4(),
-  op: z.enum(['=', '!=', '>', '>=', '<', '<=']),
-  values: z.array(z.string()),
+  op: z.enum(['=', '!=', '>', '>=', '<', '<=', 'in']),
+  values: z.array(z.union([z.string(), z.number(), z.boolean()])),
 });
-
-export const decisionOutcomesPerDayQuery = z.object({
-  dateRange: z.object({
-    start: z.iso.datetime(),
-    end: z.iso.datetime(),
-  }),
-  compareDateRange: z
-    .object({
-      start: z.iso.datetime(),
-      end: z.iso.datetime(),
-    })
-    .optional(),
-  scenarioId: z.uuidv4(),
-  scenarioVersion: z.number().optional(),
-  trigger: z.array(triggerFilter),
-});
-
-export type DecisionOutcomesPerDayQuery = z.infer<typeof decisionOutcomesPerDayQuery>;
 
 export const mergeDateRanges = (
   dateRanges: DecisionOutcomesPerDayResponseDto[][],
@@ -161,31 +142,6 @@ export const fillMissingDays = (
     return acc;
   }, []);
 };
-
-export const transformDecisionOutcomesPerDayQuery = decisionOutcomesPerDayQuery.transform(
-  (val): DecisionOutcomesPerDayQueryDto[] => {
-    return [
-      {
-        start: startOfDay(val.dateRange.start).toISOString(),
-        end: startOfDay(val.dateRange.end).toISOString(),
-        scenario_id: val.scenarioId,
-        scenario_versions: val.scenarioVersion ? [val.scenarioVersion] : [],
-        trigger: val.trigger,
-      },
-      ...(val.compareDateRange
-        ? [
-            {
-              start: startOfDay(val.compareDateRange.start).toISOString(),
-              end: startOfDay(val.compareDateRange.end).toISOString(),
-              scenario_id: val.scenarioId,
-              scenario_versions: val.scenarioVersion ? [val.scenarioVersion] : [],
-              trigger: val.trigger,
-            },
-          ]
-        : []),
-    ];
-  },
-);
 
 const MAX_TICKS = 12;
 const limitTicks = (data: DecisionOutcomesAbsolute[]): DecisionOutcomesAbsolute[] =>

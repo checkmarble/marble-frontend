@@ -4,5 +4,14 @@
   "decisions.tooltip.daily": "date: {{date}}",
   "decisions.tooltip.monthly": "mois de {{date}}",
   "decisions.tooltip.weekly": "semaine du {{date}} <Br/>(Semaine {{weekNumber}})",
-  "filters.add_compare_period": "Ajouter une période de comparaison"
+  "filters.select_comparison_date_range.placeholder": "Ajouter une période à comparer",
+  "filters.select_date_range.placeholder": "Sélectionner une période",
+  "filters.select_scenario.placeholder": "Sélectionner un scénario",
+  "ruleshit.columns.hit_count": "# déclenchements",
+  "ruleshit.columns.hit_ratio": "% déclenchements",
+  "ruleshit.columns.pivot_count": "# pivots/utilisateurs distincts",
+  "ruleshit.columns.pivot_ratio": "% pivots/utilisateurs distincts",
+  "ruleshit.columns.rule": "Règle",
+  "ruleshit.see_more.label": "Voir plus +",
+  "ruleshit.title": "Décisions par règle"
 }

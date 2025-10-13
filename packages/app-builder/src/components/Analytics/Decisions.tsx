@@ -1,7 +1,10 @@
+import { Spinner } from '@app-builder/components/Spinner';
 import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
 import {
+  type DecisionOutcomesAbsolute,
   DecisionOutcomesPerPeriod,
   type DecisionsFilter,
+  type Outcome,
   outcomeColors,
   type RangeId,
 } from '@app-builder/models/analytics';
@@ -31,9 +34,10 @@ export type DecisionsPerOutcome = {
 interface DecisionsProps {
   data: DecisionOutcomesPerPeriod | null;
   scenarioVersions: { version: number; createdAt: string }[];
+  isLoading?: boolean;
 }
 
-export function Decisions({ data, scenarioVersions }: DecisionsProps) {
+export function Decisions({ data, scenarioVersions, isLoading = false }: DecisionsProps) {
   const { t } = useTranslation();
   const language = useFormatLanguage();
 
@@ -174,11 +178,56 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
     return currentDataGroup?.gridXValues;
   };
 
+  const handleExportCsv = () => {
+    if (!currentDataGroup) return;
+    const rows = currentDataGroup.data.absolute;
+    if (!rows.length) return;
+
+    const selectedOutcomes: Outcome[] = Array.from(decisions.entries())
+      .filter(([, value]) => value)
+      .map(([key]) => key);
+
+    const headers = ['date', 'rangeId', ...selectedOutcomes, ['total']];
+
+    const lines = rows.map((row) => {
+      const base = [row.date, row.rangeId];
+      type OutcomeValues = Pick<DecisionsPerOutcome, Outcome>;
+      const outcomeValues = selectedOutcomes.map((k) => {
+        const v = (row as OutcomeValues)[k];
+        return String(v);
+      });
+      const maybeTotal = [String((row as DecisionOutcomesAbsolute).total ?? 0)];
+      return [...base, ...outcomeValues, ...maybeTotal].join(',');
+    });
+
+    const csv = [headers.join(','), ...lines].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8,' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `decisions_${groupDate}_${percentage ? 'percentage' : 'absolute'}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h2 className="text-l font-semibold">{t('analytics:decisions.title')}</h2>
-        <ButtonV2 variant="secondary" className="flex items-center gap-v2-sm" disabled={true}>
+        <h2 className="text-h2 font-semibold">{t('analytics:decisions.title')}</h2>
+        <ButtonV2
+          variant="secondary"
+          className="flex items-center gap-v2-sm"
+          disabled={
+            isLoading ||
+            !currentDataGroup ||
+            (percentage
+              ? (currentDataGroup.data.ratio?.length ?? 0) === 0
+              : (currentDataGroup.data.absolute?.length ?? 0) === 0)
+          }
+          onClick={handleExportCsv}
+        >
           <Icon icon="download" className="size-4" />
           {t('analytics:decisions.export.button')}
         </ButtonV2>
@@ -186,8 +235,14 @@ export function Decisions({ data, scenarioVersions }: DecisionsProps) {
 
       <div
         ref={divRef}
-        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm"
+        aria-busy={isLoading}
+        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative"
       >
+        {isLoading ? (
+          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
+            <Spinner className="size-6" />
+          </div>
+        ) : null}
         <div className="flex w-full h-[500px] flex-col items-start gap-v2-md">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-v2-sm">
