@@ -12,5 +12,6 @@
   "ruleshit.columns.pivot_count": "# distinct pivots/users",
   "ruleshit.columns.pivot_ratio": "% distinct pivots/users",
   "ruleshit.columns.rule": "Rule",
+  "ruleshit.see_more.label": "See more +",
   "ruleshit.title": "Decisions rules"
 }

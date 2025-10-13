@@ -101,7 +101,7 @@ export function RulesHit({
                     className="text-s w-full truncate px-4 font-medium text-purple-65"
                     colSpan={table.getHeaderGroups()[0]?.headers.length ?? 5}
                   >
-                    See more +
+                    {t('analytics:ruleshit.see_more.label')}
                   </td>
                 </tr>
               ) : null}
