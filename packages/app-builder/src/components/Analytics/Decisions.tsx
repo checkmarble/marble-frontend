@@ -180,24 +180,23 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
 
   const handleExportCsv = () => {
     if (!currentDataGroup) return;
-    const rows = percentage ? currentDataGroup.data.ratio : currentDataGroup.data.absolute;
+    const rows = currentDataGroup.data.absolute;
     if (!rows.length) return;
 
     const selectedOutcomes: Outcome[] = Array.from(decisions.entries())
       .filter(([, value]) => value)
       .map(([key]) => key);
 
-    const includeTotal = !percentage;
-    const headers = ['date', 'rangeId', ...selectedOutcomes, ...(includeTotal ? ['total'] : [])];
+    const headers = ['date', 'rangeId', ...selectedOutcomes, ['total']];
 
     const lines = rows.map((row) => {
       const base = [row.date, row.rangeId];
       type OutcomeValues = Pick<DecisionsPerOutcome, Outcome>;
       const outcomeValues = selectedOutcomes.map((k) => {
         const v = (row as OutcomeValues)[k];
-        return percentage ? v.toFixed(1) : String(v);
+        return String(v);
       });
-      const maybeTotal = includeTotal ? [String((row as DecisionOutcomesAbsolute).total ?? 0)] : [];
+      const maybeTotal = [String((row as DecisionOutcomesAbsolute).total ?? 0)];
       return [...base, ...outcomeValues, ...maybeTotal].join(',');
     });
 
