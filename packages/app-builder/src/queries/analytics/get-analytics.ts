@@ -4,7 +4,7 @@ import { RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 import { getRoute } from '@app-builder/utils/routes';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-export const useGetDecisionsOutcomesPerDay = ({
+export const useGetAnalytics = ({
   scenarioId,
   scenarioVersion,
   dateRange,
@@ -12,13 +12,13 @@ export const useGetDecisionsOutcomesPerDay = ({
   trigger = [],
 }: AnalyticsQuery) => {
   const navigate = useAgnosticNavigation();
-  const endpoint = getRoute('/ressources/analytics/decisions_outcomes_per_day/:scenarioId', {
+  const endpoint = getRoute('/ressources/analytics/:scenarioId/query', {
     scenarioId,
   });
   return useQuery({
     queryKey: [
       'analytics',
-      'decisions',
+      'query',
       scenarioId,
       scenarioVersion,
       dateRange,

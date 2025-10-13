@@ -12,7 +12,7 @@ export const useGetAvailableFilters = ({
 }) => {
   const navigate = useAgnosticNavigation();
 
-  const endpoint = getRoute('/ressources/analytics/available_filters/:scenarioId', {
+  const endpoint = getRoute('/ressources/analytics/:scenarioId/available_filters', {
     scenarioId,
   });
   return useQuery({

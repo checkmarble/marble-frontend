@@ -5,8 +5,8 @@ import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Br
 import { type DecisionOutcomesPerPeriod, FilterSource } from '@app-builder/models/analytics';
 import { RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 import { type Scenario } from '@app-builder/models/scenario';
+import { useGetAnalytics } from '@app-builder/queries/analytics/get-analytics';
 import { useGetAvailableFilters } from '@app-builder/queries/analytics/get-available-filters';
-import { useGetDecisionsOutcomesPerDay } from '@app-builder/queries/analytics/get-decisions-outcomes-per-day';
 import { initServerServices } from '@app-builder/services/init.server';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -307,7 +307,7 @@ export default function Analytics() {
       ruleHitTable: [],
     },
     isFetching: isDecisionsPending,
-  } = useGetDecisionsOutcomesPerDay({
+  } = useGetAnalytics({
     scenarioId,
     scenarioVersion: undefined,
     dateRange: currentRange ?? initialRange,
