@@ -158,7 +158,7 @@ export default function DataDisplaySettings() {
     <Page.Container>
       <Page.Content className="max-w-(--breakpoint-xl)">
         <form onSubmit={handleSubmit(form)} className="contents">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between p-2">
             <div>{t('settings:data_display.global_explanation')}</div>
             <Button type="submit">{t('common:save')}</Button>
           </div>

@@ -1,5 +1,4 @@
 {
-  "create_field.button_accept": "Créer un champ",
   "create_field.description_placeholder": "Description du champ",
   "create_field.generic_error": "Une erreur s'est produite lors de la création du champ",
   "create_field.is_enum.subtitle": "Il prend un nombre limité de valeurs distinctes, comme un code de statut",
@@ -53,6 +52,7 @@
   "create_table.description_placeholder": "Description de la table",
   "create_table.name_placeholder": "Nom de la table",
   "create_table.title": "Créer une nouvelle table",
+  "create.button_accept": "Créer",
   "description": "Description",
   "edit_field.button_accept": "Enregistrer les modifications",
   "edit_field.is_unique.cannot_toggle_index_pending": "La contrainte d'unicité est en cours de création. Veuillez attendre la fin de l'opération avant de désactiver ce paramètre.",
@@ -87,7 +87,7 @@
   "view_pivot.table": "Table",
   "view_pivot.title": "Regroupement des décisions",
   "view_pivot.type": "Type",
-  "viewer.no_object_found": "Aucun objet trouvé avec l'ID {{objectId}} dans {{tableName}}",
+  "viewer.no_object_found": "Aucun objet trouvé avec l'ID \"{{objectId}}\" dans {{tableName}}",
   "viewer.object_id": "ID de l'objet",
   "viewer.object_type": "Type d'objet",
   "your_data_callout": "Voici la liste de tous les objets que vous pouvez envoyer à Marble, ainsi que leurs propriétés. Contactez l'équipe Marble si vous souhaitez modifier votre modèle de données."

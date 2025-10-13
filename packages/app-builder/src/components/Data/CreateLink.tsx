@@ -153,7 +153,6 @@ function CreateLinkContent({
                       );
                     })}
                   </Select.Default>
-                  v
                 </div>
               )}
             </form.Field>
@@ -254,7 +253,7 @@ function CreateLinkContent({
             </Button>
           </Modal.Close>
           <Button className="flex-1" variant="primary" type="submit" name="create">
-            {t('data:create_field.button_accept')}
+            {t('data:create.button_accept')}
           </Button>
         </div>
       </div>

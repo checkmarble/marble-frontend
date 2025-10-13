@@ -101,7 +101,6 @@
   "case_detail.pivot_panel.more_data": "عرض المزيد",
   "case_detail.pivot_panel.related_object": "كائن مرتبط - {{tableName}}",
   "case_detail.pivot_values": "القيم المحورية",
-  "case_detail.review_decision": "مراجعة",
   "case_detail.review_decision.callout": "ستؤدي مراجعة القرار إلى تغيير حالته وإرسال Webhook لبدء الخطوة التالية في سير العمل (<DocLink>معرفة المزيد</DocLink>)",
   "case_detail.review_decision.comment.label": "تعليق",
   "case_detail.review_decision.comment.placeholder": "اشرح سبب اختيارك لحالة المراجعة هذه",

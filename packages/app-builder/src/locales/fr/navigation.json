@@ -1,5 +1,5 @@
 {
-  "analytics": "Analyses",
+  "analytics": "Métriques",
   "analytics.nudge": "Analysez vos décisions via un tableau de bord interactif",
   "api": "API Marble",
   "case_manager": "Investigations",
@@ -9,8 +9,8 @@
   "case_manager.information": "Informations",
   "collapse": "Réduire",
   "data": "Vos données",
-  "data.list": "Liste des modèles",
-  "data.schema": "Schéma des données",
+  "data.list": "Vue liste",
+  "data.schema": "Vue Schéma",
   "data.viewer": "Explorateur de données",
   "decisions": "Décisions",
   "expand": "Développer",
