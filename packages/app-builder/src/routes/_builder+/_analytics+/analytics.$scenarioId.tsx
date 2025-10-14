@@ -82,6 +82,7 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<R
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
+  console.log('analytics/scenarioId loader...', scenarioId);
 
   const url = new URL(request.url);
 
@@ -128,6 +129,7 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<R
     scenario.listScenarios(),
     scenario.listScenarioIterations({ scenarioId }),
   ]);
+  console.log('scenarios list and iterations fetched.');
 
   return Response.json({
     scenarioId,
@@ -143,6 +145,9 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<R
 
 export default function Analytics() {
   const { scenarios, scenarioVersions } = useLoaderData<LoaderData>();
+
+  console.log('analytics/$scenarioId component...');
+  console.log('scenarios list and iterations fetched in component:', scenarios, scenarioVersions);
   const urlScenarioId = useParam('scenarioId');
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
