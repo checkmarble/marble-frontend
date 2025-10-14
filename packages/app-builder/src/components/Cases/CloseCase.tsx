@@ -68,7 +68,7 @@ export const CloseCase = ({ id }: { id: string }) => {
                   name={field.name}
                   onValueChange={(v) => field.handleChange(v as FinalOutcome)}
                   onBlur={field.handleBlur}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 rtl:flex-row-reverse"
                 >
                   {finalOutcomes.map((s) => {
                     return (
