@@ -124,6 +124,8 @@
   "case.batch_actions.move_to_inbox": "Déplacer vers une boîte de réception",
   "case.batch_actions.reopen": "Rouvrir",
   "case.close": "Clôturer l'investigation",
+  "case.close.add_comment_placeholder": "Ajoutez une dernière note ici",
+  "case.close.choose_outcome": "Comment évaluez-vous la pertinence de cette alerte ?",
   "case.contributors": "Contributeurs",
   "case.date": "Date",
   "case.decisions": "Décisions",

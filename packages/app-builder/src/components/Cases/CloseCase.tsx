@@ -63,8 +63,7 @@ export const CloseCase = ({ id }: { id: string }) => {
           >
             {(field) => (
               <div className="flex flex-col gap-2">
-                {/* TODO: translation keys */}
-                <FormLabel name={field.name}>Choose a status</FormLabel>
+                <FormLabel name={field.name}>{t('cases:case.close.choose_outcome')}</FormLabel>
                 <RadioGroup
                   name={field.name}
                   onValueChange={(v) => field.handleChange(v as FinalOutcome)}
@@ -86,9 +85,9 @@ export const CloseCase = ({ id }: { id: string }) => {
                           })}
                         >
                           {match(s)
-                            .with('confirmed_risk', () => 'Confirmed risk')
-                            .with('valuable_alert', () => 'Valuable alert')
-                            .with('false_positive', () => 'False positive')
+                            .with('confirmed_risk', () => t('cases:case.outcome.confirmed_risk'))
+                            .with('valuable_alert', () => t('cases:case.outcome.valuable_alert'))
+                            .with('false_positive', () => t('cases:case.outcome.false_positive'))
                             .exhaustive()}
                         </span>
                       </RadioGroupItem>
@@ -108,11 +107,10 @@ export const CloseCase = ({ id }: { id: string }) => {
           >
             {(field) => (
               <div className="flex flex-col gap-2">
-                <FormLabel name={field.name}>Add a comment</FormLabel>
                 <FormTextArea
                   name={field.name}
                   defaultValue={field.state.value}
-                  placeholder="Input your comment here"
+                  placeholder={t('cases:case.close.add_comment_placeholder')}
                   valid={field.state.meta.errors.length === 0}
                   onChange={(e) => field.handleChange(e.currentTarget.value)}
                 />
@@ -128,7 +126,7 @@ export const CloseCase = ({ id }: { id: string }) => {
             </Modal.Close>
 
             <Button type="submit" className="flex-1 first-letter:capitalize">
-              Close
+              {t('common:validate')}
             </Button>
           </div>
         </form>
