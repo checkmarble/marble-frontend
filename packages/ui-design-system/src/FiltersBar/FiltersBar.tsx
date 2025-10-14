@@ -166,32 +166,34 @@ export function FiltersBar({
     <FiltersBarContext.Provider value={contextValue}>
       <div className="flex flex-col gap-2">
         {Array.from(filtersMap.entries()).map(([level, renderedFilters]) => (
-          <div key={`${level}-row`} className="flex flex-row items-center gap-2">
+          <div key={level} className="flex flex-row items-center gap-2">
             {renderedFilters
               .filter((filter) => level === 'main' || active.includes(filter.name))
               .map((filter) =>
                 match(filter)
                   .with({ type: 'text' }, (textFilter) => {
-                    return <TextMatchFilter filter={textFilter} />;
+                    return <TextMatchFilter filter={textFilter} key={filter.name} />;
                   })
-                  .with({ type: 'checkbox' }, () => <Checkbox />)
+                  .with({ type: 'checkbox' }, () => <Checkbox key={filter.name} />)
                   .with({ type: 'number' }, (numberFilter) => (
-                    <NumberValueFilter filter={numberFilter} />
+                    <NumberValueFilter filter={numberFilter} key={filter.name} />
                   ))
                   .with({ type: 'boolean' }, (booleanFilter) => (
-                    <BooleanValueFilter filter={booleanFilter} level={level} />
+                    <BooleanValueFilter filter={booleanFilter} level={level} key={filter.name} />
                   ))
                   .with({ type: 'select' }, (selectFilter) => (
-                    <SelectOptionFilter {...selectFilter} />
+                    <SelectOptionFilter {...selectFilter} key={filter.name} />
                   ))
                   .with({ type: 'date-range-popover' }, (dateRangePopoverFilter) => (
-                    <DateRangeFilterPopover filter={dateRangePopoverFilter} />
+                    <DateRangeFilterPopover filter={dateRangePopoverFilter} key={filter.name} />
                   ))
-                  .with({ type: 'radio' }, () => <div>Radio filter not implemented yet</div>)
+                  .with({ type: 'radio' }, () => (
+                    <div key={filter.name}>Radio filter not implemented yet</div>
+                  ))
                   .with({ type: 'multi-select' }, () => (
-                    <div>Multi-select filter not implemented yet</div>
+                    <div key={filter.name}>Multi-select filter not implemented yet</div>
                   ))
-                  .otherwise(() => <div>Filter not implemented yet</div>),
+                  .otherwise(() => <div key={filter.name}>Filter not implemented yet</div>),
               )}
 
             {level === 'additional' && (
