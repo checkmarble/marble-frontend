@@ -124,6 +124,8 @@
   "case.batch_actions.move_to_inbox": "تحريك إلى صندوق الوارد",
   "case.batch_actions.reopen": "إعادة فتح",
   "case.close": "قضية إغلاق",
+  "case.close.add_comment_placeholder": "أضف ملاحظة أخيرة هنا",
+  "case.close.choose_outcome": "كيف تقيم المعلومات المتعلقة بهذا التنبيه؟",
   "case.contributors": "الداعمون",
   "case.date": "التاريخ",
   "case.decisions": "القرارات",

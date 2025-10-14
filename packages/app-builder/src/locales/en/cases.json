@@ -124,6 +124,8 @@
   "case.batch_actions.move_to_inbox": "Move to inbox",
   "case.batch_actions.reopen": "Reopen",
   "case.close": "Close case",
+  "case.close.add_comment_placeholder": "Add a final note here",
+  "case.close.choose_outcome": "Did this alert deserve a manual review?",
   "case.contributors": "Contributors",
   "case.date": "Date",
   "case.decisions": "Decisions",
