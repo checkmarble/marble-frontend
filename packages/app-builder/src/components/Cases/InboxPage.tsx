@@ -23,7 +23,6 @@ import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as R from 'remeda';
 import { omit } from 'remeda';
 import shortUUID from 'short-uuid';
 import { Button, cn } from 'ui-design-system';
@@ -62,14 +61,8 @@ export const InboxPage = ({
   const { orgUsers } = useOrganizationUsers();
 
   const excludedFilters = !inboxId ? ['excludeAssigned'] : undefined;
-  const {
-    hasSelectedRows,
-    rowSelection,
-    getSelectedRows,
-    selectionProps,
-    tableProps,
-    setRowSelection,
-  } = useListSelection<Case>(cases, (row) => row.id);
+  const { hasSelectedRows, rowSelection, getSelectedRows, selectionProps, tableProps } =
+    useListSelection<Case>(cases, (row) => row.id);
   const massUpdateCasesMutation = useMassUpdateCasesMutation();
 
   const paginationSentinelRef = useRef<HTMLDivElement>(null);
@@ -87,7 +80,6 @@ export const InboxPage = ({
   const onMassUpdateCases: MassUpdateCasesFn = (params) => {
     const selectedCaseIds = getSelectedRows().map((row) => row.id);
     massUpdateCasesMutation.mutateAsync({ caseIds: selectedCaseIds, ...params }).then((res) => {
-      setRowSelection((rows) => R.omit(rows, selectedCaseIds));
       revalidate();
     });
   };

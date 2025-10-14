@@ -1,6 +1,7 @@
 import { User } from '@app-builder/models';
 import { Case } from '@app-builder/models/cases';
 import { Inbox } from '@app-builder/models/inbox';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Avatar, Button, MenuCommand } from 'ui-design-system';
@@ -26,12 +27,13 @@ export const BatchActions = ({
   inboxes,
   selectedCases,
 }: BatchActionsProps) => {
+  const [open, setOpen] = useState(false);
   const { t } = useTranslation(['common', 'cases']);
   const canReopen = selectedCases.some(({ status }) => status === 'closed');
   const canClose = selectedCases.some(({ status }) => status !== 'closed');
 
   return (
-    <MenuCommand.Menu>
+    <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
         <Button variant="secondary">
           <Icon icon="checked" className="size-4" />
