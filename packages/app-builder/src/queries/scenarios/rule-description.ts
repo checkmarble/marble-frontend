@@ -3,6 +3,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
 
 export type RuleDescriptionPayload = {
+  scenarioId: string;
   astNode: AstNode;
 };
 
@@ -13,7 +14,10 @@ export const useRuleDescriptionMutation = (identifier?: string) => {
     mutationKey: ['scenario-iteration-rule', 'rule-description', identifier],
     mutationFn: async (payload: RuleDescriptionPayload) => {
       const response = await fetch(endpoint, { method: 'POST', body: JSON.stringify(payload) });
-      return response.json() as Promise<{ success: true; data: string }>;
+      return response.json() as Promise<{
+        success: true;
+        data: { description: string; isRuleValid: boolean };
+      }>;
     },
   });
 };

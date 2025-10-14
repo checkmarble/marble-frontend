@@ -15,7 +15,10 @@ export interface ScenarioIterationRuleRepository {
   createRule(args: CreateScenarioIterationRuleInput): Promise<ScenarioIterationRule>;
   updateRule(args: UpdateScenarioIterationRuleInput): Promise<ScenarioIterationRule>;
   deleteRule(args: { ruleId: string }): Promise<void>;
-  getRuleDescription(args: { astNode: AstNode }): Promise<string>;
+  getRuleDescription(args: {
+    scenarioId: string;
+    astNode: AstNode;
+  }): Promise<{ description: string; isRuleValid: boolean }>;
 }
 
 export function makeGetScenarioIterationRuleRepository() {
@@ -44,11 +47,12 @@ export function makeGetScenarioIterationRuleRepository() {
     deleteRule: async ({ ruleId }) => {
       await marbleCoreApiClient.deleteScenarioIterationRule(ruleId);
     },
-    getRuleDescription: async ({ astNode }) => {
-      const { description } = await marbleCoreApiClient.generateAiDescriptionForAstExpression({
-        ast_expression: adaptNodeDto(astNode),
-      });
-      return description;
+    getRuleDescription: async ({ scenarioId, astNode }) => {
+      const { description, is_rule_valid } =
+        await marbleCoreApiClient.generateAiDescriptionForAstExpression(scenarioId, {
+          ast_expression: adaptNodeDto(astNode),
+        });
+      return { description, isRuleValid: is_rule_valid };
     },
   });
 }

@@ -8,9 +8,15 @@ export async function action({ request }: ActionFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const { astNode } = await request.json();
+  const { scenarioId, astNode } = await request.json();
 
-  const description = await scenarioIterationRuleRepository.getRuleDescription({ astNode });
-
-  return Response.json({ success: true, data: description });
+  try {
+    const { description, isRuleValid } = await scenarioIterationRuleRepository.getRuleDescription({
+      scenarioId,
+      astNode,
+    });
+    return Response.json({ success: true, data: { description, isRuleValid } });
+  } catch (error) {
+    return Response.json({ success: false, error: error });
+  }
 }
