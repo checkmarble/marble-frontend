@@ -155,33 +155,6 @@
     tags:
       - Scenarios
     summary: Generate AI description for an AST expression
-    operationId: GenerateScenarioAstAiDescription
-    security:
-      - bearerAuth: []
-    requestBody:
-      description: 'AST expression to generate AI description for'
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              ast_expression
-            properties:
-              ast_expression:
-                $ref: 'ast.yml#/components/schemas/NodeDto'
-    responses:
-      '200':
-        description: The AI description for an AST expression
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ScenarioASTAiDescriptionDto'
-/scenarios/{scenarioId}/ast-ai-description:
-  post:
-    tags:
-      - Scenarios
-    summary: Generate AI description for an AST expression
     operationId: GenerateAiDescriptionForAstExpression
     security:
       - bearerAuth: []
@@ -212,7 +185,6 @@
           application/json:
             schema:
               $ref: '#/components/schemas/ScenarioASTAiDescriptionDto'
->>>>>>> Conflict 1 of 1 ends
 /scenarios/{scenarioId}/rules/latest:
   get:
     tags:
