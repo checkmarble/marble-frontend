@@ -710,6 +710,12 @@ export type ScenarioRuleLatestVersionDto = {
     name: string;
     latest_version: string;
 };
+export type ScenarioAstAiDescriptionDto = {
+    /** The AI description for the AST expression */
+    description: string;
+    /** Whether the rule is valid, if not, no description will be generated */
+    is_rule_valid: boolean;
+};
 export type ScenarioIterationDto = {
     id: string;
     scenario_id: string;
@@ -952,10 +958,6 @@ export type OpenSanctionsDatasetFreshnessDto = {
     version: string;
     up_to_date: boolean;
 };
-export type ScenarioIterationRuleAiDescriptionDto = {
-    /** The AI description for the scenario iteration rule */
-    description: string;
-};
 export type UpdateScenarioIterationRuleBodyDto = {
     display_order?: number;
     name?: string;
@@ -963,6 +965,10 @@ export type UpdateScenarioIterationRuleBodyDto = {
     rule_group?: string;
     formula_ast_expression?: (NodeDto) | null;
     score_modifier?: number;
+};
+export type ScenarioIterationRuleAiDescriptionDto = {
+    /** The AI description for the scenario iteration rule */
+    description: string;
 };
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
@@ -2821,6 +2827,21 @@ export function scenarioRuleLatestVersions(scenarioId: string, opts?: Oazapfts.R
     }));
 }
 /**
+ * Generate AI description for an AST expression
+ */
+export function generateAiDescriptionForAstExpression(body: {
+    ast_expression: NodeDto;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioAstAiDescriptionDto;
+    }>(`/scenarios/${encodeURIComponent(scenarioId)}/ast-ai-description`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body
+    })));
+}
+/**
  * List iterations
  */
 export function listScenarioIterations({ scenarioId }: {
@@ -3247,21 +3268,6 @@ export function createScenarioIterationRule(createScenarioIterationRuleBodyDto: 
         ...opts,
         method: "POST",
         body: createScenarioIterationRuleBodyDto
-    })));
-}
-/**
- * Generate AI description for an AST expression
- */
-export function generateAiDescriptionForAstExpression(body: {
-    ast_expression: NodeDto;
-}, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: ScenarioIterationRuleAiDescriptionDto;
-    }>("/scenario-iteration-rules/ai-description", oazapfts.json({
-        ...opts,
-        method: "POST",
-        body
     })));
 }
 /**
