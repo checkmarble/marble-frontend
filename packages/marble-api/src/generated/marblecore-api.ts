@@ -2829,7 +2829,7 @@ export function scenarioRuleLatestVersions(scenarioId: string, opts?: Oazapfts.R
 /**
  * Generate AI description for an AST expression
  */
-export function generateAiDescriptionForAstExpression(body: {
+export function generateAiDescriptionForAstExpression(scenarioId: string, body: {
     ast_expression: NodeDto;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
