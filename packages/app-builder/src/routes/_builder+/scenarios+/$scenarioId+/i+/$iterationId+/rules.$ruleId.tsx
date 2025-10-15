@@ -225,22 +225,26 @@ export default function RuleDetail() {
 
     setRuleDescription(undefined);
     if (rule.formula) {
-      ruleDescriptionMutation.mutateAsync({ astNode: rule.formula }).then((res) => {
-        if (res.success && !ruleDescription) {
-          setRuleDescription(res.data);
-        }
-      });
+      ruleDescriptionMutation
+        .mutateAsync({ scenarioId: scenario.id, astNode: rule.formula })
+        .then((res) => {
+          if (res.success && !ruleDescription && res.data.isRuleValid) {
+            setRuleDescription(res.data.description);
+          }
+        });
     }
   }, [rule.id]);
 
   const innerHandleFormulaChange = useDebouncedCallbackRef((value: AstNode | undefined) => {
     setIsDebouncing(false);
     if (value) {
-      ruleDescriptionMutation.mutateAsync({ astNode: value }).then((res) => {
-        if (res.success) {
-          setRuleDescription(res.data);
-        }
-      });
+      ruleDescriptionMutation
+        .mutateAsync({ scenarioId: scenario.id, astNode: value })
+        .then((res) => {
+          if (res.success && res.data.isRuleValid) {
+            setRuleDescription(res.data.description);
+          }
+        });
     }
   }, 3000);
   const handleFormulaChange = (value: AstNode | undefined) => {
