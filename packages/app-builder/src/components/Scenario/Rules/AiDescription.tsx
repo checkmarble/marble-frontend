@@ -11,7 +11,6 @@ type AiDescriptionProps = {
 
 export function AiDescription({ isPending, description }: AiDescriptionProps) {
   const { t } = useTranslation(['scenarios']);
-  const isInitialRuleLoading = !description && isPending;
   const { text: displayedDescription, isDone } = useWritingText(description, 5);
   const descriptionElementRef = useRef<HTMLDivElement>(null);
   const descriptionContainerRef = useRef<HTMLDivElement>(null);
@@ -39,11 +38,7 @@ export function AiDescription({ isPending, description }: AiDescriptionProps) {
     <div className="text-default rounded-v2-md border border-purple-96 bg-purple-98 text-purple-65 flex flex-col gap-v2-sm p-v2-md">
       <div className="flex items-center gap-v2-xs">
         <Icon icon="ai-review" className="size-5" />
-        {isInitialRuleLoading ? (
-          <div>{t('scenarios:rules.ai_description.in_progress_title')}</div>
-        ) : (
-          <div>{t('scenarios:rules.ai_description.title')}</div>
-        )}
+        <div>{t('scenarios:rules.ai_description.title')}</div>
       </div>
       {description ? (
         <div
