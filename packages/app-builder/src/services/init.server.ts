@@ -9,6 +9,7 @@ import { checkEnv, getServerEnv } from '@app-builder/utils/environment';
 import { CSRF } from 'remix-utils/csrf/server';
 
 import { makeAuthenticationServerService } from './auth/auth.server';
+import { makeOidcService } from './auth/oidc.server';
 import { makeSessionService } from './auth/session.server';
 import { makeI18nextServerService } from './i18n/i18next.server';
 
@@ -24,6 +25,7 @@ function makeServerServices(repositories: ServerRepositories) {
   const toastSessionService = makeSessionService({
     sessionStorage: repositories.toastStorageRepository.toastStorage,
   });
+
   return {
     authSessionService,
     csrfService,
@@ -37,6 +39,7 @@ function makeServerServices(repositories: ServerRepositories) {
       authSessionService,
       toastSessionService,
       csrfService,
+      makeOidcService,
     }),
     i18nextService: makeI18nextServerService(repositories.lngStorageRepository),
   };

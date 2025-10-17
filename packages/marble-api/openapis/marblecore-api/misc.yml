@@ -7,7 +7,7 @@
     security:
       - bearerAuth: []
     responses:
-      '200':
+      "200":
         description: The analytics corresponding to the current organization (present in the JWT)
         content:
           application/json:
@@ -19,13 +19,13 @@
                 analytics:
                   type: array
                   items:
-                    $ref: '#/components/schemas/LegacyAnalyticsDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
-      '404':
-        $ref: 'components.yml#/responses/404'
+                    $ref: "#/components/schemas/LegacyAnalyticsDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
+      "404":
+        $ref: "components.yml#/responses/404"
 /config:
   get:
     tags:
@@ -33,12 +33,12 @@
     summary: Retrieves the configuration of the frontend app
     operationId: getAppConfig
     responses:
-      '200':
+      "200":
         description: The config
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AppConfigDto'
+              $ref: "#/components/schemas/AppConfigDto"
 /editor/{scenarioId}/identifiers:
   get:
     tags:
@@ -56,7 +56,7 @@
           type: string
           format: uuid
     responses:
-      '200':
+      "200":
         description: The list of identifiers
         content:
           application/json:
@@ -69,15 +69,15 @@
                 database_accessors:
                   type: array
                   items:
-                    $ref: 'ast.yml#/components/schemas/NodeDto'
+                    $ref: "ast.yml#/components/schemas/NodeDto"
                 payload_accessors:
                   type: array
                   items:
-                    $ref: 'ast.yml#/components/schemas/NodeDto'
-      '401':
-        $ref: 'components.yml#/responses/401'
-      '403':
-        $ref: 'components.yml#/responses/403'
+                    $ref: "ast.yml#/components/schemas/NodeDto"
+      "401":
+        $ref: "components.yml#/responses/401"
+      "403":
+        $ref: "components.yml#/responses/403"
 
 components:
   schemas:
@@ -131,8 +131,12 @@ components:
         auth:
           type: object
           required:
+            - provider
             - firebase
           properties:
+            provider:
+              type: string
+              enum: [firebase, oidc]
             firebase:
               type: object
               required:
@@ -152,6 +156,31 @@ components:
                   type: string
                 auth_domain:
                   type: string
+            oidc:
+              type: object
+              required:
+                - issuer
+                - client_id
+                - redirect_uri
+                - scopes
+                - extra_params
+              properties:
+                issuer:
+                  type: string
+                  format: url
+                client_id:
+                  type: string
+                redirect_uri:
+                  type: string
+                  format: url
+                scopes:
+                  type: array
+                  items:
+                    type: string
+                extra_params:
+                  type: object
+                  additionalProperties:
+                    type: string
         features:
           type: object
           required:

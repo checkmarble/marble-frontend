@@ -1132,12 +1132,22 @@ export type AppConfigDto = {
         metabase: string;
     };
     auth: {
+        provider: "firebase" | "oidc";
         firebase: {
             is_emulator: boolean;
             emulator_host: string;
             project_id: string;
             api_key: string;
             auth_domain: string;
+        };
+        oidc?: {
+            issuer: string;
+            client_id: string;
+            redirect_uri: string;
+            scopes: string[];
+            extra_params: {
+                [key: string]: string;
+            };
         };
     };
     features: {

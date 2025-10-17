@@ -371,6 +371,16 @@ export const routes = [
         "file": "routes/healthcheck.ts"
       },
       {
+        "id": "routes/oidc+/auth",
+        "path": "oidc/auth",
+        "file": "routes/oidc+/auth.ts"
+      },
+      {
+        "id": "routes/oidc+/callback",
+        "path": "oidc/callback",
+        "file": "routes/oidc+/callback.ts"
+      },
+      {
         "id": "routes/ressources+/analytics+/$scenarioId+/available_filters",
         "path": "ressources/analytics/:scenarioId/available_filters",
         "file": "routes/ressources+/analytics+/$scenarioId+/available_filters.ts"
