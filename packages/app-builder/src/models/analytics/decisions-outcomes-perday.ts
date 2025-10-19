@@ -66,10 +66,16 @@ export interface DecisionOutcomesPerPeriod {
 
 //TODO group by week and month server side
 
+// export const triggerFilter = z.object({
+//   field: z.uuidv4(),
+//   op: z.enum(['=', '!=', '>', '>=', '<', '<=', 'in']),
+//   values: z.array(z.union([z.string(), z.number(), z.boolean()])),
+// });
+
 export const triggerFilter = z.object({
-  field: z.uuidv4(),
+  name: z.string(),
   op: z.enum(['=', '!=', '>', '>=', '<', '<=', 'in']),
-  values: z.array(z.union([z.string(), z.number(), z.boolean()])),
+  value: z.array(z.union([z.string(), z.number(), z.boolean()])),
 });
 
 export const mergeDateRanges = (

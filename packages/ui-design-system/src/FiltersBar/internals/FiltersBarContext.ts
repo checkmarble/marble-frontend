@@ -1,11 +1,10 @@
 import { createSimpleContext } from '@marble/shared';
+import { type FilterValue } from '../types';
 
 export interface FiltersBarContextValue {
-  emitSet: (name: string, value: unknown) => void;
+  emitSet: (name: string, value: FilterValue) => void;
   emitRemove: (name: string) => void;
-  emitToggleActive: (name: string, isActive: boolean) => void;
-  getValue: (name: string) => unknown;
-  isActive: (name: string) => boolean;
+  getValue: (name: string) => FilterValue;
 }
 
 export const FiltersBarContext = createSimpleContext<FiltersBarContextValue | null>('FiltersBar');
