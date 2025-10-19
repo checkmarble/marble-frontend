@@ -17,6 +17,7 @@ import {
   type FilterBarLevel,
   type FilterDescriptor,
   type FiltersBarProps,
+  type FilterValue,
   type MultiSelectFilterDescriptor,
   type NumberFilter,
   type NumberFilterDescriptor,
@@ -44,40 +45,62 @@ export function FiltersBar({
   descriptors = [],
   dynamicDescriptors = [],
   value,
-  active = [],
   onChange,
 }: FiltersBarProps) {
   const { t } = useI18n();
   const [isAddModalOpen, setAddModalOpen] = useState(false);
+  // Track locally selected additional filters (do not emit toggleActive)
+  const [selectedAdditional, setSelectedAdditional] = useState<string[]>([]);
 
   const contextValue = useMemo<FiltersBarContextValue>(() => {
-    const emitSet = (name: string, newValue: unknown) => {
-      const nextValue = { ...value, [name]: newValue };
-      onChange({ type: 'set', name, value: newValue }, { value: nextValue, active });
+    const emitSet = (name: string, newValue: FilterValue) => {
+      const nextValue = { ...value, [name]: newValue } as Record<string, FilterValue>;
+      onChange({ type: 'set', name, value: newValue }, { value: nextValue });
     };
     const emitRemove = (name: string) => {
-      const nextValue = { ...value } as Record<string, unknown>;
+      const nextValue = { ...value } as Record<string, FilterValue>;
       delete nextValue[name];
-      const nextActive = active.filter((n) => n !== name);
-      onChange({ type: 'remove', name }, { value: nextValue, active: nextActive });
-    };
-    const emitToggleActive = (name: string, isActive: boolean) => {
-      const nextActive = isActive
-        ? Array.from(new Set([...active, name]))
-        : active.filter((n) => n !== name);
-      onChange({ type: 'toggleActive', name, isActive }, { value, active: nextActive });
+      onChange({ type: 'remove', name }, { value: nextValue });
+      // Ensure removed filters also disappear from the locally selected list
+      setSelectedAdditional((prev) => prev.filter((n) => n !== name));
     };
     const getValue = (name: string) => value[name];
-    const isActive = (name: string) => active.includes(name);
-    return { emitSet, emitRemove, emitToggleActive, getValue, isActive };
-  }, [value, active, onChange]);
+    return { emitSet, emitRemove, getValue };
+  }, [value, onChange]);
 
   const getFilter = (
     d: FilterDescriptor,
-    value: unknown,
+    value: FilterValue,
     opts: Partial<Pick<Filter, 'removable' | 'isActive'>>,
   ): Filter => {
-    const selectedValue = value ?? null;
+    // Normalize selectedValue shape based on descriptor type and possible trigger-shaped values
+    const selectedValue = (() => {
+      if (d.type === 'number') {
+        if (value && typeof value === 'object' && 'op' in (value as any)) {
+          const raw = (value as any).value as unknown;
+          const num = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
+          return {
+            operator: (d as NumberFilterDescriptor).operator,
+            value: Number.isNaN(num) ? 0 : num,
+          } as NumberFilter['selectedValue'];
+        }
+        return (value as NumberFilter['selectedValue']) ?? null;
+      }
+      if (d.type === 'text') {
+        if (value && typeof value === 'object' && 'op' in (value as any)) {
+          const raw = (value as any).value as unknown;
+          const arr = Array.isArray(raw) ? (raw as string[]) : [raw as string];
+          return [
+            { operator: (d as TextFilterDescriptor).operator, value: arr },
+          ] as TextFilter['selectedValue'];
+        }
+        return (value as TextFilter['selectedValue']) ?? null;
+      }
+      if (d.type === 'date-range-popover') {
+        return (value as DateRangePopoverFilter['selectedValue']) ?? null;
+      }
+      return ((value as { value?: unknown })?.value ?? value ?? null) as unknown;
+    })();
     const commonProps = {
       name: d.name,
       placeholder: d.placeholder,
@@ -150,17 +173,18 @@ export function FiltersBar({
   const additionalFilters: Filter[] = useMemo(
     () =>
       dynamicDescriptors
-        // .filter((d) => active.includes(d.name))
+        .filter((d) => selectedAdditional.includes(d.name) || value[d.name] != null)
         .map((d) => getFilter(d, value[d.name], { removable: true })),
-    [dynamicDescriptors, value, active],
+    [dynamicDescriptors, value, selectedAdditional],
   );
 
   const filtersMap = useMemo(() => {
+    const hasDynamic = dynamicDescriptors.length > 0;
     return new Map<FilterBarLevel, Filter[]>([
       ['main', mainFilters],
-      ...(additionalFilters.length > 0 ? [['additional', additionalFilters] as const] : []),
+      ...(hasDynamic ? [['additional', additionalFilters] as const] : []),
     ]);
-  }, [mainFilters, additionalFilters]);
+  }, [mainFilters, additionalFilters, dynamicDescriptors]);
 
   return (
     <FiltersBarContext.Provider value={contextValue}>
@@ -168,7 +192,12 @@ export function FiltersBar({
         {Array.from(filtersMap.entries()).map(([level, renderedFilters]) => (
           <div key={level} className="flex flex-row items-center gap-2">
             {renderedFilters
-              .filter((filter) => level === 'main' || active.includes(filter.name))
+              .filter(
+                (filter) =>
+                  level === 'main' ||
+                  selectedAdditional.includes(filter.name) ||
+                  value[filter.name] != null,
+              )
               .map((filter) =>
                 match(filter)
                   .with({ type: 'text' }, (textFilter) => {
@@ -206,7 +235,9 @@ export function FiltersBar({
                     <Modal.Title>{t('filters:ds.chooseFilter.label')}</Modal.Title>
                     <div className="p-4 grid grid-cols-1 gap-2">
                       {dynamicDescriptors
-                        .filter((d) => !active.includes(d.name))
+                        .filter(
+                          (d) => !selectedAdditional.includes(d.name) && value[d.name] == null,
+                        )
                         .map((d) => (
                           <button
                             key={d.name}
@@ -214,7 +245,9 @@ export function FiltersBar({
                               'text-left border border-grey-90 rounded-sm px-3 py-2 hover:bg-purple-98 outline-hidden',
                             )}
                             onClick={() => {
-                              contextValue.emitToggleActive(d.name, true);
+                              setSelectedAdditional((prev) =>
+                                Array.from(new Set([...prev, d.name])),
+                              );
                               setAddModalOpen(false);
                             }}
                           >

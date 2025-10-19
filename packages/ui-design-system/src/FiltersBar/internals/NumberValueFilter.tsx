@@ -19,6 +19,14 @@ export function NumberValueFilter({ filter }: { filter: NumberFilter }) {
     if (isOpen) setLocalValue(filter.selectedValue ?? { operator: 'eq', value: 0 });
   }, [isOpen]);
 
+  const operatorDisplay: Map<NumberOperator, string> = new Map([
+    ['eq', '='],
+    ['ne', '≠'],
+    ['gt', '>'],
+    ['gte', '≥'],
+    ['lt', '<'],
+    ['lte', '≤'],
+  ]);
   const onOperatorChange = (operator: string) => {
     // Check if operator is a valid NumberOperator value
     if (!NUMBER_OPERATORS.has(operator as NumberOperator))
@@ -32,8 +40,19 @@ export function NumberValueFilter({ filter }: { filter: NumberFilter }) {
       <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
         <FilterItem.Root>
           <FilterItem.Trigger>
-            <strong>{filter.name}</strong> {filter.selectedValue?.operator}{' '}
-            {filter.selectedValue?.value}
+            <strong>{filter.name}</strong> {(() => {
+              const op = (filter.selectedValue?.operator ?? localValue.operator) as NumberOperator;
+              const val =
+                filter.selectedValue?.value ??
+                (typeof localValue.value === 'number'
+                  ? localValue.value
+                  : Number(localValue.value));
+              return (
+                <>
+                  {operatorDisplay.get(op)} {val}
+                </>
+              );
+            })()}
           </FilterItem.Trigger>
           {filter.removable ? (
             <FilterItem.Clear
@@ -52,7 +71,9 @@ export function NumberValueFilter({ filter }: { filter: NumberFilter }) {
                 <MenuCommand.Trigger>
                   <MenuCommand.SelectButton className="w-v2-s">
                     {(() => {
-                      switch (localValue.operator) {
+                      const op = (filter.selectedValue?.operator ??
+                        localValue.operator) as NumberOperator;
+                      switch (op) {
                         case 'eq':
                           return '=';
                         case 'ne':
@@ -71,22 +92,46 @@ export function NumberValueFilter({ filter }: { filter: NumberFilter }) {
                 </MenuCommand.Trigger>
                 <MenuCommand.Content sameWidth>
                   <MenuCommand.List>
-                    <MenuCommand.Item value="eq" onSelect={(v) => onOperatorChange(v)}>
+                    <MenuCommand.Item
+                      value="eq"
+                      selected={localValue.operator === 'eq'}
+                      onSelect={(v) => onOperatorChange(v)}
+                    >
                       =
                     </MenuCommand.Item>
-                    <MenuCommand.Item value="ne" onSelect={() => onOperatorChange('ne')}>
+                    <MenuCommand.Item
+                      value="ne"
+                      selected={localValue.operator === 'ne'}
+                      onSelect={() => onOperatorChange('ne')}
+                    >
                       ≠
                     </MenuCommand.Item>
-                    <MenuCommand.Item value="gt" onSelect={() => onOperatorChange('gt')}>
+                    <MenuCommand.Item
+                      value="gt"
+                      selected={localValue.operator === 'gt'}
+                      onSelect={() => onOperatorChange('gt')}
+                    >
                       {'>'}
                     </MenuCommand.Item>
-                    <MenuCommand.Item value="gte" onSelect={() => onOperatorChange('gte')}>
+                    <MenuCommand.Item
+                      value="gte"
+                      selected={localValue.operator === 'gte'}
+                      onSelect={() => onOperatorChange('gte')}
+                    >
                       ≥
                     </MenuCommand.Item>
-                    <MenuCommand.Item value="lt" onSelect={() => onOperatorChange('lt')}>
+                    <MenuCommand.Item
+                      value="lt"
+                      selected={localValue.operator === 'lt'}
+                      onSelect={() => onOperatorChange('lt')}
+                    >
                       {'<'}
                     </MenuCommand.Item>
-                    <MenuCommand.Item value="lte" onSelect={() => onOperatorChange('lte')}>
+                    <MenuCommand.Item
+                      value="lte"
+                      selected={localValue.operator === 'lte'}
+                      onSelect={() => onOperatorChange('lte')}
+                    >
                       ≤
                     </MenuCommand.Item>
                   </MenuCommand.List>
@@ -95,7 +140,7 @@ export function NumberValueFilter({ filter }: { filter: NumberFilter }) {
               <Input
                 type="number"
                 placeholder={filter.placeholder}
-                value={localValue.value}
+                value={Number(localValue.value) || 0}
                 onChange={(e) =>
                   setLocalValue({
                     operator: localValue.operator,

@@ -9,6 +9,7 @@ import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Outlet, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
+
 export type DecisionsPerOutcome = {
   date: string;
   approve: number;
@@ -37,15 +38,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   console.log('analytics/_layout loader...');
 
   if (!params['scenarioId']) {
-    console.log('no scenarioId, fetching scenarios list...');
     const scenarioId = (await scenario.listScenarios())[0]?.id ?? null;
-    console.log('scenarioId fetched:', scenarioId);
-    console.log(
-      'redirecting to:',
-      scenarioId
-        ? getRoute('/analytics/:scenarioId', { scenarioId: fromUUIDtoSUUID(scenarioId) })
-        : getRoute('/scenarios'),
-    );
+
     return redirect(
       scenarioId
         ? getRoute('/analytics/:scenarioId', {

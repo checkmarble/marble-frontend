@@ -19,7 +19,7 @@ export type TextOperator = 'in';
 
 export interface ComparisonFilter<T> {
   operator: NumberOperator | TextOperator;
-  value: T;
+  value: T | T[];
 }
 
 export interface StaticDateRangeFilterType {
@@ -79,6 +79,17 @@ export type Filter =
   | DateRangePopoverFilter
   | RadioFilter;
 
+// Exhaustive value type accepted/emitted by FiltersBar
+export type FilterValue =
+  | ComparisonFilter<string>[]
+  | ComparisonFilter<number>
+  | boolean
+  | string
+  | string[]
+  | DateRangeFilterType
+  | null
+  | undefined;
+
 // New controlled API types
 export interface BaseFilterDescriptor {
   name: string;
@@ -125,17 +136,12 @@ export type FilterDescriptor =
   | RadioFilterDescriptor;
 
 export type FilterChange =
-  | { type: 'set'; name: string; value: unknown }
-  | { type: 'remove'; name: string }
-  | { type: 'toggleActive'; name: string; isActive: boolean };
+  | { type: 'set'; name: string; value: FilterValue }
+  | { type: 'remove'; name: string };
 
 export interface FiltersBarProps {
   descriptors: FilterDescriptor[];
   dynamicDescriptors?: FilterDescriptor[];
-  value: Record<string, unknown>;
-  active?: string[];
-  onChange: (
-    change: FilterChange,
-    next: { value: Record<string, unknown>; active: string[] },
-  ) => void;
+  value: Record<string, FilterValue>;
+  onChange: (change: FilterChange, next: { value: Record<string, FilterValue> }) => void;
 }

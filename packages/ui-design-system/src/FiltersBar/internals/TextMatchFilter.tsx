@@ -7,22 +7,27 @@ import { useFiltersBarContext } from './FiltersBarContext';
 
 export function TextMatchFilter({ filter }: { filter: TextFilter }) {
   const [isOpen, setOpen] = useState(true);
-  const [localText, setLocalText] = useState<string[]>(
-    filter.selectedValue?.map((f) => f.value) ?? [],
-  );
+  const toTextArray = (selected: unknown): string[] => {
+    const arr = selected as any[];
+    if (!Array.isArray(arr)) return [];
+    return arr.flatMap((item) => {
+      if (typeof item === 'string') return item;
+      const val = (item as any)?.value;
+      return Array.isArray(val) ? val : val != null ? [val] : [];
+    });
+  };
+  const [localText, setLocalText] = useState<string[]>(toTextArray(filter.selectedValue));
   const { emitSet, emitRemove } = useFiltersBarContext();
   useEffect(() => {
-    if (isOpen) setLocalText(filter.selectedValue?.map((f) => f.value) ?? []);
-  }, [isOpen]);
+    if (isOpen) setLocalText(toTextArray(filter.selectedValue));
+  }, [isOpen, filter.selectedValue]);
   if (filter.removable) {
     return (
       <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
         <FilterItem.Root>
           <FilterItem.Trigger id={filter.name}>
             <span className="font-semibold">{filter.name}</span>
-            <span className="font-medium">
-              in {filter.selectedValue?.map((f) => f.value).join(',')}
-            </span>
+            <span className="font-medium">in {localText.join(',')}</span>
           </FilterItem.Trigger>
           {filter.removable ? (
             <FilterItem.Clear
@@ -46,12 +51,24 @@ export function TextMatchFilter({ filter }: { filter: TextFilter }) {
                   'text-s bg-purple-65 text-white rounded-sm px-3 py-1.5 outline-hidden',
                 )}
                 onClick={() => {
-                  const committed = localText
-                    .map((v) => v.trim())
-                    .filter((v) => v.length > 0)
-                    .map((v) => ({ operator: 'in' as const, value: v }));
-                  const payload = committed.length ? committed : null;
-                  emitSet(filter.name, payload);
+                  const value = localText.map((v) => v.trim()).filter((v) => v.length > 0);
+                  if (value.length === 0) {
+                    emitRemove(filter.name);
+                    setOpen(false);
+                    return;
+                  }
+                  emitSet(filter.name, [
+                    {
+                      operator: filter.operator,
+                      value: value.map((v) => v.trim()),
+                    },
+                  ]);
+                  // const committed = localText
+                  //   .map((v) => v.trim())
+                  //   .filter((v) => v.length > 0)
+                  //   .map((v) => ({ operator: 'in' as const, value: v }));
+                  // const payload = committed.length ? committed : null;
+                  // emitSet(filter.name, payload);
                   setOpen(false);
                 }}
               >

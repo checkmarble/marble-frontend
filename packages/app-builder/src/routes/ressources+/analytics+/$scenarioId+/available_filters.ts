@@ -1,3 +1,4 @@
+import { dateRangeFilterSchema } from '@app-builder/models/analytics';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { ActionFunctionArgs } from '@remix-run/node';
@@ -8,8 +9,7 @@ const urlParamsSchema = z.object({
 });
 
 const queryParamsSchema = z.object({
-  start: z.iso.datetime(),
-  end: z.iso.datetime(),
+  ranges: z.array(dateRangeFilterSchema).min(1),
 });
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -18,13 +18,16 @@ export async function action({ request, params }: ActionFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const urlParams = urlParamsSchema.parse(params);
-  const queryParams = queryParamsSchema.parse(await request.json());
-
-  const query = await analytics.getAvailableFilters({
-    scenarioId: urlParams.scenarioId,
-    start: queryParams.start,
-    end: queryParams.end,
-  });
-  return Response.json(query);
+  try {
+    const urlParams = urlParamsSchema.parse(params);
+    const queryParams = queryParamsSchema.parse(await request.json());
+    const query = await analytics.getAvailableFilters({
+      scenarioId: urlParams.scenarioId,
+      ranges: queryParams.ranges,
+    });
+    return Response.json(query);
+  } catch (error) {
+    console.error('error in available_filters', error);
+    return Response.json({ error: 'Invalid request' }, { status: 400 });
+  }
 }

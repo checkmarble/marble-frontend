@@ -1,5 +1,7 @@
+import { add, formatDistanceStrict } from 'date-fns';
 import { ar, enUS, fr } from 'date-fns/locale';
 import { useMemo, useState } from 'react';
+import { Temporal } from 'temporal-polyfill';
 import { useFormatting } from '../../contexts/FormattingContext';
 import type { DateRangeFilterType, DateRangePopoverFilter } from '../types';
 import { DateRangeFilter } from './DateRangeFilter';
@@ -9,7 +11,7 @@ import { useFiltersBarContext } from './FiltersBarContext';
 export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFilter }) {
   const drFilter = filter;
   const { language, formatDateTimeWithoutPresets } = useFormatting();
-  const { emitSet } = useFiltersBarContext();
+  const { emitSet, emitRemove } = useFiltersBarContext();
   const dateFnsLocale = useMemo(() => {
     switch (language) {
       case 'fr':
@@ -22,6 +24,15 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
   }, [language]);
 
   const summary = (() => {
+    if (drFilter.selectedValue?.type === 'dynamic') {
+      const date = new Date();
+      const duration = Temporal.Duration.from(drFilter.selectedValue.fromNow);
+      return formatDistanceStrict(add(date, duration), date, {
+        addSuffix: true,
+        locale: dateFnsLocale,
+      });
+    }
+
     const from =
       drFilter.selectedValue?.type === 'static' ? drFilter.selectedValue.startDate : undefined;
     const to =
@@ -48,7 +59,7 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
       onOpenChange={(open) => {
         setIsOpen(open);
         if (!open) {
-          emitSet(drFilter.name, localDateRangeFilter ?? null);
+          emitSet(drFilter.name, localDateRangeFilter);
         }
       }}
     >
@@ -57,7 +68,7 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
         {drFilter.removable ? (
           <FilterItem.Clear
             onClick={() => {
-              emitSet(drFilter.name, null);
+              emitRemove(drFilter.name);
             }}
           />
         ) : null}
