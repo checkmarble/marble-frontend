@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from '../Button/Button';
 import { Checkbox } from '../Checkbox/Checkbox';
@@ -46,33 +46,46 @@ export function FiltersBar({
   dynamicDescriptors = [],
   value,
   onChange,
+  onUpdate,
 }: FiltersBarProps) {
   const { t } = useI18n();
   const [isAddModalOpen, setAddModalOpen] = useState(false);
   // Track locally selected additional filters (do not emit toggleActive)
   const [selectedAdditional, setSelectedAdditional] = useState<string[]>([]);
 
+  const [draftValue, setDraftValue] = useState<Record<string, FilterValue>>(value);
+  useEffect(() => {
+    setDraftValue(value);
+  }, [value]);
+
   const contextValue = useMemo<FiltersBarContextValue>(() => {
     const emitSet = (name: string, newValue: FilterValue) => {
-      const nextValue = { ...value, [name]: newValue } as Record<string, FilterValue>;
-      onChange({ type: 'set', name, value: newValue }, { value: nextValue });
+      setDraftValue((prev) => ({ ...prev, [name]: newValue }));
     };
     const emitRemove = (name: string) => {
-      const nextValue = { ...value } as Record<string, FilterValue>;
-      delete nextValue[name];
-      onChange({ type: 'remove', name }, { value: nextValue });
+      setDraftValue((prev) => {
+        const next = { ...prev } as Record<string, FilterValue>;
+        delete next[name];
+        return next;
+      });
       // Ensure removed filters also disappear from the locally selected list
       setSelectedAdditional((prev) => prev.filter((n) => n !== name));
     };
-    const getValue = (name: string) => value[name];
-    return { emitSet, emitRemove, getValue };
-  }, [value, onChange]);
+    const emitUpdate = () => {
+      if (onUpdate) return onUpdate({ value: draftValue });
+      // Fallback for backward compatibility
+      onChange?.({ type: 'set', name: '__apply__', value: null } as any, { value: draftValue });
+    };
+    const getValue = (name: string) => draftValue[name];
+    return { emitSet, emitRemove, emitUpdate, getValue };
+  }, [draftValue, onUpdate, onChange]);
 
   const getFilter = (
     d: FilterDescriptor,
     value: FilterValue,
     opts: Partial<Pick<Filter, 'removable' | 'isActive'>>,
   ): Filter => {
+    console.log('getFilter', d, value, opts);
     // Normalize selectedValue shape based on descriptor type and possible trigger-shaped values
     const selectedValue = (() => {
       if (d.type === 'number') {
@@ -166,16 +179,18 @@ export function FiltersBar({
     }
   };
   const mainFilters: Filter[] = useMemo(
-    () => descriptors.map((d) => getFilter(d, value[d.name], {})),
-    [descriptors, value],
+    () => descriptors.map((d) => getFilter(d, draftValue[d.name], {})),
+    [descriptors, draftValue],
   );
+
+  console.log(mainFilters);
 
   const additionalFilters: Filter[] = useMemo(
     () =>
       dynamicDescriptors
-        .filter((d) => selectedAdditional.includes(d.name) || value[d.name] != null)
-        .map((d) => getFilter(d, value[d.name], { removable: true })),
-    [dynamicDescriptors, value, selectedAdditional],
+        .filter((d) => selectedAdditional.includes(d.name) || draftValue[d.name] != null)
+        .map((d) => getFilter(d, draftValue[d.name], { removable: true })),
+    [dynamicDescriptors, draftValue, selectedAdditional],
   );
 
   const filtersMap = useMemo(() => {
@@ -196,7 +211,7 @@ export function FiltersBar({
                 (filter) =>
                   level === 'main' ||
                   selectedAdditional.includes(filter.name) ||
-                  value[filter.name] != null,
+                  draftValue[filter.name] != null,
               )
               .map((filter) =>
                 match(filter)
@@ -236,7 +251,7 @@ export function FiltersBar({
                     <div className="p-4 grid grid-cols-1 gap-2">
                       {dynamicDescriptors
                         .filter(
-                          (d) => !selectedAdditional.includes(d.name) && value[d.name] == null,
+                          (d) => !selectedAdditional.includes(d.name) && draftValue[d.name] == null,
                         )
                         .map((d) => (
                           <button
@@ -261,6 +276,11 @@ export function FiltersBar({
             )}
           </div>
         ))}
+        <div className="flex flex-row items-center justify-end">
+          <ButtonV2 variant="primary" onClick={() => contextValue.emitUpdate()}>
+            {t('filters:ds.apply.label', { defaultValue: 'Apply' })}
+          </ButtonV2>
+        </div>
       </div>
     </FiltersBarContext.Provider>
   );

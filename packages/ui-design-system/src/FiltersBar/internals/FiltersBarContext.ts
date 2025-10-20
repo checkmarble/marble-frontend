@@ -4,6 +4,7 @@ import { type FilterValue } from '../types';
 export interface FiltersBarContextValue {
   emitSet: (name: string, value: FilterValue) => void;
   emitRemove: (name: string) => void;
+  emitUpdate: () => void;
   getValue: (name: string) => FilterValue;
 }
 

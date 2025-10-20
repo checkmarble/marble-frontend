@@ -143,5 +143,6 @@ export interface FiltersBarProps {
   descriptors: FilterDescriptor[];
   dynamicDescriptors?: FilterDescriptor[];
   value: Record<string, FilterValue>;
-  onChange: (change: FilterChange, next: { value: Record<string, FilterValue> }) => void;
+  onUpdate?: (next: { value: Record<string, FilterValue> }) => void;
+  onChange?: (change: FilterChange, next: { value: Record<string, FilterValue> }) => void;
 }

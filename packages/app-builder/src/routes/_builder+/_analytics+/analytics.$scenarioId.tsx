@@ -22,7 +22,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiltersBar, FormattingProvider, I18nProvider } from 'ui-design-system';
-import type { FilterChange, FilterDescriptor } from 'ui-design-system/src/FiltersBar/types';
+import type { FilterDescriptor, FilterValue } from 'ui-design-system/src/FiltersBar/types';
 import { Icon } from 'ui-icons';
 
 interface LoaderData {
@@ -163,116 +163,72 @@ export default function Analytics() {
     queryString: queryString ?? '',
   });
 
-  const onFiltersChange = (change: FilterChange, next: { value: Record<string, unknown> }) => {
-    // Handle scenario id routing
-    if (change.type === 'set' && change.name === 'scenarioId') {
-      const newScenarioId = change.value as string | null;
-      if (newScenarioId) {
-        navigate(
-          {
-            pathname: getRoute('/analytics/:scenarioId', {
-              scenarioId: fromUUIDtoSUUID(newScenarioId),
-            }),
-            search: `?q=${btoa(JSON.stringify(parsedFiltersResult))}`,
-          },
-          { replace: true },
-        );
+  const onFiltersUpdate = (next: { value: Record<string, FilterValue> }) => {
+    const draft = next.value;
+    const OP_MAP: Record<string, '=' | '!=' | '>' | '>=' | '<' | '<=' | 'in'> = {
+      eq: '=',
+      ne: '!=',
+      gt: '>',
+      gte: '>=',
+      lt: '<',
+      lte: '<=',
+      in: 'in',
+    } as const;
 
-        // setScenarioId(newScenarioId as UUID);
-        return;
-      }
-    }
+    const nextScenarioId = (draft['scenarioId'] as string | undefined) ?? scenarioId;
 
-    if (change.type === 'set') {
-      if (dynamicDescriptors.find((d) => d.name === change.name)) {
-        const raw = change.value as unknown;
-        const OP_MAP: Record<string, '=' | '!=' | '>' | '>=' | '<' | '<=' | 'in'> = {
-          eq: '=',
-          ne: '!=',
-          gt: '>',
-          gte: '>=',
-          lt: '<',
-          lte: '<=',
-        } as const;
+    const trigger = Object.entries(draft as Record<string, unknown>).flatMap(([name, v]) => {
+      const val = v as FilterValue;
+      if (name === 'scenarioId' || name === 'range' || name === 'compareRange') return [] as any[];
 
-        let newTrigger: {
-          name: string;
-          op: '=' | '!=' | '>' | '>=' | '<' | '<=' | 'in';
-          value: Array<string | number | boolean>;
-        } | null = null;
-
-        if (Array.isArray(raw)) {
-          const values = (raw as Array<{ value: unknown }>).flatMap((f) =>
-            Array.isArray((f as any).value)
-              ? ((f as any).value as Array<string | number | boolean>)
-              : [(f as any).value as string | number | boolean],
-          );
-          newTrigger = { name: change.name, op: 'in', value: values };
-        } else if (
-          raw != null &&
-          typeof raw === 'object' &&
-          'operator' in (raw as Record<string, unknown>)
-        ) {
-          const opKey = (raw as { operator: string }).operator;
-          const op = OP_MAP[opKey] ?? (opKey as '=' | '!=' | '>' | '>=' | '<' | '<=' | 'in');
-          const valRaw = (raw as { value: unknown }).value as unknown;
-          const values = Array.isArray(valRaw)
-            ? (valRaw as Array<string | number | boolean>)
-            : [valRaw as string | number | boolean];
-          newTrigger = { name: change.name, op, value: values };
-        } else if (typeof raw === 'boolean') {
-          newTrigger = { name: change.name, op: '=', value: [raw] };
-        } else {
-          newTrigger = null;
-        }
-
-        const nextQuery = {
-          ...parsedFiltersResult,
-          trigger: [...(parsedFiltersResult?.trigger ?? []), ...(newTrigger ? [newTrigger] : [])],
-        };
-
-        console.log(
-          'dynamicDescriptors spotted, navigating to new url',
-          JSON.stringify(nextQuery, null, 2),
-        );
-        return navigate(
-          {
-            pathname: getRoute('/analytics/:scenarioId', {
-              scenarioId: fromUUIDtoSUUID(scenarioId),
-            }),
-            search: `?q=${btoa(JSON.stringify(nextQuery))}`,
-          },
-          { replace: true },
-        );
+      if (Array.isArray(val)) {
+        // Text filter: flatten values
+        const values = (val as Array<{ operator: string; value: string | string[] }>)
+          .flatMap((f) => (Array.isArray(f.value) ? f.value : [f.value]))
+          .filter((v) => v != null && String(v).length > 0);
+        return values.length ? [{ name, op: 'in', value: values }] : [];
       }
 
-      return navigate(
-        {
-          pathname: getRoute('/analytics/:scenarioId', { scenarioId: fromUUIDtoSUUID(scenarioId) }),
-          search: `?q=${btoa(
-            JSON.stringify({
-              ...parsedFiltersResult,
-              [change.name]: change.value,
-            }),
-          )}`,
-        },
-        { replace: true },
-      );
-    }
+      if (val && typeof val === 'object' && 'operator' in (val as any)) {
+        const opKey = (val as { operator: string }).operator;
+        const op = OP_MAP[opKey] ?? (opKey as '=' | '!=' | '>' | '>=' | '<' | '<=' | 'in');
+        const raw = (val as { value: unknown }).value as unknown;
+        const values = Array.isArray(raw) ? raw : [raw];
+        const cleaned = (values as Array<string | number | boolean>).filter(
+          (v) => v !== null && v !== undefined && (typeof v !== 'string' || v.length > 0),
+        );
+        return cleaned.length ? [{ name, op, value: cleaned }] : [];
+      }
 
-    if (change.type === 'remove') {
-      const nextQuery = {
-        ...parsedFiltersResult,
-        trigger: parsedFiltersResult?.trigger?.filter((t) => t.name !== change.name),
-      };
-      return navigate(
-        {
-          pathname: getRoute('/analytics/:scenarioId', { scenarioId: fromUUIDtoSUUID(scenarioId) }),
-          search: `?q=${btoa(JSON.stringify(nextQuery))}`,
+      if (typeof val === 'boolean') {
+        return [{ name, op: '=', value: [val] }];
+      }
+
+      return [] as any[];
+    });
+
+    const nextQuery: AnalyticsFiltersQuery = {
+      range: (draft['range'] as unknown as AnalyticsFiltersQuery['range']) ??
+        (parsedFiltersResult?.range as AnalyticsFiltersQuery['range']) ?? {
+          type: 'dynamic',
+          fromNow: '-P30D',
         },
-        { replace: true },
-      );
-    }
+      compareRange: draft['compareRange'] as AnalyticsFiltersQuery['compareRange'],
+      ...(parsedFiltersResult?.scenarioVersion
+        ? { scenarioVersion: parsedFiltersResult.scenarioVersion }
+        : {}),
+      ...(trigger.length ? { trigger } : {}),
+    };
+
+    return navigate(
+      {
+        pathname: getRoute('/analytics/:scenarioId', {
+          scenarioId: fromUUIDtoSUUID(nextScenarioId),
+        }),
+        search: `?q=${btoa(JSON.stringify(nextQuery))}`,
+      },
+      { replace: true },
+    );
   };
   const descriptors: FilterDescriptor[] = [
     {
@@ -317,7 +273,7 @@ export default function Analytics() {
                   descriptors={descriptors}
                   dynamicDescriptors={dynamicDescriptors}
                   value={filtersValues}
-                  onChange={onFiltersChange}
+                  onUpdate={onFiltersUpdate}
                 />
               </div>
             </div>
