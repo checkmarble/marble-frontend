@@ -165,7 +165,7 @@ export default function Analytics() {
 
   const onFiltersChange = (change: FilterChange, next: { value: Record<string, unknown> }) => {
     // Handle scenario id routing
-    if (change.type === 'set' && change.name === 'scenario') {
+    if (change.type === 'set' && change.name === 'scenarioId') {
       const newScenarioId = change.value as string | null;
       if (newScenarioId) {
         navigate(
@@ -277,7 +277,7 @@ export default function Analytics() {
   const descriptors: FilterDescriptor[] = [
     {
       type: 'select',
-      name: 'scenario',
+      name: 'scenarioId',
       placeholder: t('analytics:filters.select_scenario.placeholder'),
       options: scenarios.map((scenario) => ({ label: scenario.name, value: scenario.id })),
     },
