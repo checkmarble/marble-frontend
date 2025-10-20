@@ -5,9 +5,8 @@ import { MenuCommand } from '../../MenuCommand/MenuCommand';
 import { type SelectFilter } from '../types';
 import { useFiltersBarContext } from './FiltersBarContext';
 
-export function SelectOptionFilter(props: SelectFilter) {
+export function SelectOptionFilter({ options, placeholder, selectedValue, name }: SelectFilter) {
   const { t } = useI18n();
-  const { options, placeholder, selectedValue, name } = props;
   const { emitSet } = useFiltersBarContext();
   const [internalSelectedValue, setInternalSelectedValue] = useState<string>(
     (selectedValue as string) || '',
