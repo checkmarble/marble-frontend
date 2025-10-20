@@ -1,6 +1,7 @@
 {
   "clear_filters": "Clear filters",
   "ds.addNewFilter.label": "Add new filter",
+  "ds.apply_button.label": "Apply",
   "ds.chooseFilter.label": "Choose a filter",
   "ds.noOptionsAvailable.label": "No options available",
   "filters": "filters",
