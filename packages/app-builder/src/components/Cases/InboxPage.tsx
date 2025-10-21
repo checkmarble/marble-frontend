@@ -1,38 +1,29 @@
 import { CursorPaginationButtons, Page } from '@app-builder/components';
 import { CasesList } from '@app-builder/components/Cases';
 import { CaseRightPanel } from '@app-builder/components/Cases/CaseRightPanel';
-import {
-  CasesFilters,
-  CasesFiltersBar,
-  CasesFiltersMenu,
-  CasesFiltersProvider,
-} from '@app-builder/components/Cases/Filters';
-import { FiltersButton } from '@app-builder/components/Filters';
-import { InputWithButton } from '@app-builder/components/InputWithButton';
+import { CasesFilters, CasesFiltersProvider } from '@app-builder/components/Cases/Filters';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { useListSelection } from '@app-builder/hooks/useListSelection';
 import { type Case } from '@app-builder/models/cases';
-import { Inbox } from '@app-builder/models/inbox';
+import { InboxWithCasesCount } from '@app-builder/models/inbox';
 import { PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { useMassUpdateCasesMutation } from '@app-builder/queries/cases/mass-update';
 import { DEFAULT_CASE_PAGINATION_SIZE } from '@app-builder/repositories/CaseRepository';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { omit } from 'remeda';
 import shortUUID from 'short-uuid';
-import { Button, cn } from 'ui-design-system';
+import { Button, ButtonV2, cn, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod/v4';
-import { BatchActions, MassUpdateCasesFn } from './Inbox/BatchActions';
+import { MassUpdateCasesFn } from './Inbox/BatchActions';
+import { InboxFilterBar } from './Inbox/FilterBar';
 
 export type InboxPageProps = {
   inboxId: shortUUID.UUID | null;
-  inboxes: Inbox[];
+  inboxes: InboxWithCasesCount[];
   inboxUsersIds: string[];
   data: PaginatedResponse<Case>;
   filters: CasesFilters;
@@ -107,6 +98,19 @@ export const InboxPage = ({
           <div className="flex flex-col gap-4 relative">
             <CasesFiltersProvider submitCasesFilters={navigateCasesList} filterValues={filters}>
               <div className="flex justify-between">
+                <InboxFilterBar inboxes={inboxes} />
+                <div className="flex gap-2">
+                  <Input
+                    endAdornment="search"
+                    adornmentClassName="size-5"
+                    placeholder={t('cases:search.placeholder')}
+                  />
+                  <ButtonV2 size="default" variant="primary" appearance="stroked" mode="icon">
+                    <Icon icon="plus" className="size-4" />
+                  </ButtonV2>
+                </div>
+              </div>
+              {/* <div className="flex justify-between">
                 <div className="flex gap-4 items-center">
                   <InputWithButton
                     initialValue={filters.name}
@@ -157,7 +161,7 @@ export const InboxPage = ({
               </div>
               <CasesFiltersBar
                 excludedFilters={!inboxId ? ['excludeAssigned', 'assignee'] : undefined}
-              />
+              /> */}
               <CasesList
                 key={inboxId}
                 cases={cases}

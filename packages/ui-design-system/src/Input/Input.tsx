@@ -2,7 +2,7 @@ import { cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 import { Icon, type IconName } from 'ui-icons';
-
+import { cn } from '../utils';
 import { type inputBorderColor } from './Input.constants';
 
 export const input = cva(
@@ -25,10 +25,18 @@ export interface InputProps extends React.ComponentPropsWithoutRef<'input'> {
   borderColor?: (typeof inputBorderColor)[number];
   startAdornment?: IconName;
   endAdornment?: IconName;
+  adornmentClassName?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { className, startAdornment, endAdornment, borderColor = 'greyfigma-90', ...props },
+  {
+    className,
+    startAdornment,
+    endAdornment,
+    borderColor = 'greyfigma-90',
+    adornmentClassName,
+    ...props
+  },
   ref,
 ) {
   return (
@@ -47,7 +55,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
             'inset-y-0 start-0 ps-2',
           )}
         >
-          <Icon icon={startAdornment} className="size-6" />
+          <Icon icon={startAdornment} className={cn('size-6', adornmentClassName)} />
         </div>
       ) : null}
       {endAdornment ? (
@@ -58,7 +66,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
             'inset-y-0 end-0 pe-2',
           )}
         >
-          <Icon icon={endAdornment} className="size-6" />
+          <Icon icon={endAdornment} className={cn('size-6', adornmentClassName)} />
         </div>
       ) : null}
     </div>

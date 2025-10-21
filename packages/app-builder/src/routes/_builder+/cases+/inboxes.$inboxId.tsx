@@ -1,228 +1,188 @@
-import { paginationSchema } from '@app-builder/components';
-import { casesI18n } from '@app-builder/components/Cases';
-import { type CasesFilters, casesFiltersSchema } from '@app-builder/components/Cases/Filters';
-import { InboxPage } from '@app-builder/components/Cases/InboxPage';
+import { Page } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import { CaseRightPanel } from '@app-builder/components/Cases';
+import { CasesList } from '@app-builder/components/Cases/Inbox/CasesList';
+import { InboxFilterBar } from '@app-builder/components/Cases/Inbox/FilterBar';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
-import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
-import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
-import { type Case, type CaseStatus, caseStatuses } from '@app-builder/models/cases';
-import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
-import {
-  type CaseFilters,
-  DEFAULT_CASE_PAGINATION_SIZE,
-} from '@app-builder/repositories/CaseRepository';
-import { initServerServices } from '@app-builder/services/init.server';
-import { badRequest } from '@app-builder/utils/http/http-responses';
-import { parseIdParamSafe, parseQuerySafe } from '@app-builder/utils/input-validation';
+import { createServerFn } from '@app-builder/core/requests';
+import { useBase64Query } from '@app-builder/hooks/useBase64Query';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { filtersSchema, useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
+import { DEFAULT_CASE_PAGINATION_SIZE } from '@app-builder/repositories/CaseRepository';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { fromSUUIDtoUUID, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useLoaderData, useNavigate } from '@remix-run/react';
-import { type Namespace } from 'i18next';
-import qs from 'qs';
-import { useCallback } from 'react';
+import { Namespace } from 'i18next';
+import QueryString from 'qs';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import invariant from 'tiny-invariant';
+import { match } from 'ts-pattern';
+import { ButtonV2, Input } from 'ui-design-system';
+import { Icon } from 'ui-icons';
+import { z } from 'zod/v4';
 
 export const handle = {
-  i18n: ['navigation', ...casesI18n] satisfies Namespace,
+  i18n: ['cases', 'filters'] satisfies Namespace,
 };
 
-export const buildQueryParams = (
-  filters: CasesFilters,
-  offsetId: string | null,
-  limit: number | null,
-  order: 'ASC' | 'DESC' | null,
-) => {
-  return {
-    statuses: filters.statuses ?? [],
-    name: filters.name,
-    includeSnoozed: filters.includeSnoozed,
-    excludeAssigned: filters.excludeAssigned,
-    dateRange: filters.dateRange
-      ? filters.dateRange.type === 'static'
-        ? {
-            type: 'static',
-            endDate: filters.dateRange.endDate || null,
-            startDate: filters.dateRange.startDate || null,
-          }
-        : {
-            type: 'dynamic',
-            fromNow: filters.dateRange.fromNow,
-          }
-      : {},
-    assignee: filters.assignee,
-    offsetId,
-    ...(limit && { limit }),
-    ...(order && { order }),
-  };
-};
+const ALLOWED_FILTERS = [
+  'dateRange',
+  'statuses',
+  'includeSnoozed',
+  'excludeAssigned',
+  'assignee',
+] as const;
+const EXCLUDED_FILTERS = ['excludeAssigned', 'assignee'] as const;
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const {
-    cases,
-    user,
-    inbox: inboxRepository,
-  } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+const pageQueryStringSchema = z.object({
+  q: z.string().optional().default(''),
+  limit: z.coerce.number().optional().default(DEFAULT_CASE_PAGINATION_SIZE),
+  order: z.enum(['ASC', 'DESC']).optional().default('DESC'),
+});
 
-  const parsedResult = await parseIdParamSafe(params, 'inboxId');
-  // The MY_INBOX_ID is not an actual inboxId, but a special case to get the cases assigned to the user
-  if (!parsedResult.success && params['inboxId'] !== MY_INBOX_ID) {
-    return badRequest('Invalid inbox UUID');
-  }
+export const loader = createServerFn(
+  [authMiddleware],
+  async function casesInboxesLoader({ request, params, context }) {
+    const { inbox: inboxRepository } = context.authInfo;
+    const inboxes = await inboxRepository.listInboxesWithCaseCount();
+    const inboxId = params['inboxId'];
 
-  const inboxId = parsedResult.success ? parsedResult.data.inboxId : null;
+    invariant(inboxId, 'inboxId is required');
 
-  const parsedQuery = await parseQuerySafe(request, casesFiltersSchema);
-  const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
-  if (!parsedQuery.success || !parsedPaginationQuery.success) {
-    return inboxId
-      ? redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: fromUUIDtoSUUID(inboxId) }))
-      : redirect(getRoute('/cases'));
-  }
-
-  const inboxes = await inboxRepository.listInboxes();
-  let inboxUsersIds: string[] = [];
-  if (inboxId) {
-    const inbox = await inboxRepository.getInbox(inboxId);
-    inboxUsersIds = inbox.users.map(({ userId }) => userId);
-  }
-
-  // Force the order to be ASC if not provided
-  if (!parsedPaginationQuery.data.order) {
-    parsedPaginationQuery.data.order = 'ASC';
-  }
-
-  if (!parsedPaginationQuery.data.limit) {
-    parsedPaginationQuery.data.limit = DEFAULT_CASE_PAGINATION_SIZE;
-  }
-
-  const filtersForBackend: CaseFilters = {
-    ...parsedQuery.data,
-    ...parsedPaginationQuery.data,
-    ...(inboxId && { inboxIds: [inboxId] }),
-    // If no statuses filter is provided, we filter out closed cases
-    statuses:
-      (parsedQuery.data.statuses as CaseStatus[]) ??
-      caseStatuses.filter((status) => status !== 'closed'),
-    ...(!inboxId
-      ? { assigneeId: user.actorIdentity.userId }
-      : { assigneeId: parsedQuery.data.assignee }),
-  };
-
-  try {
-    const caseList = await cases.listCases(filtersForBackend);
+    const url = new URL(request.url);
+    const searchParams = new URLSearchParams(url.search);
+    const parsedSearchParams = pageQueryStringSchema.parse(Object.fromEntries(searchParams));
 
     return {
-      inboxId,
+      inboxId: inboxId === MY_INBOX_ID ? inboxId : fromSUUIDtoUUID(inboxId),
       inboxes,
-      inboxUsersIds,
-      casesData: caseList,
-      filters: parsedQuery.data,
-      pagination: parsedPaginationQuery.data,
+      query: parsedSearchParams.q,
+      limit: parsedSearchParams.limit,
+      order: parsedSearchParams.order,
     };
-  } catch (error) {
-    // if inbox is deleted or user no longer have access, the user is redirected
-    if (isNotFoundHttpError(error) || isForbiddenHttpError(error)) {
-      return redirect(getRoute('/cases'));
-    } else {
-      throw error;
-    }
-  }
-}
+  },
+);
 
-export default function Cases() {
-  const {
-    inboxId,
-    inboxes,
-    inboxUsersIds,
-    casesData: initialCasesData,
-    filters,
-    pagination: initialPagination,
-  } = useLoaderData<typeof loader>();
-
-  const { data, next, previous, reset, hasPreviousPage, pageNb } = useCursorPaginatedFetcher<
-    typeof loader,
-    PaginatedResponse<Case>
-  >({
-    resourceId: inboxId ?? MY_INBOX_ID,
-    transform: (fetcherData) => fetcherData.casesData,
-    initialData: initialCasesData,
-    getQueryParams: (cursor) =>
-      buildQueryParams(
-        filters,
-        cursor,
-        initialPagination.limit ?? null,
-        initialPagination.order ?? null,
-      ),
-    validateData: (data) => data.items.length > 0,
-  });
-
+export default function CasesInboxesPage() {
+  const { t } = useTranslation(['cases']);
   const navigate = useNavigate();
-  const navigateCasesList = useCallback(
-    (casesFilters: CasesFilters, pagination?: PaginationParams) => {
-      if (!pagination) {
-        reset();
+  const { inboxId, inboxes, query, limit, order } = useLoaderData<typeof loader>();
 
-        const pathname = getRoute('/cases/inboxes/:inboxId', {
-          inboxId: inboxId ? fromUUIDtoSUUID(inboxId) : MY_INBOX_ID,
-        });
-        const search = qs.stringify(buildQueryParams(casesFilters, null, null, null), {
-          addQueryPrefix: true,
-          skipNulls: true,
-        });
+  const allowedFilters = useMemo(() => {
+    if (inboxId === MY_INBOX_ID) {
+      return ALLOWED_FILTERS.filter(
+        (filter: string) => !(EXCLUDED_FILTERS as readonly string[]).includes(filter),
+      );
+    }
+    return ALLOWED_FILTERS;
+  }, [inboxId]);
+  const updatePage = (newQuery: string, newLimit: number, newOrder: 'ASC' | 'DESC') => {
+    const qs = QueryString.stringify(
+      {
+        q: newQuery !== '' ? newQuery : undefined,
+        limit: newLimit !== DEFAULT_CASE_PAGINATION_SIZE ? newLimit : undefined,
+        order: newOrder !== 'DESC' ? newOrder : undefined,
+      },
+      { addQueryPrefix: true, skipNulls: true },
+    );
+    navigate({ search: qs }, { replace: true });
+  };
 
-        navigate({ pathname, search }, { replace: true });
-        return;
-      }
-
-      if (pagination.next && pagination.offsetId) {
-        next(pagination.offsetId);
-        return;
-      }
-      if (pagination.previous) {
-        previous();
-        return;
-      }
-      if (!pagination.order) {
-        reset();
-        return;
-      }
-      if (pagination.order || pagination.limit) {
-        reset();
-        navigate(
-          {
-            pathname: getRoute('/cases/inboxes/:inboxId', {
-              inboxId: inboxId ? fromUUIDtoSUUID(inboxId) : MY_INBOX_ID,
-            }),
-            search: qs.stringify(
-              buildQueryParams(casesFilters, null, pagination.limit ?? null, pagination.order),
-              {
-                addQueryPrefix: true,
-                skipNulls: true,
-              },
-            ),
-          },
-          { replace: true },
-        );
-      }
+  const parsedQuery = useBase64Query(filtersSchema, query, {
+    onUpdate(newQuery) {
+      updatePage(newQuery, limit, order);
     },
-    [navigate, inboxId, next, previous, reset],
-  );
+  });
+  const casesQuery = useGetCasesQuery(inboxId, parsedQuery.data, limit, order);
+
+  const [searchValue, setSearchValue] = useState('');
 
   return (
-    <InboxPage
-      key={inboxId ?? MY_INBOX_ID}
-      inboxId={inboxId}
-      inboxes={inboxes}
-      inboxUsersIds={inboxUsersIds}
-      data={data}
-      filters={filters}
-      paginationParams={initialPagination}
-      hasPreviousPage={hasPreviousPage}
-      pageNb={pageNb}
-      navigateCasesList={navigateCasesList}
-    />
+    <Page.Main className="flex flex-col">
+      <Page.Header>
+        <BreadCrumbs />
+      </Page.Header>
+      <CaseRightPanel.Root className="overflow-hidden">
+        <Page.Container>
+          <Page.ContentV2 className="bg-white gap-v2-md">
+            <div className="flex flex-col gap-v2-md relative">
+              {/* <pre>{JSON.stringify(parsedQuery.data, null, 2)}</pre> */}
+              <div className="flex justify-between">
+                <InboxFilterBar
+                  inboxId={inboxId}
+                  inboxes={inboxes}
+                  allowedFilters={allowedFilters}
+                  filters={parsedQuery.asArray}
+                  updateFilters={parsedQuery.update}
+                  onInboxSelect={(inboxId) => {
+                    const inboxIdSUUID =
+                      inboxId === MY_INBOX_ID ? inboxId : fromUUIDtoSUUID(inboxId);
+                    navigate(getRoute('/cases/inboxes/:inboxId', { inboxId: inboxIdSUUID }));
+                  }}
+                />
+                <div className="flex gap-2">
+                  <Input
+                    endAdornment="search"
+                    adornmentClassName="size-5"
+                    placeholder={t('cases:search.placeholder')}
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        parsedQuery.update({ name: searchValue });
+                        setSearchValue('');
+                      }
+                    }}
+                  />
+                  <CaseRightPanel.Trigger asChild data={{ inboxId }}>
+                    <ButtonV2 size="default" variant="primary" appearance="stroked" mode="icon">
+                      <Icon icon="plus" className="size-4" />
+                    </ButtonV2>
+                  </CaseRightPanel.Trigger>
+                </div>
+              </div>
+
+              {match(casesQuery)
+                .with({ isPending: true }, () => {
+                  return <div>Loading...</div>;
+                })
+                .with({ isError: true }, () => {
+                  return <div>Error</div>;
+                })
+                .with({ isSuccess: true }, (successCasesQuery) => {
+                  return (
+                    <CasesList
+                      key={inboxId}
+                      casesQuery={successCasesQuery}
+                      sorting={order}
+                      limit={limit}
+                      setLimit={(newLimit) => updatePage(query, newLimit, order)}
+                      onSortingChange={(newOrder) => updatePage(query, limit, newOrder)}
+                    />
+                  );
+                })
+                .exhaustive()}
+
+              {/* <DateRangeFilter.Root
+              dateRangeFilter={data?.dateRange}
+              setDateRangeFilter={(dr) => {
+                if (dr?.type === 'static') {
+                  updateQuery({ dateRange: dr });
+                }
+              }}
+              className="grid"
+            >
+              <DateRangeFilter.FromNowPicker title={t('cases:filters.date_range.title')} />
+              <Separator className="bg-grey-90" decorative orientation="vertical" />
+              <DateRangeFilter.Calendar />
+              <Separator className="bg-grey-90 col-span-3" decorative orientation="horizontal" />
+              <DateRangeFilter.Summary className="col-span-3 row-span-1" />
+            </DateRangeFilter.Root> */}
+            </div>
+          </Page.ContentV2>
+        </Page.Container>
+      </CaseRightPanel.Root>
+    </Page.Main>
   );
 }
