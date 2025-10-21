@@ -237,11 +237,13 @@ export default function Analytics() {
       name: 'scenarioId',
       placeholder: t('analytics:filters.select_scenario.placeholder'),
       options: scenarios.map((scenario) => ({ label: scenario.name, value: scenario.id })),
+      removable: false,
     },
     {
       type: 'date-range-popover',
       name: 'range',
       placeholder: t('analytics:filters.select_date_range.placeholder'),
+      removable: false,
     },
     {
       type: 'date-range-popover',

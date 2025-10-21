@@ -39,8 +39,6 @@ export const NUMBER_OPERATORS: Set<NumberOperator> = new Set([
 ]);
 export const TEXT_OPERATORS: Set<TextOperator> = new Set(['in']);
 
-// Context is now provided by ./context with a dev-safe fallback
-
 export function FiltersBar({
   descriptors = [],
   dynamicDescriptors = [],
@@ -114,7 +112,7 @@ export function FiltersBar({
     const commonProps = {
       name: d.name,
       placeholder: d.placeholder,
-      removable: opts.removable ?? false,
+      removable: opts.removable ?? d.removable ?? false,
       isActive: opts.isActive ?? selectedValue ?? false,
     };
     switch (d.type) {
@@ -179,6 +177,8 @@ export function FiltersBar({
     () => descriptors.map((d) => getFilter(d, draftValue[d.name], {})),
     [descriptors, draftValue],
   );
+
+  console.log(mainFilters);
 
   const additionalFilters: Filter[] = useMemo(
     () => dynamicDescriptors.map((d) => getFilter(d, draftValue[d.name], { removable: true })),
