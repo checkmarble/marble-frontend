@@ -44,12 +44,12 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
     <div className="flex flex-col gap-2 p-2">
       <MenuCommand.Menu>
         <MenuCommand.Trigger>
-          <Button variant="secondary" size="medium" className="justify-between w-full">
+          <Button variant="primary" size="medium" className="justify-between w-full">
             <span className="text-xs truncate">{getSelectedLabel()}</span>
             <MenuCommand.Arrow />
           </Button>
         </MenuCommand.Trigger>
-        <MenuCommand.Content sameWidth>
+        <MenuCommand.Content sameWidth align="start">
           <MenuCommand.List>
             {hasOptions ? (
               options?.map((option: string | { label: string; value: string }) => {
