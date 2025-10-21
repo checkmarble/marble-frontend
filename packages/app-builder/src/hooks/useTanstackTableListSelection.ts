@@ -33,7 +33,7 @@ type WithoutSelectable<Model> = {
 
 export type SelectionProps<Model> = WithSelectable<Model> | WithoutSelectable<Model>;
 
-export function useListSelection<Model>(
+export function useTanstackTableListSelection<Model>(
   data: Model[],
   getRowId: (item: Model) => string,
 ): ListSelectionReturnType<Model> {

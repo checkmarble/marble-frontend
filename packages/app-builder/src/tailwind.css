@@ -21,6 +21,20 @@
   }
 }
 
+@keyframes gradient-move {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@utility animate-gradient {
+  background-size: 200% 100%;
+  animation: gradient-move 2s linear infinite;
+}
+
 @utility form-textarea {
   field-sizing: content;
   resize: false;

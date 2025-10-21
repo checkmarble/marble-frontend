@@ -1,88 +1,59 @@
-import { CursorPaginationButtons, Page } from '@app-builder/components';
-import { CasesList } from '@app-builder/components/Cases';
-import { CaseRightPanel } from '@app-builder/components/Cases/CaseRightPanel';
-import {
-  CasesFilters,
-  CasesFiltersBar,
-  CasesFiltersMenu,
-  CasesFiltersProvider,
-} from '@app-builder/components/Cases/Filters';
-import { FiltersButton } from '@app-builder/components/Filters';
-import { InputWithButton } from '@app-builder/components/InputWithButton';
-import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { Page } from '@app-builder/components';
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import { CaseRightPanel } from '@app-builder/components/Cases';
+import { CasesList } from '@app-builder/components/Cases/Inbox/CasesList';
+import { InboxFilterBar } from '@app-builder/components/Cases/Inbox/FilterBar/FilterBar';
+import { MultiSelect } from '@app-builder/components/MultiSelect';
+import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
+import { useBase64Query } from '@app-builder/hooks/useBase64Query';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import { useListSelection } from '@app-builder/hooks/useListSelection';
-import { type Case } from '@app-builder/models/cases';
-import { Inbox } from '@app-builder/models/inbox';
-import { PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
+import { Case } from '@app-builder/models/cases';
+import { InboxWithCasesCount } from '@app-builder/models/inbox';
+import { filtersSchema, useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
 import { useMassUpdateCasesMutation } from '@app-builder/queries/cases/mass-update';
-import { DEFAULT_CASE_PAGINATION_SIZE } from '@app-builder/repositories/CaseRepository';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { useEffect, useMemo, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { omit } from 'remeda';
-import shortUUID from 'short-uuid';
-import { Button, cn } from 'ui-design-system';
+import { match } from 'ts-pattern';
+import { ButtonV2, cn, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod/v4';
+import { Spinner } from '../Spinner';
 import { BatchActions, MassUpdateCasesFn } from './Inbox/BatchActions';
 
-export type InboxPageProps = {
-  inboxId: shortUUID.UUID | null;
-  inboxes: Inbox[];
+const ALLOWED_FILTERS = [
+  'dateRange',
+  'statuses',
+  'includeSnoozed',
+  'excludeAssigned',
+  'assignee',
+] as const;
+const EXCLUDED_FILTERS = ['excludeAssigned', 'assignee'] as const;
+
+type InboxPageProps = {
+  inboxId: string;
+  inboxes: InboxWithCasesCount[];
   inboxUsersIds: string[];
-  data: PaginatedResponse<Case>;
-  filters: CasesFilters;
-  paginationParams: PaginationParams;
-  hasPreviousPage: boolean;
-  pageNb: number;
-  navigateCasesList: (filters: CasesFilters, pagination?: PaginationParams) => void;
+  query: string;
+  limit: number;
+  order: 'ASC' | 'DESC';
+  updatePage: (newQuery: string, newLimit: number, newOrder: 'ASC' | 'DESC') => void;
+  onInboxSelect: (inboxId: string) => void;
 };
 
 export const InboxPage = ({
   inboxId,
   inboxes,
   inboxUsersIds,
-  data,
-  filters,
-  paginationParams,
-  hasPreviousPage,
-  pageNb,
-  navigateCasesList,
+  query,
+  limit,
+  order,
+  updatePage,
+  onInboxSelect,
 }: InboxPageProps) => {
   const { t } = useTranslation(['common', 'cases']);
-  const navigate = useAgnosticNavigation();
-  const revalidate = useLoaderRevalidator();
-
-  const { items: cases, ...pagination } = data;
+  const [searchValue, setSearchValue] = useState('');
   const { orgUsers } = useOrganizationUsers();
-
-  const excludedFilters = !inboxId ? ['excludeAssigned'] : undefined;
-  const { hasSelectedRows, rowSelection, getSelectedRows, selectionProps, tableProps } =
-    useListSelection<Case>(cases, (row) => row.id);
-  const massUpdateCasesMutation = useMassUpdateCasesMutation();
-
-  const paginationSentinelRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const paginationIntersection = useIntersection(paginationSentinelRef, {
-    root: containerRef.current,
-    rootMargin: '-24px',
-    threshold: 0,
-  });
-
-  useEffect(() => {
-    containerRef.current?.scrollTo({ top: 0 });
-  }, [cases]);
-
-  const onMassUpdateCases: MassUpdateCasesFn = (params) => {
-    const selectedCaseIds = getSelectedRows().map((row) => row.id);
-    massUpdateCasesMutation.mutateAsync({ caseIds: selectedCaseIds, ...params }).then((res) => {
-      revalidate();
-    });
-  };
 
   const assignableUsers = useMemo(() => {
     return orgUsers.filter(
@@ -90,142 +61,148 @@ export const InboxPage = ({
     );
   }, [orgUsers, inboxUsersIds]);
 
-  const moveableInboxes = useMemo(() => {
-    return inboxes.filter(({ id }) => id !== inboxId);
-  }, [inboxes, inboxId]);
+  const allowedFilters = useMemo(() => {
+    if (inboxId === MY_INBOX_ID) {
+      return ALLOWED_FILTERS.filter(
+        (filter: string) => !(EXCLUDED_FILTERS as readonly string[]).includes(filter),
+      );
+    }
+    return ALLOWED_FILTERS;
+  }, [inboxId]);
 
-  const selectedRows = useMemo(() => {
-    return getSelectedRows();
-  }, [getSelectedRows, rowSelection]);
+  const parsedQuery = useBase64Query(filtersSchema, query, {
+    onUpdate(newQuery) {
+      updatePage(newQuery, limit, order);
+    },
+  });
+  const casesQuery = useGetCasesQuery(inboxId, parsedQuery.data, limit, order);
+  const massUpdateCasesMutation = useMassUpdateCasesMutation();
+  const queryClient = useQueryClient();
 
-  let hasAlreadyOrdered = false;
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const intersection = useIntersection(sentinelRef, {
+    root: wrapperRef.current,
+    rootMargin: '1px',
+    threshold: 1,
+  });
+  const isSubsequentlyFetching =
+    casesQuery.isFetchingNextPage || (casesQuery.isFetching && !casesQuery.isPending);
+
+  const onMassUpdateCases: MassUpdateCasesFn = (items, params) => {
+    const caseIds = items.map((item) => item.id);
+    massUpdateCasesMutation.mutateAsync({ caseIds, ...params }).then((res) => {
+      queryClient.invalidateQueries();
+    });
+  };
 
   return (
-    <CaseRightPanel.Root>
-      <Page.Container ref={containerRef}>
-        <Page.ContentV2>
-          <div className="flex flex-col gap-4 relative">
-            <CasesFiltersProvider submitCasesFilters={navigateCasesList} filterValues={filters}>
-              <div className="flex justify-between">
-                <div className="flex gap-4 items-center">
-                  <InputWithButton
-                    initialValue={filters.name}
-                    buttonLabel={t('common:search')}
-                    placeholder={t('cases:search.placeholder')}
-                    label={t('cases:search.placeholder')}
-                    onClear={() => {
-                      navigateCasesList({ ...filters, name: undefined });
-                    }}
-                    onChange={(value) => {
-                      navigateCasesList({ ...filters, name: value });
-                    }}
-                    validator={z.string().min(1)}
-                    icon="search"
-                  />
-                  {t('common:or')}
-                  <InputWithButton
-                    buttonLabel={t('cases:access_by_id.button_label')}
-                    placeholder={t('cases:access_by_id.placeholder')}
-                    label={t('cases:access_by_id.placeholder')}
-                    onChange={(value) => {
-                      navigate(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(value) }));
-                    }}
-                    validator={z.uuid()}
-                    icon="arrow-up-right"
-                    inputClassName="w-80"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <CasesFiltersMenu excludedFilters={excludedFilters}>
-                    <FiltersButton />
-                  </CasesFiltersMenu>
-                  <CaseRightPanel.Trigger asChild data={{ inboxId }}>
-                    <Button>
-                      <Icon icon="plus" className="size-5" />
-                      {t('cases:case.new_case')}
-                    </Button>
-                  </CaseRightPanel.Trigger>
-                  {hasSelectedRows ? (
-                    <BatchActions
-                      selectedCases={selectedRows}
-                      onMassUpdateCases={onMassUpdateCases}
-                      assignableUsers={assignableUsers}
-                      inboxes={moveableInboxes}
-                    />
-                  ) : null}
-                </div>
-              </div>
-              <CasesFiltersBar
-                excludedFilters={!inboxId ? ['excludeAssigned', 'assignee'] : undefined}
-              />
-              <CasesList
-                key={inboxId}
-                cases={cases}
-                initSorting={[
-                  {
-                    id: paginationParams.sorting ?? 'created_at',
-                    desc: paginationParams.order === 'DESC',
-                  },
-                ]}
-                onSortingChange={(state) => {
-                  const params: PaginationParams = {
-                    ...omit(paginationParams, ['order']),
-                    order: state[0]?.desc ? 'DESC' : 'ASC',
-                  };
+    <Page.Main className="flex flex-col">
+      <Page.Header>
+        <BreadCrumbs />
+      </Page.Header>
+      <div
+        className={cn(
+          'h-1 animate-gradient bg-linear-to-r from-transparent from-25% via-purple-65 to-transparent to-75% invisible',
+          {
+            visible: isSubsequentlyFetching,
+          },
+        )}
+      />
+      <CaseRightPanel.Root className="overflow-hidden">
+        <Page.Container ref={wrapperRef}>
+          <Page.ContentV2 className="bg-white gap-v2-md">
+            <div className="flex flex-col gap-v2-md relative">
+              <MultiSelect.Root id={inboxId}>
+                <div className="flex justify-between">
+                  <div className="flex gap-v2-sm items-center">
+                    <MultiSelect.Subscribe<Case>>
+                      {(count, items) => {
+                        if (count === 0 || !casesQuery.isSuccess) return null;
 
-                  if (hasAlreadyOrdered) navigateCasesList(filters, params);
-                  hasAlreadyOrdered = true;
-                }}
-                selectable
-                selectionProps={selectionProps}
-                tableProps={tableProps}
-              />
-              <div
-                className={cn(
-                  'flex justify-between gap-8 sticky bottom-0 z-10 bg-purple-99 -mb-v2-lg -mx-v2-lg p-v2-lg pt-v2-md border-t border-purple-99',
-                  {
-                    'shadow-sticky-bottom border-t-grey-95':
-                      !paginationIntersection?.isIntersecting,
-                  },
-                )}
-              >
-                <div className="flex gap-2 items-center">
-                  <span>{t('cases:list.results_per_page')}</span>
-                  {[25, 50, 100].map((limit) => {
-                    const isActive = limit === paginationParams.limit;
-                    return (
-                      <Button
-                        key={`pagination-limit-${limit}`}
-                        variant="secondary"
-                        className={cn(isActive && 'border-purple-65 text-purple-65')}
-                        onClick={() => {
-                          if (!isActive) {
-                            navigateCasesList(filters, { ...paginationParams, limit });
-                          }
-                        }}
-                      >
-                        {limit}
-                      </Button>
-                    );
-                  })}
+                        return (
+                          <BatchActions
+                            selectedCases={items}
+                            inboxes={inboxes}
+                            assignableUsers={assignableUsers}
+                            onMassUpdateCases={onMassUpdateCases}
+                          />
+                        );
+                      }}
+                    </MultiSelect.Subscribe>
+                    <InboxFilterBar
+                      inboxId={inboxId}
+                      inboxes={inboxes}
+                      allowedFilters={allowedFilters}
+                      filters={parsedQuery.asArray}
+                      updateFilters={parsedQuery.update}
+                      onInboxSelect={onInboxSelect}
+                    />
+                  </div>
+                  <div className="flex gap-v2-sm">
+                    <Input
+                      endAdornment="search"
+                      adornmentClassName="size-5"
+                      placeholder={t('cases:search.placeholder')}
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          parsedQuery.update({ name: searchValue });
+                          setSearchValue('');
+                        }
+                      }}
+                    />
+                    <CaseRightPanel.Trigger asChild data={{ inboxId }}>
+                      <ButtonV2 size="default" variant="primary" appearance="stroked" mode="icon">
+                        <Icon icon="plus" className="size-4" />
+                      </ButtonV2>
+                    </CaseRightPanel.Trigger>
+                  </div>
                 </div>
-                <CursorPaginationButtons
-                  items={cases}
-                  onPaginationChange={(paginationParams: PaginationParams) =>
-                    navigateCasesList(filters, paginationParams)
-                  }
-                  boundariesDisplay="ranks"
-                  hasPreviousPage={hasPreviousPage}
-                  pageNb={pageNb}
-                  itemsPerPage={paginationParams.limit ?? DEFAULT_CASE_PAGINATION_SIZE}
-                  {...pagination}
-                />
-              </div>
-            </CasesFiltersProvider>
-            <div ref={paginationSentinelRef} className="absolute left-0 bottom-0" />
-          </div>
-        </Page.ContentV2>
-      </Page.Container>
-    </CaseRightPanel.Root>
+
+                {match(casesQuery)
+                  .with({ isPending: true }, () => {
+                    return (
+                      <div className=" border border-grey-border rounded-v2-md">
+                        <div className="h-13 border-b border-grey-border"></div>
+                        <div className="h-30 bg-grey-background animate-pulse flex items-center justify-center">
+                          <Spinner className="size-12" />
+                        </div>
+                      </div>
+                    );
+                  })
+                  .with({ isError: true }, () => {
+                    return (
+                      <div className="border-red-74 bg-red-95 text-red-47 mt-3 rounded-sm border p-v2-lg flex flex-col gap-v2-sm items-center">
+                        <span>{t('cases:errors.fetching_cases')}</span>
+                        <ButtonV2 variant="secondary" onClick={() => casesQuery.refetch()}>
+                          {t('common:retry')}
+                        </ButtonV2>
+                      </div>
+                    );
+                  })
+                  .with({ isSuccess: true }, (successCasesQuery) => {
+                    return (
+                      <CasesList
+                        key={inboxId}
+                        casesQuery={successCasesQuery}
+                        sorting={order}
+                        limit={limit}
+                        setLimit={(newLimit) => updatePage(query, newLimit, order)}
+                        onSortingChange={(newOrder) => updatePage(query, limit, newOrder)}
+                        isPaginationSticky={!(intersection?.isIntersecting ?? true)}
+                      />
+                    );
+                  })
+                  .exhaustive()}
+
+                <div ref={sentinelRef} className="absolute left-0 bottom-0" />
+              </MultiSelect.Root>
+            </div>
+          </Page.ContentV2>
+        </Page.Container>
+      </CaseRightPanel.Root>
+    </Page.Main>
   );
 };

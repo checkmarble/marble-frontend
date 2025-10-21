@@ -3,6 +3,7 @@
   "analytics.nudge": "Analyze your decisions & rules triggers through a beautiful panel",
   "api": "Marble API",
   "case_manager": "Case Manager",
+  "case_manager.cases": "Cases",
   "case_manager.decisions": "Decisions",
   "case_manager.files": "Files",
   "case_manager.hits": "Matches",

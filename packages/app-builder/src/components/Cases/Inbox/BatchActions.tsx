@@ -4,10 +4,11 @@ import { Inbox } from '@app-builder/models/inbox';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Avatar, Button, MenuCommand } from 'ui-design-system';
+import { Avatar, ButtonV2, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export type MassUpdateCasesFn = (
+  items: Case[],
   params:
     | { action: 'reopen' | 'close' }
     | { action: 'assign'; assigneeId: string }
@@ -35,20 +36,25 @@ export const BatchActions = ({
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <Button variant="secondary">
+        <ButtonV2 size="default" variant="secondary" appearance="stroked">
           <Icon icon="checked" className="size-4" />
           {t('common:actions')}
-        </Button>
+          <Icon icon="arrow-right" className="size-4" />
+        </ButtonV2>
       </MenuCommand.Trigger>
-      <MenuCommand.Content align="end" sideOffset={4}>
+      <MenuCommand.Content side="right" align="start" sideOffset={4}>
         <MenuCommand.List>
           {canReopen ? (
-            <MenuCommand.Item onSelect={() => onMassUpdateCases({ action: 'reopen' })}>
+            <MenuCommand.Item
+              onSelect={() => onMassUpdateCases(selectedCases, { action: 'reopen' })}
+            >
               {t('cases:case.batch_actions.reopen')}
             </MenuCommand.Item>
           ) : null}
           {canClose ? (
-            <MenuCommand.Item onSelect={() => onMassUpdateCases({ action: 'close' })}>
+            <MenuCommand.Item
+              onSelect={() => onMassUpdateCases(selectedCases, { action: 'close' })}
+            >
               {t('cases:case.batch_actions.lose')}
             </MenuCommand.Item>
           ) : null}
@@ -58,7 +64,9 @@ export const BatchActions = ({
                 {assignableUsers.map(({ userId, firstName, lastName }) => (
                   <MenuCommand.Item
                     key={userId}
-                    onSelect={() => onMassUpdateCases({ action: 'assign', assigneeId: userId })}
+                    onSelect={() =>
+                      onMassUpdateCases(selectedCases, { action: 'assign', assigneeId: userId })
+                    }
                   >
                     <span className="flex items-center gap-v2-sm">
                       <Avatar size="xs" firstName={firstName} lastName={lastName} />
@@ -77,7 +85,9 @@ export const BatchActions = ({
                 {inboxes.map(({ id, name }) => (
                   <MenuCommand.Item
                     key={id}
-                    onSelect={() => onMassUpdateCases({ action: 'move_to_inbox', inboxId: id })}
+                    onSelect={() =>
+                      onMassUpdateCases(selectedCases, { action: 'move_to_inbox', inboxId: id })
+                    }
                   >
                     {name}
                   </MenuCommand.Item>

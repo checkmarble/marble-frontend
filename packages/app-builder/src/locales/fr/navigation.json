@@ -3,6 +3,7 @@
   "analytics.nudge": "Analysez vos décisions via un tableau de bord interactif",
   "api": "API Marble",
   "case_manager": "Investigations",
+  "case_manager.cases": "Investigations",
   "case_manager.decisions": "Décisions",
   "case_manager.files": "Fichiers",
   "case_manager.hits": "Correspondances",

@@ -69,21 +69,67 @@ export const CtaV2ClassName = cva(
   {
     variants: {
       variant: {
-        primary:
-          'bg-purple-65 border-purple-65 text-white hover:bg-purple-60 hover:border-purple-60 disabled:bg-purple-82 disabled:border-purple-82',
+        primary: '',
         destructive:
           'bg-red-47 border-red-47 text-white hover:bg-red-43 hover:border-red-43 disabled:bg-red-74',
         secondary:
           'bg-white border-grey-border text-grey-00 hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-80',
       },
+      appearance: {
+        filled: '',
+        stroked: '',
+        link: '',
+      },
       mode: {
-        normal: 'px-v2-sm py-v2-xs',
-        icon: 'aspect-square p-v2-xs size-7 justify-center',
+        normal: '',
+        icon: 'aspect-square justify-center',
+      },
+      size: {
+        small: '',
+        default: '',
       },
     },
+    compoundVariants: [
+      // Size + Mode
+      {
+        size: 'small',
+        mode: 'normal',
+        class: 'px-v2-sm py-v2-xs',
+      },
+      {
+        size: 'small',
+        mode: 'icon',
+        class: 'p-v2-xs size-7',
+      },
+      {
+        size: 'default',
+        mode: 'normal',
+        class: 'p-v2-sm h-10',
+      },
+      {
+        size: 'default',
+        mode: 'icon',
+        class: 'p-v2-sm size-10',
+      },
+      // Variant + Style
+      {
+        variant: 'primary',
+        appearance: 'filled',
+        class:
+          'bg-purple-65 border-purple-65 text-white hover:bg-purple-60 hover:border-purple-60 disabled:bg-purple-82 disabled:border-purple-82',
+      },
+      {
+        variant: 'primary',
+        appearance: 'stroked',
+        class:
+          'bg-white border-purple-65 text-purple-65 hover:bg-purple-96 hover:border-purple-60 disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-80',
+      },
+    ],
     defaultVariants: {
       variant: 'primary',
       mode: 'normal',
+      size: 'small',
+      appearance: 'filled',
     },
   },
 );
@@ -92,14 +138,14 @@ export type ButtonV2Props = VariantProps<typeof CtaV2ClassName> &
   React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
 
 export const ButtonV2 = forwardRef<HTMLButtonElement, ButtonV2Props>(function ButtonV2(
-  { variant = 'primary', mode = 'normal', className, ...props },
+  { variant = 'primary', mode = 'normal', size = 'small', appearance, className, ...props },
   ref,
 ) {
   return (
     <button
       ref={ref}
       type="button"
-      className={cn(CtaV2ClassName({ variant, mode }), className)}
+      className={cn(CtaV2ClassName({ variant, mode, size, appearance }), className)}
       {...props}
     />
   );

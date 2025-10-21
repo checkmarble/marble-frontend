@@ -3,6 +3,7 @@
   "analytics.nudge": "حلّل قراراتك ومشغلات القواعد عبر لوحة أنيقة",
   "api": "واجهة برمجة تطبيقات Marble",
   "case_manager": "إدارة القضايا",
+  "case_manager.cases": "القضايا",
   "case_manager.decisions": "القرارات",
   "case_manager.files": "الملفات",
   "case_manager.hits": "التطابقات",

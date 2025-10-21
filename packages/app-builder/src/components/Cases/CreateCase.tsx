@@ -11,6 +11,7 @@ import {
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Button, Select } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -21,6 +22,7 @@ export function CreateCase() {
   const createCaseMutation = useCreateCaseMutation();
   const { data } = useCaseRightPanelContext();
   const revalidate = useLoaderRevalidator();
+  const queryClient = useQueryClient();
 
   const form = useForm({
     defaultValues: {
@@ -30,6 +32,7 @@ export function CreateCase() {
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
         createCaseMutation.mutateAsync(value).then((res) => {
+          queryClient.invalidateQueries({ queryKey: ['cases', 'get-cases', value.inboxId] });
           revalidate();
         });
       }

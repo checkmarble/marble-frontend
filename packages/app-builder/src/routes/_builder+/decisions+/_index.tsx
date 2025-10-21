@@ -19,7 +19,7 @@ import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/f
 import { FiltersButton } from '@app-builder/components/Filters';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
-import { useListSelection } from '@app-builder/hooks/useListSelection';
+import { useTanstackTableListSelection } from '@app-builder/hooks/useTanstackTableListSelection';
 import { type Decision } from '@app-builder/models/decision';
 import { type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -156,7 +156,7 @@ export default function Decisions() {
   );
 
   const { hasSelectedRows, getSelectedRows, selectionProps, tableProps } =
-    useListSelection<DecisionViewModel>(decisions, (row) => row.id);
+    useTanstackTableListSelection<DecisionViewModel>(decisions, (row) => row.id);
 
   return (
     <DecisionRightPanel.Root>
