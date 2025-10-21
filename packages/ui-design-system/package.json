@@ -63,7 +63,8 @@
     "react-markdown": "^10.1.0",
     "sharpstate": "^0.0.13",
     "tailwind-merge": "^3.0.2",
-    "ui-icons": "workspace:*"
+    "ui-icons": "workspace:*",
+    "remeda": "^2.21.2"
   },
   "peerDependencies": {
     "react": "^18.3.1",

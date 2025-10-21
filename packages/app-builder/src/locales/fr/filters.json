@@ -3,6 +3,7 @@
   "ds.addNewFilter.label": "Ajouter un nouveau filtre",
   "ds.apply_button.label": "Appliquer",
   "ds.chooseFilter.label": "Choisir un filtre",
+  "ds.clear_dynamic_button.label": "Effacer",
   "ds.noOptionsAvailable.label": "Aucune option disponible",
   "filters": "filtres",
   "new_filter": "nouveau filtre",

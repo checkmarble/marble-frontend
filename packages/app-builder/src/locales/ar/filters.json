@@ -3,6 +3,7 @@
   "ds.addNewFilter.label": "إضافة فلتر جديد",
   "ds.apply_button.label": "تطبيق",
   "ds.chooseFilter.label": "اختر فلتر",
+  "ds.clear_dynamic_button.label": "مسح",
   "ds.noOptionsAvailable.label": "لا يوجد خيارات متاحة",
   "filters": "الفلاتر",
   "new_filter": "فلتر جدبد",

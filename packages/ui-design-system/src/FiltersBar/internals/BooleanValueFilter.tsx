@@ -8,9 +8,11 @@ import { useFiltersBarContext } from './FiltersBarContext';
 export function BooleanValueFilter({
   filter,
   level,
+  buttonState,
 }: {
   filter: BooleanFilter;
   level: FilterBarLevel;
+  buttonState: string;
 }) {
   const f = filter as BooleanFilter;
   const committed = (level === 'additional' ? f.selectedValue : f.selectedValue) as
@@ -30,51 +32,48 @@ export function BooleanValueFilter({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  if (f.removable) {
-    return (
-      <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
-        <FilterItem.Root>
-          <FilterItem.Trigger>{label}</FilterItem.Trigger>
-          {f.removable ? (
-            <FilterItem.Clear
+  return (
+    <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
+      <FilterItem.Root className={buttonState}>
+        <FilterItem.Trigger className={buttonState}>
+          <span>{label}</span>
+        </FilterItem.Trigger>
+        {f.removable ? (
+          <FilterItem.Clear
+            onClick={() => {
+              setLocalChecked('indeterminate');
+              emitRemove(f.name);
+              setOpen(false);
+            }}
+          />
+        ) : null}
+      </FilterItem.Root>
+      <FilterPopover.Content>
+        <div className="p-4 flex flex-col gap-3 w-64">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={localChecked}
+              onCheckedChange={(checked) => setLocalChecked(checked as any)}
+            />
+            <span>Checked</span>
+          </div>
+          <div className="flex justify-end">
+            <button
+              className={cn('text-s bg-purple-65 text-white rounded-sm px-3 py-1.5 outline-hidden')}
               onClick={() => {
-                setLocalChecked('indeterminate');
-                emitRemove(f.name);
+                if (localChecked === 'indeterminate') {
+                  emitSet(f.name, null);
+                } else {
+                  emitSet(f.name, localChecked);
+                }
                 setOpen(false);
               }}
-            />
-          ) : null}
-        </FilterItem.Root>
-        <FilterPopover.Content>
-          <div className="p-4 flex flex-col gap-3 w-64">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                checked={localChecked}
-                onCheckedChange={(checked) => setLocalChecked(checked as any)}
-              />
-              <span>Checked</span>
-            </div>
-            <div className="flex justify-end">
-              <button
-                className={cn(
-                  'text-s bg-purple-65 text-white rounded-sm px-3 py-1.5 outline-hidden',
-                )}
-                onClick={() => {
-                  if (localChecked === 'indeterminate') {
-                    emitSet(f.name, null);
-                  } else {
-                    emitSet(f.name, localChecked);
-                  }
-                  setOpen(false);
-                }}
-              >
-                Done
-              </button>
-            </div>
+            >
+              Done
+            </button>
           </div>
-        </FilterPopover.Content>
-      </FilterPopover.Root>
-    );
-  }
-  return <Checkbox />;
+        </div>
+      </FilterPopover.Content>
+    </FilterPopover.Root>
+  );
 }

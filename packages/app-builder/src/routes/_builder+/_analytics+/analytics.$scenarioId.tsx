@@ -117,13 +117,14 @@ export default function Analytics() {
     };
   }, [parsedFiltersResult, scenarioId]);
 
-  const { data: availableFilters } = useGetAvailableFilters({
-    ranges: [
-      ...(parsedFiltersResult?.range ? [parsedFiltersResult.range] : []),
-      ...(parsedFiltersResult?.compareRange ? [parsedFiltersResult.compareRange] : []),
-    ].filter(Boolean),
-    scenarioId,
-  });
+  const { data: availableFilters, fetchStatus: avaiableFitlersFetchStatus } =
+    useGetAvailableFilters({
+      ranges: [
+        ...(parsedFiltersResult?.range ? [parsedFiltersResult.range] : []),
+        ...(parsedFiltersResult?.compareRange ? [parsedFiltersResult.compareRange] : []),
+      ].filter(Boolean),
+      scenarioId,
+    });
 
   type AvailableFiltersDescriptor = FilterDescriptor & {
     source?: FilterSource;
@@ -274,6 +275,12 @@ export default function Analytics() {
                   dynamicDescriptors={dynamicDescriptors}
                   value={filtersValues}
                   onUpdate={onFiltersUpdate}
+                  options={{
+                    dynamicSkeletons: {
+                      enabled: true,
+                      state: avaiableFitlersFetchStatus === 'fetching' ? 'loading' : 'success',
+                    },
+                  }}
                 />
               </div>
             </div>
