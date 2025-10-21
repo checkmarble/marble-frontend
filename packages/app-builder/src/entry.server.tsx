@@ -10,13 +10,15 @@ import { isbot } from 'isbot';
 import { renderToPipeableStream } from 'react-dom/server';
 import { I18nextProvider } from 'react-i18next';
 import { PassThrough } from 'stream';
-
+import { globalMiddlewares } from './global-middlewares';
 import { type AppConfig } from './models/app-config';
 import { initServerServices } from './services/init.server';
 import { captureUnexpectedRemixError } from './services/monitoring';
 import { checkEnv, getClientEnvVars, getServerEnv } from './utils/environment';
 import { NonceProvider } from './utils/nonce';
-import './global-middlewares';
+
+// @ts-expect-error We're required to set the globalMiddlewares on the globalThis object to be able so its not pruned. lol
+globalThis.globalMiddlewares = globalMiddlewares;
 
 const ABORT_DELAY = 70000;
 
