@@ -5,7 +5,13 @@ import { type TextFilter } from '../types';
 import { FilterItem, FilterPopover } from './FilterPopover';
 import { useFiltersBarContext } from './FiltersBarContext';
 
-export function TextMatchFilter({ filter }: { filter: TextFilter }) {
+export function TextMatchFilter({
+  filter,
+  buttonState,
+}: {
+  filter: TextFilter;
+  buttonState: string;
+}) {
   const [isOpen, setOpen] = useState(false);
   const toTextArray = (selected: unknown): string[] => {
     const arr = selected as any[];
@@ -18,18 +24,15 @@ export function TextMatchFilter({ filter }: { filter: TextFilter }) {
   };
   const [localText, setLocalText] = useState<string[]>(toTextArray(filter.selectedValue));
   const { emitSet, emitRemove } = useFiltersBarContext();
+
   useEffect(() => {
     if (isOpen) setLocalText(toTextArray(filter.selectedValue));
   }, [isOpen, filter.selectedValue]);
-  // if (filter.removable) {
   return (
     <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
-      <FilterItem.Root className={filter.selectedValue ? 'bg-purple-98' : 'bg-grey-98'}>
-        <FilterItem.Trigger
-          id={filter.name}
-          className={filter.selectedValue ? 'text-purple-65' : 'text-grey-90'}
-        >
-          <span className="font-semibold">{filter.name}</span>
+      <FilterItem.Root>
+        <FilterItem.Trigger id={filter.name}>
+          <span className={buttonState}>{filter.name}</span>
           {filter.selectedValue ? (
             <span className="font-medium">in {localText.join(',')}</span>
           ) : null}
@@ -82,6 +85,4 @@ export function TextMatchFilter({ filter }: { filter: TextFilter }) {
       </FilterPopover.Content>
     </FilterPopover.Root>
   );
-  // }
-  // return <Input placeholder={filter.placeholder} />;
 }

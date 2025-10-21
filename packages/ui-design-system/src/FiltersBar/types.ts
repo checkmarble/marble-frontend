@@ -139,10 +139,18 @@ export type FilterChange =
   | { type: 'set'; name: string; value: FilterValue }
   | { type: 'remove'; name: string };
 
+export type FilterBarOptions = {
+  dynamicSkeletons?: {
+    enabled: boolean;
+    state: 'loading' | 'error' | 'success';
+  };
+};
+
 export interface FiltersBarProps {
   descriptors: FilterDescriptor[];
   dynamicDescriptors?: FilterDescriptor[];
   value: Record<string, FilterValue>;
   onUpdate?: (next: { value: Record<string, FilterValue> }) => void;
   onChange?: (change: FilterChange, next: { value: Record<string, FilterValue> }) => void;
+  options?: FilterBarOptions | null;
 }
