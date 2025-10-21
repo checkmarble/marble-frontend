@@ -1,12 +1,12 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CreateListModal } from '@app-builder/components/Lists/CreateListModal';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { isCreateListAvailable } from '@app-builder/services/feature-access';
-import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
@@ -15,18 +15,13 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useVirtualTable } from 'ui-design-system';
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { user, customListsRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn([authMiddleware], async ({ context }) => {
+  const { user, customListsRepository } = context.authInfo;
+
   const customLists = await customListsRepository.listCustomLists();
 
-  return Response.json({
-    customLists,
-    isCreateListAvailable: isCreateListAvailable(user),
-  });
-}
+  return { customLists, isCreateListAvailable: isCreateListAvailable(user) };
+});
 
 export const handle = {
   i18n: ['lists', 'navigation'] satisfies Namespace,

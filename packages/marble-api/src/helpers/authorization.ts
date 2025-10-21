@@ -1,8 +1,15 @@
+import { marblecoreApi } from 'marble-api';
 import { BasicFetchParams, createBasicFetch } from './basic-fetch';
+
+export type TokenServiceUpdate =
+  | { status: false; marbleToken: null; refreshToken: null }
+  | { status: true; marbleToken: marblecoreApi.Token; refreshToken: string | null };
 
 export interface TokenService<Token> {
   getToken: () => Promise<Token | undefined>;
+  getUpdate: () => TokenServiceUpdate;
   refreshToken: () => Promise<Token>;
+  tokenUpdated: boolean;
 }
 
 type FetchWithAuthMiddlewareParam<Token> = BasicFetchParams & {
@@ -29,7 +36,7 @@ export function createFetchWithAuthMiddleware<Token>({
       const token = await tokenService.refreshToken();
       const { name, value } = getAuthorizationHeader(token);
       headers.set(name, value);
-      return fetch(input, { ...init, headers });
+      return basicFetch(input, { ...init, headers });
     }
 
     return response;

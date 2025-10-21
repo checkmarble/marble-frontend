@@ -16,6 +16,7 @@ import { initServerServices } from './services/init.server';
 import { captureUnexpectedRemixError } from './services/monitoring';
 import { checkEnv, getClientEnvVars, getServerEnv } from './utils/environment';
 import { NonceProvider } from './utils/nonce';
+import './global-middlewares';
 
 const ABORT_DELAY = 70000;
 

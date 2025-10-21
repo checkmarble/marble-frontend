@@ -1,10 +1,10 @@
 import { ErrorComponent, Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CreateScenario } from '@app-builder/components/Scenario/Actions/CreateScenario';
-import { initServerServices } from '@app-builder/services/init.server';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import { json, type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -15,17 +15,11 @@ export const handle = {
   i18n: ['scenarios', 'navigation'] satisfies Namespace,
 };
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  const scenarios = await scenario.listScenarios();
-
-  return json({
-    scenarios,
-  });
-}
+export const loader = createServerFn([authMiddleware], async function scenariosLoader({ context }) {
+  return {
+    scenarios: await context.authInfo.scenario.listScenarios(),
+  };
+});
 
 export default function ScenariosPage() {
   const { t } = useTranslation(handle.i18n);
