@@ -296,8 +296,26 @@ export function FiltersBar({
                 ))
                 .otherwise(() => <div key={filter.name}>Filter not implemented yet</div>),
             )}
-
-            {/* Additional filters now always displayed; no selector */}
+            {level === 'additional' && (
+              <div className="flex flex-row justify-end gap-2">
+                {dynamicDescriptors.length || options?.dynamicSkeletons?.enabled ? (
+                  <ButtonV2
+                    variant="secondary"
+                    onClick={clearDynamicFilters}
+                    disabled={!hasAnyDynamicSelected}
+                  >
+                    {t('filters:ds.clear_dynamic_button.label', { defaultValue: 'Clear' })}
+                  </ButtonV2>
+                ) : null}
+                <ButtonV2
+                  variant="primary"
+                  onClick={() => contextValue.emitUpdate()}
+                  disabled={!hasChanges}
+                >
+                  {t('filters:ds.apply_button.label', { defaultValue: 'Apply' })}
+                </ButtonV2>
+              </div>
+            )}
           </div>
         ))}
 
@@ -311,24 +329,6 @@ export function FiltersBar({
             </div>
           </div>
         )}
-        <div className="flex flex-row items-center justify-end gap-2">
-          {dynamicDescriptors.length || options?.dynamicSkeletons?.enabled ? (
-            <ButtonV2
-              variant="secondary"
-              onClick={clearDynamicFilters}
-              disabled={!hasAnyDynamicSelected}
-            >
-              {t('filters:ds.clear_dynamic_button.label', { defaultValue: 'Clear' })}
-            </ButtonV2>
-          ) : null}
-          <ButtonV2
-            variant="primary"
-            onClick={() => contextValue.emitUpdate()}
-            disabled={!hasChanges}
-          >
-            {t('filters:ds.apply_button.label', { defaultValue: 'Apply' })}
-          </ButtonV2>
-        </div>
       </div>
     </FiltersBarContext.Provider>
   );
