@@ -17,8 +17,8 @@ import * as z from 'zod/v4';
  * List of all public env vars to defined on each deployed environments
  */
 const PublicEnvVarsSchema = z.object({
-  ENV: z.string(),
-  NODE_ENV: z.string(),
+  ENV: z.string().optional().default('production'),
+  NODE_ENV: z.string().optional().default('production'),
   APP_VERSION: z.string().optional(),
 
   SESSION_MAX_AGE: z.string().optional(),
