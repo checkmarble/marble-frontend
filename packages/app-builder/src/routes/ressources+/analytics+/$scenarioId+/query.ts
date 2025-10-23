@@ -24,7 +24,7 @@ export async function action({ params, request }: ActionFunctionArgs) {
       scenarioId: urlParams.scenarioId,
     });
 
-    const [decisionOutcomesPerDay, ruleHitTable] = await Promise.all([
+    const [decisionOutcomesPerDay, ruleHitTable, screeningHitsTable] = await Promise.all([
       await analytics.getDecisionOutcomesPerDay({
         ...queryParams,
         scenarioId: urlParams.scenarioId,
@@ -33,11 +33,18 @@ export async function action({ params, request }: ActionFunctionArgs) {
         ...queryParams,
         scenarioId: urlParams.scenarioId,
       }),
+      await analytics.getScreeningHitsTable({
+        ...queryParams,
+        scenarioId: urlParams.scenarioId,
+      }),
     ]);
+
+    console.log(screeningHitsTable);
 
     return Response.json({
       decisionOutcomesPerDay,
       ruleHitTable,
+      screeningHitsTable,
     });
   } catch (error) {
     console.error('error in analytics query', error);

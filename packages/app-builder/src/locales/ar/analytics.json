@@ -13,5 +13,11 @@
   "ruleshit.columns.pivot_ratio": "% المحاور/المستخدمون المميزون",
   "ruleshit.columns.rule": "القاعدة",
   "ruleshit.see_more.label": "عرض المزيد +",
-  "ruleshit.title": "القرارات بالقاعدة"
+  "ruleshit.title": "القرارات بالقاعدة",
+  "screeninghits.columns.avg_hits_per_screening": "متوسط التطابقات لكل فحص",
+  "screeninghits.columns.execs": "# تنفيذات",
+  "screeninghits.columns.hit_ratio": "% تطابقات",
+  "screeninghits.columns.hits": "# تطابقات",
+  "screeninghits.columns.name": "القاعدة",
+  "screeninghits.title": "التطابقات بالفحص"
 }
