@@ -1,4 +1,4 @@
-ARG BUN_IMAGE=oven/bun:1.2-alpine
+ARG BUN_IMAGE=oven/bun:1.3-alpine
 ARG RUNTIME_IMAGE=gcr.io/distroless/nodejs22-debian12:nonroot
 # ---- Dependencies stage ----
 FROM ${BUN_IMAGE} AS deps-dev
