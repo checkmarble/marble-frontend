@@ -17,6 +17,11 @@ import {
   transformAvailableFiltersRequest,
 } from '@app-builder/models/analytics/available-filters';
 import { adaptRuleHitTable, RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
+import {
+  adaptScreeningHitTable,
+  ScreeningHitTableResponse,
+} from '@app-builder/models/analytics/screening-hit';
+
 import { compareAsc, compareDesc, differenceInDays } from 'date-fns';
 
 type DateRangeLimits = {
@@ -63,6 +68,7 @@ export interface AnalyticsRepository {
   legacyListAnalytics(): Promise<legacyAnalytics.Analytics[]>;
   getDecisionOutcomesPerDay(args: AnalyticsQuery): Promise<DecisionOutcomesPerPeriod | null>;
   getRuleHitTable(args: AnalyticsQuery): Promise<RuleHitTableResponse[] | null>;
+  getScreeningHitsTable(args: AnalyticsQuery): Promise<ScreeningHitTableResponse[] | null>;
   getAvailableFilters(args: AvailableFiltersRequest): Promise<AvailableFiltersResponse>;
 }
 
@@ -119,6 +125,16 @@ export function makeGetAnalyticsRepository() {
 
       const raw = await client.getRuleHitTable(parsed[0]!);
       return adaptRuleHitTable(raw);
+    },
+
+    getScreeningHitsTable: async (
+      args: AnalyticsQuery,
+    ): Promise<ScreeningHitTableResponse[] | null> => {
+      const parsed = transformAnalyticsQuery.parse(args);
+      if (!parsed.length) throw new Error('No date range provided');
+
+      const raw = await client.getScreeningHits(parsed[0]!);
+      return adaptScreeningHitTable(raw);
     },
 
     getAvailableFilters: async (

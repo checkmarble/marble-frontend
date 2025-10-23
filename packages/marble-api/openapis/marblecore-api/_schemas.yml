@@ -481,6 +481,8 @@ DecisionOutcomesPerDayResponseDto:
   $ref: analytics.yml#/components/schemas/DecisionOutcomesPerDayResponseDto
 RuleHitTableResponseDto:
   $ref: analytics.yml#/components/schemas/RuleHitTableResponseDto
+ScreeningHitTableResponseDto:
+  $ref: analytics.yml#/components/schemas/ScreeningHitTableResponseDto
 FieldFilterDto:
   $ref: analytics.yml#/components/schemas/FieldFilterDto
 AvailableFiltersRequestDto:

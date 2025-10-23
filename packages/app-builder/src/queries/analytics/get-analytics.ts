@@ -1,6 +1,7 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { AnalyticsFiltersQuery, DecisionOutcomesPerPeriod } from '@app-builder/models/analytics';
 import { RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
+import { ScreeningHitTableResponse } from '@app-builder/models/analytics/screening-hit';
 import { getRoute } from '@app-builder/utils/routes';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
@@ -48,6 +49,7 @@ export const useGetAnalytics = ({
       return result.data as {
         decisionOutcomesPerDay: DecisionOutcomesPerPeriod | null;
         ruleHitTable: RuleHitTableResponse[] | null;
+        screeningHitsTable: ScreeningHitTableResponse[] | null;
       };
     },
     placeholderData: keepPreviousData,

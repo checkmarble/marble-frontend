@@ -13,5 +13,11 @@
   "ruleshit.columns.pivot_ratio": "% distinct pivots/users",
   "ruleshit.columns.rule": "Rule",
   "ruleshit.see_more.label": "See more +",
-  "ruleshit.title": "Decisions rules"
+  "ruleshit.title": "Decisions rules",
+  "screeninghits.columns.avg_hits_per_screening": "Avg hits per screening",
+  "screeninghits.columns.execs": "# execs",
+  "screeninghits.columns.hit_ratio": "% hits",
+  "screeninghits.columns.hits": "# hits",
+  "screeninghits.columns.name": "Rule",
+  "screeninghits.title": "Screening hits"
 }
