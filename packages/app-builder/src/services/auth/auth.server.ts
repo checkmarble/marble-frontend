@@ -234,11 +234,13 @@ export function makeAuthenticationServerService({
 
             if (authSession.data.refreshToken) {
               const response = await oidc.refreshToken(authSession.data.refreshToken);
+              const accessToken = response.accessToken();
               const idToken = response.idToken();
 
               const marbleToken = await marblecoreApi.postToken(
                 {
                   authorization: `Bearer ${idToken}`,
+                  xOidcAccessToken: accessToken,
                 },
                 { baseUrl: getServerEnv('MARBLE_API_URL') },
               );
@@ -314,11 +316,12 @@ export function makeAuthenticationServerService({
     let redirectUrl = options.failureRedirect;
 
     try {
-      const { idToken, refreshToken } = tokens;
+      const { idToken, accessToken, refreshToken } = tokens;
 
       const marbleToken = await marblecoreApi.postToken(
         {
           authorization: `Bearer ${idToken}`,
+          xOidcAccessToken: accessToken,
         },
         { baseUrl: getServerEnv('MARBLE_API_URL') },
       );
