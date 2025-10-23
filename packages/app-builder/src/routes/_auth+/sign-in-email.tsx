@@ -11,7 +11,7 @@ import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
-import { Link, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
+import { Link, redirect, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
 import { tryit } from 'radash';
 import { useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
@@ -33,6 +33,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   if (err) {
     console.error('Error fetching app config API');
+  }
+
+  if (appConfig?.auth.provider === 'oidc') {
+    throw redirect(getRoute('/sign-in'));
   }
 
   const authError = !appConfig
