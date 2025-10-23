@@ -1438,9 +1438,10 @@ export type AvailableFiltersResponseDto = {
 /**
  * Get an access token
  */
-export function postToken({ xApiKey, authorization }: {
+export function postToken({ xApiKey, authorization, xOidcAccessToken }: {
     xApiKey?: string;
     authorization?: string;
+    xOidcAccessToken?: string;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -1453,7 +1454,8 @@ export function postToken({ xApiKey, authorization }: {
         method: "POST",
         headers: oazapfts.mergeHeaders(opts?.headers, {
             "X-API-Key": xApiKey,
-            Authorization: authorization
+            Authorization: authorization,
+            "x-oidc-access-token": xOidcAccessToken
         })
     }));
 }

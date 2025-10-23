@@ -17,6 +17,11 @@
         name: Authorization
         schema:
           type: string
+      - in: header
+        description: Access token used as a fallback claims retrieval mechanism for OpenID Connect authentication
+        name: x-oidc-access-token
+        schema:
+          type: string
     responses:
       '200':
         description: New access token
