@@ -11,6 +11,7 @@ export interface BaseFilter<T> {
   isOpen?: boolean;
   isActive: boolean;
   onOpenChange?: (open: boolean) => void;
+  unavailable?: boolean;
 }
 
 export type NumberOperator = 'eq' | 'ne' | 'lt' | 'lte' | 'gt' | 'gte';
@@ -95,6 +96,8 @@ export interface BaseFilterDescriptor {
   name: string;
   placeholder: string;
   removable?: boolean;
+  instantUpdate?: boolean;
+  unavailable?: boolean;
 }
 export interface NumberFilterDescriptor extends BaseFilterDescriptor {
   type: 'number';

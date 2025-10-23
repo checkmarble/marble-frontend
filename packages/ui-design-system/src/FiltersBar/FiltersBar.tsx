@@ -14,7 +14,6 @@ import { TextMatchFilter } from './internals/TextMatchFilter';
 import {
   type DateRangePopoverFilter,
   type Filter,
-  type FilterBarLevel,
   type FilterDescriptor,
   type FiltersBarProps,
   type FilterValue,
@@ -56,26 +55,6 @@ export function FiltersBar({
     setDraftValue(value);
   }, [value]);
 
-  const contextValue = useMemo<FiltersBarContextValue>(() => {
-    const emitSet = (name: string, newValue: FilterValue) => {
-      setDraftValue((prev) => ({ ...prev, [name]: newValue }));
-    };
-    const emitRemove = (name: string) => {
-      setDraftValue((prev) => {
-        const next = { ...prev } as Record<string, FilterValue>;
-        delete next[name];
-        return next;
-      });
-    };
-    const emitUpdate = () => {
-      if (onUpdate) return onUpdate({ value: draftValue });
-      // Fallback for backward compatibility
-      onChange?.({ type: 'set', name: '__apply__', value: null } as any, { value: draftValue });
-    };
-    const getValue = (name: string) => draftValue[name];
-    return { emitSet, emitRemove, emitUpdate, getValue };
-  }, [draftValue, onUpdate, onChange]);
-
   const getFilter = (
     d: FilterDescriptor,
     value: FilterValue,
@@ -114,6 +93,7 @@ export function FiltersBar({
       placeholder: d.placeholder,
       removable: opts.removable ?? d.removable ?? false,
       isActive: opts.isActive ?? selectedValue ?? false,
+      unavailable: (d as any).unavailable ?? false,
     };
     switch (d.type) {
       case 'text':
@@ -173,6 +153,7 @@ export function FiltersBar({
         return undefined as never;
     }
   };
+
   const mainFilters: Filter[] = useMemo(
     () => descriptors.map((d) => getFilter(d, draftValue[d.name], {})),
     [descriptors, draftValue],
@@ -185,13 +166,71 @@ export function FiltersBar({
     [dynamicDescriptors, draftValue],
   );
 
-  const filtersMap = useMemo(() => {
-    const hasDynamic = dynamicDescriptors.length > 0;
-    return new Map<FilterBarLevel, Filter[]>([
-      ['main', mainFilters],
-      ...(hasDynamic ? [['additional', additionalFilters] as const] : []),
-    ]);
-  }, [mainFilters, additionalFilters, dynamicDescriptors]);
+  // const filtersMap = useMemo(() => {
+  //   const hasDynamic = dynamicDescriptors.length > 0;
+  //   return new Map<FilterBarLevel, Filter[]>([
+  //     ['main', mainFilters],
+  //     ...(hasDynamic ? [['additional', additionalFilters] as const] : []),
+  //   ]);
+  // }, [mainFilters, additionalFilters, dynamicDescriptors]);
+
+  type FilterWithPriority = Filter & {
+    priority: 'main' | 'additional';
+  };
+
+  const filtersByPriority = useMemo(
+    (): FilterWithPriority[][] => [
+      mainFilters.map((filter) => ({ ...filter, priority: 'main' as const })),
+      ...(additionalFilters.length > 0
+        ? [additionalFilters.map((filter) => ({ ...filter, priority: 'additional' as const }))]
+        : []),
+    ],
+    [mainFilters, additionalFilters],
+  );
+
+  const allDescriptors = useMemo(
+    () => [...descriptors, ...dynamicDescriptors],
+    [descriptors, dynamicDescriptors],
+  );
+
+  console.log(allDescriptors);
+
+  const contextValue = useMemo<FiltersBarContextValue>(() => {
+    const emitSet = (name: string, newValue: FilterValue) => {
+      setDraftValue((prev) => ({ ...prev, [name]: newValue }));
+
+      if (allDescriptors.find((d) => d.name === name)?.instantUpdate && onChange) {
+        const nextValue = { ...draftValue, [name]: newValue };
+        onChange({ type: 'set', name, value: newValue }, { value: nextValue });
+      }
+    };
+    const emitRemove = (name: string) => {
+      setDraftValue((prev) => {
+        const next = { ...prev } as Record<string, FilterValue>;
+        delete next[name];
+        return next;
+      });
+
+      if (allDescriptors.find((d) => d.name === name)?.instantUpdate && onChange) {
+        const nextValue = { ...draftValue };
+        delete nextValue[name];
+        onChange({ type: 'remove', name }, { value: nextValue });
+      }
+    };
+    // const emitSingleChange = () => {
+    //   if (onSingleChange)
+    //     return onSingleChange({ type: 'set', name: '__apply__', value: null } as any, {
+    //       value: draftValue,
+    //     });
+    // };
+    const emitUpdate = () => {
+      if (onUpdate) return onUpdate({ value: draftValue });
+      // Fallback for backward compatibility
+      // onChange?.({ type: 'set', name: '__apply__', value: null } as any, { value: draftValue });
+    };
+    const getValue = (name: string) => draftValue[name];
+    return { emitSet, emitRemove, emitUpdate, getValue };
+  }, [draftValue, onUpdate, onChange, descriptors, dynamicDescriptors]);
 
   const buttonState = cva('font-semibold', {
     variants: {
@@ -246,13 +285,13 @@ export function FiltersBar({
   };
   return (
     <FiltersBarContext.Provider value={contextValue}>
-      <div className="flex flex-col gap-2">
-        {Array.from(filtersMap.entries()).map(([level, renderedFilters]) => (
-          <div key={level} className="flex flex-row items-center gap-2">
-            {renderedFilters.map((filter) =>
-              match(filter)
-                .with({ type: 'text' }, (textFilter) => {
-                  return (
+      <div className="flex flex-row gap-2">
+        <div className="flex flex-col gap-2">
+          {filtersByPriority.map((filters, priorityIndex) => (
+            <div key={priorityIndex} className="flex flex-row items-center gap-2">
+              {filters.map((filter) =>
+                match(filter)
+                  .with({ type: 'text' }, (textFilter) => (
                     <TextMatchFilter
                       filter={textFilter}
                       key={filter.name}
@@ -260,75 +299,74 @@ export function FiltersBar({
                         state: textFilter.selectedValue ? 'enabled' : 'disabled',
                       })}
                     />
-                  );
-                })
-                .with({ type: 'checkbox' }, () => <Checkbox key={filter.name} />)
-                .with({ type: 'number' }, (numberFilter) => (
-                  <NumberValueFilter
-                    filter={numberFilter}
-                    key={filter.name}
-                    buttonState={buttonState({
-                      state: numberFilter.selectedValue ? 'enabled' : 'disabled',
-                    })}
-                  />
-                ))
-                .with({ type: 'boolean' }, (booleanFilter) => (
-                  <BooleanValueFilter
-                    filter={booleanFilter}
-                    level={level}
-                    key={filter.name}
-                    buttonState={buttonState({
-                      state: booleanFilter.selectedValue ? 'enabled' : 'disabled',
-                    })}
-                  />
-                ))
-                .with({ type: 'select' }, (selectFilter) => (
-                  <SelectOptionFilter {...selectFilter} key={filter.name} />
-                ))
-                .with({ type: 'date-range-popover' }, (dateRangePopoverFilter) => (
-                  <DateRangeFilterPopover filter={dateRangePopoverFilter} key={filter.name} />
-                ))
-                .with({ type: 'radio' }, () => (
-                  <div key={filter.name}>Radio filter not implemented yet</div>
-                ))
-                .with({ type: 'multi-select' }, () => (
-                  <div key={filter.name}>Multi-select filter not implemented yet</div>
-                ))
-                .otherwise(() => <div key={filter.name}>Filter not implemented yet</div>),
-            )}
-            {level === 'additional' && (
-              <div className="flex flex-row justify-end gap-2">
-                {dynamicDescriptors.length || options?.dynamicSkeletons?.enabled ? (
-                  <ButtonV2
-                    variant="secondary"
-                    onClick={clearDynamicFilters}
-                    disabled={!hasAnyDynamicSelected}
-                  >
-                    {t('filters:ds.clear_dynamic_button.label', { defaultValue: 'Clear' })}
-                  </ButtonV2>
-                ) : null}
-                <ButtonV2
-                  variant="primary"
-                  onClick={() => contextValue.emitUpdate()}
-                  disabled={!hasChanges}
-                >
-                  {t('filters:ds.apply_button.label', { defaultValue: 'Apply' })}
-                </ButtonV2>
-              </div>
-            )}
-          </div>
-        ))}
-
-        {options?.dynamicSkeletons?.enabled && options?.dynamicSkeletons?.state === 'loading' && (
-          <div className="flex flex-row items-center gap-2">
-            <div className="flex flex-row items-center gap-2">
-              <div className="w-[128px] h-v2-xxl animate-pulse bg-grey-90 rounded-v2-s" />
-              <div className="w-[112px] h-v2-xxl animate-pulse bg-grey-90 rounded-v2-s" />
-              <div className="w-[128px] h-v2-xxl animate-pulse bg-grey-90 rounded-v2-s" />
-              <div className="w-[80px] h-v2-xxl animate-pulse bg-grey-90 rounded-v2-s" />
+                  ))
+                  .with({ type: 'checkbox' }, () => <Checkbox key={filter.name} />)
+                  .with({ type: 'number' }, (numberFilter) => (
+                    <NumberValueFilter
+                      filter={numberFilter}
+                      key={filter.name}
+                      buttonState={buttonState({
+                        state: numberFilter.selectedValue ? 'enabled' : 'disabled',
+                      })}
+                    />
+                  ))
+                  .with({ type: 'boolean' }, (booleanFilter) => (
+                    <BooleanValueFilter
+                      filter={booleanFilter}
+                      level={filter.priority}
+                      key={filter.name}
+                      buttonState={buttonState({
+                        state: booleanFilter.selectedValue ? 'enabled' : 'disabled',
+                      })}
+                    />
+                  ))
+                  .with({ type: 'select' }, (selectFilter) => (
+                    <SelectOptionFilter {...selectFilter} key={filter.name} />
+                  ))
+                  .with({ type: 'date-range-popover' }, (dateRangePopoverFilter) => (
+                    <DateRangeFilterPopover filter={dateRangePopoverFilter} key={filter.name} />
+                  ))
+                  .with({ type: 'radio' }, () => (
+                    <div key={filter.name}>Radio filter not implemented yet</div>
+                  ))
+                  .with({ type: 'multi-select' }, () => (
+                    <div key={filter.name}>Multi-select filter not implemented yet</div>
+                  ))
+                  .otherwise(() => <div key={filter.name}>Filter not implemented yet</div>),
+              )}
             </div>
-          </div>
-        )}
+          ))}
+
+          {options?.dynamicSkeletons?.enabled && options?.dynamicSkeletons?.state === 'loading' && (
+            <div className="flex flex-row items-center gap-2">
+              <div className="flex flex-row items-center gap-2">
+                <div className="w-[128px] h-v2-xxl animate-pulse bg-grey-90 rounded-v2-s" />
+                <div className="w-[112px] h-v2-xxl animate-pulse bg-grey-90 rounded-v2-s" />
+                <div className="w-[128px] h-v2-xxl animate-pulse bg-grey-90 rounded-v2-s" />
+                <div className="w-[80px] h-v2-xxl animate-pulse bg-grey-90 rounded-v2-s" />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-row items-end-safe gap-2">
+          {dynamicDescriptors.length || options?.dynamicSkeletons?.enabled ? (
+            <ButtonV2
+              variant="secondary"
+              onClick={clearDynamicFilters}
+              disabled={!hasAnyDynamicSelected}
+            >
+              {t('filters:ds.clear_dynamic_button.label', { defaultValue: 'Clear' })}
+            </ButtonV2>
+          ) : null}
+          <ButtonV2
+            variant="primary"
+            onClick={() => contextValue.emitUpdate()}
+            disabled={!hasChanges}
+          >
+            {t('filters:ds.apply_button.label', { defaultValue: 'Apply' })}
+          </ButtonV2>
+        </div>
       </div>
     </FiltersBarContext.Provider>
   );

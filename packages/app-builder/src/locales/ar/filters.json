@@ -7,5 +7,6 @@
   "ds.noOptionsAvailable.label": "لا يوجد خيارات متاحة",
   "filters": "الفلاتر",
   "new_filter": "فلتر جدبد",
+  "unavailable_filter_tooltip": "الفلتر غير متاح للمجال المحدد",
   "up_to": "حتى {{date}}"
 }

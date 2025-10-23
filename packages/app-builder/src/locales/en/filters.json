@@ -7,5 +7,6 @@
   "ds.noOptionsAvailable.label": "No options available",
   "filters": "filters",
   "new_filter": "new filter",
+  "unavailable_filter_tooltip": "Filter is not available for selected range",
   "up_to": "up to {{duration}}"
 }

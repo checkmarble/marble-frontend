@@ -7,5 +7,6 @@
   "ds.noOptionsAvailable.label": "Aucune option disponible",
   "filters": "filtres",
   "new_filter": "nouveau filtre",
+  "unavailable_filter_tooltip": "Le filtre n'est pas disponible pour la plage de dates sélectionnée",
   "up_to": "jusqu'à {{duration}}"
 }
