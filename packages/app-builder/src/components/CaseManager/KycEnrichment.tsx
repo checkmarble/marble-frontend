@@ -1,7 +1,7 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useAddCommentMutation } from '@app-builder/queries/cases/add-comment';
 import { useCreateKycEnrichmentQuery } from '@app-builder/queries/cases/create-kyc-enrichment';
-import * as Sentry from '@sentry/react';
+import * as Sentry from '@sentry/remix';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
