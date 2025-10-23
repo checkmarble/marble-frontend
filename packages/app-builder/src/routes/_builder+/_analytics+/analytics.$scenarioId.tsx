@@ -2,6 +2,7 @@ import { ErrorComponent } from '@app-builder/components';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
 import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
+import type { DateRangeFilter as AnalyticsDateRangeFilter } from '@app-builder/models/analytics';
 import {
   type AnalyticsFiltersQuery,
   analyticsFiltersQuery,
@@ -19,10 +20,14 @@ import type { LoaderFunctionArgs } from '@remix-run/node';
 import { useLoaderData, useNavigate, useRouteError, useSearchParams } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiltersBar, FormattingProvider, I18nProvider } from 'ui-design-system';
-import type { FilterDescriptor, FilterValue } from 'ui-design-system/src/FiltersBar/types';
+import type {
+  FilterChange,
+  FilterDescriptor,
+  FilterValue,
+} from 'ui-design-system/src/FiltersBar/types';
 import { Icon } from 'ui-icons';
 
 interface LoaderData {
@@ -108,6 +113,20 @@ export default function Analytics() {
     }
   }, [queryString]);
 
+  // Volatile overrides for instant updates (no navigation)
+  const [volatileScenarioId, setVolatileScenarioId] = useState<string | null>(null);
+  const [volatileRange, setVolatileRange] = useState<AnalyticsDateRangeFilter | undefined>();
+  const [volatileCompareRange, setVolatileCompareRange] = useState<
+    AnalyticsDateRangeFilter | undefined
+  >();
+
+  // Reset volatile overrides when URL query changes (after Apply)
+  useEffect(() => {
+    setVolatileScenarioId(null);
+    setVolatileRange(undefined);
+    setVolatileCompareRange(undefined);
+  }, [queryString]);
+
   const filtersValues = useMemo(() => {
     const { trigger, scenarioVersion: _scenarioVersion, ...rest } = parsedFiltersResult ?? {};
     return {
@@ -117,17 +136,35 @@ export default function Analytics() {
     };
   }, [parsedFiltersResult, scenarioId]);
 
+  const effectiveScenarioId = volatileScenarioId ?? scenarioId;
+  const effectiveRanges: AnalyticsDateRangeFilter[] = useMemo(() => {
+    const primary = (volatileRange ?? parsedFiltersResult?.range) as
+      | AnalyticsDateRangeFilter
+      | undefined;
+    const secondary = (volatileCompareRange ?? parsedFiltersResult?.compareRange) as
+      | AnalyticsDateRangeFilter
+      | undefined;
+    return [primary, secondary].filter(Boolean) as AnalyticsDateRangeFilter[];
+  }, [volatileRange, volatileCompareRange, parsedFiltersResult]);
+
   const { data: availableFilters, fetchStatus: avaiableFitlersFetchStatus } =
     useGetAvailableFilters({
-      ranges: [
-        ...(parsedFiltersResult?.range ? [parsedFiltersResult.range] : []),
-        ...(parsedFiltersResult?.compareRange ? [parsedFiltersResult.compareRange] : []),
-      ].filter(Boolean),
-      scenarioId,
+      ranges: effectiveRanges,
+      scenarioId: effectiveScenarioId,
     });
+
+  // Compute names of dynamic filters currently set but not present in latest availableFilters
+  const missingDynamicFilters = useMemo(() => {
+    const selectedDynamicNames = Object.keys(filtersValues).filter(
+      (k) => k !== 'scenarioId' && k !== 'range' && k !== 'compareRange',
+    );
+    const availableNames = new Set((availableFilters ?? []).map((f) => f.name));
+    return selectedDynamicNames.filter((name) => !availableNames.has(name));
+  }, [availableFilters, filtersValues]);
 
   type AvailableFiltersDescriptor = FilterDescriptor & {
     source?: FilterSource;
+    unavailable?: boolean;
   };
   const { dynamicDescriptors } = useMemo(() => {
     const index: Record<string, unknown> = {};
@@ -137,6 +174,7 @@ export default function Analytics() {
         placeholder: filter.name,
         removable: true as const,
         source: filter.source,
+        unavailable: missingDynamicFilters.includes(filter.name) ? true : undefined,
       };
       switch (filter.type) {
         case 'string':
@@ -152,7 +190,7 @@ export default function Analytics() {
     }) as AvailableFiltersDescriptor[];
 
     return { dynamicDescriptors: descriptors };
-  }, [availableFilters]);
+  }, [availableFilters, missingDynamicFilters]);
 
   const {
     data: { decisionOutcomesPerDay: decisionsData, ruleHitTable: ruleHitTableData } = {
@@ -231,6 +269,23 @@ export default function Analytics() {
       { replace: true },
     );
   };
+
+  const onInstantUpdate = (change: FilterChange): void => {
+    // Refetch available filters on instant updates without navigation
+    if (change.type === 'set') {
+      switch (change.name) {
+        case 'scenarioId':
+          return setVolatileScenarioId(change.value as string);
+        case 'range':
+          return setVolatileRange(change.value as AnalyticsDateRangeFilter);
+        case 'compareRange':
+          return setVolatileCompareRange(change.value as AnalyticsDateRangeFilter);
+      }
+    }
+    if (change.type === 'remove' && change.name === 'compareRange') {
+      return setVolatileCompareRange(undefined);
+    }
+  };
   const descriptors: FilterDescriptor[] = [
     {
       type: 'select',
@@ -238,18 +293,21 @@ export default function Analytics() {
       placeholder: t('analytics:filters.select_scenario.placeholder'),
       options: scenarios.map((scenario) => ({ label: scenario.name, value: scenario.id })),
       removable: false,
+      instantUpdate: true,
     },
     {
       type: 'date-range-popover',
       name: 'range',
       placeholder: t('analytics:filters.select_date_range.placeholder'),
       removable: false,
+      instantUpdate: true,
     },
     {
       type: 'date-range-popover',
       name: 'compareRange',
       placeholder: t('analytics:filters.select_comparison_date_range.placeholder'),
       removable: true,
+      instantUpdate: true,
     },
   ];
 
@@ -277,6 +335,7 @@ export default function Analytics() {
                   dynamicDescriptors={dynamicDescriptors}
                   value={filtersValues}
                   onUpdate={onFiltersUpdate}
+                  onChange={(change, _next) => onInstantUpdate(change)}
                   options={{
                     dynamicSkeletons: {
                       enabled: true,

@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Icon } from 'ui-icons';
 import { Checkbox } from '../../Checkbox/Checkbox';
+import { useI18n } from '../../contexts/I18nContext';
+import { Tooltip } from '../../Tooltip/Tooltip';
 import { cn } from '../../utils';
 import { type BooleanFilter, type FilterBarLevel } from '../types';
 import { FilterItem, FilterPopover } from './FilterPopover';
@@ -14,20 +17,22 @@ export function BooleanValueFilter({
   level: FilterBarLevel;
   buttonState: string;
 }) {
-  const f = filter as BooleanFilter;
-  const committed = (level === 'additional' ? f.selectedValue : f.selectedValue) as
+  const committed = (level === 'additional' ? filter.selectedValue : filter.selectedValue) as
     | boolean
     | null
     | undefined;
-  const label = committed ? String(committed) : f.placeholder;
+  const label = committed ? String(committed) : filter.placeholder;
   const [isOpen, setOpen] = useState(false);
   const [localChecked, setLocalChecked] = useState<'indeterminate' | boolean>(
-    f.selectedValue === null ? 'indeterminate' : Boolean(f.selectedValue),
+    filter.selectedValue === null ? 'indeterminate' : Boolean(filter.selectedValue),
   );
   const { emitSet, emitRemove } = useFiltersBarContext();
+  const { t } = useI18n();
   useEffect(() => {
     if (isOpen) {
-      setLocalChecked(f.selectedValue === null ? 'indeterminate' : Boolean(f.selectedValue));
+      setLocalChecked(
+        filter.selectedValue === null ? 'indeterminate' : Boolean(filter.selectedValue),
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
@@ -38,11 +43,16 @@ export function BooleanValueFilter({
         <FilterItem.Trigger className={buttonState}>
           <span>{label}</span>
         </FilterItem.Trigger>
-        {f.removable ? (
+        {filter.unavailable ? (
+          <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
+            <Icon icon="error" className="text-red-base size-4" />
+          </Tooltip.Default>
+        ) : null}
+        {filter.removable && filter.selectedValue ? (
           <FilterItem.Clear
             onClick={() => {
               setLocalChecked('indeterminate');
-              emitRemove(f.name);
+              emitRemove(filter.name);
               setOpen(false);
             }}
           />
@@ -62,9 +72,9 @@ export function BooleanValueFilter({
               className={cn('text-s bg-purple-65 text-white rounded-sm px-3 py-1.5 outline-hidden')}
               onClick={() => {
                 if (localChecked === 'indeterminate') {
-                  emitSet(f.name, null);
+                  emitSet(filter.name, null);
                 } else {
-                  emitSet(f.name, localChecked);
+                  emitSet(filter.name, localChecked);
                 }
                 setOpen(false);
               }}

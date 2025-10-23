@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Button } from '../../Button/Button';
+import { Icon } from 'ui-icons';
+import { ButtonV2 } from '../../Button/Button';
 import { useI18n } from '../../contexts/I18nContext';
 import { MenuCommand } from '../../MenuCommand/MenuCommand';
+import { Tooltip } from '../../Tooltip/Tooltip';
 import { type SelectFilter } from '../types';
 import { useFiltersBarContext } from './FiltersBarContext';
 
@@ -44,10 +46,21 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
     <div className="flex flex-col gap-2 p-2">
       <MenuCommand.Menu>
         <MenuCommand.Trigger>
-          <Button variant="primary" size="medium" className="justify-between w-full">
-            <span className="text-xs truncate">{getSelectedLabel()}</span>
+          <ButtonV2 variant="primary" mode="normal" className="justify-between w-full">
+            <span className="text-xs truncate flex items-center gap-1">
+              {getSelectedLabel()}
+              {(selectedValue as any)?.unavailable ? (
+                <Tooltip.Default
+                  content={t('filters:unavailable_filter_tooltip', {
+                    defaultValue: 'May not be available for selected range',
+                  })}
+                >
+                  <Icon icon="warning" className="text-warning-60 size-4" />
+                </Tooltip.Default>
+              ) : null}
+            </span>
             <MenuCommand.Arrow />
-          </Button>
+          </ButtonV2>
         </MenuCommand.Trigger>
         <MenuCommand.Content sameWidth align="start">
           <MenuCommand.List>

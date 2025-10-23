@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Icon } from 'ui-icons';
+import { useI18n } from '../../contexts/I18nContext';
 import { Input } from '../../Input/Input';
+import { Tooltip } from '../../Tooltip/Tooltip';
 import { cn } from '../../utils';
 import { type TextFilter } from '../types';
 import { FilterItem, FilterPopover } from './FilterPopover';
@@ -24,6 +27,7 @@ export function TextMatchFilter({
   };
   const [localText, setLocalText] = useState<string[]>(toTextArray(filter.selectedValue));
   const { emitSet, emitRemove } = useFiltersBarContext();
+  const { t } = useI18n();
 
   useEffect(() => {
     if (isOpen) setLocalText(toTextArray(filter.selectedValue));
@@ -37,6 +41,11 @@ export function TextMatchFilter({
             <span className="font-medium">in {localText.join(',')}</span>
           ) : null}
         </FilterItem.Trigger>
+        {filter.unavailable ? (
+          <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
+            <Icon icon="error" className="text-red-base size-4" />
+          </Tooltip.Default>
+        ) : null}
         {filter.selectedValue ? (
           <FilterItem.Clear
             onClick={() => {

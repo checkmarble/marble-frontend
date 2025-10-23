@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
+import { Icon } from 'ui-icons';
+import { useI18n } from '../../contexts/I18nContext';
 import { Input } from '../../Input/Input';
 import { MenuCommand } from '../../MenuCommand/MenuCommand';
+import { Tooltip } from '../../Tooltip/Tooltip';
 import { cn } from '../../utils';
 import { NUMBER_OPERATORS } from '../FiltersBar';
 import { ComparisonFilter, type NumberFilter, NumberOperator } from '../types';
@@ -15,6 +18,7 @@ export function NumberValueFilter({
   buttonState: string;
 }) {
   const [isOpen, setOpen] = useState(false);
+  const { t } = useI18n();
 
   const [opSelectIsOpen, setOpSelectIsOpen] = useState(false);
   const [localValue, setLocalValue] = useState<ComparisonFilter<number>>(
@@ -58,6 +62,11 @@ export function NumberValueFilter({
             );
           })()}
         </FilterItem.Trigger>
+        {filter.unavailable ? (
+          <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
+            <Icon icon="error" className="text-red-base size-4" />
+          </Tooltip.Default>
+        ) : null}
         {filter.selectedValue ? (
           <FilterItem.Clear
             onClick={() => {
