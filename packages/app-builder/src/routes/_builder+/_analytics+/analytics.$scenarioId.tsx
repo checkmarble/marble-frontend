@@ -1,5 +1,6 @@
 import { ErrorComponent } from '@app-builder/components';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
+import { DecisionsScoreDistribution } from '@app-builder/components/Analytics/DecisionsScoreDistribution';
 import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
 import { ScreeningHits } from '@app-builder/components/Analytics/ScreeningHits';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
@@ -196,10 +197,12 @@ export default function Analytics() {
       decisionOutcomesPerDay: decisionsData,
       ruleHitTable: ruleHitTableData,
       screeningHitsTable: screeningHitsTableData,
+      decisionsScoreDistribution: decisionsScoreDistributionData,
     } = {
       decisionOutcomesPerDay: null,
       ruleHitTable: null,
       screeningHitsTable: null,
+      decisionsScoreDistribution: null,
     },
     isFetching: _isAnalyticsPending,
   } = useGetAnalytics({
@@ -361,11 +364,19 @@ export default function Analytics() {
                 />
               </div>
             </div>
-            <Decisions
-              data={decisionsData as DecisionOutcomesPerPeriod}
-              scenarioVersions={scenarioVersions}
-              isLoading={false}
-            />
+            <div className="flex flex-row gap-v2-md w-full items-stretch">
+              <div className="basis-3/4 min-w-0">
+                <Decisions
+                  data={decisionsData as DecisionOutcomesPerPeriod}
+                  scenarioVersions={scenarioVersions}
+                  isLoading={false}
+                />
+              </div>
+              <div className="basis-1/4 min-w-0">
+                <DecisionsScoreDistribution data={decisionsScoreDistributionData ?? []} />
+              </div>
+            </div>
+
             <RulesHit data={ruleHitTableData ?? []} isLoading={false} />
             <ScreeningHits data={screeningHitsTableData ?? []} isLoading={false} />
           </div>

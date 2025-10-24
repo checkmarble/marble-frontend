@@ -1,5 +1,9 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { AnalyticsFiltersQuery, DecisionOutcomesPerPeriod } from '@app-builder/models/analytics';
+import {
+  type AnalyticsFiltersQuery,
+  type DecisionOutcomesPerPeriod,
+  type DecisionsScoreDistributionResponse,
+} from '@app-builder/models/analytics';
 import { RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 import { ScreeningHitTableResponse } from '@app-builder/models/analytics/screening-hit';
 import { getRoute } from '@app-builder/utils/routes';
@@ -50,6 +54,7 @@ export const useGetAnalytics = ({
         decisionOutcomesPerDay: DecisionOutcomesPerPeriod | null;
         ruleHitTable: RuleHitTableResponse[] | null;
         screeningHitsTable: ScreeningHitTableResponse[] | null;
+        decisionsScoreDistribution: DecisionsScoreDistributionResponse[] | null;
       };
     },
     placeholderData: keepPreviousData,

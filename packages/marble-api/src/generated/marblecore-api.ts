@@ -1442,6 +1442,10 @@ export type ScreeningHitTableResponseDto = {
     hit_ratio: number;
     avg_hits_per_screening: number;
 };
+export type DecisionsScoreDistributionResponseDto = {
+    score: number;
+    decisions: number;
+};
 export type AvailableFiltersRequestDto = {
     scenario_id: string;
     start: string;
@@ -5076,6 +5080,31 @@ export function getScreeningHits(analyticsQueryDto: AnalyticsQueryDto, opts?: Oa
         status: 200;
         data: ScreeningHitTableResponseDto[];
     }>("/analytics/query/screening_hits", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: analyticsQueryDto
+    })));
+}
+/**
+ * Get decisions score distribution
+ */
+export function getDecisionsScoreDistribution(analyticsQueryDto: AnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: DecisionsScoreDistributionResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/analytics/query/decisions_score_distribution", oazapfts.json({
         ...opts,
         method: "POST",
         body: analyticsQueryDto

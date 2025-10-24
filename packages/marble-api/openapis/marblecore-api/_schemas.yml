@@ -487,5 +487,7 @@ FieldFilterDto:
   $ref: analytics.yml#/components/schemas/FieldFilterDto
 AvailableFiltersRequestDto:
   $ref: analytics.yml#/components/schemas/AvailableFiltersRequestDto
+DecisionsScoreDistributionResponseDto:
+  $ref: analytics.yml#/components/schemas/DecisionsScoreDistributionResponseDto
 AvailableFiltersResponseDto:
   $ref: analytics.yml#/components/schemas/AvailableFiltersResponseDto

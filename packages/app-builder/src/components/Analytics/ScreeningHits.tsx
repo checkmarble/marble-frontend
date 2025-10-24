@@ -1,4 +1,4 @@
-import { ScreeningHitTableResponse } from '@app-builder/models/analytics/screening-hit';
+import { type ScreeningHitTableResponse } from '@app-builder/models/analytics';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';

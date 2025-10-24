@@ -83,6 +83,37 @@
               type: array
               items:
                 $ref: '#/components/schemas/ScreeningHitTableResponseDto'
+/analytics/query/decisions_score_distribution:
+  post:
+    tags:
+      - Analytics
+    summary: Get decisions score distribution
+    operationId: getDecisionsScoreDistribution
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AnalyticsQueryDto'
+    responses:
+      '200':
+        description: The decisions score distribution
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DecisionsScoreDistributionResponseDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /analytics/available-filters:
   post:
     tags:
@@ -228,6 +259,16 @@ components:
           type: number
         avg_hits_per_screening:
           type: number
+    DecisionsScoreDistributionResponseDto:
+      type: object
+      required:
+        - score
+        - decisions
+      properties:
+        score:
+          type: integer
+        decisions:
+          type: integer
     AvailableFiltersRequestDto:
       type: object
       required:

@@ -3,7 +3,9 @@ import type { DateRange } from '@app-builder/models/analytics';
 import {
   type AnalyticsQuery,
   adaptDecisionOutcomesPerDay,
+  adaptDecisionsScoreDistribution,
   type DecisionOutcomesPerPeriod,
+  type DecisionsScoreDistributionResponse,
   fillMissingDays,
   LimitDate,
   legacyAnalytics,
@@ -69,6 +71,9 @@ export interface AnalyticsRepository {
   getDecisionOutcomesPerDay(args: AnalyticsQuery): Promise<DecisionOutcomesPerPeriod | null>;
   getRuleHitTable(args: AnalyticsQuery): Promise<RuleHitTableResponse[] | null>;
   getScreeningHitsTable(args: AnalyticsQuery): Promise<ScreeningHitTableResponse[] | null>;
+  getDecisionsScoreDistribution(
+    args: AnalyticsQuery,
+  ): Promise<DecisionsScoreDistributionResponse[] | null>;
   getAvailableFilters(args: AvailableFiltersRequest): Promise<AvailableFiltersResponse>;
 }
 
@@ -135,6 +140,16 @@ export function makeGetAnalyticsRepository() {
 
       const raw = await client.getScreeningHits(parsed[0]!);
       return adaptScreeningHitTable(raw);
+    },
+
+    getDecisionsScoreDistribution: async (
+      args: AnalyticsQuery,
+    ): Promise<DecisionsScoreDistributionResponse[] | null> => {
+      const parsed = transformAnalyticsQuery.parse(args);
+      if (!parsed.length) throw new Error('No date range provided');
+
+      const raw = await client.getDecisionsScoreDistribution(parsed[0]!);
+      return adaptDecisionsScoreDistribution(raw);
     },
 
     getAvailableFilters: async (
