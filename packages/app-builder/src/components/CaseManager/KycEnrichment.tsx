@@ -21,11 +21,11 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
   const addCommentMutation = useAddCommentMutation();
 
   useEffect(() => {
-    if (error && open) {
+    if ((error || (isSuccess && !data.success)) && open) {
       toast.error(t('cases:kyc_enrichment.loading.toaster.error'));
       setOpen(false);
     }
-  }, [error, open]);
+  }, [error, isSuccess, data?.success, open]);
 
   const handleAddComment = async () => {
     const comment =
@@ -94,7 +94,7 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
             </div>
           )}
           {error && <Callout variant="outlined">{error.message}</Callout>}
-          {isSuccess && data ? (
+          {isSuccess && data.success ? (
             <div className="flex flex-col gap-4 flex-1 min-h-0">
               <Callout variant="outlined">
                 {t('cases:kyc_enrichment.for')}{' '}
