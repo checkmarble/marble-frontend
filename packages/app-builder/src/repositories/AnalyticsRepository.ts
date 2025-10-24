@@ -4,12 +4,14 @@ import {
   type AnalyticsQuery,
   adaptDecisionOutcomesPerDay,
   adaptDecisionsScoreDistribution,
+  adaptRuleVsDecisionOutcome,
   type DecisionOutcomesPerPeriod,
   type DecisionsScoreDistributionResponse,
   fillMissingDays,
   LimitDate,
   legacyAnalytics,
   mergeDateRanges,
+  type RuleVsDecisionOutcome,
   transformAnalyticsQuery,
 } from '@app-builder/models/analytics';
 import {
@@ -74,6 +76,7 @@ export interface AnalyticsRepository {
   getDecisionsScoreDistribution(
     args: AnalyticsQuery,
   ): Promise<DecisionsScoreDistributionResponse[] | null>;
+  getRuleVsDecisionOutcome(args: AnalyticsQuery): Promise<RuleVsDecisionOutcome | null>;
   getAvailableFilters(args: AvailableFiltersRequest): Promise<AvailableFiltersResponse>;
 }
 
@@ -150,6 +153,18 @@ export function makeGetAnalyticsRepository() {
 
       const raw = await client.getDecisionsScoreDistribution(parsed[0]!);
       return adaptDecisionsScoreDistribution(raw);
+    },
+
+    getRuleVsDecisionOutcome: async (
+      args: AnalyticsQuery,
+    ): Promise<RuleVsDecisionOutcome | null> => {
+      const parsed = transformAnalyticsQuery.parse(args);
+      if (!parsed.length) throw new Error('No date range provided');
+
+      const raw = await client.getRuleVsDecisionOutcome(parsed[0]!);
+      console.log('raw', raw);
+      console.log('adaptRuleVsDecisionOutcome', adaptRuleVsDecisionOutcome(raw));
+      return adaptRuleVsDecisionOutcome(raw);
     },
 
     getAvailableFilters: async (

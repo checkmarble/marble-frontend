@@ -21,25 +21,34 @@ export const action = createServerFn(
         scenarioId: urlParams.scenarioId,
       });
 
-      const [decisionOutcomesPerDay, ruleHitTable, screeningHitsTable, decisionsScoreDistribution] =
-        await Promise.all([
-          context.authInfo.analytics.getDecisionOutcomesPerDay({
-            ...queryParams,
-            scenarioId: urlParams.scenarioId,
-          }),
-          context.authInfo.analytics.getRuleHitTable({
-            ...queryParams,
-            scenarioId: urlParams.scenarioId,
-          }),
-          context.authInfo.analytics.getScreeningHitsTable({
-            ...queryParams,
-            scenarioId: urlParams.scenarioId,
-          }),
-          context.authInfo.analytics.getDecisionsScoreDistribution({
-            ...queryParams,
-            scenarioId: urlParams.scenarioId,
-          }),
-        ]);
+      const [
+        decisionOutcomesPerDay,
+        ruleHitTable,
+        screeningHitsTable,
+        decisionsScoreDistribution,
+        ruleVsDecisionOutcome,
+      ] = await Promise.all([
+        context.authInfo.analytics.getDecisionOutcomesPerDay({
+          ...queryParams,
+          scenarioId: urlParams.scenarioId,
+        }),
+        context.authInfo.analytics.getRuleHitTable({
+          ...queryParams,
+          scenarioId: urlParams.scenarioId,
+        }),
+        context.authInfo.analytics.getScreeningHitsTable({
+          ...queryParams,
+          scenarioId: urlParams.scenarioId,
+        }),
+        context.authInfo.analytics.getDecisionsScoreDistribution({
+          ...queryParams,
+          scenarioId: urlParams.scenarioId,
+        }),
+        context.authInfo.analytics.getRuleVsDecisionOutcome({
+          ...queryParams,
+          scenarioId: urlParams.scenarioId,
+        }),
+      ]);
 
       return {
         success: true,
@@ -48,6 +57,7 @@ export const action = createServerFn(
           ruleHitTable,
           screeningHitsTable,
           decisionsScoreDistribution,
+          ruleVsDecisionOutcome,
         },
       };
     } catch (error) {

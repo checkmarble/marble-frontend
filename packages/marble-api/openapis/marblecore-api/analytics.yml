@@ -114,6 +114,37 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/analytics/query/rule_vs_decision_outcome:
+  post:
+    tags:
+      - Analytics
+    summary: Get rule vs decision outcome
+    operationId: getRuleVsDecisionOutcome
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AnalyticsQueryDto'
+    responses:
+      '200':
+        description: The rule vs decision outcome
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleVsDecisionOutcomeResponseDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /analytics/available-filters:
   post:
     tags:
@@ -267,6 +298,19 @@ components:
       properties:
         score:
           type: integer
+        decisions:
+          type: integer
+    RuleVsDecisionOutcomeResponseDto:
+      type: object
+      required:
+        - rule_name
+        - outcome
+        - decisions
+      properties:
+        rule_name:
+          type: string
+        outcome:
+          $ref: 'decisions.yml#/components/schemas/OutcomeDto'
         decisions:
           type: integer
     AvailableFiltersRequestDto:

@@ -371,6 +371,8 @@ paths:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1query~1screening_hits
   /analytics/query/decisions_score_distribution:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1query~1decisions_score_distribution
+  /analytics/query/rule_vs_decision_outcome:
+    $ref: ./marblecore-api/analytics.yml#/~1analytics~1query~1rule_vs_decision_outcome
   /analytics/available-filters:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1available-filters
 

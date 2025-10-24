@@ -1,6 +1,7 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import {
   type AnalyticsFiltersQuery,
+  type DecisionOutcomes,
   type DecisionOutcomesPerPeriod,
   type DecisionsScoreDistributionResponse,
 } from '@app-builder/models/analytics';
@@ -55,6 +56,7 @@ export const useGetAnalytics = ({
         ruleHitTable: RuleHitTableResponse[] | null;
         screeningHitsTable: ScreeningHitTableResponse[] | null;
         decisionsScoreDistribution: DecisionsScoreDistributionResponse[] | null;
+        ruleVsDecisionOutcome: Record<string, DecisionOutcomes> | null;
       };
     },
     placeholderData: keepPreviousData,

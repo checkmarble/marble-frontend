@@ -2,6 +2,7 @@ import { ErrorComponent } from '@app-builder/components';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
 import { DecisionsScoreDistribution } from '@app-builder/components/Analytics/DecisionsScoreDistribution';
 import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
+import { RuleVsDecisionOutcomes } from '@app-builder/components/Analytics/RuleVsDecisionOutcomes';
 import { ScreeningHits } from '@app-builder/components/Analytics/ScreeningHits';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import type { DateRangeFilter as AnalyticsDateRangeFilter } from '@app-builder/models/analytics';
@@ -198,11 +199,13 @@ export default function Analytics() {
       ruleHitTable: ruleHitTableData,
       screeningHitsTable: screeningHitsTableData,
       decisionsScoreDistribution: decisionsScoreDistributionData,
+      ruleVsDecisionOutcome: ruleVsDecisionOutcomeData,
     } = {
       decisionOutcomesPerDay: null,
       ruleHitTable: null,
       screeningHitsTable: null,
       decisionsScoreDistribution: null,
+      ruleVsDecisionOutcome: null,
     },
     isFetching: _isAnalyticsPending,
   } = useGetAnalytics({
@@ -378,6 +381,7 @@ export default function Analytics() {
             </div>
 
             <RulesHit data={ruleHitTableData ?? []} isLoading={false} />
+            <RuleVsDecisionOutcomes data={ruleVsDecisionOutcomeData ?? null} isLoading={false} />
             <ScreeningHits data={screeningHitsTableData ?? []} isLoading={false} />
           </div>
         </div>

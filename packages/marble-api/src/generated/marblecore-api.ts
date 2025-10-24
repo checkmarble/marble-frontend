@@ -1446,6 +1446,11 @@ export type DecisionsScoreDistributionResponseDto = {
     score: number;
     decisions: number;
 };
+export type RuleVsDecisionOutcomeResponseDto = {
+    rule_name: string;
+    outcome: OutcomeDto;
+    decisions: number;
+};
 export type AvailableFiltersRequestDto = {
     scenario_id: string;
     start: string;
@@ -5105,6 +5110,31 @@ export function getDecisionsScoreDistribution(analyticsQueryDto: AnalyticsQueryD
         status: 404;
         data: string;
     }>("/analytics/query/decisions_score_distribution", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: analyticsQueryDto
+    })));
+}
+/**
+ * Get rule vs decision outcome
+ */
+export function getRuleVsDecisionOutcome(analyticsQueryDto: AnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: RuleVsDecisionOutcomeResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/analytics/query/rule_vs_decision_outcome", oazapfts.json({
         ...opts,
         method: "POST",
         body: analyticsQueryDto

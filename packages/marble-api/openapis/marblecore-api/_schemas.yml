@@ -489,5 +489,7 @@ AvailableFiltersRequestDto:
   $ref: analytics.yml#/components/schemas/AvailableFiltersRequestDto
 DecisionsScoreDistributionResponseDto:
   $ref: analytics.yml#/components/schemas/DecisionsScoreDistributionResponseDto
+RuleVsDecisionOutcomeResponseDto:
+  $ref: analytics.yml#/components/schemas/RuleVsDecisionOutcomeResponseDto
 AvailableFiltersResponseDto:
   $ref: analytics.yml#/components/schemas/AvailableFiltersResponseDto
