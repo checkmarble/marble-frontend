@@ -1,8 +1,10 @@
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { ResetPassword, StaticResetPassword } from '@app-builder/components/Auth/ResetPassword';
+import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { LoaderFunctionArgs } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import { Link, redirect, useLoaderData } from '@remix-run/react';
+import { tryit } from 'radash';
 import { Trans, useTranslation } from 'react-i18next';
 import { ClientOnly } from 'remix-utils/client-only';
 
@@ -11,6 +13,12 @@ export const handle = {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  const { appConfigRepository } = initServerServices(request);
+  const [_, appConfig] = await tryit(() => appConfigRepository.getAppConfig())();
+  if (appConfig?.auth.provider === 'oidc') {
+    throw redirect(getRoute('/sign-in'));
+  }
+
   const url = new URL(request.url);
   // Handle email parameter manually to preserve literal '+' characters
   const emailParam = url.searchParams.toString().match(/email=([^&]*)/)?.[1];
