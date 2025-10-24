@@ -66,6 +66,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       console.error('Error enriching KYC', error);
       const status = (error as any)?.status || 500;
       const message = (error as any)?.message || 'Error enriching KYC';
+
       throw Response.json(
         { success: false, error: { code: status, message } },
         { status, headers: { 'Content-Type': 'application/json' } },
