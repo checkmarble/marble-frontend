@@ -1,18 +1,16 @@
-import { DecisionsScoreDistributionResponse } from '@app-builder/models/analytics';
+import type { DecisionsScoreDistribution as DecisionsScoreDistributionModel } from '@app-builder/models/analytics';
 import { ResponsiveLine } from '@nivo/line';
 
 export const DecisionsScoreDistribution = ({
   data,
 }: {
-  data: DecisionsScoreDistributionResponse[];
+  data: DecisionsScoreDistributionModel | null;
 }) => {
-  const totalDecisions = data.reduce((acc, cur) => acc + cur.decisions, 0);
+  const thresholds = data?.thresholds ?? {};
   const series = [
     {
       id: 'percentage',
-      data: [...data]
-        .sort((a, b) => a.score - b.score)
-        .map((d) => ({ x: d.score, y: totalDecisions ? (d.decisions / totalDecisions) * 100 : 0 })),
+      data: data?.stepSeries ?? [],
     },
   ];
   return (
@@ -28,6 +26,7 @@ export const DecisionsScoreDistribution = ({
               margin={{ top: 5, right: 5, bottom: 24, left: 56 }}
               xScale={{ type: 'linear' }}
               yScale={{ type: 'linear', min: 0, max: 100 }}
+              curve="stepAfter"
               enableArea={false}
               enablePoints={true}
               pointSize={6}
@@ -53,6 +52,38 @@ export const DecisionsScoreDistribution = ({
                 </div>
               )}
               colors={['#6D28D9']}
+              markers={[
+                ...(thresholds.review != null
+                  ? [
+                      {
+                        axis: 'x' as const,
+                        value: thresholds.review,
+                        lineStyle: { stroke: '#A3A3A3', strokeWidth: 1, strokeDasharray: '4 4' },
+                        legend: `review ≥ ${thresholds.review}`,
+                      },
+                    ]
+                  : []),
+                ...(thresholds.blockAndReview != null
+                  ? [
+                      {
+                        axis: 'x' as const,
+                        value: thresholds.blockAndReview,
+                        lineStyle: { stroke: '#FB923C', strokeWidth: 1, strokeDasharray: '4 4' },
+                        legend: `block & review ≥ ${thresholds.blockAndReview}`,
+                      },
+                    ]
+                  : []),
+                ...(thresholds.decline != null
+                  ? [
+                      {
+                        axis: 'x' as const,
+                        value: thresholds.decline,
+                        lineStyle: { stroke: '#EF4444', strokeWidth: 1, strokeDasharray: '4 4' },
+                        legend: `decline ≥ ${thresholds.decline}`,
+                      },
+                    ]
+                  : []),
+              ]}
             />
           </div>
         </div>

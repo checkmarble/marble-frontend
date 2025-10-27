@@ -3,7 +3,7 @@ import {
   type AnalyticsFiltersQuery,
   type DecisionOutcomes,
   type DecisionOutcomesPerPeriod,
-  type DecisionsScoreDistributionResponse,
+  type DecisionsScoreDistribution,
 } from '@app-builder/models/analytics';
 import { RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 import { ScreeningHitTableResponse } from '@app-builder/models/analytics/screening-hit';
@@ -55,7 +55,7 @@ export const useGetAnalytics = ({
         decisionOutcomesPerDay: DecisionOutcomesPerPeriod | null;
         ruleHitTable: RuleHitTableResponse[] | null;
         screeningHitsTable: ScreeningHitTableResponse[] | null;
-        decisionsScoreDistribution: DecisionsScoreDistributionResponse[] | null;
+        decisionsScoreDistribution: DecisionsScoreDistribution | null;
         ruleVsDecisionOutcome: Record<string, DecisionOutcomes> | null;
       };
     },
