@@ -48,8 +48,6 @@ export function FiltersBar({
 }: FiltersBarProps) {
   const { t } = useI18n();
 
-  console.log(value);
-
   const [draftValue, setDraftValue] = useState<Record<string, FilterValue>>(value);
   useEffect(() => {
     setDraftValue(value);
@@ -71,17 +69,38 @@ export function FiltersBar({
             value: Number.isNaN(num) ? 0 : num,
           } as NumberFilter['selectedValue'];
         }
-        return (value as NumberFilter['selectedValue']) ?? null;
+        const sv = (value as NumberFilter['selectedValue']) ?? null;
+        if (sv && typeof sv === 'object') {
+          const raw = (sv as any).value as unknown;
+          const num = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
+          return {
+            operator: ((sv as any).operator ??
+              (d as NumberFilterDescriptor).operator) as NumberOperator,
+            value: Number.isNaN(num) ? 0 : num,
+          } as NumberFilter['selectedValue'];
+        }
+        return sv;
       }
       if (d.type === 'text') {
         if (value && typeof value === 'object' && 'op' in (value as any)) {
           const raw = (value as any).value as unknown;
           const arr = Array.isArray(raw) ? (raw as string[]) : [raw as string];
-          return [
-            { operator: (d as TextFilterDescriptor).operator, value: arr },
-          ] as TextFilter['selectedValue'];
+          return arr.map((v) => ({
+            operator: (d as TextFilterDescriptor).operator,
+            value: v,
+          })) as TextFilter['selectedValue'];
         }
-        return (value as TextFilter['selectedValue']) ?? null;
+        const sv = (value as TextFilter['selectedValue']) ?? null;
+        if (!sv) return null;
+        const flattened = (sv as any[]).flatMap((item) => {
+          const op = ((item as any)?.operator ??
+            (d as TextFilterDescriptor).operator) as TextOperator;
+          const v = (item as any)?.value as unknown;
+          return Array.isArray(v)
+            ? (v as string[]).map((one) => ({ operator: op, value: one }))
+            : [{ operator: op, value: v as string }];
+        });
+        return flattened as TextFilter['selectedValue'];
       }
       if (d.type === 'date-range-popover') {
         return (value as DateRangePopoverFilter['selectedValue']) ?? null;
@@ -159,8 +178,6 @@ export function FiltersBar({
     [descriptors, draftValue],
   );
 
-  console.log(mainFilters);
-
   const additionalFilters: Filter[] = useMemo(
     () => dynamicDescriptors.map((d) => getFilter(d, draftValue[d.name], { removable: true })),
     [dynamicDescriptors, draftValue],
@@ -192,8 +209,6 @@ export function FiltersBar({
     () => [...descriptors, ...dynamicDescriptors],
     [descriptors, dynamicDescriptors],
   );
-
-  console.log(allDescriptors);
 
   const contextValue = useMemo<FiltersBarContextValue>(() => {
     const emitSet = (name: string, newValue: FilterValue) => {

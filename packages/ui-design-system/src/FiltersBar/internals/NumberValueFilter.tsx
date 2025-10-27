@@ -22,12 +22,25 @@ export function NumberValueFilter({
 
   const [opSelectIsOpen, setOpSelectIsOpen] = useState(false);
   const [localValue, setLocalValue] = useState<ComparisonFilter<number>>(
-    filter.selectedValue ?? { operator: 'eq', value: 0 },
+    (() => {
+      const sv = filter.selectedValue ?? { operator: 'eq', value: 0 };
+      const raw = (sv as any).value as unknown;
+      const num = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
+      return { operator: (sv as any).operator ?? 'eq', value: Number.isNaN(num) ? 0 : num };
+    })(),
   );
   const { emitSet, emitRemove } = useFiltersBarContext();
   useEffect(() => {
-    if (isOpen) setLocalValue(filter.selectedValue ?? { operator: 'eq', value: 0 });
-  }, [isOpen]);
+    if (isOpen) {
+      const sv = filter.selectedValue ?? { operator: 'eq', value: 0 };
+      const raw = (sv as any).value as unknown;
+      const num = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
+      setLocalValue({
+        operator: (sv as any).operator ?? 'eq',
+        value: Number.isNaN(num) ? 0 : num,
+      });
+    }
+  }, [isOpen, filter.selectedValue]);
 
   const operatorDisplay: Map<NumberOperator, string> = new Map([
     ['eq', '='],
@@ -52,9 +65,10 @@ export function NumberValueFilter({
           <span className={buttonState}>{filter.name}</span> {(() => {
             if (!filter.selectedValue) return null;
             const op = (filter.selectedValue?.operator ?? localValue.operator) as NumberOperator;
-            const val =
-              filter.selectedValue?.value ??
-              (typeof localValue.value === 'number' ? localValue.value : Number(localValue.value));
+            const val = (() => {
+              const raw = (filter.selectedValue as any)?.value ?? localValue.value;
+              return Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
+            })();
             return (
               <>
                 {operatorDisplay.get(op)} {val}
@@ -166,13 +180,13 @@ export function NumberValueFilter({
             <button
               className={cn('text-s bg-purple-65 text-white rounded-sm px-3 py-1.5 outline-hidden')}
               onClick={() => {
-                const trimmed = localValue.value.toString().trim();
-                const committed =
-                  trimmed === '' ? null : { operator: localValue.operator, value: Number(trimmed) };
-                const payload =
-                  committed === null || Number.isNaN(committed.value)
-                    ? null
-                    : { operator: localValue.operator, value: committed.value };
+                const trimmed = String(localValue.value ?? '')
+                  .toString()
+                  .trim();
+                const n = Number(trimmed);
+                const payload = Number.isNaN(n)
+                  ? null
+                  : { operator: localValue.operator, value: n };
                 emitSet(filter.name, payload);
                 setOpen(false);
               }}

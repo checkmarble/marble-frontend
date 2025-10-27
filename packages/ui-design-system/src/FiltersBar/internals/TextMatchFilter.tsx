@@ -72,12 +72,8 @@ export function TextMatchFilter({
                   setOpen(false);
                   return;
                 }
-                emitSet(filter.name, [
-                  {
-                    operator: filter.operator,
-                    value: value.map((v) => v.trim()),
-                  },
-                ]);
+                const committed = value.map((v) => ({ operator: filter.operator, value: v }));
+                emitSet(filter.name, committed);
                 // const committed = localText
                 //   .map((v) => v.trim())
                 //   .filter((v) => v.length > 0)
