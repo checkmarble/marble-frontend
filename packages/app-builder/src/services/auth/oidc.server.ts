@@ -31,7 +31,7 @@ export const makeOidcService = async (config: AppConfig) => {
       tokenEndpoint: `${apiUrl}/oidc/token`,
       cookie: 'oauth2',
       clientId: config.auth.oidc.client_id,
-      clientSecret: getServerEnv('OIDC_CLIENT_SECRET'),
+      clientSecret: null,
       redirectURI: config.auth.oidc.redirect_uri,
       scopes: config.auth.oidc.scopes,
     },
