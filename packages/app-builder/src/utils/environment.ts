@@ -26,7 +26,6 @@ const PublicEnvVarsSchema = z.object({
 
   METABASE_URL: z.string().optional(),
 
-  OIDC_CLIENT_SECRET: z.string().optional(),
   TEST_FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
 
   SENTRY_DSN: z.string().optional(),
@@ -84,7 +83,6 @@ interface ServerEnvVars {
   APP_VERSION?: string;
   SESSION_MAX_AGE?: string;
   MARBLE_API_URL: string;
-  OIDC_CLIENT_SECRET: string;
   METABASE_URL?: string;
   TEST_FIREBASE_AUTH_EMULATOR_HOST?: string;
   SENTRY_DSN?: string;
