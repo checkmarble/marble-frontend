@@ -6,7 +6,7 @@ import { MenuCommand } from '../../MenuCommand/MenuCommand';
 import { Tooltip } from '../../Tooltip/Tooltip';
 import { cn } from '../../utils';
 import { NUMBER_OPERATORS } from '../FiltersBar';
-import { ComparisonFilter, type NumberFilter, NumberOperator } from '../types';
+import { type NumberComparisonFilter, type NumberFilter, NumberOperator } from '../types';
 import { FilterItem, FilterPopover } from './FilterPopover';
 import { useFiltersBarContext } from './FiltersBarContext';
 
@@ -21,7 +21,7 @@ export function NumberValueFilter({
   const { t } = useI18n();
 
   const [opSelectIsOpen, setOpSelectIsOpen] = useState(false);
-  const [localValue, setLocalValue] = useState<ComparisonFilter<number>>(
+  const [localValue, setLocalValue] = useState<NumberComparisonFilter>(
     (() => {
       const sv = filter.selectedValue ?? { operator: 'eq', value: 0 };
       const raw = (sv as any).value as unknown;
@@ -70,10 +70,8 @@ export function NumberValueFilter({
           <span className={buttonState}>{filter.name}</span> {(() => {
             if (!filter.selectedValue) return null;
             const op = (filter.selectedValue?.operator ?? localValue.operator) as NumberOperator;
-            const val = (() => {
-              const raw = (filter.selectedValue as any)?.value ?? localValue.value;
-              return Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
-            })();
+            const raw = (filter.selectedValue as any)?.value ?? localValue.value;
+            const val = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
             return (
               <>
                 {operatorDisplay.get(op)} {val}

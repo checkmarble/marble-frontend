@@ -18,6 +18,19 @@ export type NumberOperator = 'eq' | 'ne' | 'lt' | 'lte' | 'gt' | 'gte';
 
 export type TextOperator = 'in';
 
+// Number filters use a single ComparisonFilter with a single number value
+export interface NumberComparisonFilter {
+  operator: NumberOperator;
+  value: number;
+}
+
+// Text filters use an array of ComparisonFilter objects, each with a single string value
+export interface TextComparisonFilter {
+  operator: TextOperator;
+  value: string;
+}
+
+// Legacy type kept for backward compatibility - prefer NumberComparisonFilter or TextComparisonFilter
 export interface ComparisonFilter<T> {
   operator: NumberOperator | TextOperator;
   value: T | T[];
@@ -40,11 +53,11 @@ export type DateRangeFilterType =
   | null
   | undefined;
 
-export interface NumberFilter extends BaseFilter<ComparisonFilter<number>> {
+export interface NumberFilter extends BaseFilter<NumberComparisonFilter> {
   type: 'number';
   operator: NumberOperator;
 }
-export interface TextFilter extends BaseFilter<ComparisonFilter<string>[]> {
+export interface TextFilter extends BaseFilter<TextComparisonFilter[]> {
   type: 'text';
   operator: TextOperator;
 }
@@ -82,8 +95,8 @@ export type Filter =
 
 // Exhaustive value type accepted/emitted by FiltersBar
 export type FilterValue =
-  | ComparisonFilter<string>[]
-  | ComparisonFilter<number>
+  | TextComparisonFilter[]
+  | NumberComparisonFilter
   | boolean
   | string
   | string[]

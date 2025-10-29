@@ -18,11 +18,13 @@ import {
   type FiltersBarProps,
   type FilterValue,
   type MultiSelectFilterDescriptor,
+  type NumberComparisonFilter,
   type NumberFilter,
   type NumberFilterDescriptor,
   type NumberOperator,
   type RadioFilterDescriptor,
   type SelectFilterDescriptor,
+  type TextComparisonFilter,
   type TextFilter,
   type TextFilterDescriptor,
   type TextOperator,
@@ -67,17 +69,16 @@ export function FiltersBar({
           return {
             operator: (d as NumberFilterDescriptor).operator,
             value: Number.isNaN(num) ? 0 : num,
-          } as NumberFilter['selectedValue'];
+          } as NumberComparisonFilter;
         }
-        const sv = (value as NumberFilter['selectedValue']) ?? null;
-        if (sv && typeof sv === 'object') {
-          const raw = (sv as any).value as unknown;
+        const sv = (value as NumberComparisonFilter | null) ?? null;
+        if (sv && typeof sv === 'object' && 'operator' in sv && 'value' in sv) {
+          const raw = sv.value as unknown;
           const num = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
           return {
-            operator: ((sv as any).operator ??
-              (d as NumberFilterDescriptor).operator) as NumberOperator,
+            operator: (sv.operator ?? (d as NumberFilterDescriptor).operator) as NumberOperator,
             value: Number.isNaN(num) ? 0 : num,
-          } as NumberFilter['selectedValue'];
+          } as NumberComparisonFilter;
         }
         return sv;
       }
@@ -88,19 +89,22 @@ export function FiltersBar({
           return arr.map((v) => ({
             operator: (d as TextFilterDescriptor).operator,
             value: v,
-          })) as TextFilter['selectedValue'];
+          })) as TextComparisonFilter[];
         }
-        const sv = (value as TextFilter['selectedValue']) ?? null;
-        if (!sv) return null;
-        const flattened = (sv as any[]).flatMap((item) => {
-          const op = ((item as any)?.operator ??
-            (d as TextFilterDescriptor).operator) as TextOperator;
-          const v = (item as any)?.value as unknown;
-          return Array.isArray(v)
-            ? (v as string[]).map((one) => ({ operator: op, value: one }))
-            : [{ operator: op, value: v as string }];
+        const sv = (value as TextComparisonFilter[] | null) ?? null;
+        if (!sv || !Array.isArray(sv)) return null;
+        const flattened = sv.flatMap((item) => {
+          if (!item || typeof item !== 'object') return [];
+          const op = (item.operator ?? (d as TextFilterDescriptor).operator) as TextOperator;
+          const v = item.value as unknown;
+          if (Array.isArray(v)) {
+            return (v as string[]).map(
+              (one) => ({ operator: op, value: one }) as TextComparisonFilter,
+            );
+          }
+          return [{ operator: op, value: v as string } as TextComparisonFilter];
         });
-        return flattened as TextFilter['selectedValue'];
+        return flattened;
       }
       if (d.type === 'date-range-popover') {
         return (value as DateRangePopoverFilter['selectedValue']) ?? null;
