@@ -277,7 +277,7 @@ export default function RuleDetail() {
       <Page.Container>
         <Page.Content>
           <form
-            className="relative flex max-w-3xl flex-col"
+            className="relative flex flex-col"
             onSubmit={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -286,7 +286,7 @@ export default function RuleDetail() {
           >
             <div
               className={cn(
-                'bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between gap-4',
+                'bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between gap-4 max-w-3xl',
                 {
                   'border-b-grey-90 border-b': !intersection?.isIntersecting,
                 },
@@ -363,7 +363,7 @@ export default function RuleDetail() {
               ) : null}
             </div>
             <div className="flex flex-col gap-8">
-              <div className="border-grey-90 flex flex-col items-start gap-6 border-b pb-6">
+              <div className="border-grey-90 flex flex-col items-start gap-6 border-b pb-6 max-w-3xl">
                 <form.Field
                   name="description"
                   validators={{
@@ -408,38 +408,42 @@ export default function RuleDetail() {
                 </form.Field>
               </div>
               <div className="flex flex-col gap-2">
-                {isAiRuleDescriptionEnabled ? (
-                  <AiDescription
-                    isPending={isDebouncing || ruleDescriptionMutation.isPending}
-                    description={ruleDescription}
-                  />
-                ) : null}
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
-                <div className="bg-grey-100 border-grey-90 rounded-md border p-6">
-                  <form.Field
-                    name="formula"
-                    validators={{
-                      onChange: editRuleFormSchema.shape.formula,
-                      onBlur: editRuleFormSchema.shape.formula,
-                    }}
-                  >
-                    {(field) => (
-                      <FieldAstFormula
-                        type="rule"
-                        scenarioId={scenario.id}
-                        options={options}
-                        onBlur={field.handleBlur}
-                        onChange={(node) => {
-                          field.handleChange(node);
-                          handleFormulaChange(node);
-                        }}
-                        astNode={field.state.value}
-                        defaultValue={NewEmptyRuleAstNode()}
-                      />
-                    )}
-                  </form.Field>
+                <div className="grid grid-cols-[var(--container-3xl)_1fr] gap-v2-lg">
+                  <div className="bg-grey-100 border-grey-90 rounded-md border p-6 max-w-3xl">
+                    <form.Field
+                      name="formula"
+                      validators={{
+                        onChange: editRuleFormSchema.shape.formula,
+                        onBlur: editRuleFormSchema.shape.formula,
+                      }}
+                    >
+                      {(field) => (
+                        <FieldAstFormula
+                          type="rule"
+                          scenarioId={scenario.id}
+                          options={options}
+                          onBlur={field.handleBlur}
+                          onChange={(node) => {
+                            field.handleChange(node);
+                            handleFormulaChange(node);
+                          }}
+                          astNode={field.state.value}
+                          defaultValue={NewEmptyRuleAstNode()}
+                        />
+                      )}
+                    </form.Field>
+                  </div>
+
+                  {isAiRuleDescriptionEnabled ? (
+                    <AiDescription
+                      isPending={isDebouncing || ruleDescriptionMutation.isPending}
+                      description={ruleDescription}
+                      className="self-start max-w-2xl"
+                    />
+                  ) : null}
                 </div>
-                <div className="bg-grey-100 border-grey-90 rounded-md border p-6">
+                <div className="bg-grey-100 border-grey-90 rounded-md border p-6 max-w-3xl">
                   <div className="flex items-center gap-2">
                     <span className="bg-grey-95 text-grey-50 text-s inline-flex rounded-sm p-2 font-medium">
                       {t('scenarios:edit_rule.score_heading')}

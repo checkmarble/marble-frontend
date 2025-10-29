@@ -1,15 +1,16 @@
 import { useWritingText } from '@app-builder/hooks/useWritingText';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Markdown } from 'ui-design-system';
+import { cn, Markdown } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type AiDescriptionProps = {
   isPending: boolean;
   description: string | undefined;
+  className?: string;
 };
 
-export function AiDescription({ isPending, description }: AiDescriptionProps) {
+export function AiDescription({ isPending, description, className }: AiDescriptionProps) {
   const { t } = useTranslation(['scenarios']);
   const { text: displayedDescription, isDone } = useWritingText(description, 5);
   const descriptionElementRef = useRef<HTMLDivElement>(null);
@@ -35,7 +36,12 @@ export function AiDescription({ isPending, description }: AiDescriptionProps) {
   }, [displayedDescription]);
 
   return (
-    <div className="text-default rounded-v2-md border border-purple-96 bg-purple-98 text-purple-65 flex flex-col gap-v2-sm p-v2-md">
+    <div
+      className={cn(
+        'text-default rounded-v2-md border border-purple-96 bg-purple-98 text-purple-65 flex flex-col gap-v2-sm p-v2-md',
+        className,
+      )}
+    >
       <div className="flex items-center gap-v2-xs">
         <Icon icon="ai-review" className="size-5" />
         <div>{t('scenarios:rules.ai_description.title')}</div>
