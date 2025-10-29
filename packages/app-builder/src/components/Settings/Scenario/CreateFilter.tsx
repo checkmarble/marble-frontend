@@ -194,7 +194,7 @@ export function CreateFilter({
                   {t('common:cancel')}
                 </ButtonV2>
               </Modal.Close>
-              <ButtonV2 variant="primary" type="submit">
+              <ButtonV2 variant="primary" type="submit" className="align-baseline">
                 {t('common:save')}
               </ButtonV2>
             </div>

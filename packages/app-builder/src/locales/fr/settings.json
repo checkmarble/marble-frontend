@@ -38,6 +38,8 @@
   "data_display": "Affichage des données",
   "data_display.global_explanation": "Glissez-déposez les champs pour définir l'ordre d'affichage et utilisez le bouton pour masquer ceux qui ne sont pas nécessaires par défaut dans la page d'investigations.",
   "filters-settings": "Paramètres des filtres",
+  "filters.associated-object.row.header.label": "Objet associé",
+  "filters.definition.row.header.label": "Définition du filtre",
   "filters.delete_filter": "Supprimer le filtre",
   "filters.delete_filter.content": "Êtes-vous sûr de vouloir supprimer ce filtre ? Vous pourrez le créer à nouveau plus tard, mais il n’y aura plus de stockage de la valeur sur la décision associée à ce filtre.",
   "filters.delete_filter.title": "Suppression de filtre",

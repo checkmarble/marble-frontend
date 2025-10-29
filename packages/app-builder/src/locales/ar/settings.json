@@ -38,6 +38,8 @@
   "data_display": "عرض البيانات",
   "data_display.global_explanation": "اسحب الحقول وأفلِتها لتعيين ترتيب العرض، واستخدم زر التبديل لإخفاء غير اللازمة افتراضيًا في مدير الحالات.",
   "filters-settings": "إعدادات الفلاتر",
+  "filters.associated-object.row.header.label": "الكائن المرتبط",
+  "filters.definition.row.header.label": "تعريف الفلتر",
   "filters.delete_filter": "حذف الفلتر",
   "filters.delete_filter.content": "هل أنت متأكد من رغبتك في حذف هذا الفلتر؟ يمكنك إنشاءه مرة أخرى لاحقًا، لكن لن يتم تخزين القيمة المرتبطة بهذا الفلتر على القرار المرتبط به بعد الآن.",
   "filters.delete_filter.title": "حذف الفلتر",

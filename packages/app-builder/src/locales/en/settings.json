@@ -38,6 +38,8 @@
   "data_display": "Data display",
   "data_display.global_explanation": "Drag and drop the fields to set the display order, and use the toggle to hide those not needed by default in the case manager.",
   "filters-settings": "Filters settings",
+  "filters.associated-object.row.header.label": "Associated object",
+  "filters.definition.row.header.label": "Filter definition",
   "filters.delete_filter": "Delete filter",
   "filters.delete_filter.content": "Are you sure you want to delete this filter? You can recreate it later, but the value associated to this filter will no longer be stored on the related decision.",
   "filters.delete_filter.title": "Delete filter",

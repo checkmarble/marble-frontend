@@ -124,12 +124,12 @@ export default function Filters() {
     return [
       columnHelper.accessor((row) => row.associatedObject, {
         id: 'associatedObject',
-        header: 'Associated object',
+        header: t('settings:filters.associated-object.row.header.label'),
         size: 240,
       }),
       columnHelper.accessor((row) => row.definition, {
         id: 'definition',
-        header: 'Filter definition',
+        header: t('settings:filters.definition.row.header.label'),
       }),
       columnHelper.display({
         id: 'actions',
@@ -201,16 +201,9 @@ export default function Filters() {
         </CollapsiblePaper.Container>
         <Modal.Root open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
           <Modal.Content size="medium">
-            <Modal.Title>
-              {t('settings:filters.delete_filter.title', 'Suppression de filtre')}
-            </Modal.Title>
+            <Modal.Title>{t('settings:filters.delete_filter.title')}</Modal.Title>
             <Modal.Description>
-              <div className="p-6 text-left">
-                {t(
-                  'settings:filters.delete_filter.content',
-                  'Êtes-vous sûr de vouloir supprimer ce filtre ? Vous pourrez le créer à nouveau plus tard, mais il n’y aura plus de de stockage de la valeur sur la décision associée à ce filtre.',
-                )}
-              </div>
+              <div className="p-6 text-left">{t('settings:filters.delete_filter.content')}</div>
             </Modal.Description>
             <Modal.Footer>
               <div className="bg-grey-98 flex justify-end gap-3 border-t p-4">
@@ -244,7 +237,7 @@ export default function Filters() {
                     setItemToDelete(null);
                   }}
                 >
-                  {t('settings:filters.delete_filter', 'Supprimer le filtre')}
+                  {t('settings:filters.delete_filter')}
                 </ButtonV2>
               </div>
             </Modal.Footer>
