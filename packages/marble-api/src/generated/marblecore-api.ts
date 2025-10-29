@@ -1117,8 +1117,8 @@ export type SetDataModelTableOptionsBodyDto = {
     field_order: string[];
 };
 export type IngestedDataFieldDto = {
-    path: string[];
-    name: string;
+    Path: string[];
+    Name: string;
 };
 export type ExportedFieldsDto = {
     trigger_object_fields: string[];

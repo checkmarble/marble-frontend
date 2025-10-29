@@ -812,14 +812,14 @@ components:
     IngestedDataFieldDto:
       type: object
       required:
-        - path
-        - name
+        - Path
+        - Name
       properties:
-        path:
+        Path:
           type: array
           items:
             type: string
-        name:
+        Name:
           type: string
     ExportedFieldsDto:
       type: object

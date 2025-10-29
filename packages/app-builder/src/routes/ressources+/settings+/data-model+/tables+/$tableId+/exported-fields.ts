@@ -30,6 +30,23 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return Response.json({ error: 'Table ID is required' }, { status: 400 });
   }
 
+  // * GET * //
+
+  if (request.method === 'GET') {
+    try {
+      const exportedFields = await dataModelRepository.getDataModelTableExportedFields(tableId);
+      return Response.json({ success: true, exportedFields });
+    } catch (err) {
+      console.error(err);
+      return Response.json(
+        { success: false, error: 'Failed to get exported fields' },
+        { status: 500 },
+      );
+    }
+  }
+
+  // * POST * //
+
   if (request.method === 'POST') {
     const body = await request.json();
 
@@ -74,7 +91,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
           tableId,
           {
             triggerObjectFields: current.triggerObjectFields,
-            ingestedDataFields: [...current.ingestedDataFields, field],
+            ingestedDataFields: [...(current.ingestedDataFields ?? undefined), field],
           },
         );
         return Response.json({ success: true, exportedFields });
@@ -89,18 +106,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
       );
     }
   }
-  if (request.method === 'GET') {
-    try {
-      const exportedFields = await dataModelRepository.getDataModelTableExportedFields(tableId);
-      return Response.json({ success: true, exportedFields });
-    } catch (err) {
-      console.error(err);
-      return Response.json(
-        { success: false, error: 'Failed to get exported fields' },
-        { status: 500 },
-      );
-    }
-  }
+
+  // * DELETE * //
+
   if (request.method === 'DELETE') {
     const body = await request.json();
     const parsedDelete = exportedFieldSchema.safeParse(body);

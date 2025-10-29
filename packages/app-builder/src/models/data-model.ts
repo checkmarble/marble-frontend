@@ -657,11 +657,12 @@ export type ExportedFields = {
 };
 
 export function adaptExportedFieldsDto(dto: ExportedFieldsDto): ExportedFields {
+  console.log('dto', JSON.stringify(dto, null, 2));
   return {
     triggerObjectFields: dto.trigger_object_fields,
     ingestedDataFields: dto.ingested_data_fields.map((field) => ({
-      path: field.path,
-      name: field.name,
+      path: field.Path,
+      name: field.Name,
     })),
   };
 }
@@ -670,8 +671,8 @@ export function transformExportedFields(model: ExportedFields): ExportedFieldsDt
   return {
     trigger_object_fields: model.triggerObjectFields,
     ingested_data_fields: model.ingestedDataFields.map((field) => ({
-      path: field.path,
-      name: field.name,
+      Path: field.path,
+      Name: field.name,
     })),
   };
 }
