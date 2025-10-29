@@ -222,8 +222,9 @@ export default function Analytics() {
 
       if (Array.isArray(val)) {
         // Text filter: flatten values
-        const values = (val as Array<{ operator: string; value: string | string[] }>)
-          .flatMap((f) => (Array.isArray(f.value) ? f.value : [f.value]))
+        // Each filter has { operator: 'in', value: string }, so we extract the value directly
+        const values = (val as Array<{ operator: string; value: string }>)
+          .map((f) => f.value)
           .filter((v) => v != null && String(v).length > 0);
         return values.length ? [{ name, op: 'in', value: values }] : [];
       }
