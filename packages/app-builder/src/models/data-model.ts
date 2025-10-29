@@ -656,23 +656,18 @@ export type ExportedFields = {
   ingestedDataFields: IngestedDataField[];
 };
 
-export function adaptExportedFieldsDto(dto: ExportedFieldsDto): ExportedFields {
-  console.log('dto', JSON.stringify(dto, null, 2));
-  return {
-    triggerObjectFields: dto.trigger_object_fields,
-    ingestedDataFields: dto.ingested_data_fields.map((field) => ({
-      path: field.Path,
-      name: field.Name,
-    })),
-  };
-}
+export const adaptExportedFieldsDto = (dto: ExportedFieldsDto): ExportedFields => ({
+  triggerObjectFields: dto.trigger_object_fields,
+  ingestedDataFields: dto.ingested_data_fields.map((field) => ({
+    path: field.Path,
+    name: field.Name,
+  })),
+});
 
-export function transformExportedFields(model: ExportedFields): ExportedFieldsDto {
-  return {
-    trigger_object_fields: model.triggerObjectFields,
-    ingested_data_fields: model.ingestedDataFields.map((field) => ({
-      Path: field.path,
-      Name: field.name,
-    })),
-  };
-}
+export const transformExportedFields = (model: ExportedFields): ExportedFieldsDto => ({
+  trigger_object_fields: model.triggerObjectFields,
+  ingested_data_fields: model.ingestedDataFields.map((field) => ({
+    Path: field.path,
+    Name: field.name,
+  })),
+});
