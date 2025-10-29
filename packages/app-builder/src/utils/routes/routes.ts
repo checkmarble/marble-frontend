@@ -322,9 +322,15 @@ export const routes = [
                 "file": "routes/_builder+/settings+/ip-whitelisting.tsx"
               },
               {
-                "id": "routes/_builder+/settings+/scenarios",
+                "id": "routes/_builder+/settings+/scenarios+/_index",
+                "index": true,
                 "path": "scenarios",
-                "file": "routes/_builder+/settings+/scenarios.tsx"
+                "file": "routes/_builder+/settings+/scenarios+/_index.tsx"
+              },
+              {
+                "id": "routes/_builder+/settings+/scenarios+/filters",
+                "path": "scenarios/filters",
+                "file": "routes/_builder+/settings+/scenarios+/filters.tsx"
               },
               {
                 "id": "routes/_builder+/settings+/tags",
@@ -801,6 +807,11 @@ export const routes = [
         "id": "routes/ressources+/settings+/api-keys+/delete",
         "path": "ressources/settings/api-keys/delete",
         "file": "routes/ressources+/settings+/api-keys+/delete.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields",
+        "path": "ressources/settings/data-model/tables/:tableId/exported-fields",
+        "file": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields.ts"
       },
       {
         "id": "routes/ressources+/settings+/inboxes+/create",
