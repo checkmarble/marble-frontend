@@ -33,7 +33,11 @@ export const useGetAvailableFilters = ({
         return;
       }
 
-      return result as Promise<AvailableFiltersResponse>;
+      if (!result.success) {
+        throw new Error(result.error ?? 'Failed to fetch available filters');
+      }
+
+      return result.data as AvailableFiltersResponse;
     },
   });
 };

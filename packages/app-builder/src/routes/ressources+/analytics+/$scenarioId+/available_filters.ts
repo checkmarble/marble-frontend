@@ -25,9 +25,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
       scenarioId: urlParams.scenarioId,
       ranges: queryParams.ranges,
     });
-    return Response.json(query);
+    return Response.json({ success: true, data: query });
   } catch (error) {
     console.error('error in available_filters', error);
-    return Response.json({ error: 'Invalid request' }, { status: 400 });
+    return Response.json({ success: false, error: 'Invalid request' }, { status: 400 });
   }
 }

@@ -1,4 +1,5 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import type { DateRange } from '@app-builder/models/analytics';
 import {
   type AnalyticsQuery,
   adaptDecisionOutcomesPerDay,
@@ -16,8 +17,47 @@ import {
   transformAvailableFiltersRequest,
 } from '@app-builder/models/analytics/available-filters';
 import { adaptRuleHitTable, RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
-
 import { compareAsc, compareDesc, differenceInDays } from 'date-fns';
+
+type DateRangeLimits = {
+  startDate: LimitDate;
+  endDate: LimitDate;
+};
+
+function computeDateRangeLimits(parsedRanges: DateRange[]): DateRangeLimits {
+  if (parsedRanges.length === 2) {
+    const baseRange = parsedRanges[0]!;
+    const compareRange = parsedRanges[1]!;
+    const startDates = [baseRange.start, compareRange.start].sort(compareAsc);
+    const endDates = [baseRange.end, compareRange.end].sort(compareDesc);
+
+    const start = startDates[0]!;
+    const end = endDates[0]!;
+
+    return {
+      startDate: {
+        date: start,
+        rangeId: start === baseRange.start ? 'base' : 'compare',
+      },
+      endDate: {
+        date: end,
+        rangeId: end === baseRange.end ? 'base' : 'compare',
+      },
+    };
+  }
+
+  const baseRange = parsedRanges[0]!;
+  return {
+    startDate: {
+      date: baseRange.start,
+      rangeId: 'base',
+    },
+    endDate: {
+      date: baseRange.end,
+      rangeId: 'base',
+    },
+  };
+}
 
 export interface AnalyticsRepository {
   legacyListAnalytics(): Promise<legacyAnalytics.Analytics[]>;
@@ -41,57 +81,36 @@ export function makeGetAnalyticsRepository() {
       const parsed = transformAnalyticsQuery.parse(args);
       if (!parsed.length) throw new Error('No date range provided');
 
-      try {
-        const [raw, rawCompare] = await Promise.all([
-          client.getDecisionOutcomesPerDay(parsed[0]!),
-          ...(parsed[1] ? [client.getDecisionOutcomesPerDay(parsed[1])] : []),
-        ]);
+      const [raw, rawCompare] = await Promise.all([
+        client.getDecisionOutcomesPerDay(parsed[0]!),
+        ...(parsed[1] ? [client.getDecisionOutcomesPerDay(parsed[1])] : []),
+      ]);
 
-        const merged = mergeDateRanges([raw, ...(rawCompare ? [rawCompare] : [])]);
+      const merged = mergeDateRanges([raw, ...(rawCompare ? [rawCompare] : [])]);
 
-        const start =
-          parsed.length === 2
-            ? [parsed[0]!.start, parsed[1]!.start].sort(compareAsc)[0]!
-            : parsed[0]!.start;
-        const end =
-          parsed.length === 2
-            ? [parsed[0]!.end, parsed[1]!.end].sort(compareDesc)[0]!
-            : parsed[0]!.end;
+      const { startDate, endDate } = computeDateRangeLimits(parsed);
 
-        const startDate: LimitDate = {
-          date: start,
-          rangeId: start === parsed[0]!.start ? 'base' : 'compare',
-        };
-        const endDate: LimitDate = {
-          date: end,
-          rangeId: end === parsed[0]!.end ? 'base' : 'compare',
-        };
-
-        if (!merged.length) {
-          merged.push({
-            ...startDate,
-            approve: 0,
-            block_and_review: 0,
-            decline: 0,
-            review: 0,
-          });
-          merged.push({
-            ...endDate,
-            approve: 0,
-            block_and_review: 0,
-            decline: 0,
-            review: 0,
-          });
-        }
-        const rangeSize = differenceInDays(end, start);
-
-        return adaptDecisionOutcomesPerDay(
-          rangeSize === merged.length ? merged : fillMissingDays(merged, startDate, endDate),
-        );
-      } catch (error) {
-        console.error('error in getDecisionOutcomesPerDay', error);
-        return null;
+      if (!merged.length) {
+        merged.push({
+          ...startDate,
+          approve: 0,
+          block_and_review: 0,
+          decline: 0,
+          review: 0,
+        });
+        merged.push({
+          ...endDate,
+          approve: 0,
+          block_and_review: 0,
+          decline: 0,
+          review: 0,
+        });
       }
+      const rangeSize = differenceInDays(endDate.date, startDate.date);
+
+      return adaptDecisionOutcomesPerDay(
+        rangeSize === merged.length ? merged : fillMissingDays(merged, startDate, endDate),
+      );
     },
 
     getRuleHitTable: async (args: AnalyticsQuery): Promise<RuleHitTableResponse[] | null> => {
