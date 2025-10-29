@@ -47,7 +47,7 @@ export function getSettingsAccess(
       settings: [
         ...(isAdmin(user) ? [{ title: 'scenarios', to: getRoute('/settings/scenarios') }] : []),
         ...(isAdmin(user)
-          ? [{ title: 'filters', to: getRoute('/settings/scenarios/filters') }]
+          ? [{ title: 'filters-settings', to: getRoute('/settings/analytics/filters') }]
           : []),
       ],
     },

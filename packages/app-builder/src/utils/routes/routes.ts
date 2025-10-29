@@ -296,6 +296,11 @@ export const routes = [
                 "file": "routes/_builder+/settings+/ai-case-review.tsx"
               },
               {
+                "id": "routes/_builder+/settings+/analytics+/filters",
+                "path": "analytics/filters",
+                "file": "routes/_builder+/settings+/analytics+/filters.tsx"
+              },
+              {
                 "id": "routes/_builder+/settings+/api-keys",
                 "path": "api-keys",
                 "file": "routes/_builder+/settings+/api-keys.tsx"
@@ -326,11 +331,6 @@ export const routes = [
                 "index": true,
                 "path": "scenarios",
                 "file": "routes/_builder+/settings+/scenarios+/_index.tsx"
-              },
-              {
-                "id": "routes/_builder+/settings+/scenarios+/filters",
-                "path": "scenarios/filters",
-                "file": "routes/_builder+/settings+/scenarios+/filters.tsx"
               },
               {
                 "id": "routes/_builder+/settings+/tags",

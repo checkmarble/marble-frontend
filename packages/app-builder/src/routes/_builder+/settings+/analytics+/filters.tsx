@@ -183,7 +183,7 @@ export default function Filters() {
       <Page.Content>
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
-            <span className="flex-1">{t('settings:filters')}</span>
+            <span className="flex-1">{t('settings:filters-settings')}</span>
             <CreateFilter dataModel={dataModel} pivots={pivots} disabled={totalFiltersCount >= 5} />
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
