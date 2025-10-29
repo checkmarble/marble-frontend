@@ -65,19 +65,39 @@ export function FiltersBar({
       if (d.type === 'number') {
         if (value && typeof value === 'object' && 'op' in (value as any)) {
           const raw = (value as any).value as unknown;
-          const num = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
+          if (Array.isArray(raw)) {
+            if (raw.length === 0) return null;
+            const num = Number((raw as number[])[0]);
+            if (Number.isNaN(num)) return null;
+            return {
+              operator: (d as NumberFilterDescriptor).operator,
+              value: num,
+            } as NumberComparisonFilter;
+          }
+          const num = Number(raw as number);
+          if (Number.isNaN(num)) return null;
           return {
             operator: (d as NumberFilterDescriptor).operator,
-            value: Number.isNaN(num) ? 0 : num,
+            value: num,
           } as NumberComparisonFilter;
         }
         const sv = (value as NumberComparisonFilter | null) ?? null;
         if (sv && typeof sv === 'object' && 'operator' in sv && 'value' in sv) {
           const raw = sv.value as unknown;
-          const num = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
+          if (Array.isArray(raw)) {
+            if (raw.length === 0) return null;
+            const num = Number((raw as number[])[0]);
+            if (Number.isNaN(num)) return null;
+            return {
+              operator: (sv.operator ?? (d as NumberFilterDescriptor).operator) as NumberOperator,
+              value: num,
+            } as NumberComparisonFilter;
+          }
+          const num = Number(raw as number);
+          if (Number.isNaN(num)) return null;
           return {
             operator: (sv.operator ?? (d as NumberFilterDescriptor).operator) as NumberOperator,
-            value: Number.isNaN(num) ? 0 : num,
+            value: num,
           } as NumberComparisonFilter;
         }
         return sv;
