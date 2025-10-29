@@ -1,10 +1,11 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { CreateFilter } from '@app-builder/components/Settings/Scenario/CreateFilter';
-import { type ExportedFields, isAdmin } from '@app-builder/models';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { isAdmin } from '@app-builder/models';
 import {
   type DeleteExportedFieldPayload,
   useDeleteFilterMutation,
-} from '@app-builder/queries/settings/scenarios/filter';
+} from '@app-builder/queries/settings/scenarios/delete-filter';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -19,6 +20,31 @@ import { Icon } from 'ui-icons';
 export const handle = {
   i18n: ['common', 'settings'] satisfies Namespace,
 };
+type FilterRow = {
+  id: string;
+  tableId: string;
+  associatedObject: string;
+  definition: string;
+  kind: 'trigger' | 'ingested';
+  field?: string;
+  path?: string[];
+  name?: string;
+};
+
+type TriggerFieldItem = {
+  tableId: string;
+  tableName: string;
+  fieldName: string;
+  label: string;
+};
+
+type LinkPivotFieldItem = {
+  baseTableId: string;
+  pathLinks: string[];
+  fieldName: string;
+  label: string;
+};
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
   const { user, dataModelRepository } = await authService.isAuthenticated(request, {
@@ -36,89 +62,113 @@ export async function loader({ request }: LoaderFunctionArgs) {
       return [table.id, exported] as const;
     }),
   );
-  const exportedFieldsByTable = Object.fromEntries(exportedEntries) as Record<
-    string,
-    ExportedFields
-  >;
+  const exportedFieldsByTable = Object.fromEntries(exportedEntries);
+
+  const tableIdToName = new Map<string, string>(dataModel.map((t) => [t.id, t.name] as const));
+
+  const filters: FilterRow[] = Object.entries(exportedFieldsByTable).flatMap(
+    ([tableId, exported]) => {
+      const tableName = tableIdToName.get(tableId) ?? '';
+
+      const triggerFilters: FilterRow[] = (exported.triggerObjectFields ?? []).map((field) => ({
+        id: `${tableId}::trigger::${field}`,
+        tableId,
+        associatedObject: tableName,
+        definition: tableName ? `${tableName}.${field}` : field,
+        kind: 'trigger' as const,
+        field,
+      }));
+
+      const ingestedFilters: FilterRow[] = (exported.ingestedDataFields ?? [])
+        .filter((field): field is NonNullable<typeof field> => Boolean(field?.name))
+        .map((field) => {
+          const pathArr = Array.isArray(field.path) ? field.path : [];
+          const pathStr = pathArr.join('->');
+          return {
+            id: `${tableId}::ingested::${pathStr}.${field.name}`,
+            tableId,
+            associatedObject: tableName,
+            definition: `${tableName}->${pathStr}.${field.name}`,
+            kind: 'ingested' as const,
+            field: field.name,
+            name: field.name,
+            path: pathArr,
+          };
+        });
+
+      return [...triggerFilters, ...ingestedFilters];
+    },
+  );
+
+  // Compute allowed tables (those with less than 5 filters)
+  const MAX_FILTERS_PER_TABLE = 5;
+  const filterCountByTableId = filters.reduce(
+    (acc, filter) => {
+      acc[filter.tableId] = (acc[filter.tableId] ?? 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+  const allowedTables = dataModel
+    .filter((table) => (filterCountByTableId[table.id] ?? 0) < MAX_FILTERS_PER_TABLE)
+    .map((t) => t.id);
+
+  // Create a Set of existing filter IDs to exclude duplicates
+  const existingFilterIds = new Set(filters.map((f) => f.id));
+
+  // Compute all possible trigger filters
+  const allTriggerFieldItems: TriggerFieldItem[] = dataModel
+    .filter((t) => allowedTables.includes(t.id))
+    .flatMap((table) =>
+      table.fields.map((field) => ({
+        tableId: table.id,
+        tableName: table.name,
+        fieldName: field.name,
+        label: `${table.name}.${field.name}`,
+      })),
+    )
+    .filter((item) => !existingFilterIds.has(`${item.tableId}::trigger::${item.fieldName}`));
+
+  // Compute all possible link pivot filters
+  const pivots = await dataModelRepository.listPivots({});
+  const allLinkPivotFieldItems: LinkPivotFieldItem[] = pivots
+    .filter((p): p is Extract<typeof p, { type: 'link' }> => p.type === 'link')
+    .flatMap((p) => {
+      const targetTable = dataModel.find((t) => t.id === p.pivotTableId);
+      if (!targetTable) return [];
+      return targetTable.fields.map((f) => ({
+        baseTableId: p.baseTableId,
+        pathLinks: p.pathLinks,
+        fieldName: f.name,
+        label: `${p.baseTable}->${p.pathLinks.join('->')}.${f.name}`,
+      }));
+    })
+    .filter((item) => {
+      const pathStr = item.pathLinks.join('->');
+      return !existingFilterIds.has(`${item.baseTableId}::ingested::${pathStr}.${item.fieldName}`);
+    });
 
   return {
-    exportedFieldsByTable,
+    filters,
     dataModel,
-    pivots: await dataModelRepository.listPivots({}),
+    pivots,
+    allowedTables,
+    triggerFieldItems: allTriggerFieldItems,
+    linkPivotFieldItems: allLinkPivotFieldItems,
   };
 }
 
 export default function Filters() {
+  const revalidate = useLoaderRevalidator();
+
   const { t } = useTranslation(['settings', 'common']);
-  const { dataModel, exportedFieldsByTable, pivots } = useLoaderData<typeof loader>();
+  const { filters, dataModel, triggerFieldItems, linkPivotFieldItems } =
+    useLoaderData<typeof loader>();
 
-  const totalFiltersCount = useMemo(() => {
-    return Object.values(exportedFieldsByTable).reduce(
-      (acc, curr) => acc + curr.triggerObjectFields.length + curr.ingestedDataFields.length,
-      0,
-    );
-  }, [exportedFieldsByTable]);
-
-  const [byTable, setByTable] = useState<Record<string, ExportedFields>>(exportedFieldsByTable);
-  const deleteFilter = useDeleteFilterMutation();
+  const deleteFilterMutation = useDeleteFilterMutation();
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<null | {
-    id: string;
-    tableId: string;
-    kind: 'trigger' | 'ingested';
-    field?: string;
-    path?: string[];
-    name?: string;
-  }>(null);
-
-  type FilterRow = {
-    id: string;
-    tableId: string;
-    associatedObject: string;
-    definition: string;
-    kind: 'trigger' | 'ingested';
-    field?: string;
-    path?: string[];
-    name?: string;
-  };
-
-  const rows: FilterRow[] = useMemo(() => {
-    const tableIdToName = new Map<string, string>(dataModel.map((t) => [t.id, t.name] as const));
-
-    const result: FilterRow[] = [];
-    for (const [tableId, exported] of Object.entries(byTable)) {
-      const tableName = tableIdToName.get(tableId) ?? '';
-      // trigger object fields
-      for (const field of exported.triggerObjectFields ?? []) {
-        result.push({
-          id: `${tableId}::trigger::${field}`,
-          tableId,
-          associatedObject: tableName,
-          definition: tableName ? `${tableName}.${field}` : field,
-          kind: 'trigger',
-          field,
-        });
-      }
-      // ingested data fields (objects)
-      for (const field of exported.ingestedDataFields ?? []) {
-        if (!field || !field.name) continue;
-        const pathArr = Array.isArray(field.path) ? field.path : [];
-        const pathStr = pathArr.join('->');
-        result.push({
-          id: `${tableId}::ingested::${pathStr}.${field.name}`,
-          tableId,
-          associatedObject: tableName,
-          definition: `${tableName}->${pathStr}.${field.name}`,
-          kind: 'ingested',
-          field: field.name,
-          name: field.name,
-          path: pathArr,
-        });
-      }
-    }
-    return result;
-  }, [byTable, dataModel]);
+  const [itemToDelete, setItemToDelete] = useState<null | FilterRow>(null);
   const columnHelper = createColumnHelper<FilterRow>();
   const columns = useMemo(() => {
     return [
@@ -136,22 +186,14 @@ export default function Filters() {
         size: 80,
         cell: ({ row }) => {
           return (
-            <div className="flex justify-end">
+            <div className="flex justify-center">
               <ButtonV2
                 variant="secondary"
                 mode="icon"
                 className="opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={async (e) => {
                   e.stopPropagation();
-                  const item = row.original;
-                  setItemToDelete({
-                    id: item.id,
-                    tableId: item.tableId,
-                    kind: item.kind,
-                    field: item.field,
-                    path: item.path,
-                    name: item.name,
-                  });
+                  setItemToDelete(row.original);
                   setIsConfirmOpen(true);
                 }}
                 aria-label="Delete filter"
@@ -164,7 +206,7 @@ export default function Filters() {
         },
       }),
     ];
-  }, [byTable, columnHelper, deleteFilter]);
+  }, [columnHelper, deleteFilterMutation]);
 
   const {
     table,
@@ -172,7 +214,7 @@ export default function Filters() {
     rows: tableRows,
     getContainerProps,
   } = useTable({
-    data: rows,
+    data: filters,
     columns,
     columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
@@ -184,11 +226,15 @@ export default function Filters() {
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:filters-settings')}</span>
-            <CreateFilter dataModel={dataModel} pivots={pivots} disabled={totalFiltersCount >= 5} />
+            <CreateFilter
+              dataModel={dataModel}
+              triggerFieldItems={triggerFieldItems}
+              linkPivotFieldItems={linkPivotFieldItems}
+            />
           </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content>
-            <div className="flex flex-col gap-4">
-              <Table.Container {...getContainerProps()} className="max-h-96">
+          <CollapsiblePaper.Content className="flex flex-col h-full">
+            <div className="flex flex-col gap-4 flex-1 min-h-0">
+              <Table.Container {...getContainerProps()} className="flex-1 min-h-0">
                 <Table.Header headerGroups={table.getHeaderGroups()} />
                 <Table.Body {...getBodyProps()}>
                   {tableRows.map((row) => (
@@ -212,7 +258,7 @@ export default function Filters() {
                 </ButtonV2>
                 <ButtonV2
                   variant="destructive"
-                  onClick={async () => {
+                  onClick={() => {
                     if (!itemToDelete) return;
                     const payload: DeleteExportedFieldPayload =
                       itemToDelete.kind === 'trigger'
@@ -223,18 +269,16 @@ export default function Filters() {
                               name: itemToDelete.name!,
                             },
                           };
-                    const res = await deleteFilter.mutateAsync({
-                      tableId: itemToDelete.tableId,
-                      payload,
-                    });
-                    if (res?.success && res.exportedFields) {
-                      setByTable((prev) => ({
-                        ...prev,
-                        [itemToDelete.tableId]: res.exportedFields as ExportedFields,
-                      }));
-                    }
-                    setIsConfirmOpen(false);
-                    setItemToDelete(null);
+                    deleteFilterMutation
+                      .mutateAsync({
+                        tableId: itemToDelete.tableId,
+                        payload,
+                      })
+                      .then((res) => {
+                        setIsConfirmOpen(false);
+                        setItemToDelete(null);
+                        revalidate();
+                      });
                   }}
                 >
                   {t('settings:filters.delete_filter')}

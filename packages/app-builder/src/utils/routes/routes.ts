@@ -799,6 +799,11 @@ export const routes = [
         "file": "routes/ressources+/settings+/ai-review+/_index.tsx"
       },
       {
+        "id": "routes/ressources+/settings+/analytics+/filters",
+        "path": "ressources/settings/analytics/filters",
+        "file": "routes/ressources+/settings+/analytics+/filters.ts"
+      },
+      {
         "id": "routes/ressources+/settings+/api-keys+/create",
         "path": "ressources/settings/api-keys/create",
         "file": "routes/ressources+/settings+/api-keys+/create.tsx"

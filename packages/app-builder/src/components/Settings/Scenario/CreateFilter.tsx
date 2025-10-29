@@ -1,70 +1,46 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import type { DataModel, Pivot } from '@app-builder/models';
+import type { DataModel } from '@app-builder/models';
 import {
   type CreateExportedFieldPayload,
   createExportedFieldSchema,
   useCreateFilterMutation,
-} from '@app-builder/queries/settings/scenarios/filter';
+} from '@app-builder/queries/settings/scenarios/update-filter';
 import { useForm } from '@tanstack/react-form';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
+type TriggerFieldItem = {
+  tableId: string;
+  tableName: string;
+  fieldName: string;
+  label: string;
+};
+
+type LinkPivotFieldItem = {
+  baseTableId: string;
+  pathLinks: string[];
+  fieldName: string;
+  label: string;
+};
+
 export function CreateFilter({
   dataModel,
-  pivots,
-  disabled,
+  triggerFieldItems,
+  linkPivotFieldItems,
 }: {
   dataModel: DataModel;
-  pivots: Pivot[];
-  disabled: boolean;
+  triggerFieldItems: TriggerFieldItem[];
+  linkPivotFieldItems: LinkPivotFieldItem[];
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const [open, setOpen] = useState(false);
   const [openUnifiedMenu, setOpenUnifiedMenu] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState<string>(dataModel[0]?.id ?? '');
-  const createFilter = useCreateFilterMutation();
-  const selectedTable = useMemo(
-    () => dataModel.find((t) => t.id === selectedTableId),
-    [dataModel, selectedTableId],
-  );
+  const createFilterMutation = useCreateFilterMutation();
+  const selectedTable = dataModel.find((t) => t.id === selectedTableId);
   const revalidate = useLoaderRevalidator();
-  // Build unified lists
-  const triggerFieldItems = useMemo(
-    () =>
-      dataModel.flatMap((table) =>
-        table.fields.map((field) => ({
-          tableId: table.id,
-          tableName: table.name,
-          fieldName: field.name,
-          label: `${table.name}.${field.name}`,
-        })),
-      ),
-    [dataModel],
-  );
-  const linkPivotFieldItems = useMemo(
-    () =>
-      pivots
-        .filter((p): p is Extract<Pivot, { type: 'link' }> => p.type === 'link')
-        .flatMap((p) => {
-          const targetTable = dataModel.find((t) => t.id === p.pivotTableId);
-          if (!targetTable)
-            return [] as Array<{
-              baseTableId: string;
-              pathLinks: string[];
-              fieldName: string;
-              label: string;
-            }>;
-          return targetTable.fields.map((f) => ({
-            baseTableId: p.baseTableId,
-            pathLinks: p.pathLinks,
-            fieldName: f.name,
-            label: `${p.baseTable}->${p.pathLinks.join('->')}.${f.name}`,
-          }));
-        }),
-    [pivots, dataModel],
-  );
 
   function summaryLabel() {
     const v = form.state.values as CreateExportedFieldPayload;
@@ -82,9 +58,9 @@ export function CreateFilter({
     defaultValues: {} as CreateExportedFieldPayload,
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        createFilter
+        createFilterMutation
           .mutateAsync({ tableId: selectedTableId, payload: value as CreateExportedFieldPayload })
-          .then((res) => {
+          .then((res: any) => {
             if (res.success) {
               setOpen(false);
               revalidate();
@@ -100,7 +76,7 @@ export function CreateFilter({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger asChild>
-        <ButtonV2 onClick={(e) => e.stopPropagation()} disabled={disabled}>
+        <ButtonV2 onClick={(e) => e.stopPropagation()}>
           <Icon icon="plus" className="size-4" />
           {t('settings:scenarios.filters.new_filter.create.button.label')}
         </ButtonV2>

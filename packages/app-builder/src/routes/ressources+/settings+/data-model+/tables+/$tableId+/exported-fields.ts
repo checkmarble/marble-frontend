@@ -9,7 +9,6 @@ const ingestedDataFieldSchema = z.object({
   name: z.string(),
 });
 
-// Accept create payload: exactly one of the following
 const exportedFieldSchema = z.union([
   z.object({ triggerObjectField: z.string() }),
   z.object({ ingestedDataField: ingestedDataFieldSchema }),
@@ -28,21 +27,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const { tableId } = params;
   if (!tableId) {
     return Response.json({ error: 'Table ID is required' }, { status: 400 });
-  }
-
-  // * GET * //
-
-  if (request.method === 'GET') {
-    try {
-      const exportedFields = await dataModelRepository.getDataModelTableExportedFields(tableId);
-      return Response.json({ success: true, exportedFields });
-    } catch (err) {
-      console.error(err);
-      return Response.json(
-        { success: false, error: 'Failed to get exported fields' },
-        { status: 500 },
-      );
-    }
   }
 
   // * POST * //
