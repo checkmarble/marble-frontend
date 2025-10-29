@@ -60,7 +60,7 @@ export function CreateFilter({
             baseTableId: p.baseTableId,
             pathLinks: p.pathLinks,
             fieldName: f.name,
-            label: `->${p.pathLinks.join('->')}.${f.name}`,
+            label: `${p.baseTable}->${p.pathLinks.join('->')}.${f.name}`,
           }));
         }),
     [pivots, dataModel],
