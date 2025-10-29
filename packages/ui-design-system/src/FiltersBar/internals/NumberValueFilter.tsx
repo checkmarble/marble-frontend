@@ -29,16 +29,21 @@ export function NumberValueFilter({
       return { operator: (sv as any).operator ?? 'eq', value: Number.isNaN(num) ? 0 : num };
     })(),
   );
+  const [inputValue, setInputValue] = useState<string>(
+    localValue.value === 0 ? '' : String(localValue.value),
+  );
   const { emitSet, emitRemove } = useFiltersBarContext();
   useEffect(() => {
     if (isOpen) {
       const sv = filter.selectedValue ?? { operator: 'eq', value: 0 };
       const raw = (sv as any).value as unknown;
       const num = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
+      const newValue = Number.isNaN(num) ? 0 : num;
       setLocalValue({
         operator: (sv as any).operator ?? 'eq',
-        value: Number.isNaN(num) ? 0 : num,
+        value: newValue,
       });
+      setInputValue(newValue === 0 ? '' : String(newValue));
     }
   }, [isOpen, filter.selectedValue]);
 
@@ -167,23 +172,24 @@ export function NumberValueFilter({
             <Input
               type="number"
               placeholder={filter.placeholder}
-              value={Number(localValue.value) || 0}
-              onChange={(e) =>
+              value={inputValue}
+              onChange={(e) => {
+                const stringValue = e.currentTarget.value;
+                setInputValue(stringValue);
+                const numValue = stringValue === '' ? 0 : Number(stringValue);
                 setLocalValue({
                   operator: localValue.operator,
-                  value: Number(e.currentTarget.value),
-                })
-              }
+                  value: Number.isNaN(numValue) ? 0 : numValue,
+                });
+              }}
             />
           </div>
           <div className="flex justify-end">
             <button
               className={cn('text-s bg-purple-65 text-white rounded-sm px-3 py-1.5 outline-hidden')}
               onClick={() => {
-                const trimmed = String(localValue.value ?? '')
-                  .toString()
-                  .trim();
-                const n = Number(trimmed);
+                const trimmed = inputValue.trim();
+                const n = trimmed === '' ? NaN : Number(trimmed);
                 const payload = Number.isNaN(n)
                   ? null
                   : { operator: localValue.operator, value: n };
