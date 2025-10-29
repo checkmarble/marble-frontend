@@ -109,7 +109,7 @@ export default function Filters() {
           id: `${tableId}::ingested::${pathStr}.${field.name}`,
           tableId,
           associatedObject: tableName,
-          definition: `->${pathStr}.${field.name}`,
+          definition: `${tableName}->${pathStr}.${field.name}`,
           kind: 'ingested',
           field: field.name,
           name: field.name,
