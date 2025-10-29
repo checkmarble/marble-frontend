@@ -22,7 +22,7 @@ export const useGetAnalytics = ({
 
   return useQuery({
     queryKey: ['analytics', 'query', scenarioId, queryString],
-    enabled: qs && Array.isArray(range) ? range.length > 0 : true,
+    enabled: Boolean(qs && range),
     queryFn: async () => {
       const response = await fetch(endpoint, {
         method: 'POST',
