@@ -18,7 +18,7 @@ type TriggerFieldItem = {
   label: string;
 };
 
-type LinkPivotFieldItem = {
+type LinkedFieldItem = {
   baseTableId: string;
   pathLinks: string[];
   fieldName: string;
@@ -28,11 +28,11 @@ type LinkPivotFieldItem = {
 export function CreateFilter({
   dataModel,
   triggerFieldItems,
-  linkPivotFieldItems,
+  linkedFieldItems,
 }: {
   dataModel: DataModel;
   triggerFieldItems: TriggerFieldItem[];
-  linkPivotFieldItems: LinkPivotFieldItem[];
+  linkedFieldItems: LinkedFieldItem[];
 }) {
   const { t } = useTranslation(['common', 'settings']);
   const [open, setOpen] = useState(false);
@@ -129,33 +129,33 @@ export function CreateFilter({
                     </MenuCommand.Group>
                     <MenuCommand.Separator />
                     <MenuCommand.Group>
-                      {linkPivotFieldItems.map((pf) => {
+                      {linkedFieldItems.map((lf) => {
                         const v = form.state.values as CreateExportedFieldPayload;
                         const isSelected =
                           'ingestedDataField' in v &&
                           !!v.ingestedDataField &&
-                          v.ingestedDataField.name === pf.fieldName &&
-                          v.ingestedDataField.path.join('.') === pf.pathLinks.join('.') &&
-                          selectedTableId === pf.baseTableId;
+                          v.ingestedDataField.name === lf.fieldName &&
+                          v.ingestedDataField.path.join('.') === lf.pathLinks.join('.') &&
+                          selectedTableId === lf.baseTableId;
                         return (
                           <MenuCommand.Item
-                            key={`pivot-${pf.baseTableId}-${pf.label}`}
+                            key={`pivot-${lf.baseTableId}-${lf.label}`}
                             selected={isSelected}
                             onSelect={() => {
-                              setSelectedTableId(pf.baseTableId);
+                              setSelectedTableId(lf.baseTableId);
                               // choose ingested; clear trigger
                               form.setFieldValue('triggerObjectField' as any, undefined as any);
                               form.setFieldValue(
                                 'ingestedDataField' as any,
                                 {
-                                  path: pf.pathLinks,
-                                  name: pf.fieldName,
+                                  path: lf.pathLinks,
+                                  name: lf.fieldName,
                                 } as any,
                               );
                               setOpenUnifiedMenu(false);
                             }}
                           >
-                            <span className="font-semibold">{pf.label}</span>
+                            <span className="font-semibold">{lf.label}</span>
                           </MenuCommand.Item>
                         );
                       })}

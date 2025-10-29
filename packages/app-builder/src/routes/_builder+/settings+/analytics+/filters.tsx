@@ -117,7 +117,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const existingFilterIds = new Set(filters.map((f) => f.id));
 
   // Compute all possible trigger filters
-  const allTriggerFieldItems: TriggerFieldItem[] = dataModel
+  const triggerFieldItems: TriggerFieldItem[] = dataModel
     .filter((t) => allowedTables.includes(t.id))
     .flatMap((table) =>
       table.fields.map((field) => ({
@@ -129,9 +129,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     )
     .filter((item) => !existingFilterIds.has(`${item.tableId}::trigger::${item.fieldName}`));
 
-  // Compute all possible link pivot filters
+  // Compute all possible linked field filters
   const pivots = await dataModelRepository.listPivots({});
-  const allLinkPivotFieldItems: LinkPivotFieldItem[] = pivots
+  const linkedFieldItems: LinkPivotFieldItem[] = pivots
     .filter((p): p is Extract<typeof p, { type: 'link' }> => p.type === 'link')
     .flatMap((p) => {
       const targetTable = dataModel.find((t) => t.id === p.pivotTableId);
@@ -153,8 +153,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     dataModel,
     pivots,
     allowedTables,
-    triggerFieldItems: allTriggerFieldItems,
-    linkPivotFieldItems: allLinkPivotFieldItems,
+    triggerFieldItems,
+    linkedFieldItems,
   };
 }
 
@@ -162,7 +162,7 @@ export default function Filters() {
   const revalidate = useLoaderRevalidator();
 
   const { t } = useTranslation(['settings', 'common']);
-  const { filters, dataModel, triggerFieldItems, linkPivotFieldItems } =
+  const { filters, dataModel, triggerFieldItems, linkedFieldItems } =
     useLoaderData<typeof loader>();
 
   const deleteFilterMutation = useDeleteFilterMutation();
@@ -229,7 +229,7 @@ export default function Filters() {
             <CreateFilter
               dataModel={dataModel}
               triggerFieldItems={triggerFieldItems}
-              linkPivotFieldItems={linkPivotFieldItems}
+              linkedFieldItems={linkedFieldItems}
             />
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content className="flex flex-col h-full">
