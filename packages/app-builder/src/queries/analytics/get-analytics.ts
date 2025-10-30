@@ -41,6 +41,10 @@ export const useGetAnalytics = ({
         return;
       }
 
+      if (!result.success) {
+        throw new Error(result.errors?.join(', ') ?? 'Failed to fetch analytics');
+      }
+
       return result.data as {
         decisionOutcomesPerDay: DecisionOutcomesPerPeriod | null;
         ruleHitTable: RuleHitTableResponse[] | null;
