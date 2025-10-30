@@ -129,33 +129,33 @@ export function CreateFilter({
                     </MenuCommand.Group>
                     <MenuCommand.Separator />
                     <MenuCommand.Group>
-                      {linkedFieldItems.map((lf) => {
+                      {linkedFieldItems.map((item) => {
                         const v = form.state.values as CreateExportedFieldPayload;
                         const isSelected =
                           'ingestedDataField' in v &&
                           !!v.ingestedDataField &&
-                          v.ingestedDataField.name === lf.fieldName &&
-                          v.ingestedDataField.path.join('.') === lf.pathLinks.join('.') &&
-                          selectedTableId === lf.baseTableId;
+                          v.ingestedDataField.name === item.fieldName &&
+                          v.ingestedDataField.path.join('.') === item.pathLinks.join('.') &&
+                          selectedTableId === item.baseTableId;
                         return (
                           <MenuCommand.Item
-                            key={`pivot-${lf.baseTableId}-${lf.label}`}
+                            key={`pivot-${item.baseTableId}-${item.label}`}
                             selected={isSelected}
                             onSelect={() => {
-                              setSelectedTableId(lf.baseTableId);
+                              setSelectedTableId(item.baseTableId);
                               // choose ingested; clear trigger
                               form.setFieldValue('triggerObjectField' as any, undefined as any);
                               form.setFieldValue(
                                 'ingestedDataField' as any,
                                 {
-                                  path: lf.pathLinks,
-                                  name: lf.fieldName,
+                                  path: item.pathLinks,
+                                  name: item.fieldName,
                                 } as any,
                               );
                               setOpenUnifiedMenu(false);
                             }}
                           >
-                            <span className="font-semibold">{lf.label}</span>
+                            <span className="font-semibold">{item.label}</span>
                           </MenuCommand.Item>
                         );
                       })}
