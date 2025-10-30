@@ -87,7 +87,6 @@ export function CreateFilter({
           <Modal.Title>{t('settings:scenarios.filters.new_filter.title')}</Modal.Title>
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-col gap-2">
-              <span className="text-s font-medium">Fields</span>
               <MenuCommand.Menu open={openUnifiedMenu} onOpenChange={setOpenUnifiedMenu}>
                 <MenuCommand.Trigger>
                   <MenuCommand.SelectButton>{summaryLabel()}</MenuCommand.SelectButton>
