@@ -1,15 +1,14 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { CreateFilter } from '@app-builder/components/Settings/Scenario/CreateFilter';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { ExportedFields, isAdmin } from '@app-builder/models';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { ExportedFields } from '@app-builder/models';
 import type { DataModel, Pivot } from '@app-builder/models/data-model';
 import {
   type DeleteExportedFieldPayload,
   useDeleteFilterMutation,
 } from '@app-builder/queries/settings/scenarios/delete-filter';
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
@@ -139,15 +138,9 @@ const getLinkedFieldItems = (
       }));
     });
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { user, dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn([authMiddleware], async function filtersLoader({ context }) {
+  const { dataModelRepository } = context.authInfo;
 
-  if (!isAdmin(user)) {
-    return redirect(getRoute('/'));
-  }
   const dataModel = await dataModelRepository.getDataModel();
 
   const exportedEntries: [string, ExportedFields][] = await Promise.all(
@@ -171,7 +164,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     triggerFieldItems,
     linkedFieldItems,
   };
-}
+});
 
 export default function Filters() {
   const revalidate = useLoaderRevalidator();
