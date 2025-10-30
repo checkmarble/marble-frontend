@@ -5,12 +5,7 @@ import { ingestedDataFieldSchema } from './schema';
 
 export const exportedFieldsSchema = z.object({
   triggerObjectFields: z.array(z.string()),
-  ingestedDataFields: z.array(
-    z.object({
-      path: z.array(z.string()),
-      name: z.string(),
-    }),
-  ),
+  ingestedDataFields: z.array(ingestedDataFieldSchema),
 });
 
 export const createExportedFieldSchema = z.union([
