@@ -10,6 +10,7 @@ import {
   adaptDataModelObject,
   adaptDataModelTableOptions,
   adaptExportedFields,
+  adaptExportedFieldsDto,
   adaptPivot,
   adaptSetDataModelTableOptionBodyDto,
   adaptUpdateFieldDto,
@@ -25,7 +26,6 @@ import {
   ExportedFields,
   type Pivot,
   type SetDataModelTableOptionsBody,
-  transformExportedFields,
   type UpdateFieldInput,
 } from '@app-builder/models';
 import { type OpenApiSpec } from 'marble-api';
@@ -133,7 +133,7 @@ export function makeGetDataModelRepository() {
       return adaptExportedFields(
         await marbleCoreApiClient.updateDataModelTableExportedFields(
           tableId,
-          transformExportedFields(body),
+          adaptExportedFieldsDto(body),
         ),
       );
     },

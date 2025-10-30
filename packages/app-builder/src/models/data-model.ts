@@ -664,7 +664,7 @@ export const adaptExportedFields = (dto: ExportedFieldsDto): ExportedFields => (
   })),
 });
 
-export const transformExportedFields = (model: ExportedFields): ExportedFieldsDto => ({
+export const adaptExportedFieldsDto = (model: ExportedFields): ExportedFieldsDto => ({
   trigger_object_fields: model.triggerObjectFields,
   ingested_data_fields: model.ingestedDataFields.map((field) => ({
     Path: field.path,
