@@ -8,6 +8,10 @@ export const deleteExportedFieldSchema = z.union([
   z.object({ ingestedDataField: ingestedDataFieldSchema }),
 ]);
 export type DeleteExportedFieldPayload = z.infer<typeof deleteExportedFieldSchema>;
+const endpoint = (tableId: string) =>
+  getRoute('/ressources/settings/data-model/tables/:tableId/exported-fields', {
+    tableId,
+  });
 
 export const useDeleteFilterMutation = () => {
   return useMutation({
@@ -19,10 +23,7 @@ export const useDeleteFilterMutation = () => {
       tableId: string;
       payload: DeleteExportedFieldPayload;
     }) => {
-      const endpoint = getRoute('/ressources/settings/data-model/tables/:tableId/exported-fields', {
-        tableId,
-      });
-      const response = await fetch(endpoint, {
+      const response = await fetch(endpoint(tableId), {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
