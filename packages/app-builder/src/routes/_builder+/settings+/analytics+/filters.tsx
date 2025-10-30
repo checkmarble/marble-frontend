@@ -1,7 +1,8 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
 import { CreateFilter } from '@app-builder/components/Settings/Scenario/CreateFilter';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import { isAdmin } from '@app-builder/models';
+import { ExportedFields, isAdmin } from '@app-builder/models';
+import type { DataModel, Pivot } from '@app-builder/models/data-model';
 import {
   type DeleteExportedFieldPayload,
   useDeleteFilterMutation,
@@ -45,6 +46,99 @@ type LinkPivotFieldItem = {
   label: string;
 };
 
+const getFilters = (
+  exportedEntries: [string, ExportedFields][],
+  dataModel: DataModel,
+): FilterRow[] => {
+  const exportedFieldsByTable = Object.fromEntries(exportedEntries);
+
+  const tableIdToName = new Map<string, string>(dataModel.map((t) => [t.id, t.name] as const));
+  return Object.entries(exportedFieldsByTable).flatMap(([tableId, exported]) => {
+    const tableName = tableIdToName.get(tableId) ?? '';
+
+    const triggerFilters: FilterRow[] = (exported.triggerObjectFields ?? []).map((field) => ({
+      id: `${tableId}::trigger::${field}`,
+      tableId,
+      associatedObject: tableName,
+      definition: tableName ? `${tableName}.${field}` : field,
+      kind: 'trigger' as const,
+      field,
+    }));
+
+    const ingestedFilters: FilterRow[] = (exported.ingestedDataFields ?? [])
+      .filter((field): field is NonNullable<typeof field> => Boolean(field?.name))
+      .map((field) => {
+        const pathArr = Array.isArray(field.path) ? field.path : [];
+        const pathStr = pathArr.join('->');
+        return {
+          id: `${tableId}::ingested::${pathStr}.${field.name}`,
+          tableId,
+          associatedObject: tableName,
+          definition: `${tableName}->${pathStr}.${field.name}`,
+          kind: 'ingested' as const,
+          field: field.name,
+          name: field.name,
+          path: pathArr,
+        };
+      });
+
+    return [...triggerFilters, ...ingestedFilters];
+  });
+};
+
+const getAllowedTables = (filters: FilterRow[], dataModel: DataModel): string[] => {
+  // Compute allowed tables (those with less than 5 filters)
+  const MAX_FILTERS_PER_TABLE = 5;
+  const filterCountByTableId = filters.reduce(
+    (acc, filter) => {
+      acc[filter.tableId] = (acc[filter.tableId] ?? 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+  return dataModel
+    .filter((table) => (filterCountByTableId[table.id] ?? 0) < MAX_FILTERS_PER_TABLE)
+    .map((t) => t.id);
+};
+
+const getTriggerFieldItems = (
+  filters: FilterRow[],
+  allowedTables: string[],
+  dataModel: DataModel,
+): TriggerFieldItem[] => {
+  const existingFilterIds = new Set(filters.map(({ id }) => id));
+  return dataModel
+    .filter(({ id }) => allowedTables.includes(id))
+    .flatMap((table) =>
+      table.fields.map((field) => ({
+        tableId: table.id,
+        tableName: table.name,
+        fieldName: field.name,
+        label: `${table.name}.${field.name}`,
+      })),
+    )
+    .filter((item) => !existingFilterIds.has(`${item.tableId}::trigger::${item.fieldName}`));
+};
+
+const getLinkedFieldItems = (
+  pivots: Pivot[],
+  allowedTables: string[],
+  dataModel: DataModel,
+): LinkPivotFieldItem[] =>
+  pivots
+    .filter((pivot) => pivot.type === 'link')
+    .filter(({ pivotTableId }) => allowedTables.includes(pivotTableId))
+    .flatMap(({ pivotTableId, baseTableId, pathLinks, baseTable }) => {
+      const targetTable = dataModel.find(({ id }) => id === pivotTableId);
+      if (!targetTable) return [];
+      return targetTable.fields.map(({ name }) => ({
+        baseTableId,
+        pathLinks,
+        fieldName: name,
+        label: `${baseTable}->${pathLinks.join('->')}.${name}`,
+      }));
+    });
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
   const { user, dataModelRepository } = await authService.isAuthenticated(request, {
@@ -56,97 +150,18 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
   const dataModel = await dataModelRepository.getDataModel();
 
-  const exportedEntries = await Promise.all(
+  const exportedEntries: [string, ExportedFields][] = await Promise.all(
     dataModel.map(async (table) => {
       const exported = await dataModelRepository.getDataModelTableExportedFields(table.id);
       return [table.id, exported] as const;
     }),
   );
-  const exportedFieldsByTable = Object.fromEntries(exportedEntries);
 
-  const tableIdToName = new Map<string, string>(dataModel.map((t) => [t.id, t.name] as const));
-
-  const filters: FilterRow[] = Object.entries(exportedFieldsByTable).flatMap(
-    ([tableId, exported]) => {
-      const tableName = tableIdToName.get(tableId) ?? '';
-
-      const triggerFilters: FilterRow[] = (exported.triggerObjectFields ?? []).map((field) => ({
-        id: `${tableId}::trigger::${field}`,
-        tableId,
-        associatedObject: tableName,
-        definition: tableName ? `${tableName}.${field}` : field,
-        kind: 'trigger' as const,
-        field,
-      }));
-
-      const ingestedFilters: FilterRow[] = (exported.ingestedDataFields ?? [])
-        .filter((field): field is NonNullable<typeof field> => Boolean(field?.name))
-        .map((field) => {
-          const pathArr = Array.isArray(field.path) ? field.path : [];
-          const pathStr = pathArr.join('->');
-          return {
-            id: `${tableId}::ingested::${pathStr}.${field.name}`,
-            tableId,
-            associatedObject: tableName,
-            definition: `${tableName}->${pathStr}.${field.name}`,
-            kind: 'ingested' as const,
-            field: field.name,
-            name: field.name,
-            path: pathArr,
-          };
-        });
-
-      return [...triggerFilters, ...ingestedFilters];
-    },
-  );
-
-  // Compute allowed tables (those with less than 5 filters)
-  const MAX_FILTERS_PER_TABLE = 5;
-  const filterCountByTableId = filters.reduce(
-    (acc, filter) => {
-      acc[filter.tableId] = (acc[filter.tableId] ?? 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
-  const allowedTables = dataModel
-    .filter((table) => (filterCountByTableId[table.id] ?? 0) < MAX_FILTERS_PER_TABLE)
-    .map((t) => t.id);
-
-  // Create a Set of existing filter IDs to exclude duplicates
-  const existingFilterIds = new Set(filters.map((f) => f.id));
-
-  // Compute all possible trigger filters
-  const triggerFieldItems: TriggerFieldItem[] = dataModel
-    .filter((t) => allowedTables.includes(t.id))
-    .flatMap((table) =>
-      table.fields.map((field) => ({
-        tableId: table.id,
-        tableName: table.name,
-        fieldName: field.name,
-        label: `${table.name}.${field.name}`,
-      })),
-    )
-    .filter((item) => !existingFilterIds.has(`${item.tableId}::trigger::${item.fieldName}`));
-
-  // Compute all possible linked field filters
+  const filters = getFilters(exportedEntries, dataModel);
+  const allowedTables = getAllowedTables(filters, dataModel);
+  const triggerFieldItems = getTriggerFieldItems(filters, allowedTables, dataModel);
   const pivots = await dataModelRepository.listPivots({});
-  const linkedFieldItems: LinkPivotFieldItem[] = pivots
-    .filter((p): p is Extract<typeof p, { type: 'link' }> => p.type === 'link')
-    .flatMap((p) => {
-      const targetTable = dataModel.find((t) => t.id === p.pivotTableId);
-      if (!targetTable) return [];
-      return targetTable.fields.map((f) => ({
-        baseTableId: p.baseTableId,
-        pathLinks: p.pathLinks,
-        fieldName: f.name,
-        label: `${p.baseTable}->${p.pathLinks.join('->')}.${f.name}`,
-      }));
-    })
-    .filter((item) => {
-      const pathStr = item.pathLinks.join('->');
-      return !existingFilterIds.has(`${item.baseTableId}::ingested::${pathStr}.${item.fieldName}`);
-    });
+  const linkedFieldItems = getLinkedFieldItems(pivots, allowedTables, dataModel);
 
   return {
     filters,
