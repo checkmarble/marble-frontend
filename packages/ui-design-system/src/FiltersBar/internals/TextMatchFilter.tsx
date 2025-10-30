@@ -1,3 +1,4 @@
+import { CalloutV2 } from '@app-builder/components/Callout';
 import { useEffect, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { useI18n } from '../../contexts/I18nContext';
@@ -38,7 +39,11 @@ export function TextMatchFilter({
         <FilterItem.Trigger id={filter.name}>
           <span className={buttonState}>{filter.name}</span>
           {filter.selectedValue ? (
-            <span className="font-medium">in {localText.join(',')}</span>
+            <span className="font-medium">
+              {t('filters:ds.text_match_filter.selected_values', {
+                values: localText.join(','),
+              })}
+            </span>
           ) : null}
         </FilterItem.Trigger>
         {filter.unavailable ? (
@@ -57,6 +62,7 @@ export function TextMatchFilter({
       </FilterItem.Root>
       <FilterPopover.Content>
         <div className="p-4 flex flex-col gap-2 w-80">
+          <CalloutV2 className="m-4">{t('filters:ds.text_match_filter.description')}</CalloutV2>
           <Input
             placeholder={filter.placeholder}
             value={localText.join(',')}

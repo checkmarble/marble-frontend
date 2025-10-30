@@ -5,6 +5,8 @@
   "ds.chooseFilter.label": "Choose a filter",
   "ds.clear_dynamic_button.label": "Clear",
   "ds.noOptionsAvailable.label": "No options available",
+  "ds.text_match_filter.description": "Enter a comma-separated list of values to filter by. Leave empty to remove the filter.",
+  "ds.text_match_filter.selected_values": "in {{values}}",
   "filters": "filters",
   "new_filter": "new filter",
   "unavailable_filter_tooltip": "Filter is not available for selected range",

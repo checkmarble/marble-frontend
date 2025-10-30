@@ -5,6 +5,8 @@
   "ds.chooseFilter.label": "اختر فلتر",
   "ds.clear_dynamic_button.label": "مسح",
   "ds.noOptionsAvailable.label": "لا يوجد خيارات متاحة",
+  "ds.text_match_filter.description": "أدخل قائمة من القيم المفصولة بفواصل لتصفيتها. اتركها فارغة لإزالة التصفية.",
+  "ds.text_match_filter.selected_values": "يساوي {{values}}",
   "filters": "الفلاتر",
   "new_filter": "فلتر جدبد",
   "unavailable_filter_tooltip": "الفلتر غير متاح للمجال المحدد",

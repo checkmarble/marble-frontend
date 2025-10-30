@@ -5,6 +5,8 @@
   "ds.chooseFilter.label": "Choisir un filtre",
   "ds.clear_dynamic_button.label": "Effacer",
   "ds.noOptionsAvailable.label": "Aucune option disponible",
+  "ds.text_match_filter.description": "Entrez une liste de valeurs séparées par des virgules pour filtrer. Laissez vide pour supprimer le filtre.",
+  "ds.text_match_filter.selected_values": "vaut {{values}}",
   "filters": "filtres",
   "new_filter": "nouveau filtre",
   "unavailable_filter_tooltip": "Le filtre n'est pas disponible pour la plage de dates sélectionnée",
