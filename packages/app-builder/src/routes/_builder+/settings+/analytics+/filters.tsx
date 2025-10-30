@@ -248,8 +248,8 @@ export default function Filters() {
         <Modal.Root open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
           <Modal.Content size="medium">
             <Modal.Title>{t('settings:filters.delete_filter.title')}</Modal.Title>
-            <Modal.Description>
-              <div className="p-6 text-left">{t('settings:filters.delete_filter.content')}</div>
+            <Modal.Description className="p-6 text-left">
+              {t('settings:filters.delete_filter.content')}
             </Modal.Description>
             <Modal.Footer>
               <div className="bg-grey-98 flex justify-end gap-3 border-t p-4">
