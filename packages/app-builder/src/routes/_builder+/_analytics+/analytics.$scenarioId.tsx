@@ -328,7 +328,7 @@ export default function Analytics() {
         }}
       >
         <div className="overflow-y-auto">
-          <div className="flex flex-1 flex-col overflow-y-auto max-w-6xl p-v2-lg">
+          <div className="flex flex-col overflow-y-auto p-v2-lg">
             <div className="flex flex-row gap-v2-md mb-v2-lg">
               <div className="flex flex-row gap-v2-sm items-start min-h-[88px]">
                 <FiltersBar
