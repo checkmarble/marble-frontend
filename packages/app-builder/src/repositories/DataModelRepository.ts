@@ -9,7 +9,7 @@ import {
   adaptDataModel,
   adaptDataModelObject,
   adaptDataModelTableOptions,
-  adaptExportedFieldsDto,
+  adaptExportedFields,
   adaptPivot,
   adaptSetDataModelTableOptionBodyDto,
   adaptUpdateFieldDto,
@@ -130,7 +130,7 @@ export function makeGetDataModelRepository() {
       await marbleCoreApiClient.deleteAnnotation(annotationId);
     },
     updateDataModelTableExportedFields: async (tableId, body): Promise<ExportedFields> => {
-      return adaptExportedFieldsDto(
+      return adaptExportedFields(
         await marbleCoreApiClient.updateDataModelTableExportedFields(
           tableId,
           transformExportedFields(body),
@@ -138,7 +138,7 @@ export function makeGetDataModelRepository() {
       );
     },
     getDataModelTableExportedFields: async (tableId) => {
-      return adaptExportedFieldsDto(
+      return adaptExportedFields(
         await marbleCoreApiClient.getDataModelTableExportedFields(tableId),
       );
     },

@@ -656,7 +656,7 @@ export type ExportedFields = {
   ingestedDataFields: IngestedDataField[];
 };
 
-export const adaptExportedFieldsDto = (dto: ExportedFieldsDto): ExportedFields => ({
+export const adaptExportedFields = (dto: ExportedFieldsDto): ExportedFields => ({
   triggerObjectFields: dto.trigger_object_fields,
   ingestedDataFields: dto.ingested_data_fields.map((field) => ({
     path: field.Path,
