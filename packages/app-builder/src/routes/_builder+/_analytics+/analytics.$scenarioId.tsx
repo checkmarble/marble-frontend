@@ -303,13 +303,13 @@ export default function Analytics() {
       removable: false,
       instantUpdate: true,
     },
-    {
-      type: 'date-range-popover',
-      name: 'compareRange',
-      placeholder: t('analytics:filters.select_comparison_date_range.placeholder'),
-      removable: true,
-      instantUpdate: true,
-    },
+    // {
+    //   type: 'date-range-popover',
+    //   name: 'compareRange',
+    //   placeholder: t('analytics:filters.select_comparison_date_range.placeholder'),
+    //   removable: true,
+    //   instantUpdate: true,
+    // },
   ];
 
   return (
