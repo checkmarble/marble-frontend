@@ -24,9 +24,12 @@ export const useCreateFilterMutation = () => {
       tableId: string;
       payload: CreateExportedFieldPayload;
     }) => {
-      const endpoint = getRoute('/ressources/settings/data-model/tables/:tableId/exported-fields', {
-        tableId,
-      });
+      const endpoint = getRoute(
+        '/ressources/settings/data-model/tables/:tableId/exported-fields/update',
+        {
+          tableId,
+        },
+      );
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {

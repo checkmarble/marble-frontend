@@ -809,9 +809,14 @@ export const routes = [
         "file": "routes/ressources+/settings+/api-keys+/delete.tsx"
       },
       {
-        "id": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields",
-        "path": "ressources/settings/data-model/tables/:tableId/exported-fields",
-        "file": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields.ts"
+        "id": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields+/delete",
+        "path": "ressources/settings/data-model/tables/:tableId/exported-fields/delete",
+        "file": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields+/delete.ts"
+      },
+      {
+        "id": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields+/update",
+        "path": "ressources/settings/data-model/tables/:tableId/exported-fields/update",
+        "file": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields+/update.ts"
       },
       {
         "id": "routes/ressources+/settings+/inboxes+/create",

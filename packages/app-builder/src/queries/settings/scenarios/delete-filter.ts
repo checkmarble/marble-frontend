@@ -9,7 +9,7 @@ export const deleteExportedFieldSchema = z.union([
 ]);
 export type DeleteExportedFieldPayload = z.infer<typeof deleteExportedFieldSchema>;
 const endpoint = (tableId: string) =>
-  getRoute('/ressources/settings/data-model/tables/:tableId/exported-fields', {
+  getRoute('/ressources/settings/data-model/tables/:tableId/exported-fields/delete', {
     tableId,
   });
 
