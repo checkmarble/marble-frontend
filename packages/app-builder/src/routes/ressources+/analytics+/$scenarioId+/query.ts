@@ -1,46 +1,47 @@
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import { analyticsQuery } from '@app-builder/models/analytics';
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { type ActionFunctionArgs } from '@remix-run/node';
 import { z } from 'zod';
 
 const urlParamsSchema = z.object({
   scenarioId: z.uuidv4(),
 });
 
-export async function action({ params, request }: ActionFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { analytics } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const action = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function createAnalyticsQueryAction({ params, request, context }) {
+    try {
+      const urlParams = urlParamsSchema.parse(params);
 
-  try {
-    const urlParams = urlParamsSchema.parse(params);
+      const body = await request.json();
 
-    const body = await request.json();
-
-    const queryParams = analyticsQuery.parse({
-      ...body,
-      scenarioId: urlParams.scenarioId,
-    });
-
-    const [decisionOutcomesPerDay, ruleHitTable] = await Promise.all([
-      await analytics.getDecisionOutcomesPerDay({
-        ...queryParams,
+      const queryParams = analyticsQuery.parse({
+        ...body,
         scenarioId: urlParams.scenarioId,
-      }),
-      await analytics.getRuleHitTable({
-        ...queryParams,
-        scenarioId: urlParams.scenarioId,
-      }),
-    ]);
+      });
 
-    return Response.json({
-      decisionOutcomesPerDay,
-      ruleHitTable,
-    });
-  } catch (error) {
-    console.error('error in analytics query', error);
-    return Response.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+      const [decisionOutcomesPerDay, ruleHitTable] = await Promise.all([
+        await context.authInfo.analytics.getDecisionOutcomesPerDay({
+          ...queryParams,
+          scenarioId: urlParams.scenarioId,
+        }),
+        await context.authInfo.analytics.getRuleHitTable({
+          ...queryParams,
+          scenarioId: urlParams.scenarioId,
+        }),
+      ]);
+
+      return {
+        success: true,
+        data: {
+          decisionOutcomesPerDay,
+          ruleHitTable,
+        },
+      };
+    } catch (error) {
+      console.error('error in analytics query', error);
+      return { success: false, errors: 'Internal server error' };
+    }
+  },
+);

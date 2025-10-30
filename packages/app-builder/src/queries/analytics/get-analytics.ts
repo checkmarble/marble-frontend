@@ -26,9 +26,6 @@ export const useGetAnalytics = ({
     queryFn: async () => {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           scenarioVersion,
           range,
@@ -44,7 +41,7 @@ export const useGetAnalytics = ({
         return;
       }
 
-      return result as {
+      return result.data as {
         decisionOutcomesPerDay: DecisionOutcomesPerPeriod | null;
         ruleHitTable: RuleHitTableResponse[] | null;
       };
