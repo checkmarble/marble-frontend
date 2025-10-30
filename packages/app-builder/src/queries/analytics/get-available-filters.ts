@@ -34,7 +34,7 @@ export const useGetAvailableFilters = ({
       }
 
       if (!result.success) {
-        throw new Error(result.error ?? 'Failed to fetch available filters');
+        throw new Error(result.errors?.join(', ') ?? 'Failed to fetch available filters');
       }
 
       return result.data as AvailableFiltersResponse;
