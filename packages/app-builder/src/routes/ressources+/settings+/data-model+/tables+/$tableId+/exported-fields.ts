@@ -5,6 +5,7 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import { ExportedFields } from '@app-builder/models/data-model';
 import { ingestedDataFieldSchema } from '@app-builder/queries/settings/scenarios/schema';
+import invariant from 'tiny-invariant';
 import z from 'zod';
 
 const exportedFieldSchema = z.union([
@@ -35,9 +36,7 @@ export const action = createServerFn(
     const toastSession = await toastSessionService.getSession(request);
 
     const { tableId } = params;
-    if (!tableId) {
-      return { success: false, errors: ['Table ID is required'] };
-    }
+    invariant(tableId, 'Table ID is required');
 
     // * POST * //
     const body = await request.json();
