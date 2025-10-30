@@ -5,6 +5,7 @@ import {
   createExportedFieldSchema,
   useCreateFilterMutation,
 } from '@app-builder/queries/settings/scenarios/update-filter';
+import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -82,13 +83,7 @@ export function CreateFilter({
         </ButtonV2>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-          }}
-        >
+        <form onSubmit={handleSubmit(form)}>
           <Modal.Title>{t('settings:scenarios.filters.new_filter.title')}</Modal.Title>
           <div className="flex flex-col gap-6 p-6">
             <div className="flex flex-col gap-2">
