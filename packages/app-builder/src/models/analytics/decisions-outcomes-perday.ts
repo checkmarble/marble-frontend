@@ -3,12 +3,12 @@ import {
   addMonths,
   addWeeks,
   differenceInDays,
-  getDate,
-  getDay,
+  getISODay,
   getISOWeek,
   getMonth,
   isAfter,
   isBefore,
+  isFirstDayOfMonth,
   startOfMonth,
   startOfWeek,
 } from 'date-fns';
@@ -163,18 +163,34 @@ const getGridXValues = (
 ): string[] => {
   if (mode === 'day') {
     if (isBefore(end, addWeeks(start, 2))) {
-      return data.filter((day) => getDay(day.date) === 1).map((v) => v.date);
-    }
-
-    if (isBefore(end, addMonths(start, 3))) {
-      // return 1st and 15th of the month
+      // Less than 2 weeks
+      // Return first and last day, plus every 3 days
       return data
-        .filter((day) => getDate(day.date) === 1 || getDate(day.date) === 15)
+        .filter((_day, index) => index === 0 || index === data.length - 1 || index % 3 === 0)
         .map((v) => v.date);
     }
 
-    // return 1st of the month
-    return data.filter((day) => getDay(day.date) === 1).map((v) => v.date);
+    if (isBefore(end, addMonths(start, 3))) {
+      // Less than 3 months
+      // Return first and last day, plus every mondays except if within 3 days of limits
+      return data
+        .filter((day, index) => {
+          if (index === 0 || index === data.length - 1) return true;
+          if (getISODay(day.date) !== 1) return false;
+          return differenceInDays(day.date, start) > 2 && differenceInDays(end, day.date) > 2;
+        })
+        .map((v) => v.date);
+    }
+
+    // 3 months or more, (but not more than 6 months, because locked on frontend)
+    // Return first and last day, plus 1st of every month
+    return data
+      .filter((day, index) => {
+        if (index === 0 || index === data.length - 1) return true;
+        if (!isFirstDayOfMonth(day.date)) return false;
+        return differenceInDays(day.date, start) > 2 && differenceInDays(end, day.date) > 2;
+      })
+      .map((v) => v.date);
   }
 
   if (mode === 'week') {
