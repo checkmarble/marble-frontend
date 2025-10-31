@@ -1405,7 +1405,8 @@ export type UpsertAiSettingsDto = {
     kyc_enrichment_setting: KycEnrichmentSettingDto;
     case_review_setting: CaseReviewSettingDto;
 };
-export type TriggerFilterDto = {
+export type FieldFilterDto = {
+    source: "trigger_object";
     field: string;
     op: "=" | "!=" | ">" | ">=" | "<" | "<=" | "in";
     values: (string | number | boolean)[];
@@ -1417,7 +1418,7 @@ export type AnalyticsQueryDto = {
     start: string;
     end: string;
 } & {
-    trigger: TriggerFilterDto[];
+    fields: FieldFilterDto[];
 };
 export type DecisionOutcomesPerDayResponseDto = {
     date: string;
@@ -1432,6 +1433,14 @@ export type RuleHitTableResponseDto = {
     hit_ratio: number;
     pivot_count: number;
     pivot_ratio: number;
+};
+export type ScreeningHitTableResponseDto = {
+    config_id: string;
+    name: string;
+    execs: number;
+    hits: number;
+    hit_ratio: number;
+    avg_hits_per_screening: number;
 };
 export type AvailableFiltersRequestDto = {
     scenario_id: string;
@@ -5054,6 +5063,19 @@ export function getRuleHitTable(analyticsQueryDto: AnalyticsQueryDto, opts?: Oaz
         status: 404;
         data: string;
     }>("/analytics/query/rule_hit_table", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: analyticsQueryDto
+    })));
+}
+/**
+ * Get screening hits
+ */
+export function getScreeningHits(analyticsQueryDto: AnalyticsQueryDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScreeningHitTableResponseDto[];
+    }>("/analytics/query/screening_hits", oazapfts.json({
         ...opts,
         method: "POST",
         body: analyticsQueryDto

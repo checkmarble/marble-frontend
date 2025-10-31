@@ -60,6 +60,29 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/analytics/query/screening_hits:
+  post:
+    tags:
+      - Analytics
+    summary: Get screening hits
+    operationId: getScreeningHits
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AnalyticsQueryDto'
+    responses:
+      '200':
+        description: The screening hits
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScreeningHitTableResponseDto'
 /analytics/available-filters:
   post:
     tags:
@@ -108,13 +131,17 @@ components:
         end:
           type: string
           format: date-time
-    TriggerFilterDto:
+    FieldFilterDto:
       type: object
       required:
+        - source
         - field
         - op
         - values
       properties:
+        source:
+          type: string
+          enum: ['trigger_object']
         field:
           type: string
         op:
@@ -133,12 +160,12 @@ components:
         - $ref: '#/components/schemas/DateRangeFilterDto'
         - type: object
           required:
-            - trigger
+            - fields
           properties:
-            trigger:
+            fields:
               type: array
               items:
-                $ref: '#/components/schemas/TriggerFilterDto'
+                $ref: '#/components/schemas/FieldFilterDto'
     DecisionOutcomesPerDayResponseDto:
       type: object
       required:
@@ -177,6 +204,29 @@ components:
         pivot_count:
           type: integer
         pivot_ratio:
+          type: number
+    ScreeningHitTableResponseDto:
+      type: object
+      required:
+        - config_id
+        - name
+        - execs
+        - hits
+        - hit_ratio
+        - avg_hits_per_screening
+      properties:
+        config_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        execs:
+          type: integer
+        hits:
+          type: integer
+        hit_ratio:
+          type: number
+        avg_hits_per_screening:
           type: number
     AvailableFiltersRequestDto:
       type: object
