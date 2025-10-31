@@ -101,16 +101,15 @@ export const routes = [
             "file": "routes/_builder+/cases+/_index.tsx"
           },
           {
-            "id": "routes/_builder+/cases+/inboxes._layout",
+            "id": "routes/_builder+/cases+/inboxes.$inboxId",
+            "path": "cases/inboxes/:inboxId",
+            "file": "routes/_builder+/cases+/inboxes.$inboxId.tsx"
+          },
+          {
+            "id": "routes/_builder+/cases+/inboxes.index",
+            "index": true,
             "path": "cases/inboxes",
-            "file": "routes/_builder+/cases+/inboxes._layout.tsx",
-            "children": [
-              {
-                "id": "routes/_builder+/cases+/inboxes.$inboxId",
-                "path": ":inboxId",
-                "file": "routes/_builder+/cases+/inboxes.$inboxId.tsx"
-              }
-            ]
+            "file": "routes/_builder+/cases+/inboxes.index.tsx"
           },
           {
             "id": "routes/_builder+/data+/_layout",
@@ -445,6 +444,11 @@ export const routes = [
         "id": "routes/ressources+/cases+/$caseId.rules-by-pivot",
         "path": "ressources/cases/:caseId/rules-by-pivot",
         "file": "routes/ressources+/cases+/$caseId.rules-by-pivot.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/$inboxId.cases",
+        "path": "ressources/cases/:inboxId/cases",
+        "file": "routes/ressources+/cases+/$inboxId.cases.tsx"
       },
       {
         "id": "routes/ressources+/cases+/add-comment",

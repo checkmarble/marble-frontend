@@ -110,6 +110,7 @@ type SubMenuProps = Omit<RootProps, 'open' | 'onOpenChange'> & {
   arrow?: boolean;
   disabled?: boolean;
   persistOnSelect?: boolean;
+  withCombobox?: boolean;
 };
 
 function SubMenu({
@@ -120,6 +121,7 @@ function SubMenu({
   arrow,
   hover = true,
   disabled = false,
+  withCombobox = false,
   ...props
 }: SubMenuProps) {
   const [open, setOpen] = React.useState(false);
@@ -150,6 +152,7 @@ function SubMenu({
           sideOffset={12}
           className={cn('pointer-events-auto', className)}
         >
+          {withCombobox ? <Combobox /> : null}
           {children}
         </Content>
       </Root>

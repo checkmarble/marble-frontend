@@ -1,5 +1,6 @@
 {
   "clear_filters": "Clear filters",
+  "date_range.range_value": "From {{startDate}} to {{endDate}}",
   "ds.addNewFilter.label": "Add new filter",
   "ds.chooseFilter.label": "Choose a filter",
   "ds.noOptionsAvailable.label": "No options available",
