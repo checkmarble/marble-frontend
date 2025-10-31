@@ -103,67 +103,22 @@ export function NumberValueFilter({
                   {(() => {
                     const op = (filter.selectedValue?.operator ??
                       localValue.operator) as NumberOperator;
-                    switch (op) {
-                      case 'eq':
-                        return '=';
-                      case 'ne':
-                        return '≠';
-                      case 'gt':
-                        return '>';
-                      case 'gte':
-                        return '≥';
-                      case 'lt':
-                        return '<';
-                      case 'lte':
-                        return '≤';
-                    }
+                    return operatorDisplay.get(op) ?? '...';
                   })()}
                 </MenuCommand.SelectButton>
               </MenuCommand.Trigger>
               <MenuCommand.Content sameWidth>
                 <MenuCommand.List>
-                  <MenuCommand.Item
-                    value="eq"
-                    selected={localValue.operator === 'eq'}
-                    onSelect={(v) => onOperatorChange(v)}
-                  >
-                    =
-                  </MenuCommand.Item>
-                  <MenuCommand.Item
-                    value="ne"
-                    selected={localValue.operator === 'ne'}
-                    onSelect={() => onOperatorChange('ne')}
-                  >
-                    ≠
-                  </MenuCommand.Item>
-                  <MenuCommand.Item
-                    value="gt"
-                    selected={localValue.operator === 'gt'}
-                    onSelect={() => onOperatorChange('gt')}
-                  >
-                    {'>'}
-                  </MenuCommand.Item>
-                  <MenuCommand.Item
-                    value="gte"
-                    selected={localValue.operator === 'gte'}
-                    onSelect={() => onOperatorChange('gte')}
-                  >
-                    ≥
-                  </MenuCommand.Item>
-                  <MenuCommand.Item
-                    value="lt"
-                    selected={localValue.operator === 'lt'}
-                    onSelect={() => onOperatorChange('lt')}
-                  >
-                    {'<'}
-                  </MenuCommand.Item>
-                  <MenuCommand.Item
-                    value="lte"
-                    selected={localValue.operator === 'lte'}
-                    onSelect={() => onOperatorChange('lte')}
-                  >
-                    ≤
-                  </MenuCommand.Item>
+                  {Array.from(operatorDisplay.entries()).map(([op, display]) => (
+                    <MenuCommand.Item
+                      key={op}
+                      value={op}
+                      selected={localValue.operator === op}
+                      onSelect={(v) => onOperatorChange(op === 'eq' ? v : op)}
+                    >
+                      {display}
+                    </MenuCommand.Item>
+                  ))}
                 </MenuCommand.List>
               </MenuCommand.Content>
             </MenuCommand.Menu>
