@@ -59,6 +59,30 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
 
   const currentDataGroup = useMemo(() => data?.[groupDate], [data, groupDate]);
 
+  // Sanitize data to ensure all values are valid numbers
+  const sanitizedData = useMemo(() => {
+    const sourceData = percentage
+      ? (currentDataGroup?.data.ratio ?? [])
+      : (currentDataGroup?.data.absolute ?? []);
+
+    return sourceData.map((item) => {
+      const sanitized: DecisionsPerOutcome = {
+        ...item,
+        approve: Number.isFinite(item.approve) ? item.approve : 0,
+        decline: Number.isFinite(item.decline) ? item.decline : 0,
+        review: Number.isFinite(item.review) ? item.review : 0,
+        blockAndReview: Number.isFinite(item.blockAndReview) ? item.blockAndReview : 0,
+      };
+
+      // Only add total if it exists (absolute data has total, ratio doesn't)
+      if ('total' in item && typeof item.total === 'number') {
+        sanitized.total = Number.isFinite(item.total) ? item.total : 0;
+      }
+
+      return sanitized;
+    });
+  }, [percentage, currentDataGroup]);
+
   const isSameYear: boolean = getYear(data?.metadata.start!) === getYear(data?.metadata.end!);
 
   useEffect(() => {
@@ -277,11 +301,8 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
           </div>
           <div className="flex-1 w-full">
             <ResponsiveBar<DecisionsPerOutcome>
-              data={
-                percentage
-                  ? (currentDataGroup?.data.ratio ?? [])
-                  : (currentDataGroup?.data.absolute ?? [])
-              }
+              key={`${percentage ? 'percentage' : 'absolute'}-${groupDate}`}
+              data={sanitizedData}
               indexBy="date"
               enableLabel={false}
               keys={

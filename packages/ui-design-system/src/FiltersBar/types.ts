@@ -11,15 +11,29 @@ export interface BaseFilter<T> {
   isOpen?: boolean;
   isActive: boolean;
   onOpenChange?: (open: boolean) => void;
+  unavailable?: boolean;
 }
 
 export type NumberOperator = 'eq' | 'ne' | 'lt' | 'lte' | 'gt' | 'gte';
 
 export type TextOperator = 'in';
 
+// Number filters use a single ComparisonFilter with a single number value
+export interface NumberComparisonFilter {
+  operator: NumberOperator;
+  value: number;
+}
+
+// Text filters use an array of ComparisonFilter objects, each with a single string value
+export interface TextComparisonFilter {
+  operator: TextOperator;
+  value: string;
+}
+
+// Legacy type kept for backward compatibility - prefer NumberComparisonFilter or TextComparisonFilter
 export interface ComparisonFilter<T> {
   operator: NumberOperator | TextOperator;
-  value: T;
+  value: T | T[];
 }
 
 export interface StaticDateRangeFilterType {
@@ -39,11 +53,11 @@ export type DateRangeFilterType =
   | null
   | undefined;
 
-export interface NumberFilter extends BaseFilter<ComparisonFilter<number>> {
+export interface NumberFilter extends BaseFilter<NumberComparisonFilter> {
   type: 'number';
   operator: NumberOperator;
 }
-export interface TextFilter extends BaseFilter<ComparisonFilter<string>[]> {
+export interface TextFilter extends BaseFilter<TextComparisonFilter[]> {
   type: 'text';
   operator: TextOperator;
 }
@@ -79,11 +93,24 @@ export type Filter =
   | DateRangePopoverFilter
   | RadioFilter;
 
+// Exhaustive value type accepted/emitted by FiltersBar
+export type FilterValue =
+  | TextComparisonFilter[]
+  | NumberComparisonFilter
+  | boolean
+  | string
+  | string[]
+  | DateRangeFilterType
+  | null
+  | undefined;
+
 // New controlled API types
 export interface BaseFilterDescriptor {
   name: string;
   placeholder: string;
   removable?: boolean;
+  instantUpdate?: boolean;
+  unavailable?: boolean;
 }
 export interface NumberFilterDescriptor extends BaseFilterDescriptor {
   type: 'number';
@@ -125,17 +152,21 @@ export type FilterDescriptor =
   | RadioFilterDescriptor;
 
 export type FilterChange =
-  | { type: 'set'; name: string; value: unknown }
-  | { type: 'remove'; name: string }
-  | { type: 'toggleActive'; name: string; isActive: boolean };
+  | { type: 'set'; name: string; value: FilterValue }
+  | { type: 'remove'; name: string };
+
+export type FilterBarOptions = {
+  dynamicSkeletons?: {
+    enabled: boolean;
+    state: 'loading' | 'error' | 'success';
+  };
+};
 
 export interface FiltersBarProps {
   descriptors: FilterDescriptor[];
   dynamicDescriptors?: FilterDescriptor[];
-  value: Record<string, unknown>;
-  active?: string[];
-  onChange: (
-    change: FilterChange,
-    next: { value: Record<string, unknown>; active: string[] },
-  ) => void;
+  value: Record<string, FilterValue>;
+  onUpdate?: (next: { value: Record<string, FilterValue> }) => void;
+  onChange?: (change: FilterChange, next: { value: Record<string, FilterValue> }) => void;
+  options?: FilterBarOptions | null;
 }
