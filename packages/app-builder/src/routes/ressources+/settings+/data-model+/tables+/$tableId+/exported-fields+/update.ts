@@ -29,9 +29,6 @@ export const action = createServerFn(
     context,
     params,
   }): GetExportedFieldsRessourceActionResult {
-    if ('POST' !== request.method) {
-      return { success: false, errors: ['Method not allowed'] };
-    }
     const { toastSessionService } = context.services;
     const toastSession = await toastSessionService.getSession(request);
 
@@ -79,8 +76,7 @@ export const action = createServerFn(
       }
 
       return { success: false, errors: ['Invalid payload'] };
-    } catch (err) {
-      console.error(err);
+    } catch (_err) {
       setToastMessage(toastSession, {
         type: 'success',
         messageKey: 'common:errors.unknown',
