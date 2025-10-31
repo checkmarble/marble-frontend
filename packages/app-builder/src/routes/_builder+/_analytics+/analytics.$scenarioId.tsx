@@ -329,8 +329,8 @@ export default function Analytics() {
       >
         <div className="overflow-y-auto">
           <div className="flex flex-col overflow-y-auto p-v2-lg">
-            <div className="flex flex-row gap-v2-md mb-v2-lg">
-              <div className="flex flex-row gap-v2-sm items-start min-h-[88px]">
+            <div className="flex flex-row gap-v2-md mb-v2-lg w-full">
+              <div className="flex flex-row gap-v2-sm items-start min-h-[88px] w-full">
                 <FiltersBar
                   descriptors={descriptors}
                   dynamicDescriptors={dynamicDescriptors}

@@ -207,14 +207,6 @@ export function FiltersBar({
     [dynamicDescriptors, draftValue],
   );
 
-  // const filtersMap = useMemo(() => {
-  //   const hasDynamic = dynamicDescriptors.length > 0;
-  //   return new Map<FilterBarLevel, Filter[]>([
-  //     ['main', mainFilters],
-  //     ...(hasDynamic ? [['additional', additionalFilters] as const] : []),
-  //   ]);
-  // }, [mainFilters, additionalFilters, dynamicDescriptors]);
-
   type FilterWithPriority = Filter & {
     priority: 'main' | 'additional';
   };
@@ -256,16 +248,9 @@ export function FiltersBar({
         onChange({ type: 'remove', name }, { value: nextValue });
       }
     };
-    // const emitSingleChange = () => {
-    //   if (onSingleChange)
-    //     return onSingleChange({ type: 'set', name: '__apply__', value: null } as any, {
-    //       value: draftValue,
-    //     });
-    // };
+
     const emitUpdate = () => {
       if (onUpdate) return onUpdate({ value: draftValue });
-      // Fallback for backward compatibility
-      // onChange?.({ type: 'set', name: '__apply__', value: null } as any, { value: draftValue });
     };
     const getValue = (name: string) => draftValue[name];
     return { emitSet, emitRemove, emitUpdate, getValue };
@@ -324,11 +309,11 @@ export function FiltersBar({
   };
   return (
     <FiltersBarContext.Provider value={contextValue}>
-      <div className="flex flex-row gap-v2-md">
+      <div className="flex flex-row gap-v2-md w-full">
         <div className="flex flex-col gap-v2-md">
           {filtersByPriority.map((filters, priorityIndex) => (
-            <div key={priorityIndex} className="flex flex-row items-center gap-v2-md w-full">
-              <div className="flex flex-row items-center gap-v2-md">
+            <div key={priorityIndex} className="flex flex-row items-center w-full gap-v2-xl">
+              <div className="flex-1 flex flex-row items-center gap-v2-md min-w-0">
                 {filters.map((filter) =>
                   match(filter)
                     .with({ type: 'text' }, (textFilter) => (
@@ -377,7 +362,7 @@ export function FiltersBar({
               </div>
 
               {priorityIndex === 0 && (
-                <div className="flex flex-row items-start gap-v2-md ml-v2-lg">
+                <div className="basis-[15%] shrink-0 flex flex-row justify-end gap-v2-md mx-v2-xxl">
                   {dynamicDescriptors.length || options?.dynamicSkeletons?.enabled ? (
                     <ButtonV2
                       variant="secondary"
