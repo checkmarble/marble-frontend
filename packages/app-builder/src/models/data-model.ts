@@ -10,6 +10,7 @@ import {
   type DataModelDto,
   type DataModelObjectDto,
   type DataModelTableOptionsDto,
+  type ExportedFieldsDto,
   type FieldDto,
   FieldStatisticsDto,
   type GroupedAnnotations,
@@ -644,3 +645,29 @@ export function adaptCreateAnnotationDto(model: CreateAnnotationBody): CreateAnn
     )
     .exhaustive();
 }
+
+export type IngestedDataField = {
+  path: string[];
+  name: string;
+};
+
+export type ExportedFields = {
+  triggerObjectFields: string[];
+  ingestedDataFields: IngestedDataField[];
+};
+
+export const adaptExportedFields = (dto: ExportedFieldsDto): ExportedFields => ({
+  triggerObjectFields: dto.trigger_object_fields,
+  ingestedDataFields: dto.ingested_data_fields.map((field) => ({
+    path: field.Path,
+    name: field.Name,
+  })),
+});
+
+export const adaptExportedFieldsDto = (model: ExportedFields): ExportedFieldsDto => ({
+  trigger_object_fields: model.triggerObjectFields,
+  ingested_data_fields: model.ingestedDataFields.map((field) => ({
+    Path: field.path,
+    Name: field.name,
+  })),
+});

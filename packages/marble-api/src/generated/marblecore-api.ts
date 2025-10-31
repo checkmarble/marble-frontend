@@ -1116,6 +1116,14 @@ export type SetDataModelTableOptionsBodyDto = {
     /** List of field IDs in their display order */
     field_order: string[];
 };
+export type IngestedDataFieldDto = {
+    Path: string[];
+    Name: string;
+};
+export type ExportedFieldsDto = {
+    trigger_object_fields: string[];
+    ingested_data_fields: IngestedDataFieldDto[];
+};
 export type LegacyAnalyticsDto = {
     embedding_type: "global_dashboard" | "unknown_embedding_type";
     signed_embedding_url: string;
@@ -3746,6 +3754,48 @@ export function setDataModelTableOptions(tableId: string, setDataModelTableOptio
         ...opts,
         method: "POST",
         body: setDataModelTableOptionsBodyDto
+    })));
+}
+/**
+ * Get the exported fields on a table from the data model
+ */
+export function getDataModelTableExportedFields(tableId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ExportedFieldsDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/data-model/tables/${encodeURIComponent(tableId)}/exported-fields`, {
+        ...opts
+    }));
+}
+/**
+ * Update the exported fields on a table from the data model
+ */
+export function updateDataModelTableExportedFields(tableId: string, exportedFieldsDto: ExportedFieldsDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ExportedFieldsDto;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/data-model/tables/${encodeURIComponent(tableId)}/exported-fields`, oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: exportedFieldsDto
     })));
 }
 /**

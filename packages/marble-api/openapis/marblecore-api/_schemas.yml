@@ -342,7 +342,10 @@ DataModelTableOptionsDto:
   $ref: data-model.yml#/components/schemas/DataModelTableOptionsDto
 SetDataModelTableOptionsBodyDto:
   $ref: data-model.yml#/components/schemas/SetDataModelTableOptionsBodyDto
-
+IngestedDataFieldDto:
+  $ref: data-model.yml#/components/schemas/IngestedDataFieldDto
+ExportedFieldsDto:
+  $ref: data-model.yml#/components/schemas/ExportedFieldsDto
 # MISC
 
 LegacyAnalyticsDto:

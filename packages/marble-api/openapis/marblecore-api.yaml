@@ -259,6 +259,8 @@ paths:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1tables~1{tableId}~1navigation_options
   /data-model/tables/{tableId}/options:
     $ref: ./marblecore-api/data-model.yml#/~1data-model~1tables~1{tableId}~1options
+  /data-model/tables/{tableId}/exported-fields:
+    $ref: ./marblecore-api/data-model.yml#/~1data-model~1tables~1{tableId}~1exported-fields
 
   # MISC
 
