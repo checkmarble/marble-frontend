@@ -17,21 +17,14 @@ export function TextMatchFilter({
   buttonState: string;
 }) {
   const [isOpen, setOpen] = useState(false);
-  const toTextArray = (selected: unknown): string[] => {
-    const arr = selected as any[];
-    if (!Array.isArray(arr)) return [];
-    return arr.flatMap((item) => {
-      if (typeof item === 'string') return item;
-      const val = (item as any)?.value;
-      return Array.isArray(val) ? val : val != null ? [val] : [];
-    });
-  };
-  const [localText, setLocalText] = useState<string[]>(toTextArray(filter.selectedValue));
+  const [localText, setLocalText] = useState<string[]>(
+    filter.selectedValue?.map((item) => item.value) ?? [],
+  );
   const { emitSet, emitRemove } = useFiltersBarContext();
   const { t } = useI18n();
 
   useEffect(() => {
-    if (isOpen) setLocalText(toTextArray(filter.selectedValue));
+    if (isOpen) setLocalText(filter.selectedValue?.map((item) => item.value) ?? []);
   }, [isOpen, filter.selectedValue]);
   return (
     <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
