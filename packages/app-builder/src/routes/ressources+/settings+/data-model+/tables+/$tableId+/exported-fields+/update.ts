@@ -76,7 +76,7 @@ export const action = createServerFn(
       }
 
       return { success: false, errors: ['Invalid payload'] };
-    } catch (_err) {
+    } catch {
       setToastMessage(toastSession, {
         type: 'success',
         messageKey: 'common:errors.unknown',
