@@ -97,7 +97,7 @@ export async function action({ request }: LoaderFunctionArgs) {
   }
 }
 
-export default function Users() {
+export default function Scenarios() {
   const { t } = useTranslation(['settings', 'common']);
   const { organization, user, entitlements } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();

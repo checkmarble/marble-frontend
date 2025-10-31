@@ -296,6 +296,11 @@ export const routes = [
                 "file": "routes/_builder+/settings+/ai-case-review.tsx"
               },
               {
+                "id": "routes/_builder+/settings+/analytics+/filters",
+                "path": "analytics/filters",
+                "file": "routes/_builder+/settings+/analytics+/filters.tsx"
+              },
+              {
                 "id": "routes/_builder+/settings+/api-keys",
                 "path": "api-keys",
                 "file": "routes/_builder+/settings+/api-keys.tsx"
@@ -322,9 +327,10 @@ export const routes = [
                 "file": "routes/_builder+/settings+/ip-whitelisting.tsx"
               },
               {
-                "id": "routes/_builder+/settings+/scenarios",
+                "id": "routes/_builder+/settings+/scenarios+/_index",
+                "index": true,
                 "path": "scenarios",
-                "file": "routes/_builder+/settings+/scenarios.tsx"
+                "file": "routes/_builder+/settings+/scenarios+/_index.tsx"
               },
               {
                 "id": "routes/_builder+/settings+/tags",
@@ -801,6 +807,16 @@ export const routes = [
         "id": "routes/ressources+/settings+/api-keys+/delete",
         "path": "ressources/settings/api-keys/delete",
         "file": "routes/ressources+/settings+/api-keys+/delete.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields+/delete",
+        "path": "ressources/settings/data-model/tables/:tableId/exported-fields/delete",
+        "file": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields+/delete.ts"
+      },
+      {
+        "id": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields+/update",
+        "path": "ressources/settings/data-model/tables/:tableId/exported-fields/update",
+        "file": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields+/update.ts"
       },
       {
         "id": "routes/ressources+/settings+/inboxes+/create",

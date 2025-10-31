@@ -9,6 +9,8 @@ import {
   adaptDataModel,
   adaptDataModelObject,
   adaptDataModelTableOptions,
+  adaptExportedFields,
+  adaptExportedFieldsDto,
   adaptPivot,
   adaptSetDataModelTableOptionBodyDto,
   adaptUpdateFieldDto,
@@ -21,6 +23,7 @@ import {
   type DataModel,
   type DataModelObject,
   type DataModelTableOptions,
+  ExportedFields,
   type Pivot,
   type SetDataModelTableOptionsBody,
   type UpdateFieldInput,
@@ -45,6 +48,11 @@ export interface DataModelRepository {
   setDataModelTableOptions(tableId: string, body: SetDataModelTableOptionsBody): Promise<void>;
   createAnnotation(tableName: string, objectId: string, body: CreateAnnotationBody): Promise<void>;
   deleteAnnotation(annotationId: string): Promise<void>;
+  updateDataModelTableExportedFields(
+    tableId: string,
+    body: ExportedFields,
+  ): Promise<ExportedFields>;
+  getDataModelTableExportedFields(tableId: string): Promise<ExportedFields>;
 }
 
 export function makeGetDataModelRepository() {
@@ -120,6 +128,19 @@ export function makeGetDataModelRepository() {
     },
     deleteAnnotation: async (annotationId) => {
       await marbleCoreApiClient.deleteAnnotation(annotationId);
+    },
+    updateDataModelTableExportedFields: async (tableId, body): Promise<ExportedFields> => {
+      return adaptExportedFields(
+        await marbleCoreApiClient.updateDataModelTableExportedFields(
+          tableId,
+          adaptExportedFieldsDto(body),
+        ),
+      );
+    },
+    getDataModelTableExportedFields: async (tableId) => {
+      return adaptExportedFields(
+        await marbleCoreApiClient.getDataModelTableExportedFields(tableId),
+      );
     },
   });
 }

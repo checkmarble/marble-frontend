@@ -46,6 +46,9 @@ export function getSettingsAccess(
       icon: 'world',
       settings: [
         ...(isAdmin(user) ? [{ title: 'scenarios', to: getRoute('/settings/scenarios') }] : []),
+        ...(isAdmin(user)
+          ? [{ title: 'filters-settings', to: getRoute('/settings/analytics/filters') }]
+          : []),
       ],
     },
     case_manager: {
