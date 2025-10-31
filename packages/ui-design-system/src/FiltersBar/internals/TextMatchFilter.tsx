@@ -1,5 +1,5 @@
 import { CalloutV2 } from '@app-builder/components/Callout';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Icon } from 'ui-icons';
 import { ButtonV2 } from '../../Button/Button';
 import { useI18n } from '../../contexts/I18nContext';
@@ -35,9 +35,6 @@ export function TextMatchFilter({
     setOpen(false);
   };
 
-  useEffect(() => {
-    if (isOpen) setLocalText(filter.selectedValue?.map((item) => item.value) ?? []);
-  }, [isOpen, filter.selectedValue]);
   return (
     <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
       <FilterItem.Root>
