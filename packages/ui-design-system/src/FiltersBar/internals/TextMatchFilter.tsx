@@ -1,10 +1,10 @@
 import { CalloutV2 } from '@app-builder/components/Callout';
 import { useEffect, useState } from 'react';
 import { Icon } from 'ui-icons';
+import { ButtonV2 } from '../../Button/Button';
 import { useI18n } from '../../contexts/I18nContext';
 import { Input } from '../../Input/Input';
 import { Tooltip } from '../../Tooltip/Tooltip';
-import { cn } from '../../utils';
 import { type TextFilter } from '../types';
 import { FilterItem, FilterPopover } from './FilterPopover';
 import { useFiltersBarContext } from './FiltersBarContext';
@@ -22,6 +22,18 @@ export function TextMatchFilter({
   );
   const { emitSet, emitRemove } = useFiltersBarContext();
   const { t } = useI18n();
+
+  const onValidate = () => {
+    const value = localText.map((v) => v.trim()).filter((v) => v.length > 0);
+    if (value.length === 0) {
+      emitRemove(filter.name);
+      setOpen(false);
+      return;
+    }
+    const committed = value.map((v) => ({ operator: filter.operator, value: v }));
+    emitSet(filter.name, committed);
+    setOpen(false);
+  };
 
   useEffect(() => {
     if (isOpen) setLocalText(filter.selectedValue?.map((item) => item.value) ?? []);
@@ -60,30 +72,17 @@ export function TextMatchFilter({
             placeholder={filter.placeholder}
             value={localText.join(',')}
             onChange={(e) => setLocalText(e.currentTarget.value.split(','))}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                onValidate();
+              }
+            }}
           />
-          <div className="flex justify-end">
-            <button
-              className={cn('text-s bg-purple-65 text-white rounded-sm px-3 py-1.5 outline-hidden')}
-              onClick={() => {
-                const value = localText.map((v) => v.trim()).filter((v) => v.length > 0);
-                if (value.length === 0) {
-                  emitRemove(filter.name);
-                  setOpen(false);
-                  return;
-                }
-                const committed = value.map((v) => ({ operator: filter.operator, value: v }));
-                emitSet(filter.name, committed);
-                // const committed = localText
-                //   .map((v) => v.trim())
-                //   .filter((v) => v.length > 0)
-                //   .map((v) => ({ operator: 'in' as const, value: v }));
-                // const payload = committed.length ? committed : null;
-                // emitSet(filter.name, payload);
-                setOpen(false);
-              }}
-            >
-              Done
-            </button>
+          <div className="flex justify-end gap-v2-xs">
+            <ButtonV2 variant="secondary" onClick={() => setLocalText([])}>
+              {t('filters:ds.clear_button.label')}
+            </ButtonV2>
+            <ButtonV2 onClick={onValidate}>{t('filters:ds.apply_button.label')}</ButtonV2>
           </div>
         </div>
       </FilterPopover.Content>
