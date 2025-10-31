@@ -14,6 +14,12 @@ export const createExportedFieldSchema = z.union([
 ]);
 export type CreateExportedFieldPayload = z.infer<typeof createExportedFieldSchema>;
 
+const getEndpoint = (tableId: string) => {
+  return getRoute('/ressources/settings/data-model/tables/:tableId/exported-fields/update', {
+    tableId,
+  });
+};
+
 export const useCreateFilterMutation = () => {
   return useMutation({
     mutationKey: ['settings', 'data-model', 'exported-fields', 'create'],
@@ -24,13 +30,7 @@ export const useCreateFilterMutation = () => {
       tableId: string;
       payload: CreateExportedFieldPayload;
     }) => {
-      const endpoint = getRoute(
-        '/ressources/settings/data-model/tables/:tableId/exported-fields/update',
-        {
-          tableId,
-        },
-      );
-      const response = await fetch(endpoint, {
+      const response = await fetch(getEndpoint(tableId), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
