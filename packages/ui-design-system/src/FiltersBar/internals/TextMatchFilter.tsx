@@ -17,14 +17,15 @@ export function TextMatchFilter({
   buttonState: string;
 }) {
   const [isOpen, setOpen] = useState(false);
-  const [localText, setLocalText] = useState<string[]>(
-    filter.selectedValue?.map((item) => item.value) ?? [],
-  );
+  const [localText, setLocalText] = useState<string>(filter.selectedValue?.join(',') ?? '');
   const { emitSet, emitRemove } = useFiltersBarContext();
   const { t } = useI18n();
 
-  const onValidate = () => {
-    const value = localText.map((v) => v.trim()).filter((v) => v.length > 0);
+  const validate = () => {
+    const value = localText
+      .split(',')
+      .map((v) => v.trim())
+      .filter((v) => v.length > 0);
     if (value.length === 0) {
       emitRemove(filter.name);
       setOpen(false);
@@ -43,7 +44,7 @@ export function TextMatchFilter({
           {filter.selectedValue ? (
             <span className="font-medium">
               {t('filters:ds.text_match_filter.selected_values', {
-                values: localText.join(','),
+                values: filter.selectedValue.map((item) => item.value).join(', '),
               })}
             </span>
           ) : null}
@@ -67,19 +68,26 @@ export function TextMatchFilter({
           <CalloutV2 className="m-4">{t('filters:ds.text_match_filter.description')}</CalloutV2>
           <Input
             placeholder={filter.placeholder}
-            value={localText.join(',')}
-            onChange={(e) => setLocalText(e.currentTarget.value.split(','))}
+            value={localText}
+            onChange={(e) => setLocalText(e.currentTarget.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                onValidate();
+                validate();
               }
             }}
           />
           <div className="flex justify-end gap-v2-xs">
-            <ButtonV2 variant="secondary" onClick={() => setLocalText([])}>
+            <ButtonV2
+              variant="secondary"
+              onClick={() => {
+                setLocalText('');
+                emitRemove(filter.name);
+                setOpen(false);
+              }}
+            >
               {t('filters:ds.clear_button.label')}
             </ButtonV2>
-            <ButtonV2 onClick={onValidate}>{t('filters:ds.apply_button.label')}</ButtonV2>
+            <ButtonV2 onClick={validate}>{t('filters:ds.apply_button.label')}</ButtonV2>
           </div>
         </div>
       </FilterPopover.Content>
