@@ -22,11 +22,11 @@ export const action = createServerFn(
       });
 
       const [decisionOutcomesPerDay, ruleHitTable] = await Promise.all([
-        await context.authInfo.analytics.getDecisionOutcomesPerDay({
+        context.authInfo.analytics.getDecisionOutcomesPerDay({
           ...queryParams,
           scenarioId: urlParams.scenarioId,
         }),
-        await context.authInfo.analytics.getRuleHitTable({
+        context.authInfo.analytics.getRuleHitTable({
           ...queryParams,
           scenarioId: urlParams.scenarioId,
         }),
