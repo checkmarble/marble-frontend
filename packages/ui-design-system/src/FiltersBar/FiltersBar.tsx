@@ -333,27 +333,6 @@ export function FiltersBar({
                     .otherwise(() => <div key={filter.name}>Filter not implemented yet</div>),
                 )}
               </div>
-
-              {priorityIndex === 0 && (
-                <div className="basis-[15%] shrink-0 flex flex-row justify-end gap-v2-md mx-v2-xxl">
-                  {dynamicDescriptors.length || options?.dynamicSkeletons?.enabled ? (
-                    <ButtonV2
-                      variant="secondary"
-                      onClick={clearDynamicFilters}
-                      disabled={!hasAnyDynamicSelected}
-                    >
-                      {t('filters:ds.clear_dynamic_button.label', { defaultValue: 'Clear' })}
-                    </ButtonV2>
-                  ) : null}
-                  <ButtonV2
-                    variant="primary"
-                    onClick={() => contextValue.emitUpdate()}
-                    disabled={!hasChanges}
-                  >
-                    {t('filters:ds.apply_button.label', { defaultValue: 'Apply' })}
-                  </ButtonV2>
-                </div>
-              )}
             </div>
           ))}
 
@@ -367,6 +346,24 @@ export function FiltersBar({
               </div>
             </div>
           )}
+          <div className="flex flex-row justify-start gap-v2-md">
+            {dynamicDescriptors.length || options?.dynamicSkeletons?.enabled ? (
+              <ButtonV2
+                variant="secondary"
+                onClick={clearDynamicFilters}
+                disabled={!hasAnyDynamicSelected}
+              >
+                {t('filters:ds.clear_dynamic_button.label', { defaultValue: 'Clear' })}
+              </ButtonV2>
+            ) : null}
+            <ButtonV2
+              variant="primary"
+              onClick={() => contextValue.emitUpdate()}
+              disabled={!hasChanges}
+            >
+              {t('filters:ds.apply_button.label', { defaultValue: 'Apply' })}
+            </ButtonV2>
+          </div>
         </div>
       </div>
     </FiltersBarContext.Provider>
