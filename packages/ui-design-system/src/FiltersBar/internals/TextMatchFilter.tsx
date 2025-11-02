@@ -1,5 +1,5 @@
 import { CalloutV2 } from '@app-builder/components/Callout';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { ButtonV2 } from '../../Button/Button';
 import { useI18n } from '../../contexts/I18nContext';
@@ -17,9 +17,13 @@ export function TextMatchFilter({
   buttonState: string;
 }) {
   const [isOpen, setOpen] = useState(false);
-  const [localText, setLocalText] = useState<string>(filter.selectedValue?.join(',') ?? '');
+  const [localText, setLocalText] = useState<string>(filter.selectedValue?.value?.join(',') ?? '');
   const { emitSet, emitRemove } = useFiltersBarContext();
   const { t } = useI18n();
+
+  useEffect(() => {
+    setLocalText(filter.selectedValue?.value?.join(',') ?? '');
+  }, [filter.selectedValue]);
 
   const validate = () => {
     const value = localText
@@ -31,7 +35,7 @@ export function TextMatchFilter({
       setOpen(false);
       return;
     }
-    const committed = value.map((v) => ({ operator: filter.operator, value: v }));
+    const committed = { op: filter.op, value };
     emitSet(filter.name, committed);
     setOpen(false);
   };
@@ -41,10 +45,10 @@ export function TextMatchFilter({
       <FilterItem.Root>
         <FilterItem.Trigger id={filter.name}>
           <span className={buttonState}>{filter.name}</span>
-          {filter.selectedValue ? (
+          {filter.selectedValue?.value && filter.selectedValue.value.length > 0 ? (
             <span className="font-medium">
               {t('filters:ds.text_match_filter.selected_values', {
-                values: filter.selectedValue.map((item) => item.value).join(', '),
+                values: filter.selectedValue.value.join(', '),
               })}
             </span>
           ) : null}

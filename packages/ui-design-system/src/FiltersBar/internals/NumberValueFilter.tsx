@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Icon } from 'ui-icons';
+import { ButtonV2 } from '../../Button/Button';
 import { useI18n } from '../../contexts/I18nContext';
 import { Input } from '../../Input/Input';
 import { MenuCommand } from '../../MenuCommand/MenuCommand';
 import { Tooltip } from '../../Tooltip/Tooltip';
-import { cn } from '../../utils';
 import { NUMBER_OPERATORS } from '../FiltersBar';
 import { type NumberComparisonFilter, type NumberFilter, NumberOperator } from '../types';
 import { FilterItem, FilterPopover } from './FilterPopover';
@@ -23,10 +23,10 @@ export function NumberValueFilter({
   const [opSelectIsOpen, setOpSelectIsOpen] = useState(false);
   const [localValue, setLocalValue] = useState<NumberComparisonFilter>(
     (() => {
-      const sv = filter.selectedValue ?? { operator: 'eq', value: 0 };
-      const raw = (sv as any).value as unknown;
+      const sv = filter.selectedValue ?? { op: '=', value: 0 };
+      const raw = sv.value;
       const num = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
-      return { operator: (sv as any).operator ?? 'eq', value: Number.isNaN(num) ? 0 : num };
+      return { op: sv.op ?? '=', value: Number.isNaN(num) ? 0 : num };
     })(),
   );
   const [inputValue, setInputValue] = useState<string>(
@@ -35,33 +35,40 @@ export function NumberValueFilter({
   const { emitSet, emitRemove } = useFiltersBarContext();
   useEffect(() => {
     if (isOpen) {
-      const sv = filter.selectedValue ?? { operator: 'eq', value: 0 };
-      const raw = (sv as any).value as unknown;
+      const sv = filter.selectedValue ?? { op: '=', value: 0 };
+      const raw = sv.value;
       const num = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
       const newValue = Number.isNaN(num) ? 0 : num;
       setLocalValue({
-        operator: (sv as any).operator ?? 'eq',
+        op: sv.op ?? '=',
         value: newValue,
       });
       setInputValue(newValue === 0 ? '' : String(newValue));
     }
   }, [isOpen, filter.selectedValue]);
 
-  const operatorDisplay: Map<NumberOperator, string> = new Map([
-    ['eq', '='],
-    ['ne', '≠'],
-    ['gt', '>'],
-    ['gte', '≥'],
-    ['lt', '<'],
-    ['lte', '≤'],
-  ]);
   const onOperatorChange = (operator: string) => {
     // Check if operator is a valid NumberOperator value
     if (!NUMBER_OPERATORS.has(operator as NumberOperator))
       throw new Error(`Invalid operator: ${operator}`);
 
-    setLocalValue({ operator: operator as NumberOperator, value: localValue.value });
+    setLocalValue({ op: operator as NumberOperator, value: localValue.value });
     setOpSelectIsOpen(false);
+  };
+
+  const validate = () => {
+    const trimmed = inputValue.trim();
+    const n = trimmed === '' ? NaN : Number(trimmed);
+    const payload = Number.isNaN(n) ? null : { op: localValue.op, value: n };
+    emitSet(filter.name, payload);
+    setOpen(false);
+  };
+
+  const clear = () => {
+    emitRemove(filter.name);
+    setLocalValue({ op: '=', value: 0 });
+    setInputValue('');
+    setOpen(false);
   };
   return (
     <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
@@ -69,12 +76,12 @@ export function NumberValueFilter({
         <FilterItem.Trigger>
           <span className={buttonState}>{filter.name}</span> {(() => {
             if (!filter.selectedValue) return null;
-            const op = (filter.selectedValue?.operator ?? localValue.operator) as NumberOperator;
+            const op = (filter.selectedValue?.op ?? localValue.op) as NumberOperator;
             const raw = (filter.selectedValue as any)?.value ?? localValue.value;
             const val = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
             return (
               <>
-                {operatorDisplay.get(op)} {val}
+                {op} {val}
               </>
             );
           })()}
@@ -100,23 +107,19 @@ export function NumberValueFilter({
             <MenuCommand.Menu open={opSelectIsOpen} onOpenChange={setOpSelectIsOpen}>
               <MenuCommand.Trigger>
                 <MenuCommand.SelectButton className="w-v2-s">
-                  {(() => {
-                    const op = (filter.selectedValue?.operator ??
-                      localValue.operator) as NumberOperator;
-                    return operatorDisplay.get(op) ?? '...';
-                  })()}
+                  {localValue.op}
                 </MenuCommand.SelectButton>
               </MenuCommand.Trigger>
               <MenuCommand.Content sameWidth>
                 <MenuCommand.List>
-                  {Array.from(operatorDisplay.entries()).map(([op, display]) => (
+                  {Array.from(NUMBER_OPERATORS).map((op) => (
                     <MenuCommand.Item
                       key={op}
                       value={op}
-                      selected={localValue.operator === op}
-                      onSelect={(v) => onOperatorChange(op === 'eq' ? v : op)}
+                      selected={localValue.op === op}
+                      onSelect={() => onOperatorChange(op)}
                     >
-                      {display}
+                      {op}
                     </MenuCommand.Item>
                   ))}
                 </MenuCommand.List>
@@ -129,29 +132,24 @@ export function NumberValueFilter({
               onChange={(e) => {
                 const stringValue = e.currentTarget.value;
                 setInputValue(stringValue);
-                const numValue = stringValue === '' ? 0 : Number(stringValue);
+                const numValue = Number(stringValue);
                 setLocalValue({
-                  operator: localValue.operator,
-                  value: Number.isNaN(numValue) ? 0 : numValue,
+                  op: localValue.op,
+                  value: stringValue === '' || Number.isNaN(numValue) ? 0 : numValue,
                 });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  validate();
+                }
               }}
             />
           </div>
-          <div className="flex justify-end">
-            <button
-              className={cn('text-s bg-purple-65 text-white rounded-sm px-3 py-1.5 outline-hidden')}
-              onClick={() => {
-                const trimmed = inputValue.trim();
-                const n = trimmed === '' ? NaN : Number(trimmed);
-                const payload = Number.isNaN(n)
-                  ? null
-                  : { operator: localValue.operator, value: n };
-                emitSet(filter.name, payload);
-                setOpen(false);
-              }}
-            >
-              Done
-            </button>
+          <div className="flex justify-end gap-v2-xs">
+            <ButtonV2 variant="secondary" onClick={clear}>
+              {t('filters:ds.clear_button.label')}
+            </ButtonV2>
+            <ButtonV2 onClick={validate}>{t('filters:ds.apply_button.label')}</ButtonV2>
           </div>
         </div>
       </FilterPopover.Content>

@@ -12,8 +12,8 @@ const Story: Meta<typeof FiltersBar> = {
 export default Story;
 
 const mainDescriptors: FilterDescriptor[] = [
-  { type: 'text', name: 'search', placeholder: 'Search terms', operator: 'in' },
-  { type: 'number', name: 'amount', placeholder: 'Amount', operator: 'eq' },
+  { type: 'text', name: 'search', placeholder: 'Search terms', op: 'in' },
+  { type: 'number', name: 'amount', placeholder: 'Amount', op: '=' },
   { type: 'boolean', name: 'isActive', placeholder: 'Active' },
   {
     type: 'select',
@@ -25,7 +25,7 @@ const mainDescriptors: FilterDescriptor[] = [
 
 const dynamicDescriptors: FilterDescriptor[] = [
   { type: 'date-range-popover', name: 'createdAt', placeholder: 'Created between' },
-  { type: 'text', name: 'tags', placeholder: 'Tags', operator: 'in' },
+  { type: 'text', name: 'tags', placeholder: 'Tags', op: 'in' },
   { type: 'boolean', name: 'archived', placeholder: 'Archived' },
   {
     type: 'select',
@@ -70,10 +70,10 @@ export const WithInitialActive: StoryFn<typeof FiltersBar> = (args) => {
 export const PrefilledValues: StoryFn<typeof FiltersBar> = (args) => {
   const [value, setValue] = useState<Record<string, FilterValue>>({
     search: [
-      { operator: 'in', value: 'fraud' },
-      { operator: 'in', value: 'chargeback' },
+      { op: 'in', value: 'fraud' },
+      { op: 'in', value: 'chargeback' },
     ],
-    amount: { operator: 'gte', value: 1000 },
+    amount: { op: '>=', value: 1000 },
     isActive: true,
     status: 'approved',
     createdAt: { type: 'dynamic', fromNow: '-P30D' },

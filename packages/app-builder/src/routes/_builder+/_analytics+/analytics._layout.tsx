@@ -35,8 +35,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     return redirect(getRoute('/analytics-legacy'));
   }
 
-  console.log('analytics/_layout loader...');
-
   if (!params['scenarioId']) {
     const scenarioId = (await scenario.listScenarios())[0]?.id ?? null;
 
@@ -48,7 +46,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         : getRoute('/scenarios'),
     );
   }
-
   return null;
 }
 

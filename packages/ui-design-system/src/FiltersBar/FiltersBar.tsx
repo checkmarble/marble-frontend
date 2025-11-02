@@ -31,12 +31,13 @@ import {
 } from './types';
 
 export const NUMBER_OPERATORS: Set<NumberOperator> = new Set([
-  'eq',
-  'ne',
-  'lt',
-  'lte',
-  'gt',
-  'gte',
+  '=',
+  '!=',
+  '>',
+  '>=',
+  '<',
+  '<=',
+  'in',
 ]);
 export const TEXT_OPERATORS: Set<TextOperator> = new Set(['in']);
 
@@ -62,74 +63,46 @@ export function FiltersBar({
   ): Filter => {
     // Normalize selectedValue shape based on descriptor type and possible trigger-shaped values
     const selectedValue = (() => {
-      if (d.type === 'number') {
-        if (value && typeof value === 'object' && 'op' in (value as any)) {
-          const raw = (value as any).value as unknown;
-          if (Array.isArray(raw)) {
-            if (raw.length === 0) return null;
-            const num = Number((raw as number[])[0]);
+      switch (d.type) {
+        case 'number': {
+          const sv = (value as NumberComparisonFilter | null) ?? null;
+          if (sv && typeof sv === 'object' && 'op' in sv && 'value' in sv) {
+            const raw = sv.value as unknown;
+            if (Array.isArray(raw)) {
+              if (raw.length === 0) return null;
+              const num = Number((raw as number[])[0]);
+              if (Number.isNaN(num)) return null;
+              return {
+                op: (sv.op ?? (d as NumberFilterDescriptor).op) as NumberOperator,
+                value: num,
+              } as NumberComparisonFilter;
+            }
+            const num = Number(raw as number);
             if (Number.isNaN(num)) return null;
             return {
-              operator: (d as NumberFilterDescriptor).operator,
+              op: (sv.op ?? (d as NumberFilterDescriptor).op) as NumberOperator,
               value: num,
             } as NumberComparisonFilter;
           }
-          const num = Number(raw as number);
-          if (Number.isNaN(num)) return null;
-          return {
-            operator: (d as NumberFilterDescriptor).operator,
-            value: num,
-          } as NumberComparisonFilter;
+          return sv;
         }
-        const sv = (value as NumberComparisonFilter | null) ?? null;
-        if (sv && typeof sv === 'object' && 'operator' in sv && 'value' in sv) {
-          const raw = sv.value as unknown;
-          if (Array.isArray(raw)) {
-            if (raw.length === 0) return null;
-            const num = Number((raw as number[])[0]);
-            if (Number.isNaN(num)) return null;
-            return {
-              operator: (sv.operator ?? (d as NumberFilterDescriptor).operator) as NumberOperator,
-              value: num,
-            } as NumberComparisonFilter;
-          }
-          const num = Number(raw as number);
-          if (Number.isNaN(num)) return null;
-          return {
-            operator: (sv.operator ?? (d as NumberFilterDescriptor).operator) as NumberOperator,
-            value: num,
-          } as NumberComparisonFilter;
+
+        case 'text': {
+          const sv = (value as TextComparisonFilter | null) ?? null;
+          if (!sv || typeof sv !== 'object' || !('op' in sv) || !('value' in sv)) return null;
+          const op = (sv.op ?? (d as TextFilterDescriptor).op) as TextOperator;
+          const v = sv.value as unknown;
+          const arr = Array.isArray(v) ? (v as string[]) : [v as string];
+          const filtered = arr.filter((val) => val != null && String(val).length > 0);
+          return filtered.length > 0 ? { op, value: filtered } : null;
         }
-        return sv;
+
+        case 'date-range-popover':
+          return (value as DateRangePopoverFilter['selectedValue']) ?? null;
+
+        default:
+          return ((value as { value?: unknown })?.value ?? value ?? null) as unknown;
       }
-      if (d.type === 'text') {
-        if (value && typeof value === 'object' && 'op' in (value as any)) {
-          const raw = (value as any).value as unknown;
-          const arr = Array.isArray(raw) ? (raw as string[]) : [raw as string];
-          return arr.map((v) => ({
-            operator: (d as TextFilterDescriptor).operator,
-            value: v,
-          })) as TextComparisonFilter[];
-        }
-        const sv = (value as TextComparisonFilter[] | null) ?? null;
-        if (!sv || !Array.isArray(sv)) return null;
-        const flattened = sv.flatMap((item) => {
-          if (!item || typeof item !== 'object') return [];
-          const op = (item.operator ?? (d as TextFilterDescriptor).operator) as TextOperator;
-          const v = item.value as unknown;
-          if (Array.isArray(v)) {
-            return (v as string[]).map(
-              (one) => ({ operator: op, value: one }) as TextComparisonFilter,
-            );
-          }
-          return [{ operator: op, value: v as string } as TextComparisonFilter];
-        });
-        return flattened;
-      }
-      if (d.type === 'date-range-popover') {
-        return (value as DateRangePopoverFilter['selectedValue']) ?? null;
-      }
-      return ((value as { value?: unknown })?.value ?? value ?? null) as unknown;
     })();
     const commonProps = {
       name: d.name,
@@ -144,14 +117,14 @@ export function FiltersBar({
           ...commonProps,
           type: 'text' as const,
           selectedValue: (selectedValue as TextFilter['selectedValue']) ?? null,
-          operator: (d as TextFilterDescriptor).operator,
+          op: (d as TextFilterDescriptor).op,
         } as Filter;
       case 'number':
         return {
           ...commonProps,
           type: 'number' as const,
           selectedValue: (selectedValue as NumberFilter['selectedValue']) ?? null,
-          operator: (d as NumberFilterDescriptor).operator,
+          op: (d as NumberFilterDescriptor).op,
         } as Filter;
       case 'boolean':
         return {
@@ -274,12 +247,8 @@ export function FiltersBar({
     const isSelected = (f: Filter): boolean => {
       switch (f.type) {
         case 'text': {
-          const arr = f.selectedValue as unknown[] | null;
-          if (!Array.isArray(arr)) return false;
-          return arr.some((item) => {
-            const v = (item as any)?.value;
-            return Array.isArray(v) ? v.length > 0 : v != null && String(v).length > 0;
-          });
+          const sv = f.selectedValue as TextComparisonFilter | null;
+          return sv != null && Array.isArray(sv.value) && sv.value.length > 0;
         }
         case 'number':
           return f.selectedValue != null;
@@ -321,7 +290,11 @@ export function FiltersBar({
                         filter={textFilter}
                         key={filter.name}
                         buttonState={buttonState({
-                          state: textFilter.selectedValue ? 'enabled' : 'disabled',
+                          state:
+                            textFilter.selectedValue?.value &&
+                            textFilter.selectedValue.value.length > 0
+                              ? 'enabled'
+                              : 'disabled',
                         })}
                       />
                     ))

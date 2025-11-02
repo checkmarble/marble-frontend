@@ -14,25 +14,25 @@ export interface BaseFilter<T> {
   unavailable?: boolean;
 }
 
-export type NumberOperator = 'eq' | 'ne' | 'lt' | 'lte' | 'gt' | 'gte';
+export type NumberOperator = '=' | '!=' | '>' | '>=' | '<' | '<=' | 'in';
 
 export type TextOperator = 'in';
 
 // Number filters use a single ComparisonFilter with a single number value
 export interface NumberComparisonFilter {
-  operator: NumberOperator;
+  op: NumberOperator;
   value: number;
 }
 
-// Text filters use an array of ComparisonFilter objects, each with a single string value
+// Text filters use a single ComparisonFilter object with an array of string values
 export interface TextComparisonFilter {
-  operator: TextOperator;
-  value: string;
+  op: TextOperator;
+  value: string[];
 }
 
 // Legacy type kept for backward compatibility - prefer NumberComparisonFilter or TextComparisonFilter
 export interface ComparisonFilter<T> {
-  operator: NumberOperator | TextOperator;
+  op: NumberOperator | TextOperator;
   value: T | T[];
 }
 
@@ -55,11 +55,11 @@ export type DateRangeFilterType =
 
 export interface NumberFilter extends BaseFilter<NumberComparisonFilter> {
   type: 'number';
-  operator: NumberOperator;
+  op: NumberOperator;
 }
-export interface TextFilter extends BaseFilter<TextComparisonFilter[]> {
+export interface TextFilter extends BaseFilter<TextComparisonFilter> {
   type: 'text';
-  operator: TextOperator;
+  op: TextOperator;
 }
 export interface BooleanFilter extends BaseFilter<boolean> {
   type: 'boolean';
@@ -95,7 +95,7 @@ export type Filter =
 
 // Exhaustive value type accepted/emitted by FiltersBar
 export type FilterValue =
-  | TextComparisonFilter[]
+  | TextComparisonFilter
   | NumberComparisonFilter
   | boolean
   | string
@@ -114,11 +114,11 @@ export interface BaseFilterDescriptor {
 }
 export interface NumberFilterDescriptor extends BaseFilterDescriptor {
   type: 'number';
-  operator: NumberOperator;
+  op: NumberOperator;
 }
 export interface TextFilterDescriptor extends BaseFilterDescriptor {
   type: 'text';
-  operator: TextOperator;
+  op: TextOperator;
 }
 export interface BooleanFilterDescriptor extends BaseFilterDescriptor {
   type: 'boolean';

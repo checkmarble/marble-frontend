@@ -85,7 +85,6 @@ export default function Analytics() {
 
   const scenarioId = useParam('scenarioId');
   const [searchParams] = useSearchParams();
-  // const queryClient = useQueryClient();
   const { t, i18n } = useTranslation(['filters', 'analytics']);
 
   const navigate = useNavigate();
@@ -107,8 +106,7 @@ export default function Analytics() {
     try {
       const decoded = queryString ? atob(queryString) : null;
       return decoded ? analyticsFiltersQuery.parse(JSON.parse(decoded)) : null;
-    } catch (error) {
-      console.log('error', error);
+    } catch {
       return null;
     }
   }, [queryString]);
@@ -179,10 +177,10 @@ export default function Analytics() {
       switch (filter.type) {
         case 'string':
           index[filter.name] = { source: filter.source, kind: 'text' };
-          return { ...common, type: 'text', operator: 'in' as const };
+          return { ...common, type: 'text', op: 'in' as const };
         case 'number':
           index[filter.name] = { source: filter.source, kind: 'number' };
-          return { ...common, type: 'number', operator: 'eq' as const };
+          return { ...common, type: 'number', op: '=' as const };
         case 'boolean':
           index[filter.name] = { source: filter.source, kind: 'boolean' };
           return { ...common, type: 'boolean' as const };
@@ -204,47 +202,57 @@ export default function Analytics() {
 
   const onFiltersUpdate = (next: { value: Record<string, FilterValue> }) => {
     const draft = next.value;
-    const OP_MAP: Record<string, '=' | '!=' | '>' | '>=' | '<' | '<=' | 'in'> = {
-      eq: '=',
-      ne: '!=',
-      gt: '>',
-      gte: '>=',
-      lt: '<',
-      lte: '<=',
-      in: 'in',
-    } as const;
 
     const nextScenarioId = (draft['scenarioId'] as string | undefined) ?? scenarioId;
+
+    // Create a map of filter name -> filter descriptor for type-based logic
+    const filterDescriptorMap = new Map<string, FilterDescriptor>(
+      [...descriptors, ...dynamicDescriptors].map((d) => [d.name, d]),
+    );
 
     const trigger = Object.entries(draft as Record<string, unknown>).flatMap(([name, v]) => {
       const val = v as FilterValue;
       if (name === 'scenarioId' || name === 'range' || name === 'compareRange') return [] as any[];
 
-      if (Array.isArray(val)) {
-        // Text filter: flatten values
-        // Each filter has { operator: 'in', value: string }, so we extract the value directly
-        const values = (val as Array<{ operator: string; value: string }>)
-          .map((f) => f.value)
-          .filter((v) => v != null && String(v).length > 0);
-        return values.length ? [{ name, op: 'in', value: values }] : [];
-      }
+      const descriptor = filterDescriptorMap.get(name);
+      if (!descriptor) return [] as any[];
 
-      if (val && typeof val === 'object' && 'operator' in (val as any)) {
-        const opKey = (val as { operator: string }).operator;
-        const op = OP_MAP[opKey] ?? (opKey as '=' | '!=' | '>' | '>=' | '<' | '<=' | 'in');
-        const raw = (val as { value: unknown }).value as unknown;
-        const values = Array.isArray(raw) ? raw : [raw];
-        const cleaned = (values as Array<string | number | boolean>).filter(
-          (v) => v !== null && v !== undefined && (typeof v !== 'string' || v.length > 0),
-        );
-        return cleaned.length ? [{ name, op, value: cleaned }] : [];
-      }
+      switch (descriptor.type) {
+        case 'text': {
+          // Text filter: TextComparisonFilter with {op: 'in', value: ['AAA', 'BBB']}
+          if (!val || typeof val !== 'object' || !('op' in val) || !('value' in val)) {
+            return [] as any[];
+          }
+          const textFilter = val as { op: string; value: unknown };
+          const values = Array.isArray(textFilter.value)
+            ? (textFilter.value as string[]).filter((v) => v != null && String(v).length > 0)
+            : [];
+          return values.length ? [{ name, op: textFilter.op, value: values }] : [];
+        }
 
-      if (typeof val === 'boolean') {
-        return [{ name, op: '=', value: [val] }];
-      }
+        case 'number': {
+          // Number filter: NumberComparisonFilter with op and value
+          if (!val || typeof val !== 'object' || !('op' in val) || !('value' in val)) {
+            return [] as any[];
+          }
+          const numFilter = val as { op: string; value: unknown };
+          const raw = numFilter.value;
+          const values = Array.isArray(raw) ? raw : [raw];
+          const cleaned = (values as Array<string | number | boolean>).filter(
+            (v) => v !== null && v !== undefined && (typeof v !== 'string' || v.length > 0),
+          );
+          return cleaned.length ? [{ name, op: numFilter.op, value: cleaned }] : [];
+        }
 
-      return [] as any[];
+        case 'boolean': {
+          // Boolean filter: boolean value
+          if (typeof val !== 'boolean') return [] as any[];
+          return [{ name, op: '=', value: [val] }];
+        }
+
+        default:
+          return [] as any[];
+      }
     });
 
     const nextQuery: AnalyticsFiltersQuery = {
