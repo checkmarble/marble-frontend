@@ -80,8 +80,8 @@ export const adaptDecisionsScoreDistribution = (
   ) {
     // Fallback: show raw per-score distribution if thresholds are not available
     stepSeries.push(
-      ...[...points]
-        .sort((a, b) => a.score - b.score)
+      ...points
+        .toSorted((a, b) => a.score - b.score)
         .map((d) => ({ x: d.score, y: totalDecisions ? (d.decisions / totalDecisions) * 100 : 0 })),
     );
   } else {
