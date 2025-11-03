@@ -1,4 +1,5 @@
 {
+  "decisions_score_distribution.title": "توزيع درجات القرارات",
   "decisions.export.button": "تصدير",
   "decisions.title": "القرارات",
   "decisions.tooltip.daily": "التاريخ: {{date}}",

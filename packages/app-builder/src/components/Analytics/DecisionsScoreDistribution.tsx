@@ -16,7 +16,7 @@ export const DecisionsScoreDistribution = ({
   return (
     <div className="w-full">
       <div className="flex items-center justify-between">
-        <h2 className="text-h2 font-semibold">Decisions Score Distribution</h2>
+        <h2 className="text-h2 font-semibold">t('analytics:decisions_score_distribution.title')</h2>
       </div>
       <div className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative">
         <div className="flex w-full h-[500px] flex-col items-start gap-v2-md">

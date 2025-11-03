@@ -1,4 +1,5 @@
 {
+  "decisions_score_distribution.title": "Distribution des scores des décisions",
   "decisions.export.button": "Exporter",
   "decisions.title": "Décisions",
   "decisions.tooltip.daily": "date: {{date}}",
