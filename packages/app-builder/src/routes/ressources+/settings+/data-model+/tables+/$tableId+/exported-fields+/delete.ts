@@ -70,7 +70,7 @@ export const action = createServerFn(
         const exportedFields =
           await context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
             triggerObjectFields: current.triggerObjectFields,
-            ingestedDataFields: [...(current.ingestedDataFields ?? undefined), field],
+            ingestedDataFields: [...(current.ingestedDataFields ?? []), field],
           });
         return { success: true, data: exportedFields };
       }
@@ -78,7 +78,7 @@ export const action = createServerFn(
       return { success: false, errors: ['Invalid payload'] };
     } catch {
       setToastMessage(toastSession, {
-        type: 'success',
+        type: 'error',
         messageKey: 'common:errors.unknown',
       });
       return data({ success: false, errors: ['Failed to delete exported field'] }, [

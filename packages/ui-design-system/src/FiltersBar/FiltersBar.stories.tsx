@@ -2,7 +2,7 @@ import { type Meta, type StoryFn } from '@storybook/react';
 import { useState } from 'react';
 
 import { FiltersBar } from './FiltersBar';
-import { type FilterDescriptor } from './types';
+import { type FilterDescriptor, type FilterValue } from './types';
 
 const Story: Meta<typeof FiltersBar> = {
   component: FiltersBar,
@@ -12,8 +12,8 @@ const Story: Meta<typeof FiltersBar> = {
 export default Story;
 
 const mainDescriptors: FilterDescriptor[] = [
-  { type: 'text', name: 'search', placeholder: 'Search terms', operator: 'in' },
-  { type: 'number', name: 'amount', placeholder: 'Amount', operator: 'eq' },
+  { type: 'text', name: 'search', placeholder: 'Search terms', op: 'in' },
+  { type: 'number', name: 'amount', placeholder: 'Amount', op: '=' },
   { type: 'boolean', name: 'isActive', placeholder: 'Active' },
   {
     type: 'select',
@@ -25,7 +25,7 @@ const mainDescriptors: FilterDescriptor[] = [
 
 const dynamicDescriptors: FilterDescriptor[] = [
   { type: 'date-range-popover', name: 'createdAt', placeholder: 'Created between' },
-  { type: 'text', name: 'tags', placeholder: 'Tags', operator: 'in' },
+  { type: 'text', name: 'tags', placeholder: 'Tags', op: 'in' },
   { type: 'boolean', name: 'archived', placeholder: 'Archived' },
   {
     type: 'select',
@@ -40,54 +40,40 @@ const dynamicDescriptors: FilterDescriptor[] = [
 ];
 
 export const Basic: StoryFn<typeof FiltersBar> = (args) => {
-  const [state, setState] = useState<{ value: Record<string, unknown>; active: string[] }>({
-    value: {},
-    active: [],
-  });
+  const [value, setValue] = useState<Record<string, FilterValue>>({});
 
   return (
     <FiltersBar
       {...args}
       descriptors={mainDescriptors}
       dynamicDescriptors={dynamicDescriptors}
-      value={state.value}
-      active={state.active}
-      onChange={(_, next) => setState(next)}
+      value={value}
+      onChange={(_, next) => setValue(next.value)}
     />
   );
 };
 
 export const WithInitialActive: StoryFn<typeof FiltersBar> = (args) => {
-  const [state, setState] = useState<{ value: Record<string, unknown>; active: string[] }>({
-    value: {},
-    active: ['createdAt', 'owner'],
-  });
+  const [value, setValue] = useState<Record<string, FilterValue>>({});
 
   return (
     <FiltersBar
       {...args}
       descriptors={mainDescriptors}
       dynamicDescriptors={dynamicDescriptors}
-      value={state.value}
-      active={state.active}
-      onChange={(_, next) => setState(next)}
+      value={value}
+      onChange={(_, next) => setValue(next.value)}
     />
   );
 };
 
 export const PrefilledValues: StoryFn<typeof FiltersBar> = (args) => {
-  const [state, setState] = useState<{ value: Record<string, unknown>; active: string[] }>({
-    value: {
-      search: [
-        { operator: 'in', value: 'fraud' },
-        { operator: 'in', value: 'chargeback' },
-      ],
-      amount: { operator: 'gte', value: 1000 },
-      isActive: true,
-      status: 'approved',
-      createdAt: { type: 'dynamic', fromNow: '-P30D' },
-    },
-    active: ['createdAt'],
+  const [value, setValue] = useState<Record<string, FilterValue>>({
+    search: { op: 'in', value: ['fraud', 'chargeback'] },
+    amount: { op: '>=', value: 1000 },
+    isActive: true,
+    status: 'approved',
+    createdAt: { type: 'dynamic', fromNow: '-P30D' },
   });
 
   return (
@@ -95,9 +81,8 @@ export const PrefilledValues: StoryFn<typeof FiltersBar> = (args) => {
       {...args}
       descriptors={mainDescriptors}
       dynamicDescriptors={dynamicDescriptors}
-      value={state.value}
-      active={state.active}
-      onChange={(_, next) => setState(next)}
+      value={value}
+      onChange={(_, next) => setValue(next.value)}
     />
   );
 };

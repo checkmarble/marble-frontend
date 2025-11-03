@@ -1,13 +1,13 @@
 import { type AvailableFiltersRequestDto, type AvailableFiltersResponseDto } from 'marble-api';
 import * as R from 'remeda';
+import { DateRangeFilter, getIsoBoundsFromDateRanges } from '.';
 
 export type AvailableFilterType = 'string' | 'number' | 'boolean';
 export type FilterSource = 'triggerObject';
 
 export type AvailableFiltersRequest = {
   scenarioId: string;
-  start: string;
-  end: string;
+  ranges: DateRangeFilter[];
 };
 
 export type AvailableFiltersResponse = {
@@ -31,7 +31,6 @@ export const transformAvailableFiltersRequest = (
 ): AvailableFiltersRequestDto => {
   return {
     scenario_id: request.scenarioId,
-    start: request.start,
-    end: request.end,
+    ...getIsoBoundsFromDateRanges(request.ranges),
   };
 };

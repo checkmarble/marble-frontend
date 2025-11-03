@@ -108,13 +108,17 @@ components:
         end:
           type: string
           format: date-time
-    TriggerFilterDto:
+    FieldFilterDto:
       type: object
       required:
+        - source
         - field
         - op
         - values
       properties:
+        source:
+          type: string
+          enum: ['trigger_object']
         field:
           type: string
         op:
@@ -133,12 +137,12 @@ components:
         - $ref: '#/components/schemas/DateRangeFilterDto'
         - type: object
           required:
-            - trigger
+            - fields
           properties:
-            trigger:
+            fields:
               type: array
               items:
-                $ref: '#/components/schemas/TriggerFilterDto'
+                $ref: '#/components/schemas/FieldFilterDto'
     DecisionOutcomesPerDayResponseDto:
       type: object
       required:

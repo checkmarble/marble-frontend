@@ -1,49 +1,35 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { AnalyticsQuery, DecisionOutcomesPerPeriod } from '@app-builder/models/analytics';
+import { AnalyticsFiltersQuery, DecisionOutcomesPerPeriod } from '@app-builder/models/analytics';
 import { RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 import { getRoute } from '@app-builder/utils/routes';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 export const useGetAnalytics = ({
   scenarioId,
-  scenarioVersion,
-  dateRange,
-  compareDateRange = undefined,
-  trigger = [],
-}: AnalyticsQuery) => {
+  queryString,
+}: {
+  scenarioId: string;
+  queryString: string;
+}) => {
   const navigate = useAgnosticNavigation();
   const endpoint = getRoute('/ressources/analytics/:scenarioId/query', {
     scenarioId,
   });
+  const qs = queryString ? atob(queryString) : null;
+  const parsed: AnalyticsFiltersQuery = JSON.parse(qs || '{}');
+
+  const { range, compareRange, scenarioVersion, trigger } = parsed;
+
   return useQuery({
-    queryKey: [
-      'analytics',
-      'query',
-      scenarioId,
-      scenarioVersion,
-      dateRange,
-      compareDateRange,
-      trigger,
-    ],
+    queryKey: ['analytics', 'query', scenarioId, queryString],
+    enabled: Boolean(qs && range),
     queryFn: async () => {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
-          scenarioId,
           scenarioVersion,
-          dateRange: {
-            start: dateRange.start,
-            end: dateRange.end,
-          },
-          compareDateRange: compareDateRange
-            ? {
-                start: compareDateRange.start,
-                end: compareDateRange.end,
-              }
-            : undefined,
+          range,
+          compareRange,
           trigger,
         }),
       });
@@ -55,7 +41,11 @@ export const useGetAnalytics = ({
         return;
       }
 
-      return result as {
+      if (!result.success) {
+        throw new Error(result.errors?.join(', ') ?? 'Failed to fetch analytics');
+      }
+
+      return result.data as {
         decisionOutcomesPerDay: DecisionOutcomesPerPeriod | null;
         ruleHitTable: RuleHitTableResponse[] | null;
       };
