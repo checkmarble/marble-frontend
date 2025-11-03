@@ -4,6 +4,7 @@ import { getFullName } from '@app-builder/services/user';
 import { getRoute } from '@app-builder/utils/routes';
 import * as Popover from '@radix-ui/react-popover';
 import { Form } from '@remix-run/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Avatar, Button, Tag } from 'ui-design-system';
 import { Icon, Logo } from 'ui-icons';
@@ -30,6 +31,7 @@ export function UserInfo({
   const { t } = useTranslation(['common']);
   const fullName = getFullName({ firstName, lastName });
   const { query: unavailabilityQuery } = useUnavailabilitySettings();
+  const queryClient = useQueryClient();
 
   return (
     <Popover.Root>
@@ -95,6 +97,7 @@ export function UserInfo({
                 variant="secondary"
                 type="submit"
                 onClick={() => {
+                  queryClient.invalidateQueries();
                   void segment.reset();
                 }}
               >
