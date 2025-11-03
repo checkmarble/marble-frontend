@@ -3,7 +3,7 @@ import { type DecisionsFilter, type Outcome, outcomeColors } from '@app-builder/
 import { RuleVsDecisionOutcome } from '@app-builder/models/analytics/rule-vs-decision-outcome';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -31,6 +31,16 @@ export function RuleVsDecisionOutcomes({
   const selectedOutcomes: Outcome[] = Array.from(decisions.entries())
     .filter(([, value]) => value)
     .map(([key]) => key);
+
+  const maxValueScale = useMemo(
+    () =>
+      Math.max(
+        ...(data?.map((rule) =>
+          selectedOutcomes.reduce((acc, outcome) => acc + (rule[outcome] ?? 0), 0),
+        ) ?? []),
+      ),
+    [data, selectedOutcomes],
+  );
 
   // Adaptive chart height: keep each rule bar thin, and overall height small when few rows
   const perRowHeightPx = 20; // thin bars similar to the wireframe
@@ -109,7 +119,7 @@ export function RuleVsDecisionOutcomes({
               margin={{ top: 8, right: 32, bottom: 32, left: leftMargin }}
               colors={getBarColors}
               layout="horizontal"
-              valueScale={{ type: 'linear', min: 0, max: 100 }}
+              valueScale={{ type: 'linear', min: 0, max: maxValueScale }}
               theme={{
                 axis: {
                   ticks: {
@@ -126,7 +136,15 @@ export function RuleVsDecisionOutcomes({
                     style: 'percent',
                     maximumFractionDigits: 0,
                   }).format((Number(value) || 0) / 100),
-                tickValues: [0, 25, 50, 75, 100],
+                tickValues: maxValueScale
+                  ? [
+                      0,
+                      maxValueScale / 4,
+                      maxValueScale / 2,
+                      (3 * maxValueScale) / 4,
+                      maxValueScale,
+                    ]
+                  : undefined,
               }}
               tooltip={({ id, value, data }) => (
                 <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
