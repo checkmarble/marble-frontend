@@ -1,11 +1,6 @@
 import { Spinner } from '@app-builder/components/Spinner';
-import {
-  type DecisionOutcomes,
-  type DecisionsFilter,
-  type Outcome,
-  outcomeColors,
-  type RuleVsDecisionOutcome,
-} from '@app-builder/models/analytics';
+import { type DecisionsFilter, type Outcome, outcomeColors } from '@app-builder/models/analytics';
+import { RuleVsDecisionOutcome } from '@app-builder/models/analytics/rule-vs-decision-outcome';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { useMemo, useState } from 'react';
@@ -14,21 +9,11 @@ import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OutcomeFilter } from './OutcomeFilter';
 
-type DecisionOutcomesRow = {
-  rule: string;
-  approve: number;
-  review: number;
-  blockAndReview: number;
-  decline: number;
-  total: number;
-};
-
 export function RuleVsDecisionOutcomes({
   data,
   isLoading = false,
 }: {
-  // Be flexible here because the transport may serialize Map as object
-  data: RuleVsDecisionOutcome | Record<string, DecisionOutcomes> | null;
+  data: RuleVsDecisionOutcome[] | null;
   isLoading?: boolean;
 }) {
   const { t } = useTranslation(['analytics']);
@@ -51,23 +36,6 @@ export function RuleVsDecisionOutcomes({
     [],
   );
 
-  const rows: DecisionOutcomesRow[] = useMemo(() => {
-    if (!data) return [];
-
-    // Normalize either Map<string, DecisionOutcomes> or Record<string, DecisionOutcomes>
-    const entries: Array<readonly [string, any]> =
-      data instanceof Map ? Array.from(data.entries()) : Object.entries(data);
-
-    return entries.map(([ruleName, v]) => ({
-      rule: ruleName,
-      approve: Number(v.approve ?? 0),
-      review: Number(v.review ?? 0),
-      blockAndReview: Number(v.block_and_review ?? v.blockAndReview ?? 0),
-      decline: Number(v.decline ?? 0),
-      total: Number(v.total ?? 0),
-    }));
-  }, [data]);
-
   const selectedKeys = useMemo(
     () => fixedOrder.filter((k) => decisions.get(k)),
     [fixedOrder, decisions],
@@ -76,17 +44,17 @@ export function RuleVsDecisionOutcomes({
   // Adaptive chart height: keep each rule bar thin, and overall height small when few rows
   const perRowHeightPx = 20; // thin bars similar to the wireframe
   const minHeightPx = 120; // small when few rules
-  const chartHeight = Math.max(rows.length * perRowHeightPx, minHeightPx);
+  const chartHeight = data ? Math.max(data.length * perRowHeightPx, minHeightPx) : 0;
 
-  const getBarColors = (d: ComputedDatum<DecisionOutcomesRow>) => {
+  const getBarColors = (d: ComputedDatum<RuleVsDecisionOutcome>) => {
     const id = String(d.id) as Outcome;
     return outcomeColors[id] ?? '#9ca3af';
   };
 
   const handleExportCsv = () => {
-    if (!rows.length) return;
+    if (!data || !data.length) return;
     const headers = ['rule', ...fixedOrder, 'total'];
-    const lines = rows.map((row) =>
+    const lines = data.map((row) =>
       [
         row.rule,
         String(row.decline ?? 0),
@@ -115,7 +83,7 @@ export function RuleVsDecisionOutcomes({
         <ButtonV2
           variant="secondary"
           className="flex items-center gap-v2-sm"
-          disabled={isLoading || rows.length === 0}
+          disabled={isLoading || data?.length === 0}
           onClick={handleExportCsv}
         >
           <Icon icon="download" className="size-4" />
@@ -136,7 +104,7 @@ export function RuleVsDecisionOutcomes({
         <div className="flex w-full flex-col items-start gap-v2-md">
           <div className="w-full" style={{ height: chartHeight }}>
             <ResponsiveBar
-              data={rows}
+              data={data ?? []}
               indexBy="rule"
               enableLabel={false}
               keys={selectedKeys}

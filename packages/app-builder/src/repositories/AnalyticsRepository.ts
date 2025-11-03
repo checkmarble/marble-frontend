@@ -74,7 +74,7 @@ export interface AnalyticsRepository {
   getRuleHitTable(args: AnalyticsQuery): Promise<RuleHitTableResponse[] | null>;
   getScreeningHitsTable(args: AnalyticsQuery): Promise<ScreeningHitTableResponse[] | null>;
   getDecisionsScoreDistribution(args: AnalyticsQuery): Promise<DecisionsScoreDistribution | null>;
-  getRuleVsDecisionOutcome(args: AnalyticsQuery): Promise<RuleVsDecisionOutcome | null>;
+  getRuleVsDecisionOutcome(args: AnalyticsQuery): Promise<RuleVsDecisionOutcome[] | null>;
   getAvailableFilters(args: AvailableFiltersRequest): Promise<AvailableFiltersResponse>;
 }
 
@@ -207,12 +207,11 @@ export function makeGetAnalyticsRepository() {
 
     getRuleVsDecisionOutcome: async (
       args: AnalyticsQuery,
-    ): Promise<RuleVsDecisionOutcome | null> => {
+    ): Promise<RuleVsDecisionOutcome[] | null> => {
       const parsed = transformAnalyticsQuery.parse(args);
       if (!parsed.length) throw new Error('No date range provided');
 
-      const raw = await client.getRuleVsDecisionOutcome(parsed[0]!);
-      return adaptRuleVsDecisionOutcome(raw);
+      return adaptRuleVsDecisionOutcome(await client.getRuleVsDecisionOutcome(parsed[0]!));
     },
 
     getAvailableFilters: async (
