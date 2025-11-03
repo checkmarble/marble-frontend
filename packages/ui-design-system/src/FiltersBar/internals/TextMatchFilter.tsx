@@ -1,4 +1,3 @@
-import { CalloutV2 } from '@app-builder/components/Callout';
 import { useEffect, useState } from 'react';
 import { Icon } from 'ui-icons';
 import { ButtonV2 } from '../../Button/Button';
@@ -69,7 +68,10 @@ export function TextMatchFilter({
       </FilterItem.Root>
       <FilterPopover.Content>
         <div className="p-4 flex flex-col gap-2 w-80">
-          <CalloutV2 className="m-4">{t('filters:ds.text_match_filter.description')}</CalloutV2>
+          <aside className="bg-purple-98 text-s text-purple-65 flex flex-row gap-2 rounded-lg p-4 font-normal items-center">
+            <Icon icon="tip" className="size-4 shrink-0" />
+            {t('filters:ds.text_match_filter.description')}
+          </aside>
           <Input
             placeholder={filter.placeholder}
             value={localText}
