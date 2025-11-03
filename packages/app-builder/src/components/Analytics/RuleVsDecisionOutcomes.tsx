@@ -37,6 +37,12 @@ export function RuleVsDecisionOutcomes({
   const minHeightPx = 120; // small when few rules
   const chartHeight = data ? Math.max(data.length * perRowHeightPx, minHeightPx) : 0;
 
+  // Dynamic left margin based on longest rule name
+  const maxRuleLength = data ? Math.max(...data.map((d) => d.rule.length), 0) : 0;
+  const pixelsPerChar = 7; // approximate pixels per character
+  const minLeftMargin = 8;
+  const leftMargin = Math.max(maxRuleLength * pixelsPerChar + 8, minLeftMargin);
+
   const getBarColors = (d: ComputedDatum<RuleVsDecisionOutcome>) => {
     const id = String(d.id) as Outcome;
     return outcomeColors[id] ?? '#9ca3af';
@@ -100,10 +106,19 @@ export function RuleVsDecisionOutcomes({
               enableLabel={false}
               keys={selectedOutcomes}
               padding={0.5}
-              margin={{ top: 5, right: 16, bottom: 24, left: 24 }}
+              margin={{ top: 8, right: 32, bottom: 32, left: leftMargin }}
               colors={getBarColors}
               layout="horizontal"
               valueScale={{ type: 'linear', min: 0, max: 100 }}
+              theme={{
+                axis: {
+                  ticks: {
+                    text: {
+                      fontSize: '1rem',
+                    },
+                  },
+                },
+              }}
               axisLeft={{}}
               axisBottom={{
                 format: (value: number) =>
