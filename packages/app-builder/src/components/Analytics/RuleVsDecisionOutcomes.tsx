@@ -3,7 +3,7 @@ import { type DecisionsFilter, type Outcome, outcomeColors } from '@app-builder/
 import { RuleVsDecisionOutcome } from '@app-builder/models/analytics/rule-vs-decision-outcome';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -19,27 +19,18 @@ export function RuleVsDecisionOutcomes({
   const { t } = useTranslation(['analytics']);
   const language = useFormatLanguage();
 
-  const defaultDecisions: DecisionsFilter = useMemo(
-    () =>
-      new Map<Outcome, boolean>([
-        ['decline', true],
-        ['blockAndReview', true],
-        ['review', true],
-        ['approve', true],
-      ]),
-    [],
-  );
-  const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
-
-  const fixedOrder: Outcome[] = useMemo(
-    () => ['decline', 'blockAndReview', 'review', 'approve'],
-    [],
+  const [decisions, setDecisions] = useState<DecisionsFilter>(
+    new Map([
+      ['decline', true],
+      ['blockAndReview', true],
+      ['review', true],
+      ['approve', true],
+    ]),
   );
 
-  const selectedKeys = useMemo(
-    () => fixedOrder.filter((k) => decisions.get(k)),
-    [fixedOrder, decisions],
-  );
+  const selectedOutcomes: Outcome[] = Array.from(decisions.entries())
+    .filter(([, value]) => value)
+    .map(([key]) => key);
 
   // Adaptive chart height: keep each rule bar thin, and overall height small when few rows
   const perRowHeightPx = 20; // thin bars similar to the wireframe
@@ -53,7 +44,7 @@ export function RuleVsDecisionOutcomes({
 
   const handleExportCsv = () => {
     if (!data || !data.length) return;
-    const headers = ['rule', ...fixedOrder, 'total'];
+    const headers = ['rule', ...decisions.keys(), 'total'];
     const lines = data.map((row) =>
       [
         row.rule,
@@ -107,9 +98,9 @@ export function RuleVsDecisionOutcomes({
               data={data ?? []}
               indexBy="rule"
               enableLabel={false}
-              keys={selectedKeys}
+              keys={selectedOutcomes}
               padding={0.5}
-              margin={{ top: 5, right: 16, bottom: 24, left: 260 }}
+              margin={{ top: 5, right: 16, bottom: 24, left: 24 }}
               colors={getBarColors}
               layout="horizontal"
               valueScale={{ type: 'linear', min: 0, max: 100 }}
