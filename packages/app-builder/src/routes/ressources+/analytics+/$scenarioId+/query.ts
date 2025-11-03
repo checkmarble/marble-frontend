@@ -25,7 +25,7 @@ export const action = createServerFn(
         decisionOutcomesPerDay,
         ruleHitTable,
         screeningHitsTable,
-        decisionsScoreDistribution,
+        // decisionsScoreDistribution,
         ruleVsDecisionOutcome,
       ] = await Promise.all([
         context.authInfo.analytics.getDecisionOutcomesPerDay({
@@ -40,10 +40,10 @@ export const action = createServerFn(
           ...queryParams,
           scenarioId: urlParams.scenarioId,
         }),
-        context.authInfo.analytics.getDecisionsScoreDistribution({
-          ...queryParams,
-          scenarioId: urlParams.scenarioId,
-        }),
+        // context.authInfo.analytics.getDecisionsScoreDistribution({
+        //   ...queryParams,
+        //   scenarioId: urlParams.scenarioId,
+        // }),
         context.authInfo.analytics.getRuleVsDecisionOutcome({
           ...queryParams,
           scenarioId: urlParams.scenarioId,
@@ -56,7 +56,7 @@ export const action = createServerFn(
           decisionOutcomesPerDay,
           ruleHitTable,
           screeningHitsTable,
-          decisionsScoreDistribution,
+          // decisionsScoreDistribution,
           ruleVsDecisionOutcome,
         },
       };

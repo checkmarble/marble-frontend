@@ -1,6 +1,5 @@
 import { ErrorComponent } from '@app-builder/components';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
-import { DecisionsScoreDistribution } from '@app-builder/components/Analytics/DecisionsScoreDistribution';
 import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
 import { RuleVsDecisionOutcomes } from '@app-builder/components/Analytics/RuleVsDecisionOutcomes';
 import { ScreeningHits } from '@app-builder/components/Analytics/ScreeningHits';
@@ -198,13 +197,13 @@ export default function Analytics() {
       decisionOutcomesPerDay: decisionsData,
       ruleHitTable: ruleHitTableData,
       screeningHitsTable: screeningHitsTableData,
-      decisionsScoreDistribution: decisionsScoreDistributionData,
+      // decisionsScoreDistribution: decisionsScoreDistributionData,
       ruleVsDecisionOutcome: ruleVsDecisionOutcomeData,
     } = {
       decisionOutcomesPerDay: null,
       ruleHitTable: null,
       screeningHitsTable: null,
-      decisionsScoreDistribution: null,
+      // decisionsScoreDistribution: null,
       ruleVsDecisionOutcome: null,
     },
     isFetching: _isAnalyticsPending,
@@ -368,16 +367,16 @@ export default function Analytics() {
               </div>
             </div>
             <div className="flex flex-row gap-v2-md w-full items-stretch">
-              <div className="basis-3/4 min-w-0">
+              <div className="basis-full min-w-0">
                 <Decisions
                   data={decisionsData as DecisionOutcomesPerPeriod}
                   scenarioVersions={scenarioVersions}
                   isLoading={false}
                 />
               </div>
-              <div className="basis-1/4 min-w-0">
+              {/* <div className="basis-1/4 min-w-0">
                 <DecisionsScoreDistribution data={decisionsScoreDistributionData ?? []} />
-              </div>
+              </div> */}
             </div>
 
             <RulesHit data={ruleHitTableData ?? []} isLoading={false} />
