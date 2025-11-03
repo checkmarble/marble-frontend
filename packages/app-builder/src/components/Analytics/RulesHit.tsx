@@ -6,6 +6,8 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 
+const columnHelper = createColumnHelper<RuleHitTableResponse>();
+
 export function RulesHit({
   data,
   isLoading,
@@ -19,7 +21,6 @@ export function RulesHit({
 
   const visibleData = useMemo(() => (expanded ? data : data.slice(0, 5)), [expanded, data]);
 
-  const columnHelper = createColumnHelper<RuleHitTableResponse>();
   const toPercent = (value: number) =>
     formatNumber(value > 1 ? value / 100 : value, {
       language,

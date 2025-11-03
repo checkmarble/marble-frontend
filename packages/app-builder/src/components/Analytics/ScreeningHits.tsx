@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 import { Spinner } from '../Spinner';
 
+const columnHelper = createColumnHelper<ScreeningHitTableResponse>();
+
 export function ScreeningHits({
   data,
   isLoading,
@@ -25,8 +27,6 @@ export function ScreeningHits({
     });
 
   const visibleData = useMemo(() => (expanded ? data : data.slice(0, 5)), [expanded, data]);
-
-  const columnHelper = createColumnHelper<ScreeningHitTableResponse>();
 
   const columns = useMemo(
     () => [
