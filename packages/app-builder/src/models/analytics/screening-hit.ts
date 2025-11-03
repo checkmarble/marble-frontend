@@ -12,7 +12,6 @@ export type ScreeningHitTableResponse = {
 export const adaptScreeningHitTable = (
   val: ScreeningHitTableResponseDto[],
 ): ScreeningHitTableResponse[] => {
-  console.log(val);
   return val.map((v) => ({
     configId: v.config_id,
     name: v.name,

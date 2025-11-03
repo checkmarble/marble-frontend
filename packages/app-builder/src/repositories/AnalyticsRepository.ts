@@ -212,8 +212,6 @@ export function makeGetAnalyticsRepository() {
       if (!parsed.length) throw new Error('No date range provided');
 
       const raw = await client.getRuleVsDecisionOutcome(parsed[0]!);
-      console.log('raw', raw);
-      console.log('adaptRuleVsDecisionOutcome', adaptRuleVsDecisionOutcome(raw));
       return adaptRuleVsDecisionOutcome(raw);
     },
 
