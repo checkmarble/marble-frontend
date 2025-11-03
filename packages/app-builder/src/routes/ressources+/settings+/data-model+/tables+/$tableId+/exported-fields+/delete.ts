@@ -70,7 +70,7 @@ export const action = createServerFn(
         const exportedFields =
           await context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
             triggerObjectFields: current.triggerObjectFields,
-            ingestedDataFields: [...(current.ingestedDataFields ?? undefined), field],
+            ingestedDataFields: [...(current.ingestedDataFields ?? []), field],
           });
         return { success: true, data: exportedFields };
       }
