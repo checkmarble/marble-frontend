@@ -207,16 +207,12 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     const rows = currentDataGroup.data.absolute;
     if (!rows.length) return;
 
-    const selectedOutcomes: Outcome[] = Array.from(decisions.entries())
-      .filter(([, value]) => value)
-      .map(([key]) => key);
-
-    const headers = ['date', 'rangeId', ...selectedOutcomes, ['total']];
+    const headers = ['date', 'rangeId', ...decisions.keys(), ['total']];
 
     const lines = rows.map((row) => {
       const base = [row.date, row.rangeId];
       type OutcomeValues = Pick<DecisionsPerOutcome, Outcome>;
-      const outcomeValues = selectedOutcomes.map((k) => {
+      const outcomeValues = Array.from(decisions.entries()).map(([k]) => {
         const v = (row as OutcomeValues)[k];
         return String(v);
       });

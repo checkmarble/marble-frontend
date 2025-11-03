@@ -60,6 +60,91 @@
         $ref: 'components.yml#/responses/403'
       '404':
         $ref: 'components.yml#/responses/404'
+/analytics/query/screening_hits:
+  post:
+    tags:
+      - Analytics
+    summary: Get screening hits
+    operationId: getScreeningHits
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AnalyticsQueryDto'
+    responses:
+      '200':
+        description: The screening hits
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScreeningHitTableResponseDto'
+/analytics/query/decisions_score_distribution:
+  post:
+    tags:
+      - Analytics
+    summary: Get decisions score distribution
+    operationId: getDecisionsScoreDistribution
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AnalyticsQueryDto'
+    responses:
+      '200':
+        description: The decisions score distribution
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DecisionsScoreDistributionResponseDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/analytics/query/rule_vs_decision_outcome:
+  post:
+    tags:
+      - Analytics
+    summary: Get rule vs decision outcome
+    operationId: getRuleVsDecisionOutcome
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AnalyticsQueryDto'
+    responses:
+      '200':
+        description: The rule vs decision outcome
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RuleVsDecisionOutcomeResponseDto'
+      '400':
+        $ref: 'components.yml#/responses/400'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
 /analytics/available-filters:
   post:
     tags:
@@ -182,6 +267,52 @@ components:
           type: integer
         pivot_ratio:
           type: number
+    ScreeningHitTableResponseDto:
+      type: object
+      required:
+        - config_id
+        - name
+        - execs
+        - hits
+        - hit_ratio
+        - avg_hits_per_screening
+      properties:
+        config_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        execs:
+          type: integer
+        hits:
+          type: integer
+        hit_ratio:
+          type: number
+        avg_hits_per_screening:
+          type: number
+    DecisionsScoreDistributionResponseDto:
+      type: object
+      required:
+        - score
+        - decisions
+      properties:
+        score:
+          type: integer
+        decisions:
+          type: integer
+    RuleVsDecisionOutcomeResponseDto:
+      type: object
+      required:
+        - rule_name
+        - outcome
+        - decisions
+      properties:
+        rule_name:
+          type: string
+        outcome:
+          $ref: 'decisions.yml#/components/schemas/OutcomeDto'
+        decisions:
+          type: integer
     AvailableFiltersRequestDto:
       type: object
       required:

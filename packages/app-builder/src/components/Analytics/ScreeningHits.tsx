@@ -1,25 +1,23 @@
-import { Spinner } from '@app-builder/components/Spinner';
-import { type RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
+import { type ScreeningHitTableResponse } from '@app-builder/models/analytics';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
+import { Spinner } from '../Spinner';
 
-const columnHelper = createColumnHelper<RuleHitTableResponse>();
+const columnHelper = createColumnHelper<ScreeningHitTableResponse>();
 
-export function RulesHit({
+export function ScreeningHits({
   data,
   isLoading,
 }: {
-  data: RuleHitTableResponse[];
+  data: ScreeningHitTableResponse[];
   isLoading: boolean;
 }) {
   const { t } = useTranslation(['analytics']);
   const language = useFormatLanguage();
   const [expanded, setExpanded] = useState(false);
-
-  const visibleData = useMemo(() => (expanded ? data : data.slice(0, 5)), [expanded, data]);
 
   const toPercent = (value: number) =>
     formatNumber(value > 1 ? value / 100 : value, {
@@ -28,37 +26,32 @@ export function RulesHit({
       maximumFractionDigits: 1,
     });
 
+  const visibleData = useMemo(() => (expanded ? data : data.slice(0, 5)), [expanded, data]);
+
   const columns = useMemo(
     () => [
-      columnHelper.accessor((row) => row.ruleName, {
-        id: 'rule',
-        header: t('analytics:ruleshit.columns.rule'),
-        size: 220,
+      columnHelper.accessor((row) => row.name, {
+        id: 'name',
+        header: t('analytics:screeninghits.columns.name'),
         cell: ({ getValue }) => <span className="line-clamp-1">{getValue()}</span>,
       }),
-      columnHelper.accessor((row) => row.hitCount, {
-        id: 'hitCount',
-        header: t('analytics:ruleshit.columns.hit_count'),
-        size: 100,
-        cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
+      columnHelper.accessor((row) => row.execs, {
+        id: 'execs',
+        header: t('analytics:screeninghits.columns.execs'),
+      }),
+      columnHelper.accessor((row) => row.hits, {
+        id: 'hits',
+        header: t('analytics:screeninghits.columns.hits'),
       }),
       columnHelper.accessor((row) => row.hitRatio, {
         id: 'hitRatio',
-        header: t('analytics:ruleshit.columns.hit_ratio'),
-        size: 120,
+        header: t('analytics:screeninghits.columns.hit_ratio'),
         cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
       }),
-      columnHelper.accessor((row) => row.pivotCount, {
-        id: 'pivotCount',
-        header: t('analytics:ruleshit.columns.pivot_count'),
-        size: 140,
+      columnHelper.accessor((row) => row.avgHitsPerScreening, {
+        id: 'avgHitsPerScreening',
+        header: t('analytics:screeninghits.columns.avg_hits_per_screening'),
         cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
-      }),
-      columnHelper.accessor((row) => row.pivotRatio, {
-        id: 'pivotRatio',
-        header: t('analytics:ruleshit.columns.pivot_ratio'),
-        size: 160,
-        cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
       }),
     ],
     [columnHelper, language, t],
@@ -74,9 +67,8 @@ export function RulesHit({
   return (
     <div className="mt-v2-xl">
       <div className="flex items-center justify-between">
-        <h2 className="text-h2 font-semibold">{t('analytics:ruleshit.title')}</h2>
+        <h2 className="text-h2 font-semibold">{t('analytics:screeninghits.title')}</h2>
       </div>
-
       <div
         aria-busy={isLoading}
         className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative"

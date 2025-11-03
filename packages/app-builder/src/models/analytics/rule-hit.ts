@@ -1,4 +1,4 @@
-import { RuleHitTableResponseDto } from 'marble-api';
+import type { RuleHitTableResponseDto } from 'marble-api';
 
 export type RuleHitTableResponse = {
   ruleName: string;

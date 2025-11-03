@@ -1,6 +1,8 @@
 import { ErrorComponent } from '@app-builder/components';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
 import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
+import { RuleVsDecisionOutcomes } from '@app-builder/components/Analytics/RuleVsDecisionOutcomes';
+import { ScreeningHits } from '@app-builder/components/Analytics/ScreeningHits';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import type { DateRangeFilter as AnalyticsDateRangeFilter } from '@app-builder/models/analytics';
 import {
@@ -191,8 +193,18 @@ export default function Analytics() {
   }, [availableFilters, missingDynamicFilters]);
 
   const {
-    data: { decisionOutcomesPerDay: decisionsData, ruleHitTable: ruleHitTableData } = {
+    data: {
+      decisionOutcomesPerDay: decisionsData,
+      ruleHitTable: ruleHitTableData,
+      screeningHitsTable: screeningHitsTableData,
+      // decisionsScoreDistribution: decisionsScoreDistributionData,
+      ruleVsDecisionOutcome: ruleVsDecisionOutcomeData,
+    } = {
       decisionOutcomesPerDay: null,
+      ruleHitTable: null,
+      screeningHitsTable: null,
+      // decisionsScoreDistribution: null,
+      ruleVsDecisionOutcome: null,
     },
     isFetching: _isAnalyticsPending,
   } = useGetAnalytics({
@@ -354,12 +366,22 @@ export default function Analytics() {
                 />
               </div>
             </div>
-            <Decisions
-              data={decisionsData as DecisionOutcomesPerPeriod}
-              scenarioVersions={scenarioVersions}
-              isLoading={false}
-            />
+            <div className="flex flex-row gap-v2-md w-full items-stretch">
+              <div className="basis-full min-w-0">
+                <Decisions
+                  data={decisionsData as DecisionOutcomesPerPeriod}
+                  scenarioVersions={scenarioVersions}
+                  isLoading={false}
+                />
+              </div>
+              {/* <div className="basis-1/4 min-w-0">
+                <DecisionsScoreDistribution data={decisionsScoreDistributionData ?? []} />
+              </div> */}
+            </div>
+
             <RulesHit data={ruleHitTableData ?? []} isLoading={false} />
+            <RuleVsDecisionOutcomes data={ruleVsDecisionOutcomeData ?? null} isLoading={false} />
+            <ScreeningHits data={screeningHitsTableData ?? []} isLoading={false} />
           </div>
         </div>
       </I18nProvider>

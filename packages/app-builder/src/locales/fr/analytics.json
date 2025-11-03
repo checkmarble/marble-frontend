@@ -1,4 +1,5 @@
 {
+  "decisions_score_distribution.title": "Distribution des scores des décisions",
   "decisions.export.button": "Exporter",
   "decisions.title": "Décisions",
   "decisions.tooltip.daily": "date: {{date}}",
@@ -7,11 +8,18 @@
   "filters.select_comparison_date_range.placeholder": "Ajouter une période à comparer",
   "filters.select_date_range.placeholder": "Sélectionner une période",
   "filters.select_scenario.placeholder": "Sélectionner un scénario",
+  "rule_vs_decision_outcomes.title": "Résultats des règles par décisions",
   "ruleshit.columns.hit_count": "# déclenchements",
   "ruleshit.columns.hit_ratio": "% déclenchements",
   "ruleshit.columns.pivot_count": "# pivots/utilisateurs distincts",
   "ruleshit.columns.pivot_ratio": "% pivots/utilisateurs distincts",
   "ruleshit.columns.rule": "Règle",
   "ruleshit.see_more.label": "Voir plus +",
-  "ruleshit.title": "Décisions par règle"
+  "ruleshit.title": "Décisions par règle",
+  "screeninghits.columns.avg_hits_per_screening": "Moyenne de hits par screening",
+  "screeninghits.columns.execs": "# exécutions",
+  "screeninghits.columns.hit_ratio": "% hits",
+  "screeninghits.columns.hits": "# hits",
+  "screeninghits.columns.name": "Règle",
+  "screeninghits.title": "Hits par screening"
 }

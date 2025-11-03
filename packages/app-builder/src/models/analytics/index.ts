@@ -5,7 +5,10 @@ import { triggerFilter } from './decisions-outcomes-perday';
 
 export * from './available-filters';
 export * from './decisions-outcomes-perday';
+export * from './decisions-score-distribution';
 export * as legacyAnalytics from './legacy-analytics';
+export * from './rule-vs-decision-outcome';
+export * from './screening-hit';
 
 export type Outcome = 'approve' | 'review' | 'blockAndReview' | 'decline';
 export type DecisionsFilter = Map<Outcome, boolean>;
