@@ -17,7 +17,6 @@ export function ScreeningHits({
   const language = useFormatLanguage();
   const [expanded, setExpanded] = useState(false);
 
-  console.log(data);
   const toPercent = (value: number) =>
     formatNumber(value > 1 ? value / 100 : value, {
       language,
