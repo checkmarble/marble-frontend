@@ -69,10 +69,7 @@ export const WithInitialActive: StoryFn<typeof FiltersBar> = (args) => {
 
 export const PrefilledValues: StoryFn<typeof FiltersBar> = (args) => {
   const [value, setValue] = useState<Record<string, FilterValue>>({
-    search: [
-      { op: 'in', value: 'fraud' },
-      { op: 'in', value: 'chargeback' },
-    ],
+    search: { op: 'in', value: ['fraud', 'chargeback'] },
     amount: { op: '>=', value: 1000 },
     isActive: true,
     status: 'approved',
