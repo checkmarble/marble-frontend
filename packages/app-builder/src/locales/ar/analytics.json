@@ -7,6 +7,7 @@
   "filters.select_comparison_date_range.placeholder": "إضافة فترة للمقارنة",
   "filters.select_date_range.placeholder": "اختر فترة",
   "filters.select_scenario.placeholder": "اختر السيناريو",
+  "rule_vs_decision_outcomes.title": "نتائج القواعد vs القرارات",
   "ruleshit.columns.hit_count": "# مرات التطابق",
   "ruleshit.columns.hit_ratio": "% مرات التطابق",
   "ruleshit.columns.pivot_count": "# المحاور/المستخدمون المميزون",

@@ -79,7 +79,7 @@ export function RuleVsDecisionOutcomes({
   return (
     <div className="mt-v2-xl">
       <div className="flex items-center justify-between">
-        <h2 className="text-h2 font-semibold">Rule vs Decision outcomes</h2>
+        <h2 className="text-h2 font-semibold">{t('analytics:rule_vs_decision_outcomes.title')}</h2>
         <ButtonV2
           variant="secondary"
           className="flex items-center gap-v2-sm"
