@@ -21,13 +21,13 @@ function classifyOutcome(
   thresholds?: { review?: number; blockAndReview?: number; decline?: number },
 ): DecisionsScoreDistributionPoint['outcome'] {
   if (!thresholds) return undefined;
-  const r = thresholds.review ?? undefined;
-  const br = thresholds.blockAndReview ?? undefined;
-  const d = thresholds.decline ?? undefined;
+  const review = thresholds.review ?? undefined;
+  const blockAndReview = thresholds.blockAndReview ?? undefined;
+  const decline = thresholds.decline ?? undefined;
 
-  if (d != null && score >= d) return 'decline';
-  if (br != null && score >= br) return 'blockAndReview';
-  if (r != null && score >= r) return 'review';
+  if (decline != null && score >= decline) return 'decline';
+  if (blockAndReview != null && score >= blockAndReview) return 'blockAndReview';
+  if (review != null && score >= review) return 'review';
   return 'approve';
 }
 
