@@ -23,10 +23,10 @@ export function NumberValueFilter({
   const [opSelectIsOpen, setOpSelectIsOpen] = useState(false);
   const [localValue, setLocalValue] = useState<NumberComparisonFilter>(
     (() => {
-      const sv = filter.selectedValue ?? { op: '=', value: 0 };
-      const raw = sv.value;
+      const selectedValue = filter.selectedValue ?? { op: '=', value: 0 };
+      const raw = selectedValue.value;
       const num = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
-      return { op: sv.op ?? '=', value: Number.isNaN(num) ? 0 : num };
+      return { op: selectedValue.op ?? '=', value: Number.isNaN(num) ? 0 : num };
     })(),
   );
   const [inputValue, setInputValue] = useState<string>(
@@ -35,12 +35,12 @@ export function NumberValueFilter({
   const { emitSet, emitRemove } = useFiltersBarContext();
   useEffect(() => {
     if (isOpen) {
-      const sv = filter.selectedValue ?? { op: '=', value: 0 };
-      const raw = sv.value;
+      const selectedValue = filter.selectedValue ?? { op: '=', value: 0 };
+      const raw = selectedValue.value;
       const num = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
       const newValue = Number.isNaN(num) ? 0 : num;
       setLocalValue({
-        op: sv.op ?? '=',
+        op: selectedValue.op ?? '=',
         value: newValue,
       });
       setInputValue(newValue === 0 ? '' : String(newValue));
@@ -58,8 +58,8 @@ export function NumberValueFilter({
 
   const validate = () => {
     const trimmed = inputValue.trim();
-    const n = trimmed === '' ? NaN : Number(trimmed);
-    const payload = Number.isNaN(n) ? null : { op: localValue.op, value: n };
+    const numberValue = trimmed === '' ? NaN : Number(trimmed);
+    const payload = Number.isNaN(numberValue) ? null : { op: localValue.op, value: numberValue };
     emitSet(filter.name, payload);
     setOpen(false);
   };
