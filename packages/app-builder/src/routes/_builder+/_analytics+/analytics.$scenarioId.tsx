@@ -4,6 +4,7 @@ import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
 import { RuleVsDecisionOutcomes } from '@app-builder/components/Analytics/RuleVsDecisionOutcomes';
 import { ScreeningHits } from '@app-builder/components/Analytics/ScreeningHits';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import type { DateRangeFilter as AnalyticsDateRangeFilter } from '@app-builder/models/analytics';
 import {
   type AnalyticsFiltersQuery,
@@ -19,7 +20,7 @@ import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import type { LoaderFunctionArgs } from '@remix-run/node';
-import { useLoaderData, useNavigate, useRouteError, useSearchParams } from '@remix-run/react';
+import { useLoaderData, useRouteError, useSearchParams } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useEffect, useMemo, useState } from 'react';
@@ -89,7 +90,7 @@ export default function Analytics() {
   const [searchParams] = useSearchParams();
   const { t, i18n } = useTranslation(['filters', 'analytics']);
 
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
   const queryString = searchParams.get('q');
 
   useEffect(() => {

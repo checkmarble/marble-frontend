@@ -4,12 +4,13 @@ import { SignInWithGoogle } from '@app-builder/components/Auth/SignInWithGoogle'
 import { SignInWithMicrosoft } from '@app-builder/components/Auth/SignInWithMicrosoft';
 import { UnreadyCallout } from '@app-builder/components/Auth/UnreadyCallout';
 import { Spinner } from '@app-builder/components/Spinner';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { type AuthErrors } from '@app-builder/models/auth-errors';
 import { type AuthPayload } from '@app-builder/services/auth/auth.server';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { Link, useFetcher, useLoaderData, useNavigate, useSearchParams } from '@remix-run/react';
+import { Link, useFetcher, useLoaderData, useSearchParams } from '@remix-run/react';
 import { tryit } from 'radash';
 import { useTranslation } from 'react-i18next';
 import { safeRedirect } from 'remix-utils/safe-redirect';
@@ -87,7 +88,7 @@ export default function Login() {
   const loading = fetcher.state === 'loading';
   const type = fetcher.formData?.get('type');
 
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
 
   return (
     <div className="flex flex-col gap-10 w-full">

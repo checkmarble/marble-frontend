@@ -1,10 +1,10 @@
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useRefreshTokenMutation } from '@app-builder/queries/auth/refresh-token';
 import { useClientServices } from '@app-builder/services/init.client';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useInterval, useVisibilityChange } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
 import { type ActionFunctionArgs, redirect } from '@remix-run/node';
-import { useNavigate } from '@remix-run/react';
 import { useAuthenticityToken } from 'remix-utils/csrf/react';
 
 export function loader() {
@@ -27,7 +27,7 @@ export function useRefreshToken() {
   const refreshTokenMutation = useRefreshTokenMutation();
   const csrf = useAuthenticityToken();
   const visibilityState = useVisibilityChange();
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
   const clientServices = useClientServices();
 
   useInterval(
