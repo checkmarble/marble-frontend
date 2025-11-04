@@ -206,7 +206,7 @@ export default function Analytics() {
       // decisionsScoreDistribution: null,
       ruleVsDecisionOutcome: null,
     },
-    isFetching: _isAnalyticsPending,
+    isFetching: isAnalyticsFetching,
   } = useGetAnalytics({
     scenarioId,
     queryString: queryString ?? '',
@@ -371,7 +371,7 @@ export default function Analytics() {
                 <Decisions
                   data={decisionsData as DecisionOutcomesPerPeriod}
                   scenarioVersions={scenarioVersions}
-                  isLoading={false}
+                  isLoading={isAnalyticsFetching}
                 />
               </div>
               {/* <div className="basis-1/4 min-w-0">
@@ -379,9 +379,12 @@ export default function Analytics() {
               </div> */}
             </div>
 
-            <RulesHit data={ruleHitTableData ?? []} isLoading={false} />
-            <RuleVsDecisionOutcomes data={ruleVsDecisionOutcomeData ?? null} isLoading={false} />
-            <ScreeningHits data={screeningHitsTableData ?? []} isLoading={false} />
+            <RulesHit data={ruleHitTableData ?? []} isLoading={isAnalyticsFetching} />
+            <RuleVsDecisionOutcomes
+              data={ruleVsDecisionOutcomeData ?? null}
+              isLoading={isAnalyticsFetching}
+            />
+            <ScreeningHits data={screeningHitsTableData ?? []} isLoading={isAnalyticsFetching} />
           </div>
         </div>
       </I18nProvider>
