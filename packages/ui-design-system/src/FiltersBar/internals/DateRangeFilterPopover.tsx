@@ -79,11 +79,14 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
           setDateRangeFilter={(value) => setLocalDateRangeFilter(value as any)}
           locale={dateFnsLocale}
         >
-          <div className="grid grid-cols-2 gap-2">
-            <DateRangeFilter.FromNowPicker title="Quick ranges" />
+          <div className="flex flex-col md:flex-row gap-2">
+            <DateRangeFilter.FromNowPicker
+              title="Quick ranges"
+              className="border-r-1 border-grey-90 pr-v2-md"
+            />
             <DateRangeFilter.Calendar locale={dateFnsLocale} />
           </div>
-          <DateRangeFilter.Summary />
+          <DateRangeFilter.Summary className="border-t-1 border-grey-90 pt-v2-sm mt-0" />
         </DateRangeFilter.Root>
       </FilterPopover.Content>
     </FilterPopover.Root>
