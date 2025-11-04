@@ -8,6 +8,7 @@
   "filters.select_comparison_date_range.placeholder": "Add period to compare",
   "filters.select_date_range.placeholder": "Select date range",
   "filters.select_scenario.placeholder": "Select scenario",
+  "no_data": "No data available",
   "rule_vs_decision_outcomes.title": "Rule vs Decision outcomes",
   "ruleshit.columns.hit_count": "# hits",
   "ruleshit.columns.hit_ratio": "% hits",
