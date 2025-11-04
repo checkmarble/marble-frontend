@@ -5,6 +5,7 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import { ExportedFields } from '@app-builder/models/data-model';
 import { ingestedDataFieldSchema } from '@app-builder/queries/settings/scenarios/schema';
+import * as R from 'remeda';
 import invariant from 'tiny-invariant';
 import z from 'zod';
 
@@ -48,12 +49,12 @@ export const action = createServerFn(
 
       if ('triggerObjectField' in parsedCreate.data) {
         const field = parsedCreate.data.triggerObjectField;
-        if (current.triggerObjectFields.includes(field)) {
-          return { success: false, errors: ['Field already exported'] };
+        if (!current.triggerObjectFields.includes(field)) {
+          return { success: false, errors: ['Field not exported'] };
         }
         const exportedFields =
           await context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
-            triggerObjectFields: [...current.triggerObjectFields, field],
+            triggerObjectFields: current.triggerObjectFields.filter((f) => f !== field),
             ingestedDataFields: current.ingestedDataFields,
           });
         return { success: true, data: exportedFields };
@@ -61,16 +62,13 @@ export const action = createServerFn(
 
       if ('ingestedDataField' in parsedCreate.data) {
         const field = parsedCreate.data.ingestedDataField;
-        const exists = (current.ingestedDataFields ?? []).some(
-          (f) => f.name === field.name && (f.path ?? []).join('.') === field.path.join('.'),
-        );
-        if (exists) {
-          return { success: false, errors: ['Field already exported'] };
+        if (!current.ingestedDataFields.some((current) => R.isDeepEqual(current, field))) {
+          return { success: false, errors: ['Field not exported'] };
         }
         const exportedFields =
           await context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
             triggerObjectFields: current.triggerObjectFields,
-            ingestedDataFields: [...(current.ingestedDataFields ?? []), field],
+            ingestedDataFields: current.ingestedDataFields.filter((f) => !R.isDeepEqual(f, field)),
           });
         return { success: true, data: exportedFields };
       }
