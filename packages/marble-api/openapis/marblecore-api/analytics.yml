@@ -254,8 +254,8 @@ components:
         - rule_name
         - hit_count
         - hit_ratio
-        - pivot_count
-        - pivot_ratio
+        - distinct_pivots
+        - repeat_ratio
       properties:
         rule_name:
           type: string
@@ -263,9 +263,9 @@ components:
           type: integer
         hit_ratio:
           type: number
-        pivot_count:
+        distinct_pivots:
           type: integer
-        pivot_ratio:
+        repeat_ratio:
           type: number
     ScreeningHitTableResponseDto:
       type: object
