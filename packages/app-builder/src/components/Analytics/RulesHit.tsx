@@ -48,14 +48,14 @@ export function RulesHit({
         size: 120,
         cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
       }),
-      columnHelper.accessor((row) => row.pivotCount, {
-        id: 'pivotCount',
+      columnHelper.accessor((row) => row.distinctPivots, {
+        id: 'distinctPivots',
         header: t('analytics:rule_hits.columns.pivot_count'),
         size: 140,
         cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
       }),
-      columnHelper.accessor((row) => row.pivotRatio, {
-        id: 'pivotRatio',
+      columnHelper.accessor((row) => row.repeatRatio, {
+        id: 'repeatRatio',
         header: t('analytics:rule_hits.columns.pivot_ratio'),
         size: 160,
         cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,

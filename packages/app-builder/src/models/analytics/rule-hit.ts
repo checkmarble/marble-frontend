@@ -4,8 +4,8 @@ export type RuleHitTableResponse = {
   ruleName: string;
   hitCount: number;
   hitRatio: number;
-  pivotCount: number;
-  pivotRatio: number;
+  distinctPivots: number;
+  repeatRatio: number;
 };
 
 export const adaptRuleHitTable = (val: RuleHitTableResponseDto[]): RuleHitTableResponse[] => {
@@ -13,7 +13,7 @@ export const adaptRuleHitTable = (val: RuleHitTableResponseDto[]): RuleHitTableR
     ruleName: v.rule_name,
     hitCount: v.hit_count,
     hitRatio: v.hit_ratio,
-    pivotCount: v.pivot_count,
-    pivotRatio: v.pivot_ratio,
+    distinctPivots: v.distinct_pivots,
+    repeatRatio: v.hit_count > 0 ? v.repeat_ratio : 0,
   }));
 };

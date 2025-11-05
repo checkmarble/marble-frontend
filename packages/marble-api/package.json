@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "biome lint",
     "type-check": "tsc --noEmit",
-    "generate-api": "bunx swagger-cli validate openapis/marblecore-api.yaml && tsx scripts/generate.ts"
+    "generate-api": "bunx swagger-cli validate openapis/marblecore-api.yaml && bun scripts/generate.ts"
   },
   "devDependencies": {
     "@types/node": "22.13.10",
