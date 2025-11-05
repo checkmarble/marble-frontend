@@ -90,7 +90,7 @@ export function RuleVsDecisionOutcomes({
         <ButtonV2
           variant="secondary"
           className="flex items-center gap-v2-sm"
-          disabled={isLoading || data?.length === 0}
+          disabled={isLoading || !data?.length}
           onClick={handleExportCsv}
         >
           <Icon icon="download" className="size-4" />
@@ -100,76 +100,80 @@ export function RuleVsDecisionOutcomes({
 
       <div
         aria-busy={isLoading}
-        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative"
+        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative min-h-v2-xxxl"
       >
         {isLoading ? (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
             <Spinner className="size-6" />
           </div>
-        ) : null}
-
-        <div className="flex w-full flex-col items-start gap-v2-md">
-          <div className="w-full" style={{ height: chartHeight }}>
-            <ResponsiveBar
-              data={data ?? []}
-              indexBy="rule"
-              enableLabel={false}
-              keys={selectedOutcomes}
-              padding={0.5}
-              margin={{ top: 8, right: 32, bottom: 32, left: leftMargin }}
-              colors={getBarColors}
-              layout="horizontal"
-              valueScale={{ type: 'linear', min: 0, max: maxValueScale }}
-              theme={{
-                axis: {
-                  ticks: {
-                    text: {
-                      fontSize: '1rem',
+        ) : data?.length ? (
+          <div className="flex w-full flex-col items-start gap-v2-md">
+            <div className="w-full" style={{ height: chartHeight }}>
+              <ResponsiveBar
+                data={data ?? []}
+                indexBy="rule"
+                enableLabel={false}
+                keys={selectedOutcomes}
+                padding={0.5}
+                margin={{ top: 8, right: 32, bottom: 32, left: leftMargin }}
+                colors={getBarColors}
+                layout="horizontal"
+                valueScale={{ type: 'linear', min: 0, max: maxValueScale }}
+                theme={{
+                  axis: {
+                    ticks: {
+                      text: {
+                        fontSize: '1rem',
+                      },
                     },
                   },
-                },
-              }}
-              axisLeft={{}}
-              axisBottom={{
-                format: (value: number) =>
-                  new Intl.NumberFormat(language, {
-                    style: 'percent',
-                    maximumFractionDigits: 0,
-                  }).format((Number(value) || 0) / 100),
-                tickValues: maxValueScale
-                  ? [
-                      0,
-                      maxValueScale / 4,
-                      maxValueScale / 2,
-                      (3 * maxValueScale) / 4,
-                      maxValueScale,
-                    ]
-                  : undefined,
-              }}
-              tooltip={({ id, value, data }) => (
-                <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
-                  <div className="flex items-center gap-v2-sm">
-                    <strong className="text-grey-00 font-semibold">
-                      {String(id)}: {Number(value).toFixed(1)}%
-                    </strong>
+                }}
+                axisLeft={{}}
+                axisBottom={{
+                  format: (value: number) =>
+                    new Intl.NumberFormat(language, {
+                      style: 'percent',
+                      maximumFractionDigits: 0,
+                    }).format((Number(value) || 0) / 100),
+                  tickValues: maxValueScale
+                    ? [
+                        0,
+                        maxValueScale / 4,
+                        maxValueScale / 2,
+                        (3 * maxValueScale) / 4,
+                        maxValueScale,
+                      ]
+                    : undefined,
+                }}
+                tooltip={({ id, value, data }) => (
+                  <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
+                    <div className="flex items-center gap-v2-sm">
+                      <strong className="text-grey-00 font-semibold">
+                        {String(id)}: {Number(value).toFixed(1)}%
+                      </strong>
+                    </div>
+                    <div className="text-s text-grey-60">{data.rule}</div>
                   </div>
-                  <div className="text-s text-grey-60">{data.rule}</div>
-                </div>
-              )}
-              motionConfig={{
-                mass: 1,
-                tension: 170,
-                friction: 8,
-                clamp: true,
-                precision: 0.01,
-                velocity: 0,
-              }}
-            />
+                )}
+                motionConfig={{
+                  mass: 1,
+                  tension: 170,
+                  friction: 8,
+                  clamp: true,
+                  precision: 0.01,
+                  velocity: 0,
+                }}
+              />
+            </div>
+            <div className="flex w-full justify-center">
+              <OutcomeFilter decisions={decisions} onChange={setDecisions} />
+            </div>
           </div>
-          <div className="flex w-full justify-center">
-            <OutcomeFilter decisions={decisions} onChange={setDecisions} />
+        ) : (
+          <div className="flex items-center justify-center h-full min-h-40">
+            <span className="text-v2-md text-grey-80">{t('analytics:no_data')}</span>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

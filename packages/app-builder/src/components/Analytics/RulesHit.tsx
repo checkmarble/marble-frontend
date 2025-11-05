@@ -109,6 +109,11 @@ export function RulesHit({
             </Table.Body>
           </Table.Container>
         </div>
+        {!isLoading && !data.length ? (
+          <div className="flex items-center justify-center h-full min-h-40">
+            <span className="text-v2-md text-grey-80">{t('analytics:no_data')}</span>
+          </div>
+        ) : null}
       </div>
     </div>
   );
