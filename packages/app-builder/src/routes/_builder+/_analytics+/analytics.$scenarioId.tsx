@@ -5,7 +5,10 @@ import { RuleVsDecisionOutcomes } from '@app-builder/components/Analytics/RuleVs
 import { ScreeningHits } from '@app-builder/components/Analytics/ScreeningHits';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import type { DateRangeFilter as AnalyticsDateRangeFilter } from '@app-builder/models/analytics';
+import type {
+  DateRangeFilter as AnalyticsDateRangeFilter,
+  AvailableFiltersResponse,
+} from '@app-builder/models/analytics';
 import {
   type AnalyticsFiltersQuery,
   analyticsFiltersQuery,
@@ -41,6 +44,8 @@ interface LoaderData {
     createdAt: string;
   }>;
 }
+
+import { useRef } from 'react';
 
 export const handle = {
   i18n: ['navigation', 'filters', 'analytics'] satisfies Namespace,
@@ -148,50 +153,67 @@ export default function Analytics() {
     return [primary, secondary].filter(Boolean) as AnalyticsDateRangeFilter[];
   }, [volatileRange, volatileCompareRange, parsedFiltersResult]);
 
-  const { data: availableFilters, fetchStatus: avaiableFitlersFetchStatus } =
-    useGetAvailableFilters({
-      ranges: effectiveRanges,
-      scenarioId: effectiveScenarioId,
-    });
+  const { data: availableFilters } = useGetAvailableFilters({
+    ranges: effectiveRanges,
+    scenarioId: effectiveScenarioId,
+  });
 
-  // Compute names of dynamic filters currently set but not present in latest availableFilters
-  const missingDynamicFilters = useMemo(() => {
-    const selectedDynamicNames = Object.keys(filtersValues).filter(
-      (k) => k !== 'scenarioId' && k !== 'range' && k !== 'compareRange',
-    );
-    const availableNames = new Set((availableFilters ?? []).map((f) => f.name));
-    return selectedDynamicNames.filter((name) => !availableNames.has(name));
-  }, [availableFilters, filtersValues]);
+  const seenAvailableFilters = useRef<Map<string, AvailableFiltersResponse[number]>>(new Map());
+
+  useEffect(() => {
+    availableFilters?.forEach((filter) => {
+      seenAvailableFilters.current.set(filter.name, filter);
+    });
+  }, [availableFilters]);
 
   type AvailableFiltersDescriptor = FilterDescriptor & {
     source?: FilterSource;
     unavailable?: boolean;
   };
-  const { dynamicDescriptors } = useMemo(() => {
-    const index: Record<string, unknown> = {};
-    const descriptors: AvailableFiltersDescriptor[] = (availableFilters ?? []).map((filter) => {
-      const common = {
+
+  const dynamicDescriptors: AvailableFiltersDescriptor[] = useMemo(() => {
+    const descriptors: Map<string, AvailableFiltersDescriptor> = new Map();
+
+    const appendToDescriptors = (
+      filter: AvailableFiltersResponse[number],
+      unavailable: boolean,
+    ): void => {
+      const baseDescriptor = {
         name: filter.name,
         placeholder: filter.name,
-        removable: true as const,
+        removable: true,
+        unavailable,
         source: filter.source,
-        unavailable: missingDynamicFilters.includes(filter.name) ? true : undefined,
       };
       switch (filter.type) {
         case 'string':
-          index[filter.name] = { source: filter.source, kind: 'text' };
-          return { ...common, type: 'text', op: 'in' as const };
+          descriptors.set(filter.name, {
+            ...baseDescriptor,
+            type: 'text',
+            op: 'in',
+          });
+          break;
         case 'number':
-          index[filter.name] = { source: filter.source, kind: 'number' };
-          return { ...common, type: 'number', op: '=' as const };
+          descriptors.set(filter.name, {
+            ...baseDescriptor,
+            type: 'number',
+            op: '=',
+          });
+          break;
         case 'boolean':
-          index[filter.name] = { source: filter.source, kind: 'boolean' };
-          return { ...common, type: 'boolean' as const };
+          descriptors.set(filter.name, {
+            ...baseDescriptor,
+            type: 'boolean',
+          });
+          break;
       }
-    }) as AvailableFiltersDescriptor[];
+    };
 
-    return { dynamicDescriptors: descriptors };
-  }, [availableFilters, missingDynamicFilters]);
+    seenAvailableFilters.current.forEach((filter) => appendToDescriptors(filter, true));
+    availableFilters?.forEach((filter) => appendToDescriptors(filter, false));
+
+    return Array.from(descriptors.values());
+  }, [availableFilters, seenAvailableFilters]);
 
   const {
     data: {
@@ -358,12 +380,6 @@ export default function Analytics() {
                   value={filtersValues}
                   onUpdate={onFiltersUpdate}
                   onChange={(change, _next) => onInstantUpdate(change)}
-                  options={{
-                    dynamicSkeletons: {
-                      enabled: true,
-                      state: avaiableFitlersFetchStatus === 'fetching' ? 'loading' : 'success',
-                    },
-                  }}
                 />
               </div>
             </div>

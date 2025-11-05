@@ -92,10 +92,9 @@ export function makeGetAnalyticsRepository() {
     ): Promise<DecisionOutcomesPerPeriod | null> => {
       const parsed = transformAnalyticsQuery.parse(args);
       if (!parsed.length) throw new Error('No date range provided');
-
       const [raw, rawCompare] = await Promise.all([
         client.getDecisionOutcomesPerDay(parsed[0]!),
-        ...(parsed[1] ? [client.getDecisionOutcomesPerDay(parsed[1])] : []),
+        parsed[1] && client.getDecisionOutcomesPerDay(parsed[1]),
       ]);
 
       const merged = mergeDateRanges([raw, ...(rawCompare ? [rawCompare] : [])]);
