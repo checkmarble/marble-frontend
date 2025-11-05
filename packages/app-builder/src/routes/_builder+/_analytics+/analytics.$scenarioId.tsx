@@ -334,7 +334,7 @@ export default function Analytics() {
     {
       type: 'select',
       name: 'scenarioId',
-      placeholder: t('analytics:filters.select_scenario.placeholder'),
+      placeholder: 'placeholder-do-not-happen',
       options: scenarios.map((scenario) => ({ label: scenario.name, value: scenario.id })),
       removable: false,
       instantUpdate: true,
@@ -342,7 +342,7 @@ export default function Analytics() {
     {
       type: 'date-range-popover',
       name: 'range',
-      placeholder: t('analytics:filters.select_date_range.placeholder'),
+      placeholder: 'placeholder-do-not-happen',
       removable: false,
       instantUpdate: true,
     },

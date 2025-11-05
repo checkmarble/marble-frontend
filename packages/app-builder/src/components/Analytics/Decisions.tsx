@@ -141,15 +141,12 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     switch (groupDate) {
       case 'monthly':
         return (
-          <Trans
-            i18nKey="analytics:decisions.tooltip.monthly"
-            values={{
-              date: dateObj.toLocaleDateString(language, {
-                month: 'short',
-                year: isSameYear ? undefined : 'numeric',
-              }),
-            }}
-          />
+          <span className="capitalize">
+            {dateObj.toLocaleDateString(language, {
+              month: 'long',
+              year: isSameYear ? undefined : 'numeric',
+            })}
+          </span>
         );
       case 'weekly':
         return (
@@ -383,7 +380,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                   groupDate === 'daily' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''
                 }
               >
-                Day
+                {t('analytics:time_granularity.day')}
               </ButtonV2>
               <ButtonV2
                 disabled={!data?.weekly || !data?.metadata.totalDecisions}
@@ -394,7 +391,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                   groupDate === 'weekly' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''
                 }
               >
-                Week
+                {t('analytics:time_granularity.week')}
               </ButtonV2>
               <ButtonV2
                 disabled={!data?.monthly || !data?.metadata.totalDecisions}
@@ -405,7 +402,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                   groupDate === 'monthly' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''
                 }
               >
-                Month
+                {t('analytics:time_granularity.month')}
               </ButtonV2>
             </div>
           </div>
