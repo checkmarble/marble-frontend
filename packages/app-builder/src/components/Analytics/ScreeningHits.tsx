@@ -32,25 +32,25 @@ export function ScreeningHits({
     () => [
       columnHelper.accessor((row) => row.name, {
         id: 'name',
-        header: t('analytics:screeninghits.columns.name'),
+        header: t('analytics:screening_hits.columns.name'),
         cell: ({ getValue }) => <span className="line-clamp-1">{getValue()}</span>,
       }),
       columnHelper.accessor((row) => row.execs, {
         id: 'execs',
-        header: t('analytics:screeninghits.columns.execs'),
+        header: t('analytics:screening_hits.columns.execs'),
       }),
       columnHelper.accessor((row) => row.hits, {
         id: 'hits',
-        header: t('analytics:screeninghits.columns.hits'),
+        header: t('analytics:screening_hits.columns.hits'),
       }),
       columnHelper.accessor((row) => row.hitRatio, {
         id: 'hitRatio',
-        header: t('analytics:screeninghits.columns.hit_ratio'),
+        header: t('analytics:screening_hits.columns.hit_ratio'),
         cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
       }),
       columnHelper.accessor((row) => row.avgHitsPerScreening, {
         id: 'avgHitsPerScreening',
-        header: t('analytics:screeninghits.columns.avg_hits_per_screening'),
+        header: t('analytics:screening_hits.columns.avg_hits_per_screening'),
         cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
       }),
     ],
@@ -67,7 +67,7 @@ export function ScreeningHits({
   return (
     <div className="mt-v2-xl">
       <div className="flex items-center justify-between">
-        <h2 className="text-h2 font-semibold">{t('analytics:screeninghits.title')}</h2>
+        <h2 className="text-h2 font-semibold">{t('analytics:screening_hits.title')}</h2>
       </div>
       <div
         aria-busy={isLoading}
@@ -94,7 +94,7 @@ export function ScreeningHits({
                     className="text-s w-full truncate px-4 font-medium text-purple-65"
                     colSpan={table.getHeaderGroups()[0]?.headers.length ?? 5}
                   >
-                    {t('analytics:ruleshit.see_more.label')}
+                    {t('analytics:rule_hits.see_more.label')}
                   </td>
                 </tr>
               ) : null}

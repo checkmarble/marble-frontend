@@ -349,7 +349,9 @@ export function FiltersBar({
               onClick={() => contextValue.emitUpdate()}
               disabled={!hasChanges}
             >
-              {t('filters:ds.apply_button.label')}
+              {hasChanges
+                ? t('filters:ds.reapply_button.label')
+                : t('filters:ds.apply_button.label')}
             </ButtonV2>
           </div>
         </div>
