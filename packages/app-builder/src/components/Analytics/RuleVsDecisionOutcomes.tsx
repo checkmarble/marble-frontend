@@ -47,6 +47,15 @@ export function RuleVsDecisionOutcomes({
     return outcomeColors[id] ?? '#9ca3af';
   };
 
+  const MAX_RULE_NAME_LENGTH = 42;
+  const MIN_LEFT_MARGIN = 8;
+  const leftMargin = Math.max(
+    (data ? Math.max(...data.map((d) => Math.min(d.rule.length, MAX_RULE_NAME_LENGTH)), 0) : 0) *
+      MIN_LEFT_MARGIN +
+      MIN_LEFT_MARGIN,
+    MIN_LEFT_MARGIN,
+  );
+
   const handleExportCsv = () => {
     if (!data || !data.length) return;
     const headers = ['rule', ...decisions.keys(), 'total'];
@@ -104,7 +113,7 @@ export function RuleVsDecisionOutcomes({
                 enableLabel={false}
                 keys={selectedOutcomes}
                 padding={0.5}
-                margin={{ top: 8, right: 8, bottom: 42, left: 340 }}
+                margin={{ top: 8, right: 8, bottom: 42, left: leftMargin }}
                 colors={getBarColors}
                 layout="horizontal"
                 valueScale={{ type: 'linear', min: 0, max: maxValueScale }}
@@ -120,7 +129,7 @@ export function RuleVsDecisionOutcomes({
                 axisLeft={{
                   tickSize: 0,
                   tickPadding: 4,
-                  truncateTickAt: 42,
+                  truncateTickAt: MAX_RULE_NAME_LENGTH,
                 }}
                 axisBottom={{
                   format: (value: number) =>
