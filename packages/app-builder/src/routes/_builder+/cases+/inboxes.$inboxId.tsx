@@ -3,6 +3,7 @@ import { casesI18n } from '@app-builder/components/Cases';
 import { type CasesFilters, casesFiltersSchema } from '@app-builder/components/Cases/Filters';
 import { InboxPage } from '@app-builder/components/Cases/InboxPage';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { isForbiddenHttpError, isNotFoundHttpError } from '@app-builder/models';
 import { type Case, type CaseStatus, caseStatuses } from '@app-builder/models/cases';
@@ -17,7 +18,7 @@ import { parseIdParamSafe, parseQuerySafe } from '@app-builder/utils/input-valid
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { useLoaderData, useNavigate } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
 import { useCallback } from 'react';
@@ -159,7 +160,7 @@ export default function Cases() {
     validateData: (data) => data.items.length > 0,
   });
 
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
   const navigateCasesList = useCallback(
     (casesFilters: CasesFilters, pagination?: PaginationParams) => {
       if (!pagination) {

@@ -17,6 +17,7 @@ import {
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { decisionFilterNames } from '@app-builder/components/Decisions/Filters/filters';
 import { FiltersButton } from '@app-builder/components/Filters';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useCursorPaginatedFetcher } from '@app-builder/hooks/useCursorPaginatedFetcher';
 import { useListSelection } from '@app-builder/hooks/useListSelection';
 import { type Decision } from '@app-builder/models/decision';
@@ -26,7 +27,7 @@ import { parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { Form, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
+import { Form, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import qs from 'qs';
@@ -126,7 +127,7 @@ export default function Decisions() {
   });
   const { items: decisions, ...pagination } = data;
 
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
   const navigateDecisionList = useCallback(
     (decisionFilters: DecisionFilters, pagination?: PaginationParams) => {
       if (!pagination) {

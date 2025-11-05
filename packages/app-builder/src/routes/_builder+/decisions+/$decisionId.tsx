@@ -18,6 +18,7 @@ import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { ScreeningDetail } from '@app-builder/components/Decisions/ScreeningDetail';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { isNotFoundHttpError, Pivot } from '@app-builder/models';
 import { DecisionDetails } from '@app-builder/models/decision';
 import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
@@ -30,7 +31,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { shortUUIDSchema } from '@app-builder/utils/schema/shortUUIDSchema';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs } from '@remix-run/node';
-import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from '@remix-run/react';
+import { isRouteErrorResponse, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -223,7 +224,7 @@ function AddToCase({ decisionIds }: { decisionIds: string[] }) {
 }
 
 const DecisionNotFound = () => {
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
   const { t } = useTranslation(['common']);
   return (
     <div className="m-auto flex flex-col items-center gap-4">

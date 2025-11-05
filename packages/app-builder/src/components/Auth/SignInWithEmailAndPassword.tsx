@@ -1,3 +1,4 @@
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import {
   EmailUnverified,
   InvalidLoginCredentials,
@@ -10,7 +11,7 @@ import { useClientServices } from '@app-builder/services/init.client';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { sleep } from '@app-builder/utils/sleep';
-import { Link, useNavigate } from '@remix-run/react';
+import { Link } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
@@ -18,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button } from 'ui-design-system';
 import * as z from 'zod/v4';
-
 import { FormErrorOrDescription } from '../Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '../Form/Tanstack/FormInput';
 import { FormLabel } from '../Form/Tanstack/FormLabel';
@@ -46,7 +46,7 @@ export function SignInWithEmailAndPassword({
 }) {
   const { t } = useTranslation(['auth', 'common']);
   const clientServices = useClientServices();
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
   const hydrated = useHydrated();
 
   const emailAndPasswordSignIn = useEmailAndPasswordSignIn(

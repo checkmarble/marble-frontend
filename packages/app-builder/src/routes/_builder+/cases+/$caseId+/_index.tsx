@@ -14,6 +14,7 @@ import { DataModelExplorerProvider } from '@app-builder/components/DataModelExpl
 import { LeftSidebarSharpFactory } from '@app-builder/components/Layout/LeftSidebar';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import {
   type DataModelWithTableOptions,
   isNotFoundHttpError,
@@ -30,14 +31,7 @@ import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/pre
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
-import {
-  defer,
-  isRouteErrorResponse,
-  Link,
-  useLoaderData,
-  useNavigate,
-  useRouteError,
-} from '@remix-run/react';
+import { defer, isRouteErrorResponse, Link, useLoaderData, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
 import { type Namespace } from 'i18next';
 import { useEffect, useState } from 'react';
@@ -225,7 +219,6 @@ export default function CaseManagerIndexPage() {
     isKycEnrichmentEnabled,
   } = useLoaderData<typeof loader>();
   const { t } = useTranslation(casesI18n);
-  const navigate = useNavigate();
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
   const [selectedDecision, selectDecision] = useState<DetailedCaseDecision | null>(null);
   const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision' | 'snooze'>(
@@ -336,15 +329,13 @@ export default function CaseManagerIndexPage() {
             </ClientOnly>
           </AiAssist.Root>
           {nextCaseId ? (
-            <ButtonV2
-              variant="secondary"
-              onClick={() =>
-                navigate(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(nextCaseId) }))
-              }
+            <Link
+              className={CtaV2ClassName({ variant: 'secondary', mode: 'normal' })}
+              to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(nextCaseId) })}
             >
               {t('cases:next_unassigned_case')}
               <Icon icon="arrow-up" className="size-3.5 rotate-90" />
-            </ButtonV2>
+            </Link>
           ) : null}
         </div>
       </Page.Header>
@@ -397,7 +388,7 @@ export default function CaseManagerIndexPage() {
 }
 
 export function ErrorBoundary() {
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
   const { t } = useTranslation(casesI18n);
   const error = useRouteError();
   captureRemixErrorBoundaryError(error);

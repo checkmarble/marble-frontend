@@ -1,4 +1,5 @@
-import { Link, useNavigate } from '@remix-run/react';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
+import { Link } from '@remix-run/react';
 import { cva, VariantProps } from 'class-variance-authority';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -108,7 +109,7 @@ const pageBack = cva(
 );
 
 function PageBackButton({ className, ...props }: React.ComponentProps<'button'>) {
-  const navigate = useNavigate();
+  const navigate = useAgnosticNavigation();
   const { t } = useTranslation(['common']);
   return (
     <Tooltip.Default content={t('common:go_back')}>
