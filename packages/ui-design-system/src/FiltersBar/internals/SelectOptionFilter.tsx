@@ -13,6 +13,7 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
   const [internalSelectedValue, setInternalSelectedValue] = useState<string>(
     (selectedValue as string) || '',
   );
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setInternalSelectedValue((selectedValue as string) || '');
@@ -23,6 +24,7 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
   const handleSelect = (value: string) => {
     setInternalSelectedValue(value);
     emitSet(name, value);
+    setOpen(false);
   };
 
   const getOptionLabel = (option: string | { label: string; value: string }) => {
@@ -44,7 +46,7 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
 
   return (
     <div className="flex flex-col gap-2 p-2">
-      <MenuCommand.Menu>
+      <MenuCommand.Menu open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
           <ButtonV2 variant="primary" mode="normal" className="justify-between w-full">
             <span className="text-xs truncate flex items-center gap-1">
