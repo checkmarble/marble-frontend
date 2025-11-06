@@ -1,9 +1,4 @@
-import {
-  AddNewFilterButton,
-  ClearAllFiltersButton,
-  FilterItem,
-  FilterPopover,
-} from '@app-builder/components/Filters';
+import { AddNewFilterButton, ClearAllFiltersButton, FilterItem, FilterPopover } from '@app-builder/components/Filters';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Separator } from 'ui-design-system';
@@ -32,8 +27,7 @@ export function TestRunsFiltersBar() {
     [onTestRunsFilterClose],
   );
 
-  const { undefinedTestRunsFilterNames, definedTestRunsFilterNames } =
-    useTestRunsFiltersPartition();
+  const { undefinedTestRunsFilterNames, definedTestRunsFilterNames } = useTestRunsFiltersPartition();
 
   const clearFilter = useClearFilter();
   const clearAllFilters = useClearAllFilters();

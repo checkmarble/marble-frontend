@@ -24,9 +24,7 @@ export function Root({
     onOpenChange?.(value);
   });
 
-  return (
-    <AiAssistContext.Provider value={{ isOpened, setOpened }}>{children}</AiAssistContext.Provider>
-  );
+  return <AiAssistContext.Provider value={{ isOpened, setOpened }}>{children}</AiAssistContext.Provider>;
 }
 
 function Trigger({ children }: { children: React.ReactNode }) {

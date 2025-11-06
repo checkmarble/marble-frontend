@@ -33,10 +33,7 @@ export function CommitIterationDraft({
 
   if (!iteration.isValid) {
     return (
-      <Tooltip.Default
-        className="text-xs"
-        content={t('scenarios:deployment_modal.commit.validation_error')}
-      >
+      <Tooltip.Default className="text-xs" content={t('scenarios:deployment_modal.commit.validation_error')}>
         {button}
       </Tooltip.Default>
     );
@@ -52,13 +49,7 @@ export function CommitIterationDraft({
   );
 }
 
-function CommitScenarioDraftContent({
-  scenarioId,
-  iterationId,
-}: {
-  scenarioId: string;
-  iterationId: string;
-}) {
+function CommitScenarioDraftContent({ scenarioId, iterationId }: { scenarioId: string; iterationId: string }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const commitIterationMutation = useCommitIterationMutation(scenarioId, iterationId);
   const revalidate = useLoaderRevalidator();
@@ -102,18 +93,12 @@ function CommitScenarioDraftContent({
                 <Checkbox
                   name={field.name}
                   defaultChecked={field.state.value}
-                  onCheckedChange={(state) =>
-                    state !== 'indeterminate' && field.handleChange(state)
-                  }
+                  onCheckedChange={(state) => state !== 'indeterminate' && field.handleChange(state)}
                 />
-                <FormLabel name={field.name}>
-                  {t('scenarios:deployment_modal.commit.draft_is_readonly')}
-                </FormLabel>
+                <FormLabel name={field.name}>{t('scenarios:deployment_modal.commit.draft_is_readonly')}</FormLabel>
                 <Tooltip.Default
                   content={
-                    <p className="max-w-60">
-                      {t('scenarios:deployment_modal.commit.draft_is_readonly.tooltip')}
-                    </p>
+                    <p className="max-w-60">{t('scenarios:deployment_modal.commit.draft_is_readonly.tooltip')}</p>
                   }
                 >
                   <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-6" />
@@ -133,18 +118,12 @@ function CommitScenarioDraftContent({
                 <Checkbox
                   name={field.name}
                   defaultChecked={field.state.value}
-                  onCheckedChange={(state) =>
-                    state !== 'indeterminate' && field.handleChange(state)
-                  }
+                  onCheckedChange={(state) => state !== 'indeterminate' && field.handleChange(state)}
                 />
-                <FormLabel name={field.name}>
-                  {t('scenarios:deployment_modal.commit.activate_to_go_in_prod')}
-                </FormLabel>
+                <FormLabel name={field.name}>{t('scenarios:deployment_modal.commit.activate_to_go_in_prod')}</FormLabel>
                 <Tooltip.Default
                   content={
-                    <p className="max-w-60">
-                      {t('scenarios:deployment_modal.commit.activate_to_go_in_prod.tooltip')}
-                    </p>
+                    <p className="max-w-60">{t('scenarios:deployment_modal.commit.activate_to_go_in_prod.tooltip')}</p>
                   }
                 >
                   <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-6" />
@@ -164,13 +143,9 @@ function CommitScenarioDraftContent({
                 <Checkbox
                   name={field.name}
                   defaultChecked={field.state.value}
-                  onCheckedChange={(state) =>
-                    state !== 'indeterminate' && field.handleChange(state)
-                  }
+                  onCheckedChange={(state) => state !== 'indeterminate' && field.handleChange(state)}
                 />
-                <FormLabel name={field.name}>
-                  {t('scenarios:deployment_modal.commit.change_is_immediate')}
-                </FormLabel>
+                <FormLabel name={field.name}>{t('scenarios:deployment_modal.commit.change_is_immediate')}</FormLabel>
               </div>
             )}
           </form.Field>

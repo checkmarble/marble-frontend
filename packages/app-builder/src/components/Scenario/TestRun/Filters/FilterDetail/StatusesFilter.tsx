@@ -12,10 +12,7 @@ export function StatusesFilter() {
   const { selectedStatuses, setSelectedStatuses } = useStatusesFilter();
   const deferredValue = useDeferredValue(value);
 
-  const matches = useMemo(
-    () => matchSorter(toggle(statuses, 'unknown'), deferredValue),
-    [deferredValue],
-  );
+  const matches = useMemo(() => matchSorter(toggle(statuses, 'unknown'), deferredValue), [deferredValue]);
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -29,11 +26,7 @@ export function StatusesFilter() {
         <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((status) => {
             return (
-              <SelectWithCombobox.ComboboxItem
-                key={status}
-                value={status}
-                className="align-baseline"
-              >
+              <SelectWithCombobox.ComboboxItem key={status} value={status} className="align-baseline">
                 <TestRunStatus status={status} />
               </SelectWithCombobox.ComboboxItem>
             );

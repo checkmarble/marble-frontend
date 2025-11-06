@@ -1,10 +1,6 @@
 import { CopyToClipboardButton, casesI18n, ErrorComponent, Page } from '@app-builder/components';
 import { AiAssist } from '@app-builder/components/AiAssist';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { DecisionPanel } from '@app-builder/components/CaseManager/DecisionPanel/DecisionPanel';
 import { CaseManagerDrawer } from '@app-builder/components/CaseManager/Drawer/Drawer';
 import { PivotsPanel } from '@app-builder/components/CaseManager/PivotsPanel/PivotsPanel';
@@ -58,20 +54,19 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     i18nextService: { getFixedT },
     toastSessionService: { getSession, commitSession },
   } = initServerServices(request);
-  const { aiAssistSettings, cases, inbox, user, dataModelRepository, entitlements } =
-    await authService.isAuthenticated(request, {
+  const { aiAssistSettings, cases, inbox, user, dataModelRepository, entitlements } = await authService.isAuthenticated(
+    request,
+    {
       failureRedirect: getRoute('/sign-in'),
-    });
+    },
+  );
 
   const parsedResult = await parseIdParamSafe(params, 'caseId');
   if (!parsedResult.success) {
     return badRequest('Invalid UUID');
   }
   const { caseId } = parsedResult.data;
-  const [toastSession, t] = await Promise.all([
-    getSession(request),
-    getFixedT(request, ['common', 'cases']),
-  ]);
+  const [toastSession, t] = await Promise.all([getSession(request), getFixedT(request, ['common', 'cases'])]);
 
   const [currentCase, inboxes] = await Promise.all([
     cases.getCase({ caseId }).catch(async (err) => {
@@ -95,16 +90,15 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     return redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: MY_INBOX_ID }));
   }
 
-  const [nextCaseId, reports, pivotObjects, dataModel, pivots, mostRecentReviews, settings] =
-    await Promise.all([
-      cases.getNextUnassignedCaseId({ caseId }),
-      cases.listSuspiciousActivityReports({ caseId }),
-      cases.listPivotObjects({ caseId }),
-      dataModelRepository.getDataModel(),
-      dataModelRepository.listPivots({}),
-      cases.getMostRecentCaseReview({ caseId }),
-      aiAssistSettings.getAiAssistSettings(),
-    ]);
+  const [nextCaseId, reports, pivotObjects, dataModel, pivots, mostRecentReviews, settings] = await Promise.all([
+    cases.getNextUnassignedCaseId({ caseId }),
+    cases.listSuspiciousActivityReports({ caseId }),
+    cases.listPivotObjects({ caseId }),
+    dataModelRepository.getDataModel(),
+    dataModelRepository.listPivots({}),
+    cases.getMostRecentCaseReview({ caseId }),
+    aiAssistSettings.getAiAssistSettings(),
+  ]);
 
   const dataModelWithTableOptions: DataModelWithTableOptions = await Promise.all(
     dataModel.map<Promise<TableModelWithOptions>>((table) =>
@@ -188,10 +182,7 @@ export const handle = {
 
       return (
         <div className="flex items-center gap-4">
-          <BreadCrumbLink
-            to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })}
-            isLast={isLast}
-          >
+          <BreadCrumbLink to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })} isLast={isLast}>
             <span className="line-clamp-2 text-start">{caseDetail.name}</span>
           </BreadCrumbLink>
           <CopyToClipboardButton toCopy={caseDetail.id}>
@@ -221,9 +212,7 @@ export default function CaseManagerIndexPage() {
   const { t } = useTranslation(casesI18n);
   const leftSidebarSharp = LeftSidebarSharpFactory.useSharp();
   const [selectedDecision, selectDecision] = useState<DetailedCaseDecision | null>(null);
-  const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision' | 'snooze'>(
-    'pivot',
-  );
+  const [drawerContentMode, setDrawerContentMode] = useState<'pivot' | 'decision' | 'snooze'>('pivot');
   const enqueueReviewMutation = useEnqueueCaseReviewMutation();
   const [hasRequestedReview, setHasRequestedReview] = useState(false);
 
@@ -266,9 +255,7 @@ export default function CaseManagerIndexPage() {
                                         icon={mostRecentReview.review.ok ? 'tick' : 'cross'}
                                         className={cn(
                                           'size-5',
-                                          mostRecentReview.review.ok
-                                            ? 'text-green-34'
-                                            : 'text-red-47',
+                                          mostRecentReview.review.ok ? 'text-green-34' : 'text-red-47',
                                         )}
                                       />
                                     </TabsTrigger>
@@ -278,17 +265,11 @@ export default function CaseManagerIndexPage() {
                                       </TabsTrigger>
                                     ) : null}
                                   </TabsList>
-                                  <TabsContent
-                                    value="review"
-                                    className="min-h-0 p-2 overflow-scroll"
-                                  >
+                                  <TabsContent value="review" className="min-h-0 p-2 overflow-scroll">
                                     <Markdown>{mostRecentReview.review.output}</Markdown>
                                   </TabsContent>
                                   {!mostRecentReview.ok ? (
-                                    <TabsContent
-                                      value="sanityCheck"
-                                      className="min-h-0 p-2 overflow-scroll"
-                                    >
+                                    <TabsContent value="sanityCheck" className="min-h-0 p-2 overflow-scroll">
                                       <Markdown>{mostRecentReview.review.sanityCheck}</Markdown>
                                     </TabsContent>
                                   ) : null}
@@ -376,9 +357,7 @@ export default function CaseManagerIndexPage() {
                   />
                 ),
               )
-              .with('snooze', () => (
-                <SnoozePanel key={details.id} setDrawerContentMode={setDrawerContentMode} />
-              ))
+              .with('snooze', () => <SnoozePanel key={details.id} setDrawerContentMode={setDrawerContentMode} />)
               .exhaustive()}
           </CaseManagerDrawer>
         </DataModelExplorerProvider>

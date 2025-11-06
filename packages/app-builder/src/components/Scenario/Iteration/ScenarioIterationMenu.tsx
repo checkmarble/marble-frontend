@@ -4,14 +4,7 @@ import { type TFunction } from 'i18next';
 import { matchSorter } from 'match-sorter';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Input,
-  MenuCombobox,
-  MenuContent,
-  MenuItem,
-  MenuPopover,
-  MenuRoot,
-} from 'ui-design-system';
+import { Input, MenuCombobox, MenuContent, MenuItem, MenuPopover, MenuRoot } from 'ui-design-system';
 
 interface LabelledScenarioIteration {
   id: string;
@@ -40,10 +33,7 @@ export function getFormattedVersion(
   return version ? `V${version}` : t('scenarios:draft');
 }
 
-export function getFormattedLive(
-  { type }: Pick<LabelledScenarioIteration, 'type'>,
-  t: TFunction<['scenarios']>,
-) {
+export function getFormattedLive({ type }: Pick<LabelledScenarioIteration, 'type'>, t: TFunction<['scenarios']>) {
   return type === 'live version' ? t('scenarios:live') : undefined;
 }
 
@@ -69,10 +59,7 @@ export function ScenarioIterationMenu({
     <MenuRoot searchValue={searchValue} onSearch={setSearchValue} rtl={i18n.dir() === 'rtl'}>
       {children}
       <MenuPopover className="flex max-h-[min(400px,var(--popover-available-height))] flex-col">
-        <ScenarioIterationContent
-          searchValue={deferredSearchValue}
-          labelledScenarioIteration={scenarioIterations}
-        />
+        <ScenarioIterationContent searchValue={deferredSearchValue} labelledScenarioIteration={scenarioIterations} />
       </MenuPopover>
     </MenuRoot>
   );
@@ -83,10 +70,7 @@ interface ScenarioIterationContentProps {
   searchValue: string;
 }
 
-function ScenarioIterationContent({
-  labelledScenarioIteration,
-  searchValue,
-}: ScenarioIterationContentProps) {
+function ScenarioIterationContent({ labelledScenarioIteration, searchValue }: ScenarioIterationContentProps) {
   const { t } = useTranslation(['common']);
 
   const matches = React.useMemo(
@@ -105,9 +89,7 @@ function ScenarioIterationContent({
       <MenuContent>
         <div className="flex flex-col gap-2 overflow-y-auto p-2">
           {!matches.length ? (
-            <div className="text-grey-80 w-full text-center">
-              {t('common:help_center.no_results')}
-            </div>
+            <div className="text-grey-80 w-full text-center">{t('common:help_center.no_results')}</div>
           ) : null}
           {matches.map((iteration) => (
             <MenuItem
@@ -116,20 +98,12 @@ function ScenarioIterationContent({
               render={<Link to={iteration.linkTo} />}
             >
               <span className="text-s flex flex-row gap-1 font-semibold">
-                <Highlight
-                  className="text-grey-00 capitalize"
-                  query={searchValue}
-                  text={iteration.formattedVersion}
-                />
+                <Highlight className="text-grey-00 capitalize" query={searchValue} text={iteration.formattedVersion} />
                 {iteration.formattedLive ? (
                   <span className="text-purple-65 capitalize">{iteration.formattedLive}</span>
                 ) : null}
               </span>
-              <Highlight
-                className="text-grey-80 text-xs"
-                query={searchValue}
-                text={iteration.formattedUpdatedAt}
-              />
+              <Highlight className="text-grey-80 text-xs" query={searchValue} text={iteration.formattedUpdatedAt} />
             </MenuItem>
           ))}
         </div>

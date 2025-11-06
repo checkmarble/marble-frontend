@@ -21,13 +21,7 @@ import { Icon } from 'ui-icons';
 import { Spinner } from '../Spinner';
 import { BatchActions, MassUpdateCasesFn } from './Inbox/BatchActions';
 
-const ALLOWED_FILTERS = [
-  'dateRange',
-  'statuses',
-  'includeSnoozed',
-  'excludeAssigned',
-  'assignee',
-] as const;
+const ALLOWED_FILTERS = ['dateRange', 'statuses', 'includeSnoozed', 'excludeAssigned', 'assignee'] as const;
 const EXCLUDED_FILTERS = ['excludeAssigned', 'assignee'] as const;
 
 type InboxPageProps = {
@@ -56,16 +50,12 @@ export const InboxPage = ({
   const { orgUsers } = useOrganizationUsers();
 
   const assignableUsers = useMemo(() => {
-    return orgUsers.filter(
-      ({ userId, role }) => inboxUsersIds.includes(userId) || role === 'ADMIN',
-    );
+    return orgUsers.filter(({ userId, role }) => inboxUsersIds.includes(userId) || role === 'ADMIN');
   }, [orgUsers, inboxUsersIds]);
 
   const allowedFilters = useMemo(() => {
     if (inboxId === MY_INBOX_ID) {
-      return ALLOWED_FILTERS.filter(
-        (filter: string) => !(EXCLUDED_FILTERS as readonly string[]).includes(filter),
-      );
+      return ALLOWED_FILTERS.filter((filter: string) => !(EXCLUDED_FILTERS as readonly string[]).includes(filter));
     }
     return ALLOWED_FILTERS;
   }, [inboxId]);
@@ -86,8 +76,7 @@ export const InboxPage = ({
     rootMargin: '1px',
     threshold: 1,
   });
-  const isSubsequentlyFetching =
-    casesQuery.isFetchingNextPage || (casesQuery.isFetching && !casesQuery.isPending);
+  const isSubsequentlyFetching = casesQuery.isFetchingNextPage || (casesQuery.isFetching && !casesQuery.isPending);
 
   const onMassUpdateCases: MassUpdateCasesFn = (items, params) => {
     const caseIds = items.map((item) => item.id);

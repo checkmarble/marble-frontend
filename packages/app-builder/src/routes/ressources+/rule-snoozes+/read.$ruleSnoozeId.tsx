@@ -8,10 +8,12 @@ import * as React from 'react';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { ruleSnoozeRepository, scenario, scenarioIterationRuleRepository } =
-    await authService.isAuthenticated(request, {
+  const { ruleSnoozeRepository, scenario, scenarioIterationRuleRepository } = await authService.isAuthenticated(
+    request,
+    {
       failureRedirect: getRoute('/sign-in'),
-    });
+    },
+  );
   const ruleSnoozeId = fromParams(params, 'ruleSnoozeId');
 
   try {

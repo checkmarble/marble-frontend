@@ -4,13 +4,7 @@ import { AvailableFiltersResponse } from '@app-builder/models/analytics/availabl
 import { getRoute } from '@app-builder/utils/routes';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-export const useGetAvailableFilters = ({
-  scenarioId,
-  ranges,
-}: {
-  scenarioId: string;
-  ranges: DateRangeFilter[];
-}) => {
+export const useGetAvailableFilters = ({ scenarioId, ranges }: { scenarioId: string; ranges: DateRangeFilter[] }) => {
   const navigate = useAgnosticNavigation();
 
   const endpoint = getRoute('/ressources/analytics/:scenarioId/available_filters', {

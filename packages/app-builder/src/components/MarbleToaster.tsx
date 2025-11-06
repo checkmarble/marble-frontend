@@ -7,10 +7,7 @@ import { Icon } from 'ui-icons';
 
 import { headerHeight } from './Page';
 
-export function setToastMessage(
-  session: toastSession.ToastSession,
-  toastMessage: toastSession.ToastMessage,
-) {
+export function setToastMessage(session: toastSession.ToastSession, toastMessage: toastSession.ToastMessage) {
   session.flash('toastMessage', toastMessage);
 }
 
@@ -62,11 +59,7 @@ export function MarbleToaster({ toastMessage }: { toastMessage?: toastSession.To
               {icon}
               {message}
               {currentToast.type !== 'loading' ? (
-                <button
-                  onClick={() => toast.dismiss(currentToast.id)}
-                  aria-label="Close"
-                  className="shrink-0"
-                >
+                <button onClick={() => toast.dismiss(currentToast.id)} aria-label="Close" className="shrink-0">
                   <Icon icon="cross" className="size-6 shrink-0" />
                 </button>
               ) : null}
@@ -86,9 +79,7 @@ function getMessage(message: string) {
   return (
     <div className="flex flex-col gap-1">
       <p className="text-s text-grey-00">{message}</p>
-      <p className="text-grey-50 text-xs">
-        In dev, toast may be displayed twice due to strict mode
-      </p>
+      <p className="text-grey-50 text-xs">In dev, toast may be displayed twice due to strict mode</p>
     </div>
   );
 }

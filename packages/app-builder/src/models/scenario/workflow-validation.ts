@@ -6,13 +6,7 @@ import { knownOutcomes } from '../outcome';
 import { type Rule, type WorkflowAction, type WorkflowCondition } from './workflow';
 
 // OutcomeDto validation schema
-const outcomeSchema = z.enum([
-  'approve',
-  'review',
-  'decline',
-  'block_and_review',
-  'unknown',
-] as const);
+const outcomeSchema = z.enum(['approve', 'review', 'decline', 'block_and_review', 'unknown'] as const);
 
 // Enhanced node schema for AST nodes with recursive validation
 const baseNodeSchema = z.object({
@@ -34,13 +28,9 @@ const binaryExpressionSchema = z.object({
   id: z.string(),
   name: z
     .string()
-    .refine(
-      (name) =>
-        name !== null && name !== undefinedAstNodeName && isBinaryMainAstOperatorFunction(name),
-      {
-        error: 'A valid operator must be selected',
-      },
-    ),
+    .refine((name) => name !== null && name !== undefinedAstNodeName && isBinaryMainAstOperatorFunction(name), {
+      error: 'A valid operator must be selected',
+    }),
   constant: z.undefined(),
   children: z
     .array(
@@ -172,14 +162,8 @@ export function validateRuleConditions(conditions: WorkflowCondition[]): {
     if (!condition.function) {
       errors.push(`Condition ${index + 1}: Missing function type`);
     } else if (condition.function === 'outcome_in') {
-      if (
-        !('params' in condition) ||
-        !Array.isArray(condition.params) ||
-        condition.params.length === 0
-      ) {
-        errors.push(
-          `Condition ${index + 1}: Outcome condition must have at least one outcome selected`,
-        );
+      if (!('params' in condition) || !Array.isArray(condition.params) || condition.params.length === 0) {
+        errors.push(`Condition ${index + 1}: Outcome condition must have at least one outcome selected`);
       }
     } else if (condition.function === 'rule_hit') {
       if (
@@ -225,9 +209,7 @@ export function validateRuleEnhanced(rule: Rule): {
     if (zodResult.success) {
       // Additional custom validations
       const ruleData = zodResult.data;
-      const conditionValidation = validateRuleConditions(
-        ruleData.conditions as WorkflowCondition[],
-      );
+      const conditionValidation = validateRuleConditions(ruleData.conditions as WorkflowCondition[]);
       const actionValidation = validateRuleAction(ruleData.actions as WorkflowAction[]);
 
       const allErrors: Array<{ message: string; path: string[] }> = [];
@@ -283,8 +265,7 @@ export function validateOutcomes(outcomes: OutcomeDto[]): boolean {
   return (
     outcomes.length > 0 &&
     outcomes.every(
-      (outcome) =>
-        knownOutcomes.includes(outcome as (typeof knownOutcomes)[number]) || outcome === 'unknown',
+      (outcome) => knownOutcomes.includes(outcome as (typeof knownOutcomes)[number]) || outcome === 'unknown',
     )
   );
 }
@@ -294,9 +275,7 @@ export function validateScenarioRules(ruleIds: string[]): boolean {
 }
 // Helper function to get validation errors for a specific field
 export function getFieldErrors(error: z.ZodError, fieldPath: string): string[] {
-  return error.issues
-    .filter((issue) => issue.path.join('.') === fieldPath)
-    .map((issue) => issue.message);
+  return error.issues.filter((issue) => issue.path.join('.') === fieldPath).map((issue) => issue.message);
 }
 
 // Helper function to check if a rule has validation errors

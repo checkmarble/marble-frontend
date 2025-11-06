@@ -104,8 +104,7 @@ const DisplayFilterValue = ({ filter }: DisplayFilterValueProps) => {
       const startDate = formatDateTimeWithoutPresets(value.startDate, { language });
       const endDate = formatDateTimeWithoutPresets(value.endDate, { language });
       const diff = differenceInDays(new Date(value.endDate), new Date(value.startDate));
-      const dateDisplay =
-        diff <= 1 ? startDate : t('filters:date_range.range_value', { startDate, endDate });
+      const dateDisplay = diff <= 1 ? startDate : t('filters:date_range.range_value', { startDate, endDate });
 
       return (
         <span>
@@ -154,9 +153,7 @@ const EditFilterContent = ({ filter, onUpdate }: EditFilterContentProps) => {
     .with(['assignee', P.string], ([name]) => (
       <AssigneeFilterMenuItem onSelect={(userId) => onUpdate({ [name]: userId })} />
     ))
-    .with(['dateRange', P.any], ([name]) => (
-      <DateRangeFilterMenu onSelect={(value) => onUpdate({ [name]: value })} />
-    ))
+    .with(['dateRange', P.any], ([name]) => <DateRangeFilterMenu onSelect={(value) => onUpdate({ [name]: value })} />)
     .with(['name', P.string], ([name, value]) => null)
     .with(['statuses', P.array(P.string)], ([name, value]) => null)
     .with(['includeSnoozed', P.boolean], ([name]) => null)

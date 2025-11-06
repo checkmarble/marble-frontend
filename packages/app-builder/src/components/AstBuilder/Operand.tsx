@@ -19,9 +19,5 @@ export type AstBuilderOperandProps = AstBuilderBaseProps<KnownOperandAstNode> & 
 
 export function AstBuilderOperand(props: AstBuilderOperandProps) {
   const builderMode = AstBuilderDataSharpFactory.select((s) => s.mode);
-  return builderMode === 'edit' ? (
-    <EditionAstBuilderOperand {...props} />
-  ) : (
-    <ViewingAstBuilderOperand {...props} />
-  );
+  return builderMode === 'edit' ? <EditionAstBuilderOperand {...props} /> : <ViewingAstBuilderOperand {...props} />;
 }

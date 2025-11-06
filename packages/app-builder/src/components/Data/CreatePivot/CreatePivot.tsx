@@ -125,10 +125,7 @@ export function CreatePivot({
             <ValidateSelfPivot {...{ pivotOption, tableModel, onBack }} onValidate={createPivot} />
           ))
           .with({ step: 'field', pivotOption: null }, () => (
-            <SelectField
-              {...{ tableModel, onSelected: createPivot, onBack }}
-              pivotOptions={fieldOptions}
-            />
+            <SelectField {...{ tableModel, onSelected: createPivot, onBack }} pivotOptions={fieldOptions} />
           ))
           .otherwise(() => null)}
       </Modal.Content>

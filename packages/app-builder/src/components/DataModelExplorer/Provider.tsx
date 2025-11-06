@@ -16,8 +16,7 @@ type DataModelExplorerContextValue = {
   startNavigation: (tab: DataModelExplorerNavigationTab) => void;
 };
 
-export const DataModelExplorerContext =
-  createSimpleContext<DataModelExplorerContextValue>('DataModelExplorer');
+export const DataModelExplorerContext = createSimpleContext<DataModelExplorerContextValue>('DataModelExplorer');
 
 export function DataModelExplorerProvider({ children }: { children: ReactNode }) {
   const [explorerState, _setExplorerState] = useState<DataModelExplorerState | null>(null);

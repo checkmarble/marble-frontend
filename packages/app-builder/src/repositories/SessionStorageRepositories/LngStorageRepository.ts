@@ -2,10 +2,7 @@ import { createCookie, createCookieSessionStorage } from '@remix-run/node';
 
 import { type SessionStorageRepositoryOptions } from './SessionStorageRepository';
 
-export function getLngStorageRepository({
-  secrets,
-  secure,
-}: Omit<SessionStorageRepositoryOptions, 'maxAge'>) {
+export function getLngStorageRepository({ secrets, secure }: Omit<SessionStorageRepositoryOptions, 'maxAge'>) {
   const lngCookie = createCookie('lng', {
     sameSite: 'lax', // this helps with CSRF
     path: '/', // remember to add this so the cookie will work in all routes

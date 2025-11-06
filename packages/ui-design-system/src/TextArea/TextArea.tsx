@@ -25,9 +25,7 @@ export const textarea = cva(
   },
 );
 
-export interface TextAreaProps
-  extends React.ComponentPropsWithoutRef<'textarea'>,
-    VariantProps<typeof textarea> {}
+export interface TextAreaProps extends React.ComponentPropsWithoutRef<'textarea'>, VariantProps<typeof textarea> {}
 
 /**
  * A textarea that automatically resize to fit its content.
@@ -52,9 +50,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(function 
 
   return (
     <div className={clsx('grid', className)}>
-      <div
-        className={clsx('invisible whitespace-pre-wrap', sharedClassNames)}
-      >{`${internalRef.current?.value} `}</div>
+      <div className={clsx('invisible whitespace-pre-wrap', sharedClassNames)}>{`${internalRef.current?.value} `}</div>
       <textarea
         ref={internalRef}
         placeholder="Write a note"

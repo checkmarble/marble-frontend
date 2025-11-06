@@ -1,9 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { AddListValueModal } from '@app-builder/components/Lists/AddListValueModal';
 import { DeleteListModal } from '@app-builder/components/Lists/DeleteListModal';
 import { DeleteListValueModal } from '@app-builder/components/Lists/DeleteListValueModal';
@@ -26,12 +22,7 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData, useRevalidator, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import {
-  createColumnHelper,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-} from '@tanstack/react-table';
+import { createColumnHelper, getCoreRowModel, getFilteredRowModel, getSortedRowModel } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import * as React from 'react';
@@ -73,10 +64,7 @@ export const handle = {
       const { customList } = useLoaderData<typeof loader>();
 
       return (
-        <BreadCrumbLink
-          to={getRoute('/lists/:listId', { listId: fromUUIDtoSUUID(customList.id) })}
-          isLast={isLast}
-        >
+        <BreadCrumbLink to={getRoute('/lists/:listId', { listId: fromUUIDtoSUUID(customList.id) })} isLast={isLast}>
           {customList.name}
         </BreadCrumbLink>
       );
@@ -109,11 +97,7 @@ export default function Lists() {
             <div className="group flex items-center justify-between">
               <p className="text-grey-00 text-s font-medium">{value}</p>
               {listFeatureAccess.isDeleteListValueAvailable ? (
-                <DeleteListValueModal
-                  listId={customList.id}
-                  listValueId={row.original.id}
-                  value={value}
-                >
+                <DeleteListValueModal listId={customList.id} listValueId={row.original.id} value={value}>
                   <button
                     className="group-hover:text-grey-00 text-transparent transition-colors duration-200 ease-in-out"
                     name="delete"
@@ -145,17 +129,11 @@ export default function Lists() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
         {listFeatureAccess.isEditListAvailable ? (
-          <EditListModal
-            listId={customList.id}
-            name={customList.name}
-            description={customList.description}
-          />
+          <EditListModal listId={customList.id} name={customList.name} description={customList.description} />
         ) : null}
       </Page.Header>
       <Page.Container>
-        {customList.description ? (
-          <Page.Description>{customList.description}</Page.Description>
-        ) : null}
+        {customList.description ? <Page.Description>{customList.description}</Page.Description> : null}
         <Page.Content className="max-w-(--breakpoint-xl)">
           {listValues.length > 0 ? <DownloadAsCSV listId={customList.id} /> : null}
           <UploadAsCsv listId={customList.id} />
@@ -174,9 +152,7 @@ export default function Lists() {
                   }}
                 />
               </form>
-              {listFeatureAccess.isCreateListValueAvailable ? (
-                <AddListValueModal listId={customList.id} />
-              ) : null}
+              {listFeatureAccess.isCreateListValueAvailable ? <AddListValueModal listId={customList.id} /> : null}
             </div>
             {virtualTable.isEmpty ? (
               <div className="bg-grey-100 border-grey-90 flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-4">
@@ -190,9 +166,7 @@ export default function Lists() {
               <Table.Default {...virtualTable}></Table.Default>
             )}
           </div>
-          {listFeatureAccess.isDeleteListAvailable ? (
-            <DeleteListModal listId={customList.id} />
-          ) : null}
+          {listFeatureAccess.isDeleteListAvailable ? <DeleteListModal listId={customList.id} /> : null}
         </Page.Content>
       </Page.Container>
     </Page.Main>
@@ -211,11 +185,7 @@ function DownloadAsCSV({ listId }: { listId: string }) {
   });
 
   return (
-    <Link
-      reloadDocument
-      to={downloadUrl}
-      className={CtaClassName({ variant: 'secondary', className: 'w-fit' })}
-    >
+    <Link reloadDocument to={downloadUrl} className={CtaClassName({ variant: 'secondary', className: 'w-fit' })}>
       <Icon icon="download" className="size-6" />
       {t('lists:download_values_as_csv')}
     </Link>

@@ -118,9 +118,7 @@ function AddRuleSnoozeContent({
         >
           {(field) => (
             <div className="row-span-full grid grid-rows-subgrid gap-2">
-              <FormLabel name={field.name}>
-                {t('cases:case_detail.add_rule_snooze.comment.label')}
-              </FormLabel>
+              <FormLabel name={field.name}>{t('cases:case_detail.add_rule_snooze.comment.label')}</FormLabel>
               <TextArea
                 className="w-full"
                 defaultValue={field.state.value}
@@ -170,16 +168,12 @@ function AddRuleSnoozeContent({
           >
             {(field) => (
               <div className="row-span-full grid grid-rows-subgrid gap-2">
-                <FormLabel name={field.name}>
-                  {t('cases:case_detail.add_rule_snooze.duration_unit')}
-                </FormLabel>
+                <FormLabel name={field.name}>{t('cases:case_detail.add_rule_snooze.duration_unit')}</FormLabel>
                 <Select.Default
                   className="h-10 w-full"
                   defaultValue={field.state.value}
                   onValueChange={(unit) =>
-                    field.handleChange(
-                      unit as Exclude<DurationUnit, 'seconds' | 'years' | 'minutes' | 'months'>,
-                    )
+                    field.handleChange(unit as Exclude<DurationUnit, 'seconds' | 'years' | 'minutes' | 'months'>)
                   }
                 >
                   {durationUnitOptions.map((unit) => (
@@ -195,15 +189,9 @@ function AddRuleSnoozeContent({
         </div>
 
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>{t('common:cancel')}</ModalV2.Close>
           <Button className="flex-1" variant="primary" type="submit" name="update">
-            <LoadingIcon
-              icon="snooze"
-              className="size-5"
-              loading={addRuleSnoozeMutation.isPending}
-            />
+            <LoadingIcon icon="snooze" className="size-5" loading={addRuleSnoozeMutation.isPending} />
             {t('cases:decisions.rule.snooze')}
           </Button>
         </div>

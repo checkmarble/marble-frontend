@@ -14,15 +14,7 @@ export function OutcomeFilter({
     onChange(newDecisions);
   };
 
-  const FilterItem = ({
-    label,
-    outcome,
-    checked,
-  }: {
-    label: string;
-    outcome: Outcome;
-    checked: boolean;
-  }) => (
+  const FilterItem = ({ label, outcome, checked }: { label: string; outcome: Outcome; checked: boolean }) => (
     <div
       className={`flex items-center gap-2 cursor-pointer flex-1 min-w-0 ${outcome === 'blockAndReview' ? 'min-w-40' : ''} ${!checked ? 'text-grey-50' : ''}`}
       onClick={() => handleToggle(outcome)}

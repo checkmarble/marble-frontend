@@ -84,9 +84,7 @@ export interface RuleExecutionNoHit extends RuleExecutionCore {
   outcome: 'no_hit';
 }
 
-export function isRuleExecutionNoHit(
-  ruleExecution: RuleExecution,
-): ruleExecution is RuleExecutionNoHit {
+export function isRuleExecutionNoHit(ruleExecution: RuleExecution): ruleExecution is RuleExecutionNoHit {
   return ruleExecution.outcome === 'no_hit';
 }
 
@@ -95,9 +93,7 @@ export interface RuleExecutionHit extends RuleExecutionCore {
   scoreModifier: number;
 }
 
-export function isRuleExecutionHit(
-  ruleExecution: RuleExecution,
-): ruleExecution is RuleExecutionHit {
+export function isRuleExecutionHit(ruleExecution: RuleExecution): ruleExecution is RuleExecutionHit {
   return ruleExecution.outcome === 'hit';
 }
 
@@ -124,9 +120,7 @@ export interface RuleExecutionError extends RuleExecutionCore {
   error: ExecutionError;
 }
 
-export function isRuleExecutionError(
-  ruleExecution: RuleExecution,
-): ruleExecution is RuleExecutionError {
+export function isRuleExecutionError(ruleExecution: RuleExecution): ruleExecution is RuleExecutionError {
   return ruleExecution.outcome === 'error';
 }
 
@@ -134,17 +128,11 @@ export interface RuleExecutionSnoozed extends RuleExecutionCore {
   outcome: 'snoozed';
 }
 
-export function isRuleExecutionSnoozed(
-  ruleExecution: RuleExecution,
-): ruleExecution is RuleExecutionSnoozed {
+export function isRuleExecutionSnoozed(ruleExecution: RuleExecution): ruleExecution is RuleExecutionSnoozed {
   return ruleExecution.outcome === 'snoozed';
 }
 
-export type RuleExecution =
-  | RuleExecutionNoHit
-  | RuleExecutionHit
-  | RuleExecutionSnoozed
-  | RuleExecutionError;
+export type RuleExecution = RuleExecutionNoHit | RuleExecutionHit | RuleExecutionSnoozed | RuleExecutionError;
 
 export interface DecisionDetails extends Decision {
   rules: RuleExecution[];
@@ -174,10 +162,7 @@ export function adaptDecision(dto: DecisionDto): Decision {
   };
 }
 
-export function adaptRuleExecutionDto(
-  dto: RuleExecutionDto,
-  includeRuleEvaluation: boolean,
-): RuleExecution {
+export function adaptRuleExecutionDto(dto: RuleExecutionDto, includeRuleEvaluation: boolean): RuleExecution {
   const ruleExecution: RuleExecutionCore = {
     name: dto.name,
     ruleId: dto.rule_id,
@@ -221,10 +206,7 @@ export function adaptRuleExecutionDto(
   }
 }
 
-export function adaptDecisionDetail(
-  dto: DecisionDetailDto,
-  includeRuleEvaluation: boolean,
-): DecisionDetails {
+export function adaptDecisionDetail(dto: DecisionDetailDto, includeRuleEvaluation: boolean): DecisionDetails {
   return {
     ...adaptDecision(dto),
     rules: dto.rules.map((r) => adaptRuleExecutionDto(r, includeRuleEvaluation)),

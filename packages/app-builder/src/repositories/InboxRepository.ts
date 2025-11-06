@@ -83,17 +83,11 @@ export function makeGetInboxRepository() {
       return inbox_users.map(adaptInboxUser);
     },
     createInboxUser: async (inboxId, data) => {
-      const { inbox_user } = await marbleCoreApiClient.addInboxUser(
-        inboxId,
-        adaptInboxUserCreateBody(data),
-      );
+      const { inbox_user } = await marbleCoreApiClient.addInboxUser(inboxId, adaptInboxUserCreateBody(data));
       return adaptInboxUser(inbox_user);
     },
     updateInboxUser: async (inboxUserId, data) => {
-      const { inbox_user } = await marbleCoreApiClient.updateInboxUser(
-        inboxUserId,
-        adaptInboxUserUpdateBody(data),
-      );
+      const { inbox_user } = await marbleCoreApiClient.updateInboxUser(inboxUserId, adaptInboxUserUpdateBody(data));
       return adaptInboxUser(inbox_user);
     },
     deleteInboxUser: async (inboxUserId) => {

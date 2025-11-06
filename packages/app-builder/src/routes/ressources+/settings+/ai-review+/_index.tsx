@@ -11,10 +11,7 @@ export async function action({ request }: ActionFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const [rawData, toastSession] = await Promise.all([
-    request.json(),
-    toastSessionService.getSession(request),
-  ]);
+  const [rawData, toastSession] = await Promise.all([request.json(), toastSessionService.getSession(request)]);
 
   try {
     await aiAssistSettings.updateAiAssistSettings(rawData);

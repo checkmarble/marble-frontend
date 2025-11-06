@@ -1,9 +1,5 @@
 import { Page } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { initServerServices } from '@app-builder/services/init.server';
 import { downloadFile } from '@app-builder/utils/download-file';
 import { getRoute } from '@app-builder/utils/routes';

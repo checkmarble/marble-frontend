@@ -59,9 +59,7 @@ async function initSentry() {
   });
 
   if (!marbleUrl) {
-    Sentry.captureMessage(
-      'App config could not be fetched. Sentry will not be able to trace errors.',
-    );
+    Sentry.captureMessage('App config could not be fetched. Sentry will not be able to trace errors.');
   }
 }
 

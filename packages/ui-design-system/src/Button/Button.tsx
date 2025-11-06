@@ -45,22 +45,11 @@ export type ButtonProps = VariantProps<typeof CtaClassName> &
 
 // @deprecated use the new ButtonV2 instead
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  {
-    variant = 'primary',
-    color = variant === 'primary' ? 'purple' : 'grey',
-    size = 'default',
-    className,
-    ...props
-  },
+  { variant = 'primary', color = variant === 'primary' ? 'purple' : 'grey', size = 'default', className, ...props },
   ref,
 ) {
   return (
-    <button
-      ref={ref}
-      type="button"
-      className={cn(CtaClassName({ variant, color, size }), className)}
-      {...props}
-    />
+    <button ref={ref} type="button" className={cn(CtaClassName({ variant, color, size }), className)} {...props} />
   );
 });
 
@@ -70,8 +59,7 @@ export const CtaV2ClassName = cva(
     variants: {
       variant: {
         primary: '',
-        destructive:
-          'bg-red-47 border-red-47 text-white hover:bg-red-43 hover:border-red-43 disabled:bg-red-74',
+        destructive: 'bg-red-47 border-red-47 text-white hover:bg-red-43 hover:border-red-43 disabled:bg-red-74',
         secondary:
           'bg-white border-grey-border text-grey-00 hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-80',
       },

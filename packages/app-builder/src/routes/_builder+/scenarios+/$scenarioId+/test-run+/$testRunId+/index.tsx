@@ -1,9 +1,5 @@
 import { CopyToClipboardButton, Page } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CancelTestRun } from '@app-builder/components/Scenario/TestRun/Actions/CancelTestRun';
 import { DistributionOfDecisionChart } from '@app-builder/components/Scenario/TestRun/Graphs/DistributionOfDecisionChart';
 import { FilterTransactionByDecision } from '@app-builder/components/Scenario/TestRun/Graphs/FilterTransactionByDecision';
@@ -99,10 +95,7 @@ export default function TestRun() {
     [iterations, run.refIterationId, run.testIterationId],
   );
 
-  const creator = useMemo(
-    () => orgUsers.find((u) => u.userId === run.creatorId),
-    [orgUsers, run.creatorId],
-  );
+  const creator = useMemo(() => orgUsers.find((u) => u.userId === run.creatorId), [orgUsers, run.creatorId]);
 
   return (
     <Page.Main>
@@ -123,9 +116,7 @@ export default function TestRun() {
           <TestRunDetails {...run} iterations={iterations} creator={creator} />
           <Suspense fallback={<DistributionOfDecisionChartSkeleton />}>
             <Await resolve={decisionsPromise}>
-              {(decisions) => (
-                <DistributionOfDecisionChart versions={versions} decisions={decisions} />
-              )}
+              {(decisions) => <DistributionOfDecisionChart versions={versions} decisions={decisions} />}
             </Await>
           </Suspense>
           <Suspense fallback={<FilterTransactionByDecisionSkeleton />}>

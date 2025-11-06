@@ -8,13 +8,7 @@ import { type TextFilter } from '../types';
 import { FilterItem, FilterPopover } from './FilterPopover';
 import { useFiltersBarContext } from './FiltersBarContext';
 
-export function TextMatchFilter({
-  filter,
-  buttonState,
-}: {
-  filter: TextFilter;
-  buttonState: string;
-}) {
+export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; buttonState: string }) {
   const [isOpen, setOpen] = useState(false);
   const [localText, setLocalText] = useState<string>(filter.selectedValue?.value?.join(',') ?? '');
   const { emitSet, emitRemove } = useFiltersBarContext();

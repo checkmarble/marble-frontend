@@ -19,9 +19,7 @@ export type ComponentState<ID extends any[], S, A> = {
   effect: (fn: EffectFn) => () => void;
 };
 
-export type ComponentStateType<T> = T extends ComponentState<any, infer S, infer A>
-  ? ComponentStateValue<S, A>
-  : never;
+export type ComponentStateType<T> = T extends ComponentState<any, infer S, infer A> ? ComponentStateValue<S, A> : never;
 
 type ActionApi<S> = {
   value: S;
@@ -36,10 +34,7 @@ type Config<F extends StateFactory<any, any>> = {
   name: string;
   factory: F;
 };
-type ConfigWithActions<
-  F extends StateFactory<any, any>,
-  A extends ActionsConfig<ReturnType<F>>,
-> = Config<F> & {
+type ConfigWithActions<F extends StateFactory<any, any>, A extends ActionsConfig<ReturnType<F>>> = Config<F> & {
   actions: A;
 };
 
@@ -53,14 +48,12 @@ type StateUpdateFn<S> = (state: S) => void;
 export type StateApi<S, A = never> = {
   value: DeepSignal<S>;
   update: (fn: StateUpdateFn<S>) => void;
-} & ([A] extends [never]
-  ? Record<string, never>
-  : { actions: A extends ActionsConfig<S> ? ReturnType<A> : never });
+} & ([A] extends [never] ? Record<string, never> : { actions: A extends ActionsConfig<S> ? ReturnType<A> : never });
 
-export function withActions<
-  F extends StateFactory<any, any>,
-  A extends ActionsConfig<ReturnType<F>>,
->(cfg: { config: Config<F>; actions: A }): ConfigWithActions<F, A> {
+export function withActions<F extends StateFactory<any, any>, A extends ActionsConfig<ReturnType<F>>>(cfg: {
+  config: Config<F>;
+  actions: A;
+}): ConfigWithActions<F, A> {
   return { ...cfg.config, actions: cfg.actions };
 }
 

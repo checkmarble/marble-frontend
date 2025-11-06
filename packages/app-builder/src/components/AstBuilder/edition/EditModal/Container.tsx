@@ -27,11 +27,7 @@ export function OperandEditModalContainer({ className, ...props }: OperandEditMo
 
   return (
     <Modal.Root open onOpenChange={handleOpenChange}>
-      <Modal.Content
-        size={props.size}
-        onInteractOutside={handleImplicitClose}
-        onEscapeKeyDown={handleImplicitClose}
-      >
+      <Modal.Content size={props.size} onInteractOutside={handleImplicitClose} onEscapeKeyDown={handleImplicitClose}>
         <Modal.Title>{props.title}</Modal.Title>
         <div className={cn('flex flex-col gap-4 p-4', className)}>{props.children}</div>
         <Modal.Footer>

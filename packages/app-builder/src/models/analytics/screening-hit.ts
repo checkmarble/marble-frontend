@@ -9,9 +9,7 @@ export type ScreeningHitTableResponse = {
   avgHitsPerScreening: number;
 };
 
-export const adaptScreeningHitTable = (
-  val: ScreeningHitTableResponseDto[],
-): ScreeningHitTableResponse[] => {
+export const adaptScreeningHitTable = (val: ScreeningHitTableResponseDto[]): ScreeningHitTableResponse[] => {
   return val.map((v) => ({
     configId: v.config_id,
     name: v.name,

@@ -10,10 +10,7 @@ import { Icon } from 'ui-icons';
 export const CaseAssignedDetail = ({ event }: { event: CaseAssignedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
-  const user = useMemo(
-    () => (event.userId ? getOrgUserById(event.userId) : undefined),
-    [event.userId, getOrgUserById],
-  );
+  const user = useMemo(() => (event.userId ? getOrgUserById(event.userId) : undefined), [event.userId, getOrgUserById]);
 
   const assignee = useMemo(() => {
     return getOrgUserById(event.assignedTo);

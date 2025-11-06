@@ -50,10 +50,7 @@ export function ClientObjectComments({ comments, className }: ClientObjectCommen
             {firstComment ? <CommentItem comment={firstComment} /> : null}
             <>
               <span></span>
-              <button
-                onClick={() => setExpanded(true)}
-                className="text-left font-semibold underline"
-              >
+              <button onClick={() => setExpanded(true)} className="text-left font-semibold underline">
                 {t('cases:annotations.comments.see_others', { count: comments.length - 2 })}
               </button>
             </>

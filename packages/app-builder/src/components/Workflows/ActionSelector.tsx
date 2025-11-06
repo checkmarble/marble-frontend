@@ -79,10 +79,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
   };
 
   const handleActionSelect = (actionType: (typeof actionOptions)[number]['value']) => {
-    const id =
-      action?.id ||
-      tempIdRef.current ||
-      `temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+    const id = action?.id || tempIdRef.current || `temp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
     let newAction: WorkflowAction;
 
     switch (actionType) {
@@ -153,8 +150,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
     onChange?.(newAction);
   };
 
-  const needsInbox =
-    action?.action === 'CREATE_CASE' || action?.action === 'ADD_TO_CASE_IF_POSSIBLE';
+  const needsInbox = action?.action === 'CREATE_CASE' || action?.action === 'ADD_TO_CASE_IF_POSSIBLE';
   const selectedAction = action?.action;
 
   const getTitleTemplateAsStringTemplate = (): StringTemplateAstNode => {
@@ -165,10 +161,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
     try {
       let astNode: AstNode;
       // If it's already an AstNode, use it directly
-      if (
-        'id' in action.params.titleTemplate &&
-        typeof action.params.titleTemplate.id === 'string'
-      ) {
+      if ('id' in action.params.titleTemplate && typeof action.params.titleTemplate.id === 'string') {
         astNode = action.params.titleTemplate as AstNode;
       } else {
         // Otherwise, adapt from NodeDto
@@ -194,10 +187,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
             {selectedAction ? (
               <>
                 <Icon
-                  icon={
-                    (actionOptions.find((opt) => opt.value === selectedAction)?.icon as any) ||
-                    'trigger'
-                  }
+                  icon={(actionOptions.find((opt) => opt.value === selectedAction)?.icon as any) || 'trigger'}
                   className="size-4"
                 />
                 {actionOptions.find((opt) => opt.value === selectedAction)?.label}
@@ -234,9 +224,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
         <div className="flex flex-col gap-3">
           <div className="flex items-start gap-2">
             <div className="bg-grey-20 px-3 py-1 rounded-sm min-w-20 flex justify-center h-10 items-center">
-              <span className="text-grey-60 font-bold text-sm">
-                {t('workflows:action.in_inbox')}
-              </span>
+              <span className="text-grey-60 font-bold text-sm">{t('workflows:action.in_inbox')}</span>
             </div>
             <div className="flex-1">
               <InboxSelector

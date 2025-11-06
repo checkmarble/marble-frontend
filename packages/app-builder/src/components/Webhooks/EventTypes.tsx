@@ -28,10 +28,7 @@ export function SelectEvents({
   const [searchValue, setSearchValue] = React.useState('');
   const deferredSearchValue = React.useDeferredValue(searchValue);
 
-  const matches = React.useMemo(
-    () => matchSorter(eventTypes, deferredSearchValue),
-    [deferredSearchValue],
-  );
+  const matches = React.useMemo(() => matchSorter(eventTypes, deferredSearchValue), [deferredSearchValue]);
 
   return (
     <SelectWithCombobox.Root
@@ -40,18 +37,11 @@ export function SelectEvents({
       onSearchValueChange={setSearchValue}
       onSelectedValueChange={onChange}
     >
-      <SelectWithCombobox.Select
-        name={name}
-        disabled={disabled}
-        onBlur={onBlur}
-        className={className}
-      >
+      <SelectWithCombobox.Select name={name} disabled={disabled} onBlur={onBlur} className={className}>
         {selectedEventTypes.length > 0 ? (
           <EventTypes eventTypes={selectedEventTypes} />
         ) : (
-          <span className="text-grey-80 text-s">
-            {t('settings:webhooks.event_types.placeholder')}
-          </span>
+          <span className="text-grey-80 text-s">{t('settings:webhooks.event_types.placeholder')}</span>
         )}
         <SelectWithCombobox.Arrow />
       </SelectWithCombobox.Select>
@@ -83,13 +73,7 @@ export function SelectEvents({
   );
 }
 
-export function EventTypes({
-  className,
-  eventTypes,
-}: {
-  eventTypes: string[];
-  className?: string;
-}) {
+export function EventTypes({ className, eventTypes }: { eventTypes: string[]; className?: string }) {
   return (
     <Tooltip.Default
       content={

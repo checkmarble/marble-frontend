@@ -1,9 +1,5 @@
 import { NewUndefinedAstNode } from '@app-builder/models';
-import {
-  type AndAstNode,
-  NewAndAstNode,
-  type OrWithAndAstNode,
-} from '@app-builder/models/astNode/builder-ast-node';
+import { type AndAstNode, NewAndAstNode, type OrWithAndAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { getAtPath, parsePath } from '@app-builder/utils/tree';
 import { AddLogicalOperatorButton } from '@ast-builder/styles/AddLogicalOperatorButton';
 import { LogicalOperatorLabel } from '@ast-builder/styles/LogicalOperatorLabel';
@@ -124,11 +120,7 @@ function EditionRootOrGroup({ isFirst, path, removeNode }: EditionRootOrGroupPro
       })}
       <div className="col-span-2 col-start-2 flex flex-row flex-wrap gap-2">
         <AddLogicalOperatorButton onClick={appendChild} operator="and" />
-        <EditionEvaluationErrors
-          direct
-          id={node.value.id}
-          filterOut={['ARGUMENT_MUST_BE_BOOLEAN']}
-        />
+        <EditionEvaluationErrors direct id={node.value.id} filterOut={['ARGUMENT_MUST_BE_BOOLEAN']} />
       </div>
     </>
   );

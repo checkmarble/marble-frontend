@@ -23,13 +23,7 @@ const getEndpoint = (tableId: string) => {
 export const useCreateFilterMutation = () => {
   return useMutation({
     mutationKey: ['settings', 'data-model', 'exported-fields', 'create'],
-    mutationFn: async ({
-      tableId,
-      payload,
-    }: {
-      tableId: string;
-      payload: CreateExportedFieldPayload;
-    }) => {
+    mutationFn: async ({ tableId, payload }: { tableId: string; payload: CreateExportedFieldPayload }) => {
       const response = await fetch(getEndpoint(tableId), {
         method: 'POST',
         headers: {

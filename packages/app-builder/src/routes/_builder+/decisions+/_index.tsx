@@ -68,12 +68,9 @@ export const buildQueryParams = (filters: DecisionFilters, offsetId: string | nu
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { decision, scenario, dataModelRepository, inbox } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { decision, scenario, dataModelRepository, inbox } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const parsedFilterQuery = await parseQuerySafe(request, decisionFiltersSchema);
   const parsedPaginationQuery = await parseQuerySafe(request, paginationSchema);
@@ -86,9 +83,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const [decisionsData, scenarios, pivots, inboxes] = await Promise.all([
     decision.listDecisions({
       outcome: outcomeAndReviewStatus?.outcome ? [outcomeAndReviewStatus.outcome] : [],
-      reviewStatus: outcomeAndReviewStatus?.reviewStatus
-        ? [outcomeAndReviewStatus.reviewStatus]
-        : [],
+      reviewStatus: outcomeAndReviewStatus?.reviewStatus ? [outcomeAndReviewStatus.reviewStatus] : [],
       ...filters,
       ...parsedPaginationQuery.data,
     }),
@@ -181,10 +176,7 @@ export default function Decisions() {
                     <DecisionFiltersMenu filterNames={decisionFilterNames}>
                       <FiltersButton />
                     </DecisionFiltersMenu>
-                    <AddToCase
-                      hasSelection={hasSelectedRows}
-                      getSelectedDecisions={getSelectedRows}
-                    />
+                    <AddToCase hasSelection={hasSelectedRows} getSelectedDecisions={getSelectedRows} />
                   </div>
                 </div>
                 <DecisionFiltersBar />

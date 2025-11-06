@@ -29,10 +29,7 @@ type ViewingAstBuilderOperandProps = Omit<
   AstBuilderOperandProps,
   'node' | 'placeholder' | 'onChange' | 'optionsDataType' | 'coerceDataType'
 > & { node: IdLessAstNode<KnownOperandAstNode> };
-export function ViewingAstBuilderOperand({
-  validationStatus,
-  ...props
-}: ViewingAstBuilderOperandProps) {
+export function ViewingAstBuilderOperand({ validationStatus, ...props }: ViewingAstBuilderOperandProps) {
   return (
     <div className={viewingOperandLabelClassnames({ validationStatus })}>
       <OperandDisplayName interactionMode="viewer" {...props} />

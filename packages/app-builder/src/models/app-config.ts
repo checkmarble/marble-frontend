@@ -49,9 +49,7 @@ export type AppConfig = {
 export function adaptAppConfig(dto: AppConfigDto, appVersion: string): AppConfig {
   const fbConfig = dto.auth.firebase;
   const emulatorHost = getServerEnv('TEST_FIREBASE_AUTH_EMULATOR_HOST');
-  const emulatorUrl = fbConfig.emulator_host
-    ? `http://${emulatorHost ?? fbConfig.emulator_host}`
-    : undefined;
+  const emulatorUrl = fbConfig.emulator_host ? `http://${emulatorHost ?? fbConfig.emulator_host}` : undefined;
 
   return {
     versions: {

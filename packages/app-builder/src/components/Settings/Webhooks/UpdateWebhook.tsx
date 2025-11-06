@@ -36,11 +36,7 @@ export function UpdateWebhook({
     <ModalV2.Root open={open} setOpen={setOpen}>
       <ModalV2.Trigger render={children} />
       <ModalV2.Content>
-        <UpdateWebhookContent
-          defaultValue={defaultValue}
-          webhookStatus={webhookStatus}
-          setOpen={setOpen}
-        />
+        <UpdateWebhookContent defaultValue={defaultValue} webhookStatus={webhookStatus} setOpen={setOpen} />
       </ModalV2.Content>
     </ModalV2.Root>
   );
@@ -99,11 +95,7 @@ function UpdateWebhookContent({
                 {match(webhookStatus)
                   .with('allowed', () => null)
                   .otherwise((status) => (
-                    <Nudge
-                      kind={status}
-                      content={t('settings:webhooks.nudge')}
-                      className="size-6"
-                    />
+                    <Nudge kind={status} content={t('settings:webhooks.nudge')} className="size-6" />
                   ))}
               </FormLabel>
               <SelectEvents
@@ -159,9 +151,7 @@ function UpdateWebhookContent({
         </form.Field>
 
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>{t('common:cancel')}</ModalV2.Close>
           <Button
             className="flex-1"
             variant="primary"
@@ -169,11 +159,7 @@ function UpdateWebhookContent({
             name="update"
             disabled={updateWebhookMutation.isPending}
           >
-            <LoadingIcon
-              icon="edit-square"
-              className="size-5"
-              loading={updateWebhookMutation.isPending}
-            />
+            <LoadingIcon icon="edit-square" className="size-5" loading={updateWebhookMutation.isPending} />
             {t('settings:webhooks.update_webhook')}
           </Button>
         </div>

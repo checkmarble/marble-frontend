@@ -23,12 +23,7 @@ export const FieldEntityType = ({
     <div className="flex flex-col gap-4">
       <MenuCommand.Menu persistOnSelect={false} open={open} onOpenChange={setOpen}>
         <MenuCommand.Trigger>
-          <Button
-            variant="secondary"
-            size="medium"
-            className="w-52 justify-between"
-            disabled={editor === 'view'}
-          >
+          <Button variant="secondary" size="medium" className="w-52 justify-between" disabled={editor === 'view'}>
             <span className="text-grey-00 text-s font-medium">
               {match(entityType)
                 .with('Thing', () => t('scenarios:edit_sanction.entity_type.thing'))

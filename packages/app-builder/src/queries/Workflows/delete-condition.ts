@@ -11,16 +11,13 @@ export function useDeleteConditionMutation() {
 
   return useMutation({
     mutationFn: async ({ ruleId, conditionId, scenarioId }: DeleteConditionInput) => {
-      const response = await fetch(
-        `/ressources/workflows/rule/${ruleId}/condition/${conditionId}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ scenarioId }),
+      const response = await fetch(`/ressources/workflows/rule/${ruleId}/condition/${conditionId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({ scenarioId }),
+      });
 
       if (!response.ok) {
         throw new Error('Failed to delete condition');

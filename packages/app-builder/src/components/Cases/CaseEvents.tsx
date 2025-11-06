@@ -7,10 +7,7 @@ import { DecisionAddedDetail } from '@app-builder/components/Cases/Events/Decisi
 import { DecisionReviewedDetail } from '@app-builder/components/Cases/Events/DecisionReviewed';
 import { EntityAnnotated } from '@app-builder/components/Cases/Events/EntityAnnotated';
 import { FileAddedDetail } from '@app-builder/components/Cases/Events/FileAdded';
-import {
-  CaseEventFilters,
-  type CaseEventFiltersForm,
-} from '@app-builder/components/Cases/Events/Filters';
+import { CaseEventFilters, type CaseEventFiltersForm } from '@app-builder/components/Cases/Events/Filters';
 import { InboxChangedDetail } from '@app-builder/components/Cases/Events/InboxChanged';
 import { NameUpdatedDetail } from '@app-builder/components/Cases/Events/NameUpdated';
 import { OutcomeUpdatedDetail } from '@app-builder/components/Cases/Events/OutcomeUpdated';
@@ -70,9 +67,7 @@ export function CaseEvents({
       allPass(event, [
         (e) => {
           if (type.length === 0) return true;
-          const typesAllowed: CaseEventType[] = type.flatMap(
-            (t) => CASE_EVENT_CATEGORY_TO_EVENTS_MAPPING[t],
-          );
+          const typesAllowed: CaseEventType[] = type.flatMap((t) => CASE_EVENT_CATEGORY_TO_EVENTS_MAPPING[t]);
           return typesAllowed.includes(e.eventType);
         },
         (e) => !startDate || new Date(e.createdAt).getTime() >= new Date(startDate).getTime(),
@@ -159,21 +154,15 @@ export function CaseEvents({
               .with({ eventType: 'name_updated' }, (e) => <NameUpdatedDetail event={e} />)
               .with({ eventType: 'tags_updated' }, (e) => <TagsUpdatedDetail event={e} />)
               .with({ eventType: 'file_added' }, (e) => <FileAddedDetail event={e} />)
-              .with({ eventType: 'inbox_changed' }, (e) => (
-                <InboxChangedDetail event={e} inboxes={inboxes} />
-              ))
-              .with({ eventType: 'rule_snooze_created' }, (e) => (
-                <RuleSnoozeCreatedDetail event={e} />
-              ))
+              .with({ eventType: 'inbox_changed' }, (e) => <InboxChangedDetail event={e} inboxes={inboxes} />)
+              .with({ eventType: 'rule_snooze_created' }, (e) => <RuleSnoozeCreatedDetail event={e} />)
               .with({ eventType: 'decision_reviewed' }, (e) => <DecisionReviewedDetail event={e} />)
               .with({ eventType: 'case_snoozed' }, (e) => <CaseSnoozedDetail event={e} />)
               .with({ eventType: 'case_unsnoozed' }, (e) => <CaseUnsnoozedDetail event={e} />)
               .with({ eventType: 'case_assigned' }, (e) => <CaseAssignedDetail event={e} />)
               .with({ eventType: 'sar_created' }, (e) => <SarCreatedDetail event={e} />)
               .with({ eventType: 'sar_deleted' }, (e) => <SarDeletedDetail event={e} />)
-              .with({ eventType: 'sar_status_changed' }, (e) => (
-                <SarStatusChangedDetail event={e} />
-              ))
+              .with({ eventType: 'sar_status_changed' }, (e) => <SarStatusChangedDetail event={e} />)
               .with({ eventType: 'sar_file_uploaded' }, (e) => <SarFileUploadedDetail event={e} />)
               .with({ eventType: 'entity_annotated' }, (e) => <EntityAnnotated event={e} />)
               .exhaustive()}

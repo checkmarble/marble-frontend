@@ -1,11 +1,7 @@
 import { DataModelExplorer } from '@app-builder/components/DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerContext } from '@app-builder/components/DataModelExplorer/Provider';
 import useIntersection from '@app-builder/hooks/useIntersection';
-import {
-  type CurrentUser,
-  DataModelObject,
-  type DataModelWithTableOptions,
-} from '@app-builder/models';
+import { type CurrentUser, DataModelObject, type DataModelWithTableOptions } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import clsx from 'clsx';
 import { useEffect, useRef } from 'react';
@@ -53,8 +49,7 @@ export function PivotsPanel(props: PivotsPanelProps) {
           <DrawerBreadcrumb
             items={[
               t('cases:case_detail.pivot_panel.breadcrumb_client', {
-                clientName:
-                  dataModelExplorerContext.explorerState.currentTab.pivotObject.pivotValue,
+                clientName: dataModelExplorerContext.explorerState.currentTab.pivotObject.pivotValue,
               }),
               t('cases:case_detail.pivot_panel.breadcrumb_explore'),
             ]}

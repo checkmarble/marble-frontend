@@ -34,11 +34,7 @@ export function EditFuzzyMatchComparator(props: Omit<OperandEditModalProps, 'nod
   });
 
   return (
-    <OperandEditModalContainer
-      {...props}
-      title={t('scenarios:edit_fuzzy_match.title')}
-      size="medium"
-    >
+    <OperandEditModalContainer {...props} title={t('scenarios:edit_fuzzy_match.title')} size="medium">
       <InnerEditFuzzyMatchModal
         fuzzMatchConfig={fuzzyMatchConfig}
         operatorDisplay={t(funcNameTKeys[fuzzyMatchNode.name])}

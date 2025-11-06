@@ -15,11 +15,7 @@ export function StatusRadioGroup({ value, onChange }: StatusRadioGroupProps) {
   return (
     <RadioProvider>
       <RadioGroup className="flex flex-col gap-2">
-        <RadioItem
-          value="confirmed_hit"
-          checked={value === 'confirmed_hit'}
-          onCheck={() => onChange('confirmed_hit')}
-        >
+        <RadioItem value="confirmed_hit" checked={value === 'confirmed_hit'} onCheck={() => onChange('confirmed_hit')}>
           <StatusTag disabled status="confirmed_hit" />
         </RadioItem>
         <RadioItem value="no_hit" checked={value === 'no_hit'} onCheck={() => onChange('no_hit')}>

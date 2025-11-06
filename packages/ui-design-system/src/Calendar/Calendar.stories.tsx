@@ -16,15 +16,11 @@ const Demo = ({ mode, ...args }: CalendarProps) => {
           : { ...args, mode, selected: dateRange, onSelect: setDateRange })}
       />
 
-      {mode === 'single' ? (
-        <p className="text-m">Selected Date: {date ? date.toDateString() : 'None'}</p>
-      ) : null}
+      {mode === 'single' ? <p className="text-m">Selected Date: {date ? date.toDateString() : 'None'}</p> : null}
       {mode === 'range' ? (
         <p className="text-m">
           Selected Range:{' '}
-          {dateRange
-            ? [dateRange.from?.toDateString(), dateRange.to?.toDateString() ?? '?'].join(' - ')
-            : 'None'}
+          {dateRange ? [dateRange.from?.toDateString(), dateRange.to?.toDateString() ?? '?'].join(' - ') : 'None'}
         </p>
       ) : null}
     </div>

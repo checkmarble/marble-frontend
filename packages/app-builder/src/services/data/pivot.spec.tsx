@@ -1,9 +1,4 @@
-import {
-  type DataModel,
-  type DataModelField,
-  type DataType,
-  type TableModel,
-} from '@app-builder/models';
+import { type DataModel, type DataModelField, type DataType, type TableModel } from '@app-builder/models';
 
 import { describe, expect, it } from 'vitest';
 

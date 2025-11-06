@@ -55,10 +55,7 @@ function getRuleExecutionStatusColor(ruleExecution: RuleExecution) {
   return 'grey';
 }
 
-function getRuleExecutionStatusLabel(
-  t: TFunction<typeof decisionsI18n>,
-  ruleExecution: RuleExecution,
-) {
+function getRuleExecutionStatusLabel(t: TFunction<typeof decisionsI18n>, ruleExecution: RuleExecution) {
   if (isRuleExecutionHit(ruleExecution)) {
     return t('decisions:rules.status.hit');
   }
@@ -71,10 +68,7 @@ function getRuleExecutionStatusLabel(
   return t('decisions:rules.status.no_hit');
 }
 
-function getRuleExecutionErrorLabel(
-  t: TFunction<typeof decisionsI18n>,
-  ruleExecution: RuleExecutionError,
-) {
+function getRuleExecutionErrorLabel(t: TFunction<typeof decisionsI18n>, ruleExecution: RuleExecutionError) {
   switch (ruleExecution.error.code) {
     case 'division_by_zero':
       return t('decisions:rules.error.division_by_zero');

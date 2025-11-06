@@ -24,8 +24,6 @@ export function NewConstantAstNode<T extends ConstantType = ConstantType>({
   };
 }
 
-export function isConstant(
-  node: IdLessAstNode | AstNode,
-): node is CheckNodeId<ConstantAstNode, typeof node> {
+export function isConstant(node: IdLessAstNode | AstNode): node is CheckNodeId<ConstantAstNode, typeof node> {
   return !node.name && node.constant !== undefined;
 }

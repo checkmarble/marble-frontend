@@ -8,13 +8,7 @@ import { Table, useTable } from 'ui-design-system';
 
 const columnHelper = createColumnHelper<RuleHitTableResponse>();
 
-export function RulesHit({
-  data,
-  isLoading,
-}: {
-  data: RuleHitTableResponse[];
-  isLoading: boolean;
-}) {
+export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; isLoading: boolean }) {
   const { t } = useTranslation(['analytics']);
   const language = useFormatLanguage();
   const [expanded, setExpanded] = useState(false);

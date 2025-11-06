@@ -49,12 +49,7 @@ export function CreateUser({
         </Button>
       </Modal.Trigger>
       <Modal.Content onClick={(e) => e.stopPropagation()}>
-        <CreateUserContent
-          orgId={orgId}
-          access={access}
-          userRoles={userRoles}
-          onSuccess={() => setOpen(false)}
-        />
+        <CreateUserContent orgId={orgId} access={access} userRoles={userRoles} onSuccess={() => setOpen(false)} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -131,10 +126,7 @@ function CreateUserContent({
                 </div>
               )}
             </form.Field>
-            <form.Field
-              name="lastName"
-              validators={{ onChange: createUserPayloadSchema.shape.lastName }}
-            >
+            <form.Field name="lastName" validators={{ onChange: createUserPayloadSchema.shape.lastName }}>
               {(field) => (
                 <div className="group flex w-full flex-col gap-2">
                   <FormLabel name={field.name}>{t('settings:users.last_name')}</FormLabel>
@@ -177,11 +169,7 @@ function CreateUserContent({
                     {t('settings:users.role')}
                   </span>
                   {access === 'allowed' ? null : (
-                    <Nudge
-                      content={t('settings:users.role.nudge')}
-                      className="size-6"
-                      kind={access}
-                    />
+                    <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
                   )}
                 </FormLabel>
                 <Select.Default

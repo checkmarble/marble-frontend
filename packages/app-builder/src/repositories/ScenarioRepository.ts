@@ -27,10 +27,7 @@ import {
   type CreateScenarioPublicationBody,
   type ScenarioPublicationStatus,
 } from '@app-builder/models/scenario/publication';
-import {
-  adaptScenarioValidation,
-  type ScenarioValidation,
-} from '@app-builder/models/scenario/validation';
+import { adaptScenarioValidation, type ScenarioValidation } from '@app-builder/models/scenario/validation';
 import {
   adaptScenarioRulesLatestVersion,
   adaptWorkflow,
@@ -50,23 +47,13 @@ export interface ScenarioRepository {
   listScenarios(): Promise<Scenario[]>;
   getScenario(args: { scenarioId: string }): Promise<Scenario>;
   createScenario(args: ScenarioCreateInput): Promise<Scenario>;
-  updateScenario(args: {
-    scenarioId: string;
-    name: string;
-    description: string | null;
-  }): Promise<Scenario>;
+  updateScenario(args: { scenarioId: string; name: string; description: string | null }): Promise<Scenario>;
   createScenarioIteration(args: { scenarioId: string }): Promise<ScenarioIteration>;
-  updateScenarioIteration(
-    iterationId: string,
-    input: UpdateScenarioIterationBody,
-  ): Promise<ScenarioIteration>;
+  updateScenarioIteration(iterationId: string, input: UpdateScenarioIterationBody): Promise<ScenarioIteration>;
   getScenarioIteration(args: { iterationId: string }): Promise<ScenarioIteration>;
   listScenarioIterations(args: { scenarioId: string }): Promise<ScenarioIteration[]>;
   validate(args: { iterationId: string }): Promise<ScenarioValidation>;
-  validateTrigger(args: {
-    iterationId: string;
-    trigger: AstNode;
-  }): Promise<ScenarioValidation['trigger']>;
+  validateTrigger(args: { iterationId: string; trigger: AstNode }): Promise<ScenarioValidation['trigger']>;
   validateRule(args: {
     iterationId: string;
     rule: AstNode;
@@ -77,26 +64,17 @@ export interface ScenarioRepository {
     payload: { node: AstNode; expectedReturnType?: ReturnValueType },
   ): Promise<AstValidation>;
   commitScenarioIteration(args: { iterationId: string }): Promise<ScenarioIteration>;
-  getPublicationPreparationStatus(args: {
-    iterationId: string;
-  }): Promise<ScenarioPublicationStatus>;
+  getPublicationPreparationStatus(args: { iterationId: string }): Promise<ScenarioPublicationStatus>;
   startPublicationPreparation(args: { iterationId: string }): Promise<void>;
   createScenarioPublication(args: CreateScenarioPublicationBody): Promise<void>;
   getScenarioIterationActiveSnoozes(scenarioIterationId: string): Promise<SnoozesOfIteration>;
   scheduleScenarioExecution(args: { iterationId: string }): Promise<void>;
   listWorkflowRules(args: { scenarioId: string }): Promise<Rule[]>;
   getWorkflowRule(args: { ruleId: string }): Promise<Rule>;
-  createWorkflowRule(args: {
-    scenarioId: string;
-    name: string;
-    fallthrough: boolean;
-  }): Promise<Rule>;
+  createWorkflowRule(args: { scenarioId: string; name: string; fallthrough: boolean }): Promise<Rule>;
   updateWorkflowRule(args: { ruleId: string; name: string; fallthrough: boolean }): Promise<Rule>;
   reorderWorkflows(args: { scenarioId: string; workflowIds: string[] }): Promise<void>;
-  createWorkflowCondition(args: {
-    ruleId: string;
-    condition: WorkflowCondition;
-  }): Promise<WorkflowCondition>;
+  createWorkflowCondition(args: { ruleId: string; condition: WorkflowCondition }): Promise<WorkflowCondition>;
   deleteWorkflowCondition(args: { ruleId: string; conditionId: string }): Promise<void>;
   updateWorkflowCondition(args: {
     ruleId: string;
@@ -106,11 +84,7 @@ export interface ScenarioRepository {
   deleteWorkflowRule(args: { ruleId: string }): Promise<void>;
   createWorkflowAction(args: { ruleId: string; action: WorkflowAction }): Promise<WorkflowAction>;
   deleteWorkflowAction(args: { ruleId: string; actionId: string }): Promise<void>;
-  updateWorkflowAction(args: {
-    ruleId: string;
-    actionId: string;
-    action: WorkflowAction;
-  }): Promise<WorkflowAction>;
+  updateWorkflowAction(args: { ruleId: string; actionId: string; action: WorkflowAction }): Promise<WorkflowAction>;
   getLatestRulesReferences(scenarioId: string): Promise<ScenarioRuleLatestVersion[]>;
 }
 
@@ -159,30 +133,21 @@ export function makeGetScenarioRepository() {
       return dtos.map(adaptScenarioIteration);
     },
     validate: async ({ iterationId }) => {
-      const { scenario_validation } = await marbleCoreApiClient.validateScenarioIteration(
-        iterationId,
-        undefined,
-      );
+      const { scenario_validation } = await marbleCoreApiClient.validateScenarioIteration(iterationId, undefined);
       return adaptScenarioValidation(scenario_validation);
     },
     validateTrigger: async ({ iterationId, trigger }) => {
-      const { scenario_validation } = await marbleCoreApiClient.validateScenarioIteration(
-        iterationId,
-        {
-          trigger_or_rule: adaptNodeDto(trigger),
-          rule_id: null,
-        },
-      );
+      const { scenario_validation } = await marbleCoreApiClient.validateScenarioIteration(iterationId, {
+        trigger_or_rule: adaptNodeDto(trigger),
+        rule_id: null,
+      });
       return adaptScenarioValidation(scenario_validation).trigger;
     },
     validateRule: async ({ iterationId, rule, ruleId }) => {
-      const { scenario_validation } = await marbleCoreApiClient.validateScenarioIteration(
-        iterationId,
-        {
-          trigger_or_rule: adaptNodeDto(rule),
-          rule_id: ruleId,
-        },
-      );
+      const { scenario_validation } = await marbleCoreApiClient.validateScenarioIteration(iterationId, {
+        trigger_or_rule: adaptNodeDto(rule),
+        rule_id: ruleId,
+      });
       return findRuleValidation(adaptScenarioValidation(scenario_validation), ruleId);
     },
     validateAst: async (scenarioId, { node, expectedReturnType }) => {
@@ -215,9 +180,7 @@ export function makeGetScenarioRepository() {
     },
     createScenarioPublication: async (args) => {
       try {
-        await marbleCoreApiClient.createScenarioPublication(
-          adaptCreateScenarioPublicationBodyDto(args),
-        );
+        await marbleCoreApiClient.createScenarioPublication(adaptCreateScenarioPublicationBodyDto(args));
       } catch (error) {
         if (isStatusBadRequestHttpError(error) && isMarbleError(error)) {
           const errorCode = error.data.error_code;
@@ -238,8 +201,7 @@ export function makeGetScenarioRepository() {
       }
     },
     getScenarioIterationActiveSnoozes: async (scenarioIterationId) => {
-      const { snoozes } =
-        await marbleCoreApiClient.getScenarioIterationActiveSnoozes(scenarioIterationId);
+      const { snoozes } = await marbleCoreApiClient.getScenarioIterationActiveSnoozes(scenarioIterationId);
       return adaptSnoozesOfIteration(snoozes);
     },
     scheduleScenarioExecution: async ({ iterationId }) => {
@@ -297,10 +259,7 @@ export function makeGetScenarioRepository() {
       await marbleCoreApiClient.deleteWorkflowRule(ruleId);
     },
     createWorkflowAction: async ({ ruleId, action }) => {
-      const newAction = await marbleCoreApiClient.createWorkflowAction(
-        ruleId,
-        transformWorkflowAction(action),
-      );
+      const newAction = await marbleCoreApiClient.createWorkflowAction(ruleId, transformWorkflowAction(action));
       return adaptWorkflowAction(newAction);
     },
     deleteWorkflowAction: async ({ ruleId, actionId }) => {

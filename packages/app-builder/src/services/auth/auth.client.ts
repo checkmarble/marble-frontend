@@ -4,9 +4,7 @@ import { AuthErrorCodes } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
 import { useAuthenticityToken } from 'remix-utils/csrf/react';
 
-export function makeAuthenticationClientService(
-  authenticationClientRepository: AuthenticationClientRepository,
-) {
+export function makeAuthenticationClientService(authenticationClientRepository: AuthenticationClientRepository) {
   return {
     authenticationClientRepository,
   };
@@ -58,9 +56,7 @@ export function useGoogleSignIn({ authenticationClientRepository }: Authenticati
   };
 }
 
-export function useMicrosoftSignIn({
-  authenticationClientRepository,
-}: AuthenticationClientService) {
+export function useMicrosoftSignIn({ authenticationClientRepository }: AuthenticationClientService) {
   const {
     i18n: { language },
   } = useTranslation();
@@ -93,9 +89,7 @@ export function useMicrosoftSignIn({
   };
 }
 
-export function useEmailAndPasswordSignIn({
-  authenticationClientRepository,
-}: AuthenticationClientService) {
+export function useEmailAndPasswordSignIn({ authenticationClientRepository }: AuthenticationClientService) {
   const {
     i18n: { language },
   } = useTranslation();
@@ -103,11 +97,7 @@ export function useEmailAndPasswordSignIn({
 
   return async (email: string, password: string) => {
     try {
-      const result = await authenticationClientRepository.emailAndPasswordSignIn(
-        language,
-        email,
-        password,
-      );
+      const result = await authenticationClientRepository.emailAndPasswordSignIn(language, email, password);
       if (!result.emailVerified) {
         throw new EmailUnverified();
       }
@@ -128,9 +118,7 @@ export function useEmailAndPasswordSignIn({
   };
 }
 
-export function useEmailAndPasswordSignUp({
-  authenticationClientRepository,
-}: AuthenticationClientService) {
+export function useEmailAndPasswordSignUp({ authenticationClientRepository }: AuthenticationClientService) {
   const {
     i18n: { language },
   } = useTranslation();
@@ -138,11 +126,7 @@ export function useEmailAndPasswordSignUp({
 
   return async (email: string, password: string) => {
     try {
-      const idToken = await authenticationClientRepository.emailAndPassswordSignUp(
-        language,
-        email,
-        password,
-      );
+      const idToken = await authenticationClientRepository.emailAndPassswordSignUp(language, email, password);
       return { idToken, csrf };
     } catch (error) {
       if (error instanceof FirebaseError) {
@@ -162,9 +146,7 @@ export function useEmailAndPasswordSignUp({
   };
 }
 
-export function useResendEmailVerification({
-  authenticationClientRepository,
-}: AuthenticationClientService) {
+export function useResendEmailVerification({ authenticationClientRepository }: AuthenticationClientService) {
   const {
     i18n: { language },
   } = useTranslation();
@@ -186,9 +168,7 @@ export function useResendEmailVerification({
   };
 }
 
-export function useSendPasswordResetEmail({
-  authenticationClientRepository,
-}: AuthenticationClientService) {
+export function useSendPasswordResetEmail({ authenticationClientRepository }: AuthenticationClientService) {
   const {
     i18n: { language },
   } = useTranslation();

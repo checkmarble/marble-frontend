@@ -43,8 +43,7 @@ export const PaginationRow = forwardRef<HTMLDivElement, PaginationRowProps>(
             endIndex: 0,
           };
         }
-        const startIndex =
-          pagesStartIndexes[index] !== undefined ? pagesStartIndexes[index] + 1 : 0;
+        const startIndex = pagesStartIndexes[index] !== undefined ? pagesStartIndexes[index] + 1 : 0;
         const pageLength = page?.items.length !== undefined ? page?.items.length - 1 : 0;
 
         return {

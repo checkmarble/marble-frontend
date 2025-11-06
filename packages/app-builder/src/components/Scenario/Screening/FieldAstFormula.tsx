@@ -16,9 +16,7 @@ const EvaluationErrorsWrapper = ({ errors }: { errors: FlatAstValidation['errors
 
   return (
     <EvaluationErrors
-      errors={errors
-        .filter((error) => error != 'RULE_FORMULA_REQUIRED')
-        .map(getScenarioErrorMessage)}
+      errors={errors.filter((error) => error != 'RULE_FORMULA_REQUIRED').map(getScenarioErrorMessage)}
     />
   );
 };
@@ -93,9 +91,7 @@ export const FieldAstFormula = ({
             </Button>
           ) : (
             <Button type="button" variant="secondary" size="medium" onClick={handleDeleteTrigger}>
-              <span className="text-xs">
-                {t('scenarios:trigger.trigger_object.delete_trigger')}
-              </span>
+              <span className="text-xs">{t('scenarios:trigger.trigger_object.delete_trigger')}</span>
             </Button>
           )}
         </div>

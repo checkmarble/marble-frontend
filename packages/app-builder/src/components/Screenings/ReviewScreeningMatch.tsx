@@ -64,11 +64,7 @@ export const ReviewScreeningMatch = ({
       size="small"
     >
       <ModalV2.Title>{t('screenings:review_modal.title')}</ModalV2.Title>
-      <form
-        className="flex flex-col gap-8 p-8"
-        onSubmit={handleSubmit(form)}
-        id="review-screening-match"
-      >
+      <form className="flex flex-col gap-8 p-8" onSubmit={handleSubmit(form)} id="review-screening-match">
         <input name="matchId" type="hidden" value={screeningMatch.id} />
         <form.Field name="status">
           {(field) => {
@@ -104,17 +100,11 @@ export const ReviewScreeningMatch = ({
               return (
                 <div className="flex flex-col gap-2">
                   <span className="flex items-center gap-2">
-                    <Switch
-                      name={field.name}
-                      checked={field.state.value}
-                      onCheckedChange={field.handleChange}
-                    />{' '}
+                    <Switch name={field.name} checked={field.state.value} onCheckedChange={field.handleChange} />{' '}
                     {t('screenings:review_modal.whitelist_label')}
                   </span>
                   <div className="border-grey-90 bg-grey-98 flex flex-col gap-2 rounded-sm border p-2">
-                    <span className="font-semibold">
-                      {t('screenings:match.unique_counterparty_identifier')}
-                    </span>
+                    <span className="font-semibold">{t('screenings:match.unique_counterparty_identifier')}</span>
                     <span>{screeningMatch.uniqueCounterpartyIdentifier}</span>
                   </div>
                 </div>
@@ -145,9 +135,7 @@ export const ReviewScreeningMatch = ({
             <div className="flex flex-col gap-4 p-6">
               <div>{t('screenings:review_modal.callout_confirmed_hit')}</div>
               <div className="flex justify-between gap-4">
-                <ModalV2.Close
-                  render={<Button className="flex-1" variant="secondary" name="cancel" />}
-                >
+                <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
                   {t('common:cancel')}
                 </ModalV2.Close>
                 <Button

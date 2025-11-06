@@ -1,14 +1,6 @@
 import { createSimpleContext } from '@marble/shared';
 import { cva } from 'class-variance-authority';
-import {
-  type Dispatch,
-  Fragment,
-  type ReactNode,
-  type RefObject,
-  type SetStateAction,
-  useRef,
-  useState,
-} from 'react';
+import { type Dispatch, Fragment, type ReactNode, type RefObject, type SetStateAction, useRef, useState } from 'react';
 
 import { DrawerIcon } from './DrawerIcon';
 
@@ -29,17 +21,14 @@ const drawerVariants = cva(
     },
   },
 );
-const drawerContainerVariants = cva(
-  ['bg-grey-100 h-full overflow-y-auto', 'transition-all duration-500'],
-  {
-    variants: {
-      expanded: {
-        false: 'w-[519px]',
-        true: 'w-[80vw]',
-      },
+const drawerContainerVariants = cva(['bg-grey-100 h-full overflow-y-auto', 'transition-all duration-500'], {
+  variants: {
+    expanded: {
+      false: 'w-[519px]',
+      true: 'w-[80vw]',
     },
   },
-);
+});
 
 export type CaseManagerDrawerProps = {
   children: ReactNode;

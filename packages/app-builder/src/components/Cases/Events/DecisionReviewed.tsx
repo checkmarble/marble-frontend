@@ -12,10 +12,7 @@ import { EventTime } from './Time';
 export const DecisionReviewedDetail = ({ event }: { event: DecisionReviewedEvent }) => {
   const { t } = useTranslation(casesI18n);
   const { getOrgUserById } = useOrganizationUsers();
-  const user = useMemo(
-    () => (event.userId ? getOrgUserById(event.userId) : undefined),
-    [event.userId, getOrgUserById],
-  );
+  const user = useMemo(() => (event.userId ? getOrgUserById(event.userId) : undefined), [event.userId, getOrgUserById]);
   const i18nKey = event.comment
     ? 'cases:case_detail.history.event_detail.decision_reviewed_with_comment'
     : 'cases:case_detail.history.event_detail.decision_reviewed';

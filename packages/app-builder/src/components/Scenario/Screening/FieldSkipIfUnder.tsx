@@ -12,13 +12,7 @@ interface FieldSkipIfUnderProps {
   name: string;
 }
 
-export const FieldSkipIfUnder = ({
-  value,
-  onBlur,
-  onChange,
-  editor,
-  name,
-}: FieldSkipIfUnderProps) => {
+export const FieldSkipIfUnder = ({ value, onBlur, onChange, editor, name }: FieldSkipIfUnderProps) => {
   const { t } = useTranslation(scenarioI18n);
   const [inputValue, setInputValue] = useState<number>(value ?? 5);
 

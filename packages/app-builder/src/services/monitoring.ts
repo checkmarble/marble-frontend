@@ -1,8 +1,4 @@
-import {
-  isForbiddenHttpError,
-  isNotFoundHttpError,
-  isUnauthorizedHttpError,
-} from '@app-builder/models';
+import { isForbiddenHttpError, isNotFoundHttpError, isUnauthorizedHttpError } from '@app-builder/models';
 import * as Sentry from '@sentry/remix';
 
 export function captureUnexpectedRemixError(error: unknown, name: string, request: Request) {

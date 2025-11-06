@@ -31,10 +31,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const tableName = params['tableName'];
   invariant(tableName, 'Expected tableName param to be present in url');
 
-  const queryParams = R.pipe(
-    new URL(request.url).searchParams.entries().toArray(),
-    R.fromEntries(),
-  );
+  const queryParams = R.pipe(new URL(request.url).searchParams.entries().toArray(), R.fromEntries());
   const explorationOptions = explorationOptionsSchema.parse(queryParams);
   const paginationQuery = paginationSchema.parse(queryParams);
 

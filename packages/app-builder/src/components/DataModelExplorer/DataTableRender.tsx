@@ -10,12 +10,7 @@ import {
 import { useClientObjectListQuery } from '@app-builder/queries/client-object-list';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import clsx from 'clsx';
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,8 +37,7 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
   const { t } = useTranslation(['common', 'cases']);
   const currentTable = dataModel.find((t) => t.name === item.targetTableName);
   const sourceField = item.sourceObject[item.sourceFieldName];
-  const filterFieldValue =
-    typeof sourceField === 'string' || typeof sourceField === 'number' ? sourceField : '';
+  const filterFieldValue = typeof sourceField === 'string' || typeof sourceField === 'number' ? sourceField : '';
 
   const dataListQuery = useClientObjectListQuery({
     tableName: item.targetTableName,
@@ -57,9 +51,7 @@ export function DataTableRender({ caseId, dataModel, item, navigateTo }: DataTab
 
   if (!currentTable) {
     return (
-      <div className="border-red-47 bg-red-95 text-red-47 mt-3 rounded-sm border p-2">
-        {t('common:global_error')}
-      </div>
+      <div className="border-red-47 bg-red-95 text-red-47 mt-3 rounded-sm border p-2">{t('common:global_error')}</div>
     );
   }
 
@@ -185,15 +177,7 @@ type DataTableProps = {
   navigateTo: (tab: DataModelExplorerNavigationTab) => void;
 };
 
-function DataTable({
-  caseId,
-  pivotObject,
-  table,
-  list,
-  metadata,
-  pagination,
-  navigateTo,
-}: DataTableProps) {
+function DataTable({ caseId, pivotObject, table, list, metadata, pagination, navigateTo }: DataTableProps) {
   const { t } = useTranslation(['common', 'cases']);
   const language = useFormatLanguage();
 
@@ -277,14 +261,9 @@ function DataTable({
               <MenuCommand.List>
                 {fieldOrder.map((fieldName) => {
                   return (
-                    <MenuCommand.Item
-                      key={fieldName}
-                      onSelect={() => handleToggleColumn(fieldName)}
-                    >
+                    <MenuCommand.Item key={fieldName} onSelect={() => handleToggleColumn(fieldName)}>
                       {fieldName}
-                      {columnList.includes(fieldName) ? (
-                        <Icon icon="tick" className="size-5" />
-                      ) : null}
+                      {columnList.includes(fieldName) ? <Icon icon="tick" className="size-5" /> : null}
                     </MenuCommand.Item>
                   );
                 })}
@@ -320,9 +299,7 @@ function DataTable({
                         className="border-grey-90 border-y px-2 font-normal not-last:border-r box-border"
                         style={getHeaderStyle(fieldStatistic)}
                       >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                       </th>
                     );
                   })}
@@ -360,10 +337,7 @@ function DataTable({
                       </div>
                     </td>
                     {row.getVisibleCells().map((cell) => (
-                      <td
-                        className="border-grey-90 group-hover:bg-grey-98 border-b not-last:border-r"
-                        key={cell.id}
-                      >
+                      <td className="border-grey-90 group-hover:bg-grey-98 border-b not-last:border-r" key={cell.id}>
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
@@ -404,8 +378,7 @@ function DataTableActionsButton({
   const [annotationMenuOpen, setAnnotationMenuOpen] = useState(false);
   const annotations = sourceObject.annotations ?? { files: [], comments: [], tags: [] };
 
-  const annotationsCount =
-    annotations.comments.length + annotations.files.length + annotations.tags.length;
+  const annotationsCount = annotations.comments.length + annotations.files.length + annotations.tags.length;
   const showCommentAction = annotationsCount > 0 || annotationMenuOpen;
 
   return (
@@ -455,12 +428,7 @@ function DataTableActionsButton({
                 <Icon icon="more-menu" className="size-3.5" />
               </ButtonV2>
             </MenuCommand.Trigger>
-            <MenuCommand.Content
-              side="right"
-              align="start"
-              sideOffset={4}
-              className="text-r min-w-[280px]"
-            >
+            <MenuCommand.Content side="right" align="start" sideOffset={4} className="text-r min-w-[280px]">
               <MenuCommand.List>
                 {sourceObject.metadata.canBeAnnotated ? (
                   <MenuCommand.Group>
@@ -470,9 +438,7 @@ function DataTableActionsButton({
                           {t('cases:annotations.popover.annotate.title')}{' '}
                           <span className="text-grey-80 text-xs">{annotationsCount}</span>
                         </div>
-                        <span className="text-grey-50">
-                          {t('cases:annotations.popover.annotate.subtitle')}
-                        </span>
+                        <span className="text-grey-50">{t('cases:annotations.popover.annotate.subtitle')}</span>
                       </div>
                       <Icon icon="comment" className="size-5" />
                     </MenuCommand.Item>

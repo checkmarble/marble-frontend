@@ -9,10 +9,7 @@ function debounce<T extends (...args: any[]) => void>(callback: T, delay: number
   }) as T;
 }
 
-export function useDebouncedCallbackRef<T extends (...args: any[]) => void>(
-  callback: T | undefined,
-  delay: number,
-): T {
+export function useDebouncedCallbackRef<T extends (...args: any[]) => void>(callback: T | undefined, delay: number): T {
   const callbackRef = React.useRef<T | undefined>();
   callbackRef.current = callback;
 

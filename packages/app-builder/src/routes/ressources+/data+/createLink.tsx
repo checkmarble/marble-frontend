@@ -45,9 +45,6 @@ export async function action({ request }: ActionFunctionArgs) {
       });
     }
 
-    return json(
-      { success: 'false', errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return json({ success: 'false', errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }

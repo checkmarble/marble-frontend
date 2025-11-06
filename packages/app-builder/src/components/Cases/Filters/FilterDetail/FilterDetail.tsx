@@ -7,13 +7,7 @@ import { CasesExcludeAssignedFilter } from './CasesExcludeAssignedFilter';
 import { CasesSnoozedFilter } from './CasesSnoozedFilter';
 import { ClosedCasesFilter } from './ClosedCasesFilter';
 
-export const FilterDetail = ({
-  filterName,
-  close,
-}: {
-  filterName: CasesFilterName;
-  close: () => void;
-}) =>
+export const FilterDetail = ({ filterName, close }: { filterName: CasesFilterName; close: () => void }) =>
   match(filterName)
     .with('dateRange', () => <CasesDateRangeFilter />)
     .with('statuses', () => <ClosedCasesFilter close={close} />)

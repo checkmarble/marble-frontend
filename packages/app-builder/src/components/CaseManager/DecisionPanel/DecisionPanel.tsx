@@ -1,7 +1,4 @@
-import {
-  CaseManagerDrawerButtons,
-  DrawerContext,
-} from '@app-builder/components/CaseManager/Drawer/Drawer';
+import { CaseManagerDrawerButtons, DrawerContext } from '@app-builder/components/CaseManager/Drawer/Drawer';
 import { casesI18n } from '@app-builder/components/Cases';
 import { CasePivotValues } from '@app-builder/components/Cases/CasePivotValues';
 import { RequiredActions } from '@app-builder/components/Cases/RequiredActions';
@@ -131,21 +128,15 @@ const DecisionTriggerObject = ({
   return (
     <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
       <div className="flex h-fit flex-col gap-4">
-        <span className="text-m text-grey-00 font-semibold">
-          {t('cases:case_detail.trigger_object')}
-        </span>
+        <span className="text-m text-grey-00 font-semibold">{t('cases:case_detail.trigger_object')}</span>
         <div className="flex flex-col gap-2">
-          <span className="text-grey-50 text-xs first-letter:capitalize">
-            {t('cases:case_detail.pivot_values')}
-          </span>
+          <span className="text-grey-50 text-xs first-letter:capitalize">{t('cases:case_detail.pivot_values')}</span>
           <CasePivotValues pivotValues={pivotValues} />
         </div>
       </div>
 
       <div className="flex h-fit flex-col gap-2">
-        <span className="text-grey-50 text-xs first-letter:capitalize">
-          {t('cases:case_detail.trigger_object')}
-        </span>
+        <span className="text-grey-50 text-xs first-letter:capitalize">{t('cases:case_detail.trigger_object')}</span>
         <CaseDetailTriggerObject
           className="h-fit max-h-[50dvh] overflow-auto"
           dataModel={dataModel}
@@ -179,18 +170,12 @@ const DecisionDetailSkeleton = ({ isExpanded }: { isExpanded: boolean }) => (
         </div>
         <div className="bg-grey-90 h-30 w-full animate-pulse rounded-md" />
       </div>
-      {isExpanded ? (
-        <div className="bg-grey-90 h-60 w-115 shrink-0 animate-pulse rounded-md" />
-      ) : null}
+      {isExpanded ? <div className="bg-grey-90 h-60 w-115 shrink-0 animate-pulse rounded-md" /> : null}
     </div>
   </div>
 );
 
-const ExpandedDetail = ({
-  decision,
-  pivots,
-  dataModel,
-}: DetailProps & { dataModel: TableModel[] }) => {
+const ExpandedDetail = ({ decision, pivots, dataModel }: DetailProps & { dataModel: TableModel[] }) => {
   return (
     <div className="flex flex-row gap-6">
       <DecisionRuleExecutions decision={decision} />
@@ -199,11 +184,7 @@ const ExpandedDetail = ({
   );
 };
 
-const CollapsedDetail = ({
-  decision,
-  pivots,
-  dataModel,
-}: DetailProps & { dataModel: TableModel[] }) => {
+const CollapsedDetail = ({ decision, pivots, dataModel }: DetailProps & { dataModel: TableModel[] }) => {
   const { t } = useTranslation(casesI18n);
   return (
     <Tabs defaultValue="hits" className="flex flex-col items-start gap-6">

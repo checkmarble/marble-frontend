@@ -16,9 +16,7 @@ export interface DatabaseAccessAstNode {
   };
 }
 
-export function isDatabaseAccess(
-  node: IdLessAstNode,
-): node is CheckNodeId<DatabaseAccessAstNode, typeof node> {
+export function isDatabaseAccess(node: IdLessAstNode): node is CheckNodeId<DatabaseAccessAstNode, typeof node> {
   return node.name === databaseAccessAstNodeName;
 }
 

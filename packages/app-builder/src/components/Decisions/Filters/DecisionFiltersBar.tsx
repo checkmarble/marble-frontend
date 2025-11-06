@@ -1,9 +1,4 @@
-import {
-  AddNewFilterButton,
-  ClearAllFiltersLink,
-  FilterItem,
-  FilterPopover,
-} from '@app-builder/components/Filters';
+import { AddNewFilterButton, ClearAllFiltersLink, FilterItem, FilterPopover } from '@app-builder/components/Filters';
 import { getRoute } from '@app-builder/utils/routes';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,11 +6,7 @@ import { Separator } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { decisionsI18n } from '../decisions-i18n';
-import {
-  useClearFilter,
-  useDecisionFiltersContext,
-  useDecisionFiltersPartition,
-} from './DecisionFiltersContext';
+import { useClearFilter, useDecisionFiltersContext, useDecisionFiltersPartition } from './DecisionFiltersContext';
 import { DecisionFiltersMenu } from './DecisionFiltersMenu';
 import { FilterDetail } from './FilterDetail';
 import { getFilterIcon, getFilterTKey } from './filters';
@@ -33,8 +24,7 @@ export function DecisionFiltersBar() {
     [onDecisionFilterClose],
   );
 
-  const { undefinedDecisionFilterNames, definedDecisionFilterNames } =
-    useDecisionFiltersPartition();
+  const { undefinedDecisionFilterNames, definedDecisionFilterNames } = useDecisionFiltersPartition();
   const clearFilter = useClearFilter();
 
   if (definedDecisionFilterNames.length === 0) {

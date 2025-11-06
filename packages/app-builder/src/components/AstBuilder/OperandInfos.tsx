@@ -11,28 +11,13 @@ import {
   isAggregation,
   isUnaryAggregationFilter,
 } from '@app-builder/models/astNode/aggregation';
-import {
-  type CustomListAccessAstNode,
-  isCustomListAccess,
-} from '@app-builder/models/astNode/custom-list';
-import {
-  type DataAccessorAstNode,
-  isDataAccessorAstNode,
-} from '@app-builder/models/astNode/data-accessor';
+import { type CustomListAccessAstNode, isCustomListAccess } from '@app-builder/models/astNode/custom-list';
+import { type DataAccessorAstNode, isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
 import { isTimeAdd } from '@app-builder/models/astNode/time';
 import { type CustomList } from '@app-builder/models/custom-list';
-import {
-  getOperandTypeIcon,
-  getOperandTypeTKey,
-  type OperandType,
-} from '@app-builder/models/operand-type';
+import { getOperandTypeIcon, getOperandTypeTKey, type OperandType } from '@app-builder/models/operand-type';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardPortal,
-  HoverCardTrigger,
-} from '@radix-ui/react-hover-card';
+import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '@radix-ui/react-hover-card';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -67,19 +52,11 @@ export function OperandInfos(props: OperandInfosProps) {
         />
       </HoverCardTrigger>
       <HoverCardPortal>
-        <HoverCardContent
-          side="right"
-          align="start"
-          sideOffset={20}
-          alignOffset={-8}
-          className={contentClassnames}
-        >
+        <HoverCardContent side="right" align="start" sideOffset={20} alignOffset={-8} className={contentClassnames}>
           <div className="bg-grey-100 flex flex-col gap-2 overflow-auto p-4">
             <div className="flex flex-col gap-1">
               <TypeInfos operandType={props.operandType} dataType={props.dataType} />
-              <p className="text-grey-00 text-s text-ellipsis hyphens-auto font-normal">
-                {props.displayName}
-              </p>
+              <p className="text-grey-00 text-s text-ellipsis hyphens-auto font-normal">{props.displayName}</p>
             </div>
             <OperandDescription node={props.node} />
           </div>
@@ -109,10 +86,7 @@ function TypeInfos({ operandType, dataType }: TypeInfosProps) {
       {typeInfos.map(({ icon, tKey }) => {
         if (!tKey) return null;
         return (
-          <span
-            key={tKey}
-            className="text-purple-82 inline-flex items-center gap-[2px] text-xs font-normal"
-          >
+          <span key={tKey} className="text-purple-82 inline-flex items-center gap-[2px] text-xs font-normal">
             {icon ? <Icon icon={icon} className="size-3" /> : null}
             {t(tKey, { count: 1 })}
           </span>
@@ -150,9 +124,7 @@ function OperandDescription({ node }: OperandDescriptionProps) {
 
 function Description({ description }: { description: string }) {
   return description ? (
-    <p className="text-grey-50 max-w-[300px] text-xs font-normal first-letter:capitalize">
-      {description}
-    </p>
+    <p className="text-grey-50 max-w-[300px] text-xs font-normal first-letter:capitalize">{description}</p>
   ) : null;
 }
 
@@ -183,9 +155,7 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
               - a field name (string) = fieldName?.constant
               - a table name (string) = tableName?.constant
               */}
-              <p className="bg-grey-98 whitespace-nowrap p-2 text-end">
-                {fieldName.constant ?? '...'}
-              </p>
+              <p className="bg-grey-98 whitespace-nowrap p-2 text-end">{fieldName.constant ?? '...'}</p>
               <ViewingOperator operator={operator.constant} isFilter />
               {!isUnaryAggregationFilter(filter) ? (
                 <ViewingAstBuilderOperand node={filter.namedChildren.value} />
@@ -203,9 +173,7 @@ type CustomListAccessDescriptionProps = {
   customLists: CustomList[];
 };
 function CustomListAccessDescription({ node, customLists }: CustomListAccessDescriptionProps) {
-  const customList = customLists.find(
-    (list) => list.id === node.namedChildren.customListId.constant,
-  );
+  const customList = customLists.find((list) => list.id === node.namedChildren.customListId.constant);
   if (!customList) return null;
 
   return <Description description={customList.description} />;
@@ -216,11 +184,7 @@ type DataAccessorDescriptionProps = {
   dataModel: DataModel;
   triggerObjectTable: TableModel;
 };
-function DataAccessorDescription({
-  node,
-  dataModel,
-  triggerObjectTable,
-}: DataAccessorDescriptionProps) {
+function DataAccessorDescription({ node, dataModel, triggerObjectTable }: DataAccessorDescriptionProps) {
   const { t } = useTranslation(['scenarios']);
   const field = getDataAccessorAstNodeField(node, { triggerObjectTable, dataModel });
 
@@ -239,9 +203,7 @@ function DataAccessorDescription({
                   {value}
                 </li>
               ))}
-            {field.values.length > MAX_ENUM_VALUES ? (
-              <li className="text-xs font-normal">...</li>
-            ) : null}
+            {field.values.length > MAX_ENUM_VALUES ? <li className="text-xs font-normal">...</li> : null}
           </ul>
         </div>
       ) : null}

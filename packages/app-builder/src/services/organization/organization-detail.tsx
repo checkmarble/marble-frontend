@@ -9,8 +9,7 @@ interface OrganizationDetailsContext {
   currentUser: CurrentUser;
 }
 
-const OrganizationDetailsContext =
-  createSimpleContext<OrganizationDetailsContext>('OrganizationDetails');
+const OrganizationDetailsContext = createSimpleContext<OrganizationDetailsContext>('OrganizationDetails');
 
 export function OrganizationDetailsContextProvider({
   org,
@@ -22,11 +21,7 @@ export function OrganizationDetailsContextProvider({
   children: React.ReactNode;
 }) {
   const value = useMemo(() => ({ org, currentUser }), [org, currentUser]);
-  return (
-    <OrganizationDetailsContext.Provider value={value}>
-      {children}
-    </OrganizationDetailsContext.Provider>
-  );
+  return <OrganizationDetailsContext.Provider value={value}>{children}</OrganizationDetailsContext.Provider>;
 }
 
 export const useOrganizationDetails = () => OrganizationDetailsContext.useValue();

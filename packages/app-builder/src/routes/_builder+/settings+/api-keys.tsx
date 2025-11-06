@@ -49,8 +49,7 @@ const columnHelper = createColumnHelper<ApiKey>();
 
 export default function ApiKeys() {
   const { t } = useTranslation(['settings']);
-  const { apiKeys, createdApiKey, isCreateApiKeyAvailable, isDeleteApiKeyAvailable } =
-    useLoaderData<typeof loader>();
+  const { apiKeys, createdApiKey, isCreateApiKeyAvailable, isDeleteApiKeyAvailable } = useLoaderData<typeof loader>();
 
   const columns = useMemo(() => {
     return [

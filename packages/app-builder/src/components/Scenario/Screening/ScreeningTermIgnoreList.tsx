@@ -41,9 +41,7 @@ export const ScreeningTermIgnoreList = ({
         <Switch
           checked={value !== null}
           onBlur={onBlur}
-          onCheckedChange={(checked) =>
-            onChange(checked ? (selectedListId ?? customLists[0]?.id ?? null) : null)
-          }
+          onCheckedChange={(checked) => onChange(checked ? (selectedListId ?? customLists[0]?.id ?? null) : null)}
           disabled={editor === 'view'}
         />
         <span className="text-s">{t('scenarios:edit_sanction.remove_terms_from_list')}</span>
@@ -53,12 +51,7 @@ export const ScreeningTermIgnoreList = ({
         <div className="flex flex-col gap-1">
           <MenuCommand.Menu persistOnSelect={false} open={open} onOpenChange={setOpen}>
             <MenuCommand.Trigger>
-              <Button
-                variant="secondary"
-                size="medium"
-                className="w-52 justify-between"
-                disabled={editor === 'view'}
-              >
+              <Button variant="secondary" size="medium" className="w-52 justify-between" disabled={editor === 'view'}>
                 <span className="text-grey-00 text-s font-medium">
                   {customLists.find((list) => list.id === selectedListId)?.name ||
                     t('scenarios:edit_sanction.select_list')}

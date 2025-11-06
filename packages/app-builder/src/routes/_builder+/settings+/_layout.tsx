@@ -1,9 +1,5 @@
 import { Page } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { Nudge } from '@app-builder/components/Nudge';
 import { isAccessible } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';

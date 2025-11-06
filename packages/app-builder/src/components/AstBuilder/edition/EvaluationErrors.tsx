@@ -1,8 +1,5 @@
 import { type EvaluationErrorCode } from '@app-builder/models/node-evaluation';
-import {
-  adaptEvaluationErrorViewModels,
-  commonErrorMessages,
-} from '@app-builder/services/validation';
+import { adaptEvaluationErrorViewModels, commonErrorMessages } from '@app-builder/services/validation';
 import { computed } from '@preact/signals-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,9 +23,7 @@ export const EditionEvaluationErrors = memo(function (props: EditionEvaluationEr
     if (!evaluation) return [];
     return R.pipe(
       evaluation,
-      R.filter((row) =>
-        props.direct ? row.nodeId === props.id : row.relatedIds.includes(props.id),
-      ),
+      R.filter((row) => (props.direct ? row.nodeId === props.id : row.relatedIds.includes(props.id))),
       R.flatMap((row) => row.errors),
       R.filter((err) => !(props.filterOut ?? []).includes(err.error)),
     );

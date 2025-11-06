@@ -66,9 +66,7 @@ export function checkEnv() {
     const entries: Array<[string, string[]]> = Object.entries(tree.properties ?? {}).map(
       ([key, value]) => [key, value.errors] as [string, string[]],
     );
-    const formatted = entries
-      .map(([key, messages]) => `\t- ${key}: ${messages.join(', ')}`)
-      .join('\n');
+    const formatted = entries.map(([key, messages]) => `\t- ${key}: ${messages.join(', ')}`).join('\n');
 
     throw new Error(`[MissingEnv] validation issues :\n${formatted}`);
   }

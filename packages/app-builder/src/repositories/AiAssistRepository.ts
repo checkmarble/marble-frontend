@@ -1,9 +1,5 @@
 import { MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import {
-  CaseReviewSetting,
-  KYCEnrichmentSetting,
-  transformCaseReviewSetting,
-} from '@app-builder/models/ai-settings';
+import { CaseReviewSetting, KYCEnrichmentSetting, transformCaseReviewSetting } from '@app-builder/models/ai-settings';
 import * as Sentry from '@sentry/remix';
 
 export interface AiAssistRepository {

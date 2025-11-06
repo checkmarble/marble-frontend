@@ -1,9 +1,6 @@
 import { initializeFeatureAccessAPIClient } from '@app-builder/infra/feature-access-api';
 import { initializeMarbleCoreAPIClient } from '@app-builder/infra/marblecore-api';
-import {
-  makeServerRepositories,
-  type ServerRepositories,
-} from '@app-builder/repositories/init.server';
+import { makeServerRepositories, type ServerRepositories } from '@app-builder/repositories/init.server';
 import { checkEnv, getServerEnv } from '@app-builder/utils/environment';
 import { CSRF } from 'remix-utils/csrf/server';
 
@@ -30,9 +27,7 @@ function makeServerServices(repositories: ServerRepositories) {
     csrfService,
     toastSessionService,
     appConfigRepository: repositories.getAppConfigRepository(repositories.marbleCoreApiClient),
-    featureAccessService: repositories.getFeatureAccessRepository(
-      repositories.getFeatureAccessApiClientWithoutAuth(),
-    ),
+    featureAccessService: repositories.getFeatureAccessRepository(repositories.getFeatureAccessApiClientWithoutAuth()),
     authService: makeAuthenticationServerService({
       ...repositories,
       authSessionService,

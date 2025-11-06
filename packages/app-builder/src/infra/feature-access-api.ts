@@ -1,9 +1,4 @@
-import {
-  createBasicFetch,
-  createFetchWithAuthMiddleware,
-  featureAccessApi,
-  type TokenService,
-} from 'marble-api';
+import { createBasicFetch, createFetchWithAuthMiddleware, featureAccessApi, type TokenService } from 'marble-api';
 import * as R from 'remeda';
 import { type FunctionKeys } from 'typescript-utils';
 
@@ -11,9 +6,7 @@ export type FeatureAccessApi = {
   [P in FunctionKeys<typeof featureAccessApi>]: (typeof featureAccessApi)[P];
 };
 
-export type GetFeatureAccessAPIClientWithAuth = (
-  tokenService: TokenService<string>,
-) => FeatureAccessApi;
+export type GetFeatureAccessAPIClientWithAuth = (tokenService: TokenService<string>) => FeatureAccessApi;
 
 function getFeatureAccessAPIClient({
   request,
@@ -47,10 +40,7 @@ type FeatureAccessAPIClientParams = {
   request: Request;
   baseUrl: string;
 };
-export function initializeFeatureAccessAPIClient({
-  request,
-  baseUrl,
-}: FeatureAccessAPIClientParams): {
+export function initializeFeatureAccessAPIClient({ request, baseUrl }: FeatureAccessAPIClientParams): {
   featureAccessApi: FeatureAccessApi;
   getFeatureAccessAPIClientWithAuth: GetFeatureAccessAPIClientWithAuth;
 } {

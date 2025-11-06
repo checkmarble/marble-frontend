@@ -29,10 +29,7 @@ const FieldCategory = memo(function FieldCategory({
   const [open, setOpen] = useState(false);
   const editor = useEditorMode();
 
-  const sectionDatasetIds = useMemo(
-    () => section.datasets.map((dataset) => dataset.name),
-    [section.datasets],
-  );
+  const sectionDatasetIds = useMemo(() => section.datasets.map((dataset) => dataset.name), [section.datasets]);
 
   const selectedDatasetIds = useMemo(
     () => intersection(sectionDatasetIds, selectedIds),
@@ -56,9 +53,7 @@ const FieldCategory = memo(function FieldCategory({
             : datasets,
         // We filter the resulted datasets by selected tags if any
         (datasets) =>
-          filters.tags.length > 0
-            ? datasets.filter((d) => d.tag && filters.tags.includes(d.tag))
-            : datasets,
+          filters.tags.length > 0 ? datasets.filter((d) => d.tag && filters.tags.includes(d.tag)) : datasets,
         // We get only the ids
         map((d) => d.name),
         // We don't forget to add the selected dataset ids
@@ -78,10 +73,7 @@ const FieldCategory = memo(function FieldCategory({
     <CollapsibleV2.Provider defaultOpen={open}>
       <div key={section.name} className="w-full overflow-hidden rounded-lg">
         <div className="bg-grey-98 flex w-full items-center justify-between p-4">
-          <CollapsibleV2.Title
-            onClick={() => setOpen(!open)}
-            className="flex flex-row items-center gap-2"
-          >
+          <CollapsibleV2.Title onClick={() => setOpen(!open)} className="flex flex-row items-center gap-2">
             <Icon
               icon="arrow-right"
               className={clsx('size-5', {
@@ -103,9 +95,7 @@ const FieldCategory = memo(function FieldCategory({
             <Checkbox
               disabled={editor === 'view'}
               size="small"
-              checked={
-                isAllSelected ? true : selectedDatasetIds.length > 0 ? 'indeterminate' : false
-              }
+              checked={isAllSelected ? true : selectedDatasetIds.length > 0 ? 'indeterminate' : false}
               onCheckedChange={(state) => {
                 updateSelectedIds((prev) => {
                   let result: string[] = [...prev];

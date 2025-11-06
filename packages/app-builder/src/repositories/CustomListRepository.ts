@@ -17,10 +17,7 @@ export interface CustomListsRepository {
   getCustomList(id: string): Promise<CustomListWithValues>;
   updateCustomList(id: string, body: UpdateCustomListBody): Promise<CustomList>;
   deleteCustomList(id: string): Promise<void>;
-  createCustomListValue(
-    customListId: string,
-    body: CreateCustomListValueBody,
-  ): Promise<CustomListValue>;
+  createCustomListValue(customListId: string, body: CreateCustomListValueBody): Promise<CustomListValue>;
   deleteCustomListValue(customListId: string, valueId: string): Promise<void>;
   downloadValues(customListId: string): Promise<string>;
 }
@@ -47,10 +44,7 @@ export function makeGetCustomListRepository() {
       await marbleCoreApiClient.deleteCustomList(id);
     },
     createCustomListValue: async (customListId, body) => {
-      const { custom_list_value } = await marbleCoreApiClient.createCustomListValue(
-        customListId,
-        body,
-      );
+      const { custom_list_value } = await marbleCoreApiClient.createCustomListValue(customListId, body);
       return adaptCustomListValue(custom_list_value);
     },
     deleteCustomListValue: async (customListId, valueId) => {

@@ -13,7 +13,5 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   invariant(scenarioId, 'scenarioId is required');
 
   const references = await scenario.getLatestRulesReferences(scenarioId);
-  return Response.json(
-    references.sort((a, b) => Number(b.latestVersion) - Number(a.latestVersion)),
-  );
+  return Response.json(references.sort((a, b) => Number(b.latestVersion) - Number(a.latestVersion)));
 }

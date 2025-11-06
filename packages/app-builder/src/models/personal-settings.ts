@@ -9,9 +9,7 @@ export const adaptUnavailability = (data: PersonalSettingsUnavailableDto): Perso
   until: data.until ? new Date(data.until) : null,
 });
 
-export const transformUnavailability = (
-  unavailability: PersonalSettings,
-): PersonalSettingsUnavailableDto => {
+export const transformUnavailability = (unavailability: PersonalSettings): PersonalSettingsUnavailableDto => {
   if (unavailability.until === null) {
     throw new Error('Unavailability should not be null');
   }

@@ -1,16 +1,8 @@
-import {
-  type DataModel,
-  type DataType,
-  type IdLessAstNode,
-  type TableModel,
-} from '@app-builder/models';
+import { type DataModel, type DataType, type IdLessAstNode, type TableModel } from '@app-builder/models';
 import { type ConstantAstNode, isConstant } from '@app-builder/models/astNode/constant';
 import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
-import {
-  isFuzzyMatchComparator,
-  isStringTemplateAstNode,
-} from '@app-builder/models/astNode/strings';
+import { isFuzzyMatchComparator, isStringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { isTimeAdd, isTimeNow, isTimestampExtract } from '@app-builder/models/astNode/time';
 import { dateTimeDataTypeSchema } from '@app-builder/utils/schema/dataTypeSchema';
 import * as R from 'remeda';

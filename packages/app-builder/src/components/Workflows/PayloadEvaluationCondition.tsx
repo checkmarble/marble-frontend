@@ -30,10 +30,7 @@ function createDefaultSimpleExpression(): AstNode {
   };
 }
 
-export function PayloadEvaluationCondition({
-  condition,
-  onChange,
-}: PayloadEvaluationConditionProps) {
+export function PayloadEvaluationCondition({ condition, onChange }: PayloadEvaluationConditionProps) {
   const currentScenario = useCurrentScenario();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -58,9 +55,7 @@ export function PayloadEvaluationCondition({
         <AstBuilder.Root
           node={currentExpression}
           optionsDataType={(option) =>
-            option.operandType !== 'Modeling' &&
-            !isDatabaseAccess(option.astNode) &&
-            !isAggregation(option.astNode)
+            option.operandType !== 'Modeling' && !isDatabaseAccess(option.astNode) && !isAggregation(option.astNode)
           }
           onStoreChange={(nodeStore) => {
             if (nodeStore) {

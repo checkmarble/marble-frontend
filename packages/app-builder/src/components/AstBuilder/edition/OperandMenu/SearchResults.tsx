@@ -52,9 +52,7 @@ export function SearchResults({ onSelect, search }: SearchResultsProps) {
         }) as const,
     );
 
-    return coerceDataType
-      ? coerceOpts.filter((o) => coerceDataType.includes(o.dataType))
-      : coerceOpts;
+    return coerceDataType ? coerceOpts.filter((o) => coerceDataType.includes(o.dataType)) : coerceOpts;
   }, [t, language, search, coerceDataType]);
 
   return (
@@ -72,9 +70,7 @@ export function SearchResults({ onSelect, search }: SearchResultsProps) {
                 onSelect={onSelect}
                 rightElement={
                   dataTypeTkey ? (
-                    <span className="text-s text-purple-65 font-semibold">
-                      {t(`scenarios:${dataTypeTkey}`)}
-                    </span>
+                    <span className="text-s text-purple-65 font-semibold">{t(`scenarios:${dataTypeTkey}`)}</span>
                   ) : undefined
                 }
               />
@@ -99,9 +95,7 @@ function ResultTitle({ count }: { count: number }) {
   return (
     <div className="flex min-h-10 select-none flex-row items-center gap-1 p-2">
       <div className="flex w-full items-baseline gap-1">
-        <div className="text-grey-00 text-m flex items-baseline whitespace-pre font-semibold">
-          Results
-        </div>
+        <div className="text-grey-00 text-m flex items-baseline whitespace-pre font-semibold">Results</div>
         <div className="text-grey-80 text-xs font-medium">{count}</div>
       </div>
     </div>

@@ -3,10 +3,7 @@ import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 
 import { describe, expect, it } from 'vitest';
 
-import {
-  type CoerceToConstantAstNodeOptions,
-  coerceToConstantAstNode,
-} from './coerceToConstantAstNode';
+import { type CoerceToConstantAstNodeOptions, coerceToConstantAstNode } from './coerceToConstantAstNode';
 
 const options: CoerceToConstantAstNodeOptions = {
   booleans: {
@@ -127,11 +124,7 @@ function helperConstantOperandOption({
   }
 }
 
-function helperConstantArrayOperandOption({
-  constant,
-}: {
-  constant: (string | number | boolean)[];
-}) {
+function helperConstantArrayOperandOption({ constant }: { constant: (string | number | boolean)[] }) {
   return stripIdFromNode(
     NewConstantAstNode({
       constant,

@@ -8,6 +8,5 @@ export interface FeatureAccessRepository {
 export const makeGetFeatureAccessRepository =
   () =>
   (client: FeatureAccessApi): FeatureAccessRepository => ({
-    getEntitlements: async () =>
-      adaptFeatureAccesses((await client.getEntitlements()).feature_access),
+    getEntitlements: async () => adaptFeatureAccesses((await client.getEntitlements()).feature_access),
   });

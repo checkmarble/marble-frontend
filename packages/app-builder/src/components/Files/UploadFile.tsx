@@ -43,11 +43,7 @@ export type UploadFileContentProps = {
   onUploadCompleted: (success: boolean) => void;
 };
 
-function UploadFileContent({
-  uploadFileEndpoint,
-  setOpen,
-  onUploadCompleted,
-}: UploadFileContentProps) {
+function UploadFileContent({ uploadFileEndpoint, setOpen, onUploadCompleted }: UploadFileContentProps) {
   const { t } = useTranslation(['common', 'cases']);
   const [loading, setLoading] = useState(false);
 

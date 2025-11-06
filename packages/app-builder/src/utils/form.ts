@@ -2,9 +2,7 @@ import { AnyFormApi, StandardSchemaV1Issue } from '@tanstack/react-form';
 import { select } from 'radash';
 import type { FormEvent, LegacyRef, MutableRefObject, RefCallback } from 'react';
 
-export const submitOnBlur: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement> = (
-  event,
-) => {
+export const submitOnBlur: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
   if (event.currentTarget.value !== event.currentTarget.defaultValue) {
     event.currentTarget.form?.requestSubmit();
   }
@@ -35,9 +33,7 @@ export const getFieldErrors = (errors: ({ message: string } | undefined)[]) =>
     (e) => e !== undefined,
   );
 
-export const mergeRefs = <T>(
-  refs: Array<MutableRefObject<T> | LegacyRef<T> | undefined | null>,
-): RefCallback<T> => {
+export const mergeRefs = <T>(refs: Array<MutableRefObject<T> | LegacyRef<T> | undefined | null>): RefCallback<T> => {
   return (value) => {
     refs.forEach((ref) => {
       if (typeof ref === 'function') {

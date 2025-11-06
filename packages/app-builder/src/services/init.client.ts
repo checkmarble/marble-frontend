@@ -1,9 +1,6 @@
 import { AppConfigContext } from '@app-builder/contexts/AppConfigContext';
 import { initializeFirebaseClient } from '@app-builder/infra/firebase';
-import {
-  type ClientRepositories,
-  makeClientRepositories,
-} from '@app-builder/repositories/init.client';
+import { type ClientRepositories, makeClientRepositories } from '@app-builder/repositories/init.client';
 import { useMemo } from 'react';
 
 import { makeAuthenticationClientService } from './auth/auth.client';
@@ -11,9 +8,7 @@ import { makeI18nextClientService } from './i18n/i18next.client';
 
 function makeClientServices(repositories: ClientRepositories) {
   return {
-    authenticationClientService: makeAuthenticationClientService(
-      repositories.authenticationClientRepository,
-    ),
+    authenticationClientService: makeAuthenticationClientService(repositories.authenticationClientRepository),
   };
 }
 

@@ -11,10 +11,7 @@ import { Icon } from 'ui-icons';
 
 import { decisionsI18n } from './decisions-i18n';
 
-const outcomeMapping: Record<
-  Outcome,
-  { color: TagProps['color']; tKey: ParseKeys<['decisions']> }
-> = {
+const outcomeMapping: Record<Outcome, { color: TagProps['color']; tKey: ParseKeys<['decisions']> }> = {
   approve: { color: 'green', tKey: 'decisions:outcome.approve' },
   review: { color: 'yellow', tKey: 'decisions:outcome.review' },
   block_and_review: {
@@ -120,15 +117,11 @@ export const OutcomeBadge = ({
       {match(outcome)
         .with('approve', () => <Icon icon="accepted" className="text-green-38 size-4" />)
         .with('decline', () => <Icon icon="denied" className="text-red-47 size-4" />)
-        .with('review', () => (
-          <div className={cn('size-3.5 rounded-full border-2 border-orange-50')} />
-        ))
+        .with('review', () => <div className={cn('size-3.5 rounded-full border-2 border-orange-50')} />)
         .with('unknown', () => <div className="border-grey-50 size-4 rounded-full border-2" />)
         .with('block_and_review', () =>
           match(reviewStatus)
-            .with('approve', () => (
-              <Icon icon="manually_accepted" className="text-green-38 size-4" />
-            ))
+            .with('approve', () => <Icon icon="manually_accepted" className="text-green-38 size-4" />)
             .with('decline', () => <Icon icon="manually_denied" className="text-red-47 size-4" />)
             .otherwise(() => <Icon icon="block_and_review" className="size-4 text-orange-50" />),
         )

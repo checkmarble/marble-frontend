@@ -1,10 +1,6 @@
 import { v7 as uuidv7 } from 'uuid';
 
-import {
-  type AggregationAstNode,
-  type FuzzyMatchFilterOptionsAstNode,
-  isAggregation,
-} from './aggregation';
+import { type AggregationAstNode, type FuzzyMatchFilterOptionsAstNode, isAggregation } from './aggregation';
 import { type AstNode, isUndefinedAstNode, type UndefinedAstNode } from './ast-node';
 import {
   type BinaryMainAstOperatorFunction,
@@ -24,13 +20,7 @@ import {
   isStringTemplateAstNode,
   type StringTemplateAstNode,
 } from './strings';
-import {
-  isTimeAdd,
-  isTimeNow,
-  isTimestampExtract,
-  type TimeAddAstNode,
-  type TimeNowAstNode,
-} from './time';
+import { isTimeAdd, isTimeNow, isTimestampExtract, type TimeAddAstNode, type TimeNowAstNode } from './time';
 
 export type EditableAstNode =
   | AggregationAstNode
@@ -97,9 +87,7 @@ export interface AndAstNode {
   namedChildren: Record<string, never>;
 }
 
-export function NewAndAstNode({
-  children = [],
-}: Partial<Pick<AndAstNode, 'children'>> = {}): AndAstNode {
+export function NewAndAstNode({ children = [] }: Partial<Pick<AndAstNode, 'children'>> = {}): AndAstNode {
   return {
     id: uuidv7(),
     name: 'And',
@@ -198,7 +186,6 @@ export function isMainAstBinaryNode(astNode: AstNode): astNode is MainAstBinaryN
   if (!isMainAstNode(astNode)) return false;
 
   return (
-    astNode.children.length === 2 &&
-    (isBinaryMainAstOperatorFunction(astNode.name) || isUndefinedAstNode(astNode))
+    astNode.children.length === 2 && (isBinaryMainAstOperatorFunction(astNode.name) || isUndefinedAstNode(astNode))
   );
 }

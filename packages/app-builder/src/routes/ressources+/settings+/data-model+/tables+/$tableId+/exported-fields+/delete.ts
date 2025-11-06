@@ -44,19 +44,17 @@ export const action = createServerFn(
     }
 
     try {
-      const current =
-        await context.authInfo.dataModelRepository.getDataModelTableExportedFields(tableId);
+      const current = await context.authInfo.dataModelRepository.getDataModelTableExportedFields(tableId);
 
       if ('triggerObjectField' in parsedCreate.data) {
         const field = parsedCreate.data.triggerObjectField;
         if (!current.triggerObjectFields.includes(field)) {
           return { success: false, errors: ['Field not exported'] };
         }
-        const exportedFields =
-          await context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
-            triggerObjectFields: current.triggerObjectFields.filter((f) => f !== field),
-            ingestedDataFields: current.ingestedDataFields,
-          });
+        const exportedFields = await context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
+          triggerObjectFields: current.triggerObjectFields.filter((f) => f !== field),
+          ingestedDataFields: current.ingestedDataFields,
+        });
         return { success: true, data: exportedFields };
       }
 
@@ -65,11 +63,10 @@ export const action = createServerFn(
         if (!current.ingestedDataFields.some((current) => R.isDeepEqual(current, field))) {
           return { success: false, errors: ['Field not exported'] };
         }
-        const exportedFields =
-          await context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
-            triggerObjectFields: current.triggerObjectFields,
-            ingestedDataFields: current.ingestedDataFields.filter((f) => !R.isDeepEqual(f, field)),
-          });
+        const exportedFields = await context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
+          triggerObjectFields: current.triggerObjectFields,
+          ingestedDataFields: current.ingestedDataFields.filter((f) => !R.isDeepEqual(f, field)),
+        });
         return { success: true, data: exportedFields };
       }
 

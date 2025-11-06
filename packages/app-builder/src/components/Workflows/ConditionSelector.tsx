@@ -139,8 +139,7 @@ export function ConditionSelector({
   };
 
   const needsParams =
-    (condition?.function && condition.function !== 'always' && condition.function !== 'never') ??
-    false;
+    (condition?.function && condition.function !== 'always' && condition.function !== 'never') ?? false;
   const selectedCondition = condition?.function;
 
   // Render condition line with common structure
@@ -200,9 +199,7 @@ export function ConditionSelector({
               <div className="flex-1 min-w-0">
                 <SelectOutcomesList
                   selectedOutcomes={(c.params as unknown as OutcomeDto[]) || []}
-                  onSelectedOutcomesChange={(outcomes) =>
-                    handleParamsSelect(outcomes?.join(',') || '')
-                  }
+                  onSelectedOutcomesChange={(outcomes) => handleParamsSelect(outcomes?.join(',') || '')}
                 />
               </div>
             ))

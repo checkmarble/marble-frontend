@@ -33,10 +33,7 @@ async function getDatasetFreshnessInfo(
           : null;
       }),
     ),
-    R.filter(
-      (iteration): iteration is ScenarioIteration =>
-        !!iteration && iteration.screeningConfigs.length > 0,
-    ),
+    R.filter((iteration): iteration is ScenarioIteration => !!iteration && iteration.screeningConfigs.length > 0),
   );
 
   if (iterationsWithScreening.length > 0) {

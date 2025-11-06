@@ -3,15 +3,7 @@ import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { unique } from 'remeda';
-import {
-  Button,
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from 'ui-design-system';
+import { Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { RuleGroup } from '../Rules/RuleGroup';
@@ -57,10 +49,7 @@ export const FieldRuleGroup = ({
             size={selectedRuleGroup ? 'icon' : undefined}
             className={clsx({ 'w-fit': !selectedRuleGroup })}
           >
-            <Icon
-              icon={selectedRuleGroup ? 'edit-square' : 'plus'}
-              className="text-grey-80 size-4"
-            />
+            <Icon icon={selectedRuleGroup ? 'edit-square' : 'plus'} className="text-grey-80 size-4" />
             {!selectedRuleGroup ? <span>{t('scenarios:rules.add_group')}</span> : null}
           </Button>
         </Trigger>
@@ -68,9 +57,7 @@ export const FieldRuleGroup = ({
       <Content className="mt-1 min-w-[280px] shadow-md" align="start">
         <Command className="flex flex-col gap-2 p-2">
           <div className="border-grey-90 flex items-center gap-2 border-b p-2 pb-3">
-            {selectedRuleGroup ? (
-              <RuleGroup ruleGroup={selectedRuleGroup} onClear={() => onChange?.('')} />
-            ) : null}
+            {selectedRuleGroup ? <RuleGroup ruleGroup={selectedRuleGroup} onClear={() => onChange?.('')} /> : null}
             <CommandInput
               placeholder={t('scenarios:rules.new_group')}
               value={value}

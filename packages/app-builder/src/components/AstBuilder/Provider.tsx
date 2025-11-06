@@ -8,12 +8,7 @@ export type AstBuilderMode = 'edit' | 'view';
 
 export const AstBuilderDataSharpFactory = createSharpFactory({
   name: 'AstBuilderData',
-  initializer(init: {
-    scenarioId: string;
-    data: BuilderOptionsResource;
-    mode: AstBuilderMode;
-    showValues: boolean;
-  }) {
+  initializer(init: { scenarioId: string; data: BuilderOptionsResource; mode: AstBuilderMode; showValues: boolean }) {
     return { ...init };
   },
 }).withComputed({
@@ -55,11 +50,7 @@ function AstBuilderInternalProvider(props: AstBuilderInternalProviderProps) {
     store.value.showValues = props.showValues;
   }, [store, props.showValues]);
 
-  return (
-    <AstBuilderDataSharpFactory.Provider value={store}>
-      {props.children}
-    </AstBuilderDataSharpFactory.Provider>
-  );
+  return <AstBuilderDataSharpFactory.Provider value={store}>{props.children}</AstBuilderDataSharpFactory.Provider>;
 }
 
 export function AstBuilderProvider(props: AstBuilderDataProviderProps) {

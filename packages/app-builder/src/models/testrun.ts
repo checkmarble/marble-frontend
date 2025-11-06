@@ -25,9 +25,7 @@ export interface TestRunRuleExecutionCount {
   ruleId: string | null;
 }
 
-export function adaptTestRunRuleExecution(
-  dto: TestRunRuleExecutionDataDto,
-): TestRunRuleExecutionCount {
+export function adaptTestRunRuleExecution(dto: TestRunRuleExecutionDataDto): TestRunRuleExecutionCount {
   return {
     version: dto.version,
     name: dto.name,

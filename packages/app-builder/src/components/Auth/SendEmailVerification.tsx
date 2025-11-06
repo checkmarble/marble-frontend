@@ -13,22 +13,11 @@ import { ClientOnly } from 'remix-utils/client-only';
 import { useHydrated } from 'remix-utils/use-hydrated';
 import { Button } from 'ui-design-system';
 
-function SendEmailVerificationButton({
-  onClick,
-  children,
-}: {
-  onClick?: () => void;
-  children: React.ReactNode;
-}) {
+function SendEmailVerificationButton({ onClick, children }: { onClick?: () => void; children: React.ReactNode }) {
   const isHydrated = useHydrated();
 
   return (
-    <Button
-      variant="secondary"
-      className="w-full capitalize"
-      onClick={onClick}
-      disabled={!isHydrated}
-    >
+    <Button variant="secondary" className="w-full capitalize" onClick={onClick} disabled={!isHydrated}>
       {children}
     </Button>
   );
@@ -38,11 +27,8 @@ function ClientSendEmailVerificationButton() {
   const { t } = useTranslation(['common', 'auth']);
   const clientServices = useClientServices();
 
-  const { isFirebaseEmulator } =
-    clientServices.authenticationClientService.authenticationClientRepository;
-  const resendEmailVerification = useResendEmailVerification(
-    clientServices.authenticationClientService,
-  );
+  const { isFirebaseEmulator } = clientServices.authenticationClientService.authenticationClientRepository;
+  const resendEmailVerification = useResendEmailVerification(clientServices.authenticationClientService);
 
   const navigate = useAgnosticNavigation();
   async function onSendClick() {
@@ -67,9 +53,7 @@ function ClientSendEmailVerificationButton() {
         void onSendClick();
       }}
     >
-      {isFirebaseEmulator
-        ? t('auth:email-verification.emulator_resend')
-        : t('auth:email-verification.resend')}
+      {isFirebaseEmulator ? t('auth:email-verification.emulator_resend') : t('auth:email-verification.resend')}
     </SendEmailVerificationButton>
   );
 }
@@ -78,11 +62,7 @@ export function SendEmailVerification() {
   const { t } = useTranslation(['auth']);
   return (
     <ClientOnly
-      fallback={
-        <SendEmailVerificationButton>
-          {t('auth:email-verification.resend')}
-        </SendEmailVerificationButton>
-      }
+      fallback={<SendEmailVerificationButton>{t('auth:email-verification.resend')}</SendEmailVerificationButton>}
     >
       {() => <ClientSendEmailVerificationButton />}
     </ClientOnly>
@@ -93,16 +73,13 @@ function ClientSendEmailVerificationDescription() {
   const { t } = useTranslation(['auth']);
   const clientServices = useClientServices();
 
-  const { isFirebaseEmulator } =
-    clientServices.authenticationClientService.authenticationClientRepository;
+  const { isFirebaseEmulator } = clientServices.authenticationClientService.authenticationClientRepository;
 
   return (
     <Trans
       t={t}
       i18nKey={
-        isFirebaseEmulator
-          ? 'auth:email-verification.emulator_description'
-          : 'auth:email-verification.description'
+        isFirebaseEmulator ? 'auth:email-verification.emulator_description' : 'auth:email-verification.description'
       }
     />
   );

@@ -1,9 +1,4 @@
-import {
-  AddNewFilterButton,
-  ClearAllFiltersLink,
-  FilterItem,
-  FilterPopover,
-} from '@app-builder/components/Filters';
+import { AddNewFilterButton, ClearAllFiltersLink, FilterItem, FilterPopover } from '@app-builder/components/Filters';
 import { SimpleFilter } from '@app-builder/components/Filters/SimpleFilter';
 import { useLocation } from '@remix-run/react';
 import { useCallback, useState } from 'react';
@@ -11,11 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Separator } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { casesI18n } from '../cases-i18n';
-import {
-  useCasesFiltersContext,
-  useCasesFiltersPartition,
-  useClearFilter,
-} from './CasesFiltersContext';
+import { useCasesFiltersContext, useCasesFiltersPartition, useClearFilter } from './CasesFiltersContext';
 import { CasesFiltersMenu } from './CasesFiltersMenu';
 import { FilterDetail } from './FilterDetail';
 import { casesSimpleFilterNames, getFilterIcon, getFilterTKey } from './filters';
@@ -34,8 +25,7 @@ export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonl
     [onCasesFilterClose],
   );
 
-  const { undefinedCasesFilterNames, definedCasesFilterNames } =
-    useCasesFiltersPartition(excludedFilters);
+  const { undefinedCasesFilterNames, definedCasesFilterNames } = useCasesFiltersPartition(excludedFilters);
   const clearFilter = useClearFilter();
 
   const { pathname } = useLocation();
@@ -53,9 +43,7 @@ export function CasesFiltersBar({ excludedFilters }: { excludedFilters?: readonl
             const icon = getFilterIcon(filterName);
             const tKey = getFilterTKey(filterName);
 
-            return casesSimpleFilterNames.includes(
-              filterName as (typeof casesSimpleFilterNames)[number],
-            ) ? (
+            return casesSimpleFilterNames.includes(filterName as (typeof casesSimpleFilterNames)[number]) ? (
               <SimpleFilter key={filterName}>
                 <Icon icon={icon} className="size-5" />
                 <span className="text-s font-semibold first-letter:capitalize">{t(tKey)}</span>

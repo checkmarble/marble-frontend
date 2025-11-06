@@ -13,68 +13,65 @@ import * as React from 'react';
 import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 
-const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(
-  function CollapsibleContainer({ className, ...props }, ref) {
-    return (
-      <Root
-        defaultOpen={true}
-        ref={ref}
-        className={clsx(
-          'border-grey-90 flex w-full flex-col overflow-hidden rounded-lg border',
-          className,
-        )}
-        {...props}
-      />
-    );
-  },
-);
+const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(function CollapsibleContainer(
+  { className, ...props },
+  ref,
+) {
+  return (
+    <Root
+      defaultOpen={true}
+      ref={ref}
+      className={clsx('border-grey-90 flex w-full flex-col overflow-hidden rounded-lg border', className)}
+      {...props}
+    />
+  );
+});
 
-const collapsibleTitle = cva(
-  'group flex cursor-pointer items-center justify-between gap-4 font-semibold ',
-  {
-    variants: {
-      size: {
-        default: 'p-4 lg:p-6',
-        small: 'p-4',
-      },
-    },
-    defaultVariants: {
-      size: 'default',
+const collapsibleTitle = cva('group flex cursor-pointer items-center justify-between gap-4 font-semibold ', {
+  variants: {
+    size: {
+      default: 'p-4 lg:p-6',
+      small: 'p-4',
     },
   },
-);
+  defaultVariants: {
+    size: 'default',
+  },
+});
 
 export type CollapsibleTriggerProps = VariantProps<typeof collapsibleTitle> & RadixCollapsibleProps;
 
-const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
-  function CollapsibleTitle({ className, children, size, ...props }, ref) {
-    return (
-      <Trigger ref={ref} className={collapsibleTitle({ size, className })} asChild {...props}>
-        <div>
-          {children}
-          <Icon
-            icon="smallarrow-up"
-            aria-hidden
-            className="border-grey-90 group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
-          />
-        </div>
-      </Trigger>
-    );
-  },
-);
+const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(function CollapsibleTitle(
+  { className, children, size, ...props },
+  ref,
+) {
+  return (
+    <Trigger ref={ref} className={collapsibleTitle({ size, className })} asChild {...props}>
+      <div>
+        {children}
+        <Icon
+          icon="smallarrow-up"
+          aria-hidden
+          className="border-grey-90 group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
+        />
+      </div>
+    </Trigger>
+  );
+});
 
 const content =
   'border-grey-90 border-t radix-state-open:animate-slide-down radix-state-closed:animate-slide-up overflow-hidden';
 
-const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
-  function CollapsibleContent({ children, className, ...props }, ref) {
-    return (
-      <Content className={clsx(content, className)} {...props} ref={ref}>
-        <div className="text-s p-4 lg:p-6">{children}</div>
-      </Content>
-    );
-  },
-);
+const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(function CollapsibleContent(
+  { children, className, ...props },
+  ref,
+) {
+  return (
+    <Content className={clsx(content, className)} {...props} ref={ref}>
+      <div className="text-s p-4 lg:p-6">{children}</div>
+    </Content>
+  );
+});
 
 export const Collapsible = {
   Container: CollapsibleContainer,

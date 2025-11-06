@@ -1,7 +1,4 @@
-import {
-  CASE_EVENT_CATEGORIES,
-  DEFAULT_CASE_EVENT_CATEGORIES_FILTER,
-} from '@app-builder/constants/cases';
+import { CASE_EVENT_CATEGORIES, DEFAULT_CASE_EVENT_CATEGORIES_FILTER } from '@app-builder/constants/cases';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { endOfDay, startOfDay } from 'date-fns';
@@ -50,10 +47,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
   return (
     <div className="flex items-center gap-2">
       {isDirty ? (
-        <ButtonV2
-          variant="secondary"
-          onClick={() => setFilters({ types: DEFAULT_CASE_EVENT_CATEGORIES_FILTER })}
-        >
+        <ButtonV2 variant="secondary" onClick={() => setFilters({ types: DEFAULT_CASE_EVENT_CATEGORIES_FILTER })}>
           <Icon icon="cross" className="size-4" />
           {t('cases:case_detail.history.filter_reset')}
         </ButtonV2>
@@ -65,14 +59,10 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
             <span>Type</span>
             {filters.types.length > 0 ? <div className="bg-grey-80 mx-1 h-3 w-px" /> : null}
             {filters.types.length >= 3 ? (
-              <Badge>
-                {t('cases:case_detail.history.nb_selected', { count: filters.types.length })}
-              </Badge>
+              <Badge>{t('cases:case_detail.history.nb_selected', { count: filters.types.length })}</Badge>
             ) : (
               filters.types.map((type) => (
-                <Badge key={type}>
-                  {t(`cases:case_detail.history.event_type_category.${type}`)}
-                </Badge>
+                <Badge key={type}>{t(`cases:case_detail.history.event_type_category.${type}`)}</Badge>
               ))
             )}
           </ButtonV2>
@@ -87,23 +77,17 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
               }}
             >
               <Checkbox size="small" checked={checked} />
-              <span className="text-s">
-                {t(`common:${checked === true ? 'select_none' : 'select_all'}`)}
-              </span>
+              <span className="text-s">{t(`common:${checked === true ? 'select_none' : 'select_all'}`)}</span>
             </MenuCommand.Item>
             <MenuCommand.Separator className="-mx-1" />
             {CASE_EVENT_CATEGORIES.map((type) => (
               <MenuCommand.Item
-                onSelect={() =>
-                  setFilters((prev) => ({ ...prev, types: toggle(prev.types, type) }))
-                }
+                onSelect={() => setFilters((prev) => ({ ...prev, types: toggle(prev.types, type) }))}
                 className="flex min-h-0 cursor-pointer items-center justify-start p-1.5"
                 key={type}
               >
                 <Checkbox size="small" checked={filters?.types.includes(type)} />
-                <span className="text-s">
-                  {t(`cases:case_detail.history.event_type_category.${type}`)}
-                </span>
+                <span className="text-s">{t(`cases:case_detail.history.event_type_category.${type}`)}</span>
               </MenuCommand.Item>
             ))}
           </MenuCommand.List>
@@ -114,9 +98,7 @@ export const CaseEventFilters = ({ filters, setFilters }: CaseEventFiltersProps)
           <ButtonV2 variant="secondary">
             <Icon icon="add-circle" className="size-3.5" />
             <span>Date</span>
-            {filters.startDate || filters.endDate ? (
-              <div className="bg-grey-80 mx-1 h-3 w-px" />
-            ) : null}
+            {filters.startDate || filters.endDate ? <div className="bg-grey-80 mx-1 h-3 w-px" /> : null}
             {filters.startDate ? (
               <Badge>
                 {t('common:from', {

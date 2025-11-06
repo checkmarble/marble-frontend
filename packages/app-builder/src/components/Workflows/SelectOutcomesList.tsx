@@ -40,9 +40,7 @@ export function SelectOutcomesList({
           className={`min-w-0 flex-1 ${!pristine && !validateOutcomes(selectedOutcomes) ? 'border-red-47' : ''}`}
         >
           {(() => {
-            const validOutcomes = selectedOutcomes.filter(
-              (outcome) => outcome && outcome.length > 0,
-            );
+            const validOutcomes = selectedOutcomes.filter((outcome) => outcome && outcome.length > 0);
             return validOutcomes.length > 0 ? (
               <div className="flex gap-1 flex-nowrap overflow-x-auto">
                 {validOutcomes.map((outcome) => (
@@ -50,9 +48,7 @@ export function SelectOutcomesList({
                 ))}
               </div>
             ) : (
-              <span className="text-grey-80">
-                {t('workflows:detail_panel.decision_created.outcomes.placeholder')}
-              </span>
+              <span className="text-grey-80">{t('workflows:detail_panel.decision_created.outcomes.placeholder')}</span>
             );
           })()}
         </MenuCommand.SelectButton>

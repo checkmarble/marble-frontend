@@ -4,10 +4,7 @@ import { Icon } from 'ui-icons';
 export const FieldToolTip = ({ children }: { children: React.ReactNode }) => {
   return (
     <HovercardProvider showTimeout={0} hideTimeout={0} placement="right">
-      <HovercardAnchor
-        tabIndex={-1}
-        className="hover:text-purple-65 text-purple-82 cursor-pointer transition-colors"
-      >
+      <HovercardAnchor tabIndex={-1} className="hover:text-purple-65 text-purple-82 cursor-pointer transition-colors">
         <Icon icon="tip" className="size-5" />
       </HovercardAnchor>
       <Hovercard

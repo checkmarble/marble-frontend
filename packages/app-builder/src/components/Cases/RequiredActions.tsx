@@ -27,8 +27,7 @@ export const RequiredActions = ({
   const reviewDecisionModalStore = useDialogStore();
 
   const hasPendingScreening = decision.screenings.some((s) => s.status === 'in_review');
-  const isPendingDecision =
-    decision.reviewStatus === 'pending' && decision.outcome === 'block_and_review';
+  const isPendingDecision = decision.reviewStatus === 'pending' && decision.outcome === 'block_and_review';
   const areThereScreenings = decision.screenings.length > 0;
 
   return isPendingDecision || areThereScreenings ? (
@@ -87,10 +86,7 @@ export const RequiredActions = ({
       {isPendingDecision ? (
         <div className="flex items-center gap-2.5">
           <Checkbox size="small" disabled={true} />
-          <DialogDisclosure
-            store={reviewDecisionModalStore}
-            render={<Button variant="secondary" size="xs" />}
-          >
+          <DialogDisclosure store={reviewDecisionModalStore} render={<Button variant="secondary" size="xs" />}>
             {t('cases:required_actions.decide_final_status')}
           </DialogDisclosure>
           <ReviewDecisionModal

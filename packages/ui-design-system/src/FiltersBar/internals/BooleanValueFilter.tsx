@@ -30,9 +30,7 @@ export function BooleanValueFilter({
   const { t } = useI18n();
   useEffect(() => {
     if (isOpen) {
-      setLocalChecked(
-        filter.selectedValue === null ? 'indeterminate' : Boolean(filter.selectedValue),
-      );
+      setLocalChecked(filter.selectedValue === null ? 'indeterminate' : Boolean(filter.selectedValue));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
@@ -61,10 +59,7 @@ export function BooleanValueFilter({
       <FilterPopover.Content>
         <div className="p-4 flex flex-col gap-3 w-64">
           <div className="flex items-center gap-2">
-            <Checkbox
-              checked={localChecked}
-              onCheckedChange={(checked) => setLocalChecked(checked as any)}
-            />
+            <Checkbox checked={localChecked} onCheckedChange={(checked) => setLocalChecked(checked as any)} />
             <span>Checked</span>
           </div>
           <div className="flex justify-end">

@@ -22,10 +22,7 @@ export const FieldOutcomes = ({
   const [searchValue, setSearchValue] = useState('');
   const deferredSearchValue = useDeferredValue(searchValue);
 
-  const matches = useMemo(
-    () => matchSorter(outcomes, deferredSearchValue),
-    [outcomes, deferredSearchValue],
-  );
+  const matches = useMemo(() => matchSorter(outcomes, deferredSearchValue), [outcomes, deferredSearchValue]);
 
   return (
     <SelectWithCombobox.Root

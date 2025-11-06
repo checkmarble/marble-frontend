@@ -44,9 +44,7 @@ export type EvaluationErrorViewModel =
         | 'AGGREGATION_FIELD_INCOMPATIBLE_WITH_AGGREGATOR';
     };
 
-export function adaptEvaluationErrorViewModels(
-  evaluationErrors: EvaluationError[],
-): EvaluationErrorViewModel[] {
+export function adaptEvaluationErrorViewModels(evaluationErrors: EvaluationError[]): EvaluationErrorViewModel[] {
   const {
     UNEXPECTED_ERROR,
     RUNTIME_EXPRESSION_ERROR,
@@ -88,10 +86,7 @@ export function adaptEvaluationErrorViewModels(
     });
   }
 
-  const FIELD_NOT_FOUND = [
-    ...(PAYLOAD_FIELD_NOT_FOUND ?? []),
-    ...(DATABASE_ACCESS_NOT_FOUND ?? []),
-  ];
+  const FIELD_NOT_FOUND = [...(PAYLOAD_FIELD_NOT_FOUND ?? []), ...(DATABASE_ACCESS_NOT_FOUND ?? [])];
   if (FIELD_NOT_FOUND.length > 0) {
     evaluationErrorVMs.push({
       error: 'FIELD_NOT_FOUND',
@@ -115,10 +110,7 @@ export function adaptEvaluationErrorViewModels(
 export function useGetNodeEvaluationErrorMessage() {
   const { t } = useTranslation(['scenarios']);
 
-  return useCallback(
-    (evaluationError: EvaluationErrorViewModel) => commonErrorMessages(t)(evaluationError),
-    [t],
-  );
+  return useCallback((evaluationError: EvaluationErrorViewModel) => commonErrorMessages(t)(evaluationError), [t]);
 }
 
 export function useGetOrAndNodeEvaluationErrorMessage() {
@@ -137,106 +129,103 @@ export function useGetOrAndNodeEvaluationErrorMessage() {
   );
 }
 
-export const commonErrorMessages =
-  (t: TFunction<['scenarios']>) => (evaluationError: EvaluationErrorViewModel) => {
-    switch (evaluationError.error) {
-      case 'UNDEFINED_FUNCTION':
-        return t('scenarios:validation.evaluation_error.undefined_function', {
-          count: evaluationError.count,
-        });
-      case 'WRONG_NUMBER_OF_ARGUMENTS':
-        return t('scenarios:validation.evaluation_error.wrong_number_of_arguments');
-      case 'FILTERS_TABLE_NOT_MATCH':
-        return t('scenarios:validation.evaluation_error.filters_table_not_match');
-      case 'AGGREGATION_FIELD_NOT_CHOSEN':
-        return t('scenarios:validation.evaluation_error.aggregation_field_not_chosen');
-      case 'AGGREGATION_FIELD_INCOMPATIBLE_WITH_AGGREGATOR':
-        return t(
-          'scenarios:validation.evaluation_error.aggregation_field_incompatible_with_aggregator',
-        );
-      case 'MISSING_NAMED_ARGUMENT':
-        return t('scenarios:validation.evaluation_error.missing_named_argument', {
-          count: evaluationError.count,
-        });
-      case 'ARGUMENTS_MUST_BE_INT_OR_FLOAT':
-        return t('scenarios:validation.evaluation_error.arguments_must_be_int_or_float', {
-          count: evaluationError.count,
-        });
-      case 'ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME':
-        return t('scenarios:validation.evaluation_error.arguments_must_be_int_float_or_time', {
-          count: evaluationError.count,
-        });
-      case 'ARGUMENT_MUST_BE_INTEGER':
-        return t('scenarios:validation.evaluation_error.argument_must_be_integer', {
-          count: evaluationError.count,
-        });
-      case 'ARGUMENT_MUST_BE_STRING':
-        return t('scenarios:validation.evaluation_error.argument_must_be_string', {
-          count: evaluationError.count,
-        });
-      case 'ARGUMENT_MUST_BE_BOOLEAN':
-        return t('scenarios:validation.evaluation_error.argument_must_be_boolean', {
-          count: evaluationError.count,
-        });
-      case 'ARGUMENT_MUST_BE_LIST':
-        return t('scenarios:validation.evaluation_error.argument_must_be_list', {
-          count: evaluationError.count,
-        });
-      case 'ARGUMENT_MUST_BE_STRING_OR_LIST':
-        return t('scenarios:validation.evaluation_error.argument_must_be_string_or_list', {
-          count: evaluationError.count,
-        });
-      case 'ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION':
-        return t('scenarios:validation.evaluation_error.argument_must_be_convertible_to_duration', {
-          count: evaluationError.count,
-        });
-      case 'ARGUMENT_MUST_BE_TIME':
-        return t('scenarios:validation.evaluation_error.argument_must_be_time', {
-          count: evaluationError.count,
-        });
-      case 'FUNCTION_ERROR':
-        return t('scenarios:validation.evaluation_error.function_error', {
-          count: evaluationError.count,
-        });
-      case 'ARGUMENT_REQUIRED':
-        return t('scenarios:validation.evaluation_error.argument_required', {
-          count: evaluationError.count,
-        });
-      case 'ARGUMENT_INVALID_TYPE':
-        return t('scenarios:validation.evaluation_error.argument_invalid_type', {
-          count: evaluationError.count,
-        });
-      case 'LIST_NOT_FOUND':
-        return t('scenarios:validation.evaluation_error.list_not_found', {
-          count: evaluationError.count,
-        });
-      case 'FIELD_NOT_FOUND':
-        return t('scenarios:validation.evaluation_error.field_not_found', {
-          count: evaluationError.count,
-        });
-      case 'NULL_FIELD_READ':
-        return t('scenarios:validation.evaluation_error.null_field_read', {
-          count: evaluationError.count,
-        });
-      case 'NO_ROWS_READ':
-        return t('scenarios:validation.evaluation_error.no_rows_read', {
-          count: evaluationError.count,
-        });
-      case 'DIVISION_BY_ZERO':
-        return t('scenarios:validation.evaluation_error.division_by_zero', {
-          count: evaluationError.count,
-        });
-      case 'PAYLOAD_FIELD_NOT_FOUND':
-        return t('scenarios:validation.evaluation_error.payload_field_not_found', {
-          count: evaluationError.count,
-        });
-      case 'RUNTIME_EXPRESSION_ERROR':
-      case 'UNEXPECTED_ERROR':
-        return evaluationError.message;
-      default:
-        assertNever('[EvaluationError] unhandled error code', evaluationError['code']);
-    }
-  };
+export const commonErrorMessages = (t: TFunction<['scenarios']>) => (evaluationError: EvaluationErrorViewModel) => {
+  switch (evaluationError.error) {
+    case 'UNDEFINED_FUNCTION':
+      return t('scenarios:validation.evaluation_error.undefined_function', {
+        count: evaluationError.count,
+      });
+    case 'WRONG_NUMBER_OF_ARGUMENTS':
+      return t('scenarios:validation.evaluation_error.wrong_number_of_arguments');
+    case 'FILTERS_TABLE_NOT_MATCH':
+      return t('scenarios:validation.evaluation_error.filters_table_not_match');
+    case 'AGGREGATION_FIELD_NOT_CHOSEN':
+      return t('scenarios:validation.evaluation_error.aggregation_field_not_chosen');
+    case 'AGGREGATION_FIELD_INCOMPATIBLE_WITH_AGGREGATOR':
+      return t('scenarios:validation.evaluation_error.aggregation_field_incompatible_with_aggregator');
+    case 'MISSING_NAMED_ARGUMENT':
+      return t('scenarios:validation.evaluation_error.missing_named_argument', {
+        count: evaluationError.count,
+      });
+    case 'ARGUMENTS_MUST_BE_INT_OR_FLOAT':
+      return t('scenarios:validation.evaluation_error.arguments_must_be_int_or_float', {
+        count: evaluationError.count,
+      });
+    case 'ARGUMENTS_MUST_BE_INT_FLOAT_OR_TIME':
+      return t('scenarios:validation.evaluation_error.arguments_must_be_int_float_or_time', {
+        count: evaluationError.count,
+      });
+    case 'ARGUMENT_MUST_BE_INTEGER':
+      return t('scenarios:validation.evaluation_error.argument_must_be_integer', {
+        count: evaluationError.count,
+      });
+    case 'ARGUMENT_MUST_BE_STRING':
+      return t('scenarios:validation.evaluation_error.argument_must_be_string', {
+        count: evaluationError.count,
+      });
+    case 'ARGUMENT_MUST_BE_BOOLEAN':
+      return t('scenarios:validation.evaluation_error.argument_must_be_boolean', {
+        count: evaluationError.count,
+      });
+    case 'ARGUMENT_MUST_BE_LIST':
+      return t('scenarios:validation.evaluation_error.argument_must_be_list', {
+        count: evaluationError.count,
+      });
+    case 'ARGUMENT_MUST_BE_STRING_OR_LIST':
+      return t('scenarios:validation.evaluation_error.argument_must_be_string_or_list', {
+        count: evaluationError.count,
+      });
+    case 'ARGUMENT_MUST_BE_CONVERTIBLE_TO_DURATION':
+      return t('scenarios:validation.evaluation_error.argument_must_be_convertible_to_duration', {
+        count: evaluationError.count,
+      });
+    case 'ARGUMENT_MUST_BE_TIME':
+      return t('scenarios:validation.evaluation_error.argument_must_be_time', {
+        count: evaluationError.count,
+      });
+    case 'FUNCTION_ERROR':
+      return t('scenarios:validation.evaluation_error.function_error', {
+        count: evaluationError.count,
+      });
+    case 'ARGUMENT_REQUIRED':
+      return t('scenarios:validation.evaluation_error.argument_required', {
+        count: evaluationError.count,
+      });
+    case 'ARGUMENT_INVALID_TYPE':
+      return t('scenarios:validation.evaluation_error.argument_invalid_type', {
+        count: evaluationError.count,
+      });
+    case 'LIST_NOT_FOUND':
+      return t('scenarios:validation.evaluation_error.list_not_found', {
+        count: evaluationError.count,
+      });
+    case 'FIELD_NOT_FOUND':
+      return t('scenarios:validation.evaluation_error.field_not_found', {
+        count: evaluationError.count,
+      });
+    case 'NULL_FIELD_READ':
+      return t('scenarios:validation.evaluation_error.null_field_read', {
+        count: evaluationError.count,
+      });
+    case 'NO_ROWS_READ':
+      return t('scenarios:validation.evaluation_error.no_rows_read', {
+        count: evaluationError.count,
+      });
+    case 'DIVISION_BY_ZERO':
+      return t('scenarios:validation.evaluation_error.division_by_zero', {
+        count: evaluationError.count,
+      });
+    case 'PAYLOAD_FIELD_NOT_FOUND':
+      return t('scenarios:validation.evaluation_error.payload_field_not_found', {
+        count: evaluationError.count,
+      });
+    case 'RUNTIME_EXPRESSION_ERROR':
+    case 'UNEXPECTED_ERROR':
+      return evaluationError.message;
+    default:
+      assertNever('[EvaluationError] unhandled error code', evaluationError['code']);
+  }
+};
 
 export function useGetScenarioErrorMessage() {
   const { t } = useTranslation(['scenarios']);
@@ -260,9 +249,7 @@ export function useGetScenarioErrorMessage() {
               typeof evaluationErrorCode,
               `FORMULA_INCORRECT_RETURN_TYPE${string}`
             >;
-            return t(
-              `scenarios:validation.decision.${errorCode.toLowerCase() as Lowercase<typeof errorCode>}`,
-            );
+            return t(`scenarios:validation.decision.${errorCode.toLowerCase() as Lowercase<typeof errorCode>}`);
           }
           return evaluationErrorCode;
       }

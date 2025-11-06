@@ -18,9 +18,7 @@ export const Default: StoryFn<typeof Tabs> = () => (
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <h3 className="text-l font-semibold">Account</h3>
-          <p className="text-s text-grey-50">
-            Make changes to your account here. Click save when you&apos;re done.
-          </p>
+          <p className="text-s text-grey-50">Make changes to your account here. Click save when you&apos;re done.</p>
         </div>
       </div>
     </TabsContent>
@@ -28,9 +26,7 @@ export const Default: StoryFn<typeof Tabs> = () => (
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <h3 className="text-l font-semibold">Password</h3>
-          <p className="text-s text-grey-50">
-            Change your password here. After saving, you&apos;ll be logged out.
-          </p>
+          <p className="text-s text-grey-50">Change your password here. After saving, you&apos;ll be logged out.</p>
         </div>
       </div>
     </TabsContent>

@@ -131,9 +131,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('data:create_field.name_placeholder')}
                 />
-                <FormErrorOrDescription
-                  errors={getFieldErrors(field.state.meta.errors).map(translateError)}
-                />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors).map(translateError)} />
               </div>
             )}
           </form.Field>
@@ -155,9 +153,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                   valid={field.state.meta.errors.length === 0}
                   placeholder={t('data:create_field.description_placeholder')}
                 />
-                <FormErrorOrDescription
-                  errors={getFieldErrors(field.state.meta.errors).map(translateError)}
-                />
+                <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors).map(translateError)} />
               </div>
             )}
           </form.Field>
@@ -186,9 +182,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                       );
                     })}
                   </Select.Default>
-                  <FormErrorOrDescription
-                    errors={getFieldErrors(field.state.meta.errors).map(translateError)}
-                  />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors).map(translateError)} />
                 </div>
               )}
             </form.Field>
@@ -216,17 +210,13 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                       );
                     })}
                   </Select.Default>
-                  <FormErrorOrDescription
-                    errors={getFieldErrors(field.state.meta.errors).map(translateError)}
-                  />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors).map(translateError)} />
                 </div>
               )}
             </form.Field>
           </div>
           {selectedRequired === 'required' ? (
-            <span className="text-red-47 text-s">
-              {t('data:create_field.option_required_warning')}
-            </span>
+            <span className="text-red-47 text-s">{t('data:create_field.option_required_warning')}</span>
           ) : null}
           {EnumDataTypes.includes(selectedType) ? (
             <form.Field
@@ -249,9 +239,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                     <p>{t('data:create_field.is_enum.title')}</p>
                     <p className="text-xs">{t('data:create_field.is_enum.subtitle')}</p>
                   </FormLabel>
-                  <FormErrorOrDescription
-                    errors={getFieldErrors(field.state.meta.errors).map(translateError)}
-                  />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors).map(translateError)} />
                 </div>
               )}
             </form.Field>
@@ -282,9 +270,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
                       </p>
                     ) : null}
                   </FormLabel>
-                  <FormErrorOrDescription
-                    errors={getFieldErrors(field.state.meta.errors).map(translateError)}
-                  />
+                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors).map(translateError)} />
                 </div>
               )}
             </form.Field>
@@ -292,22 +278,11 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>
-            <Button
-              className="flex-1"
-              variant="secondary"
-              type="button"
-              onClick={() => console.log(form.state)}
-            >
+            <Button className="flex-1" variant="secondary" type="button" onClick={() => console.log(form.state)}>
               {t('common:cancel')}
             </Button>
           </Modal.Close>
-          <Button
-            className="flex-1"
-            variant="primary"
-            type="submit"
-            name="create"
-            disabled={form.state.isSubmitting}
-          >
+          <Button className="flex-1" variant="primary" type="submit" name="create" disabled={form.state.isSubmitting}>
             {t('data:create.button_accept')}
           </Button>
         </div>

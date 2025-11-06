@@ -1,7 +1,4 @@
-import {
-  ScenarioRuleLatestVersion,
-  ScenarioRuleLatestVersionMap,
-} from '@app-builder/models/scenario/workflow';
+import { ScenarioRuleLatestVersion, ScenarioRuleLatestVersionMap } from '@app-builder/models/scenario/workflow';
 import { type UseQueryResult, useQuery } from '@tanstack/react-query';
 
 export function useGetLatestRulesReferencesQuery(

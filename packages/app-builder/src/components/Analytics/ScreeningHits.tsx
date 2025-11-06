@@ -8,13 +8,7 @@ import { Spinner } from '../Spinner';
 
 const columnHelper = createColumnHelper<ScreeningHitTableResponse>();
 
-export function ScreeningHits({
-  data,
-  isLoading,
-}: {
-  data: ScreeningHitTableResponse[];
-  isLoading: boolean;
-}) {
+export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResponse[]; isLoading: boolean }) {
   const { t } = useTranslation(['analytics']);
   const language = useFormatLanguage();
   const [expanded, setExpanded] = useState(false);

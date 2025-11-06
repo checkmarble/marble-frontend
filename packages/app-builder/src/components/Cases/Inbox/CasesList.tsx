@@ -42,10 +42,7 @@ export function CasesList({
   } = useTranslation(['cases']);
   const lastPageRef = useRef<number>(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const cases =
-    casesQuery.data?.pages[currentPage]?.items ??
-    casesQuery.data?.pages[lastPageRef.current]?.items ??
-    [];
+  const cases = casesQuery.data?.pages[currentPage]?.items ?? casesQuery.data?.pages[lastPageRef.current]?.items ?? [];
   const { orgTags } = useOrganizationTags();
 
   useEffect(() => {
@@ -84,9 +81,7 @@ export function CasesList({
           </HeaderCell>
           <HeaderCell>{t('cases:inbox.heading.tags')}</HeaderCell>
           <HeaderCell>
-            <span className="hidden lg:inline">
-              {t('cases:inbox.heading.assigned_and_contributors')}
-            </span>
+            <span className="hidden lg:inline">{t('cases:inbox.heading.assigned_and_contributors')}</span>
             <span className="lg:hidden">{t('cases:inbox.heading.assignee')}</span>
           </HeaderCell>
         </div>
@@ -97,10 +92,7 @@ export function CasesList({
             onClick={handleRowClick}
           >
             <div className="invisible">
-              <Link
-                data-row-link
-                to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseItem.id) })}
-              />
+              <Link data-row-link to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseItem.id) })} />
             </div>
             <div className="relative p-v2-md ps-v2-xl w-25">
               <MultiSelect.Item index={index} id={caseItem.id} item={caseItem}>
@@ -141,10 +133,7 @@ export function CasesList({
               })}
             </div>
             <div className="p-v2-md">
-              <AssignedContributors
-                assignedTo={caseItem.assignedTo}
-                contributors={caseItem.contributors}
-              />
+              <AssignedContributors assignedTo={caseItem.assignedTo} contributors={caseItem.contributors} />
             </div>
           </div>
         ))}
@@ -163,12 +152,7 @@ export function CasesList({
 
 const HeaderCell = ({ children, className }: { children: React.ReactNode; className?: string }) => {
   return (
-    <div
-      className={cn(
-        'p-v2-md font-normal text-left not-first:border-l border-grey-border',
-        className,
-      )}
-    >
+    <div className={cn('p-v2-md font-normal text-left not-first:border-l border-grey-border', className)}>
       {children}
     </div>
   );

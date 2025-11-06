@@ -1,8 +1,5 @@
 import { type DataModel } from '@app-builder/models';
-import {
-  type DatabaseAccessAstNode,
-  type PayloadAstNode,
-} from '@app-builder/models/astNode/data-accessor';
+import { type DatabaseAccessAstNode, type PayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
@@ -19,10 +16,9 @@ export type BuilderOptionsResource = {
 
 export async function loader({ request, params }: ActionFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { editor, scenario, dataModelRepository, customListsRepository } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const { editor, scenario, dataModelRepository, customListsRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const scenarioId = fromParams(params, 'scenarioId');
   const [currentScenario, customLists, dataModel, accessors] = await Promise.all([

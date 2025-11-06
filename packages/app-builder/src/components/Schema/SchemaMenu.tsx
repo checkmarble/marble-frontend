@@ -44,10 +44,7 @@ export const SchemaMenuMenuItem = React.forwardRef<HTMLDivElement, Omit<MenuItem
     return (
       <MenuItem
         ref={ref}
-        className={clsx(
-          'data-active-item:bg-purple-98 flex flex-row gap-2 rounded-sm p-2 outline-hidden',
-          className,
-        )}
+        className={clsx('data-active-item:bg-purple-98 flex flex-row gap-2 rounded-sm p-2 outline-hidden', className)}
         {...props}
       />
     );

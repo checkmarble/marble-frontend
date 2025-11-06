@@ -104,11 +104,7 @@ export const MatchCard = ({ match, readonly, unreviewable, defaultOpen }: MatchC
           </CollapsibleV2.Content>
         </div>
       </CollapsibleV2.Provider>
-      <ReviewScreeningMatch
-        open={isInReview}
-        onClose={() => setIsInReview(false)}
-        screeningMatch={match}
-      />
+      <ReviewScreeningMatch open={isInReview} onClose={() => setIsInReview(false)} screeningMatch={match} />
     </div>
   );
 };

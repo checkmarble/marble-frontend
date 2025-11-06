@@ -30,12 +30,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
-import {
-  ActionFunctionArgs,
-  type LoaderFunctionArgs,
-  redirect,
-  type SerializeFrom,
-} from '@remix-run/node';
+import { ActionFunctionArgs, type LoaderFunctionArgs, redirect, type SerializeFrom } from '@remix-run/node';
 import { useLoaderData, useRouteLoaderData } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel, getSortedRowModel } from '@tanstack/react-table';
 import { type Namespace } from 'i18next';
@@ -116,9 +111,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     inbox,
     inboxesList,
     escalationInboxes,
-    escalationInbox: inbox.escalationInboxId
-      ? await inboxApi.getInboxMetadata(inbox.escalationInboxId)
-      : null,
+    escalationInbox: inbox.escalationInboxId ? await inboxApi.getInboxMetadata(inbox.escalationInboxId) : null,
     caseCount: inbox.casesCount,
     entitlements,
     isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
@@ -156,9 +149,7 @@ export async function action({ request }: ActionFunctionArgs) {
     }),
   ]);
 
-  const { data, success, error } = getUpdateInboxUserFormSchema(
-    getInboxUserRoles(entitlements),
-  ).safeParse(rawData);
+  const { data, success, error } = getUpdateInboxUserFormSchema(getInboxUserRoles(entitlements)).safeParse(rawData);
 
   if (!success) {
     return Response.json(
@@ -243,11 +234,7 @@ export default function Inbox() {
                 };
 
                 return isEditInboxUserAvailable ? (
-                  <Switch
-                    checked={value}
-                    onCheckedChange={handleChange}
-                    disabled={!isEditInboxUserAvailable}
-                  />
+                  <Switch checked={value} onCheckedChange={handleChange} disabled={!isEditInboxUserAvailable} />
                 ) : getValue() ? (
                   t('settings:inboxes.inbox_details.auto_assign_enabled')
                 ) : (
@@ -288,14 +275,7 @@ export default function Inbox() {
           ]
         : []),
     ];
-  }, [
-    inboxUserRoles,
-    isDeleteInboxUserAvailable,
-    isEditInboxUserAvailable,
-    orgUsers,
-    t,
-    entitlements.userRoles,
-  ]);
+  }, [inboxUserRoles, isDeleteInboxUserAvailable, isEditInboxUserAvailable, orgUsers, t, entitlements.userRoles]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: inbox.users ?? [],
@@ -305,9 +285,7 @@ export default function Inbox() {
     getSortedRowModel: getSortedRowModel(),
   });
 
-  const nonInboxUsers = orgUsers.filter(
-    (user) => !inbox.users?.some((u) => u.userId === user.userId),
-  );
+  const nonInboxUsers = orgUsers.filter((user) => !inbox.users?.some((u) => u.userId === user.userId));
 
   return (
     <Page.Container>
@@ -330,9 +308,7 @@ export default function Inbox() {
               {inbox.name}
               <span className="font-bold">{t('settings:inboxes.inbox_details.case_count')}</span>
               {caseCount}
-              <span className="font-bold">
-                {t('settings:inboxes.inbox_details.escalation_inbox')}
-              </span>
+              <span className="font-bold">{t('settings:inboxes.inbox_details.escalation_inbox')}</span>
               {escalationInbox?.name ?? t('settings:inboxes.inbox_details.no_escalation_inbox')}
               <span className="font-bold flex items-center gap-2">
                 {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
@@ -385,9 +361,7 @@ export default function Inbox() {
             <DeleteInbox inbox={inbox} />
           ) : (
             <Tooltip.Default
-              content={
-                <p className="p-2">{t('settings:inboxes.inbox_details.delete_inbox.tooltip')}</p>
-              }
+              content={<p className="p-2">{t('settings:inboxes.inbox_details.delete_inbox.tooltip')}</p>}
             >
               <span className="w-fit">
                 <DeleteInbox inbox={inbox} disabled />

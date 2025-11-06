@@ -42,9 +42,7 @@ const DateRangeFilterContext = createContext<
 const useDateRangeFilterContext = () => {
   const ctx = useContext(DateRangeFilterContext);
   if (!ctx) {
-    throw new Error(
-      'useDateRangeFilterContext must be used within DateRangeFilterContext.Provider',
-    );
+    throw new Error('useDateRangeFilterContext must be used within DateRangeFilterContext.Provider');
   }
   return ctx;
 };
@@ -62,8 +60,7 @@ function DateRangeFilterRoot({
   children: React.ReactNode;
   className?: string;
 }) {
-  const calendarSelected =
-    dateRangeFilter?.type === 'static' ? adaptDateRange(dateRangeFilter) : undefined;
+  const calendarSelected = dateRangeFilter?.type === 'static' ? adaptDateRange(dateRangeFilter) : undefined;
 
   const onCalendarSelect = useCallback(
     (range?: DateRange) => {
@@ -160,10 +157,7 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
   if (fromNow) {
     return (
       <div className={clsx('m-4 flex h-10 w-full items-center justify-center', className)}>
-        <time
-          className="text-s text-grey-00 flex h-10 items-center rounded-sm p-2 outline-hidden"
-          dateTime={fromNow}
-        >
+        <time className="text-s text-grey-00 flex h-10 items-center rounded-sm p-2 outline-hidden" dateTime={fromNow}>
           {t('filters:up_to', {
             duration: formatDuration(fromNow, language),
           })}

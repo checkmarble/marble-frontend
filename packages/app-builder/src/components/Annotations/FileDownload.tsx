@@ -1,8 +1,4 @@
-import {
-  AlreadyDownloadingError,
-  AuthRequestError,
-  useDownloadFile,
-} from '@app-builder/services/DownloadFilesService';
+import { AlreadyDownloadingError, AuthRequestError, useDownloadFile } from '@app-builder/services/DownloadFilesService';
 import { getRoute } from '@app-builder/utils/routes';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';

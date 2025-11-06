@@ -44,9 +44,7 @@ export function UserInfo({
                 aria-labelledby="marble logo"
                 className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12"
               />
-              {isAutoAssignmentAvailable &&
-              unavailabilityQuery.isSuccess &&
-              unavailabilityQuery.data.until !== null ? (
+              {isAutoAssignmentAvailable && unavailabilityQuery.isSuccess && unavailabilityQuery.data.until !== null ? (
                 <div className="absolute top-1 left-1 flex h-3 w-3">
                   <span className="animate-[ping_1s_ease-in-out_4s] absolute inline-flex h-full w-full rounded-full bg-red-47 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-red-47"></span>

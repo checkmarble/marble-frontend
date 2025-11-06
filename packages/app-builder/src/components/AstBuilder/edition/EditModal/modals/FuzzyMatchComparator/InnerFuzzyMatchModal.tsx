@@ -40,9 +40,7 @@ export type InnerEditFuzzyMatchModalProps = {
   onRightChange: (node: AstNode) => void;
   threshold: ThresholdField;
   onThresholdChange: (
-    options:
-      | { mode: 'level'; level: 'low' | 'medium' | 'high' }
-      | { mode: 'threshold'; value: number },
+    options: { mode: 'level'; level: 'low' | 'medium' | 'high' } | { mode: 'threshold'; value: number },
   ) => void;
   algorithm: FuzzyMatchAlgorithm;
   onAlorithmChange: (algorithm: FuzzyMatchAlgorithm) => void;
@@ -94,11 +92,7 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
             />
           )}
         </div>
-        <Examples
-          config={props.fuzzMatchConfig}
-          algorithm={props.algorithm}
-          threshold={props.threshold.value}
-        />
+        <Examples config={props.fuzzMatchConfig} algorithm={props.algorithm} threshold={props.threshold.value} />
       </div>
       <div className="flex flex-col gap-2">
         <p id="level" className="text-m text-grey-00 font-normal">

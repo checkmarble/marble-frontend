@@ -10,11 +10,7 @@ type FilterInboxSelectorProps = {
   onSelectInbox: (inbox: PartialInbox) => void;
 };
 
-export const FilterInboxSelector = ({
-  inboxes,
-  selectedInbox,
-  onSelectInbox,
-}: FilterInboxSelectorProps) => {
+export const FilterInboxSelector = ({ inboxes, selectedInbox, onSelectInbox }: FilterInboxSelectorProps) => {
   const { t } = useTranslation(['cases']);
   const [open, setOpen] = useState(false);
 
@@ -36,15 +32,9 @@ export const FilterInboxSelector = ({
       <MenuCommand.Content align="start" sideOffset={4} sameWidth>
         <MenuCommand.List>
           {inboxes.map((inbox) => (
-            <MenuCommand.Item
-              key={inbox.id}
-              value={`${inbox.id} ${inbox.name}`}
-              onSelect={() => onSelectInbox(inbox)}
-            >
+            <MenuCommand.Item key={inbox.id} value={`${inbox.id} ${inbox.name}`} onSelect={() => onSelectInbox(inbox)}>
               <div className="grid grid-cols-[20px_1fr] items-center gap-v2-xs">
-                {inbox.id === selectedInbox.id ? (
-                  <Icon icon="tick" className="size-4 text-purple-65" />
-                ) : null}
+                {inbox.id === selectedInbox.id ? <Icon icon="tick" className="size-4 text-purple-65" /> : null}
                 <span className="col-start-2">{inbox.name}</span>
               </div>
               {inbox.casesCount !== undefined ? (

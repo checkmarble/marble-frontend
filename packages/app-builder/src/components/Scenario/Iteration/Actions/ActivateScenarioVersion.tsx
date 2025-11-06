@@ -33,10 +33,7 @@ export function ActivateScenarioVersion({ scenario, iteration }: ActivateScenari
 
   if (!iteration.isValid) {
     return (
-      <Tooltip.Default
-        className="text-xs"
-        content={t('scenarios:deployment_modal.activate.validation_error')}
-      >
+      <Tooltip.Default className="text-xs" content={t('scenarios:deployment_modal.activate.validation_error')}>
         {button}
       </Tooltip.Default>
     );
@@ -104,9 +101,7 @@ function ActivateScenarioVersionContent({
                 <Checkbox
                   name={field.name}
                   defaultChecked={field.state.value}
-                  onCheckedChange={(state) =>
-                    state !== 'indeterminate' && field.handleChange(state)
-                  }
+                  onCheckedChange={(state) => state !== 'indeterminate' && field.handleChange(state)}
                 />
                 <FormLabel name={field.name}>
                   {scenario.isLive
@@ -114,11 +109,7 @@ function ActivateScenarioVersionContent({
                     : t('scenarios:deployment_modal.activate.will_be_live')}
                 </FormLabel>
                 <Tooltip.Default
-                  content={
-                    <p className="max-w-60">
-                      {t('scenarios:deployment_modal.activate.live_version.tooltip')}
-                    </p>
-                  }
+                  content={<p className="max-w-60">{t('scenarios:deployment_modal.activate.live_version.tooltip')}</p>}
                 >
                   <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-6" />
                 </Tooltip.Default>
@@ -137,13 +128,9 @@ function ActivateScenarioVersionContent({
                 <Checkbox
                   name={field.name}
                   defaultChecked={field.state.value}
-                  onCheckedChange={(state) =>
-                    state !== 'indeterminate' && field.handleChange(state)
-                  }
+                  onCheckedChange={(state) => state !== 'indeterminate' && field.handleChange(state)}
                 />
-                <FormLabel name={field.name}>
-                  {t('scenarios:deployment_modal.activate.change_is_immediate')}
-                </FormLabel>
+                <FormLabel name={field.name}>{t('scenarios:deployment_modal.activate.change_is_immediate')}</FormLabel>
               </div>
             )}
           </form.Field>
@@ -167,13 +154,7 @@ function ActivateScenarioVersionContent({
   );
 }
 
-function RuleSnoozeDetail({
-  scenarioId,
-  iterationId,
-}: {
-  scenarioId: string;
-  iterationId: string;
-}) {
+function RuleSnoozeDetail({ scenarioId, iterationId }: { scenarioId: string; iterationId: string }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const iteration = useCurrentScenarioIteration();
   const ruleSnoozesQuery = useRuleSnoozesQuery(scenarioId, iterationId);
@@ -211,9 +192,7 @@ function RuleSnoozeDetail({
         <div className="max-h-40 overflow-y-auto p-1">
           <ul className="list-none">
             {iteration.rules.map((rule) => {
-              const hasSnoozesActive = ruleSnoozes.find(
-                (snooze) => snooze.ruleId === rule.id,
-              )?.hasSnoozesActive;
+              const hasSnoozesActive = ruleSnoozes.find((snooze) => snooze.ruleId === rule.id)?.hasSnoozesActive;
               return (
                 <li key={rule.id} className="flex flex-row">
                   <Icon

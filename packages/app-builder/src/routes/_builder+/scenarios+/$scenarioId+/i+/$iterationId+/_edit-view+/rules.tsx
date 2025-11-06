@@ -16,11 +16,7 @@ import { type ScreeningConfig } from '@app-builder/models/screening-config';
 import { CreateScreening } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/screenings+/create';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
-import {
-  findRuleValidation,
-  hasRuleErrors,
-  useGetScenarioErrorMessage,
-} from '@app-builder/services/validation';
+import { findRuleValidation, hasRuleErrors, useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
@@ -50,10 +46,9 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { scenarioIterationRuleRepository, entitlements, scenario } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const { scenarioIterationRuleRepository, entitlements, scenario } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const scenarioIterationId = fromParams(params, 'iterationId');
 
@@ -111,11 +106,7 @@ const AddRuleOrScreening = ({
         className="bg-grey-100 border-grey-90 z-10 mt-2 flex flex-col gap-2 rounded-sm border p-2"
       >
         <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
-        <CreateScreening
-          scenarioId={scenarioId}
-          iterationId={iterationId}
-          isSanctionAvailable={isSanctionAvailable}
-        />
+        <CreateScreening scenarioId={scenarioId} iterationId={iterationId} isSanctionAvailable={isSanctionAvailable} />
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   );
@@ -270,11 +261,7 @@ export default function Rules() {
     <div className="flex flex-col gap-4">
       <EvaluationErrors errors={scenarioValidation.rules.errors.map(getScenarioErrorMessage)} />
 
-      <RulesFiltersProvider
-        filterValues={filterValues}
-        submitRulesFilters={submitRulesFilters}
-        ruleGroups={ruleGroups}
-      >
+      <RulesFiltersProvider filterValues={filterValues} submitRulesFilters={submitRulesFilters} ruleGroups={ruleGroups}>
         <div className="flex flex-row items-center justify-between gap-4">
           <form className="flex grow items-center">
             <Input

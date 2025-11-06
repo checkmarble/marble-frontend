@@ -38,9 +38,7 @@ const TestRunRuleName = ({
     return (
       <div className="flex flex-row items-baseline gap-2">
         <span className="text-s font-normal">{testRuleName}</span>
-        <span className="text-green-38 text-xs font-semibold">
-          ({t('scenarios:testrun.rule.new')})
-        </span>
+        <span className="text-green-38 text-xs font-semibold">({t('scenarios:testrun.rule.new')})</span>
       </div>
     );
   }
@@ -49,9 +47,7 @@ const TestRunRuleName = ({
     return (
       <div className="flex flex-row items-baseline gap-2">
         <span className="text-s font-normal">{refRuleName}</span>
-        <span className="text-grey-80 text-xs font-semibold">
-          ({t('scenarios:testrun.rule.old')})
-        </span>
+        <span className="text-grey-80 text-xs font-semibold">({t('scenarios:testrun.rule.old')})</span>
       </div>
     );
   }
@@ -77,9 +73,7 @@ const TestRunRuleHitPercentage = ({
       return undefined;
     }
 
-    return refRuleTotal === 0 || refRuleHitTotal === 0
-      ? 0
-      : Math.round((refRuleHitTotal * 100) / refRuleTotal);
+    return refRuleTotal === 0 || refRuleHitTotal === 0 ? 0 : Math.round((refRuleHitTotal * 100) / refRuleTotal);
   }, [rulesByVersion, ref]);
 
   const testRuleHitPercentage = useMemo(() => {
@@ -93,9 +87,7 @@ const TestRunRuleHitPercentage = ({
       return undefined;
     }
 
-    return testRuleTotal === 0 || testRuleHitTotal === 0
-      ? 0
-      : Math.round((testRuleHitTotal * 100) / testRuleTotal);
+    return testRuleTotal === 0 || testRuleHitTotal === 0 ? 0 : Math.round((testRuleHitTotal * 100) / testRuleTotal);
   }, [rulesByVersion, test]);
 
   let direction = 'equal';
@@ -137,11 +129,10 @@ const TestRunRuleHitPercentage = ({
         />
       </div>
       <span className="text-s text-grey-00 font-medium">
-        {formatNumber(
-          (testRuleHitPercentage !== undefined ? testRuleHitPercentage : refRuleHitPercentage)! /
-            100,
-          { language, style: 'percent' },
-        )}
+        {formatNumber((testRuleHitPercentage !== undefined ? testRuleHitPercentage : refRuleHitPercentage)! / 100, {
+          language,
+          style: 'percent',
+        })}
       </span>
     </div>
   );
@@ -240,9 +231,7 @@ export const FilterTransactionByDecision = ({
         ) : (
           <div className="flex flex-col gap-8">
             <div className="flex w-full flex-row items-center justify-end gap-2">
-              <span className="text-s text-grey-00 font-medium">
-                {t('scenarios:testrun.show_rules_changes')}
-              </span>
+              <span className="text-s text-grey-00 font-medium">{t('scenarios:testrun.show_rules_changes')}</span>
               <Switch checked={displayChangedRules} onCheckedChange={toggleChangedRulesDisplay} />
             </div>
             {keys(rulesByRuleId).length ? (

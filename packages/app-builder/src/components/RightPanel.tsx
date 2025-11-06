@@ -30,13 +30,7 @@ export function createRightPanel(name: string) {
     );
   }
 
-  function RightPanelViewport({
-    children,
-    className,
-  }: {
-    children: React.ReactNode;
-    className?: string;
-  }) {
+  function RightPanelViewport({ children, className }: { children: React.ReactNode; className?: string }) {
     const { open, onClose } = useValue();
     return (
       <div
@@ -57,31 +51,26 @@ export function createRightPanel(name: string) {
   const RightPanelTrigger = Dialog.Trigger;
   RightPanelTrigger.displayName = `${name}Trigger`;
 
-  const RightPanelContent = forwardRef<HTMLDivElement, Dialog.DialogContentProps>(
-    ({ className, ...props }, ref) => {
-      return (
-        <Dialog.Content
-          ref={ref}
-          {...props}
-          className={clsx(
-            'bg-grey-100 absolute inset-y-0 end-0 size-full gap-4 overflow-y-scroll p-4 pe-[calc(1rem-var(--scrollbar-width))] shadow-sm lg:gap-6 lg:p-6 lg:pe-[calc(1.5rem-var(--scrollbar-width))]',
-            'radix-state-open:rtl:animate-slide-left-and-fade-in radix-state-closed:rtl:animate-slide-left-and-fade-out radix-state-open:ltr:animate-slide-right-and-fade-in radix-state-closed:ltr:animate-slide-right-and-fade-out',
-            className,
-          )}
-        />
-      );
-    },
-  );
+  const RightPanelContent = forwardRef<HTMLDivElement, Dialog.DialogContentProps>(({ className, ...props }, ref) => {
+    return (
+      <Dialog.Content
+        ref={ref}
+        {...props}
+        className={clsx(
+          'bg-grey-100 absolute inset-y-0 end-0 size-full gap-4 overflow-y-scroll p-4 pe-[calc(1rem-var(--scrollbar-width))] shadow-sm lg:gap-6 lg:p-6 lg:pe-[calc(1.5rem-var(--scrollbar-width))]',
+          'radix-state-open:rtl:animate-slide-left-and-fade-in radix-state-closed:rtl:animate-slide-left-and-fade-out radix-state-open:ltr:animate-slide-right-and-fade-in radix-state-closed:ltr:animate-slide-right-and-fade-out',
+          className,
+        )}
+      />
+    );
+  });
   RightPanelContent.displayName = `${name}Content`;
 
   function RightPanelTitle(props: Dialog.DialogTitleProps) {
     return (
       <Dialog.Title
         {...props}
-        className={clsx(
-          'text-grey-00 text-l flex flex-row items-center gap-2 font-bold',
-          props.className,
-        )}
+        className={clsx('text-grey-00 text-l flex flex-row items-center gap-2 font-bold', props.className)}
       />
     );
   }

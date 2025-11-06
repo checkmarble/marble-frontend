@@ -145,9 +145,7 @@ export default function Scenarios() {
               <form.Field name="defaultScenarioTimezone">
                 {(field) => (
                   <div className="flex w-full items-center justify-between">
-                    <FormLabel name={field.name}>
-                      {t('settings:scenario_default_timezone.label')}
-                    </FormLabel>
+                    <FormLabel name={field.name}>{t('settings:scenario_default_timezone.label')}</FormLabel>
                     <FormSelectTimezone
                       name={field.name}
                       disabled={!isAdmin(user)}
@@ -171,11 +169,7 @@ export default function Scenarios() {
                   <form.Field name="sanctionLimit">
                     {(field) => (
                       <div className="flex flex-col gap-4">
-                        <FormLabel
-                          name={field.name}
-                          className="text-m"
-                          valid={field.state.meta.errors.length === 0}
-                        >
+                        <FormLabel name={field.name} className="text-m" valid={field.state.meta.errors.length === 0}>
                           {t('settings:scenario_sanction_limit')}
                         </FormLabel>
                         <FormInput
@@ -194,11 +188,7 @@ export default function Scenarios() {
                   <form.Field name="sanctionThreshold">
                     {(field) => (
                       <div className="flex flex-col gap-4">
-                        <FormLabel
-                          name={field.name}
-                          className="text-m"
-                          valid={field.state.meta.errors.length === 0}
-                        >
+                        <FormLabel name={field.name} className="text-m" valid={field.state.meta.errors.length === 0}>
                           {t('settings:scenario_sanction_threshold')}
                         </FormLabel>
                         <FormInput

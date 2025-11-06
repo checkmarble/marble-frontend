@@ -38,10 +38,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     failureRedirect: '/sign-in',
   });
 
-  const [_t, _session] = await Promise.all([
-    getFixedT(request, ['common', 'cases']),
-    getSession(request),
-  ]);
+  const [_t, _session] = await Promise.all([getFixedT(request, ['common', 'cases']), getSession(request)]);
 
   if (request.method === 'POST') {
     try {

@@ -30,12 +30,7 @@ export const SnoozePanel = ({
 }) => {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
-  const {
-    case: caseDetail,
-    dataModelWithTableOptions,
-    pivotObjects,
-    entitlements,
-  } = useLoaderData<typeof loader>();
+  const { case: caseDetail, dataModelWithTableOptions, pivotObjects, entitlements } = useLoaderData<typeof loader>();
   const { setExpanded } = DrawerContext.useValue();
   const rulesByPivotQuery = useRulesByPivotQuery(caseDetail.id);
 
@@ -91,11 +86,7 @@ export const SnoozePanel = ({
                 {table && client ? (
                   <div className="border-grey-90 flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
                     <div className="capitalize font-semibold">{table.name}</div>
-                    <PivotObjectDetails
-                      tableModel={table}
-                      dataModel={dataModelWithTableOptions}
-                      pivotObject={client}
-                    />
+                    <PivotObjectDetails tableModel={table} dataModel={dataModelWithTableOptions} pivotObject={client} />
                   </div>
                 ) : null}
                 <div className="border-grey-90 bg-grey-100 relative w-full rounded-lg border">
@@ -145,18 +136,11 @@ export const SnoozePanel = ({
                               className={cn({ 'bg-purple-96': r.isSnoozed })}
                               disabled={
                                 r.isSnoozed ||
-                                (entitlements.ruleSnoozes !== 'allowed' &&
-                                  entitlements.ruleSnoozes !== 'test')
+                                (entitlements.ruleSnoozes !== 'allowed' && entitlements.ruleSnoozes !== 'test')
                               }
                             >
-                              <Icon
-                                icon={r.isSnoozed ? 'snooze-on' : 'snooze'}
-                                className="size-4"
-                                aria-hidden
-                              />
-                              <span className="text-xs font-medium">
-                                {t('cases:decisions.rule.snooze')}
-                              </span>
+                              <Icon icon={r.isSnoozed ? 'snooze-on' : 'snooze'} className="size-4" aria-hidden />
+                              <span className="text-xs font-medium">{t('cases:decisions.rule.snooze')}</span>
                             </Button>
                           </AddRuleSnooze>
                         </div>
@@ -177,16 +161,11 @@ export const SnoozePanel = ({
                           />
                         </div>
                         <div className="border-grey-90 flex min-h-full items-center border-r p-2">
-                          <span className={cn('text-xs', { 'opacity-30': r.isSnoozed })}>
-                            {r.description}
-                          </span>
+                          <span className={cn('text-xs', { 'opacity-30': r.isSnoozed })}>{r.description}</span>
                         </div>
                         <div className="border-grey-90 flex min-h-full items-center border-r p-2">
                           {r.ruleGroup ? (
-                            <RuleGroup
-                              className={cn({ 'opacity-30': r.isSnoozed })}
-                              ruleGroup={r.ruleGroup}
-                            />
+                            <RuleGroup className={cn({ 'opacity-30': r.isSnoozed })} ruleGroup={r.ruleGroup} />
                           ) : null}
                         </div>
                         <div className="flex min-h-full items-center p-2">

@@ -16,9 +16,7 @@ export type AvailableFiltersResponse = {
   source: FilterSource;
 }[];
 
-export const adaptAvailableFiltersResponse = (
-  response: AvailableFiltersResponseDto,
-): AvailableFiltersResponse => {
+export const adaptAvailableFiltersResponse = (response: AvailableFiltersResponseDto): AvailableFiltersResponse => {
   return response.map((item) => ({
     name: item.name,
     type: item.type as AvailableFilterType,
@@ -26,9 +24,7 @@ export const adaptAvailableFiltersResponse = (
   }));
 };
 
-export const transformAvailableFiltersRequest = (
-  request: AvailableFiltersRequest,
-): AvailableFiltersRequestDto => {
+export const transformAvailableFiltersRequest = (request: AvailableFiltersRequest): AvailableFiltersRequestDto => {
   return {
     scenario_id: request.scenarioId,
     ...getIsoBoundsFromDateRanges(request.ranges),

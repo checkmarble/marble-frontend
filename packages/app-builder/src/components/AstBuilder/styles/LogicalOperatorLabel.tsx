@@ -52,9 +52,7 @@ export function LogicalOperatorLabel({
         className,
       })}
     >
-      <span className="text-s w-full text-center font-semibold">
-        {t(`scenarios:logical_operator.${operator}`)}
-      </span>
+      <span className="text-s w-full text-center font-semibold">{t(`scenarios:logical_operator.${operator}`)}</span>
     </div>
   );
 }

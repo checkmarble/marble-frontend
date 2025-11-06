@@ -3,11 +3,7 @@ import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type TableModel } from '@app-builder/models/data-model';
-import {
-  CreateLinkValue,
-  createLinkValueSchema,
-  useCreateLinkMutation,
-} from '@app-builder/queries/data/create-link';
+import { CreateLinkValue, createLinkValueSchema, useCreateLinkMutation } from '@app-builder/queries/data/create-link';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useEffect, useMemo, useState } from 'react';
@@ -53,9 +49,7 @@ function CreateLinkContent({
   const { t } = useTranslation(['data', 'navigation', 'common']);
   const [selectedParentTable, setSelectedParentTable] = useState(otherTables[0]);
   const selectedParentTableFields = useMemo(() => {
-    return selectedParentTable.fields.filter(
-      (field) => field.unicityConstraint === 'active_unique_constraint',
-    );
+    return selectedParentTable.fields.filter((field) => field.unicityConstraint === 'active_unique_constraint');
   }, [selectedParentTable]);
   const revalidate = useLoaderRevalidator();
 
@@ -200,8 +194,7 @@ function CreateLinkContent({
                     defaultValue={field.state.value}
                     onValueChange={(id) => {
                       field.handleChange(id);
-                      const newTable =
-                        otherTables.find(({ id: tableId }) => tableId === id) ?? otherTables[0];
+                      const newTable = otherTables.find(({ id: tableId }) => tableId === id) ?? otherTables[0];
                       setSelectedParentTable(newTable);
                     }}
                   >
@@ -227,10 +220,7 @@ function CreateLinkContent({
               {(field) => (
                 <div className="flex flex-1 flex-col gap-2">
                   <FormLabel name={field.name}>{t('data:create_link.parent_field')}</FormLabel>
-                  <Select.Default
-                    defaultValue={selectedParentTableFields[0]?.id}
-                    onValueChange={field.handleChange}
-                  >
+                  <Select.Default defaultValue={selectedParentTableFields[0]?.id} onValueChange={field.handleChange}>
                     {selectedParentTableFields.map(({ id, name }) => {
                       return (
                         <Select.DefaultItem key={id} value={id}>

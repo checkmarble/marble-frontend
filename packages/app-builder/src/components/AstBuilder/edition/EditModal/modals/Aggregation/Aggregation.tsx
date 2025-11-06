@@ -25,9 +25,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   const aggregatedField = computed(() => {
     const tableName = node.namedChildren.tableName.constant;
     const fieldName = node.namedChildren.fieldName.constant;
-    const dataModelField = dataModel
-      .find((t) => t.name === tableName)
-      ?.fields.find((f) => f.name === fieldName);
+    const dataModelField = dataModel.find((t) => t.name === tableName)?.fields.find((f) => f.name === fieldName);
 
     return dataModelField
       ? ({
@@ -46,9 +44,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
           {t('scenarios:edit_aggregation.title')}
           <div className="flex flex-row items-center justify-center gap-1">
             <Logo logo="logo" className="size-4" />
-            <span className="text-grey-50 text-xs font-light">
-              {t('scenarios:edit_aggregation.subtitle')}
-            </span>
+            <span className="text-grey-50 text-xs font-light">{t('scenarios:edit_aggregation.subtitle')}</span>
           </div>
         </div>
       }

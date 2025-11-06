@@ -36,10 +36,7 @@ export function EntityAnnotated({ event }: EntityAnnotatedProps) {
   const { t } = useTranslation(casesI18n);
   const [open, setOpen] = useState(false);
 
-  const user = useMemo(
-    () => (event.userId ? getOrgUserById(event.userId) : undefined),
-    [event.userId, getOrgUserById],
-  );
+  const user = useMemo(() => (event.userId ? getOrgUserById(event.userId) : undefined), [event.userId, getOrgUserById]);
 
   return (
     <div key={event.id} className="flex w-full items-start gap-2">
@@ -77,9 +74,7 @@ export function EntityAnnotated({ event }: EntityAnnotatedProps) {
               );
             })
             .with({ type: 'comment' }, (annotation) => {
-              return (
-                <span className="border-grey-90 ms-2 border-l ps-2">{annotation.payload.text}</span>
-              );
+              return <span className="border-grey-90 ms-2 border-l ps-2">{annotation.payload.text}</span>;
             })
             .exhaustive()}
         </span>

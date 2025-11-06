@@ -15,12 +15,7 @@ export class BackendGlobalError extends Error {
   }
 }
 
-function forwardHeader(
-  currentHeaders: Headers,
-  newHeaders: Headers,
-  name: string,
-  defaultValue?: string,
-) {
+function forwardHeader(currentHeaders: Headers, newHeaders: Headers, name: string, defaultValue?: string) {
   const headerValue = currentHeaders.get(name) ?? defaultValue;
   if (headerValue !== null && headerValue !== undefined) {
     newHeaders.set(name, headerValue);

@@ -10,11 +10,7 @@ export function DecisionsDateRangeFilter() {
   const { dateRange, setDateRange } = useDateRangeFilter();
 
   return (
-    <DateRangeFilter.Root
-      dateRangeFilter={dateRange}
-      setDateRangeFilter={setDateRange}
-      className="grid"
-    >
+    <DateRangeFilter.Root dateRangeFilter={dateRange} setDateRangeFilter={setDateRange} className="grid">
       <DateRangeFilter.FromNowPicker title={t('decisions:filters.date_range.title')} />
       <Separator className="bg-grey-90" decorative orientation="vertical" />
       <DateRangeFilter.Calendar />

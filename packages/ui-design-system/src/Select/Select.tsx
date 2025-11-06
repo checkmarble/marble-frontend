@@ -22,18 +22,11 @@ import clsx from 'clsx';
 import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
 
-function SelectContent({
-  children,
-  className,
-  ...props
-}: React.PropsWithChildren<SelectContentProps>) {
+function SelectContent({ children, className, ...props }: React.PropsWithChildren<SelectContentProps>) {
   return (
     <Portal>
       <Content
-        className={clsx(
-          'bg-grey-100 border-grey-90 z-50 mt-2 rounded-sm border shadow-md',
-          className,
-        )}
+        className={clsx('bg-grey-100 border-grey-90 z-50 mt-2 rounded-sm border shadow-md', className)}
         position="popper"
         {...props}
       >
@@ -49,11 +42,7 @@ function SelectContent({
   );
 }
 
-function SelectViewport({
-  children,
-  className,
-  ...props
-}: React.PropsWithChildren<SelectViewportProps>) {
+function SelectViewport({ children, className, ...props }: React.PropsWithChildren<SelectViewportProps>) {
   return (
     <Viewport className={clsx('flex flex-col gap-2 p-2', className)} {...props}>
       {children}
@@ -82,9 +71,7 @@ export const selectTrigger = cva(
   },
 );
 
-export interface SelectTriggerProps
-  extends PrimitiveSelectTriggerProps,
-    VariantProps<typeof selectTrigger> {}
+export interface SelectTriggerProps extends PrimitiveSelectTriggerProps, VariantProps<typeof selectTrigger> {}
 
 const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(function SelectTrigger(
   { children, className, border = 'square', borderColor = 'greyfigma-90', disabled, ...props },
@@ -131,21 +118,22 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectIt
   );
 });
 
-const SelectValue = forwardRef<HTMLDivElement, SelectValueProps & { align?: 'center' | 'start' }>(
-  function SelectValue({ className, align = 'center', ...props }, ref) {
-    return (
-      <span
-        className={clsx(
-          'w-full group-data-[border=rounded]/trigger:px-2',
-          { 'text-center': align === 'center', 'text-start': align === 'start' },
-          className,
-        )}
-      >
-        <Value ref={ref} {...props} />
-      </span>
-    );
-  },
-);
+const SelectValue = forwardRef<HTMLDivElement, SelectValueProps & { align?: 'center' | 'start' }>(function SelectValue(
+  { className, align = 'center', ...props },
+  ref,
+) {
+  return (
+    <span
+      className={clsx(
+        'w-full group-data-[border=rounded]/trigger:px-2',
+        { 'text-center': align === 'center', 'text-start': align === 'start' },
+        className,
+      )}
+    >
+      <Value ref={ref} {...props} />
+    </span>
+  );
+});
 
 const SelectArrow = () => (
   <SelectIcon className="group-radix-state-open:rotate-180 text-grey-00 size-6 shrink-0" asChild>
@@ -163,12 +151,7 @@ const SelectDefault = forwardRef<HTMLButtonElement, SelectProps>(function Select
 ) {
   return (
     <Root {...props}>
-      <Select.Trigger
-        ref={triggerRef}
-        border={border}
-        borderColor={borderColor}
-        className={className}
-      >
+      <Select.Trigger ref={triggerRef} border={border} borderColor={borderColor} className={className}>
         <Select.Value placeholder={placeholder} />
         <Select.Arrow />
       </Select.Trigger>

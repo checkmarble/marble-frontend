@@ -64,12 +64,7 @@ const books = new Map(
 
 const bookKeys = Array.from(books.keys());
 
-export const Complex: StoryFn<StoryProps> = ({
-  placeholder,
-  border,
-  borderColor,
-  ...args
-}: StoryProps) => (
+export const Complex: StoryFn<StoryProps> = ({ placeholder, border, borderColor, ...args }: StoryProps) => (
   <Select.Root {...args} aria-invalid>
     <Select.Trigger border={border} borderColor={borderColor}>
       <Select.Value placeholder={placeholder} />

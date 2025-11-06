@@ -31,9 +31,7 @@ export function ScoreOutcomeThresholds({
           </div>
 
           <div className="bg-yellow-90 flex h-10 flex-1 items-center justify-center border-b-4 border-b-yellow-50">
-            <span className="text-s font-semibold text-yellow-50">
-              {t('decisions:outcome.review')}
-            </span>
+            <span className="text-s font-semibold text-yellow-50">{t('decisions:outcome.review')}</span>
           </div>
         </>
       ) : null}
@@ -47,9 +45,7 @@ export function ScoreOutcomeThresholds({
           </div>
 
           <div className="bg-orange-95 flex h-10 flex-1 items-center justify-center border-b-4 border-b-orange-50">
-            <span className="text-s font-semibold text-orange-50">
-              {t('decisions:outcome.block_and_review')}
-            </span>
+            <span className="text-s font-semibold text-orange-50">{t('decisions:outcome.block_and_review')}</span>
           </div>
         </>
       ) : null}

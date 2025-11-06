@@ -10,18 +10,10 @@ function FruitCombobox() {
   const [value, setValue] = React.useState('');
   const deferredValue = React.useDeferredValue(value);
 
-  const matches = React.useMemo(
-    () => fruits.filter((fruit) => fruit.includes(deferredValue)),
-    [deferredValue],
-  );
+  const matches = React.useMemo(() => fruits.filter((fruit) => fruit.includes(deferredValue)), [deferredValue]);
 
   return (
-    <ComboboxRoot
-      value={value}
-      setValue={setValue}
-      selectedValue={value}
-      setSelectedValue={setValue}
-    >
+    <ComboboxRoot value={value} setValue={setValue} selectedValue={value} setSelectedValue={setValue}>
       <ComboboxLabel>Fruits</ComboboxLabel>
       <Combobox />
       <ComboboxPopover hideOnInteractOutside modal>

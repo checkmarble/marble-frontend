@@ -6,10 +6,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
-import {
-  createTestRunPayloadSchema,
-  useCreateTestRunMutation,
-} from '@app-builder/queries/scenarios/create-testrun';
+import { createTestRunPayloadSchema, useCreateTestRunMutation } from '@app-builder/queries/scenarios/create-testrun';
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
@@ -45,10 +42,7 @@ export function CreateTestRun({
       <ModalV2.Root open={open} setOpen={setOpen}>
         <ModalV2.Trigger render={children} />
         <ModalV2.Content className="overflow-visible">
-          <CreateTestRunToContent
-            currentScenario={currentScenario}
-            scenarioIterations={scenarioIterations}
-          />
+          <CreateTestRunToContent currentScenario={currentScenario} scenarioIterations={scenarioIterations} />
         </ModalV2.Content>
       </ModalV2.Root>
     );
@@ -138,14 +132,10 @@ function CreateTestRunToContent({
                   <FormLabel name={field.name}>{t('scenarios:create_testrun.ref')}</FormLabel>
                   <Select.Default name={field.name} defaultValue={field.state.value} disabled>
                     {refIterations.map(({ id }) => {
-                      const iteration = refIterations.find(
-                        ({ id: iterationId }) => iterationId === id,
-                      );
+                      const iteration = refIterations.find(({ id: iterationId }) => iterationId === id);
                       return (
                         <Select.DefaultItem key={id} value={id}>
-                          {`V${iteration?.version} ${
-                            iteration?.type === 'live version' ? t('scenarios:live') : ''
-                          }`}
+                          {`V${iteration?.version} ${iteration?.type === 'live version' ? t('scenarios:live') : ''}`}
                         </Select.DefaultItem>
                       );
                     })}
@@ -171,9 +161,7 @@ function CreateTestRunToContent({
                   >
                     {testIterations.map(({ id }) => (
                       <Select.DefaultItem key={id} value={id}>
-                        {`V${
-                          testIterations.find(({ id: iterationId }) => iterationId === id)?.version
-                        }`}
+                        {`V${testIterations.find(({ id: iterationId }) => iterationId === id)?.version}`}
                       </Select.DefaultItem>
                     ))}
                   </Select.Default>

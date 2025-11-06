@@ -5,11 +5,7 @@ import { useUploadIngestionData } from '@app-builder/queries/upload-ingestion-da
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { isIngestDataAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
-import {
-  formatDateTimeWithoutPresets,
-  formatNumber,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -417,9 +413,7 @@ export default function Upload() {
               )}
             </ClientOnly>
           </div>
-          <ClientOnly fallback={<Loading />}>
-            {() => <UploadForm objectType={objectType} />}
-          </ClientOnly>
+          <ClientOnly fallback={<Loading />}>{() => <UploadForm objectType={objectType} />}</ClientOnly>
           {uploadLogs.length > 0 ? <PastUploads uploadLogs={uploadLogs} /> : null}
         </Page.Content>
       </Page.Container>

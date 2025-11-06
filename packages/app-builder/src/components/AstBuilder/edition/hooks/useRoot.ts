@@ -4,11 +4,7 @@ import { type AstBuilderRootProps } from '@ast-builder/types';
 import { useCallbackRef } from '@marble/shared';
 import { useEffect, useRef } from 'react';
 
-import {
-  AstBuilderNodeSharpFactory,
-  AstBuilderUpdateFn,
-  type AstBuilderValidationFn,
-} from '../node-store';
+import { AstBuilderNodeSharpFactory, AstBuilderUpdateFn, type AstBuilderValidationFn } from '../node-store';
 
 export function useRoot(props: AstBuilderRootProps, autoValidate = true) {
   const scenarioId = AstBuilderDataSharpFactory.select((s) => s.scenarioId);

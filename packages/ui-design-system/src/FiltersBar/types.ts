@@ -47,11 +47,7 @@ export interface DynamicDateRangeFilterType {
   fromNow: string;
 }
 
-export type DateRangeFilterType =
-  | StaticDateRangeFilterType
-  | DynamicDateRangeFilterType
-  | null
-  | undefined;
+export type DateRangeFilterType = StaticDateRangeFilterType | DynamicDateRangeFilterType | null | undefined;
 
 export interface NumberFilter extends BaseFilter<NumberComparisonFilter> {
   type: 'number';
@@ -151,9 +147,7 @@ export type FilterDescriptor =
   | DateRangePopoverFilterDescriptor
   | RadioFilterDescriptor;
 
-export type FilterChange =
-  | { type: 'set'; name: string; value: FilterValue }
-  | { type: 'remove'; name: string };
+export type FilterChange = { type: 'set'; name: string; value: FilterValue } | { type: 'remove'; name: string };
 
 export interface FiltersBarProps {
   descriptors: FilterDescriptor[];

@@ -41,14 +41,9 @@ export async function action({ request }: ActionFunctionArgs) {
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
-      message: isStatusConflictHttpError(error)
-        ? t('common:errors.list.duplicate_email')
-        : t('common:errors.unknown'),
+      message: isStatusConflictHttpError(error) ? t('common:errors.list.duplicate_email') : t('common:errors.unknown'),
     });
 
-    return Response.json(
-      { success: false, errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: false, errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }

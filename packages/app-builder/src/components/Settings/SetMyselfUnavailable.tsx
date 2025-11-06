@@ -53,12 +53,7 @@ export function SetMyselfUnavailable() {
                 {t('common:cancel')}
               </Button>
             </Modal.Close>
-            <Button
-              variant="primary"
-              className="flex-1"
-              onClick={setMeUnavailable}
-              disabled={!dateSelected}
-            >
+            <Button variant="primary" className="flex-1" onClick={setMeUnavailable} disabled={!dateSelected}>
               <Icon icon="account-circle-off" className="size-4" />
 
               {t('settings:set_myself_unavailable.validate.button')}

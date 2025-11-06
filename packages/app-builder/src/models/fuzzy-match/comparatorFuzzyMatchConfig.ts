@@ -1,7 +1,4 @@
-import {
-  type ComparatorFuzzyMatchAlgorithms,
-  createBaseFuzzyMatchConfig,
-} from './baseFuzzyMatchConfig';
+import { type ComparatorFuzzyMatchAlgorithms, createBaseFuzzyMatchConfig } from './baseFuzzyMatchConfig';
 
 /**
  * ComparatorFuzzyMatchConfig is a configuration object for fuzzy matching algorithms.
@@ -10,44 +7,43 @@ import {
  *
  * @type {BaseFuzzyMatchConfig}
  */
-export const ComparatorFuzzyMatchConfig =
-  createBaseFuzzyMatchConfig<ComparatorFuzzyMatchAlgorithms>({
-    algorithms: new Set(['ratio', 'token_set_ratio', 'bag_of_words_similarity']),
-    defaultAlgorithm: 'ratio',
-    editablesAlgorithms: new Set(['ratio', 'token_set_ratio']),
-    defaultEditableAlgorithm: 'token_set_ratio',
+export const ComparatorFuzzyMatchConfig = createBaseFuzzyMatchConfig<ComparatorFuzzyMatchAlgorithms>({
+  algorithms: new Set(['ratio', 'token_set_ratio', 'bag_of_words_similarity']),
+  defaultAlgorithm: 'ratio',
+  editablesAlgorithms: new Set(['ratio', 'token_set_ratio']),
+  defaultEditableAlgorithm: 'token_set_ratio',
 
-    thresholds: {
-      low: 55,
-      medium: 70,
-      high: 85,
+  thresholds: {
+    low: 55,
+    medium: 70,
+    high: 85,
+  },
+  defaultLevel: 'high',
+
+  examples: [
+    {
+      left: 'Cabinet Dupond',
+      right: 'Jean-Charles Dupond',
+      resultsScores: {
+        ratio: 61,
+        token_set_ratio: 61,
+      },
     },
-    defaultLevel: 'high',
-
-    examples: [
-      {
-        left: 'Cabinet Dupond',
-        right: 'Jean-Charles Dupond',
-        resultsScores: {
-          ratio: 61,
-          token_set_ratio: 61,
-        },
+    {
+      left: 'Mr Mrs John Jane OR Doe Smith',
+      right: 'John Doe',
+      resultsScores: {
+        ratio: 43,
+        token_set_ratio: 100,
       },
-      {
-        left: 'Mr Mrs John Jane OR Doe Smith',
-        right: 'John Doe',
-        resultsScores: {
-          ratio: 43,
-          token_set_ratio: 100,
-        },
+    },
+    {
+      left: 'the dog was walking on the sidewalk',
+      right: "the d og as walkin' on the side alk",
+      resultsScores: {
+        ratio: 91,
+        token_set_ratio: 72,
       },
-      {
-        left: 'the dog was walking on the sidewalk',
-        right: "the d og as walkin' on the side alk",
-        resultsScores: {
-          ratio: 91,
-          token_set_ratio: 72,
-        },
-      },
-    ],
-  });
+    },
+  ],
+});

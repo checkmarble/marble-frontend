@@ -27,9 +27,7 @@ export function CreateScenario({ children }: { children: React.ReactElement }) {
     <ModalV2.Root>
       <ModalV2.Trigger render={children} disabled={!dataModelQuery.isSuccess} />
       <ModalV2.Content>
-        {dataModelQuery.isSuccess ? (
-          <CreateScenarioContent dataModel={dataModelQuery.data.dataModel} />
-        ) : null}
+        {dataModelQuery.isSuccess ? <CreateScenarioContent dataModel={dataModelQuery.data.dataModel} /> : null}
       </ModalV2.Content>
     </ModalV2.Root>
   );
@@ -98,9 +96,7 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
           <form.Field name="description">
             {(field) => (
               <div className="group flex w-full flex-col gap-2">
-                <FormLabel name={field.name}>
-                  {t('scenarios:create_scenario.description')}
-                </FormLabel>
+                <FormLabel name={field.name}>{t('scenarios:create_scenario.description')}</FormLabel>
                 <FormInput
                   type="text"
                   name={field.name}
@@ -160,9 +156,7 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
                       </Select.DefaultItem>
                     );
                   })}
-                  {dataModel.length === 0 ? (
-                    <p>{t('scenarios:create_scenario.no_trigger_object')}</p>
-                  ) : null}
+                  {dataModel.length === 0 ? <p>{t('scenarios:create_scenario.no_trigger_object')}</p> : null}
                 </Select.Default>
                 <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
               </div>

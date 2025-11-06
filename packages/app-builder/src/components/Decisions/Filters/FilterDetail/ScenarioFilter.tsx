@@ -10,10 +10,7 @@ export function ScenarioFilter() {
   const { scenarios, selectedScenarioIds, setSelectedScenarioIds } = useScenarioFilter();
   const searchValue = useDeferredValue(value);
 
-  const matches = useMemo(
-    () => matchSorter(scenarios, searchValue, { keys: ['name'] }),
-    [searchValue, scenarios],
-  );
+  const matches = useMemo(() => matchSorter(scenarios, searchValue, { keys: ['name'] }), [searchValue, scenarios]);
 
   return (
     <div className="flex flex-col gap-2 p-2">

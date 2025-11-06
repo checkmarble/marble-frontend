@@ -27,12 +27,8 @@ function SignInWithGoogleButton({ onClick, loading }: { onClick?: () => void; lo
       disabled={loading}
     >
       <Logo logo="google-logo" className="size-6" />
-      <span className="text-s whitespace-nowrap text-center font-medium">
-        {t('auth:sign_in.google')}
-      </span>
-      <span className="absolute end-0 mx-2 size-4">
-        {loading ? <Spinner className="size-4" /> : null}
-      </span>
+      <span className="text-s whitespace-nowrap text-center font-medium">{t('auth:sign_in.google')}</span>
+      <span className="absolute end-0 mx-2 size-4">{loading ? <Spinner className="size-4" /> : null}</span>
     </button>
   );
 }

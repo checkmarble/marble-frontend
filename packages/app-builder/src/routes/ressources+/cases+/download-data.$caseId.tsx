@@ -16,12 +16,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   // This download doesn't use the marble API because the oazapfts library configured in optimistic is stripping the response
   // so due to the download being a binary file, it's not possible to stream the response
-  return fetch(
-    `${getServerEnv('MARBLE_API_URL')}${getCaseInvestigationDataDownloadEndpoint(caseId)}`,
-    {
-      headers: {
-        Authorization: `Bearer ${await tokenService.getToken()}`,
-      },
+  return fetch(`${getServerEnv('MARBLE_API_URL')}${getCaseInvestigationDataDownloadEndpoint(caseId)}`, {
+    headers: {
+      Authorization: `Bearer ${await tokenService.getToken()}`,
     },
-  );
+  });
 };

@@ -1,9 +1,4 @@
-import {
-  AddNewFilterButton,
-  ClearAllFiltersButton,
-  FilterItem,
-  FilterPopover,
-} from '@app-builder/components/Filters';
+import { AddNewFilterButton, ClearAllFiltersButton, FilterItem, FilterPopover } from '@app-builder/components/Filters';
 import { useCallback } from 'react';
 import { Separator } from 'ui-design-system';
 import { Icon } from 'ui-icons';

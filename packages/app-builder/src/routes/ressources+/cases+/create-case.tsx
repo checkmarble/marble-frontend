@@ -43,9 +43,6 @@ export async function action({ request }: ActionFunctionArgs) {
       messageKey: 'common:errors.unknown',
     });
 
-    return json(
-      { success: 'false', error: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return json({ success: 'false', error: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }

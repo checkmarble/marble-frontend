@@ -1,8 +1,4 @@
-import {
-  type Rule,
-  type WorkflowAction,
-  type WorkflowCondition,
-} from '@app-builder/models/scenario/workflow';
+import { type Rule, type WorkflowAction, type WorkflowCondition } from '@app-builder/models/scenario/workflow';
 import { validateRuleEnhanced } from '@app-builder/models/scenario/workflow-validation';
 import { useUpdateRuleMutation } from '@app-builder/queries/Workflows';
 import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
@@ -102,9 +98,7 @@ export function RuleProvider({ children, rule, setEditingRuleId, scenarioId }: R
     updatedRule.conditions = [...existingConditions];
 
     if (condition.id) {
-      const existingConditionIndex = updatedRule.conditions.findIndex(
-        (c: WorkflowCondition) => c.id === condition.id,
-      );
+      const existingConditionIndex = updatedRule.conditions.findIndex((c: WorkflowCondition) => c.id === condition.id);
 
       if (existingConditionIndex !== -1) {
         updatedRule.conditions[existingConditionIndex] = condition;

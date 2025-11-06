@@ -1,15 +1,7 @@
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { type GetFeatureAccessAPIClientWithAuth } from '@app-builder/infra/feature-access-api';
-import {
-  type GetMarbleCoreAPIClientWithAuth,
-  type MarbleCoreApi,
-} from '@app-builder/infra/marblecore-api';
-import {
-  type AuthData,
-  type AuthFlashData,
-  adaptAuthErrors,
-  type CurrentUser,
-} from '@app-builder/models';
+import { type GetMarbleCoreAPIClientWithAuth, type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
+import { type AuthData, type AuthFlashData, adaptAuthErrors, type CurrentUser } from '@app-builder/models';
 import { AppConfig } from '@app-builder/models/app-config';
 import { emptyFeatureAccesses, type FeatureAccesses } from '@app-builder/models/feature-access';
 import { ToastFlashData } from '@app-builder/models/toast-session';
@@ -96,18 +88,12 @@ export interface AuthenticationServerService {
     request: Request,
     options?: { successRedirect?: never; failureRedirect?: never },
   ): Promise<AuthenticatedInfo | null>;
-  isAuthenticated(
-    request: Request,
-    options: { successRedirect: string; failureRedirect?: never },
-  ): Promise<null>;
+  isAuthenticated(request: Request, options: { successRedirect: string; failureRedirect?: never }): Promise<null>;
   isAuthenticated(
     request: Request,
     options: { successRedirect?: never; failureRedirect: string },
   ): Promise<AuthenticatedInfo>;
-  isAuthenticated(
-    request: Request,
-    options: { successRedirect: string; failureRedirect: string },
-  ): Promise<null>;
+  isAuthenticated(request: Request, options: { successRedirect: string; failureRedirect: string }): Promise<null>;
 }
 
 const schema = z.object({
@@ -128,17 +114,10 @@ interface MakeAuthenticationServerServiceArgs {
   getCaseRepository: (marbleCoreApiClient: MarbleCoreApi) => CaseRepository;
   getScreeningRepository: (marbleCoreApiClient: MarbleCoreApi) => ScreeningRepository;
   getCustomListRepository: (marbleCoreApiClient: MarbleCoreApi) => CustomListsRepository;
-  getOrganizationRepository: (
-    marbleCoreApiClient: MarbleCoreApi,
-    organizationId: string,
-  ) => OrganizationRepository;
+  getOrganizationRepository: (marbleCoreApiClient: MarbleCoreApi, organizationId: string) => OrganizationRepository;
   getScenarioRepository: (marbleCoreApiClient: MarbleCoreApi) => ScenarioRepository;
-  getScenarioIterationRuleRepository: (
-    marbleCoreApiClient: MarbleCoreApi,
-  ) => ScenarioIterationRuleRepository;
-  getScenarioIterationScreeningRepository: (
-    marbleCoreApiClient: MarbleCoreApi,
-  ) => ScenarioIterationScreeningRepository;
+  getScenarioIterationRuleRepository: (marbleCoreApiClient: MarbleCoreApi) => ScenarioIterationRuleRepository;
+  getScenarioIterationScreeningRepository: (marbleCoreApiClient: MarbleCoreApi) => ScenarioIterationScreeningRepository;
   getDataModelRepository: (marbleCoreApiClient: MarbleCoreApi) => DataModelRepository;
   getApiKeyRepository: (marbleCoreApiClient: MarbleCoreApi) => ApiKeyRepository;
   getAnalyticsRepository: (marbleCoreApiClient: MarbleCoreApi) => AnalyticsRepository;
@@ -187,10 +166,7 @@ export function makeAuthenticationServerService({
   getAiAssistSettingsRepository,
   makeOidcService,
 }: MakeAuthenticationServerServiceArgs) {
-  function getTokenService(
-    marbleAccessToken: string,
-    request: Request | undefined = undefined,
-  ): TokenService<string> {
+  function getTokenService(marbleAccessToken: string, request: Request | undefined = undefined): TokenService<string> {
     let update: { value: TokenServiceUpdate } = {
       value: { status: false, marbleToken: null, refreshToken: null },
     };
@@ -455,8 +431,7 @@ export function makeAuthenticationServerService({
       customListsRepository: getCustomListRepository(marbleCoreApiClient),
       scenario: getScenarioRepository(marbleCoreApiClient),
       scenarioIterationRuleRepository: getScenarioIterationRuleRepository(marbleCoreApiClient),
-      scenarioIterationScreeningRepository:
-        getScenarioIterationScreeningRepository(marbleCoreApiClient),
+      scenarioIterationScreeningRepository: getScenarioIterationScreeningRepository(marbleCoreApiClient),
       organization: getOrganizationRepository(marbleCoreApiClient, user.organizationId),
       dataModelRepository: getDataModelRepository(marbleCoreApiClient),
       apiKey: getApiKeyRepository(marbleCoreApiClient),

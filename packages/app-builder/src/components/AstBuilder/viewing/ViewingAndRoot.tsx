@@ -14,10 +14,7 @@ type ViewingAstBuilderAndRootProps = Omit<AstBuilderRootProps<AndAstNode>, 'onSt
 
 export function ViewingAstBuilderAndRoot(props: ViewingAstBuilderAndRootProps) {
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
-  const validation = useMemo(
-    () => props.validation ?? { errors: [], evaluation: [] },
-    [props.validation],
-  );
+  const validation = useMemo(() => props.validation ?? { errors: [], evaluation: [] }, [props.validation]);
 
   return (
     <div className="flex flex-col gap-2 lg:gap-4">
@@ -62,11 +59,7 @@ function ViewingRootAndLine({ isFirst, isLast, path, validation, node }: Viewing
       <div className={clsx('border-grey-90 col-start-1 border-e', isLast && 'h-5')} />
       <div className="border-grey-90 col-start-2 h-5 border-b" />
 
-      <LogicalOperatorLabel
-        operator={isFirst ? 'where' : 'and'}
-        className="col-start-3"
-        type="contained"
-      />
+      <LogicalOperatorLabel operator={isFirst ? 'where' : 'and'} className="col-start-3" type="contained" />
 
       <div className={clsx('col-span-2 col-start-4 flex flex-col gap-2 px-2')}>
         <ViewingAstBuilderNode path={path} node={node} validation={validation} root />

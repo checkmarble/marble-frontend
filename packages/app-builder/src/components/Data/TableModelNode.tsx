@@ -26,12 +26,7 @@ import { Handle, type NodeProps, Position } from 'reactflow';
 import * as R from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import {
-  SchemaMenuMenuButton,
-  SchemaMenuMenuItem,
-  SchemaMenuMenuPopover,
-  SchemaMenuRoot,
-} from '../Schema/SchemaMenu';
+import { SchemaMenuMenuButton, SchemaMenuMenuItem, SchemaMenuMenuPopover, SchemaMenuRoot } from '../Schema/SchemaMenu';
 import { CreateField } from './CreateField';
 import { CreateLink } from './CreateLink';
 import { CreatePivot } from './CreatePivot/CreatePivot';
@@ -72,15 +67,11 @@ export function adaptTableModelNodeData(
 ): TableModelNodeData {
   const linksToThisTable = dataModel
     .filter((table) => table.id !== tableModel.id)
-    .flatMap((table) =>
-      table.linksToSingle.filter(({ parentTableId }) => parentTableId === tableModel.id),
-    );
+    .flatMap((table) => table.linksToSingle.filter(({ parentTableId }) => parentTableId === tableModel.id));
 
   const linksFromThisTable = dataModel
     .filter((table) => table.id === tableModel.id)
-    .flatMap((table) =>
-      table.linksToSingle.filter(({ childTableId }) => childTableId === tableModel.id),
-    );
+    .flatMap((table) => table.linksToSingle.filter(({ childTableId }) => childTableId === tableModel.id));
 
   const tableHasLinks = linksToThisTable.length > 0 || linksFromThisTable.length > 0;
 
@@ -91,9 +82,7 @@ export function adaptTableModelNodeData(
     linksToThisTable,
     otherTablesWithUnique: dataModel
       .filter((table) => table.id !== tableModel.id)
-      .filter((table) =>
-        table.fields.some((field) => field.unicityConstraint === 'active_unique_constraint'),
-      ),
+      .filter((table) => table.fields.some((field) => field.unicityConstraint === 'active_unique_constraint')),
     id: tableModel.id,
     name: tableModel.name,
     description: tableModel.description,
@@ -126,9 +115,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   const { displayPivot, isFieldPartOfPivot, isTablePartOfPivot } = useSelectedPivot();
   const { isEditDataModelFieldAvailable } = useDataModelFeatureAccess();
 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
-    { id: 'hasLink', value: true },
-  ]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([{ id: 'hasLink', value: true }]);
 
   const hasLinkFilter = columnFilters.find((f) => f.id === 'hasLink')?.value === true;
 
@@ -148,9 +135,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
         header: () => (
           <div className="flex items-start justify-between gap-6 p-4">
             <div className="flex min-w-96 max-w-md flex-1 flex-col gap-2 text-start">
-              <span className="text-grey-00 overflow-auto text-ellipsis text-[30px]">
-                {data.name}
-              </span>
+              <span className="text-grey-00 overflow-auto text-ellipsis text-[30px]">{data.name}</span>
               <div className="flex flex-row flex-wrap items-center">
                 <FormatDescription description={data.description || ''} />
               </div>
@@ -171,11 +156,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               {data.pivot ? (
                 <DisplayPivot {...data.pivot} />
               ) : (
-                <CreatePivot
-                  key="create-pivot"
-                  tableModel={data.original}
-                  dataModel={data.dataModel}
-                >
+                <CreatePivot key="create-pivot" tableModel={data.original} dataModel={data.dataModel}>
                   <Button variant={'secondary'} disabled={displayPivot}>
                     <Icon icon="plus" className="size-6" />
                     {t('data:create_pivot.button.label')}
@@ -189,11 +170,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
           columnHelper.accessor((row) => row.name, {
             id: 'name',
             enableResizing: false,
-            header: () => (
-              <span className="text-grey-00 flex p-2 text-start font-medium">
-                {t('data:field_name')}
-              </span>
-            ),
+            header: () => <span className="text-grey-00 flex p-2 text-start font-medium">{t('data:field_name')}</span>,
             cell: ({ getValue }) => {
               return <span className="text-grey-00 font-semibold">{getValue()}</span>;
             },
@@ -201,20 +178,12 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
           columnHelper.accessor((row) => row.displayType, {
             id: 'displayType',
             enableResizing: false,
-            header: () => (
-              <span className="text-grey-00 flex p-2 text-start font-medium">
-                {t('data:field_type')}
-              </span>
-            ),
+            header: () => <span className="text-grey-00 flex p-2 text-start font-medium">{t('data:field_type')}</span>,
           }),
           columnHelper.accessor((row) => row.description, {
             id: 'description',
             enableResizing: false,
-            header: () => (
-              <span className="text-grey-00 flex p-2 text-start font-medium">
-                {t('data:description')}
-              </span>
-            ),
+            header: () => <span className="text-grey-00 flex p-2 text-start font-medium">{t('data:description')}</span>,
             cell: ({ getValue }) => {
               return <FormatDescription description={getValue<string>() || ''} />;
             },
@@ -328,13 +297,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   );
 }
 
-function EditDataModelField({
-  field,
-  linksToThisTable,
-}: {
-  field: DataModelField;
-  linksToThisTable: LinkToSingle[];
-}) {
+function EditDataModelField({ field, linksToThisTable }: { field: DataModelField; linksToThisTable: LinkToSingle[] }) {
   const { displayPivot } = useSelectedPivot();
   return (
     <EditField field={field} linksToThisTable={linksToThisTable}>
@@ -415,11 +378,7 @@ function MoreMenu({ data }: { data: TableModelNodeData }) {
   }
   if (isCreateDataModelLinkAvailable && R.hasAtLeast(data.otherTablesWithUnique, 1)) {
     menuItems.push(
-      <CreateLink
-        key="create-link"
-        thisTable={data.original}
-        otherTables={data.otherTablesWithUnique}
-      >
+      <CreateLink key="create-link" thisTable={data.original} otherTables={data.otherTablesWithUnique}>
         <SchemaMenuMenuItem>
           <Icon icon="plus" className="size-6" />
           {t('data:create_link.title')}
@@ -477,9 +436,7 @@ export function DisplayPivot(pivot: Pivot) {
     >
       <Icon icon="center-focus" className="size-6" />
       {pivot.type === 'field' ? (
-        <span className="text-grey-00">
-          {pivot.field === 'object_id' ? pivot.baseTable : pivot.field}
-        </span>
+        <span className="text-grey-00">{pivot.field === 'object_id' ? pivot.baseTable : pivot.field}</span>
       ) : (
         pivot.pathLinks.map((table) => (
           <React.Fragment key={`pivot-${pivot.baseTable}-${table}`}>

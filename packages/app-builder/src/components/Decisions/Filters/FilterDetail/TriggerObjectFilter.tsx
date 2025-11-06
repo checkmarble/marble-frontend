@@ -7,14 +7,10 @@ import { useTriggerObjectFilter } from '../DecisionFiltersContext';
 
 export function TriggerObjectFilter() {
   const [value, setSearchValue] = useState('');
-  const { triggerObjects, selectedTriggerObjects, setSelectedTriggerObjects } =
-    useTriggerObjectFilter();
+  const { triggerObjects, selectedTriggerObjects, setSelectedTriggerObjects } = useTriggerObjectFilter();
   const searchValue = useDeferredValue(value);
 
-  const matches = useMemo(
-    () => matchSorter(triggerObjects, searchValue),
-    [searchValue, triggerObjects],
-  );
+  const matches = useMemo(() => matchSorter(triggerObjects, searchValue), [searchValue, triggerObjects]);
 
   return (
     <div className="flex flex-col gap-2 p-2">
@@ -29,11 +25,7 @@ export function TriggerObjectFilter() {
           {matches.map((triggerObject) => {
             return (
               <SelectWithCombobox.ComboboxItem key={triggerObject} value={triggerObject}>
-                <Highlight
-                  className="first-letter:capitalize"
-                  text={triggerObject}
-                  query={searchValue}
-                />
+                <Highlight className="first-letter:capitalize" text={triggerObject} query={searchValue} />
               </SelectWithCombobox.ComboboxItem>
             );
           })}

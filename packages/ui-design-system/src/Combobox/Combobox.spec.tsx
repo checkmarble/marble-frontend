@@ -14,10 +14,7 @@ function FruitCombobox() {
   const [value, setValue] = React.useState('');
   const deferredValue = React.useDeferredValue(value);
 
-  const matches = React.useMemo(
-    () => fruits.filter((fruit) => fruit.includes(deferredValue)),
-    [deferredValue],
-  );
+  const matches = React.useMemo(() => fruits.filter((fruit) => fruit.includes(deferredValue)), [deferredValue]);
 
   return (
     <ComboboxRoot setValue={setValue}>

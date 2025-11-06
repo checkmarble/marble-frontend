@@ -4,11 +4,7 @@ import { CreateInbox } from '@app-builder/components/Settings/Inboxes/CreateInbo
 import { UpdateOrganizationSettings } from '@app-builder/components/Settings/Organization/UpdateOrganization';
 import { isAdmin } from '@app-builder/models';
 import { type InboxWithCasesCount, tKeyForInboxUserRole } from '@app-builder/models/inbox';
-import {
-  isAutoAssignmentAvailable,
-  isCreateInboxAvailable,
-  isInboxAdmin,
-} from '@app-builder/services/feature-access';
+import { isAutoAssignmentAvailable, isCreateInboxAvailable, isInboxAdmin } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -64,13 +60,8 @@ const columnHelper = createColumnHelper<InboxWithCasesCount>();
 
 export default function Inboxes() {
   const { t } = useTranslation(['settings']);
-  const {
-    isAutoAssignmentAvailable,
-    inboxes,
-    isCreateInboxAvailable,
-    autoAssignQueueLimit,
-    organizationId,
-  } = useLoaderData<LoaderData>();
+  const { isAutoAssignmentAvailable, inboxes, isCreateInboxAvailable, autoAssignQueueLimit, organizationId } =
+    useLoaderData<LoaderData>();
 
   const columns = useMemo(() => {
     return [
@@ -127,9 +118,7 @@ export default function Inboxes() {
         <CollapsiblePaper.Container>
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:inboxes')}</span>
-            {isCreateInboxAvailable ? (
-              <CreateInbox redirectRoutePath="/settings/inboxes/:inboxId" />
-            ) : null}
+            {isCreateInboxAvailable ? <CreateInbox redirectRoutePath="/settings/inboxes/:inboxId" /> : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>
             <Table.Container {...getContainerProps()} className="max-h-96">
@@ -167,9 +156,7 @@ export default function Inboxes() {
                   />
                 ) : null}
               </span>
-              <span className={cn({ 'blur-xs': !isAutoAssignmentAvailable })}>
-                {autoAssignQueueLimit}
-              </span>
+              <span className={cn({ 'blur-xs': !isAutoAssignmentAvailable })}>{autoAssignQueueLimit}</span>
             </div>
           </CollapsiblePaper.Content>
         </CollapsiblePaper.Container>

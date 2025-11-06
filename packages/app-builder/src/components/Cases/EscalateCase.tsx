@@ -1,10 +1,7 @@
 import { Callout, casesI18n } from '@app-builder/components';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { isAdmin } from '@app-builder/models';
-import {
-  escalateCasePayloadSchema,
-  useEscalateCaseMutation,
-} from '@app-builder/queries/cases/escalate-case';
+import { escalateCasePayloadSchema, useEscalateCaseMutation } from '@app-builder/queries/cases/escalate-case';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
 import { handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';

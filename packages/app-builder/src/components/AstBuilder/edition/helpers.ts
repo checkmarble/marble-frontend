@@ -1,17 +1,7 @@
-import {
-  type AstNode,
-  type DataModel,
-  type EnumValue,
-  type IdLessAstNode,
-  type TableModel,
-} from '@app-builder/models';
+import { type AstNode, type DataModel, type EnumValue, type IdLessAstNode, type TableModel } from '@app-builder/models';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { NewCustomListAstNode } from '@app-builder/models/astNode/custom-list';
-import {
-  isDataAccessorAstNode,
-  isDatabaseAccess,
-  isPayload,
-} from '@app-builder/models/astNode/data-accessor';
+import { isDataAccessorAstNode, isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
 import { type NodeEvaluation } from '@app-builder/models/node-evaluation';
 import { type BuilderOptionsResource } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/builder-options';
 import {
@@ -28,11 +18,7 @@ import { type TFunction } from 'i18next';
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
 
-import {
-  AST_BUILDER_STATIC_OPTIONS,
-  MODELING_OPTIONS,
-  type OperandMenuOption,
-} from './base-options';
+import { AST_BUILDER_STATIC_OPTIONS, MODELING_OPTIONS, type OperandMenuOption } from './base-options';
 
 type EnrichingOperandContext = {
   enumValues: EnumValue[] | undefined;
@@ -40,10 +26,7 @@ type EnrichingOperandContext = {
   dataModel: DataModel;
 } & AstNodeStringifierContext;
 
-export type EnrichedMenuOption = Omit<
-  OperandMenuOption,
-  'operandType' | 'displayName' | 'dataType'
-> & {
+export type EnrichedMenuOption = Omit<OperandMenuOption, 'operandType' | 'displayName' | 'dataType'> & {
   operandType: NonNullable<OperandMenuOption['operandType']>;
   displayName: NonNullable<OperandMenuOption['displayName']>;
   dataType: NonNullable<OperandMenuOption['dataType']>;
@@ -129,20 +112,8 @@ export function groupByOperandType(
   );
 }
 
-function createMapOption({
-  enumValues,
-  customLists,
-  language,
-  t,
-  ...modelData
-}: EnrichingOperandContext) {
-  return function ({
-    astNode,
-    operandType,
-    displayName,
-    dataType,
-    ...rest
-  }: OperandMenuOption): EnrichedMenuOption {
+function createMapOption({ enumValues, customLists, language, t, ...modelData }: EnrichingOperandContext) {
+  return function ({ astNode, operandType, displayName, dataType, ...rest }: OperandMenuOption): EnrichedMenuOption {
     return {
       astNode,
       operandType:
@@ -163,10 +134,7 @@ function createMapOption({
   };
 }
 
-export function getOptionDisplayName(
-  option: EnrichedMenuOption,
-  context: AstNodeStringifierContext,
-) {
+export function getOptionDisplayName(option: EnrichedMenuOption, context: AstNodeStringifierContext) {
   return option.displayName ?? getAstNodeDisplayName(option.astNode, context);
 }
 
@@ -243,19 +211,13 @@ export function getEvaluationForNode(evaluation: FlatNodeEvaluation, nodeId: str
   return evaluation.filter((e) => e.relatedIds.includes(nodeId));
 }
 
-export function getErrorsForNode(
-  validation: FlatAstValidation,
-  nodeIds?: string | string[],
-  direct = false,
-) {
+export function getErrorsForNode(validation: FlatAstValidation, nodeIds?: string | string[], direct = false) {
   if (!nodeIds) return [];
 
   const nodeIdsArr = typeof nodeIds === 'string' ? [nodeIds] : nodeIds;
   return validation.evaluation
     .filter((e) =>
-      direct
-        ? nodeIdsArr.includes(e.nodeId)
-        : nodeIdsArr.some((nodeId) => e.relatedIds.includes(nodeId)),
+      direct ? nodeIdsArr.includes(e.nodeId) : nodeIdsArr.some((nodeId) => e.relatedIds.includes(nodeId)),
     )
     .flatMap((e) => e.errors);
 }

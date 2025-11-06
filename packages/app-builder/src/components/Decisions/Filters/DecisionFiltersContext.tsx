@@ -42,8 +42,7 @@ interface DecisionFiltersContextValue {
   onDecisionFilterClose: () => void;
 }
 
-const DecisionFiltersContext =
-  createSimpleContext<DecisionFiltersContextValue>('DecisionFiltersContext');
+const DecisionFiltersContext = createSimpleContext<DecisionFiltersContextValue>('DecisionFiltersContext');
 
 export type DecisionFiltersForm = {
   dateRange: DateRangeFilterForm;

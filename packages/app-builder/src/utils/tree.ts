@@ -91,11 +91,7 @@ export function getAtPath<T>(tree: Tree<T>, path: Path): Tree<T> | undefined {
   return getAtPath(child, restPath);
 }
 
-export function setAtPathSegment<T>(
-  tree: Tree<T>,
-  pathSegment: PathSegment,
-  value: Tree<T>,
-): Tree<T> {
+export function setAtPathSegment<T>(tree: Tree<T>, pathSegment: PathSegment, value: Tree<T>): Tree<T> {
   switch (pathSegment.type) {
     case 'children': {
       const { index } = pathSegment;

@@ -100,20 +100,14 @@ export async function action({ request }: ActionFunctionArgs) {
       messageKey: 'common:success.save',
     });
 
-    return Response.json(
-      { success: true },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
   } catch (_err) {
     setToastMessage(session, {
       type: 'error',
       messageKey: 'common:errors.unknown',
     });
 
-    return Response.json(
-      { status: 'error', errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ status: 'error', errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }
 
@@ -208,20 +202,17 @@ const droppableVariants = cva('not-last:mb-2', {
   },
 });
 
-const draggableVariants = cva(
-  'p-2 grid grid-cols-[auto_1fr_auto] max-w-[500px] gap-2 items-center',
-  {
-    variants: {
-      isDragging: {
-        true: 'bg-purple-98 rounded-sm',
-        false: null,
-      },
-    },
-    defaultVariants: {
-      isDragging: false,
+const draggableVariants = cva('p-2 grid grid-cols-[auto_1fr_auto] max-w-[500px] gap-2 items-center', {
+  variants: {
+    isDragging: {
+      true: 'bg-purple-98 rounded-sm',
+      false: null,
     },
   },
-);
+  defaultVariants: {
+    isDragging: false,
+  },
+});
 
 type TableModelFieldDnDProps = {
   tableModel: TableModel;
@@ -291,9 +282,7 @@ function TableModelFieldDnD({ options, tableModel, onChange }: TableModelFieldDn
                           <Switch
                             disabled={field.name === 'object_id'}
                             checked={displayedField || field.name === 'object_id'}
-                            onCheckedChange={() =>
-                              field.name !== 'object_id' && handleOnCheckChange(field.id)
-                            }
+                            onCheckedChange={() => field.name !== 'object_id' && handleOnCheckChange(field.id)}
                           />
                         </div>
                       );

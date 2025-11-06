@@ -87,10 +87,7 @@ export function InboxSelector({
                   setOpen(false);
                 }}
               >
-                <Highlight
-                  text={t('workflows:action.inbox.any_available')}
-                  query={deferredSearchValue}
-                />
+                <Highlight text={t('workflows:action.inbox.any_available')} query={deferredSearchValue} />
               </MenuCommand.Item>
             )}
           </MenuCommand.List>

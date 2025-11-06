@@ -60,16 +60,12 @@ export function useBase64Query<T extends ZodObject>(
   const update = useCallbackRef((filters: Partial<z.infer<T>>) => {
     const nextFilters = { ...decodedObject, ...filters };
     const stringifiedFilters = JSON.stringify(nextFilters);
-    const nextQuery = bytesToBase64(
-      new TextEncoder().encode(stringifiedFilters === '{}' ? '' : stringifiedFilters),
-    );
+    const nextQuery = bytesToBase64(new TextEncoder().encode(stringifiedFilters === '{}' ? '' : stringifiedFilters));
     options.onUpdate?.(nextQuery, nextFilters);
   });
 
   const result = useMemo(() => {
-    const asArray = Object.entries(validatedObject.data ?? {}).filter(
-      ([_, value]) => !!value,
-    ) as QueryEntry<T>[];
+    const asArray = Object.entries(validatedObject.data ?? {}).filter(([_, value]) => !!value) as QueryEntry<T>[];
 
     return {
       ...validatedObject,

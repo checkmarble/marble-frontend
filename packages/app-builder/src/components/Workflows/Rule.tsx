@@ -101,18 +101,14 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   <div className="group inline-flex items-center gap-1">
                     <span
                       className="cursor-text hover:bg-white hover:bg-opacity-20 px-1 py-0.5 rounded-sm transition-colors"
-                      onClick={(event) =>
-                        handleRenameClick(event, displayRule.id, displayRule.name)
-                      }
+                      onClick={(event) => handleRenameClick(event, displayRule.id, displayRule.name)}
                     >
                       {displayRule.name}
                     </span>
                     <Button
                       variant="ghost"
                       type="button"
-                      onClick={(event) =>
-                        handleRenameClick(event, displayRule.id, displayRule.name)
-                      }
+                      onClick={(event) => handleRenameClick(event, displayRule.id, displayRule.name)}
                       disabled={editingRuleId === displayRule.id}
                       className="opacity-0 group-hover:opacity-100 transition-all duration-200"
                     >
@@ -181,9 +177,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                       })}
                     </div>
                   ) : (
-                    <Callout variant="outlined">
-                      {t('workflows:rule.no_conditions.description')}
-                    </Callout>
+                    <Callout variant="outlined">{t('workflows:rule.no_conditions.description')}</Callout>
                   )}
                   <div className="mt-5 flex items-center justify-between">
                     <ConditionSelector
@@ -202,9 +196,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
             <div className="w-28 h-0.5 bg-grey-80 relative">
               <div className="absolute -right-0 top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-l-8 border-transparent border-l-grey-80"></div>
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-grey-90 px-3 py-1 rounded-sm z-10">
-                <span className="text-sm font-bold text-white uppercase tracking-wide">
-                  {t('common:then')}
-                </span>
+                <span className="text-sm font-bold text-white uppercase tracking-wide">{t('common:then')}</span>
               </div>
             </div>
           </div>
@@ -220,10 +212,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
             }`}
           >
             <div className="bg-grey-05 rounded-md">
-              <ActionSelector
-                action={displayRule.actions?.[0]}
-                onChange={(action) => updateAction(action)}
-              />
+              <ActionSelector action={displayRule.actions?.[0]} onChange={(action) => updateAction(action)} />
             </div>
           </div>
         </div>

@@ -43,11 +43,7 @@ type FormErrorDisplayProps = {
 const containerClassName = 'text-red-base bg-red-background rounded-v2-md';
 
 function FormErrorDisplayAsString({ messages, className }: FormErrorDisplayProps) {
-  return (
-    <div className={cn(containerClassName, 'px-v2-sm py-v2-xs', className)}>
-      {messages.join(', ')}
-    </div>
-  );
+  return <div className={cn(containerClassName, 'px-v2-sm py-v2-xs', className)}>{messages.join(', ')}</div>;
 }
 
 function FormErrorDisplayAsComponents({ messages, className }: FormErrorDisplayProps) {

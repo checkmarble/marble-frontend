@@ -47,19 +47,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
       message: t('cases:case_detail.ai_review.actions.add_to_comment.success'),
     });
 
-    return Response.json(
-      { success: true },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
   } catch {
     setToastMessage(session, {
       type: 'error',
       messageKey: t('common:errors.unknown'),
     });
 
-    return Response.json(
-      { success: false },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: false }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }

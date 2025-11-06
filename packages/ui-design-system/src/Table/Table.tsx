@@ -76,20 +76,14 @@ function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderG
             const context = header.getContext();
             if (header.id === internalRowLink) {
               return (
-                <th
-                  colSpan={header.colSpan}
-                  key={header.id}
-                  className="bg-grey-100 border-grey-90 w-0 border-b"
-                ></th>
+                <th colSpan={header.colSpan} key={header.id} className="bg-grey-100 border-grey-90 w-0 border-b"></th>
               );
             }
             return (
               <Table.TH header={header} key={header.id}>
                 {header.isPlaceholder ? null : (
                   <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
-                    <p className="flex flex-1">
-                      {flexRender(header.column.columnDef.header, context)}
-                    </p>
+                    <p className="flex flex-1">{flexRender(header.column.columnDef.header, context)}</p>
                     {{
                       asc: <Icon icon="arrow-2-up" className="size-6" />,
                       desc: <Icon icon="arrow-2-down" className="size-6" />,
@@ -169,8 +163,7 @@ export function useVirtualTable<TData extends RowData>(options: TableProps<TData
   const totalSize = getTotalSize();
 
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
-  const paddingBottom =
-    virtualRows.length > 0 ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0) : 0;
+  const paddingBottom = virtualRows.length > 0 ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0) : 0;
 
   return {
     table,

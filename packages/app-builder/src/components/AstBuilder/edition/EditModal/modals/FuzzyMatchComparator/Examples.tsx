@@ -37,12 +37,8 @@ export function Examples({
           if (!(algorithm in resultsScores)) return null; // Ensure the algorithm key exists
           return (
             <tr key={`${left}-${right}`}>
-              <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
-                {left}
-              </td>
-              <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
-                {right}
-              </td>
+              <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">{left}</td>
+              <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">{right}</td>
               <td className="text-grey-00 border-grey-90 border px-2 text-xs font-normal">
                 {t(`common:${resultsScores[algorithm]! > threshold}`)}
               </td>

@@ -37,10 +37,7 @@ export function CaseTag({ tag }: { tag?: Tag }) {
   const { t } = useTranslation(casesI18n);
 
   return (
-    <div
-      className="bg-grey-95 flex h-6 items-center rounded-sm px-2"
-      style={{ backgroundColor: tag?.color }}
-    >
+    <div className="bg-grey-95 flex h-6 items-center rounded-sm px-2" style={{ backgroundColor: tag?.color }}>
       <span className="text-grey-00 line-clamp-1 text-xs font-normal">
         {tag?.name || t('cases:case_detail.unknown_tag')}
       </span>

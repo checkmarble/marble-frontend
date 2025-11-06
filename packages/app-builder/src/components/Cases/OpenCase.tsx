@@ -3,11 +3,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import {
-  OpenCasePayload,
-  openCasePayloadSchema,
-  useOpenCaseMutation,
-} from '@app-builder/queries/cases/open-case';
+import { OpenCasePayload, openCasePayloadSchema, useOpenCaseMutation } from '@app-builder/queries/cases/open-case';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';

@@ -29,14 +29,7 @@ export interface InputProps extends React.ComponentPropsWithoutRef<'input'> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  {
-    className,
-    startAdornment,
-    endAdornment,
-    borderColor = 'greyfigma-90',
-    adornmentClassName,
-    ...props
-  },
+  { className, startAdornment, endAdornment, borderColor = 'greyfigma-90', adornmentClassName, ...props },
   ref,
 ) {
   return (

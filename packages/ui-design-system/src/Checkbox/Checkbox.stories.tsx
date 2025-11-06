@@ -28,9 +28,7 @@ export const WithLabel: StoryFn<typeof Checkbox> = (args) => (
 const fruits = ['apple', 'banana', 'blueberry', 'grapes', 'pineapple'];
 
 export const WithIntermediate: StoryFn<typeof Checkbox> = () => {
-  const [checkedFruits, setCheckedFruits] = useState(
-    new Map(fruits.map((fruit) => [fruit, false])),
-  );
+  const [checkedFruits, setCheckedFruits] = useState(new Map(fruits.map((fruit) => [fruit, false])));
   const allChecked = Array.from(checkedFruits.values()).every((val) => val === true)
     ? true
     : Array.from(checkedFruits.values()).every((val) => val === false)

@@ -51,9 +51,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       : false,
     authProvider,
     didMigrationsRun: appConfig?.status.migrations ?? false,
-    authError: !appConfig
-      ? 'BackendUnavailable'
-      : (session.get('authError')?.message as AuthErrors),
+    authError: !appConfig ? 'BackendUnavailable' : (session.get('authError')?.message as AuthErrors),
     isManagedMarble: appConfig?.isManagedMarble ?? false,
   };
 }
@@ -73,8 +71,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Login() {
   const { t } = useTranslation(['auth', 'common']);
-  const { isSignupReady, authProvider, didMigrationsRun, isManagedMarble } =
-    useLoaderData<typeof loader>();
+  const { isSignupReady, authProvider, didMigrationsRun, isManagedMarble } = useLoaderData<typeof loader>();
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
@@ -105,9 +102,7 @@ export default function Login() {
               <span className="text-s text-grey-100 w-full whitespace-nowrap text-center align-middle font-medium">
                 Sign in with OpenID Connect
               </span>
-              <span className="absolute end-0 mx-2 size-4">
-                {loading ? <Spinner className="size-4" /> : null}
-              </span>
+              <span className="absolute end-0 mx-2 size-4">{loading ? <Spinner className="size-4" /> : null}</span>
             </button>
           ) : (
             <>

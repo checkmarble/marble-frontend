@@ -29,11 +29,7 @@ import { type Namespace } from 'i18next';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiltersBar, FormattingProvider, I18nProvider } from 'ui-design-system';
-import type {
-  FilterChange,
-  FilterDescriptor,
-  FilterValue,
-} from 'ui-design-system/src/FiltersBar/types';
+import type { FilterChange, FilterDescriptor, FilterValue } from 'ui-design-system/src/FiltersBar/types';
 import { Icon } from 'ui-icons';
 
 interface LoaderData {
@@ -122,9 +118,7 @@ export default function Analytics() {
   // Volatile overrides for instant updates (no navigation)
   const [volatileScenarioId, setVolatileScenarioId] = useState<string | null>(null);
   const [volatileRange, setVolatileRange] = useState<AnalyticsDateRangeFilter | undefined>();
-  const [volatileCompareRange, setVolatileCompareRange] = useState<
-    AnalyticsDateRangeFilter | undefined
-  >();
+  const [volatileCompareRange, setVolatileCompareRange] = useState<AnalyticsDateRangeFilter | undefined>();
 
   // Reset volatile overrides when URL query changes (after Apply)
   useEffect(() => {
@@ -144,9 +138,7 @@ export default function Analytics() {
 
   const effectiveScenarioId = volatileScenarioId ?? scenarioId;
   const effectiveRanges: AnalyticsDateRangeFilter[] = useMemo(() => {
-    const primary = (volatileRange ?? parsedFiltersResult?.range) as
-      | AnalyticsDateRangeFilter
-      | undefined;
+    const primary = (volatileRange ?? parsedFiltersResult?.range) as AnalyticsDateRangeFilter | undefined;
     const secondary = (volatileCompareRange ?? parsedFiltersResult?.compareRange) as
       | AnalyticsDateRangeFilter
       | undefined;
@@ -174,10 +166,7 @@ export default function Analytics() {
   const dynamicDescriptors: AvailableFiltersDescriptor[] = useMemo(() => {
     const descriptors: Map<string, AvailableFiltersDescriptor> = new Map();
 
-    const appendToDescriptors = (
-      filter: AvailableFiltersResponse[number],
-      unavailable: boolean,
-    ): void => {
+    const appendToDescriptors = (filter: AvailableFiltersResponse[number], unavailable: boolean): void => {
       const baseDescriptor = {
         name: filter.name,
         placeholder: filter.name,
@@ -297,9 +286,7 @@ export default function Analytics() {
           fromNow: '-P30D',
         },
       compareRange: draft['compareRange'] as AnalyticsFiltersQuery['compareRange'],
-      ...(parsedFiltersResult?.scenarioVersion
-        ? { scenarioVersion: parsedFiltersResult.scenarioVersion }
-        : {}),
+      ...(parsedFiltersResult?.scenarioVersion ? { scenarioVersion: parsedFiltersResult.scenarioVersion } : {}),
       ...(trigger.length ? { trigger } : {}),
     };
 
@@ -397,10 +384,7 @@ export default function Analytics() {
             </div>
 
             <RulesHit data={ruleHitTableData ?? []} isLoading={isAnalyticsFetching} />
-            <RuleVsDecisionOutcomes
-              data={ruleVsDecisionOutcomeData ?? null}
-              isLoading={isAnalyticsFetching}
-            />
+            <RuleVsDecisionOutcomes data={ruleVsDecisionOutcomeData ?? null} isLoading={isAnalyticsFetching} />
             <ScreeningHits data={screeningHitsTableData ?? []} isLoading={isAnalyticsFetching} />
           </div>
         </div>

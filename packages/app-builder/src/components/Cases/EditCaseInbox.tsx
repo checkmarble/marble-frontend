@@ -1,26 +1,14 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type Inbox } from '@app-builder/models/inbox';
-import {
-  EditInboxPayload,
-  editInboxPayloadSchema,
-  useEditInboxMutation,
-} from '@app-builder/queries/cases/edit-inbox';
+import { EditInboxPayload, editInboxPayloadSchema, useEditInboxMutation } from '@app-builder/queries/cases/edit-inbox';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMemo, useState } from 'react';
 import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export const EditCaseInbox = ({
-  inboxId,
-  id,
-  inboxes,
-}: {
-  inboxId: string;
-  id: string;
-  inboxes: Inbox[];
-}) => {
+export const EditCaseInbox = ({ inboxId, id, inboxes }: { inboxId: string; id: string; inboxes: Inbox[] }) => {
   const editInboxMutation = useEditInboxMutation();
   const revalidate = useLoaderRevalidator();
   const [open, setOpen] = useState(false);
@@ -55,9 +43,7 @@ export const EditCaseInbox = ({
       {(field) => (
         <div className="flex w-full gap-1">
           <div className="flex items-center gap-2">
-            {selectedInbox ? (
-              <span className="text-xs font-medium">{selectedInbox.name}</span>
-            ) : null}
+            {selectedInbox ? <span className="text-xs font-medium">{selectedInbox.name}</span> : null}
             <MenuCommand.Menu open={open} onOpenChange={setOpen}>
               <MenuCommand.Trigger>
                 <Button className="w-fit p-0.5" variant="secondary" size="icon">
@@ -77,9 +63,7 @@ export const EditCaseInbox = ({
                     >
                       <span className="inline-flex w-full justify-between">
                         <span className="text-s">{name}</span>
-                        {id === selectedInboxId ? (
-                          <Icon icon="tick" className="text-purple-65 size-6" />
-                        ) : null}
+                        {id === selectedInboxId ? <Icon icon="tick" className="text-purple-65 size-6" /> : null}
                       </span>
                     </MenuCommand.Item>
                   ))}

@@ -31,9 +31,7 @@ const OutcomesMap = new Map<OutcomeDto, Outcome | 'unknown'>([
 
 export type RuleVsDecisionOutcomeEntry = Map<string, DecisionOutcomesEntry>;
 
-export const adaptRuleVsDecisionOutcome = (
-  val: RuleVsDecisionOutcomeResponseDto[],
-): RuleVsDecisionOutcome[] => {
+export const adaptRuleVsDecisionOutcome = (val: RuleVsDecisionOutcomeResponseDto[]): RuleVsDecisionOutcome[] => {
   const grouped = R.pipe(
     val,
     R.groupBy((v) => v.rule_name),

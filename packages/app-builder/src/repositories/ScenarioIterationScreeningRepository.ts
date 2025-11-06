@@ -6,10 +6,7 @@ import {
 } from '@app-builder/models/screening-config';
 
 export interface ScenarioIterationScreeningRepository {
-  createScreeningConfig(args: {
-    iterationId: string;
-    changes: ScreeningConfig;
-  }): Promise<ScreeningConfig>;
+  createScreeningConfig(args: { iterationId: string; changes: ScreeningConfig }): Promise<ScreeningConfig>;
   updateScreeningConfig(args: {
     iterationId: string;
     screeningId: string;
@@ -24,16 +21,10 @@ export function makeGetScenarioIterationScreeningRepository() {
       await client.deleteScreeningConfig(iterationId, screeningId);
     },
     createScreeningConfig: async ({ iterationId, changes }) =>
-      adaptScreeningConfig(
-        await client.createScreeningConfig(iterationId, adaptScreeningConfigDto(changes)),
-      ),
+      adaptScreeningConfig(await client.createScreeningConfig(iterationId, adaptScreeningConfigDto(changes))),
     updateScreeningConfig: async ({ iterationId, screeningId, changes }) =>
       adaptScreeningConfig(
-        await client.upsertScreeningConfig(
-          iterationId,
-          screeningId,
-          adaptScreeningConfigDto(changes),
-        ),
+        await client.upsertScreeningConfig(iterationId, screeningId, adaptScreeningConfigDto(changes)),
       ),
   });
 }

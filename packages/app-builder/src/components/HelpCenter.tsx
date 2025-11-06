@@ -86,13 +86,7 @@ interface HelpCenterContentProps {
   versions: AppVersions;
 }
 
-function HelpCenterContent({
-  defaultTab,
-  resources,
-  ChatWithUsButton,
-  searchValue,
-  versions,
-}: HelpCenterContentProps) {
+function HelpCenterContent({ defaultTab, resources, ChatWithUsButton, searchValue, versions }: HelpCenterContentProps) {
   const { t, i18n } = useTranslation(['common']);
   const language = useFormatLanguage();
   const categories = React.useMemo(() => R.keys(resources), [resources]);
@@ -153,9 +147,7 @@ function HelpCenterContent({
           <MenuContent>
             <div className="flex flex-col gap-2 overflow-y-auto p-2">
               {!currentResources.length ? (
-                <div className="text-grey-80 w-full text-center">
-                  {t('common:help_center.no_results')}
-                </div>
+                <div className="text-grey-80 w-full text-center">{t('common:help_center.no_results')}</div>
               ) : null}
               {currentResources.map((resource) => (
                 <MenuItem
@@ -224,27 +216,25 @@ function HelpCenterContent({
   );
 }
 
-const CategoryTab = React.forwardRef<HTMLButtonElement, Ariakit.TabProps>(
-  function CategoryTab(props, ref) {
-    const internalRef = React.useRef<HTMLButtonElement>(null);
-    const composedRef = useComposedRefs(ref, internalRef);
-    // Scroll to the selected tab on first render only
-    React.useEffect(() => {
-      if (!internalRef.current) return;
-      const isSelected = internalRef.current.getAttribute('aria-selected') === 'true';
-      if (isSelected) internalRef.current.scrollIntoView();
-    }, []);
+const CategoryTab = React.forwardRef<HTMLButtonElement, Ariakit.TabProps>(function CategoryTab(props, ref) {
+  const internalRef = React.useRef<HTMLButtonElement>(null);
+  const composedRef = useComposedRefs(ref, internalRef);
+  // Scroll to the selected tab on first render only
+  React.useEffect(() => {
+    if (!internalRef.current) return;
+    const isSelected = internalRef.current.getAttribute('aria-selected') === 'true';
+    if (isSelected) internalRef.current.scrollIntoView();
+  }, []);
 
-    return (
-      <Ariakit.Tab
-        ref={composedRef}
-        className="aria-selected:bg-purple-96 aria-selected:border-purple-96 text-grey-00 bg-grey-95 border-grey-95 aria-selected:text-purple-65 data-active-item:border-purple-65 flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize"
-        accessibleWhenDisabled={false}
-        {...props}
-      />
-    );
-  },
-);
+  return (
+    <Ariakit.Tab
+      ref={composedRef}
+      className="aria-selected:bg-purple-96 aria-selected:border-purple-96 text-grey-00 bg-grey-95 border-grey-95 aria-selected:text-purple-65 data-active-item:border-purple-65 flex h-6 scroll-mx-2 flex-row items-center justify-center gap-1 whitespace-pre rounded-full border px-2 text-xs font-medium capitalize"
+      accessibleWhenDisabled={false}
+      {...props}
+    />
+  );
+});
 
 export function useMarbleCoreResources() {
   const { t } = useTranslation(['common', 'navigation']);

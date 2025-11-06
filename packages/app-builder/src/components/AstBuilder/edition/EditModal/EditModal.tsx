@@ -1,13 +1,7 @@
-import {
-  isAggregation,
-  isFuzzyMatchFilterOptionsAstNode,
-} from '@app-builder/models/astNode/aggregation';
+import { isAggregation, isFuzzyMatchFilterOptionsAstNode } from '@app-builder/models/astNode/aggregation';
 import { type EditableAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
-import {
-  isFuzzyMatchComparator,
-  isStringTemplateAstNode,
-} from '@app-builder/models/astNode/strings';
+import { isFuzzyMatchComparator, isStringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { isTimeAdd, isTimestampExtract } from '@app-builder/models/astNode/time';
 import { type ParseKeys } from 'i18next';
 import { type ComponentType, type ReactNode } from 'react';

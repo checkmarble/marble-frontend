@@ -2,10 +2,7 @@ import Cookie from 'js-cookie';
 
 import { COOKIE_NAME, type PreferencesCookie, PreferencesCookieSchema } from './config';
 
-export function setPreferencesCookie<K extends keyof PreferencesCookie>(
-  key: K,
-  value: PreferencesCookie[K],
-) {
+export function setPreferencesCookie<K extends keyof PreferencesCookie>(key: K, value: PreferencesCookie[K]) {
   let current: Partial<Record<keyof PreferencesCookie, string | number>> = {};
   try {
     const raw = Cookie.get(COOKIE_NAME);

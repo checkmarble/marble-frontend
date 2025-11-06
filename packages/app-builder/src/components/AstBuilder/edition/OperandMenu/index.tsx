@@ -55,9 +55,5 @@ export function AstBuilderOperandMenu({
 function SmartMenuList(props: SmartMenuListProps) {
   const search = MenuCommand.State.useSharp().value.search;
 
-  return search.trim().length === 0 ? (
-    <DiscoveryList {...props} />
-  ) : (
-    <SearchResults search={search} {...props} />
-  );
+  return search.trim().length === 0 ? <DiscoveryList {...props} /> : <SearchResults search={search} {...props} />;
 }

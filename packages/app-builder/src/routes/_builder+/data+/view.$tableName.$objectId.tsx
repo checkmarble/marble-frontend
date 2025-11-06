@@ -10,10 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 export const handle = {
   BreadCrumbs: [
-    ({
-      isLast,
-      data: { tableName, objectId },
-    }: BreadCrumbProps<{ tableName: string; objectId: string }>) => {
+    ({ isLast, data: { tableName, objectId } }: BreadCrumbProps<{ tableName: string; objectId: string }>) => {
       return (
         <BreadCrumbLink
           to={getRoute('/data/view/:tableName/:objectId', {
@@ -67,13 +64,5 @@ export default function DataSearchObjectPage() {
     );
   }
 
-  return (
-    <IngestedObjectDetail
-      light
-      object={object}
-      objectId={objectId}
-      tableName={tableName}
-      dataModel={dataModel}
-    />
-  );
+  return <IngestedObjectDetail light object={object} objectId={objectId} tableName={tableName} dataModel={dataModel} />;
 }

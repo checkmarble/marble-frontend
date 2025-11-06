@@ -26,11 +26,7 @@ export const TestRunDetails = ({
     <div className="bg-grey-100 border-grey-90 flex flex-row gap-10 rounded-lg border p-8">
       <div className="flex flex-col gap-2">
         <span className="text-grey-00 font-semibold">{t('scenarios:testrun.filters.version')}</span>
-        <TestRunVersions
-          iterations={iterations}
-          refIterationId={refIterationId}
-          testIterationId={testIterationId}
-        />
+        <TestRunVersions iterations={iterations} refIterationId={refIterationId} testIterationId={testIterationId} />
       </div>
       <div className="flex flex-col gap-2">
         <span className="text-grey-00 font-semibold">{t('scenarios:testrun.filters.period')}</span>

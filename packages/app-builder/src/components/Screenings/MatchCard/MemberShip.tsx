@@ -1,11 +1,7 @@
 import { MembershipMemberEntity } from '@app-builder/models/screening';
 import { useTranslation } from 'react-i18next';
 
-export const MemberShip = ({
-  membershipMember,
-}: {
-  membershipMember: MembershipMemberEntity[];
-}) => {
+export const MemberShip = ({ membershipMember }: { membershipMember: MembershipMemberEntity[] }) => {
   const { t } = useTranslation(['screenings']);
 
   return (

@@ -13,11 +13,7 @@ export function DeleteApiKey({ apiKey }: { apiKey: ApiKey }) {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
-        <Icon
-          icon="delete"
-          className="size-6 shrink-0"
-          aria-label={t('settings:api_keys.delete')}
-        />
+        <Icon icon="delete" className="size-6 shrink-0" aria-label={t('settings:api_keys.delete')} />
       </Modal.Trigger>
       <Modal.Content>
         <DeleteApiKeyContent apiKey={apiKey} onSuccess={() => setOpen(false)} />
@@ -54,13 +50,7 @@ function DeleteApiKeyContent({ apiKey, onSuccess }: { apiKey: ApiKey; onSuccess:
               {t('common:cancel')}
             </Button>
           </Modal.Close>
-          <Button
-            color="red"
-            className="flex-1"
-            variant="primary"
-            name="delete"
-            onClick={handleDeleteApiKey}
-          >
+          <Button color="red" className="flex-1" variant="primary" name="delete" onClick={handleDeleteApiKey}>
             <Icon icon="delete" className="size-6" />
             {t('common:delete')}
           </Button>

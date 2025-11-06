@@ -1,11 +1,6 @@
 import { CaseEventType } from '@app-builder/models/cases';
 
-export const CASE_EVENT_CATEGORIES = [
-  'case_review_action',
-  'case_assignation',
-  'sar_related',
-  'others',
-] as const;
+export const CASE_EVENT_CATEGORIES = ['case_review_action', 'case_assignation', 'sar_related', 'others'] as const;
 
 export type CaseEventCategory = (typeof CASE_EVENT_CATEGORIES)[number];
 
@@ -26,6 +21,4 @@ export const CASE_EVENT_CATEGORY_TO_EVENTS_MAPPING = {
   case_review_action: ['comment_added', 'file_added', 'decision_reviewed', 'entity_annotated'],
 } as const satisfies Record<CaseEventCategory, CaseEventType[]>;
 
-export const DEFAULT_CASE_EVENT_CATEGORIES_FILTER = [
-  'case_review_action',
-] as const satisfies CaseEventCategory[];
+export const DEFAULT_CASE_EVENT_CATEGORIES_FILTER = ['case_review_action'] as const satisfies CaseEventCategory[];

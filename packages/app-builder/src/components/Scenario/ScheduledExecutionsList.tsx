@@ -1,9 +1,5 @@
 import { type ScheduledExecution } from '@app-builder/models/decision';
-import {
-  formatDateTimeWithoutPresets,
-  formatNumber,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
@@ -19,11 +15,7 @@ import { scenarioI18n } from './scenario-i18n';
 
 const columnHelper = createColumnHelper<ScheduledExecution>();
 
-export function ScheduledExecutionsList({
-  scheduledExecutions,
-}: {
-  scheduledExecutions: ScheduledExecution[];
-}) {
+export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExecutions: ScheduledExecution[] }) {
   const { t } = useTranslation(scenarioI18n);
   const language = useFormatLanguage();
 

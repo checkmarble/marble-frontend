@@ -11,17 +11,10 @@ import { FormatData } from '../FormatData';
 import { decisionsI18n } from './decisions-i18n';
 
 function useParsedTriggerObject(triggerObject: Record<string, unknown>) {
-  return React.useMemo(
-    () => R.pipe(triggerObject, R.mapValues(parseUnknownData), R.entries()),
-    [triggerObject],
-  );
+  return React.useMemo(() => R.pipe(triggerObject, R.mapValues(parseUnknownData), R.entries()), [triggerObject]);
 }
 
-export function DecisionDetailTriggerObject({
-  triggerObject,
-}: {
-  triggerObject: Record<string, unknown>;
-}) {
+export function DecisionDetailTriggerObject({ triggerObject }: { triggerObject: Record<string, unknown> }) {
   const { t } = useTranslation(decisionsI18n);
   const language = useFormatLanguage();
 

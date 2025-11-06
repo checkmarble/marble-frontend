@@ -109,10 +109,7 @@ export function CreateFilter({
                               setSelectedTableId(item.tableId);
                               // choose trigger; clear ingested
                               form.setFieldValue('ingestedDataField' as any, undefined as any);
-                              form.setFieldValue(
-                                'triggerObjectField' as any,
-                                item.fieldName as any,
-                              );
+                              form.setFieldValue('triggerObjectField' as any, item.fieldName as any);
                               setOpenUnifiedMenu(false);
                             }}
                           >

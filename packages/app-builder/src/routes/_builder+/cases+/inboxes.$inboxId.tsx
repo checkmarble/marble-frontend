@@ -44,35 +44,32 @@ const pageQueryStringSchema = z.object({
   order: z.enum(['ASC', 'DESC']).optional().default('DESC'),
 });
 
-export const loader = createServerFn(
-  [authMiddleware],
-  async function casesInboxesLoader({ request, params, context }) {
-    const { inbox: inboxRepository } = context.authInfo;
-    const inboxes = await inboxRepository.listInboxesWithCaseCount();
-    const inboxId = params['inboxId'];
+export const loader = createServerFn([authMiddleware], async function casesInboxesLoader({ request, params, context }) {
+  const { inbox: inboxRepository } = context.authInfo;
+  const inboxes = await inboxRepository.listInboxesWithCaseCount();
+  const inboxId = params['inboxId'];
 
-    invariant(inboxId, 'inboxId is required');
+  invariant(inboxId, 'inboxId is required');
 
-    let inboxUsersIds: string[] = [];
-    let currentInbox = inboxes.find((inbox) => inbox.id === inboxId);
-    if (currentInbox) {
-      inboxUsersIds = currentInbox.users.map((user) => user.userId);
-    }
+  let inboxUsersIds: string[] = [];
+  let currentInbox = inboxes.find((inbox) => inbox.id === inboxId);
+  if (currentInbox) {
+    inboxUsersIds = currentInbox.users.map((user) => user.userId);
+  }
 
-    const url = new URL(request.url);
-    const searchParams = new URLSearchParams(url.search);
-    const parsedSearchParams = pageQueryStringSchema.parse(Object.fromEntries(searchParams));
+  const url = new URL(request.url);
+  const searchParams = new URLSearchParams(url.search);
+  const parsedSearchParams = pageQueryStringSchema.parse(Object.fromEntries(searchParams));
 
-    return {
-      inboxId: inboxId === MY_INBOX_ID ? inboxId : fromSUUIDtoUUID(inboxId),
-      inboxes,
-      inboxUsersIds,
-      query: parsedSearchParams.q,
-      limit: parsedSearchParams.limit,
-      order: parsedSearchParams.order,
-    };
-  },
-);
+  return {
+    inboxId: inboxId === MY_INBOX_ID ? inboxId : fromSUUIDtoUUID(inboxId),
+    inboxes,
+    inboxUsersIds,
+    query: parsedSearchParams.q,
+    limit: parsedSearchParams.limit,
+    order: parsedSearchParams.order,
+  };
+});
 
 export default function CasesInboxesPage() {
   const navigate = useAgnosticNavigation();

@@ -1,9 +1,5 @@
 import { ErrorComponent, Page } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { notFound } from '@app-builder/utils/http/http-responses';
@@ -42,9 +38,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   const analyticsList = await analytics.legacyListAnalytics();
-  const globalDashbord = analyticsList.find(
-    ({ embeddingType }) => embeddingType === 'global_dashboard',
-  );
+  const globalDashbord = analyticsList.find(({ embeddingType }) => embeddingType === 'global_dashboard');
   if (!globalDashbord) {
     return notFound("Global dashboard doesn't exist");
   }

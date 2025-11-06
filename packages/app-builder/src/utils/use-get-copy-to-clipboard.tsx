@@ -18,9 +18,7 @@ export function useGetCopyToClipboard() {
               t={t}
               i18nKey="clipboard.copy"
               components={{
-                Value: (
-                  <span className="text-s text-grey-00 whitespace-pre-wrap break-all font-semibold" />
-                ),
+                Value: <span className="text-s text-grey-00 whitespace-pre-wrap break-all font-semibold" />,
               }}
               values={{
                 value,

@@ -37,10 +37,7 @@ export function getAuthenticationClientRepository(
     const auth = getClientAuth(locale);
     // Logout before sign in to avoid grant token firebase error
     await firebaseClient.logout(auth);
-    const credential = await firebaseClient.signInWithOAuth(
-      auth,
-      firebaseClient.googleAuthProvider,
-    );
+    const credential = await firebaseClient.signInWithOAuth(auth, firebaseClient.googleAuthProvider);
     return credential.user.getIdToken();
   }
 
@@ -48,10 +45,7 @@ export function getAuthenticationClientRepository(
     const auth = getClientAuth(locale);
     // Logout before sign in to avoid grant token firebase error
     await firebaseClient.logout(auth);
-    const credential = await firebaseClient.signInWithOAuth(
-      auth,
-      firebaseClient.microsoftAuthProvider,
-    );
+    const credential = await firebaseClient.signInWithOAuth(auth, firebaseClient.microsoftAuthProvider);
     return credential.user.getIdToken();
   }
 
@@ -79,10 +73,7 @@ export function getAuthenticationClientRepository(
     await firebaseClient.logout(auth);
     const credential = await firebaseClient.createUserWithEmailAndPassword(auth, email, password);
 
-    await firebaseClient.sendEmailVerification(
-      credential.user,
-      emailVerificationActionCodeSettings,
-    );
+    await firebaseClient.sendEmailVerification(credential.user, emailVerificationActionCodeSettings);
   }
 
   async function resendEmailVerification(locale: string, logout: () => void) {
@@ -92,10 +83,7 @@ export function getAuthenticationClientRepository(
       return;
     }
 
-    await firebaseClient.sendEmailVerification(
-      auth.currentUser,
-      emailVerificationActionCodeSettings,
-    );
+    await firebaseClient.sendEmailVerification(auth.currentUser, emailVerificationActionCodeSettings);
   }
 
   const passwordResetEmailActionCodeSettings = {

@@ -30,9 +30,7 @@ describe('Menu', () => {
 
     await userEvent.click(screen.getByText('Open'));
 
-    fruits.forEach((fruit) =>
-      expect(screen.getByRole('menuitem', { name: fruit })).toBeInTheDocument(),
-    );
+    fruits.forEach((fruit) => expect(screen.getByRole('menuitem', { name: fruit })).toBeInTheDocument());
     const firstItem = screen.getByRole('menuitem', { name: fruits[0] });
     expect(firstItem).toBeDefined();
     if (!firstItem) return;
@@ -40,10 +38,7 @@ describe('Menu', () => {
     // Click on an option
     await userEvent.click(firstItem);
 
-    expect(screen.queryByRole('button', { name: 'Open' })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
+    expect(screen.queryByRole('button', { name: 'Open' })).toHaveAttribute('aria-expanded', 'false');
   });
 });
 
@@ -79,9 +74,7 @@ describe('Menu with combobox', () => {
 
     await userEvent.click(screen.getByText('Open'));
 
-    fruits.forEach((fruit) =>
-      expect(screen.getByRole('option', { name: fruit })).toBeInTheDocument(),
-    );
+    fruits.forEach((fruit) => expect(screen.getByRole('option', { name: fruit })).toBeInTheDocument());
     const firstItem = screen.getByRole('option', { name: fruits[0] });
     expect(firstItem).toBeDefined();
     if (!firstItem) return;
@@ -89,10 +82,7 @@ describe('Menu with combobox', () => {
     // Click on an option
     await userEvent.click(firstItem);
 
-    expect(screen.queryByRole('button', { name: 'Open' })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
+    expect(screen.queryByRole('button', { name: 'Open' })).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('should filter elements', async () => {

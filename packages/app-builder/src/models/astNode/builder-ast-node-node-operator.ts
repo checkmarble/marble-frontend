@@ -23,9 +23,7 @@ const binaryMainAstOperatorFunctions = [
 ] as const;
 export type BinaryMainAstOperatorFunction = (typeof binaryMainAstOperatorFunctions)[number];
 
-export function isBinaryMainAstOperatorFunction(
-  value: string,
-): value is BinaryMainAstOperatorFunction {
+export function isBinaryMainAstOperatorFunction(value: string): value is BinaryMainAstOperatorFunction {
   return (binaryMainAstOperatorFunctions as ReadonlyArray<string>).includes(value);
 }
 
@@ -33,9 +31,7 @@ export function isBinaryMainAstOperatorFunction(
 const unaryMainAstOperatorFunctions = ['IsEmpty', 'IsNotEmpty'] as const;
 export type UnaryMainAstOperatorFunction = (typeof unaryMainAstOperatorFunctions)[number];
 
-export function isUnaryMainAstOperatorFunction(
-  value: string,
-): value is UnaryMainAstOperatorFunction {
+export function isUnaryMainAstOperatorFunction(value: string): value is UnaryMainAstOperatorFunction {
   return (unaryMainAstOperatorFunctions as ReadonlyArray<string>).includes(value);
 }
 
@@ -47,9 +43,7 @@ export const allMainAstOperatorFunctions = [
 
 export function isMainAstOperatorFunction(value: string): value is MainAstOperatorFunction {
   return (
-    value === undefinedAstNodeName ||
-    isBinaryMainAstOperatorFunction(value) ||
-    isUnaryMainAstOperatorFunction(value)
+    value === undefinedAstNodeName || isBinaryMainAstOperatorFunction(value) || isUnaryMainAstOperatorFunction(value)
   );
 }
 export type MainAstOperatorFunction =

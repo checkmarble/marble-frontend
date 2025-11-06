@@ -25,9 +25,7 @@ export const action = createServerFn(
     }
 
     try {
-      const result = await context.authInfo.customListsRepository.createCustomList(
-        createListPayload.data,
-      );
+      const result = await context.authInfo.customListsRepository.createCustomList(createListPayload.data);
       return redirect(getRoute('/lists/:listId', { listId: fromUUIDtoSUUID(result.id) }));
     } catch (error) {
       setToastMessage(toastSession, {

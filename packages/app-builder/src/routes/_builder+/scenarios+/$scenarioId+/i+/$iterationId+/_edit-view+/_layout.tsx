@@ -11,16 +11,9 @@ import {
   useScenarioIterations,
 } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import {
-  isCreateDraftAvailable,
-  isDeploymentActionsAvailable,
-} from '@app-builder/services/feature-access';
+import { isCreateDraftAvailable, isDeploymentActionsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
-import {
-  hasDecisionErrors,
-  hasRulesErrors,
-  hasTriggerErrors,
-} from '@app-builder/services/validation';
+import { hasDecisionErrors, hasRulesErrors, hasTriggerErrors } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, useParam } from '@app-builder/utils/short-uuid';
 import { json, type LoaderFunctionArgs } from '@remix-run/node';
@@ -120,17 +113,13 @@ export default function ScenarioEditLayout() {
                   !hasDecisionErrors(scenarioValidation),
                 status: loaderData.publicationPreparationStatus.status,
               }}
-              isPreparationServiceOccupied={
-                loaderData.publicationPreparationStatus.serviceStatus === 'occupied'
-              }
+              isPreparationServiceOccupied={loaderData.publicationPreparationStatus.serviceStatus === 'occupied'}
             />
           ) : null}
         </div>
       </Page.Header>
       <Page.Container>
-        {currentScenario.description ? (
-          <Page.Description>{currentScenario.description}</Page.Description>
-        ) : null}
+        {currentScenario.description ? <Page.Description>{currentScenario.description}</Page.Description> : null}
         <Page.Content>
           <nav>
             <ul className="flex flex-row gap-2">
@@ -140,11 +129,7 @@ export default function ScenarioEditLayout() {
                   labelTKey="navigation:scenario.trigger"
                   to="./trigger"
                   Icon={(props) => (
-                    <ScenariosLinkIcon
-                      {...props}
-                      icon="trigger"
-                      withPing={hasTriggerErrors(scenarioValidation)}
-                    />
+                    <ScenariosLinkIcon {...props} icon="trigger" withPing={hasTriggerErrors(scenarioValidation)} />
                   )}
                 />
               </li>
@@ -154,11 +139,7 @@ export default function ScenarioEditLayout() {
                   labelTKey="navigation:scenario.rules"
                   to="./rules"
                   Icon={(props) => (
-                    <ScenariosLinkIcon
-                      {...props}
-                      icon="rules"
-                      withPing={hasRulesErrors(scenarioValidation)}
-                    />
+                    <ScenariosLinkIcon {...props} icon="rules" withPing={hasRulesErrors(scenarioValidation)} />
                   )}
                 />
               </li>
@@ -168,11 +149,7 @@ export default function ScenarioEditLayout() {
                   labelTKey="navigation:scenario.decision"
                   to="./decision"
                   Icon={(props) => (
-                    <ScenariosLinkIcon
-                      {...props}
-                      icon="decision"
-                      withPing={hasDecisionErrors(scenarioValidation)}
-                    />
+                    <ScenariosLinkIcon {...props} icon="decision" withPing={hasDecisionErrors(scenarioValidation)} />
                   )}
                 />
               </li>

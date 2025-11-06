@@ -6,11 +6,7 @@ test('Create a user', async ({ page }) => {
   await page.goto('/settings');
   await page.waitForURL('/settings/users');
 
-  await waitForThen(
-    page,
-    page.getByRole('button', { name: 'New user' }),
-    async (button) => await button.click(),
-  );
+  await waitForThen(page, page.getByRole('button', { name: 'New user' }), async (button) => await button.click());
 
   const fn = crypto.randomUUID();
   const ln = crypto.randomUUID();

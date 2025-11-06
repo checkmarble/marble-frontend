@@ -8,47 +8,44 @@ import { selectTrigger } from '../Select/Select';
 export const ComboboxRoot = Ariakit.ComboboxProvider;
 export const ComboboxLabel = Ariakit.ComboboxLabel;
 
-export const Combobox = React.forwardRef<
-  HTMLInputElement,
-  Ariakit.ComboboxProps & VariantProps<typeof selectTrigger>
->(function Combobox(
-  { className, border = 'square', borderColor = 'greyfigma-90', disabled, ...props },
-  ref,
-) {
-  return (
-    <Ariakit.Combobox
-      ref={ref}
-      className={clsx(
-        'group',
-        selectTrigger({
-          border,
-          borderColor,
-          backgroundColor: disabled ? 'disabled' : 'enabled',
-        }),
-        className,
-      )}
-      disabled={disabled}
-      {...props}
-    />
-  );
-});
-
-export const ComboboxPopover = React.forwardRef<HTMLDivElement, Ariakit.ComboboxPopoverProps>(
-  function ComboboxPopover({ className, ...props }, ref) {
+export const Combobox = React.forwardRef<HTMLInputElement, Ariakit.ComboboxProps & VariantProps<typeof selectTrigger>>(
+  function Combobox({ className, border = 'square', borderColor = 'greyfigma-90', disabled, ...props }, ref) {
     return (
-      <Ariakit.ComboboxPopover
+      <Ariakit.Combobox
         ref={ref}
-        fitViewport
-        gutter={8}
         className={clsx(
-          'bg-grey-100 border-grey-90 max-h-[min(var(--popover-available-height),300px)] -translate-y-1 rounded-sm border opacity-0 shadow-md transition-all data-enter:translate-y-0 data-enter:opacity-100',
+          'group',
+          selectTrigger({
+            border,
+            borderColor,
+            backgroundColor: disabled ? 'disabled' : 'enabled',
+          }),
           className,
         )}
+        disabled={disabled}
         {...props}
       />
     );
   },
 );
+
+export const ComboboxPopover = React.forwardRef<HTMLDivElement, Ariakit.ComboboxPopoverProps>(function ComboboxPopover(
+  { className, ...props },
+  ref,
+) {
+  return (
+    <Ariakit.ComboboxPopover
+      ref={ref}
+      fitViewport
+      gutter={8}
+      className={clsx(
+        'bg-grey-100 border-grey-90 max-h-[min(var(--popover-available-height),300px)] -translate-y-1 rounded-sm border opacity-0 shadow-md transition-all data-enter:translate-y-0 data-enter:opacity-100',
+        className,
+      )}
+      {...props}
+    />
+  );
+});
 
 export const ComboboxItem = React.forwardRef<HTMLDivElement, Ariakit.ComboboxItemProps>(
   function ComboboxItem(props, ref) {

@@ -83,18 +83,11 @@ export function ClientDocumentsPopover({
           {(field) => (
             <div className="flex flex-col gap-2 px-4 py-3">
               <input {...getInputProps()} />
-              <button
-                type="button"
-                className="flex items-center justify-between gap-9 text-left"
-                {...getRootProps()}
-              >
+              <button type="button" className="flex items-center justify-between gap-9 text-left" {...getRootProps()}>
                 <div className="flex flex-col">
-                  <div className="text-r flex items-center gap-2">
-                    {t('cases:annotations.documents.add_file')}
-                  </div>
+                  <div className="text-r flex items-center gap-2">{t('cases:annotations.documents.add_file')}</div>
                   <span className="text-grey-50">
-                    {t('cases:annotations.documents.upload_file')}: jpg, png, pdf, zip, doc, docx,
-                    xls, xlsx
+                    {t('cases:annotations.documents.upload_file')}: jpg, png, pdf, zip, doc, docx, xls, xlsx
                   </span>
                 </div>
                 <Icon icon="upload" className="size-5 shrink-0" />
@@ -122,12 +115,7 @@ export function ClientDocumentsPopover({
                   </div>
                   <form.Subscribe selector={(state) => [state.canSubmit, state.isSubmitting]}>
                     {([canSubmit, isSubmitting]) => (
-                      <Button
-                        type="submit"
-                        size="icon"
-                        variant="primary"
-                        disabled={!canSubmit || isSubmitting}
-                      >
+                      <Button type="submit" size="icon" variant="primary" disabled={!canSubmit || isSubmitting}>
                         <Icon
                           icon={isSubmitting ? 'spinner' : 'send'}
                           className={clsx('size-4', { 'animate-spin': isSubmitting })}
@@ -152,19 +140,12 @@ export function ClientDocumentsPopover({
                 <div key={document.id} className="flex flex-col">
                   <div className="has-[button[data-delete]:hover]:bg-red-95 relative z-0 flex flex-col rounded-sm">
                     {files.map((file, idx) => (
-                      <div
-                        key={file.id}
-                        className="z-10 grid grid-cols-[auto_1fr_auto_20px] gap-2 p-2"
-                      >
+                      <div key={file.id} className="z-10 grid grid-cols-[auto_1fr_auto_20px] gap-2 p-2">
                         <Icon icon="attachment" className="text-grey-50 size-5" />
                         <span className="truncate">{file.filename}</span>
                         <AnnotationFileDownload annotationId={document.id} fileId={file.id} />
                         {idx === 0 ? (
-                          <button
-                            data-delete
-                            className="size-5"
-                            onClick={() => setAnnotationToDelete(document)}
-                          >
+                          <button data-delete className="size-5" onClick={() => setAnnotationToDelete(document)}>
                             <Icon icon="delete" className="text-red-47 size-5" />
                           </button>
                         ) : null}

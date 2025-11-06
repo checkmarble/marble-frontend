@@ -16,9 +16,7 @@ const METADATA_FIELDS = ['object_id', 'valid_from'] as const;
 function useParsedTriggerObject(triggerObject: Record<string, unknown> | null) {
   return useMemo(
     () =>
-      triggerObject
-        ? R.pipe(triggerObject, R.omit(METADATA_FIELDS), R.mapValues(parseUnknownData), R.entries())
-        : null,
+      triggerObject ? R.pipe(triggerObject, R.omit(METADATA_FIELDS), R.mapValues(parseUnknownData), R.entries()) : null,
     [triggerObject],
   );
 }
@@ -62,9 +60,7 @@ export const IngestedObjectDetail = ({
       })}
     >
       <div className="text-m col-span-full flex items-center gap-2">
-        <span className="bg-grey-100 border-blue-58 text-blue-58 rounded-sm border px-2 py-1">
-          ID: {objectId}
-        </span>
+        <span className="bg-grey-100 border-blue-58 text-blue-58 rounded-sm border px-2 py-1">ID: {objectId}</span>
         <span className="bg-grey-100 border-grey-50 text-grey-50 rounded-sm border px-2 py-1">
           {t('data:last_ingestion_at', {
             date: formatDateTimeWithoutPresets(object.metadata.validFrom, {

@@ -22,9 +22,7 @@ const modalContentClassnames = cva(
   },
 );
 
-interface ModalContentProps
-  extends Dialog.DialogContentProps,
-    VariantProps<typeof modalContentClassnames> {}
+interface ModalContentProps extends Dialog.DialogContentProps, VariantProps<typeof modalContentClassnames> {}
 
 const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function ModalContent(
   { className, size = 'small', ...props },
@@ -68,39 +66,36 @@ export const Modal = {
   Footer: ModalFooter,
 };
 
-export interface ModalContentV2Props
-  extends Ariakit.DialogProps,
-    VariantProps<typeof modalContentClassnames> {}
+export interface ModalContentV2Props extends Ariakit.DialogProps, VariantProps<typeof modalContentClassnames> {}
 
-export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(
-  function ModalContentV2({ className, size = 'small', fixedHeight, ...props }, ref) {
-    return (
-      <Ariakit.Dialog
-        ref={ref}
-        className={modalContentClassnames({
-          size,
-          fixedHeight,
-          className: clsx(
-            'z-50 scale-95 opacity-0 transition-all data-enter:scale-100 data-enter:opacity-100',
-            className,
-          ),
-        })}
-        backdrop={
-          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-grey-00/20 fixed inset-0 flex items-center justify-center p-4 opacity-0 backdrop-blur-xs transition-all data-enter:opacity-100"
-          />
-        }
-        unmountOnHide
-        render={({ className, ...p }) => (
-          <div className={clsx(className, 'fixed left-1/2 -translate-x-1/2')} {...p} />
-        )}
-        {...props}
-      />
-    );
-  },
-);
+export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(function ModalContentV2(
+  { className, size = 'small', fixedHeight, ...props },
+  ref,
+) {
+  return (
+    <Ariakit.Dialog
+      ref={ref}
+      className={modalContentClassnames({
+        size,
+        fixedHeight,
+        className: clsx(
+          'z-50 scale-95 opacity-0 transition-all data-enter:scale-100 data-enter:opacity-100',
+          className,
+        ),
+      })}
+      backdrop={
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="bg-grey-00/20 fixed inset-0 flex items-center justify-center p-4 opacity-0 backdrop-blur-xs transition-all data-enter:opacity-100"
+        />
+      }
+      unmountOnHide
+      render={({ className, ...p }) => <div className={clsx(className, 'fixed left-1/2 -translate-x-1/2')} {...p} />}
+      {...props}
+    />
+  );
+});
 
 export function ModalTitleV2(props: Ariakit.DialogHeadingProps) {
   return (

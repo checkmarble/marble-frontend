@@ -35,11 +35,7 @@ export function EditIsMultipleOf(props: Omit<OperandEditModalProps, 'node'>) {
   const divider = node.namedChildren.divider.constant ?? 1;
 
   return (
-    <OperandEditModalContainer
-      {...props}
-      title={t('scenarios:edit_is_multiple_of.title')}
-      size="large"
-    >
+    <OperandEditModalContainer {...props} title={t('scenarios:edit_is_multiple_of.title')} size="large">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <div className="flex gap-2">
@@ -56,9 +52,7 @@ export function EditIsMultipleOf(props: Omit<OperandEditModalProps, 'node'>) {
               validationStatus={getValidationStatus(evaluation, node.namedChildren.value.id)}
             />
             <div className="border-grey-90 bg-grey-98 flex h-10 w-fit min-w-[40px] items-center justify-center rounded-sm border p-2 text-center">
-              <span className="text-s text-grey-00 font-medium">
-                {t('scenarios:edit_is_multiple_of.label')}
-              </span>
+              <span className="text-s text-grey-00 font-medium">{t('scenarios:edit_is_multiple_of.label')}</span>
             </div>
             <MenuCommand.Menu>
               <MenuCommand.Trigger>

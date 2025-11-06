@@ -1,11 +1,5 @@
-import {
-  type FeatureAccessApi,
-  type GetFeatureAccessAPIClientWithAuth,
-} from '@app-builder/infra/feature-access-api';
-import {
-  type GetMarbleCoreAPIClientWithAuth,
-  type MarbleCoreApi,
-} from '@app-builder/infra/marblecore-api';
+import { type FeatureAccessApi, type GetFeatureAccessAPIClientWithAuth } from '@app-builder/infra/feature-access-api';
+import { type GetMarbleCoreAPIClientWithAuth, type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
 import { makeGetAiAssistSettingsRepository } from './AiAssistRepository';
 import { makeGetAnalyticsRepository } from './AnalyticsRepository';
 import { makeGetApiKeyRepository } from './ApiKeyRepository';

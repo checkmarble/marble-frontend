@@ -4,11 +4,7 @@ import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type FinalOutcome, finalOutcomes } from '@app-builder/models/cases';
-import {
-  CloseCasePayload,
-  closeCasePayloadSchema,
-  useCloseCaseMutation,
-} from '@app-builder/queries/cases/close-case';
+import { CloseCasePayload, closeCasePayloadSchema, useCloseCaseMutation } from '@app-builder/queries/cases/close-case';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { RadioGroup, RadioGroupItem } from '@radix-ui/react-radio-group';
 import { useForm } from '@tanstack/react-form';

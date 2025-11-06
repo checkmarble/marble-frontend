@@ -10,41 +10,40 @@ interface FormErrorOrDescriptionProps
   description?: string | React.ReactNode;
 }
 
-export const FormErrorOrDescription = React.forwardRef<
-  HTMLParagraphElement,
-  FormErrorOrDescriptionProps
->(function FormErrorOrDescription({ errorClassName, descriptionClassName, ...props }, ref) {
-  if (props.errors?.length) {
-    return (
-      <p
-        ref={ref}
-        className={cn(
-          'text-s text-red-47 flex flex-col gap-1 font-medium transition-opacity duration-200 ease-in-out',
-          errorClassName,
-        )}
-        {...props}
-      >
-        <span>{props.errors[0]}</span>
-      </p>
-    );
-  }
+export const FormErrorOrDescription = React.forwardRef<HTMLParagraphElement, FormErrorOrDescriptionProps>(
+  function FormErrorOrDescription({ errorClassName, descriptionClassName, ...props }, ref) {
+    if (props.errors?.length) {
+      return (
+        <p
+          ref={ref}
+          className={cn(
+            'text-s text-red-47 flex flex-col gap-1 font-medium transition-opacity duration-200 ease-in-out',
+            errorClassName,
+          )}
+          {...props}
+        >
+          <span>{props.errors[0]}</span>
+        </p>
+      );
+    }
 
-  if (props.description) {
-    return typeof props.description === 'string' ? (
-      <p
-        ref={ref}
-        className={clsx(
-          'text-s text-grey-80 font-medium transition-opacity duration-200 ease-in-out',
-          descriptionClassName,
-        )}
-        {...props}
-      >
-        {props.description}
-      </p>
-    ) : (
-      props.description
-    );
-  }
+    if (props.description) {
+      return typeof props.description === 'string' ? (
+        <p
+          ref={ref}
+          className={clsx(
+            'text-s text-grey-80 font-medium transition-opacity duration-200 ease-in-out',
+            descriptionClassName,
+          )}
+          {...props}
+        >
+          {props.description}
+        </p>
+      ) : (
+        props.description
+      );
+    }
 
-  return null;
-});
+    return null;
+  },
+);

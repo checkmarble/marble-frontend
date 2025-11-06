@@ -3,11 +3,7 @@ import { createCookie, createCookieSessionStorage } from '@remix-run/node';
 
 import { type SessionStorageRepositoryOptions } from './SessionStorageRepository';
 
-export function getToastStorageRepository({
-  maxAge,
-  secrets,
-  secure,
-}: SessionStorageRepositoryOptions) {
+export function getToastStorageRepository({ maxAge, secrets, secure }: SessionStorageRepositoryOptions) {
   const toastCookie = createCookie('toast', {
     maxAge,
     sameSite: 'lax', // this helps with CSRF

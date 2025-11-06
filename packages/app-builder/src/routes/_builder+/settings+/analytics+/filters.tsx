@@ -45,10 +45,7 @@ type LinkPivotFieldItem = {
   label: string;
 };
 
-const getFilters = (
-  exportedEntries: [string, ExportedFields][],
-  dataModel: DataModel,
-): FilterRow[] => {
+const getFilters = (exportedEntries: [string, ExportedFields][], dataModel: DataModel): FilterRow[] => {
   const exportedFieldsByTable = Object.fromEntries(exportedEntries);
 
   const tableIdToName = new Map<string, string>(dataModel.map((t) => [t.id, t.name] as const));
@@ -95,9 +92,7 @@ const getAllowedTables = (filters: FilterRow[], dataModel: DataModel): string[] 
     },
     {} as Record<string, number>,
   );
-  return dataModel
-    .filter((table) => (filterCountByTableId[table.id] ?? 0) < MAX_FILTERS_PER_TABLE)
-    .map((t) => t.id);
+  return dataModel.filter((table) => (filterCountByTableId[table.id] ?? 0) < MAX_FILTERS_PER_TABLE).map((t) => t.id);
 };
 
 const getTriggerFieldItems = (
@@ -119,11 +114,7 @@ const getTriggerFieldItems = (
     .filter((item) => !existingFilterIds.has(`${item.tableId}::trigger::${item.fieldName}`));
 };
 
-const getLinkedFieldItems = (
-  pivots: Pivot[],
-  allowedTables: string[],
-  dataModel: DataModel,
-): LinkPivotFieldItem[] =>
+const getLinkedFieldItems = (pivots: Pivot[], allowedTables: string[], dataModel: DataModel): LinkPivotFieldItem[] =>
   pivots
     .filter((pivot) => pivot.type === 'link')
     .filter(({ pivotTableId }) => allowedTables.includes(pivotTableId))
@@ -170,8 +161,7 @@ export default function Filters() {
   const revalidate = useLoaderRevalidator();
 
   const { t } = useTranslation(['settings', 'common']);
-  const { filters, dataModel, triggerFieldItems, linkedFieldItems } =
-    useLoaderData<typeof loader>();
+  const { filters, dataModel, triggerFieldItems, linkedFieldItems } = useLoaderData<typeof loader>();
 
   const deleteFilterMutation = useDeleteFilterMutation();
 

@@ -8,9 +8,7 @@ export interface ScenarioPublicationStatus {
   serviceStatus: 'available' | 'occupied';
 }
 
-export function adaptScenarioPublicationStatus(
-  dto: ScenarioPublicationStatusDto,
-): ScenarioPublicationStatus {
+export function adaptScenarioPublicationStatus(dto: ScenarioPublicationStatusDto): ScenarioPublicationStatus {
   return {
     status: dto.preparation_status,
     serviceStatus: dto.preparation_service_status,

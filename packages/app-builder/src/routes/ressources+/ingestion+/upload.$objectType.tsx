@@ -33,14 +33,11 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     return;
   }
 
-  return fetch(
-    `${getServerEnv('MARBLE_API_URL')}${getIngestionDataBatchUploadEndpoint(objectType)}`,
-    {
-      body: raw,
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${await tokenService.getToken()}`,
-      },
+  return fetch(`${getServerEnv('MARBLE_API_URL')}${getIngestionDataBatchUploadEndpoint(objectType)}`, {
+    body: raw,
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${await tokenService.getToken()}`,
     },
-  );
+  });
 };

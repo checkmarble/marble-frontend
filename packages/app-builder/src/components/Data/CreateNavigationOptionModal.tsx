@@ -19,11 +19,7 @@ export type CreateNavigationOptionModalProps = {
   link: LinkToSingle;
 };
 
-export function CreateNavigationOptionModal({
-  label,
-  dataModel,
-  link,
-}: CreateNavigationOptionModalProps) {
+export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNavigationOptionModalProps) {
   const { t } = useTranslation(['common', 'data']);
   const targetTable = dataModel.find((table) => {
     return table.name === link.childTableName;
@@ -101,13 +97,9 @@ export function CreateNavigationOptionModal({
               }}
             >
               {(formField) => {
-                const selectedField = targetTable.fields.find(
-                  (tableField) => tableField.id === formField.state.value,
-                );
+                const selectedField = targetTable.fields.find((tableField) => tableField.id === formField.state.value);
                 const fieldErrors = formField.state.meta.errors;
-                const targetFields = targetTable.fields.filter(
-                  (tableField) => tableField.id !== link.childFieldId,
-                );
+                const targetFields = targetTable.fields.filter((tableField) => tableField.id !== link.childFieldId);
 
                 return (
                   <>
@@ -125,11 +117,7 @@ export function CreateNavigationOptionModal({
                       <MenuCommand.Content align="start" sameWidth sideOffset={4}>
                         <MenuCommand.List>
                           {targetFields.map((field) => (
-                            <MenuCommand.Item
-                              key={field.id}
-                              value={field.id}
-                              onSelect={formField.handleChange}
-                            >
+                            <MenuCommand.Item key={field.id} value={field.id} onSelect={formField.handleChange}>
                               {field.name}
                               {selectedField?.name === field.name ? (
                                 <Icon icon="tick" className="text-purple-65 size-6" />
@@ -145,9 +133,7 @@ export function CreateNavigationOptionModal({
               }}
             </form.Field>
           </div>
-          <div className="col-span-full mt-4">
-            {t('data:create_navigation_option.explanation_text')}
-          </div>
+          <div className="col-span-full mt-4">{t('data:create_navigation_option.explanation_text')}</div>
         </form>
         <Modal.Footer>
           <div className="flex flex-1 flex-row gap-2 p-4">

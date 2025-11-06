@@ -27,11 +27,7 @@ export function UpdateTag({ tag }: { tag: Tag }) {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
-        <Icon
-          icon="edit-square"
-          className="size-6 shrink-0"
-          aria-label={t('settings:tags.update_tag')}
-        />
+        <Icon icon="edit-square" className="size-6 shrink-0" aria-label={t('settings:tags.update_tag')} />
       </Modal.Trigger>
       <Modal.Content>
         <UpdateTagContent tag={tag} onSuccess={handleOnSuccess} />

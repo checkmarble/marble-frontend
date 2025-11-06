@@ -45,10 +45,7 @@ export default function CaseSanctionsHitsPage() {
         />
         <div className="sticky top-0 flex h-fit flex-1 flex-col gap-6">
           {screening.request ? (
-            <ScreeningQueryDetail
-              request={screening.request}
-              initialQuery={screening.initialQuery}
-            />
+            <ScreeningQueryDetail request={screening.request} initialQuery={screening.initialQuery} />
           ) : null}
           {pivotValues.length > 0 && (
             <div className="flex h-fit flex-col gap-2">
@@ -132,9 +129,7 @@ function ScreeningQueryDetail({
   return (
     <Tabs defaultValue="preprocessed">
       <TabsList className="mb-2">
-        {hasInitialQuery && (
-          <TabsTrigger value="initial">{t('screenings:initial_query')}</TabsTrigger>
-        )}
+        {hasInitialQuery && <TabsTrigger value="initial">{t('screenings:initial_query')}</TabsTrigger>}
         <TabsTrigger value="preprocessed">
           {!hasInitialQuery ? t('screenings:query') : t('screenings:processed_query')}
         </TabsTrigger>

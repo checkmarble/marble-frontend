@@ -9,11 +9,7 @@ export const getTableSelectColumn = (columnHelper: ColumnHelper<any>, selectable
           header: ({ table }) => (
             <Checkbox
               checked={
-                table.getIsAllPageRowsSelected()
-                  ? true
-                  : table.getIsSomeRowsSelected()
-                    ? 'indeterminate'
-                    : false
+                table.getIsAllPageRowsSelected() ? true : table.getIsSomeRowsSelected() ? 'indeterminate' : false
               }
               onClick={table.getToggleAllRowsSelectedHandler()}
               className="ml-v2-sm"

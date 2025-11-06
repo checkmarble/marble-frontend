@@ -14,26 +14,14 @@ type MenuOptionProps = {
   rightElement?: ReactNode;
   highlightSearch?: boolean;
 };
-export function MenuOption({
-  option,
-  value,
-  onSelect,
-  rightElement,
-  highlightSearch = true,
-}: MenuOptionProps) {
+export function MenuOption({ option, value, onSelect, rightElement, highlightSearch = true }: MenuOptionProps) {
   const searchValue = MenuCommand.State.useSharp().value.search;
   const leftIcon = option.icon ?? getDataTypeIcon(option.dataType);
 
   return (
-    <MenuCommand.Item
-      className="group"
-      value={value}
-      onSelect={() => onSelect(injectIdToNode(option.astNode))}
-    >
+    <MenuCommand.Item className="group" value={value} onSelect={() => onSelect(injectIdToNode(option.astNode))}>
       <div className="grid w-full grid-cols-[20px_1fr] gap-1">
-        {leftIcon ? (
-          <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon={leftIcon} />
-        ) : null}
+        {leftIcon ? <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon={leftIcon} /> : null}
         <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
           <div className="text-grey-00 text-s w-full break-all text-start font-normal">
             {searchValue && highlightSearch ? (

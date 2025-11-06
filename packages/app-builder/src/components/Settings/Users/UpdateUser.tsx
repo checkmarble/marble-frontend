@@ -35,19 +35,10 @@ export function UpdateUser({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
-        <Icon
-          icon="edit-square"
-          className="size-6 shrink-0"
-          aria-label={t('settings:users.update_user')}
-        />
+        <Icon icon="edit-square" className="size-6 shrink-0" aria-label={t('settings:users.update_user')} />
       </Modal.Trigger>
       <Modal.Content>
-        <UpdateUserContent
-          user={user}
-          userRoles={userRoles}
-          access={access}
-          onSuccess={() => setOpen(false)}
-        />
+        <UpdateUserContent user={user} userRoles={userRoles} access={access} onSuccess={() => setOpen(false)} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -97,10 +88,7 @@ function UpdateUserContent({
       <div className="flex flex-col gap-6 p-6">
         <div className="flex flex-1 flex-col gap-4">
           <div className="flex gap-2">
-            <form.Field
-              name="firstName"
-              validators={{ onChange: updateUserPayloadSchema.shape.firstName }}
-            >
+            <form.Field name="firstName" validators={{ onChange: updateUserPayloadSchema.shape.firstName }}>
               {(field) => (
                 <div className="group flex w-full flex-col gap-2">
                   <FormLabel name={field.name}>{t('settings:users.first_name')}</FormLabel>
@@ -115,10 +103,7 @@ function UpdateUserContent({
                 </div>
               )}
             </form.Field>
-            <form.Field
-              name="lastName"
-              validators={{ onChange: updateUserPayloadSchema.shape.lastName }}
-            >
+            <form.Field name="lastName" validators={{ onChange: updateUserPayloadSchema.shape.lastName }}>
               {(field) => (
                 <div className="group flex w-full flex-col gap-2">
                   <FormLabel name={field.name}>{t('settings:users.last_name')}</FormLabel>
@@ -162,11 +147,7 @@ function UpdateUserContent({
                     {t('settings:users.role')}
                   </span>
                   {access === 'allowed' ? null : (
-                    <Nudge
-                      content={t('settings:users.role.nudge')}
-                      className="size-6"
-                      kind={access}
-                    />
+                    <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
                   )}
                 </FormLabel>
                 <Select.Default

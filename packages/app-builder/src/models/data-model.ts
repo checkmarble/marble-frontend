@@ -29,10 +29,7 @@ type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'unknown';
 export const EnumDataTypes = ['Float', 'Int', 'String'];
 export const UniqueDataTypes = ['Float', 'Int', 'String'];
-export type UnicityConstraintType =
-  | 'no_unicity_constraint'
-  | 'pending_unique_constraint'
-  | 'active_unique_constraint';
+export type UnicityConstraintType = 'no_unicity_constraint' | 'pending_unique_constraint' | 'active_unique_constraint';
 
 export type EnumValue = string | number;
 export interface DataModelField {
@@ -299,13 +296,7 @@ export function findDataModelTable({
   return table;
 }
 
-export function findDataModelField({
-  table,
-  fieldName,
-}: {
-  table: TableModel;
-  fieldName: string;
-}): DataModelField {
+export function findDataModelField({ table, fieldName }: { table: TableModel; fieldName: string }): DataModelField {
   const field = table.fields.find((f) => f.name == fieldName);
   if (!field) {
     throw Error(`can't find field '${fieldName}' in table '${table.name}'`);
@@ -314,11 +305,7 @@ export function findDataModelField({
   return field;
 }
 
-export function getEnumValues(
-  dataModel: DataModel,
-  tableName: string,
-  fieldName: string,
-): EnumValue[] {
+export function getEnumValues(dataModel: DataModel, tableName: string, fieldName: string): EnumValue[] {
   const table = findDataModelTableByName({ dataModel, tableName });
   const field = findDataModelField({ table, fieldName });
   return field.values ?? [];
@@ -438,9 +425,7 @@ export function adaptClientObjectDetail(dto: ClientObjectDetailDto): ClientObjec
     data: dto.data,
     relatedObjects: dto.related_objects.map((rel) => ({
       linkName: rel.link_name,
-      relatedObjectDetail: rel?.related_object_detail
-        ? adaptClientObjectDetail(rel.related_object_detail)
-        : undefined,
+      relatedObjectDetail: rel?.related_object_detail ? adaptClientObjectDetail(rel.related_object_detail) : undefined,
     })),
     annotations: dto.annotations,
   };
@@ -457,9 +442,7 @@ export type ClientDataListRequestBody = {
   offsetId?: string | number;
 };
 
-export function adaptClientDataListRequestBodyDto(
-  model: ClientDataListRequestBody,
-): ClientDataListRequestBodyDto {
+export function adaptClientDataListRequestBodyDto(model: ClientDataListRequestBody): ClientDataListRequestBodyDto {
   return {
     exploration_options: {
       source_table_name: model.explorationOptions.sourceTableName,
@@ -510,9 +493,7 @@ export function adaptFieldStatistics(dto: FieldStatisticsDto): FieldStatistics {
     .exhaustive();
 }
 
-export function adaptClientDataListResponse(
-  dto: ClientDataListResponseDto,
-): ClientDataListResponse {
+export function adaptClientDataListResponse(dto: ClientDataListResponseDto): ClientDataListResponse {
   return {
     data: dto.data.map(adaptClientObjectDetail),
     metadata: {
@@ -537,9 +518,7 @@ export type CreateNavigationOption = {
   orderingFieldId: string;
 };
 
-export function adaptCreateNavigationOptionDto(
-  model: CreateNavigationOption,
-): CreateNavigationOptionDto {
+export function adaptCreateNavigationOptionDto(model: CreateNavigationOption): CreateNavigationOptionDto {
   return {
     source_field_id: model.sourceFieldId,
     target_table_id: model.targetTableId,

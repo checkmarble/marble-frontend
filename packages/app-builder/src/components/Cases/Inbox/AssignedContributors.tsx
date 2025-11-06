@@ -42,9 +42,7 @@ type AvatarWithTooltipProps = {
 
 export const AvatarWithTooltip = ({ user, className }: AvatarWithTooltipProps) => {
   const { t } = useTranslation(['cases']);
-  const avatar = (
-    <Avatar key={user?.userId} size="s" firstName={user?.firstName} lastName={user?.lastName} />
-  );
+  const avatar = <Avatar key={user?.userId} size="s" firstName={user?.firstName} lastName={user?.lastName} />;
 
   return (
     <Tooltip.Default

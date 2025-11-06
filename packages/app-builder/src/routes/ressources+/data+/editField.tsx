@@ -42,9 +42,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
     captureUnexpectedRemixError(error, 'editField@action', request);
 
-    return json(
-      { success: 'false', errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return json({ success: 'false', errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }

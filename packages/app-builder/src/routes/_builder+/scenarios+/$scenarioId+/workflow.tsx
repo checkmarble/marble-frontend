@@ -103,13 +103,8 @@ function WorkflowContent() {
 
             const mainElement = document.querySelector('.h-screen.overflow-auto');
             if (mainElement) {
-              mainElement.addEventListener('scroll', () =>
-                scrollHandler(mainElement as HTMLElement),
-              );
-              return () =>
-                mainElement.removeEventListener('scroll', () =>
-                  scrollHandler(mainElement as HTMLElement),
-                );
+              mainElement.addEventListener('scroll', () => scrollHandler(mainElement as HTMLElement));
+              return () => mainElement.removeEventListener('scroll', () => scrollHandler(mainElement as HTMLElement));
             }
           }, []);
 
@@ -141,12 +136,7 @@ function WorkflowContent() {
                           {t('common:cancel')}
                         </Button>
                       </Modal.Close>
-                      <Button
-                        color="red"
-                        className="flex-1"
-                        variant="primary"
-                        onClick={confirmDeleteRule}
-                      >
+                      <Button color="red" className="flex-1" variant="primary" onClick={confirmDeleteRule}>
                         <Icon icon="delete" className="size-4" />
                         {t('workflows:delete_rule.delete_button')}
                       </Button>
@@ -165,11 +155,7 @@ export default function WorkflowPage() {
   const { scenarioId, dataModel, workflowFeatureAccess } = useLoaderData<typeof loader>();
 
   return (
-    <WorkflowProvider
-      scenarioId={scenarioId}
-      dataModel={dataModel}
-      workflowDataFeatureAccess={workflowFeatureAccess}
-    >
+    <WorkflowProvider scenarioId={scenarioId} dataModel={dataModel} workflowDataFeatureAccess={workflowFeatureAccess}>
       <WorkflowContent />
     </WorkflowProvider>
   );

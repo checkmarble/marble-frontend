@@ -17,13 +17,7 @@ import { Logo } from 'ui-icons';
 import { Spinner } from '../Spinner';
 import { PopupBlockedError } from './PopupBlockedError';
 
-function SignInWithMicrosoftButton({
-  onClick,
-  loading,
-}: {
-  onClick?: () => void;
-  loading?: boolean;
-}) {
+function SignInWithMicrosoftButton({ onClick, loading }: { onClick?: () => void; loading?: boolean }) {
   const { t } = useTranslation(['auth']);
 
   return (
@@ -35,12 +29,8 @@ function SignInWithMicrosoftButton({
       disabled={loading}
     >
       <Logo logo="microsoft-logo" className="size-6" />
-      <span className="text-s whitespace-nowrap text-center font-medium">
-        {t('auth:sign_in.microsoft')}
-      </span>
-      <span className="absolute end-0 mx-2 size-4">
-        {loading ? <Spinner className="size-4" /> : null}
-      </span>
+      <span className="text-s whitespace-nowrap text-center font-medium">{t('auth:sign_in.microsoft')}</span>
+      <span className="absolute end-0 mx-2 size-4">{loading ? <Spinner className="size-4" /> : null}</span>
     </button>
   );
 }

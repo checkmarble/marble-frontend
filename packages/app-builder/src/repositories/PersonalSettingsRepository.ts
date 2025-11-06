@@ -1,9 +1,5 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import {
-  adaptUnavailability,
-  PersonalSettings,
-  transformUnavailability,
-} from '@app-builder/models/personal-settings';
+import { adaptUnavailability, PersonalSettings, transformUnavailability } from '@app-builder/models/personal-settings';
 
 export interface PersonalSettingsRepository {
   getUnavailability(): Promise<PersonalSettings>;

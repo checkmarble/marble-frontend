@@ -33,37 +33,23 @@ export function getOperatorName(
       case '/':
         return '÷';
       case 'IsInList':
-        return isAggregationFilter
-          ? t('scenarios:operator.filter_is_in')
-          : t('scenarios:operator.is_in');
+        return isAggregationFilter ? t('scenarios:operator.filter_is_in') : t('scenarios:operator.is_in');
       case 'IsEmpty':
-        return isAggregationFilter
-          ? t('scenarios:operator.filter_is_empty')
-          : t('scenarios:operator.is_empty');
+        return isAggregationFilter ? t('scenarios:operator.filter_is_empty') : t('scenarios:operator.is_empty');
       case 'IsNotEmpty':
-        return isAggregationFilter
-          ? t('scenarios:operator.filter_is_not_empty')
-          : t('scenarios:operator.is_not_empty');
+        return isAggregationFilter ? t('scenarios:operator.filter_is_not_empty') : t('scenarios:operator.is_not_empty');
       case 'IsNotInList':
-        return isAggregationFilter
-          ? t('scenarios:operator.filter_is_not_in')
-          : t('scenarios:operator.is_not_in');
+        return isAggregationFilter ? t('scenarios:operator.filter_is_not_in') : t('scenarios:operator.is_not_in');
       case 'StringContains':
-        return isAggregationFilter
-          ? t('scenarios:operator.filter_contains')
-          : t('scenarios:operator.contains');
+        return isAggregationFilter ? t('scenarios:operator.filter_contains') : t('scenarios:operator.contains');
       case 'StringNotContain':
         return isAggregationFilter
           ? t('scenarios:operator.filter_does_not_contain')
           : t('scenarios:operator.does_not_contain');
       case 'StringStartsWith':
-        return isAggregationFilter
-          ? t('scenarios:operator.filter_starts_with')
-          : t('scenarios:operator.starts_with');
+        return isAggregationFilter ? t('scenarios:operator.filter_starts_with') : t('scenarios:operator.starts_with');
       case 'StringEndsWith':
-        return isAggregationFilter
-          ? t('scenarios:operator.filter_ends_with')
-          : t('scenarios:operator.ends_with');
+        return isAggregationFilter ? t('scenarios:operator.filter_ends_with') : t('scenarios:operator.ends_with');
       case 'ContainsAnyOf':
         return isAggregationFilter
           ? t('scenarios:operator.filter_contains_any_of')

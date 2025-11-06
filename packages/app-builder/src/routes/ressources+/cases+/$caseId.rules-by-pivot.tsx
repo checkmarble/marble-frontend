@@ -22,10 +22,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const caseId = fromParams(params, 'caseId');
   const caseDetail = await caseRepository.getCase({ caseId });
 
-  const iterationRules = await getScenarioIterationsRules(
-    caseDetail.decisions,
-    scenarioIterationRuleRepository,
-  );
+  const iterationRules = await getScenarioIterationsRules(caseDetail.decisions, scenarioIterationRuleRepository);
 
   const [decisionsDetails, snoozes] = await Promise.all([
     enrichDecisions(caseDetail.decisions, decisionRepository, iterationRules),
@@ -111,9 +108,7 @@ async function getScenarioIterationsRules(
   decisions: Decision[],
   repository: ScenarioIterationRuleRepository,
 ): Promise<ScenarioIterationRule[]> {
-  const uniqueScenarioIterationIds = R.unique(
-    decisions.map((decision) => decision.scenario.scenarioIterationId),
-  );
+  const uniqueScenarioIterationIds = R.unique(decisions.map((decision) => decision.scenario.scenarioIterationId));
 
   return Promise.all(
     uniqueScenarioIterationIds.map((scenarioIterationId) => {
@@ -122,10 +117,7 @@ async function getScenarioIterationsRules(
   ).then((rulesArrays) => R.flat(rulesArrays));
 }
 
-function getRulesForSnooze(
-  decisions: DecisionForSnooze[],
-  snoozes: RuleSnoozeWithRuleId[],
-): RuleWithSnoozeData[] {
+function getRulesForSnooze(decisions: DecisionForSnooze[], snoozes: RuleSnoozeWithRuleId[]): RuleWithSnoozeData[] {
   const enrichedRulesArray = R.map(decisions, (decision) => {
     return decision.rules.map((rule) => ({
       ...rule,

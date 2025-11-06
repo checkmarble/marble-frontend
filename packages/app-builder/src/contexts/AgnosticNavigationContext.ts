@@ -11,8 +11,7 @@ interface NavigateFunction {
   (delta: number): void;
 }
 
-export const AgnosticNavigationContext =
-  createSimpleContext<NavigateFunction>('AgnosticNavigation');
+export const AgnosticNavigationContext = createSimpleContext<NavigateFunction>('AgnosticNavigation');
 
 export const useAgnosticNavigation = () => {
   return AgnosticNavigationContext.useValue();

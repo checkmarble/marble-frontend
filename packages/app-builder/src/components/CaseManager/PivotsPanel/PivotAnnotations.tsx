@@ -17,12 +17,7 @@ type PivotAnnotationsProps = {
   annotations: GroupedAnnotations | undefined;
 };
 
-export function PivotAnnotations({
-  caseId,
-  tableName,
-  objectId,
-  annotations,
-}: PivotAnnotationsProps) {
+export function PivotAnnotations({ caseId, tableName, objectId, annotations }: PivotAnnotationsProps) {
   const { t } = useTranslation(['common', 'cases']);
   const [commentSectionOpen, setCommentSectionOpen] = useState(true);
   const [editTagsOpen, setEditTagsOpen] = useState(false);
@@ -38,9 +33,7 @@ export function PivotAnnotations({
           <div>{t('cases:annotations.tags.title')}</div>
           <div className="flex items-start justify-between">
             <div>
-              <ClientTagsList
-                tagsIds={tagsAnnotations.map((annotation) => annotation.payload.tag_id)}
-              />
+              <ClientTagsList tagsIds={tagsAnnotations.map((annotation) => annotation.payload.tag_id)} />
             </div>
             <MenuCommand.Menu persistOnSelect open={editTagsOpen} onOpenChange={setEditTagsOpen}>
               <MenuCommand.Trigger>
@@ -72,13 +65,7 @@ export function PivotAnnotations({
                   <Icon icon="edit-square" className="size-3.5" />
                 </ButtonV2>
               </Popover.Trigger>
-              <Popover.Content
-                side="bottom"
-                align="end"
-                sideOffset={4}
-                collisionPadding={10}
-                className="w-[340px]"
-              >
+              <Popover.Content side="bottom" align="end" sideOffset={4} collisionPadding={10} className="w-[340px]">
                 <ClientDocumentsPopover
                   caseId={caseId}
                   documents={documents}
@@ -93,22 +80,13 @@ export function PivotAnnotations({
             className="group/comment data-[open=true]:border-grey-90 col-span-full flex items-center justify-between pb-2 data-[open=true]:border-b"
           >
             {t('cases:annotations.comments.title')}
-            <ButtonV2
-              mode="icon"
-              variant="secondary"
-              onClick={() => setCommentSectionOpen((o) => !o)}
-            >
-              <Icon
-                icon="caret-down"
-                className="size-3.5 group-data-[open=true]/comment:rotate-180"
-              />
+            <ButtonV2 mode="icon" variant="secondary" onClick={() => setCommentSectionOpen((o) => !o)}>
+              <Icon icon="caret-down" className="size-3.5 group-data-[open=true]/comment:rotate-180" />
             </ButtonV2>
           </div>
           {commentSectionOpen ? (
             <div className="col-span-full flex flex-col gap-4 pt-4">
-              {comments.length > 0 ? (
-                <ClientObjectComments comments={comments} className="mx-4" />
-              ) : null}
+              {comments.length > 0 ? <ClientObjectComments comments={comments} className="mx-4" /> : null}
               <ClientCommentForm
                 caseId={caseId}
                 tableName={tableName}

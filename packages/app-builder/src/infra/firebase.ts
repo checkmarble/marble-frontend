@@ -28,9 +28,7 @@ export type FirebaseClientWrapper = {
   logout: typeof signOut;
 };
 
-export function initializeFirebaseClient(
-  config: AppConfig['auth']['firebase'],
-): FirebaseClientWrapper {
+export function initializeFirebaseClient(config: AppConfig['auth']['firebase']): FirebaseClientWrapper {
   const app = initializeApp({
     apiKey: config.apiKey,
     authDomain: config.authDomain,

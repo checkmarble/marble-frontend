@@ -64,15 +64,11 @@ export function SelectField({
             <div className="flex flex-col gap-2">
               <MenuCommand.Menu {...{ open, onOpenChange }}>
                 <MenuCommand.Trigger>
-                  <MenuCommand.SelectButton>
-                    {selectedOption?.displayValue}
-                  </MenuCommand.SelectButton>
+                  <MenuCommand.SelectButton>{selectedOption?.displayValue}</MenuCommand.SelectButton>
                 </MenuCommand.Trigger>
 
                 <MenuCommand.Content align="start" sameWidth sideOffset={4}>
-                  <MenuCommand.Combobox
-                    placeholder={t('data:create_pivot.entity_selection.search.placeholder')}
-                  />
+                  <MenuCommand.Combobox placeholder={t('data:create_pivot.entity_selection.search.placeholder')} />
 
                   <MenuCommand.List>
                     {pivotOptions.map((pivot) => (

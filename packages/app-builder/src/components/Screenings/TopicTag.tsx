@@ -16,10 +16,7 @@ export const TopicTag = ({ topic }: { topic: string }) => {
 
   return (
     <span
-      className={cn(
-        'text-2xs shrink-0 rounded-full px-2 py-[3px] font-medium',
-        SCREENING_CATEGORY_COLORS[category],
-      )}
+      className={cn('text-2xs shrink-0 rounded-full px-2 py-[3px] font-medium', SCREENING_CATEGORY_COLORS[category])}
     >
       {t(`screeningTopics:${topic}`, { defaultValue: topic })}
     </span>
