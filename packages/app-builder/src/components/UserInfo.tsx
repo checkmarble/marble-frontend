@@ -16,7 +16,7 @@ interface UserInfoProps {
   firstName?: string;
   lastName?: string;
   role: string;
-  orgOrPartnerName: string;
+  orgName: string;
   isAutoAssignmentAvailable: boolean;
 }
 
@@ -25,7 +25,7 @@ export function UserInfo({
   firstName,
   lastName,
   role,
-  orgOrPartnerName,
+  orgName,
   isAutoAssignmentAvailable = false,
 }: UserInfoProps) {
   const { t } = useTranslation(['common']);
@@ -85,7 +85,7 @@ export function UserInfo({
             {fullName ? <p className="text-m mb-1 font-semibold capitalize">{fullName}</p> : null}
             <p className="text-s mb-2 font-normal">{email}</p>
             <Tag border="square">{role}</Tag>
-            <p className="text-grey-50 m-2 text-xs font-normal">{orgOrPartnerName}</p>
+            <p className="text-grey-50 m-2 text-xs font-normal">{orgName}</p>
             <LanguagePicker />
           </div>
 

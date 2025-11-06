@@ -130,25 +130,5 @@ export function getPageViewNameAndProps(thisPage: UIMatch): PageViewNameAndProps
     case 'routes/_builder+/api': {
       return { name: 'Marble API', properties: undefined };
     }
-
-    // Transfercheck
-    case 'routes/transfercheck+/transfers+/_index': {
-      return { name: 'Transfers', properties: undefined };
-    }
-    case 'routes/transfercheck+/transfers+/$transferId': {
-      const safeParseProperties = z
-        .object({
-          transferId: shortUUIDSchema,
-        })
-        .safeParse(thisPage.params);
-      if (!safeParseProperties.success) return;
-
-      return {
-        name: 'Transfer',
-        properties: {
-          transfer_id: safeParseProperties.data.transferId,
-        },
-      };
-    }
   }
 }

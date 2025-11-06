@@ -5,10 +5,6 @@ import {
   type MarbleCoreApi,
 } from '@app-builder/infra/marblecore-api';
 import {
-  type GetTransfercheckAPIClientWithAuth,
-  type TransfercheckApi,
-} from '@app-builder/infra/transfercheck-api';
-import {
   type AuthData,
   type AuthFlashData,
   adaptAuthErrors,
@@ -29,7 +25,6 @@ import { type EditorRepository } from '@app-builder/repositories/EditorRepositor
 import { type makeGetFeatureAccessRepository } from '@app-builder/repositories/FeatureAccessRepository';
 import { type InboxRepository } from '@app-builder/repositories/InboxRepository';
 import { type OrganizationRepository } from '@app-builder/repositories/OrganizationRepository';
-import { type PartnerRepository } from '@app-builder/repositories/PartnerRepository';
 import { PersonalSettingsRepository } from '@app-builder/repositories/PersonalSettingsRepository';
 import { type RuleSnoozeRepository } from '@app-builder/repositories/RuleSnoozeRepository';
 import { type ScenarioIterationRuleRepository } from '@app-builder/repositories/ScenarioIterationRuleRepository';
@@ -37,8 +32,6 @@ import { type ScenarioIterationScreeningRepository } from '@app-builder/reposito
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
 import { type ScreeningRepository } from '@app-builder/repositories/ScreeningRepository';
 import { type TestRunRepository } from '@app-builder/repositories/TestRunRepository';
-import { type TransferAlertRepository } from '@app-builder/repositories/TransferAlertRepository';
-import { type TransferRepository } from '@app-builder/repositories/TransferRepository';
 import { type UserRepository } from '@app-builder/repositories/UserRepository';
 import { type WebhookRepository } from '@app-builder/repositories/WebhookRepository';
 import { Tokens } from '@app-builder/routes/oidc+/auth';
@@ -68,9 +61,6 @@ interface AuthenticatedInfo {
   dataModelRepository: DataModelRepository;
   apiKey: ApiKeyRepository;
   analytics: AnalyticsRepository;
-  transferRepository: TransferRepository;
-  partnerRepository: PartnerRepository;
-  transferAlertRepository: TransferAlertRepository;
   testRun: TestRunRepository;
   webhookRepository: WebhookRepository;
   ruleSnoozeRepository: RuleSnoozeRepository;
@@ -129,7 +119,6 @@ export type AuthPayload = z.infer<typeof schema>;
 
 interface MakeAuthenticationServerServiceArgs {
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
-  getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
   getFeatureAccessAPIClientWithAuth: GetFeatureAccessAPIClientWithAuth;
   getAppConfigRepository: (marbleCoreApiClient: MarbleCoreApi) => AppConfigRepository;
   getUserRepository: (marbleCoreApiClient: MarbleCoreApi) => UserRepository;
@@ -153,13 +142,7 @@ interface MakeAuthenticationServerServiceArgs {
   getDataModelRepository: (marbleCoreApiClient: MarbleCoreApi) => DataModelRepository;
   getApiKeyRepository: (marbleCoreApiClient: MarbleCoreApi) => ApiKeyRepository;
   getAnalyticsRepository: (marbleCoreApiClient: MarbleCoreApi) => AnalyticsRepository;
-  getTransferRepository: (transfercheckApi: TransfercheckApi) => TransferRepository;
   getTestRunRepository: (marbleCoreApiClient: MarbleCoreApi) => TestRunRepository;
-  getPartnerRepository: (transfercheckApi: TransfercheckApi) => PartnerRepository;
-  getTransferAlertRepository: (
-    transfercheckApi: TransfercheckApi,
-    partnerId?: string,
-  ) => TransferAlertRepository;
   getWebhookRepository: (marbleCoreApiClient: MarbleCoreApi) => WebhookRepository;
   getRuleSnoozeRepository: (marbleCoreApiClient: MarbleCoreApi) => RuleSnoozeRepository;
   getFeatureAccessRepository: ReturnType<typeof makeGetFeatureAccessRepository>;
@@ -177,7 +160,6 @@ function expectedErrors(error: unknown) {
 
 export function makeAuthenticationServerService({
   getMarbleCoreAPIClientWithAuth,
-  getTransfercheckAPIClientWithAuth,
   getFeatureAccessAPIClientWithAuth,
   getAppConfigRepository,
   getUserRepository,
@@ -194,10 +176,7 @@ export function makeAuthenticationServerService({
   getDataModelRepository,
   getApiKeyRepository,
   getAnalyticsRepository,
-  getTransferRepository,
   getTestRunRepository,
-  getPartnerRepository,
-  getTransferAlertRepository,
   getWebhookRepository,
   getRuleSnoozeRepository,
   getFeatureAccessRepository,
@@ -440,7 +419,6 @@ export function makeAuthenticationServerService({
     const featureAccessApiClient = getFeatureAccessAPIClientWithAuth(
       getTokenService(marbleToken.access_token, request),
     );
-    const transfercheckAPIClient = getTransfercheckAPIClientWithAuth(tokenService);
 
     let user: CurrentUser;
     let entitlements: FeatureAccesses;
@@ -483,10 +461,7 @@ export function makeAuthenticationServerService({
       dataModelRepository: getDataModelRepository(marbleCoreApiClient),
       apiKey: getApiKeyRepository(marbleCoreApiClient),
       analytics: getAnalyticsRepository(marbleCoreApiClient),
-      transferRepository: getTransferRepository(transfercheckAPIClient),
       testRun: getTestRunRepository(marbleCoreApiClient),
-      partnerRepository: getPartnerRepository(transfercheckAPIClient),
-      transferAlertRepository: getTransferAlertRepository(transfercheckAPIClient, user.partnerId),
       webhookRepository: getWebhookRepository(marbleCoreApiClient),
       ruleSnoozeRepository: getRuleSnoozeRepository(marbleCoreApiClient),
       user,

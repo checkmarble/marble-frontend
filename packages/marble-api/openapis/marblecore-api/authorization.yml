@@ -82,8 +82,6 @@ components:
           properties:
             organization_id:
               type: string
-            partner_id:
-              type: string
             role:
               type: string
             actor_identity:

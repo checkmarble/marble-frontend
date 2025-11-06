@@ -2,9 +2,7 @@ import { ErrorComponent } from '@app-builder/components';
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
-import { isMarbleCoreUser, isTransferCheckUser } from '@app-builder/models';
 import { segment } from '@app-builder/services/segment';
-import { forbidden } from '@app-builder/utils/http/http-responses';
 import { FORBIDDEN } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
 import { Form, isRouteErrorResponse, redirect, useRouteError } from '@remix-run/react';
@@ -17,25 +15,8 @@ export const handle = {
   i18n: authI18n,
 };
 
-/**
- * This file is used to redirect users to the correct page based on their role.
- *
- * This is unfortunately a little bit of a hack, as we originally supported a single app :
- * - Marble Core: The main app, no sub path
- * - Transfer Check: The transfer check app, with a /transfercheck sub path
- */
-
 export const loader = createServerFn([authMiddleware], async function appRouterLoader({ context }) {
-  const { user } = context.authInfo;
-
-  if (isMarbleCoreUser(user)) {
-    return redirect(getRoute('/scenarios'));
-  }
-  if (isTransferCheckUser(user)) {
-    return redirect(getRoute('/transfercheck'));
-  }
-
-  return forbidden('You are not allowed to access any page on this application.');
+  return redirect(getRoute('/scenarios'));
 });
 
 export function ErrorBoundary() {

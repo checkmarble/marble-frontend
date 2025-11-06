@@ -28,9 +28,5 @@
   "settings.case_manager": "Case Manager",
   "settings.inboxes": "Inboxes",
   "settings.tags": "Tags",
-  "settings.users": "Users",
-  "transfercheck.alerts": "Alerts",
-  "transfercheck.alerts.received": "Received alerts",
-  "transfercheck.alerts.sent": "Sent alerts",
-  "transfercheck.transfers": "Transfers"
+  "settings.users": "Users"
 }

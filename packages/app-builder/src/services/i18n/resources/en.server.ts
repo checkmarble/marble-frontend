@@ -12,7 +12,6 @@ import scenarios from '@app-builder/locales/en/scenarios.json';
 import screeningTopics from '@app-builder/locales/en/screening-topics.json';
 import screenings from '@app-builder/locales/en/screenings.json';
 import settings from '@app-builder/locales/en/settings.json';
-import transfercheck from '@app-builder/locales/en/transfercheck.json';
 import upload from '@app-builder/locales/en/upload.json';
 import workflows from '@app-builder/locales/en/workflows.json';
 
@@ -31,7 +30,6 @@ export const en = {
   screeningTopics,
   scenarios,
   settings,
-  transfercheck,
   upload,
   workflows,
 };
