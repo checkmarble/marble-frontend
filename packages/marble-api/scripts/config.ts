@@ -33,15 +33,3 @@ export const featureAccessApiConfig: Config = {
     mergeReadWriteOnly: true,
   },
 };
-
-export const transfercheckApiConfig: Config = {
-  apiName: 'Transfercheck API',
-  apiSpec: join('openapis', 'transfercheck-api.yaml'),
-  generatedApi: join(GENERATED_FOLDER, 'transfercheck-api.ts'),
-  apiOptions: {
-    optimistic: true,
-    useEnumType: false,
-    unionUndefined: false,
-    mergeReadWriteOnly: true,
-  },
-};

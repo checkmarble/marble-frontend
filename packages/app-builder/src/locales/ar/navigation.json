@@ -28,9 +28,5 @@
   "settings.case_manager": "إدارة القضايا",
   "settings.inboxes": "صناديق الوارد",
   "settings.tags": "الوسوم",
-  "settings.users": "المستخدمون",
-  "transfercheck.alerts": "التنبيهات",
-  "transfercheck.alerts.received": "التنبيهات المستلمة",
-  "transfercheck.alerts.sent": "التنبيهات المرسلة",
-  "transfercheck.transfers": "التحويلات"
+  "settings.users": "المستخدمون"
 }

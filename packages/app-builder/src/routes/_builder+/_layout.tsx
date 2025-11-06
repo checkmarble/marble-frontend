@@ -114,7 +114,7 @@ export default function Builder() {
                           firstName={user.actorIdentity.firstName}
                           lastName={user.actorIdentity.lastName}
                           role={user.role}
-                          orgOrPartnerName={organization.name}
+                          orgName={organization.name}
                           isAutoAssignmentAvailable={featuresAccess.isAutoAssignmentAvailable}
                         />
                       </div>

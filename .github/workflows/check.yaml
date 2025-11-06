@@ -44,7 +44,6 @@ jobs:
         run: |
           bunx swagger-cli validate openapis/marblecore-api.yaml
           bunx swagger-cli validate openapis/feature-access-api.yaml
-          bunx swagger-cli validate openapis/transfercheck-api.yaml
         working-directory: packages/marble-api
 
       - name: Generate API client and verify diff

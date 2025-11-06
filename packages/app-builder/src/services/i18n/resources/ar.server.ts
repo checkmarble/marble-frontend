@@ -12,7 +12,6 @@ import scenarios from '@app-builder/locales/ar/scenarios.json';
 import screeningTopics from '@app-builder/locales/ar/screening-topics.json';
 import screenings from '@app-builder/locales/ar/screenings.json';
 import settings from '@app-builder/locales/ar/settings.json';
-import transfercheck from '@app-builder/locales/ar/transfercheck.json';
 import upload from '@app-builder/locales/ar/upload.json';
 import workflows from '@app-builder/locales/ar/workflows.json';
 
@@ -31,7 +30,6 @@ export const ar = {
   scenarios,
   screeningTopics,
   settings,
-  transfercheck,
   upload,
   workflows,
 };

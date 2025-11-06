@@ -120,7 +120,6 @@ export const iconNames = [
   'thumb-up',
   'tick',
   'tip',
-  'transfercheck',
   'tree-schema',
   'trigger',
   'uncheck',

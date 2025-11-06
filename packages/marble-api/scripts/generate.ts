@@ -7,7 +7,6 @@ import {
   featureAccessApiConfig,
   GENERATED_FOLDER,
   marbleCoreApiConfig,
-  transfercheckApiConfig,
 } from './config';
 
 async function openapiGenerator({ apiName, apiSpec, generatedApi, apiOptions }: Config) {
@@ -31,7 +30,6 @@ async function main() {
 
     await openapiGenerator(marbleCoreApiConfig);
     await openapiGenerator(featureAccessApiConfig);
-    await openapiGenerator(transfercheckApiConfig);
   } catch (error) {
     console.error('\n', error);
     process.exit(1);

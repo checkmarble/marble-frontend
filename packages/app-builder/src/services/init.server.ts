@@ -1,6 +1,5 @@
 import { initializeFeatureAccessAPIClient } from '@app-builder/infra/feature-access-api';
 import { initializeMarbleCoreAPIClient } from '@app-builder/infra/marblecore-api';
-import { initializeTransfercheckAPIClient } from '@app-builder/infra/transfercheck-api';
 import {
   makeServerRepositories,
   type ServerRepositories,
@@ -53,11 +52,6 @@ export function initServerServices(request: Request) {
     baseUrl: getServerEnv('MARBLE_API_URL'),
   });
 
-  const { getTransfercheckAPIClientWithAuth } = initializeTransfercheckAPIClient({
-    request,
-    baseUrl: getServerEnv('MARBLE_API_URL'),
-  });
-
   const { getFeatureAccessAPIClientWithAuth, featureAccessApi } = initializeFeatureAccessAPIClient({
     request,
     baseUrl: getServerEnv('MARBLE_API_URL'),
@@ -69,7 +63,6 @@ export function initServerServices(request: Request) {
     getFeatureAccessAPIClientWithAuth,
     marbleCoreApiClient,
     getMarbleCoreAPIClientWithAuth,
-    getTransfercheckAPIClientWithAuth,
     sessionStorageRepositoryOptions: {
       maxAge: Number(getServerEnv('SESSION_MAX_AGE')) || 43200,
       secrets: [getServerEnv('SESSION_SECRET')],

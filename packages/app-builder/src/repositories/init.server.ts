@@ -6,7 +6,6 @@ import {
   type GetMarbleCoreAPIClientWithAuth,
   type MarbleCoreApi,
 } from '@app-builder/infra/marblecore-api';
-import { type GetTransfercheckAPIClientWithAuth } from '@app-builder/infra/transfercheck-api';
 import { makeGetAiAssistSettingsRepository } from './AiAssistRepository';
 import { makeGetAnalyticsRepository } from './AnalyticsRepository';
 import { makeGetApiKeyRepository } from './ApiKeyRepository';
@@ -19,7 +18,6 @@ import { makeGetEditorRepository } from './EditorRepository';
 import { makeGetFeatureAccessRepository } from './FeatureAccessRepository';
 import { makeGetInboxRepository } from './InboxRepository';
 import { makeGetOrganizationRepository } from './OrganizationRepository';
-import { makeGetPartnerRepository } from './PartnerRepository';
 import { makeGetPersonalSettingsRepository } from './PersonalSettingsRepository';
 import { makeGetRuleSnoozeRepository } from './RuleSnoozeRepository';
 import { makeGetScenarioIterationRuleRepository } from './ScenarioIterationRuleRepository';
@@ -34,8 +32,6 @@ import {
   type SessionStorageRepositoryOptions,
 } from './SessionStorageRepositories';
 import { makeGetTestRunRepository } from './TestRunRepository';
-import { makeGetTransferAlertRepository } from './TransferAlertRepository';
-import { makeGetTransferRepository } from './TransferRepository';
 import { makeGetUserRepository } from './UserRepository';
 import { makeGetWebhookRepository } from './WebhookRepository';
 
@@ -45,14 +41,12 @@ export function makeServerRepositories({
   getFeatureAccessAPIClientWithAuth,
   marbleCoreApiClient,
   getMarbleCoreAPIClientWithAuth,
-  getTransfercheckAPIClientWithAuth,
 }: {
   sessionStorageRepositoryOptions: SessionStorageRepositoryOptions;
   getFeatureAccessApiClientWithoutAuth: () => FeatureAccessApi;
   getFeatureAccessAPIClientWithAuth: GetFeatureAccessAPIClientWithAuth;
   marbleCoreApiClient: MarbleCoreApi;
   getMarbleCoreAPIClientWithAuth: GetMarbleCoreAPIClientWithAuth;
-  getTransfercheckAPIClientWithAuth: GetTransfercheckAPIClientWithAuth;
 }) {
   return {
     authStorageRepository: getAuthStorageRepository(sessionStorageRepositoryOptions),
@@ -63,7 +57,6 @@ export function makeServerRepositories({
     getFeatureAccessAPIClientWithAuth,
     marbleCoreApiClient,
     getMarbleCoreAPIClientWithAuth,
-    getTransfercheckAPIClientWithAuth,
     getUserRepository: makeGetUserRepository(),
     getInboxRepository: makeGetInboxRepository(),
     getEditorRepository: makeGetEditorRepository(),
@@ -78,9 +71,6 @@ export function makeServerRepositories({
     getDataModelRepository: makeGetDataModelRepository(),
     getApiKeyRepository: makeGetApiKeyRepository(),
     getAnalyticsRepository: makeGetAnalyticsRepository(),
-    getTransferRepository: makeGetTransferRepository(),
-    getPartnerRepository: makeGetPartnerRepository(),
-    getTransferAlertRepository: makeGetTransferAlertRepository(),
     getWebhookRepository: makeGetWebhookRepository(),
     getRuleSnoozeRepository: makeGetRuleSnoozeRepository(),
     getTestRunRepository: makeGetTestRunRepository(),

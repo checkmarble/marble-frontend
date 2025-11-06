@@ -170,19 +170,7 @@ export type RoutePath =
   | '/ressources/workflows/rule/:ruleId'
   | '/ressources/workflows/rule/:ruleId/condition/:conditionId'
   | '/ressources/workflows/rule/:ruleId/rename'
-  | '/ressources/workflows/rule'
-  | '/transfercheck'
-  | '/transfercheck/*'
-  | '/transfercheck/alerts/received/:alertId'
-  | '/transfercheck/alerts/sent/:alertId'
-  | '/transfercheck/alerts'
-  | '/transfercheck/alerts/received'
-  | '/transfercheck/alerts/sent'
-  | '/transfercheck/ressources/alert/create'
-  | '/transfercheck/ressources/alert/update'
-  | '/transfercheck/ressources/alert/update/status'
-  | '/transfercheck/transfers/:transferId'
-  | '/transfercheck/transfers';
+  | '/ressources/workflows/rule';
 
 export type RouteID =
   | 'root'
@@ -371,18 +359,4 @@ export type RouteID =
   | 'routes/ressources+/workflows+/rule+/$ruleId+/_index'
   | 'routes/ressources+/workflows+/rule+/$ruleId+/condition+/$conditionId'
   | 'routes/ressources+/workflows+/rule+/$ruleId+/rename'
-  | 'routes/ressources+/workflows+/rule+/_index'
-  | 'routes/transfercheck+/_layout'
-  | 'routes/transfercheck+/$'
-  | 'routes/transfercheck+/_index'
-  | 'routes/transfercheck+/alerts+/_.received.$alertId'
-  | 'routes/transfercheck+/alerts+/_.sent.$alertId'
-  | 'routes/transfercheck+/alerts+/_layout'
-  | 'routes/transfercheck+/alerts+/_index'
-  | 'routes/transfercheck+/alerts+/received'
-  | 'routes/transfercheck+/alerts+/sent'
-  | 'routes/transfercheck+/ressources+/alert.create'
-  | 'routes/transfercheck+/ressources+/alert.update'
-  | 'routes/transfercheck+/ressources+/alert.update.status'
-  | 'routes/transfercheck+/transfers+/$transferId'
-  | 'routes/transfercheck+/transfers+/_index';
+  | 'routes/ressources+/workflows+/rule+/_index';

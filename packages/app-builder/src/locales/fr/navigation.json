@@ -28,9 +28,5 @@
   "settings.case_manager": "Investigations",
   "settings.inboxes": "Boîtes de réception",
   "settings.tags": "Tags",
-  "settings.users": "Utilisateurs",
-  "transfercheck.alerts": "Alertes",
-  "transfercheck.alerts.received": "Alertes reçues",
-  "transfercheck.alerts.sent": "Alertes envoyées",
-  "transfercheck.transfers": "Transferts"
+  "settings.users": "Utilisateurs"
 }
