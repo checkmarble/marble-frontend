@@ -136,10 +136,12 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
             />
           </div>
           <div className="flex justify-end gap-v2-xs">
-            <ButtonV2 variant="secondary" onClick={clear}>
+            <ButtonV2 variant="secondary" size="default" onClick={clear}>
               {t('filters:ds.clear_button.label')}
             </ButtonV2>
-            <ButtonV2 onClick={validate}>{t('filters:ds.apply_button.label')}</ButtonV2>
+            <ButtonV2 size="default" onClick={validate}>
+              {t('filters:ds.apply_button.label')}
+            </ButtonV2>
           </div>
         </div>
       </FilterPopover.Content>

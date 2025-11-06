@@ -316,12 +316,13 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
           <div className="flex flex-row justify-start gap-v2-md">
             <ButtonV2
               variant="secondary"
+              size="default"
               onClick={clearDynamicFilters}
               disabled={!hasAnyDynamicSelected || dynamicDescriptors.length === 0}
             >
               {t('filters:ds.clear_dynamic_button.label')}
             </ButtonV2>
-            <ButtonV2 variant="primary" onClick={() => contextValue.emitUpdate()} disabled={!hasChanges}>
+            <ButtonV2 variant="primary" size="default" onClick={() => contextValue.emitUpdate()} disabled={!hasChanges}>
               {hasChanges ? t('filters:ds.reapply_button.label') : t('filters:ds.apply_button.label')}
             </ButtonV2>
           </div>
