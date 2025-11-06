@@ -30,7 +30,6 @@ export function useSegmentPageTracking() {
     if (!tracking) return;
     const { name, properties } = tracking;
     void window.analytics?.page(name, properties);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, thisPage?.id, isHydrated]);
 
   return null;

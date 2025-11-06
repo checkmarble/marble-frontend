@@ -111,7 +111,6 @@ export function CaseEvents({
     container.addEventListener('scroll', callback);
 
     return () => container.removeEventListener('scroll', callback);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredEvents]);
 
   return (

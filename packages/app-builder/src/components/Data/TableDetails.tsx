@@ -78,7 +78,6 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
         <span className="flex flex-1">{tableModel.name}</span>
 
         {isCreateDataModelFieldAvailable ? (
-          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
           <div
             onClick={(e) => {
               //necessary to prevent clicks on modal interactible to trigger the collapsible

@@ -58,7 +58,6 @@ export default function WebhookDetail() {
             <span className="flex-1">{t('settings:webhook_details')}</span>
             {isEditWebhookAvailable ? (
               // Necessary to prevent click events from propagating to the Collapsible
-              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <span onClick={(e) => e.stopPropagation()}>
                 <UpdateWebhook defaultValue={webhook} webhookStatus={webhookStatus}>
                   <Button>

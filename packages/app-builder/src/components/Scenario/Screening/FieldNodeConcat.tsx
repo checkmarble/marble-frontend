@@ -32,7 +32,6 @@ export function FieldNodeConcat({
     if (nodes.length === 0) {
       setNodes([NewUndefinedAstNode()]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- We only want to trigger this useEffect on mount
   }, []);
 
   useEffect(() => {

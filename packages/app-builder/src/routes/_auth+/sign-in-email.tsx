@@ -117,7 +117,6 @@ export default function LoginWithEmail() {
           {() => (
             <SignInWithEmailAndPassword
               signIn={signIn}
-              // eslint-disable-next-line react/jsx-no-leaked-render
               loading={loading && type === 'email'}
               additionalContent={isSsoEnabled ? <SignInFirstConnection isSignInHomepage={false} /> : null}
               prefilledEmail={prefilledEmail}

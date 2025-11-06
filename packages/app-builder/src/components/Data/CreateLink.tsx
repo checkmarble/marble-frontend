@@ -83,7 +83,6 @@ function CreateLinkContent({
     const parentFieldId = selectedParentTableFields[0]?.id;
     if (!parentFieldId) return;
     form.setFieldValue('parentFieldId', parentFieldId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedParentTableFields]);
 
   return (

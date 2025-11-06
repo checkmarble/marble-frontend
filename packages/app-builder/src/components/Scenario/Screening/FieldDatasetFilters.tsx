@@ -46,7 +46,6 @@ export const FieldDatasetFilters = ({
       setFilters((prev) => ({ ...prev, search: searchValue }));
     }, 300);
     return () => clearTimeout(delayInputTimeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue]);
 
   return (

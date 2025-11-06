@@ -162,7 +162,6 @@ export const FieldDataset = ({
 
   useEffect(() => {
     onChange?.(selectedIds);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIds]);
 
   return (

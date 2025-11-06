@@ -32,7 +32,6 @@ export function BooleanValueFilter({
     if (isOpen) {
       setLocalChecked(filter.selectedValue === null ? 'indeterminate' : Boolean(filter.selectedValue));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   return (

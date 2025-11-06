@@ -106,16 +106,8 @@ export default function Login() {
             </button>
           ) : (
             <>
-              <SignInWithGoogle
-                signIn={signIn}
-                // eslint-disable-next-line react/jsx-no-leaked-render
-                loading={loading && type === 'google'}
-              />
-              <SignInWithMicrosoft
-                signIn={signIn}
-                // eslint-disable-next-line react/jsx-no-leaked-render
-                loading={loading && type === 'microsoft'}
-              />
+              <SignInWithGoogle signIn={signIn} loading={loading && type === 'google'} />
+              <SignInWithMicrosoft signIn={signIn} loading={loading && type === 'microsoft'} />
               <Link
                 className={CtaClassName({
                   variant: 'primary',

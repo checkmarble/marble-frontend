@@ -84,7 +84,6 @@ export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(fu
         ),
       })}
       backdrop={
-        // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
         <div
           onClick={(e) => e.stopPropagation()}
           className="bg-grey-00/20 fixed inset-0 flex items-center justify-center p-4 opacity-0 backdrop-blur-xs transition-all data-enter:opacity-100"

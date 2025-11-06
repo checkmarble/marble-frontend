@@ -36,8 +36,7 @@ export const SnoozePanel = ({
 
   useEffect(() => {
     setExpanded(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setExpanded]);
 
   if (rulesByPivotQuery.isPending) {
     return <div>Loading...</div>;

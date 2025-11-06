@@ -52,10 +52,7 @@ export function SelectEvents({
             <SelectWithCombobox.ComboboxItem
               key={event}
               value={event}
-              disabled={
-                // eslint-disable-next-line react/jsx-no-leaked-render
-                webhookStatus === 'restricted' && !event.includes('decision.')
-              }
+              disabled={webhookStatus === 'restricted' && !event.includes('decision.')}
             >
               <EventType>
                 <Highlight text={event} query={deferredSearchValue} />
