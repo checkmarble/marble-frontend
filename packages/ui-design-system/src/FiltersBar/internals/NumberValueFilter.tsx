@@ -73,7 +73,7 @@ export function NumberValueFilter({
   return (
     <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
       <FilterItem.Root>
-        <FilterItem.Trigger>
+        <FilterItem.Trigger id={filter.name}>
           <span className={buttonState}>{filter.name}</span> {(() => {
             if (!filter.selectedValue) return null;
             const op = (filter.selectedValue?.op ?? localValue.op) as NumberOperator;
@@ -85,12 +85,13 @@ export function NumberValueFilter({
               </>
             );
           })()}
+          {filter.unavailable ? (
+            <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
+              <Icon icon="error" className="text-red-base size-4" />
+            </Tooltip.Default>
+          ) : null}
         </FilterItem.Trigger>
-        {filter.unavailable ? (
-          <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
-            <Icon icon="error" className="text-red-base size-4" />
-          </Tooltip.Default>
-        ) : null}
+
         {filter.selectedValue ? (
           <FilterItem.Clear
             onClick={() => {

@@ -47,7 +47,6 @@ export function FiltersBar({
   value,
   onChange,
   onUpdate,
-  options = null,
 }: FiltersBarProps) {
   const { t } = useI18n();
 
@@ -187,9 +186,9 @@ export function FiltersBar({
   const filtersByPriority = useMemo(
     (): FilterWithPriority[][] => [
       mainFilters.map((filter) => ({ ...filter, priority: 'main' as const })),
-      ...(additionalFilters.length > 0
-        ? [additionalFilters.map((filter) => ({ ...filter, priority: 'additional' as const }))]
-        : []),
+      additionalFilters.length > 0
+        ? additionalFilters.map((filter) => ({ ...filter, priority: 'additional' as const }))
+        : [],
     ],
     [mainFilters, additionalFilters],
   );
@@ -281,87 +280,78 @@ export function FiltersBar({
       <div className="flex flex-row gap-v2-md w-full">
         <div className="flex flex-col gap-v2-md">
           {filtersByPriority.map((filters, priorityIndex) => (
-            <div key={priorityIndex} className="flex flex-row items-center w-full gap-v2-xl">
-              <div className="flex-1 flex flex-row items-center gap-v2-md min-w-0">
-                {filters.map((filter) =>
-                  match(filter)
-                    .with({ type: 'text' }, (textFilter) => (
-                      <TextMatchFilter
-                        filter={textFilter}
-                        key={filter.name}
-                        buttonState={buttonState({
-                          state:
-                            textFilter.selectedValue?.value &&
-                            textFilter.selectedValue.value.length > 0
-                              ? 'enabled'
-                              : 'disabled',
-                        })}
-                      />
-                    ))
-                    .with({ type: 'checkbox' }, () => <Checkbox key={filter.name} />)
-                    .with({ type: 'number' }, (numberFilter) => (
-                      <NumberValueFilter
-                        filter={numberFilter}
-                        key={filter.name}
-                        buttonState={buttonState({
-                          state: numberFilter.selectedValue ? 'enabled' : 'disabled',
-                        })}
-                      />
-                    ))
-                    .with({ type: 'boolean' }, (booleanFilter) => (
-                      <BooleanValueFilter
-                        filter={booleanFilter}
-                        level={filter.priority}
-                        key={filter.name}
-                        buttonState={buttonState({
-                          state: booleanFilter.selectedValue ? 'enabled' : 'disabled',
-                        })}
-                      />
-                    ))
-                    .with({ type: 'select' }, (selectFilter) => (
-                      <SelectOptionFilter {...selectFilter} key={filter.name} />
-                    ))
-                    .with({ type: 'date-range-popover' }, (dateRangePopoverFilter) => (
-                      <DateRangeFilterPopover filter={dateRangePopoverFilter} key={filter.name} />
-                    ))
-                    .with({ type: 'radio' }, () => (
-                      <div key={filter.name}>Radio filter not implemented yet</div>
-                    ))
-                    .with({ type: 'multi-select' }, () => (
-                      <div key={filter.name}>Multi-select filter not implemented yet</div>
-                    ))
-                    .otherwise(() => <div key={filter.name}>Filter not implemented yet</div>),
-                )}
-              </div>
+            <div
+              key={priorityIndex}
+              className="flex flex-row items-center w-full gap-v2-xl h-v2-xl"
+            >
+              {filters.map((filter) =>
+                match(filter)
+                  .with({ type: 'text' }, (textFilter) => (
+                    <TextMatchFilter
+                      filter={textFilter}
+                      key={filter.name}
+                      buttonState={buttonState({
+                        state:
+                          textFilter.selectedValue?.value &&
+                          textFilter.selectedValue.value.length > 0
+                            ? 'enabled'
+                            : 'disabled',
+                      })}
+                    />
+                  ))
+                  .with({ type: 'checkbox' }, () => <Checkbox key={filter.name} />)
+                  .with({ type: 'number' }, (numberFilter) => (
+                    <NumberValueFilter
+                      filter={numberFilter}
+                      key={filter.name}
+                      buttonState={buttonState({
+                        state: numberFilter.selectedValue ? 'enabled' : 'disabled',
+                      })}
+                    />
+                  ))
+                  .with({ type: 'boolean' }, (booleanFilter) => (
+                    <BooleanValueFilter
+                      filter={booleanFilter}
+                      level={filter.priority}
+                      key={filter.name}
+                      buttonState={buttonState({
+                        state: booleanFilter.selectedValue ? 'enabled' : 'disabled',
+                      })}
+                    />
+                  ))
+                  .with({ type: 'select' }, (selectFilter) => (
+                    <SelectOptionFilter {...selectFilter} key={filter.name} />
+                  ))
+                  .with({ type: 'date-range-popover' }, (dateRangePopoverFilter) => (
+                    <DateRangeFilterPopover filter={dateRangePopoverFilter} key={filter.name} />
+                  ))
+                  .with({ type: 'radio' }, () => (
+                    <div key={filter.name}>Radio filter not implemented yet</div>
+                  ))
+                  .with({ type: 'multi-select' }, () => (
+                    <div key={filter.name}>Multi-select filter not implemented yet</div>
+                  ))
+                  .otherwise(() => <div key={filter.name}>Filter not implemented yet</div>),
+              )}
             </div>
           ))}
 
-          {options?.dynamicSkeletons?.enabled && options?.dynamicSkeletons?.state === 'loading' && (
-            <div className="flex flex-row items-center gap-v2-md">
-              <div className="flex flex-row items-center gap-v2-md">
-                <div className="w-[84px] h-v2-xxl animate-pulse bg-grey-90 rounded-v2-s" />
-                <div className="w-[96px] h-v2-xxl animate-pulse bg-grey-90 rounded-v2-s" />
-                <div className="w-[82px] h-v2-xxl animate-pulse bg-grey-90 rounded-v2-s" />
-                <div className="w-[80px] h-v2-xxl animate-pulse bg-grey-90 rounded-v2-s" />
-              </div>
-            </div>
-          )}
           <div className="flex flex-row justify-start gap-v2-md">
-            {dynamicDescriptors.length || options?.dynamicSkeletons?.enabled ? (
-              <ButtonV2
-                variant="secondary"
-                onClick={clearDynamicFilters}
-                disabled={!hasAnyDynamicSelected}
-              >
-                {t('filters:ds.clear_dynamic_button.label', { defaultValue: 'Clear' })}
-              </ButtonV2>
-            ) : null}
+            <ButtonV2
+              variant="secondary"
+              onClick={clearDynamicFilters}
+              disabled={!hasAnyDynamicSelected || dynamicDescriptors.length === 0}
+            >
+              {t('filters:ds.clear_dynamic_button.label')}
+            </ButtonV2>
             <ButtonV2
               variant="primary"
               onClick={() => contextValue.emitUpdate()}
               disabled={!hasChanges}
             >
-              {t('filters:ds.apply_button.label', { defaultValue: 'Apply' })}
+              {hasChanges
+                ? t('filters:ds.reapply_button.label')
+                : t('filters:ds.apply_button.label')}
             </ButtonV2>
           </div>
         </div>

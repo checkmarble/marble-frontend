@@ -1431,8 +1431,8 @@ export type RuleHitTableResponseDto = {
     rule_name: string;
     hit_count: number;
     hit_ratio: number;
-    pivot_count: number;
-    pivot_ratio: number;
+    distinct_pivots: number;
+    repeat_ratio: number;
 };
 export type ScreeningHitTableResponseDto = {
     config_id: string;

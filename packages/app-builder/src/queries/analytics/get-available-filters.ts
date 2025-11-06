@@ -2,7 +2,7 @@ import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationC
 import { DateRangeFilter } from '@app-builder/models/analytics';
 import { AvailableFiltersResponse } from '@app-builder/models/analytics/available-filters';
 import { getRoute } from '@app-builder/utils/routes';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 export const useGetAvailableFilters = ({
   scenarioId,
@@ -19,6 +19,7 @@ export const useGetAvailableFilters = ({
   return useQuery({
     queryKey: ['analytics', 'available-filters', scenarioId, ranges],
     enabled: Array.isArray(ranges) && ranges.length > 0,
+    placeholderData: keepPreviousData,
     queryFn: async () => {
       const response = await fetch(endpoint, {
         method: 'POST',

@@ -6,6 +6,7 @@
   "ds.clear_button.label": "مسح",
   "ds.clear_dynamic_button.label": "مسح",
   "ds.noOptionsAvailable.label": "لا يوجد خيارات متاحة",
+  "ds.reapply_button.label": "إعادة التطبيق",
   "ds.text_match_filter.description": "أدخل قائمة من القيم المفصولة بفواصل لتصفيتها.",
   "ds.text_match_filter.selected_values": "يساوي {{values}}",
   "filters": "الفلاتر",

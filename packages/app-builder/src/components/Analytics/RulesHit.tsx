@@ -32,31 +32,31 @@ export function RulesHit({
     () => [
       columnHelper.accessor((row) => row.ruleName, {
         id: 'rule',
-        header: t('analytics:ruleshit.columns.rule'),
+        header: t('analytics:rule_hits.columns.rule'),
         size: 220,
         cell: ({ getValue }) => <span className="line-clamp-1">{getValue()}</span>,
       }),
       columnHelper.accessor((row) => row.hitCount, {
         id: 'hitCount',
-        header: t('analytics:ruleshit.columns.hit_count'),
+        header: t('analytics:rule_hits.columns.hit_count'),
         size: 100,
         cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
       }),
       columnHelper.accessor((row) => row.hitRatio, {
         id: 'hitRatio',
-        header: t('analytics:ruleshit.columns.hit_ratio'),
+        header: t('analytics:rule_hits.columns.hit_ratio'),
         size: 120,
         cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
       }),
-      columnHelper.accessor((row) => row.pivotCount, {
-        id: 'pivotCount',
-        header: t('analytics:ruleshit.columns.pivot_count'),
+      columnHelper.accessor((row) => row.distinctPivots, {
+        id: 'distinctPivots',
+        header: t('analytics:rule_hits.columns.pivot_count'),
         size: 140,
         cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
       }),
-      columnHelper.accessor((row) => row.pivotRatio, {
-        id: 'pivotRatio',
-        header: t('analytics:ruleshit.columns.pivot_ratio'),
+      columnHelper.accessor((row) => row.repeatRatio, {
+        id: 'repeatRatio',
+        header: t('analytics:rule_hits.columns.pivot_ratio'),
         size: 160,
         cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
       }),
@@ -74,7 +74,7 @@ export function RulesHit({
   return (
     <div className="mt-v2-xl">
       <div className="flex items-center justify-between">
-        <h2 className="text-h2 font-semibold">{t('analytics:ruleshit.title')}</h2>
+        <h2 className="text-h2 font-semibold">{t('analytics:rule_hits.title')}</h2>
       </div>
 
       <div
@@ -102,7 +102,7 @@ export function RulesHit({
                     className="text-s w-full truncate px-4 font-medium text-purple-65"
                     colSpan={table.getHeaderGroups()[0]?.headers.length ?? 5}
                   >
-                    {t('analytics:ruleshit.see_more.label')}
+                    {t('analytics:rule_hits.see_more.label')}
                   </td>
                 </tr>
               ) : null}

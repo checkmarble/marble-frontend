@@ -51,12 +51,13 @@ export function TextMatchFilter({
               })}
             </span>
           ) : null}
+          {filter.unavailable ? (
+            <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
+              <Icon icon="error" className="text-red-base size-4" />
+            </Tooltip.Default>
+          ) : null}
         </FilterItem.Trigger>
-        {filter.unavailable ? (
-          <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
-            <Icon icon="error" className="text-red-base size-4" />
-          </Tooltip.Default>
-        ) : null}
+
         {filter.selectedValue ? (
           <FilterItem.Clear
             onClick={() => {

@@ -39,9 +39,9 @@ export function BooleanValueFilter({
 
   return (
     <FilterPopover.Root open={isOpen} onOpenChange={setOpen}>
-      <FilterItem.Root className={buttonState}>
+      <FilterItem.Root>
         <FilterItem.Trigger className={buttonState}>
-          <span>{label}</span>
+          <span className={buttonState}>{label}</span>
         </FilterItem.Trigger>
         {filter.unavailable ? (
           <Tooltip.Default content={t('filters:unavailable_filter_tooltip')}>
