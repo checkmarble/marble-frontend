@@ -8,19 +8,10 @@ import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
-export const InboxChangedDetail = ({
-  event,
-  inboxes,
-}: {
-  event: InboxChangedEvent;
-  inboxes: Inbox[];
-}) => {
+export const InboxChangedDetail = ({ event, inboxes }: { event: InboxChangedEvent; inboxes: Inbox[] }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
-  const user = useMemo(
-    () => (event.userId ? getOrgUserById(event.userId) : undefined),
-    [event.userId, getOrgUserById],
-  );
+  const user = useMemo(() => (event.userId ? getOrgUserById(event.userId) : undefined), [event.userId, getOrgUserById]);
   const inboxName = useMemo(
     () => inboxes.find((i) => i.id === event.newInboxId)?.name ?? 'Unknown',
     [event.newInboxId, inboxes],

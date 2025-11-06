@@ -106,9 +106,7 @@ export default function TestRuns() {
           <div className="flex flex-col gap-4">
             <TestRunsFiltersProvider submitTestRunsFilters={setFilters} filterValues={filters}>
               <div className="flex flex-row items-center justify-between">
-                <span className="text-grey-00 text-l font-semibold">
-                  {t('scenarios:testrun.home')}
-                </span>
+                <span className="text-grey-00 text-l font-semibold">{t('scenarios:testrun.home')}</span>
                 <div className="flex flex-row gap-4">
                   <TestRunsFiltersMenu filterNames={testRunsFilterNames}>
                     <FiltersButton />

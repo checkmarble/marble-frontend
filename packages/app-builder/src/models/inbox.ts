@@ -1,10 +1,5 @@
 import { type ParseKeys } from 'i18next';
-import {
-  type AddInboxUserBodyDto,
-  type InboxDto,
-  type InboxMetadataDto,
-  type InboxUserDto,
-} from 'marble-api';
+import { type AddInboxUserBodyDto, type InboxDto, type InboxMetadataDto, type InboxUserDto } from 'marble-api';
 import invariant from 'tiny-invariant';
 
 export interface Inbox {
@@ -101,11 +96,7 @@ export interface InboxUserCreateBody {
   autoAssignable: boolean;
 }
 
-export function adaptInboxUserCreateBody({
-  userId,
-  role,
-  autoAssignable,
-}: InboxUserCreateBody): AddInboxUserBodyDto {
+export function adaptInboxUserCreateBody({ userId, role, autoAssignable }: InboxUserCreateBody): AddInboxUserBodyDto {
   return {
     user_id: userId,
     role,

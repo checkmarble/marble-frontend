@@ -158,10 +158,7 @@ function DataModelFlowImpl({ dataModel, pivots, children }: DataModelFlowProps) 
     // Wait first render of each node to have dynamic width before layouting
     if (nodes.some((nd) => nd.width === undefined)) return;
 
-    if (
-      nodes.some((nd) => nd.data.state === 'initialized') ||
-      edges.some((ed) => ed.data?.state === 'initialized')
-    ) {
+    if (nodes.some((nd) => nd.data.state === 'initialized') || edges.some((ed) => ed.data?.state === 'initialized')) {
       const layout = layoutElements(nodes, edges);
       setNodes(
         R.pipe(
@@ -297,10 +294,7 @@ function CustomControls() {
   );
 }
 
-function layoutElements(
-  nodes: Array<Node<DataModelNodeData>>,
-  edges: Array<Edge<DataModelEdgeData>>,
-) {
+function layoutElements(nodes: Array<Node<DataModelNodeData>>, edges: Array<Edge<DataModelEdgeData>>) {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
   g.setGraph({
     rankdir: 'LR',

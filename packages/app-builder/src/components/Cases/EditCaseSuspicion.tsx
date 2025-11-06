@@ -7,11 +7,7 @@ import {
   editSuspicionPayloadSchema,
   useEditSuspicionMutation,
 } from '@app-builder/queries/cases/edit-suspicion';
-import {
-  AlreadyDownloadingError,
-  AuthRequestError,
-  useDownloadFile,
-} from '@app-builder/services/DownloadFilesService';
+import { AlreadyDownloadingError, AuthRequestError, useDownloadFile } from '@app-builder/services/DownloadFilesService';
 import { getRoute } from '@app-builder/utils/routes';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useState } from 'react';
@@ -142,13 +138,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                   </span>
                   {reports[0]?.hasFile ? (
                     <ClientOnly>
-                      {() => (
-                        <ReportFile
-                          name={t('cases:sar.action.download')}
-                          caseId={id}
-                          reportId={reports[0]!.id}
-                        />
-                      )}
+                      {() => <ReportFile name={t('cases:sar.action.download')} caseId={id} reportId={reports[0]!.id} />}
                     </ClientOnly>
                   ) : (
                     <Button variant="secondary" size="xs" onClick={() => setOpenReportModal(true)}>
@@ -163,9 +153,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
           <Modal.Root open={openReportModal} onOpenChange={setOpenReportModal}>
             <Modal.Content>
               <Modal.Title>
-                {!isCompleted
-                  ? t('cases:sar.modale.title')
-                  : t('cases:sar.modale.title_choose_file')}
+                {!isCompleted ? t('cases:sar.modale.title') : t('cases:sar.modale.title_choose_file')}
               </Modal.Title>
               <div className="flex flex-col gap-8 p-8">
                 {isCompleted ? <Callout>{t('cases:sar.modale.callout')}</Callout> : null}
@@ -192,11 +180,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                   {reportFile ? (
                     <span className="border-grey-90 flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
                       {reportFile.name}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => form.setFieldValue('file', undefined)}
-                      >
+                      <Button variant="ghost" size="icon" onClick={() => form.setFieldValue('file', undefined)}>
                         <Icon icon="cross" className="text-grey-00 size-4" />
                       </Button>
                     </span>

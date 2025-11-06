@@ -1,11 +1,7 @@
 import type { DecisionsScoreDistribution as DecisionsScoreDistributionModel } from '@app-builder/models/analytics';
 import { ResponsiveLine } from '@nivo/line';
 
-export const DecisionsScoreDistribution = ({
-  data,
-}: {
-  data: DecisionsScoreDistributionModel | null;
-}) => {
+export const DecisionsScoreDistribution = ({ data }: { data: DecisionsScoreDistributionModel | null }) => {
   const thresholds = data?.thresholds ?? {};
   const series = [
     {
@@ -44,9 +40,7 @@ export const DecisionsScoreDistribution = ({
               tooltip={({ point }: { point: any }) => (
                 <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
                   <div className="flex items-center gap-v2-sm">
-                    <strong className="text-grey-00 font-semibold">
-                      {`Score: ${point.data.xFormatted}`}
-                    </strong>
+                    <strong className="text-grey-00 font-semibold">{`Score: ${point.data.xFormatted}`}</strong>
                   </div>
                   <div className="text-s text-grey-60">{`${point.data.yFormatted}`}</div>
                 </div>

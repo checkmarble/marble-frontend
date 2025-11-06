@@ -16,15 +16,7 @@ type Data =
       value: unknown;
     };
 
-export function FormatData({
-  data,
-  language,
-  className,
-}: {
-  data?: Data;
-  language: string;
-  className?: string;
-}) {
+export function FormatData({ data, language, className }: { data?: Data; language: string; className?: string }) {
   if (!data) {
     return <span className={className}>-</span>;
   }

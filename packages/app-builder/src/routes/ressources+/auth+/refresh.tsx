@@ -32,8 +32,7 @@ export function useRefreshToken() {
 
   useInterval(
     () => {
-      const { firebaseIdToken } =
-        clientServices.authenticationClientService.authenticationClientRepository;
+      const { firebaseIdToken } = clientServices.authenticationClientService.authenticationClientRepository;
 
       firebaseIdToken().then(
         (idToken: string) => {

@@ -55,9 +55,7 @@ test('server function with 2 middlewares depending on same dep propagates contex
   }) satisfies MiddlewareFunction<any, any>;
   const b = createMiddleware([dep], bFn);
 
-  const sFn = vi.fn<ServerFunction<any, any>>().mockImplementation(async function handler({
-    context,
-  }) {
+  const sFn = vi.fn<ServerFunction<any, any>>().mockImplementation(async function handler({ context }) {
     // All context from previous middlewares must be present
     expect(context).toEqual(
       expect.objectContaining({
@@ -97,18 +95,13 @@ test('should propagate global middleware contexts correctly', async () => {
 
   setGlobalMiddlewares(g);
 
-  const mFn = vi.fn<MiddlewareFunction<any, any>>().mockImplementation(async function m(
-    { context },
-    next,
-  ) {
+  const mFn = vi.fn<MiddlewareFunction<any, any>>().mockImplementation(async function m({ context }, next) {
     expect(context.gValue).toBe('value-from-global');
     return next({ context: { mValue: 'value-from-middleware' } });
   }) satisfies MiddlewareFunction<any, any>;
   const m = createMiddlewareWithGlobalContext([], mFn);
 
-  const sFn = vi.fn<ServerFunction<any, any>>().mockImplementation(async function handler({
-    context,
-  }) {
+  const sFn = vi.fn<ServerFunction<any, any>>().mockImplementation(async function handler({ context }) {
     expect(context).toEqual(expect.objectContaining({ gValue: 'value-from-global' }));
     return { ok: true, context };
   });

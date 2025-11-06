@@ -11,12 +11,7 @@ export function useRenameRuleMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      ruleId,
-      name,
-      fallthrough,
-      scenarioId,
-    }: RenameRuleInput): Promise<RenameRuleInput> => {
+    mutationFn: async ({ ruleId, name, fallthrough, scenarioId }: RenameRuleInput): Promise<RenameRuleInput> => {
       const response = await fetch(`/ressources/workflows/rule/${ruleId}/rename`, {
         method: 'PUT',
         headers: {

@@ -1,9 +1,5 @@
 import { Page, scenarioI18n } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
@@ -86,20 +82,16 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, appConfigRepository } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { customListsRepository, editor, dataModelRepository } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
-  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, appConfig] =
-    await Promise.all([
-      editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
-      dataModelRepository.getDataModel(),
-      customListsRepository.listCustomLists(),
-      appConfigRepository.getAppConfig(),
-    ]);
+  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, appConfig] = await Promise.all([
+    editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
+    dataModelRepository.getDataModel(),
+    customListsRepository.listCustomLists(),
+    appConfigRepository.getAppConfig(),
+  ]);
 
   return {
     databaseAccessors,
@@ -178,13 +170,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function RuleDetail() {
-  const {
-    databaseAccessors,
-    payloadAccessors,
-    dataModel,
-    customLists,
-    isAiRuleDescriptionEnabled,
-  } = useLoaderData<typeof loader>();
+  const { databaseAccessors, payloadAccessors, dataModel, customLists, isAiRuleDescriptionEnabled } =
+    useLoaderData<typeof loader>();
 
   const { t } = useTranslation(handle.i18n);
   const iterationId = useParam('iterationId');
@@ -225,26 +212,22 @@ export default function RuleDetail() {
 
     setRuleDescription(undefined);
     if (rule.formula) {
-      ruleDescriptionMutation
-        .mutateAsync({ scenarioId: scenario.id, astNode: rule.formula })
-        .then((res) => {
-          if (res.success && !ruleDescription && res.data.isRuleValid) {
-            setRuleDescription(res.data.description);
-          }
-        });
+      ruleDescriptionMutation.mutateAsync({ scenarioId: scenario.id, astNode: rule.formula }).then((res) => {
+        if (res.success && !ruleDescription && res.data.isRuleValid) {
+          setRuleDescription(res.data.description);
+        }
+      });
     }
   }, [rule.id]);
 
   const innerHandleFormulaChange = useDebouncedCallbackRef((value: AstNode | undefined) => {
     setIsDebouncing(false);
     if (value) {
-      ruleDescriptionMutation
-        .mutateAsync({ scenarioId: scenario.id, astNode: value })
-        .then((res) => {
-          if (res.success && res.data.isRuleValid) {
-            setRuleDescription(res.data.description);
-          }
-        });
+      ruleDescriptionMutation.mutateAsync({ scenarioId: scenario.id, astNode: value }).then((res) => {
+        if (res.success && res.data.isRuleValid) {
+          setRuleDescription(res.data.description);
+        }
+      });
     }
   }, 3000);
   const handleFormulaChange = (value: AstNode | undefined) => {
@@ -285,12 +268,9 @@ export default function RuleDetail() {
             }}
           >
             <div
-              className={cn(
-                'bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between gap-4 max-w-3xl',
-                {
-                  'border-b-grey-90 border-b': !intersection?.isIntersecting,
-                },
-              )}
+              className={cn('bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between gap-4 max-w-3xl', {
+                'border-b-grey-90 border-b': !intersection?.isIntersecting,
+              })}
             >
               <form.Field
                 name="name"
@@ -331,22 +311,14 @@ export default function RuleDetail() {
                       shift={-80}
                       className="bg-grey-100 border-grey-90 mt-2 flex flex-col gap-2 rounded-sm border p-2"
                     >
-                      <DuplicateRule
-                        ruleId={rule.id}
-                        iterationId={rule.scenarioIterationId}
-                        scenarioId={scenarioId}
-                      >
+                      <DuplicateRule ruleId={rule.id} iterationId={rule.scenarioIterationId} scenarioId={scenarioId}>
                         <Button variant="secondary" type="button">
                           <Icon icon="copy" className="size-5" aria-hidden />
                           {t('scenarios:clone_rule.button')}
                         </Button>
                       </DuplicateRule>
 
-                      <DeleteRule
-                        ruleId={rule.id}
-                        iterationId={rule.scenarioIterationId}
-                        scenarioId={scenarioId}
-                      >
+                      <DeleteRule ruleId={rule.id} iterationId={rule.scenarioIterationId} scenarioId={scenarioId}>
                         <Button color="red" type="button">
                           <Icon icon="delete" className="size-5" aria-hidden />
                           {t('common:delete')}
@@ -466,9 +438,7 @@ export default function RuleDetail() {
                             onChange={(e) => field.handleChange(+e.currentTarget.value)}
                             valid={field.state.meta.errors?.length === 0}
                           />
-                          <FormErrorOrDescription
-                            errors={getFieldErrors(field.state.meta.errors)}
-                          />
+                          <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                         </div>
                       )}
                     </form.Field>

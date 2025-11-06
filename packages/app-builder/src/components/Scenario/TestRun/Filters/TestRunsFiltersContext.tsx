@@ -24,8 +24,7 @@ interface TestRunsFiltersContextValue {
   onTestRunsFilterClose: () => void;
 }
 
-const TestRunsFiltersContext =
-  createSimpleContext<TestRunsFiltersContextValue>('TestRunsFiltersContext');
+const TestRunsFiltersContext = createSimpleContext<TestRunsFiltersContextValue>('TestRunsFiltersContext');
 
 export type TestRunsFiltersForm = TestRunsFilters;
 

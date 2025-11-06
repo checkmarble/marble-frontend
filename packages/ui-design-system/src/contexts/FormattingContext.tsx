@@ -14,10 +14,7 @@ export interface FormattingContextValue {
 
 const defaultLanguage: SupportedLanguage = 'en';
 
-function defaultFormatDateTimeWithoutPresets(
-  date: Date | string,
-  options?: FormatDateTimeOptions,
-): string {
+function defaultFormatDateTimeWithoutPresets(date: Date | string, options?: FormatDateTimeOptions): string {
   const d = typeof date === 'string' ? new Date(date) : date;
   const lang = options?.language ?? defaultLanguage;
   try {
@@ -63,13 +60,7 @@ const FormattingContext = createContext<FormattingContextValue>({
   formatDuration: defaultFormatDuration,
 });
 
-export function FormattingProvider({
-  value,
-  children,
-}: {
-  value: FormattingContextValue;
-  children: React.ReactNode;
-}) {
+export function FormattingProvider({ value, children }: { value: FormattingContextValue; children: React.ReactNode }) {
   return <FormattingContext.Provider value={value}>{children}</FormattingContext.Provider>;
 }
 

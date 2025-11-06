@@ -10,13 +10,7 @@ import { type NumberComparisonFilter, type NumberFilter, NumberOperator } from '
 import { FilterItem, FilterPopover } from './FilterPopover';
 import { useFiltersBarContext } from './FiltersBarContext';
 
-export function NumberValueFilter({
-  filter,
-  buttonState,
-}: {
-  filter: NumberFilter;
-  buttonState: string;
-}) {
+export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilter; buttonState: string }) {
   const [isOpen, setOpen] = useState(false);
   const { t } = useI18n();
 
@@ -29,9 +23,7 @@ export function NumberValueFilter({
       return { op: selectedValue.op ?? '=', value: Number.isNaN(num) ? 0 : num };
     })(),
   );
-  const [inputValue, setInputValue] = useState<string>(
-    localValue.value === 0 ? '' : String(localValue.value),
-  );
+  const [inputValue, setInputValue] = useState<string>(localValue.value === 0 ? '' : String(localValue.value));
   const { emitSet, emitRemove } = useFiltersBarContext();
   useEffect(() => {
     if (isOpen) {
@@ -49,8 +41,7 @@ export function NumberValueFilter({
 
   const onOperatorChange = (operator: string) => {
     // Check if operator is a valid NumberOperator value
-    if (!NUMBER_OPERATORS.has(operator as NumberOperator))
-      throw new Error(`Invalid operator: ${operator}`);
+    if (!NUMBER_OPERATORS.has(operator as NumberOperator)) throw new Error(`Invalid operator: ${operator}`);
 
     setLocalValue({ op: operator as NumberOperator, value: localValue.value });
     setOpSelectIsOpen(false);
@@ -107,9 +98,7 @@ export function NumberValueFilter({
           <div className="flex gap-2">
             <MenuCommand.Menu open={opSelectIsOpen} onOpenChange={setOpSelectIsOpen}>
               <MenuCommand.Trigger>
-                <MenuCommand.SelectButton className="w-v2-s">
-                  {localValue.op}
-                </MenuCommand.SelectButton>
+                <MenuCommand.SelectButton className="w-v2-s">{localValue.op}</MenuCommand.SelectButton>
               </MenuCommand.Trigger>
               <MenuCommand.Content sameWidth>
                 <MenuCommand.List>

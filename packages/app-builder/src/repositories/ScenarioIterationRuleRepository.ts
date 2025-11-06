@@ -48,10 +48,12 @@ export function makeGetScenarioIterationRuleRepository() {
       await marbleCoreApiClient.deleteScenarioIterationRule(ruleId);
     },
     getRuleDescription: async ({ scenarioId, astNode }) => {
-      const { description, is_rule_valid } =
-        await marbleCoreApiClient.generateAiDescriptionForAstExpression(scenarioId, {
+      const { description, is_rule_valid } = await marbleCoreApiClient.generateAiDescriptionForAstExpression(
+        scenarioId,
+        {
           ast_expression: adaptNodeDto(astNode),
-        });
+        },
+      );
       return { description, isRuleValid: is_rule_valid };
     },
   });

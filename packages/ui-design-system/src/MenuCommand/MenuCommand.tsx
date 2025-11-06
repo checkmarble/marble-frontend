@@ -80,8 +80,7 @@ function Root({ hover = false, persistOnSelect, ...props }: RootProps) {
   const onOpenChange = props.onOpenChange;
 
   const parentInternalSharp = InternalMenuSharpFactory.useOptionalSharp();
-  const shouldPersistOnSelect =
-    persistOnSelect ?? parentInternalSharp?.value.persistOnSelect ?? false;
+  const shouldPersistOnSelect = persistOnSelect ?? parentInternalSharp?.value.persistOnSelect ?? false;
 
   const internalSharp = InternalMenuSharpFactory.createSharp({
     hover,
@@ -145,12 +144,7 @@ function SubMenu({
             )}
           </Item>
         </Trigger>
-        <Content
-          side="right"
-          align="start"
-          sideOffset={12}
-          className={cn('pointer-events-auto', className)}
-        >
+        <Content side="right" align="start" sideOffset={12} className={cn('pointer-events-auto', className)}>
           {children}
         </Content>
       </Root>
@@ -181,10 +175,10 @@ function Trigger({ children }: React.PropsWithChildren) {
   );
 }
 
-type ButtonProps = React.DetailedHTMLProps<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  HTMLButtonElement
-> & { hasError?: boolean; noArrow?: boolean };
+type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+  hasError?: boolean;
+  noArrow?: boolean;
+};
 const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function SelectButton(
   { children, className, hasError = false, noArrow, ...props },
   ref,
@@ -251,14 +245,7 @@ type ContentProps = React.ComponentProps<typeof Popover.Content> &
   VariantProps<typeof commandClassname> & {
     bottom?: React.ReactNode;
   };
-function Content({
-  children,
-  className,
-  sameWidth,
-  bottom,
-  collisionPadding,
-  ...props
-}: ContentProps) {
+function Content({ children, className, sameWidth, bottom, collisionPadding, ...props }: ContentProps) {
   const internalSharp = InternalMenuSharpFactory.useSharp();
   const Portal = internalSharp.value.hover ? HoverCard.Portal : Popover.Portal;
   const ContentEl = internalSharp.value.hover ? HoverCard.Content : Popover.Content;
@@ -342,20 +329,21 @@ const KeyboardNav = () => {
 type ItemProps = Omit<React.ComponentProps<typeof Command.Item>, 'asChild'> & {
   selected?: boolean;
 };
-const HeadlessItem = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
-  function HeadlessItem({ onSelect, ...props }, ref) {
-    const internalSharp = InternalMenuSharpFactory.useSharp();
-    const menuOnSelect = React.useCallback(
-      (value: string) => {
-        onSelect?.(value);
-        internalSharp.value.onSelect();
-      },
-      [onSelect, internalSharp],
-    );
+const HeadlessItem = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(function HeadlessItem(
+  { onSelect, ...props },
+  ref,
+) {
+  const internalSharp = InternalMenuSharpFactory.useSharp();
+  const menuOnSelect = React.useCallback(
+    (value: string) => {
+      onSelect?.(value);
+      internalSharp.value.onSelect();
+    },
+    [onSelect, internalSharp],
+  );
 
-    return <Command.Item ref={ref} onSelect={menuOnSelect} {...props} />;
-  },
-);
+  return <Command.Item ref={ref} onSelect={menuOnSelect} {...props} />;
+});
 const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(function Item(
   { className, selected = false, ...props },
   ref,
@@ -386,12 +374,7 @@ Separator.displayName = Command.Separator.displayName;
 
 type ListProps = Omit<React.ComponentProps<typeof Command.List>, 'asChild'> & {};
 function List({ className, ...props }: ListProps) {
-  return (
-    <Command.List
-      className={cn('flex-1 overflow-y-auto overflow-x-hidden p-2', className)}
-      {...props}
-    />
-  );
+  return <Command.List className={cn('flex-1 overflow-y-auto overflow-x-hidden p-2', className)} {...props} />;
 }
 
 export const MenuCommand = {

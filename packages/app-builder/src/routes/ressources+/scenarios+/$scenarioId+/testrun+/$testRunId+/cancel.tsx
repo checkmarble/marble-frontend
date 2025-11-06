@@ -29,9 +29,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
       messageKey: 'common:errors.unknown',
     });
 
-    return Response.json(
-      { success: false },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: false }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }

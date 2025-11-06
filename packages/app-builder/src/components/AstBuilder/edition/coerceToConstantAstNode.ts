@@ -91,10 +91,7 @@ function getBooleanCoercionLogic(options: CoerceToConstantAstNodeOptions['boolea
   return {
     isCoerceableToBoolean: (search: string) => {
       const sanitizedSearch = search.trim().toLocaleLowerCase();
-      return (
-        sanitizedOptions.true.includes(sanitizedSearch) ||
-        sanitizedOptions.false.includes(sanitizedSearch)
-      );
+      return sanitizedOptions.true.includes(sanitizedSearch) || sanitizedOptions.false.includes(sanitizedSearch);
     },
     coerceToBoolean: (search: string) => {
       const sanitizedSearch = search.trim().toLocaleLowerCase();

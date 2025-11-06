@@ -40,11 +40,7 @@ export function RulesDetail({
                 <RuleExecutionTitle ruleExecution={ruleExecution} />
                 <RuleExecutionContent>
                   <RuleExecutionDescription description={ruleExecution.description} />
-                  <RuleExecutionDetail
-                    scenarioId={scenarioId}
-                    ruleExecution={ruleExecution}
-                    rules={rules}
-                  />
+                  <RuleExecutionDetail scenarioId={scenarioId} ruleExecution={ruleExecution} rules={rules} />
                 </RuleExecutionContent>
               </RuleExecutionCollapsible>
             );
@@ -98,9 +94,7 @@ export function RuleExecutionDetail({
             }}
           />
         </div>
-        {ruleExecution.evaluation ? (
-          <DisplayReturnValuesSwitch value={showValues} onChange={setShowValues} />
-        ) : null}
+        {ruleExecution.evaluation ? <DisplayReturnValuesSwitch value={showValues} onChange={setShowValues} /> : null}
       </div>
 
       <RuleFormula
@@ -113,13 +107,7 @@ export function RuleExecutionDetail({
   );
 }
 
-function DisplayReturnValuesSwitch({
-  value,
-  onChange,
-}: {
-  value: boolean;
-  onChange: (v: boolean) => void;
-}) {
+function DisplayReturnValuesSwitch({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
   const { t } = useTranslation(decisionsI18n);
 
   const id = React.useId();

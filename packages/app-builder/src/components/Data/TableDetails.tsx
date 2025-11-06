@@ -39,9 +39,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
     () =>
       dataModel
         .filter((table) => table.id !== tableModel.id)
-        .filter((table) =>
-          table.fields.some((field) => field.unicityConstraint === 'active_unique_constraint'),
-        ),
+        .filter((table) => table.fields.some((field) => field.unicityConstraint === 'active_unique_constraint')),
     [dataModel, tableModel],
   );
 
@@ -188,9 +186,7 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
     () =>
       dataModel
         .filter((table) => table.id !== tableModel.id)
-        .flatMap((table) =>
-          table.linksToSingle.filter((link) => link.parentTableName === tableModel.name),
-        ),
+        .flatMap((table) => table.linksToSingle.filter((link) => link.parentTableName === tableModel.name)),
     [dataModel, tableModel],
   );
 
@@ -211,9 +207,7 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
         size: 100,
         header: t('data:field_required'),
         cell: ({ getValue }) => {
-          return getValue()
-            ? t('data:create_field.option_optional')
-            : t('data:create_field.option_required');
+          return getValue() ? t('data:create_field.option_optional') : t('data:create_field.option_required');
         },
       }),
       fieldsColumnHelper.accessor('unicityConstraint', {
@@ -251,11 +245,7 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
               </div>
               {isEditDataModelFieldAvailable ? (
                 <div className="flex-shrink-0">
-                  <EditField
-                    key={cell.row.original.id}
-                    field={cell.row.original}
-                    linksToThisTable={linksToThisTable}
-                  >
+                  <EditField key={cell.row.original.id} field={cell.row.original} linksToThisTable={linksToThisTable}>
                     <div className="group-hover:text-grey-00 group-hover:bg-grey-98 group-hover:border-grey-50 hover:group-hover:bg-grey-95 active:group-hover:bg-grey-90 relative cursor-pointer rounded-sm border p-2 text-transparent transition-colors ease-in-out">
                       <Icon icon="edit-square" className="size-6" />
                     </div>
@@ -359,10 +349,7 @@ function FormatDescription({ description }: { description: string }) {
 
   return (
     <span
-      className={clsx(
-        'relative first-letter:capitalize truncate block',
-        description ? 'text-grey-00' : 'text-grey-80',
-      )}
+      className={clsx('relative first-letter:capitalize truncate block', description ? 'text-grey-00' : 'text-grey-80')}
       title={description || t('data:empty_description')}
     >
       {description || t('data:empty_description')}

@@ -26,9 +26,7 @@ import { PivotAnnotations } from './PivotAnnotations';
 import { PivotNavigationOptions } from './PivotNavigationOptions';
 
 function pivotUniqKey(pivotObject?: PivotObject) {
-  return pivotObject
-    ? `${pivotObject.pivotObjectName}_${pivotObject.pivotFieldName}_${pivotObject.pivotValue}`
-    : null;
+  return pivotObject ? `${pivotObject.pivotObjectName}_${pivotObject.pivotFieldName}_${pivotObject.pivotValue}` : null;
 }
 
 export function PivotsPanelContent({
@@ -51,21 +49,13 @@ export function PivotsPanelContent({
   const { t } = useTranslation(['cases']);
 
   const [isDisplayingProofs, setIsDisplayingProofs] = useState(false);
-  const [currentPivotUniqKey, setCurrentPivotObjectUniqKey] = useState(
-    pivotUniqKey(pivotObjects[0]),
-  );
-  const currentPivotObject = pivotObjects.find(
-    (pivotObject) => pivotUniqKey(pivotObject) === currentPivotUniqKey,
-  );
+  const [currentPivotUniqKey, setCurrentPivotObjectUniqKey] = useState(pivotUniqKey(pivotObjects[0]));
+  const currentPivotObject = pivotObjects.find((pivotObject) => pivotUniqKey(pivotObject) === currentPivotUniqKey);
 
   const currentTable = dataModel.find((t) => t.name === currentPivotObject?.pivotObjectName);
-  const decisionsPivotValues = useMemo(
-    () => caseObj.decisions.flatMap((d) => d.pivotValues),
-    [caseObj],
-  );
+  const decisionsPivotValues = useMemo(() => caseObj.decisions.flatMap((d) => d.pivotValues), [caseObj]);
   const isAllMissingPivotObject = decisionsPivotValues.every(
-    (pivotValue) =>
-      !pivotObjects.find((pivotObject) => pivotObject.pivotValue === pivotValue.value),
+    (pivotValue) => !pivotObjects.find((pivotObject) => pivotObject.pivotValue === pivotValue.value),
   );
   const dataModelExplorerContext = DataModelExplorerContext.useValue();
 
@@ -79,10 +69,7 @@ export function PivotsPanelContent({
               : t('cases:case_detail.pivot_panel.missing_pivot')}
           </span>
           {isAdmin(currentUser) ? (
-            <Link
-              to={getRoute('/data')}
-              className={CtaClassName({ variant: 'secondary', size: 'small' })}
-            >
+            <Link to={getRoute('/data')} className={CtaClassName({ variant: 'secondary', size: 'small' })}>
               {t('cases:case_detail.pivot_panel.missing_pivot_cta')}
             </Link>
           ) : null}
@@ -127,19 +114,13 @@ export function PivotsPanelContent({
           {currentTable && currentPivotObject ? (
             <div className="flex flex-col gap-v2-md">
               <div className="flex flex-row gap-v2-md">
-                <div className="text-h2 font-semibold">
-                  {t('cases:case_detail.pivot_panel.informations')}
-                </div>
+                <div className="text-h2 font-semibold">{t('cases:case_detail.pivot_panel.informations')}</div>
                 {isKycEnrichmentEnabled ? <KycEnrichment caseId={caseObj.id} /> : null}
               </div>
 
               <div className="border-grey-90 flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
                 <div className="capitalize font-semibold">{currentTable.name}</div>
-                <PivotObjectDetails
-                  tableModel={currentTable}
-                  dataModel={dataModel}
-                  pivotObject={currentPivotObject}
-                />
+                <PivotObjectDetails tableModel={currentTable} dataModel={dataModel} pivotObject={currentPivotObject} />
                 <div className="h-px bg-grey-90" />
                 <PivotNavigationOptions
                   currentUser={currentUser}
@@ -252,13 +233,7 @@ const cellVariants = cva('border-grey-90 border-t p-2', {
   },
 });
 
-function RelatedCases({
-  currentCase,
-  pivotValue,
-}: {
-  currentCase: CaseDetail;
-  pivotValue: string;
-}) {
+function RelatedCases({ currentCase, pivotValue }: { currentCase: CaseDetail; pivotValue: string }) {
   const { t } = useTranslation(['common', 'cases']);
   const casesQuery = usePivotRelatedCasesQuery(pivotValue);
   const language = useFormatLanguage();
@@ -284,9 +259,7 @@ function RelatedCases({
 
       return (
         <div className="flex flex-col gap-v2-md">
-          <div className="text-h2 font-semibold">
-            {t('cases:case_detail.pivot_panel.case_history')}
-          </div>
+          <div className="text-h2 font-semibold">{t('cases:case_detail.pivot_panel.case_history')}</div>
           <div className="grid w-full grid-cols-[auto_1fr_auto_auto]">
             {cases.map((caseObj, idx) => {
               const isLast = idx === cases.length - 1;
@@ -320,9 +293,7 @@ function RelatedCases({
                       Open
                     </Link>
                   </div>
-                  <div
-                    className={cellVariants({ isLast, className: 'flex items-center border-l' })}
-                  >
+                  <div className={cellVariants({ isLast, className: 'flex items-center border-l' })}>
                     <CaseStatusBadge
                       status={caseObj.status}
                       showText={false}
@@ -344,11 +315,7 @@ type PivotObjectDetailsProps = {
   dataModel: DataModelWithTableOptions;
   pivotObject: PivotObject;
 };
-export function PivotObjectDetails({
-  tableModel,
-  dataModel,
-  pivotObject,
-}: PivotObjectDetailsProps) {
+export function PivotObjectDetails({ tableModel, dataModel, pivotObject }: PivotObjectDetailsProps) {
   const { t } = useTranslation(['common', 'cases']);
   const { data, relatedObjects } = pivotObject.pivotObjectData;
   const filteredRelatedObjects = relatedObjects.filter((r) => !!r.relatedObjectDetail?.metadata);
@@ -356,11 +323,7 @@ export function PivotObjectDetails({
   return (
     <>
       <div className="flex flex-col gap-8">
-        <ClientObjectDataList
-          tableModel={tableModel}
-          data={data}
-          isIncompleteObject={!pivotObject.isIngested}
-        />
+        <ClientObjectDataList tableModel={tableModel} data={data} isIncompleteObject={!pivotObject.isIngested} />
         {filteredRelatedObjects.length > 0 ? (
           <div className="">
             {filteredRelatedObjects.map((relatedObject) => {
@@ -377,10 +340,7 @@ export function PivotObjectDetails({
                       tableName: relatedObject.linkName ?? relatedObjectType,
                     })}
                   </h4>
-                  <ClientObjectDataList
-                    tableModel={relatedObjectTable}
-                    data={relatedObject.relatedObjectDetail.data}
-                  />
+                  <ClientObjectDataList tableModel={relatedObjectTable} data={relatedObject.relatedObjectDetail.data} />
                 </Fragment>
               );
             })}

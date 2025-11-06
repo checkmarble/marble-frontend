@@ -1,9 +1,6 @@
 import { type AggregationFilterOperator, isAggregationFilterOperator } from './astNode/aggregation';
 import type { undefinedAstNodeName } from './astNode/ast-node';
-import {
-  isMainAstOperatorFunction,
-  type MainAstOperatorFunction,
-} from './astNode/builder-ast-node-node-operator';
+import { isMainAstOperatorFunction, type MainAstOperatorFunction } from './astNode/builder-ast-node-node-operator';
 import type { ValidTimestampExtractParts } from './astNode/time';
 import {
   type AggregatorOperator,

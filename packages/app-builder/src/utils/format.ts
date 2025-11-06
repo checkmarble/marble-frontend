@@ -24,19 +24,14 @@ import { Temporal } from 'temporal-polyfill';
  * We just need to add an interface to allow the user to change it.
  */
 export function useFormatLanguage() {
-  return useMemo(
-    () => (typeof window === 'undefined' ? 'fr-FR' : (navigator?.languages[0] ?? 'fr-FR')),
-    [],
-  );
+  return useMemo(() => (typeof window === 'undefined' ? 'fr-FR' : (navigator?.languages[0] ?? 'fr-FR')), []);
 }
 
 export function formatDateTimeWithoutPresets(
   timestamp: string | Date,
   { language, ...options }: { language: string } & Intl.DateTimeFormatOptions,
 ) {
-  return Intl.DateTimeFormat(language, options).format(
-    typeof timestamp === 'string' ? new Date(timestamp) : timestamp,
-  );
+  return Intl.DateTimeFormat(language, options).format(typeof timestamp === 'string' ? new Date(timestamp) : timestamp);
 }
 
 export function formatNumber(
@@ -58,10 +53,7 @@ export function formatCurrency(
   {
     currency,
     ...options
-  }: { language: string; currency: Currency<number> } & Omit<
-    Intl.NumberFormatOptions,
-    'currency' | 'style'
-  >,
+  }: { language: string; currency: Currency<number> } & Omit<Intl.NumberFormatOptions, 'currency' | 'style'>,
 ) {
   const decimal = toDecimal(dinero({ amount, currency }));
   // @ts-expect-error toDecimal return string instead of `${number}`
@@ -72,10 +64,7 @@ export function formatCurrency(
   });
 }
 
-export function formatSchedule(
-  schedule: string,
-  { language, ...options }: { language: string } & ConstrueOptions,
-) {
+export function formatSchedule(schedule: string, { language, ...options }: { language: string } & ConstrueOptions) {
   // Cronstrue only expose locale for lng, without country code
   const locale = language.split('-')[0];
 

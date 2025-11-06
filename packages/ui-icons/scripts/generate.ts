@@ -108,23 +108,13 @@ async function generateIcons() {
   const spinner = ora('Start generating svg sprites...').start();
 
   try {
-    const iconsSVGFileNames = (await readdir(IN_ICONS_DIR)).filter((fileName) =>
-      fileName.endsWith('.svg'),
-    );
-    await Promise.all([
-      buildIconSvgSprite(iconsSVGFileNames),
-      buildIconTypeFile(iconsSVGFileNames),
-    ]);
+    const iconsSVGFileNames = (await readdir(IN_ICONS_DIR)).filter((fileName) => fileName.endsWith('.svg'));
+    await Promise.all([buildIconSvgSprite(iconsSVGFileNames), buildIconTypeFile(iconsSVGFileNames)]);
 
     spinner.succeed(`${iconsSVGFileNames.length} icons succesfully generated`);
 
-    const logosSVGFileNames = (await readdir(IN_LOGOS_DIR)).filter((fileName) =>
-      fileName.endsWith('.svg'),
-    );
-    await Promise.all([
-      buildLogoSvgSprite(logosSVGFileNames),
-      buildLogoTypeFile(logosSVGFileNames),
-    ]);
+    const logosSVGFileNames = (await readdir(IN_LOGOS_DIR)).filter((fileName) => fileName.endsWith('.svg'));
+    await Promise.all([buildLogoSvgSprite(logosSVGFileNames), buildLogoTypeFile(logosSVGFileNames)]);
     spinner.succeed(`${logosSVGFileNames.length} logos succesfully generated`);
 
     spinner.succeed('svg sprites succesfully generated');

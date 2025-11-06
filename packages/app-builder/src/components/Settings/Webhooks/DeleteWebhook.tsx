@@ -5,13 +5,7 @@ import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalV2 } from 'ui-design-system';
 
-export function DeleteWebhook({
-  webhookId,
-  children,
-}: {
-  webhookId: string;
-  children: React.ReactElement;
-}) {
+export function DeleteWebhook({ webhookId, children }: { webhookId: string; children: React.ReactElement }) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -24,13 +18,7 @@ export function DeleteWebhook({
   );
 }
 
-function DeleteWebhookContent({
-  webhookId,
-  onSuccess,
-}: {
-  webhookId: string;
-  onSuccess: () => void;
-}) {
+function DeleteWebhookContent({ webhookId, onSuccess }: { webhookId: string; onSuccess: () => void }) {
   const { t } = useTranslation(['common', 'settings']);
   const deleteWebhookMutation = useDeleteWebhookMutation();
   const revalidate = useLoaderRevalidator();
@@ -54,9 +42,7 @@ function DeleteWebhookContent({
         </div>
 
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>{t('common:cancel')}</ModalV2.Close>
           <Button
             className="flex-1"
             variant="primary"
@@ -66,11 +52,7 @@ function DeleteWebhookContent({
             onClick={handleDeleteWebhook}
             disabled={deleteWebhookMutation.isPending}
           >
-            <LoadingIcon
-              icon="delete"
-              className="size-5"
-              loading={deleteWebhookMutation.isPending}
-            />
+            <LoadingIcon icon="delete" className="size-5" loading={deleteWebhookMutation.isPending} />
             {t('common:delete')}
           </Button>
         </div>

@@ -1,10 +1,5 @@
 import { type MarbleCoreApi } from '@app-builder/infra/marblecore-api';
-import {
-  type ApiKey,
-  adaptApiKey,
-  adaptCreatedApiKey,
-  type CreatedApiKey,
-} from '@app-builder/models/api-keys';
+import { type ApiKey, adaptApiKey, adaptCreatedApiKey, type CreatedApiKey } from '@app-builder/models/api-keys';
 
 export interface ApiKeyRepository {
   listApiKeys(): Promise<ApiKey[]>;

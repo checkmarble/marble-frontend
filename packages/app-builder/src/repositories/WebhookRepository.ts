@@ -14,10 +14,7 @@ export interface WebhookRepository {
   listWebhooks(): Promise<Webhook[]>;
   getWebhook(args: { webhookId: string }): Promise<WebhookWithSecret>;
   createWebhook(args: { webhookCreateBody: WebhookCreateBody }): Promise<WebhookWithSecret>;
-  updateWebhook(args: {
-    webhookId: string;
-    webhookUpdateBody: WebhookUpdateBody;
-  }): Promise<Webhook>;
+  updateWebhook(args: { webhookId: string; webhookUpdateBody: WebhookUpdateBody }): Promise<Webhook>;
   deleteWebhook(args: { webhookId: string }): Promise<void>;
 }
 
@@ -29,9 +26,7 @@ export function makeGetWebhookRepository() {
       return webhooks.map(adaptWebhook);
     },
     createWebhook: async ({ webhookCreateBody }) => {
-      const { webhook } = await marbleCoreApiClient.createWebhook(
-        adaptWebhookRegisterBodyDto(webhookCreateBody),
-      );
+      const { webhook } = await marbleCoreApiClient.createWebhook(adaptWebhookRegisterBodyDto(webhookCreateBody));
 
       return adaptWebhookWithSecret(webhook);
     },

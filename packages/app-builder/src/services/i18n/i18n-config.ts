@@ -11,10 +11,7 @@ export const defaultNS = 'common';
 
 // When adding a new supported lng, add corresponding cronstrue locale above too
 export const supportedLngs = ['en', 'fr', 'ar'] as const;
-export const languageNames: Record<
-  (typeof supportedLngs)[number],
-  { dir: 'ltr' | 'rtl'; name: string }
-> = {
+export const languageNames: Record<(typeof supportedLngs)[number], { dir: 'ltr' | 'rtl'; name: string }> = {
   en: { dir: 'ltr', name: 'English' },
   fr: { dir: 'ltr', name: 'Français' },
   ar: { dir: 'rtl', name: 'العربية' },

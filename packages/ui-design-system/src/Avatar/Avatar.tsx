@@ -1,29 +1,26 @@
 import { Fallback, Image, Root, type AvatarProps as RootAvatarProps } from '@radix-ui/react-avatar';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-const avatar = cva(
-  'inline-flex select-none items-center justify-center overflow-hidden rounded-full shrink-0',
-  {
-    variants: {
-      color: {
-        default: 'bg-purple-96',
-        grey: 'bg-grey-90',
-      },
-      size: {
-        xxs: 'size-6 text-2xs',
-        xs: 'size-6 text-xs',
-        s: 'size-8 text-s',
-        m: 'size-10 text-m',
-        l: 'size-14 text-l',
-        xl: 'size-16 text-l',
-      },
+const avatar = cva('inline-flex select-none items-center justify-center overflow-hidden rounded-full shrink-0', {
+  variants: {
+    color: {
+      default: 'bg-purple-96',
+      grey: 'bg-grey-90',
     },
-    defaultVariants: {
-      size: 'm',
-      color: 'default',
+    size: {
+      xxs: 'size-6 text-2xs',
+      xs: 'size-6 text-xs',
+      s: 'size-8 text-s',
+      m: 'size-10 text-m',
+      l: 'size-14 text-l',
+      xl: 'size-16 text-l',
     },
   },
-);
+  defaultVariants: {
+    size: 'm',
+    color: 'default',
+  },
+});
 
 export type AvatarProps = Omit<RootAvatarProps, 'asChild'> &
   VariantProps<typeof avatar> & {
@@ -32,15 +29,7 @@ export type AvatarProps = Omit<RootAvatarProps, 'asChild'> &
     src?: string;
   };
 
-export function Avatar({
-  firstName,
-  lastName,
-  src,
-  size,
-  color,
-  className,
-  ...props
-}: AvatarProps) {
+export function Avatar({ firstName, lastName, src, size, color, className, ...props }: AvatarProps) {
   return (
     <Root
       className={avatar({

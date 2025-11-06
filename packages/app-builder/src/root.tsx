@@ -66,8 +66,7 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { i18nextService, toastSessionService, csrfService, appConfigRepository } =
-    initServerServices(request);
+  const { i18nextService, toastSessionService, csrfService, appConfigRepository } = initServerServices(request);
   const locale = await i18nextService.getLocale(request);
 
   const [toastSession, [csrfToken, csrfCookieHeader]] = await Promise.all([
@@ -133,9 +132,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         {/* <script crossOrigin="anonymous" src="//unpkg.com/react-scan/dist/auto.global.js" /> */}
         <Links />
-        {loaderData?.segmentScript ? (
-          <SegmentScript nonce={nonce} script={loaderData.segmentScript} />
-        ) : null}
+        {loaderData?.segmentScript ? <SegmentScript nonce={nonce} script={loaderData.segmentScript} /> : null}
         <ExternalScripts />
       </head>
       <body className="selection:text-grey-100 selection:bg-purple-65 h-screen w-full overflow-hidden antialiased">
@@ -215,10 +212,7 @@ function App() {
 
 export default withSentry(App);
 
-export function shouldRevalidate({
-  defaultShouldRevalidate,
-  nextUrl,
-}: ShouldRevalidateFunctionArgs) {
+export function shouldRevalidate({ defaultShouldRevalidate, nextUrl }: ShouldRevalidateFunctionArgs) {
   // Revalidate when navigating to the sign-in page to ensure a fresh CSRF token
   if (nextUrl.pathname === getRoute('/sign-in')) {
     return true;

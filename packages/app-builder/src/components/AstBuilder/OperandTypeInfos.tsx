@@ -1,27 +1,20 @@
 import { type DataType, getDataTypeIcon, getDataTypeTKey } from '@app-builder/models';
-import {
-  getOperandTypeIcon,
-  getOperandTypeTKey,
-  type OperandType,
-} from '@app-builder/models/operand-type';
+import { getOperandTypeIcon, getOperandTypeTKey, type OperandType } from '@app-builder/models/operand-type';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { type TFunction } from 'i18next';
 import { Icon } from 'ui-icons';
 
-const operandTypeInfosClassnames = cva(
-  'flex items-center justify-center rounded-xs p-1 text-grey-00',
-  {
-    variants: {
-      interactionMode: {
-        viewer: 'bg-grey-90',
-        editor: 'bg-grey-98 group-aria-expanded:bg-purple-96 group-aria-expanded:text-purple-65',
-      },
-    },
-    defaultVariants: {
-      interactionMode: 'editor',
+const operandTypeInfosClassnames = cva('flex items-center justify-center rounded-xs p-1 text-grey-00', {
+  variants: {
+    interactionMode: {
+      viewer: 'bg-grey-90',
+      editor: 'bg-grey-98 group-aria-expanded:bg-purple-96 group-aria-expanded:text-purple-65',
     },
   },
-);
+  defaultVariants: {
+    interactionMode: 'editor',
+  },
+});
 
 export type OperandTypeVariantProps = VariantProps<typeof operandTypeInfosClassnames>;
 type OperandTypeInfosProps = OperandTypeVariantProps & {
@@ -30,12 +23,7 @@ type OperandTypeInfosProps = OperandTypeVariantProps & {
   dataType: DataType;
 };
 
-export function OperandTypeInfos({
-  t,
-  operandType,
-  dataType,
-  interactionMode,
-}: OperandTypeInfosProps) {
+export function OperandTypeInfos({ t, operandType, dataType, interactionMode }: OperandTypeInfosProps) {
   const typeInfos = [
     {
       icon: getOperandTypeIcon(operandType),
@@ -55,11 +43,7 @@ export function OperandTypeInfos({
         if (!icon) return null;
         return (
           <div key={tKey} className={operandTypeInfosClassnames({ interactionMode })}>
-            <Icon
-              icon={icon}
-              className="size-4 shrink-0"
-              aria-label={tKey ? t(`scenarios:${tKey}`) : undefined}
-            />
+            <Icon icon={icon} className="size-4 shrink-0" aria-label={tKey ? t(`scenarios:${tKey}`) : undefined} />
           </div>
         );
       })}

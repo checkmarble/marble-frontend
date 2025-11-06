@@ -64,10 +64,7 @@ export async function parseParamsSafe<Output>(params: Params, schema: ZodType<Ou
 export async function parseIdParamSafe<KeyName extends string>(
   params: Params,
   keyName: KeyName,
-): Promise<
-  | { success: true; data: { [K in KeyName]: UUID } }
-  | { success: false; error: z.ZodError; params: Params }
-> {
+): Promise<{ success: true; data: { [K in KeyName]: UUID } } | { success: false; error: z.ZodError; params: Params }> {
   const schema = z.object({
     [keyName]: z.union([shortUUIDSchema, z.uuid()]),
   });

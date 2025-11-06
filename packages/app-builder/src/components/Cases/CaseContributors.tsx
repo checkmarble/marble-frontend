@@ -19,12 +19,7 @@ export function CaseContributors({ contributors }: { contributors: CaseContribut
             const user = getOrgUserById(contributor.userId);
             return (
               <div key={contributor.id} className="flex flex-row items-center gap-1">
-                <Avatar
-                  key={contributor.id}
-                  size="xs"
-                  firstName={user?.firstName}
-                  lastName={user?.lastName}
-                />
+                <Avatar key={contributor.id} size="xs" firstName={user?.firstName} lastName={user?.lastName} />
                 <div className="text-grey-00 text-xs font-normal capitalize">
                   {getFullName(user) || t('cases:case_detail.unknown_user')}
                 </div>

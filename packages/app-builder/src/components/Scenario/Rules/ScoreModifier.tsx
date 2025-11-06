@@ -1,11 +1,7 @@
 import { type ComponentProps } from 'react';
 import { cn } from 'ui-design-system';
 
-export const ScoreModifier = ({
-  score,
-  className,
-  ...rest
-}: ComponentProps<'span'> & { score: number }) => {
+export const ScoreModifier = ({ score, className, ...rest }: ComponentProps<'span'> & { score: number }) => {
   return (
     <span
       {...rest}

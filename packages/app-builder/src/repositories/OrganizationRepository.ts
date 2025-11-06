@@ -11,10 +11,7 @@ export interface OrganizationRepository {
   getCurrentOrganization(): Promise<Organization>;
   listUsers(): Promise<User[]>;
   listTags(args?: { target?: 'case' | 'object'; withCaseCount?: boolean }): Promise<Tag[]>;
-  updateOrganization(args: {
-    organizationId: string;
-    changes: OrganizationUpdateInput;
-  }): Promise<Organization>;
+  updateOrganization(args: { organizationId: string; changes: OrganizationUpdateInput }): Promise<Organization>;
   updateAllowedNetworks(organizationId: string, allowedNetworks: string[]): Promise<string[]>;
 }
 

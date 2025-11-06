@@ -36,20 +36,19 @@ export const radioGroupItem = cva([
 
 export type RadioGroupItem = VariantProps<typeof radioGroupItem> & RadixRadioGroupItemProps;
 
-export const RadioGroupItem = forwardRef<
-  HTMLButtonElement,
-  RadioGroupItem & ComponentProps<'button'>
->(function RadioGroupItem({ className, ...props }, ref) {
-  return <Item {...props} className={radioGroupItem({ className })} ref={ref} />;
-});
+export const RadioGroupItem = forwardRef<HTMLButtonElement, RadioGroupItem & ComponentProps<'button'>>(
+  function RadioGroupItem({ className, ...props }, ref) {
+    return <Item {...props} className={radioGroupItem({ className })} ref={ref} />;
+  },
+);
 
 export const radioGroupIndicator = cva(['']);
 
-export type RadioGroupIndicator = VariantProps<typeof radioGroupIndicator> &
-  RadixRadioGroupIndicatorProps;
+export type RadioGroupIndicator = VariantProps<typeof radioGroupIndicator> & RadixRadioGroupIndicatorProps;
 
-export const RadioGroupIndicator = forwardRef<HTMLDivElement, RadioGroupIndicator>(
-  function RadioGroupIndicator({ className, ...props }, ref) {
-    return <Indicator {...props} className={radioGroupIndicator({ className })} ref={ref} />;
-  },
-);
+export const RadioGroupIndicator = forwardRef<HTMLDivElement, RadioGroupIndicator>(function RadioGroupIndicator(
+  { className, ...props },
+  ref,
+) {
+  return <Indicator {...props} className={radioGroupIndicator({ className })} ref={ref} />;
+});

@@ -31,12 +31,7 @@ export function ValidateSelfPivot({
           {t('common:back')}
         </Button>
 
-        <Button
-          className="flex-1"
-          variant="primary"
-          type="submit"
-          onClick={() => onValidate(pivotOption)}
-        >
+        <Button className="flex-1" variant="primary" type="submit" onClick={() => onValidate(pivotOption)}>
           {t('common:validate')}
         </Button>
       </div>

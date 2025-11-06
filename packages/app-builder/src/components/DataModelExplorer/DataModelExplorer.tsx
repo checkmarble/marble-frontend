@@ -52,9 +52,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
     if (!explorerContext.explorerState) return;
 
     const newTabUniqValue = getTabUniqValue(newTab);
-    const existingTab = explorerContext.explorerState.tabs.find(
-      findTabWithUniqValue(newTabUniqValue),
-    );
+    const existingTab = explorerContext.explorerState.tabs.find(findTabWithUniqValue(newTabUniqValue));
 
     if (existingTab) {
       explorerContext.setExplorerState({
@@ -161,24 +159,14 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
           />
         </div>
         <div>
-          <DataTableRender
-            caseId={props.caseId}
-            item={currentTab}
-            dataModel={props.dataModel}
-            navigateTo={addTab}
-          />
+          <DataTableRender caseId={props.caseId} item={currentTab} dataModel={props.dataModel} navigateTo={addTab} />
         </div>
       </div>
     </div>
   );
 }
 
-function DataModelExplorerTab(props: {
-  current: boolean;
-  label: string;
-  onClick: () => void;
-  onClose: () => void;
-}) {
+function DataModelExplorerTab(props: { current: boolean; label: string; onClick: () => void; onClose: () => void }) {
   return (
     <button
       aria-current={props.current}
@@ -216,11 +204,7 @@ function TabBarActions(props: {
       <MenuCommand.Content align="end" sideOffset={4}>
         <MenuCommand.List>
           {props.options.map((opt) => (
-            <MenuCommand.Item
-              disabled={opt.disabled}
-              key={opt.value}
-              onSelect={() => props.onSelect(opt.value)}
-            >
+            <MenuCommand.Item disabled={opt.disabled} key={opt.value} onSelect={() => props.onSelect(opt.value)}>
               {opt.label}
             </MenuCommand.Item>
           ))}

@@ -88,11 +88,7 @@ export function CreateInboxUserContent({
   const filteredUsers = useMemo(
     () =>
       matchSorter(users, deferredSearchValue, {
-        keys: [
-          (u: User) => `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim(),
-          'firstName',
-          'lastName',
-        ],
+        keys: [(u: User) => `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim(), 'firstName', 'lastName'],
       }),
     [deferredSearchValue, users],
   );
@@ -138,24 +134,14 @@ export function CreateInboxUserContent({
               <FormLabel name={field.name}>{t('settings:inboxes.inbox_details.user')}</FormLabel>
               <MenuCommand.Menu open={userMenuOpen} onOpenChange={setUserMenuOpen}>
                 <MenuCommand.Trigger>
-                  <MenuCommand.SelectButton
-                    hasError={field.state.meta.errors.length > 0}
-                    className="w-full"
-                  >
+                  <MenuCommand.SelectButton hasError={field.state.meta.errors.length > 0} className="w-full">
                     {users.find((u) => u.userId === field.state.value)
                       ? `${users.find((u) => u.userId === field.state.value)?.firstName ?? ''} ${users.find((u) => u.userId === field.state.value)?.lastName ?? ''}`
                       : ''}
                   </MenuCommand.SelectButton>
                 </MenuCommand.Trigger>
-                <MenuCommand.Content
-                  sameWidth
-                  align="start"
-                  className="min-w-(--radix-popover-trigger-width)"
-                >
-                  <MenuCommand.Combobox
-                    placeholder={t('common:search')}
-                    onValueChange={setSearchValue}
-                  />
+                <MenuCommand.Content sameWidth align="start" className="min-w-(--radix-popover-trigger-width)">
+                  <MenuCommand.Combobox placeholder={t('common:search')} onValueChange={setSearchValue} />
                   <MenuCommand.List className="max-h-60">
                     {filteredUsers.map(({ userId, firstName, lastName }) => (
                       <MenuCommand.Item
@@ -172,9 +158,7 @@ export function CreateInboxUserContent({
                       </MenuCommand.Item>
                     ))}
                     <MenuCommand.Empty>
-                      <div className="text-center p-2">
-                        {t('common:no_results', { defaultValue: '' })}
-                      </div>
+                      <div className="text-center p-2">{t('common:no_results', { defaultValue: '' })}</div>
                     </MenuCommand.Empty>
                   </MenuCommand.List>
                 </MenuCommand.Content>
@@ -196,11 +180,7 @@ export function CreateInboxUserContent({
                   {t('settings:inboxes.inbox_details.role')}
                 </span>
                 {access === 'allowed' ? null : (
-                  <Nudge
-                    content={t('settings:users.role.nudge')}
-                    className="size-6"
-                    kind={access}
-                  />
+                  <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
                 )}
               </FormLabel>
               <MenuCommand.Menu open={roleMenuOpen} onOpenChange={setRoleMenuOpen}>
@@ -213,11 +193,7 @@ export function CreateInboxUserContent({
                     {field.state.value ? t(tKeyForInboxUserRole(field.state.value)) : ''}
                   </MenuCommand.SelectButton>
                 </MenuCommand.Trigger>
-                <MenuCommand.Content
-                  sameWidth
-                  align="start"
-                  className="min-w-(--radix-popover-trigger-width)"
-                >
+                <MenuCommand.Content sameWidth align="start" className="min-w-(--radix-popover-trigger-width)">
                   <MenuCommand.List>
                     {inboxUserRoles.map((role) => (
                       <MenuCommand.Item

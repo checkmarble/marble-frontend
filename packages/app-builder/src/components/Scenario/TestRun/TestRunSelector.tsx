@@ -43,11 +43,7 @@ export const TestRunSelector = ({
       )}
     >
       <div className="px-4">
-        <TestRunVersions
-          iterations={iterations}
-          refIterationId={refIterationId}
-          testIterationId={testIterationId}
-        />
+        <TestRunVersions iterations={iterations} refIterationId={refIterationId} testIterationId={testIterationId} />
       </div>
       <div className="px-4">
         <TestRunPeriod startDate={startDate} endDate={endDate} />

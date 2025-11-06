@@ -3,12 +3,7 @@ import * as R from 'remeda';
 import { v7 as uuidv7 } from 'uuid';
 import { z } from 'zod/v4';
 
-import {
-  type AndAstNode,
-  NewAndAstNode,
-  NewOrWithAndAstNode,
-  type OrWithAndAstNode,
-} from './builder-ast-node';
+import { type AndAstNode, NewAndAstNode, NewOrWithAndAstNode, type OrWithAndAstNode } from './builder-ast-node';
 
 const baseConstantTypeSchema = z.union([z.number(), z.string(), z.boolean(), z.null()]);
 
@@ -18,10 +13,7 @@ export type ConstantType =
   | { [key: string]: ConstantType };
 
 export const constantTypeSchema: z.ZodType<ConstantType> = baseConstantTypeSchema.or(
-  z.union([
-    z.lazy(() => z.array(constantTypeSchema)),
-    z.lazy(() => z.record(z.string(), constantTypeSchema)),
-  ]),
+  z.union([z.lazy(() => z.array(constantTypeSchema)), z.lazy(() => z.record(z.string(), constantTypeSchema))]),
 );
 
 const baseAstNodeSchema = z.object({
@@ -62,12 +54,7 @@ export const astNodeSchema: z.ZodType<AstNode> = baseAstNodeSchema.extend({
   namedChildren: z.lazy(() => z.record(z.string(), astNodeSchema)),
 });
 
-export function NewAstNode({
-  name,
-  constant,
-  children,
-  namedChildren,
-}: Partial<AstNode> = {}): AstNode {
+export function NewAstNode({ name, constant, children, namedChildren }: Partial<AstNode> = {}): AstNode {
   return {
     id: uuidv7(),
     name: name ?? null,
@@ -77,9 +64,7 @@ export function NewAstNode({
   };
 }
 
-export function injectIdToNode<T extends IdLessAstNode>(
-  node: T,
-): T extends IdLessAstNode<infer N> ? N : never {
+export function injectIdToNode<T extends IdLessAstNode>(node: T): T extends IdLessAstNode<infer N> ? N : never {
   return {
     ...node,
     id: uuidv7(),
@@ -116,9 +101,7 @@ export function NewUndefinedAstNode({
   };
 }
 
-export function isUndefinedAstNode(
-  node: IdLessAstNode | AstNode,
-): node is CheckNodeId<UndefinedAstNode, typeof node> {
+export function isUndefinedAstNode(node: IdLessAstNode | AstNode): node is CheckNodeId<UndefinedAstNode, typeof node> {
   return node.name === undefinedAstNodeName;
 }
 

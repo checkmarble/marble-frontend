@@ -14,10 +14,7 @@ export const TagsUpdatedDetail = ({ event }: { event: CaseTagsUpdatedEvent }) =>
   const { t } = useTranslation(casesI18n);
   const { orgTags } = useOrganizationTags();
 
-  const user = useMemo(
-    () => (event.userId ? getOrgUserById(event.userId) : undefined),
-    [event.userId, getOrgUserById],
-  );
+  const user = useMemo(() => (event.userId ? getOrgUserById(event.userId) : undefined), [event.userId, getOrgUserById]);
 
   //TODO: Remove when proper event is implemented
   const finalTags = useMemo(() => event.tagIds.filter((id) => id !== ''), [event.tagIds]);

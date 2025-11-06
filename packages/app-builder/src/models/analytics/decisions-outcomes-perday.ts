@@ -78,9 +78,7 @@ export const triggerFilter = z.object({
   value: z.array(z.union([z.string(), z.number(), z.boolean()])),
 });
 
-export const mergeDateRanges = (
-  dateRanges: DecisionOutcomesPerDayResponseDto[][],
-): DecisionOutcomesPerDayEntity[] =>
+export const mergeDateRanges = (dateRanges: DecisionOutcomesPerDayResponseDto[][]): DecisionOutcomesPerDayEntity[] =>
   dateRanges
     .flatMap((range, index) =>
       range.map(
@@ -104,10 +102,7 @@ export const fillMissingDays = (
 
   const zeroActivityDay = (
     rangeId: RangeId,
-  ): Pick<
-    DecisionOutcomesPerDayEntity,
-    'approve' | 'block_and_review' | 'decline' | 'review' | 'rangeId'
-  > => ({
+  ): Pick<DecisionOutcomesPerDayEntity, 'approve' | 'block_and_review' | 'decline' | 'review' | 'rangeId'> => ({
     approve: 0,
     block_and_review: 0,
     decline: 0,
@@ -151,10 +146,7 @@ export const fillMissingDays = (
 
 const MAX_TICKS = 12;
 const limitTicks = (data: DecisionOutcomesAbsolute[]): DecisionOutcomesAbsolute[] =>
-  data.filter(
-    (_, i, arr) =>
-      arr.length <= MAX_TICKS || i % Math.round((arr.length - 1) / (MAX_TICKS - 1)) === 0,
-  );
+  data.filter((_, i, arr) => arr.length <= MAX_TICKS || i % Math.round((arr.length - 1) / (MAX_TICKS - 1)) === 0);
 const getGridXValues = (
   data: DecisionOutcomesAbsolute[],
   start: Date,
@@ -208,19 +200,14 @@ const getRatio = (item: DecisionOutcomesAbsolute): DecisionOutcomes => ({
   review: item.total ? (100 * item.review) / item.total : 0,
 });
 
-export const adaptDecisionOutcomesPerDay = (
-  val: DecisionOutcomesPerDayEntity[],
-): DecisionOutcomesPerPeriod => {
+export const adaptDecisionOutcomesPerDay = (val: DecisionOutcomesPerDayEntity[]): DecisionOutcomesPerPeriod => {
   // if (!val) {
   //   return null;
   // }
   const start = new Date(val[0]!.date);
   const end = new Date(val[val.length - 1]!.date);
 
-  const total = val.reduce(
-    (acc, v) => acc + v.approve + v.block_and_review + v.decline + v.review,
-    0,
-  );
+  const total = val.reduce((acc, v) => acc + v.approve + v.block_and_review + v.decline + v.review, 0);
   const absoluteDailyData: DecisionOutcomesAbsolute[] = val.map((v) => ({
     rangeId: v.rangeId,
     date: v.date,

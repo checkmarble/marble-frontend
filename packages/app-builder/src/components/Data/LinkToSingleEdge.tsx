@@ -1,11 +1,5 @@
 import { type LinkToSingle } from '@app-builder/models';
-import {
-  BaseEdge,
-  type DefaultEdgeOptions,
-  type EdgeProps,
-  getBezierPath,
-  MarkerType,
-} from 'reactflow';
+import { BaseEdge, type DefaultEdgeOptions, type EdgeProps, getBezierPath, MarkerType } from 'reactflow';
 
 import { useSelectedPivot } from './SelectedPivot';
 

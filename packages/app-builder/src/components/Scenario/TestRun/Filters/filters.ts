@@ -1,13 +1,7 @@
 import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
 
-export const testRunsFilterNames = [
-  'startedAfter',
-  'statuses',
-  'creators',
-  'ref_versions',
-  'test_versions',
-] as const;
+export const testRunsFilterNames = ['startedAfter', 'statuses', 'creators', 'ref_versions', 'test_versions'] as const;
 
 export type TestRunFilterName = (typeof testRunsFilterNames)[number];
 

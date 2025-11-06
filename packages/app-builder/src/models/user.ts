@@ -82,8 +82,7 @@ export const isAdmin = (user: CurrentUser) => user.role === 'ADMIN';
 
 export const isMarbleAdmin = (user: CurrentUser) => user.role === 'MARBLE_ADMIN';
 
-export const isMarbleCoreUser = (user: CurrentUser) =>
-  ['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'].includes(user.role);
+export const isMarbleCoreUser = (user: CurrentUser) => ['VIEWER', 'BUILDER', 'PUBLISHER', 'ADMIN'].includes(user.role);
 
 export function tKeyForUserRole(role: string): ParseKeys<['settings']> {
   switch (role) {

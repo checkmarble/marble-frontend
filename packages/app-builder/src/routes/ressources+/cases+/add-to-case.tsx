@@ -39,22 +39,14 @@ export async function action({ request }: ActionFunctionArgs) {
         messageKey: 'common:success.add_to_case',
       });
 
-      return Response.json(
-        { success: true },
-        { headers: { 'Set-Cookie': await commitSession(session) } },
-      );
+      return Response.json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
     }
   } catch (error) {
     setToastMessage(session, {
       type: 'error',
-      messageKey: isStatusBadRequestHttpError(error)
-        ? 'common:errors.add_to_case.invalid'
-        : 'common:errors.unknown',
+      messageKey: isStatusBadRequestHttpError(error) ? 'common:errors.add_to_case.invalid' : 'common:errors.unknown',
     });
 
-    return Response.json(
-      { success: false, errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: false, errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }

@@ -1,9 +1,5 @@
 import { Page } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { DataModelContextProvider } from '@app-builder/services/data/data-model';
 import {
   isCreateDataModelFieldAvailable,
@@ -68,10 +64,7 @@ export default function Data() {
       <Page.Header className="justify-between">
         <BreadCrumbs />
       </Page.Header>
-      <DataModelContextProvider
-        dataModel={dataModel}
-        dataModelFeatureAccess={dataModelFeatureAccess}
-      >
+      <DataModelContextProvider dataModel={dataModel} dataModelFeatureAccess={dataModelFeatureAccess}>
         <Page.Description>{t('data:your_data_callout')}</Page.Description>
         <Outlet />
       </DataModelContextProvider>

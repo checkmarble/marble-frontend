@@ -7,9 +7,7 @@ import { useCallbackRef } from './use-callback-ref';
  *
  * Inspired from https://github.com/sergeyleschev/react-custom-hooks?tab=readme-ov-file#2-useasync
  */
-export default function useAsync<Args extends Array<unknown>, Return>(
-  callback: (...args: Args) => Promise<Return>,
-) {
+export default function useAsync<Args extends Array<unknown>, Return>(callback: (...args: Args) => Promise<Return>) {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<unknown>();
   const [value, setValue] = React.useState<Return>();

@@ -142,9 +142,7 @@ export function UpdateInboxContent({
                 <MenuCommand.Menu open={isEscalationInboxOpen} onOpenChange={setEscalationOpen}>
                   <MenuCommand.Trigger>
                     <MenuCommand.SelectButton>
-                      {selectedInbox
-                        ? selectedInbox.name
-                        : t('settings:inboxes.inbox_details.no_escalation_inbox')}
+                      {selectedInbox ? selectedInbox.name : t('settings:inboxes.inbox_details.no_escalation_inbox')}
                     </MenuCommand.SelectButton>
                   </MenuCommand.Trigger>
                   <MenuCommand.Content align="start" sameWidth sideOffset={4}>
@@ -153,11 +151,7 @@ export function UpdateInboxContent({
                         {t('settings:inboxes.inbox_details.no_escalation_inbox')}
                       </MenuCommand.Item>
                       {otherInboxes.map((inbox) => (
-                        <MenuCommand.Item
-                          key={inbox.id}
-                          value={inbox.id}
-                          onSelect={field.handleChange}
-                        >
+                        <MenuCommand.Item key={inbox.id} value={inbox.id} onSelect={field.handleChange}>
                           {inbox.name}
                         </MenuCommand.Item>
                       ))}
@@ -179,9 +173,7 @@ export function UpdateInboxContent({
           {(field) => (
             <div className="group flex justify-between">
               <div className="flex gap-2">
-                <FormLabel name={field.name}>
-                  {t('settings:inboxes.inbox_details.auto_assign_enabled.label')}
-                </FormLabel>
+                <FormLabel name={field.name}>{t('settings:inboxes.inbox_details.auto_assign_enabled.label')}</FormLabel>
                 {!isAutoAssignmentAvailable ? (
                   <Nudge
                     className="size-5"

@@ -39,9 +39,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw redirect(getRoute('/sign-in'));
   }
 
-  const authError = !appConfig
-    ? 'BackendUnavailable'
-    : (session.get('authError')?.message as AuthErrors);
+  const authError = !appConfig ? 'BackendUnavailable' : (session.get('authError')?.message as AuthErrors);
 
   const url = new URL(request.url);
   // Handle email parameter manually to preserve literal '+' characters
@@ -82,14 +80,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function LoginWithEmail() {
   const { t } = useTranslation(['common', 'auth']);
-  const {
-    authError,
-    isSsoEnabled,
-    isSignupReady,
-    didMigrationsRun,
-    isManagedMarble,
-    prefilledEmail,
-  } = useLoaderData<typeof loader>();
+  const { authError, isSsoEnabled, isSignupReady, didMigrationsRun, isManagedMarble, prefilledEmail } =
+    useLoaderData<typeof loader>();
 
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
@@ -106,10 +98,7 @@ export default function LoginWithEmail() {
   return (
     <div className="flex flex-col gap-10 w-full">
       {isSsoEnabled ? (
-        <Link
-          className="absolute top-[60px] left-[60px] flex gap-2 text-s items-center"
-          to="/sign-in"
-        >
+        <Link className="absolute top-[60px] left-[60px] flex gap-2 text-s items-center" to="/sign-in">
           <Icon icon="arrow-left" className="size-4" />
           {t('common:back')}
         </Link>
@@ -120,9 +109,7 @@ export default function LoginWithEmail() {
         <ClientOnly
           fallback={
             <StaticSignInWithEmailAndPassword
-              additionalContent={
-                isSsoEnabled ? <SignInFirstConnection isSignInHomepage={false} /> : null
-              }
+              additionalContent={isSsoEnabled ? <SignInFirstConnection isSignInHomepage={false} /> : null}
               prefilledEmail={prefilledEmail}
             />
           }
@@ -132,9 +119,7 @@ export default function LoginWithEmail() {
               signIn={signIn}
               // eslint-disable-next-line react/jsx-no-leaked-render
               loading={loading && type === 'email'}
-              additionalContent={
-                isSsoEnabled ? <SignInFirstConnection isSignInHomepage={false} /> : null
-              }
+              additionalContent={isSsoEnabled ? <SignInFirstConnection isSignInHomepage={false} /> : null}
               prefilledEmail={prefilledEmail}
             />
           )}
@@ -149,10 +134,7 @@ export default function LoginWithEmail() {
             <div className="flex flex-col gap-8">
               <h2 className="text-2xl text-center">{t('auth:sign_in.first_connection')}</h2>
               <div className="flex flex-col gap-2">
-                <SignInFirstConnection
-                  isSignInHomepage={false}
-                  showAskDemoButton={!isSsoEnabled && isManagedMarble}
-                />
+                <SignInFirstConnection isSignInHomepage={false} showAskDemoButton={!isSsoEnabled && isManagedMarble} />
               </div>
             </div>
           </>

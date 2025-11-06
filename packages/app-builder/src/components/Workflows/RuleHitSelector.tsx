@@ -1,7 +1,4 @@
-import {
-  ScenarioRuleLatestVersion,
-  ScenarioRuleLatestVersionMap,
-} from '@app-builder/models/scenario/workflow';
+import { ScenarioRuleLatestVersion, ScenarioRuleLatestVersionMap } from '@app-builder/models/scenario/workflow';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MenuCommand } from 'ui-design-system';
@@ -49,9 +46,7 @@ export function RuleHitSelector({ onChange, selectedRuleIds, rulesList }: RuleHi
     <MenuCommand.Menu open={open} onOpenChange={setOpen} persistOnSelect>
       <MenuCommand.Trigger>
         <MenuCommand.SelectButton
-          className={`min-w-0 flex-1 ${
-            !pristine && selectedRuleIds.length === 0 ? 'border-red-47' : ''
-          }`}
+          className={`min-w-0 flex-1 ${!pristine && selectedRuleIds.length === 0 ? 'border-red-47' : ''}`}
         >
           {selectedRuleIds.length > 0 ? (
             <div className="flex flex-nowrap overflow-x-auto">
@@ -103,11 +98,7 @@ export function RuleHitSelector({ onChange, selectedRuleIds, rulesList }: RuleHi
                 }
               >
                 {rules.map((rule) => (
-                  <MenuCommand.Item
-                    key={rule.stableId}
-                    value={rule.name}
-                    onSelect={() => handleItemSelect(rule)}
-                  >
+                  <MenuCommand.Item key={rule.stableId} value={rule.name} onSelect={() => handleItemSelect(rule)}>
                     <div className="flex items-center gap-2 p-3 hover:bg-grey-05 rounded-md cursor-pointer">
                       <div className="flex items-center justify-center w-5 h-5">
                         {selectedRuleIds.includes(rule.stableId) && (
@@ -123,9 +114,7 @@ export function RuleHitSelector({ onChange, selectedRuleIds, rulesList }: RuleHi
             </Fragment>
           ))}
           <MenuCommand.Empty>
-            <div className="px-3 py-2 text-grey-60">
-              {t('workflows:rule_hit_selector.no_result')}
-            </div>
+            <div className="px-3 py-2 text-grey-60">{t('workflows:rule_hit_selector.no_result')}</div>
           </MenuCommand.Empty>
         </MenuCommand.List>
       </MenuCommand.Content>

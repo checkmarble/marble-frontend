@@ -1,10 +1,6 @@
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { createSimpleContext } from '@app-builder/utils/create-context';
-import {
-  formatDateTimeWithoutPresets,
-  formatDuration,
-  useFormatLanguage,
-} from '@app-builder/utils/format';
+import { formatDateTimeWithoutPresets, formatDuration, useFormatLanguage } from '@app-builder/utils/format';
 import { clsx } from 'clsx';
 import { add, sub } from 'date-fns';
 import { useCallback } from 'react';
@@ -25,11 +21,7 @@ interface DynamicDateRangeFilterType {
   fromNow: string;
 }
 
-type DateRangeFilterType =
-  | StaticDateRangeFilterType
-  | DynamicDateRangeFilterType
-  | null
-  | undefined;
+type DateRangeFilterType = StaticDateRangeFilterType | DynamicDateRangeFilterType | null | undefined;
 
 function adaptStaticDateRangeFilterType({ from, to }: DateRange): StaticDateRangeFilterType {
   const startDate = from?.toISOString() ?? '';
@@ -73,8 +65,7 @@ function DateRangeFilterRoot({
   children: React.ReactNode;
   className?: string;
 }) {
-  const calendarSelected =
-    dateRangeFilter?.type === 'static' ? adaptDateRange(dateRangeFilter) : undefined;
+  const calendarSelected = dateRangeFilter?.type === 'static' ? adaptDateRange(dateRangeFilter) : undefined;
 
   const onCalendarSelect = useCallback(
     (range?: DateRange) => {
@@ -172,10 +163,7 @@ function DateRangeFilterSummary({ className }: { className?: string }) {
   if (fromNow) {
     return (
       <div className={clsx('m-4 flex h-10 w-full items-center justify-center', className)}>
-        <time
-          className="text-s text-grey-00 flex h-10 items-center rounded-sm p-2 outline-hidden"
-          dateTime={fromNow}
-        >
+        <time className="text-s text-grey-00 flex h-10 items-center rounded-sm p-2 outline-hidden" dateTime={fromNow}>
           {t('filters:up_to', {
             duration: formatDuration(fromNow, language),
           })}

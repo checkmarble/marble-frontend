@@ -5,10 +5,7 @@ import {
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
-import {
-  type EditorMode,
-  EditorModeContextProvider,
-} from '@app-builder/services/editor/editor-mode';
+import { type EditorMode, EditorModeContextProvider } from '@app-builder/services/editor/editor-mode';
 import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { findRuleValidation } from '@app-builder/services/validation';
@@ -55,20 +52,13 @@ export const handle = {
           >
             <p className="text-s flex flex-row gap-1 font-semibold">
               <span className="capitalize">{currentFormattedVersion}</span>
-              {currentFormattedLive ? (
-                <span className="text-purple-65 capitalize">{currentFormattedLive}</span>
-              ) : null}
+              {currentFormattedLive ? <span className="text-purple-65 capitalize">{currentFormattedLive}</span> : null}
             </p>
           </BreadCrumbLink>
         );
       }
 
-      return (
-        <VersionSelect
-          currentIteration={currentIteration}
-          scenarioIterations={scenarioIterations}
-        />
-      );
+      return <VersionSelect currentIteration={currentIteration} scenarioIterations={scenarioIterations} />;
     },
   ],
 };
@@ -187,10 +177,7 @@ export function VersionSelect({
         type: si.type,
         version: si.version,
         updatedAt: si.updatedAt,
-        linkTo: location.pathname.replace(
-          fromUUIDtoSUUID(currentIteration.id),
-          fromUUIDtoSUUID(si.id),
-        ),
+        linkTo: location.pathname.replace(fromUUIDtoSUUID(currentIteration.id), fromUUIDtoSUUID(si.id)),
         formattedVersion: getFormattedVersion(si, t),
         formattedLive: getFormattedLive(si, t),
         formattedUpdatedAt: formatDateRelative(si.updatedAt, {
@@ -208,9 +195,7 @@ export function VersionSelect({
       <MenuButton className="text-s text-grey-00 border-grey-90 focus:border-purple-65 flex min-h-10 items-center justify-between rounded-full border p-2 font-medium outline-hidden">
         <p className="text-s ml-2 flex flex-row gap-1 font-semibold">
           <span className="text-grey-00 capitalize">{currentFormattedVersion}</span>
-          {currentFormattedLive ? (
-            <span className="text-purple-65 capitalize">{currentFormattedLive}</span>
-          ) : null}
+          {currentFormattedLive ? <span className="text-purple-65 capitalize">{currentFormattedLive}</span> : null}
         </p>
         <Icon aria-hidden icon="arrow-2-down" className="text-grey-00 size-6 shrink-0" />
       </MenuButton>

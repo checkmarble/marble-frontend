@@ -61,9 +61,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
 
   // Sanitize data to ensure all values are valid numbers
   const sanitizedData = useMemo(() => {
-    const sourceData = percentage
-      ? (currentDataGroup?.data.ratio ?? [])
-      : (currentDataGroup?.data.absolute ?? []);
+    const sourceData = percentage ? (currentDataGroup?.data.ratio ?? []) : (currentDataGroup?.data.absolute ?? []);
 
     return sourceData.map((item) => {
       const sanitized: DecisionsPerOutcome = {
@@ -250,10 +248,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
         </ButtonV2>
       </div>
 
-      <div
-        ref={divRef}
-        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative"
-      >
+      <div ref={divRef} className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative">
         {isLoading ? (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
             <Spinner className="size-6" />
@@ -324,15 +319,11 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                   id: 'compareOpacity',
                 },
               ]}
-              valueScale={
-                !data?.metadata.totalDecisions ? { type: 'linear', min: 0, max: 1000 } : undefined
-              }
+              valueScale={!data?.metadata.totalDecisions ? { type: 'linear', min: 0, max: 1000 } : undefined}
               axisLeft={{
                 legend: 'outcome (indexBy)',
                 legendOffset: -70,
-                tickValues: !data?.metadata.totalDecisions
-                  ? [0, 200, 400, 600, 800, 1000]
-                  : undefined,
+                tickValues: !data?.metadata.totalDecisions ? [0, 200, 400, 600, 800, 1000] : undefined,
               }}
               axisBottom={{
                 tickValues: getXTickValues(),
@@ -376,9 +367,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 variant="secondary"
                 mode="normal"
                 onClick={() => setGroupDate('daily')}
-                className={
-                  groupDate === 'daily' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''
-                }
+                className={groupDate === 'daily' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
               >
                 {t('analytics:time_granularity.day')}
               </ButtonV2>
@@ -387,9 +376,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 variant="secondary"
                 mode="normal"
                 onClick={() => setGroupDate('weekly')}
-                className={
-                  groupDate === 'weekly' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''
-                }
+                className={groupDate === 'weekly' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
               >
                 {t('analytics:time_granularity.week')}
               </ButtonV2>
@@ -398,9 +385,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 variant="secondary"
                 mode="normal"
                 onClick={() => setGroupDate('monthly')}
-                className={
-                  groupDate === 'monthly' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''
-                }
+                className={groupDate === 'monthly' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
               >
                 {t('analytics:time_granularity.month')}
               </ButtonV2>

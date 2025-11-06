@@ -6,11 +6,7 @@ import {
   type IdLessAstNode,
   type TableModel,
 } from '@app-builder/models';
-import {
-  type DataAccessorAstNode,
-  isDatabaseAccess,
-  isPayload,
-} from '@app-builder/models/astNode/data-accessor';
+import { type DataAccessorAstNode, isDatabaseAccess, isPayload } from '@app-builder/models/astNode/data-accessor';
 import { assertNever } from 'typescript-utils';
 
 export function getDataAccessorAstNodeField(

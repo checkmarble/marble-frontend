@@ -1,12 +1,6 @@
 import { type AstNode, isUndefinedAstNode, NewUndefinedAstNode } from '@app-builder/models';
-import {
-  isKnownOperandAstNode,
-  type KnownOperandAstNode,
-} from '@app-builder/models/astNode/builder-ast-node';
-import {
-  NewStringConcatAstNode,
-  type StringConcatAstNode,
-} from '@app-builder/models/astNode/strings';
+import { isKnownOperandAstNode, type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
+import { NewStringConcatAstNode, type StringConcatAstNode } from '@app-builder/models/astNode/strings';
 import { reorder } from '@app-builder/utils/list';
 import { DragDropContext, Draggable, Droppable, type OnDragEndResponder } from '@hello-pangea/dnd';
 import { replace } from 'radash';
@@ -32,9 +26,7 @@ export function FieldNodeConcat({
   onBlur?: () => void;
   viewOnly?: boolean;
 }) {
-  const [nodes, setNodes] = useState<KnownOperandAstNode[]>(
-    value?.children?.length ? value.children : [],
-  );
+  const [nodes, setNodes] = useState<KnownOperandAstNode[]>(value?.children?.length ? value.children : []);
 
   useEffect(() => {
     if (nodes.length === 0) {
@@ -46,8 +38,7 @@ export function FieldNodeConcat({
   useEffect(() => {
     const finalNodes = nodes.filter((n) => !isUndefinedAstNode(n));
 
-    const result =
-      finalNodes.length !== 0 ? NewStringConcatAstNode(finalNodes, { withSeparator: true }) : null;
+    const result = finalNodes.length !== 0 ? NewStringConcatAstNode(finalNodes, { withSeparator: true }) : null;
 
     onChange?.(result);
   }, [nodes, onChange]);
@@ -67,12 +58,7 @@ export function FieldNodeConcat({
           {(dropProvided) => (
             <div className="flex flex-col gap-2" ref={dropProvided.innerRef}>
               {nodes.map((node, index) => (
-                <Draggable
-                  isDragDisabled={viewOnly}
-                  key={node.id}
-                  draggableId={node.id}
-                  index={index}
-                >
+                <Draggable isDragDisabled={viewOnly} key={node.id} draggableId={node.id} index={index}>
                   {(dragProvided) => (
                     <div
                       key={node.id}
@@ -123,9 +109,7 @@ export function FieldNodeConcat({
                         placeholder={placeholder}
                         onSave={(savedNode) => {
                           if (isKnownOperandAstNode(savedNode)) {
-                            setNodes((prev) =>
-                              replace(prev, { ...savedNode, id: node.id }, (_, i) => i === index),
-                            );
+                            setNodes((prev) => replace(prev, { ...savedNode, id: node.id }, (_, i) => i === index));
                           }
                         }}
                       />

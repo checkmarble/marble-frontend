@@ -4,13 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function CreateRule({
-  scenarioId,
-  iterationId,
-}: {
-  scenarioId: string;
-  iterationId: string;
-}) {
+export function CreateRule({ scenarioId, iterationId }: { scenarioId: string; iterationId: string }) {
   const { t } = useTranslation(['scenarios']);
   const createRuleMutation = useCreateRuleMutation(scenarioId, iterationId);
   const revalidate = useLoaderRevalidator();
@@ -32,9 +26,7 @@ export function CreateRule({
       <Icon icon="plus" className="text-grey-00 size-5" />
       <div className="flex w-full flex-col items-start">
         <span className="text-grey-00 font-normal">{t('scenarios:create_rule.title')}</span>
-        <span className="text-s text-grey-50 font-normal">
-          {t('scenarios:create_rule.description')}
-        </span>
+        <span className="text-s text-grey-50 font-normal">{t('scenarios:create_rule.description')}</span>
       </div>
     </Button>
   );

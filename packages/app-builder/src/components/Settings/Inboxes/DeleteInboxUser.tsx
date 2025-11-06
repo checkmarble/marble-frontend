@@ -17,11 +17,7 @@ export function DeleteInboxUser({ inboxUser }: { inboxUser: InboxUser }) {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
-        <Icon
-          icon="delete"
-          className="size-6 shrink-0"
-          aria-label={t('settings:inboxes.inbox_user.delete')}
-        />
+        <Icon icon="delete" className="size-6 shrink-0" aria-label={t('settings:inboxes.inbox_user.delete')} />
       </Modal.Trigger>
       <Modal.Content>
         <DeleteInboxUserContent inboxUser={inboxUser} onSuccess={handleOnSuccess} />
@@ -30,26 +26,18 @@ export function DeleteInboxUser({ inboxUser }: { inboxUser: InboxUser }) {
   );
 }
 
-const DeleteInboxUserContent = ({
-  inboxUser,
-  onSuccess,
-}: {
-  inboxUser: InboxUser;
-  onSuccess: () => void;
-}) => {
+const DeleteInboxUserContent = ({ inboxUser, onSuccess }: { inboxUser: InboxUser; onSuccess: () => void }) => {
   const { t } = useTranslation(['common', 'settings']);
   const deleteInboxUserMutation = useDeleteInboxUserMutation();
   const revalidate = useLoaderRevalidator();
 
   const handleDeleteInboxUser = () => {
-    deleteInboxUserMutation
-      .mutateAsync({ inboxId: inboxUser.inboxId, inboxUserId: inboxUser.id })
-      .then((res) => {
-        if (!res) {
-          onSuccess();
-        }
-        revalidate();
-      });
+    deleteInboxUserMutation.mutateAsync({ inboxId: inboxUser.inboxId, inboxUserId: inboxUser.id }).then((res) => {
+      if (!res) {
+        onSuccess();
+      }
+      revalidate();
+    });
   };
 
   return (
@@ -67,13 +55,7 @@ const DeleteInboxUserContent = ({
               {t('common:cancel')}
             </Button>
           </Modal.Close>
-          <Button
-            color="red"
-            className="flex-1"
-            variant="primary"
-            name="delete"
-            onClick={handleDeleteInboxUser}
-          >
+          <Button color="red" className="flex-1" variant="primary" name="delete" onClick={handleDeleteInboxUser}>
             <Icon icon="delete" className="size-6" />
             {t('common:delete')}
           </Button>

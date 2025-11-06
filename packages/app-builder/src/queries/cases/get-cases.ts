@@ -26,10 +26,7 @@ const dateRangeSchema = z.discriminatedUnion('type', [
   }),
 ]);
 
-const stringableBooleanSchema = z.union([
-  z.boolean(),
-  z.enum(['true', 'false']).transform((val) => val === 'true'),
-]);
+const stringableBooleanSchema = z.union([z.boolean(), z.enum(['true', 'false']).transform((val) => val === 'true')]);
 
 export const filtersSchema = z.object({
   name: z.string().optional(),
@@ -42,8 +39,7 @@ export const filtersSchema = z.object({
 
 export type Filters = z.infer<typeof filtersSchema>;
 
-const endpoint = (inboxId: string, qs: string) =>
-  getRoute('/ressources/cases/:inboxId/cases', { inboxId }) + qs;
+const endpoint = (inboxId: string, qs: string) => getRoute('/ressources/cases/:inboxId/cases', { inboxId }) + qs;
 
 export const useGetCasesQuery = (
   inboxId: string,
@@ -63,9 +59,7 @@ export const useGetCasesQuery = (
       const response = await fetch(endpoint(inboxId, qs), {
         method: 'GET',
       });
-      const responseData = (await response.json()) as
-        | { redirectTo: string }
-        | { data: PaginatedResponse<Case> };
+      const responseData = (await response.json()) as { redirectTo: string } | { data: PaginatedResponse<Case> };
 
       if ('redirectTo' in responseData) {
         navigate(responseData.redirectTo);

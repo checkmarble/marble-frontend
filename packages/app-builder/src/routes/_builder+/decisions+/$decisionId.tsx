@@ -9,11 +9,7 @@ import {
   RulesDetail,
   useDecisionRightPanelContext,
 } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { PivotDetail } from '@app-builder/components/Decisions/PivotDetail';
 import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { ScreeningDetail } from '@app-builder/components/Decisions/ScreeningDetail';
@@ -77,12 +73,9 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs): Promise<LoaderData> {
   const { authService } = initServerServices(request);
-  const { decision, scenario, dataModelRepository, screening } = await authService.isAuthenticated(
-    request,
-    {
-      failureRedirect: getRoute('/sign-in'),
-    },
-  );
+  const { decision, scenario, dataModelRepository, screening } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
   const parsedParam = await parseParamsSafe(params, z.object({ decisionId: shortUUIDSchema }));
   if (!parsedParam.success) {
     throw handleParseParamError(request, parsedParam.error);
@@ -105,17 +98,11 @@ export async function loader({ request, params }: LoaderFunctionArgs): Promise<L
     const [pivots, screeningResult, { sections }] = await independentOperations;
 
     const datasets: Map<string, string> = new Map(
-      sections?.flatMap(
-        ({ datasets }) => datasets?.map(({ name, title }) => [name, title]) ?? [],
-      ) ?? [],
+      sections?.flatMap(({ datasets }) => datasets?.map(({ name, title }) => [name, title]) ?? []) ?? [],
     );
 
     const sanctionsDatasets = [
-      ...new Set(
-        screeningResult.flatMap(({ matches }) =>
-          matches.flatMap(({ payload }) => payload.datasets),
-        ),
-      ),
+      ...new Set(screeningResult.flatMap(({ matches }) => matches.flatMap(({ payload }) => payload.datasets))),
     ];
 
     return {
@@ -161,9 +148,7 @@ export default function DecisionPage() {
     R.filter(R.isNonNullish),
   );
 
-  const existingPivotDefinition = pivots.some(
-    (pivot) => pivot.baseTable === decision.triggerObjectType,
-  );
+  const existingPivotDefinition = pivots.some((pivot) => pivot.baseTable === decision.triggerObjectType);
 
   return (
     <DecisionRightPanel.Root>
@@ -177,15 +162,8 @@ export default function DecisionPage() {
             <div className="grid grid-cols-[2fr_1fr] gap-4 lg:gap-8">
               <div className="flex flex-col gap-4 lg:gap-8">
                 <DecisionDetail decision={decision} />
-                <PivotDetail
-                  pivotValues={pivotValues}
-                  existingPivotDefinition={existingPivotDefinition}
-                />
-                <RulesDetail
-                  scenarioId={decision.scenario.id}
-                  ruleExecutions={decision.rules}
-                  rules={scenarioRules}
-                />
+                <PivotDetail pivotValues={pivotValues} existingPivotDefinition={existingPivotDefinition} />
+                <RulesDetail scenarioId={decision.scenario.id} ruleExecutions={decision.rules} rules={scenarioRules} />
                 {screening.map((s) => (
                   <ScreeningDetail key={s.id} screening={s} />
                 ))}

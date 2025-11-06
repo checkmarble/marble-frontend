@@ -38,11 +38,7 @@ export function UpdateInboxUser({
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
-        <Icon
-          icon="edit-square"
-          className="size-6 shrink-0"
-          aria-label={t('settings:tags.update_tag')}
-        />
+        <Icon icon="edit-square" className="size-6 shrink-0" aria-label={t('settings:tags.update_tag')} />
       </Modal.Trigger>
       <Modal.Content>
         <UpdateInboxUserContent
@@ -115,11 +111,7 @@ export function UpdateInboxUserContent({
                   {t('settings:inboxes.inbox_details.role')}
                 </span>
                 {access === 'allowed' ? null : (
-                  <Nudge
-                    content={t('settings:users.role.nudge')}
-                    className="size-6"
-                    kind={access}
-                  />
+                  <Nudge content={t('settings:users.role.nudge')} className="size-6" kind={access} />
                 )}
               </FormLabel>
               <Select.Default

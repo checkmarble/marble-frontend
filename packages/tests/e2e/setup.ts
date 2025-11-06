@@ -43,9 +43,7 @@ async function globalSetup() {
     .withDefaultLogDriver()
     .start();
 
-  const api = await new GenericContainer(
-    'europe-west1-docker.pkg.dev/marble-infra/marble/marble-backend',
-  )
+  const api = await new GenericContainer('europe-west1-docker.pkg.dev/marble-infra/marble/marble-backend')
     .withPlatform('linux/x86_64')
     .withNetwork(net)
     .withNetworkAliases('api')

@@ -44,35 +44,29 @@ export type DateRange = {
   end: string;
 };
 
-const transformDateRangeToStatic = dateRangeFilterSchema.transform(
-  (val: DateRangeFilter): DateRange => {
-    if (val.type === 'static')
-      return {
-        start: val.startDate,
-        end: val.endDate,
-      };
+const transformDateRangeToStatic = dateRangeFilterSchema.transform((val: DateRangeFilter): DateRange => {
+  if (val.type === 'static')
+    return {
+      start: val.startDate,
+      end: val.endDate,
+    };
 
-    const now = new Date();
-    const m = /-?P-?(\d+)([MD])/i.exec(val.fromNow);
-    const amount = m && m[1] ? Number(m[1]) : 1;
-    const unit = m && m[2] ? m[2].toUpperCase() : 'M';
-    const startDate = unit === 'D' ? subDays(now, amount) : subMonths(now, amount);
-    return { start: new Date(startDate).toISOString(), end: new Date(now).toISOString() };
-  },
-);
+  const now = new Date();
+  const m = /-?P-?(\d+)([MD])/i.exec(val.fromNow);
+  const amount = m && m[1] ? Number(m[1]) : 1;
+  const unit = m && m[2] ? m[2].toUpperCase() : 'M';
+  const startDate = unit === 'D' ? subDays(now, amount) : subMonths(now, amount);
+  return { start: new Date(startDate).toISOString(), end: new Date(now).toISOString() };
+});
 
 export function getIsoBoundsFromDateRanges(ranges: DateRangeFilter[]): DateRange {
   if (!ranges.length) return { start: '', end: '' };
 
   const staticRanges = ranges.map((r) => transformDateRangeToStatic.parse(r));
 
-  const earliestStart = new Date(
-    Math.min(...staticRanges.map((r) => new Date(r.start).getTime())),
-  ).toISOString();
+  const earliestStart = new Date(Math.min(...staticRanges.map((r) => new Date(r.start).getTime()))).toISOString();
 
-  const latestEnd = new Date(
-    Math.max(...staticRanges.map((r) => new Date(r.end).getTime())),
-  ).toISOString();
+  const latestEnd = new Date(Math.max(...staticRanges.map((r) => new Date(r.end).getTime()))).toISOString();
 
   return { start: earliestStart, end: latestEnd };
 }
@@ -90,9 +84,7 @@ export const analyticsQuery = analyticsFiltersQuery.extend({
   scenarioId: z.uuidv4(),
 });
 
-export const transformTriggersFiltersToFieldsFilters = (
-  filters: AnalyticsFiltersQuery['trigger'],
-): FieldFilterDto[] =>
+export const transformTriggersFiltersToFieldsFilters = (filters: AnalyticsFiltersQuery['trigger']): FieldFilterDto[] =>
   filters?.map((f) => ({
     source: 'trigger_object',
     field: f.name,

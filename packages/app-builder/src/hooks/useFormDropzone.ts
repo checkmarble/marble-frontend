@@ -1,11 +1,7 @@
 import { useCallbackRef } from '@marble/shared';
 import { type DropEvent, type FileRejection, useDropzone } from 'react-dropzone-esm';
 
-type OnDropFn = <T extends File>(
-  acceptedFiles: T[],
-  fileRejections: FileRejection[],
-  event: DropEvent,
-) => void;
+type OnDropFn = <T extends File>(acceptedFiles: T[], fileRejections: FileRejection[], event: DropEvent) => void;
 
 export const MAX_FILE_SIZE_MB = 20;
 export const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;

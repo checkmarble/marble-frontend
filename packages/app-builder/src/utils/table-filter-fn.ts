@@ -14,11 +14,7 @@ export function dateRangeFilterFn<TData extends RowData>(
   return dateRangeFilter(date);
 }
 
-export function arrIncludesExactSome<TData extends RowData>(
-  row: Row<TData>,
-  columnId: string,
-  filterValue: string[],
-) {
+export function arrIncludesExactSome<TData extends RowData>(row: Row<TData>, columnId: string, filterValue: string[]) {
   if (!filterValue) return true;
   const value = row.getValue<string>(columnId);
   return filterValue.some((filter) => filter === value);

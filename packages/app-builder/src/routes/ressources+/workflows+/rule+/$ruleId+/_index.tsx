@@ -66,10 +66,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       const apiMessage: string | undefined = anyError?.data?.message ?? anyError?.message;
       const apiCode: string | undefined = anyError?.data?.error_code;
       if (typeof status === 'number') {
-        return Response.json(
-          { error: apiMessage ?? 'Failed to delete rule', errorCode: apiCode ?? null },
-          { status },
-        );
+        return Response.json({ error: apiMessage ?? 'Failed to delete rule', errorCode: apiCode ?? null }, { status });
       }
       return Response.json(
         { error: apiMessage ?? 'Failed to delete rule', errorCode: apiCode ?? null },

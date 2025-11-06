@@ -19,15 +19,8 @@ import {
   type SuspiciousActivityReport,
 } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
-import {
-  adaptKycCaseEnrichment,
-  type KycCaseEnrichment,
-} from '@app-builder/models/kyc-case-enrichment';
-import {
-  adaptPagination,
-  type FiltersWithPagination,
-  type PaginatedResponse,
-} from '@app-builder/models/pagination';
+import { adaptKycCaseEnrichment, type KycCaseEnrichment } from '@app-builder/models/kyc-case-enrichment';
+import { adaptPagination, type FiltersWithPagination, type PaginatedResponse } from '@app-builder/models/pagination';
 import { add } from 'date-fns/add';
 import { map } from 'remeda';
 import { Temporal } from 'temporal-polyfill';
@@ -83,11 +76,7 @@ export interface CaseRepository {
   }): Promise<CaseDetail>;
   setTags(args: { caseId: string; tagIds: string[] }): Promise<CaseDetail>;
   addDecisionsToCase(args: { caseId: string; decisionIds: string[] }): Promise<CaseDetail>;
-  reviewDecision(args: {
-    decisionId: string;
-    reviewComment: string;
-    reviewStatus: ReviewStatus;
-  }): Promise<CaseDetail>;
+  reviewDecision(args: { decisionId: string; reviewComment: string; reviewStatus: ReviewStatus }): Promise<CaseDetail>;
   listSuspiciousActivityReports(args: { caseId: string }): Promise<SuspiciousActivityReport[]>;
   createSuspiciousActivityReport(args: {
     caseId: string;
@@ -104,11 +93,7 @@ export interface CaseRepository {
   enqueueReviewForCase(args: { caseId: string }): Promise<unknown>;
   getMostRecentCaseReview(args: { caseId: string }): Promise<CaseReview[]>;
   getCaseFileDownloadLink(fileId: string): Promise<{ url: string }>;
-  addCaseReviewFeedback(args: {
-    caseId: string;
-    reviewId: string;
-    reaction: 'ok' | 'ko';
-  }): Promise<void>;
+  addCaseReviewFeedback(args: { caseId: string; reviewId: string; reaction: 'ok' | 'ko' }): Promise<void>;
   enrichPivotObjectOfCaseWithKyc(args: { caseId: string }): Promise<KycCaseEnrichment[]>;
   listCaseDecisions(
     args: {
@@ -163,8 +148,7 @@ export function makeGetCaseRepository() {
       return res.map((dto) => adaptCase(dto));
     },
     unsnoozeCase: ({ caseId }) => marbleCoreApiClient.unsnoozeCase(caseId),
-    snoozeCase: ({ caseId, snoozeUntil }) =>
-      marbleCoreApiClient.snoozeCase(caseId, { until: snoozeUntil }),
+    snoozeCase: ({ caseId, snoozeUntil }) => marbleCoreApiClient.snoozeCase(caseId, { until: snoozeUntil }),
     createCase: async (data) => {
       const result = await marbleCoreApiClient.createCase(adaptCaseCreateBody(data));
       return adaptCaseDetail(result.case, marbleCoreApiClient);
@@ -206,12 +190,9 @@ export function makeGetCaseRepository() {
     createSuspiciousActivityReport: async ({ caseId, body }) =>
       adaptSuspiciousActivityReport(await marbleCoreApiClient.sarCreate(caseId, body)),
     updateSuspiciousActivityReport: async ({ caseId, reportId, body }) => {
-      return adaptSuspiciousActivityReport(
-        await marbleCoreApiClient.sarUpdate(caseId, reportId, body),
-      );
+      return adaptSuspiciousActivityReport(await marbleCoreApiClient.sarUpdate(caseId, reportId, body));
     },
-    deleteSuspiciousActivityReport: async ({ caseId, reportId }) =>
-      marbleCoreApiClient.sarDelete(caseId, reportId),
+    deleteSuspiciousActivityReport: async ({ caseId, reportId }) => marbleCoreApiClient.sarDelete(caseId, reportId),
     getNextUnassignedCaseId: async ({ caseId }) =>
       marbleCoreApiClient
         .getNextCase(caseId)

@@ -11,8 +11,7 @@ export const createNavigationOptionSchema = z.object({
 
 type CreateNavigationOptionValue = z.infer<typeof createNavigationOptionSchema>;
 
-const endpoint = (tableId: string) =>
-  getRoute('/ressources/data/:tableId/createNavigationOption', { tableId });
+const endpoint = (tableId: string) => getRoute('/ressources/data/:tableId/createNavigationOption', { tableId });
 
 export const useCreateNavigationOptionMutation = (tableId: string) => {
   return useMutation({

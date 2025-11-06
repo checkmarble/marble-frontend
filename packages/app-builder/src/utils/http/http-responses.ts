@@ -1,13 +1,6 @@
 import { json } from '@remix-run/node';
 
-import {
-  BAD_REQUEST,
-  CONFLICT,
-  FORBIDDEN,
-  INTERNAL_SERVER_ERROR,
-  NOT_FOUND,
-  UNAUTHORIZED,
-} from './http-status-codes';
+import { BAD_REQUEST, CONFLICT, FORBIDDEN, INTERNAL_SERVER_ERROR, NOT_FOUND, UNAUTHORIZED } from './http-status-codes';
 
 function errorResponse<Data>(status: number) {
   return (data: Data, init?: Omit<ResponseInit, 'status'>) => {

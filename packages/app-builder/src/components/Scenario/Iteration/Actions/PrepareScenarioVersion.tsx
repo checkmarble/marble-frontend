@@ -31,10 +31,7 @@ export function PrepareScenarioVersion({
 
   if (!iteration.isValid) {
     return (
-      <Tooltip.Default
-        className="text-xs"
-        content={t('scenarios:deployment_modal.prepare.validation_error')}
-      >
+      <Tooltip.Default className="text-xs" content={t('scenarios:deployment_modal.prepare.validation_error')}>
         <Button className="flex-1" variant="primary" disabled color="red">
           <Icon icon="queue-list" className="size-6" />
           {t('scenarios:deployment_modal.prepare.button')}
@@ -65,11 +62,7 @@ export function PrepareScenarioVersion({
         </Button>
       </Modal.Trigger>
       <Modal.Content>
-        <PrepareScenarioVersionContent
-          scenarioId={scenarioId}
-          iterationId={iteration.id}
-          onSuccess={handleSuccess}
-        />
+        <PrepareScenarioVersionContent scenarioId={scenarioId} iterationId={iteration.id} onSuccess={handleSuccess} />
       </Modal.Content>
     </Modal.Root>
   );
@@ -130,18 +123,14 @@ function PrepareScenarioVersionContent({
                 <Checkbox
                   name={field.name}
                   defaultChecked={field.state.value}
-                  onCheckedChange={(state) =>
-                    state !== 'indeterminate' && field.handleChange(state)
-                  }
+                  onCheckedChange={(state) => state !== 'indeterminate' && field.handleChange(state)}
                 />
                 <FormLabel name={field.name}>
                   {t('scenarios:deployment_modal.prepare.activate_to_go_in_prod')}
                 </FormLabel>
                 <Tooltip.Default
                   content={
-                    <p className="max-w-60">
-                      {t('scenarios:deployment_modal.prepare.activate_to_go_in_prod.tooltip')}
-                    </p>
+                    <p className="max-w-60">{t('scenarios:deployment_modal.prepare.activate_to_go_in_prod.tooltip')}</p>
                   }
                 >
                   <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-6" />
@@ -161,13 +150,9 @@ function PrepareScenarioVersionContent({
                 <Checkbox
                   name={field.name}
                   defaultChecked={field.state.value}
-                  onCheckedChange={(state) =>
-                    state !== 'indeterminate' && field.handleChange(state)
-                  }
+                  onCheckedChange={(state) => state !== 'indeterminate' && field.handleChange(state)}
                 />
-                <FormLabel name={field.name}>
-                  {t('scenarios:deployment_modal.prepare.preparation_is_async')}
-                </FormLabel>
+                <FormLabel name={field.name}>{t('scenarios:deployment_modal.prepare.preparation_is_async')}</FormLabel>
               </div>
             )}
           </form.Field>

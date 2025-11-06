@@ -45,11 +45,7 @@ export const StringTemplateForm = () => {
                   </div>
                   <div className="flex flex-col gap-2">
                     <EditionAstBuilderOperand
-                      node={
-                        variable && isKnownOperandAstNode(variable)
-                          ? variable
-                          : NewUndefinedAstNode()
-                      }
+                      node={variable && isKnownOperandAstNode(variable) ? variable : NewUndefinedAstNode()}
                       onChange={(newNode) => {
                         if (isKnownOperandAstNode(newNode)) {
                           node.namedChildren[name] = newNode;

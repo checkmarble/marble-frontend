@@ -43,19 +43,17 @@ export const action = createServerFn(
     }
 
     try {
-      const current =
-        await context.authInfo.dataModelRepository.getDataModelTableExportedFields(tableId);
+      const current = await context.authInfo.dataModelRepository.getDataModelTableExportedFields(tableId);
 
       if ('triggerObjectField' in parsedCreate.data) {
         const field = parsedCreate.data.triggerObjectField;
         if (current.triggerObjectFields.includes(field)) {
           return { success: false, errors: ['Field already exported'] };
         }
-        const exportedFields =
-          await context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
-            triggerObjectFields: [...current.triggerObjectFields, field],
-            ingestedDataFields: current.ingestedDataFields,
-          });
+        const exportedFields = await context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
+          triggerObjectFields: [...current.triggerObjectFields, field],
+          ingestedDataFields: current.ingestedDataFields,
+        });
         return { success: true, data: exportedFields };
       }
 
@@ -67,11 +65,10 @@ export const action = createServerFn(
         if (exists) {
           return { success: false, errors: ['Field already exported'] };
         }
-        const exportedFields =
-          await context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
-            triggerObjectFields: current.triggerObjectFields,
-            ingestedDataFields: [...(current.ingestedDataFields ?? undefined), field],
-          });
+        const exportedFields = await context.authInfo.dataModelRepository.updateDataModelTableExportedFields(tableId, {
+          triggerObjectFields: current.triggerObjectFields,
+          ingestedDataFields: [...(current.ingestedDataFields ?? undefined), field],
+        });
         return { success: true, data: exportedFields };
       }
 

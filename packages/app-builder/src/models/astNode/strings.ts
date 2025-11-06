@@ -1,15 +1,7 @@
 import { v7 as uuidv7 } from 'uuid';
 
-import {
-  type BaseFuzzyMatchConfig,
-  type FuzzyMatchAlgorithm,
-} from '../fuzzy-match/baseFuzzyMatchConfig';
-import {
-  type AstNode,
-  type CheckNodeId,
-  type IdLessAstNode,
-  NewUndefinedAstNode,
-} from './ast-node';
+import { type BaseFuzzyMatchConfig, type FuzzyMatchAlgorithm } from '../fuzzy-match/baseFuzzyMatchConfig';
+import { type AstNode, type CheckNodeId, type IdLessAstNode, NewUndefinedAstNode } from './ast-node';
 import { type KnownOperandAstNode } from './builder-ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
@@ -125,17 +117,12 @@ export function NewFuzzyMatchComparatorAstNode({
     id: uuidv7(),
     name: '>',
     constant: undefined,
-    children: [
-      fuzzyMatch,
-      NewConstantAstNode({ constant: threshold ?? config.getDefaultThreshold() }),
-    ],
+    children: [fuzzyMatch, NewConstantAstNode({ constant: threshold ?? config.getDefaultThreshold() })],
     namedChildren: {},
   };
 }
 
-export function isFuzzyMatch(
-  node: IdLessAstNode | AstNode,
-): node is CheckNodeId<FuzzyMatchAstNode, typeof node> {
+export function isFuzzyMatch(node: IdLessAstNode | AstNode): node is CheckNodeId<FuzzyMatchAstNode, typeof node> {
   return node.name === fuzzyMatchAstNodeName;
 }
 

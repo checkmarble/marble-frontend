@@ -74,10 +74,7 @@ function adaptLinkPivotOption({
 
 export type PivotOption = FieldPivotOption | LinkPivotOption;
 
-export function getLinksPivotOptions(
-  tableModel: TableModel,
-  dataModel: DataModel,
-): LinkPivotOption[] {
+export function getLinksPivotOptions(tableModel: TableModel, dataModel: DataModel): LinkPivotOption[] {
   return getLinkPivotOptions(tableModel.linksToSingle, {
     baseTableId: tableModel.id,
     tablesMap: new Map(dataModel.map((table) => [table.id, table])),
@@ -92,10 +89,7 @@ export function getFieldPivotOptions(tableModel: TableModel): FieldPivotOption[]
     //Exlude objectId field
     R.filter((field) => field.name !== 'object_id'),
     // Exclude fields that are already links
-    R.filter(
-      (field) =>
-        tableModel.linksToSingle.find((link) => link.childFieldId === field.id) === undefined,
-    ),
+    R.filter((field) => tableModel.linksToSingle.find((link) => link.childFieldId === field.id) === undefined),
     R.map((field) => adaptFieldPivotOption({ baseTableId: tableModel.id, field })),
   );
 }
@@ -146,9 +140,7 @@ function getLinkPivotOptions(
         pivots.push(pivot);
       }
 
-      return pivots.concat(
-        getLinkPivotOptions(parentTable.linksToSingle, config, pathLinks, depth + 1),
-      );
+      return pivots.concat(getLinkPivotOptions(parentTable.linksToSingle, config, pathLinks, depth + 1));
     }),
   );
 }

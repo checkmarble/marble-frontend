@@ -48,8 +48,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export default function WebhookDetail() {
   const { t } = useTranslation(['settings']);
-  const { webhook, isEditWebhookAvailable, isDeleteWebhookAvailable, webhookStatus } =
-    useLoaderData<typeof loader>();
+  const { webhook, isEditWebhookAvailable, isDeleteWebhookAvailable, webhookStatus } = useLoaderData<typeof loader>();
 
   return (
     <Page.Container>
@@ -79,9 +78,7 @@ export default function WebhookDetail() {
               {webhook.eventTypes.length > 0 ? (
                 <EventTypes eventTypes={webhook.eventTypes} />
               ) : (
-                <span className="text-grey-80 text-s">
-                  {t('settings:webhooks.event_types.placeholder')}
-                </span>
+                <span className="text-grey-80 text-s">{t('settings:webhooks.event_types.placeholder')}</span>
               )}
 
               <WebhookLabel>{t('settings:webhooks.http_timeout')}</WebhookLabel>
@@ -152,9 +149,7 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
         cell: ({ getValue }) => {
           const dateTime = getValue();
           return (
-            <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
-            </time>
+            <time dateTime={dateTime}>{formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}</time>
           );
         },
       }),
@@ -168,9 +163,7 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
             return '-';
           }
           return (
-            <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
-            </time>
+            <time dateTime={dateTime}>{formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}</time>
           );
         },
       }),
@@ -184,9 +177,7 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
             return '-';
           }
           return (
-            <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
-            </time>
+            <time dateTime={dateTime}>{formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}</time>
           );
         },
       }),

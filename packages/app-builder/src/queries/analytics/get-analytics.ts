@@ -9,13 +9,7 @@ import { ScreeningHitTableResponse } from '@app-builder/models/analytics/screeni
 import { getRoute } from '@app-builder/utils/routes';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-export const useGetAnalytics = ({
-  scenarioId,
-  queryString,
-}: {
-  scenarioId: string;
-  queryString: string;
-}) => {
+export const useGetAnalytics = ({ scenarioId, queryString }: { scenarioId: string; queryString: string }) => {
   const navigate = useAgnosticNavigation();
   const endpoint = getRoute('/ressources/analytics/:scenarioId/query', {
     scenarioId,

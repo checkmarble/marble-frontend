@@ -1,9 +1,5 @@
 import { Page, TabLink } from '@app-builder/components';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CaseStatusBadge, casesI18n } from '@app-builder/components/Cases';
 import { UploadFile } from '@app-builder/components/Files/UploadFile';
 import { ScreeningStatusTag } from '@app-builder/components/Screenings/ScreeningStatusTag';
@@ -52,10 +48,7 @@ export const handle = {
 
       return (
         <div className="flex items-center gap-2">
-          <BreadCrumbLink
-            to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })}
-            isLast={isLast}
-          >
+          <BreadCrumbLink to={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })} isLast={isLast}>
             <span className="line-clamp-2 text-start">{t('cases:case.page_title')}</span>
           </BreadCrumbLink>
           <span className="text-s border-grey-90 text-grey-50 inline-flex gap-2 rounded-sm border px-2 font-normal">
@@ -150,9 +143,7 @@ export default function CaseSanctionReviewPage() {
   return (
     <Page.Main>
       <Page.Header className="justify-between gap-8">
-        <BreadCrumbs
-          back={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })}
-        />
+        <BreadCrumbs back={getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseDetail.id) })} />
       </Page.Header>
       <div className="flex size-full flex-col overflow-hidden">
         <Page.Container>

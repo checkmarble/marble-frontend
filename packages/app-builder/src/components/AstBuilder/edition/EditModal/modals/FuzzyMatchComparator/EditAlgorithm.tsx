@@ -30,13 +30,8 @@ export function EditAlgorithm({ fuzzyMatchConfig, algorithm, onChange }: EditAlg
             <span className="text-s text-grey-00 w-full text-center font-medium">
               <Select.Value placeholder="..." />
             </span>
-            <Tooltip.Default
-              content={t(`scenarios:edit_fuzzy_match.algorithm.description.${algorithm}`)}
-            >
-              <Icon
-                icon="tip"
-                className="hover:text-purple-65 text-purple-82 size-5 shrink-0 transition-colors"
-              />
+            <Tooltip.Default content={t(`scenarios:edit_fuzzy_match.algorithm.description.${algorithm}`)}>
+              <Icon icon="tip" className="hover:text-purple-65 text-purple-82 size-5 shrink-0 transition-colors" />
             </Tooltip.Default>
           </Select.Trigger>
           <Select.Content className="max-h-60">
@@ -69,14 +64,9 @@ export function EditAlgorithm({ fuzzyMatchConfig, algorithm, onChange }: EditAlg
 
   return (
     <div className="flex flex-1 flex-col gap-2">
-      <span className="text-m text-grey-00 font-normal">
-        {t('scenarios:edit_fuzzy_match.threshold.label')}
-      </span>
+      <span className="text-m text-grey-00 font-normal">{t('scenarios:edit_fuzzy_match.threshold.label')}</span>
       <div className="bg-grey-98 border-grey-90 flex h-10 items-center justify-center rounded-sm border p-2 text-center">
-        <FuzzyMatchAlgorithmLabel
-          fuzzyMatchConfig={fuzzyMatchConfig}
-          fuzzyMatchAlgorithm={algorithm}
-        />
+        <FuzzyMatchAlgorithmLabel fuzzyMatchConfig={fuzzyMatchConfig} fuzzyMatchAlgorithm={algorithm} />
       </div>
     </div>
   );

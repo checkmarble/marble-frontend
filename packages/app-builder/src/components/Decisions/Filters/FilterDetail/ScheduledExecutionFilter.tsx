@@ -45,8 +45,7 @@ export function ScheduledExecutionFilter() {
   const showSpinner = useSpinDelay(isLoading);
 
   const [value, setSearchValue] = React.useState('');
-  const { selectedScheduledExecutionIds, setSelectedScheduledExecutionIds } =
-    useScheduledExecutionFilter();
+  const { selectedScheduledExecutionIds, setSelectedScheduledExecutionIds } = useScheduledExecutionFilter();
   const searchValue = React.useDeferredValue(value);
 
   const matches = React.useMemo(
@@ -78,27 +77,16 @@ export function ScheduledExecutionFilter() {
                 value={successfullScheduledExecution.id}
               >
                 <div className="flex flex-col">
-                  <Highlight
-                    text={successfullScheduledExecution.scenarioName}
-                    query={searchValue}
-                  />
-                  <time
-                    className="text-grey-50 text-xs"
-                    dateTime={successfullScheduledExecution.startedAt.dateTime}
-                  >
-                    <Highlight
-                      text={successfullScheduledExecution.startedAt.formattedDateTime}
-                      query={searchValue}
-                    />
+                  <Highlight text={successfullScheduledExecution.scenarioName} query={searchValue} />
+                  <time className="text-grey-50 text-xs" dateTime={successfullScheduledExecution.startedAt.dateTime}>
+                    <Highlight text={successfullScheduledExecution.startedAt.formattedDateTime} query={searchValue} />
                   </time>
                 </div>
               </SelectWithCombobox.ComboboxItem>
             );
           })}
           {showSpinner ? (
-            <div className="text-grey-00 h-10 p-2 first-letter:capitalize">
-              {t('common:loading')}
-            </div>
+            <div className="text-grey-00 h-10 p-2 first-letter:capitalize">{t('common:loading')}</div>
           ) : matches.length === 0 ? (
             <p className="text-grey-50 flex items-center justify-center p-2">
               {successfullScheduledExecutions?.length

@@ -59,14 +59,11 @@ export function ScheduleOptionEditor({
             {t(textForFrequency[scheduleOption.frequency])}
             <ScheduleDetailSelect
               frequency={scheduleOption.frequency}
-              onChange={(value: string) =>
-                setScheduleOption({ ...scheduleOption, scheduleDetail: value })
-              }
+              onChange={(value: string) => setScheduleOption({ ...scheduleOption, scheduleDetail: value })}
               value={scheduleOption.scheduleDetail}
             />
           </div>
-          {scheduleOption.frequency === 'monthly' &&
-          ['29', '30', '31'].includes(scheduleOption.scheduleDetail) ? (
+          {scheduleOption.frequency === 'monthly' && ['29', '30', '31'].includes(scheduleOption.scheduleDetail) ? (
             <p className="text-s text-purple-65">
               <Trans
                 t={t}
@@ -171,9 +168,7 @@ const dailyScheduleOptions = Array.from({ length: 24 }, (_, i) => `${i}`);
 
 const weekDays = Array.from({ length: 7 }, (_, i) => `${i}`);
 
-const getWeekInfo = (
-  locale: string,
-): { firstDay: number; weekend: number[]; minimalDays: number } => {
+const getWeekInfo = (locale: string): { firstDay: number; weekend: number[]; minimalDays: number } => {
   const intl = new Intl.Locale(locale);
   // Default to France weekInfo if not present
   return (

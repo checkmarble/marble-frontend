@@ -63,28 +63,13 @@ export function adaptCaseTag(dto: CaseTagDto): CaseTag {
 }
 
 export type CaseStatus = CaseStatusDto;
-export const caseStatuses: CaseStatus[] = [
-  'pending',
-  'investigating',
-  'closed',
-  'waiting_for_action',
-  'snoozed',
-];
+export const caseStatuses: CaseStatus[] = ['pending', 'investigating', 'closed', 'waiting_for_action', 'snoozed'];
 
 export type CaseOutcome = Outcome;
-export const caseOutcomes: CaseOutcome[] = [
-  'false_positive',
-  'valuable_alert',
-  'confirmed_risk',
-  'unset',
-];
+export const caseOutcomes: CaseOutcome[] = ['false_positive', 'valuable_alert', 'confirmed_risk', 'unset'];
 
 export type FinalOutcome = Exclude<CaseOutcome, 'unset'>;
-export const finalOutcomes: UnionToArray<FinalOutcome> = [
-  'false_positive',
-  'valuable_alert',
-  'confirmed_risk',
-];
+export const finalOutcomes: UnionToArray<FinalOutcome> = ['false_positive', 'valuable_alert', 'confirmed_risk'];
 
 export interface Case {
   id: string;
@@ -445,10 +430,7 @@ export interface CaseDetail extends Case {
   files: CaseFile[];
 }
 
-export async function adaptCaseDetail(
-  dto: CaseDetailDto,
-  marbleCoreApiClient: MarbleCoreApi,
-): Promise<CaseDetail> {
+export async function adaptCaseDetail(dto: CaseDetailDto, marbleCoreApiClient: MarbleCoreApi): Promise<CaseDetail> {
   return {
     ...adaptCase(dto),
     decisions: dto.decisions.map((decisionDto) => ({
@@ -524,9 +506,7 @@ export interface SuspiciousActivityReport {
   createdBy: string;
 }
 
-export function adaptSuspiciousActivityReport(
-  dto: SuspiciousActivityReportDto,
-): SuspiciousActivityReport {
+export function adaptSuspiciousActivityReport(dto: SuspiciousActivityReportDto): SuspiciousActivityReport {
   return {
     id: dto.id,
     createdAt: dto.created_at,

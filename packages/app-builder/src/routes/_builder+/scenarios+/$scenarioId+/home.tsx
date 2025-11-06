@@ -20,10 +20,7 @@ import { type Scenario } from '@app-builder/models/scenario';
 import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import { useListRulesQuery } from '@app-builder/queries/Workflows';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';
-import {
-  isEditScenarioAvailable,
-  isManualTriggerScenarioAvailable,
-} from '@app-builder/services/feature-access';
+import { isEditScenarioAvailable, isManualTriggerScenarioAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { formatDateRelative, formatSchedule, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -173,18 +170,13 @@ export default function ScenarioHome() {
         ) : null}
       </Page.Header>
       <Page.Container>
-        {currentScenario.description ? (
-          <Page.Description>{currentScenario.description}</Page.Description>
-        ) : null}
+        {currentScenario.description ? <Page.Description>{currentScenario.description}</Page.Description> : null}
         <Page.ContentV2 centered className="flex flex-col gap-v2-lg w-225">
           <VersionSection scenarioIterations={scenarioIterations} />
           <section className="flex flex-col gap-v2-sm">
             <h2 className="text-grey-00 text-m font-semibold">{t('scenarios:home.execution')}</h2>
             <div className="grid max-w-[1000px] grid-cols-2 gap-v2-sm">
-              <RealTimeSection
-                scenarioId={currentScenario.id}
-                liveScenarioIteration={liveScenarioIteration}
-              />
+              <RealTimeSection scenarioId={currentScenario.id} liveScenarioIteration={liveScenarioIteration} />
               <BatchSection
                 scenarioId={currentScenario.id}
                 isManualTriggerScenarioAvailable={featureAccess.isManualTriggerScenarioAvailable}
@@ -195,19 +187,13 @@ export default function ScenarioHome() {
                 .with('missing_configuration', (status) => <TestRunNudge kind={status} />)
                 .with('restricted', (status) => <TestRunNudge kind={status} />)
                 .otherwise(() => (
-                  <TestRunSection
-                    scenarioId={currentScenario.id}
-                    access={featureAccess.isTestRunAvailable}
-                  />
+                  <TestRunSection scenarioId={currentScenario.id} access={featureAccess.isTestRunAvailable} />
                 ))}
               {match(featureAccess.isWorkflowsAvailable)
                 .with('missing_configuration', (status) => <WorkflowNudge kind={status} />)
                 .with('restricted', (status) => <WorkflowNudge kind={status} />)
                 .otherwise(() => (
-                  <WorkflowSection
-                    scenario={currentScenario}
-                    access={featureAccess.isWorkflowsAvailable}
-                  />
+                  <WorkflowSection scenario={currentScenario} access={featureAccess.isWorkflowsAvailable} />
                 ))}
             </div>
           </section>
@@ -218,11 +204,7 @@ export default function ScenarioHome() {
   );
 }
 
-function VersionSection({
-  scenarioIterations,
-}: {
-  scenarioIterations: ScenarioIterationWithType[];
-}) {
+function VersionSection({ scenarioIterations }: { scenarioIterations: ScenarioIterationWithType[] }) {
   const { t } = useTranslation(['scenarios']);
   const language = useFormatLanguage();
 
@@ -241,9 +223,7 @@ function VersionSection({
       .filter((si) => si.type === 'draft')
       .sort((lhs, rhs) => (lhs.updatedAt > rhs.updatedAt ? -1 : 1))[0];
 
-    const otherVersions = scenarioIterations.filter(
-      (si) => si.id !== quickVersion?.id && si.id !== quickDraft?.id,
-    );
+    const otherVersions = scenarioIterations.filter((si) => si.id !== quickVersion?.id && si.id !== quickDraft?.id);
     return {
       quickVersion,
       quickDraft,
@@ -295,11 +275,7 @@ function VersionSection({
   );
 }
 
-function QuickVersionAccess({
-  scenarioIteration,
-}: {
-  scenarioIteration: ScenarioIterationWithType;
-}) {
+function QuickVersionAccess({ scenarioIteration }: { scenarioIteration: ScenarioIterationWithType }) {
   const { t } = useTranslation(['scenarios']);
 
   const currentFormattedVersion = getFormattedVersion(scenarioIteration, t);
@@ -314,25 +290,15 @@ function QuickVersionAccess({
       className={CtaV2ClassName({ variant: 'secondary' })}
       // className="bg-grey-100 border-grey-90 text-grey-00 text-s hover:bg-grey-95 active:bg-grey-90 flex min-w-24 flex-row items-center justify-center gap-1 rounded-full border py-2 transition-colors"
     >
-      <span className="text-grey-00 text-s font-semibold capitalize">
-        {currentFormattedVersion}
-      </span>
+      <span className="text-grey-00 text-s font-semibold capitalize">{currentFormattedVersion}</span>
       {currentFormattedLive ? (
-        <span className="text-s text-purple-65 font-semibold capitalize">
-          {currentFormattedLive}
-        </span>
+        <span className="text-s text-purple-65 font-semibold capitalize">{currentFormattedLive}</span>
       ) : null}
     </Link>
   );
 }
 
-function TestRunSection({
-  scenarioId,
-  access,
-}: {
-  scenarioId: string;
-  access: FeatureAccessLevelDto;
-}) {
+function TestRunSection({ scenarioId, access }: { scenarioId: string; access: FeatureAccessLevelDto }) {
   const { t } = useTranslation();
   const currentScenario = useCurrentScenario();
   const scenarioIterations = useScenarioIterations();
@@ -360,11 +326,7 @@ function TestRunSection({
       </div>
 
       {access === 'test' ? (
-        <Nudge
-          className="absolute -right-3 -top-3 size-6"
-          content={t('scenarios:testrun.nudge')}
-          kind="test"
-        />
+        <Nudge className="absolute -right-3 -top-3 size-6" content={t('scenarios:testrun.nudge')} kind="test" />
       ) : null}
 
       <CalloutV2>{t('scenarios:testrun.description')}</CalloutV2>
@@ -532,10 +494,7 @@ function BatchSection({
 
       <div className="flex flex-row gap-v2-md mt-auto">
         {isManualTriggerScenarioAvailable && isLive ? (
-          <ManualTriggerScenarioExecutionForm
-            iterationId={liveScenarioIteration.id}
-            disabled={isExecutionOngoing}
-          />
+          <ManualTriggerScenarioExecutionForm iterationId={liveScenarioIteration.id} disabled={isExecutionOngoing} />
         ) : null}
         <Link
           className={CtaV2ClassName({ variant: 'secondary' })}
@@ -552,13 +511,7 @@ function BatchSection({
   );
 }
 
-function ManualTriggerScenarioExecutionForm({
-  iterationId,
-  disabled,
-}: {
-  iterationId: string;
-  disabled: boolean;
-}) {
+function ManualTriggerScenarioExecutionForm({ iterationId, disabled }: { iterationId: string; disabled: boolean }) {
   const { t } = useTranslation(['scenarios']);
   const fetcher = useFetcher<typeof action>();
 
@@ -591,13 +544,7 @@ function ManualTriggerScenarioExecutionForm({
   );
 }
 
-function WorkflowSection({
-  scenario,
-  access,
-}: {
-  scenario: Scenario;
-  access: FeatureAccessLevelDto;
-}) {
+function WorkflowSection({ scenario, access }: { scenario: Scenario; access: FeatureAccessLevelDto }) {
   const { t } = useTranslation(['common', 'scenarios', 'workflows']);
 
   // TODO load workflow rules and check if at least one rule is defined

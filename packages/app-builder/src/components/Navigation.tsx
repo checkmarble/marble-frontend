@@ -17,20 +17,17 @@ export interface SidebarLinkProps {
   className?: string;
 }
 
-export const sidebarLink = cva(
-  'text-s flex flex-row items-center gap-2 rounded-xs p-2 font-medium w-full',
-  {
-    variants: {
-      isActive: {
-        true: 'bg-purple-96 text-purple-65',
-        false: 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
-      },
-    },
-    defaultVariants: {
-      isActive: false,
+export const sidebarLink = cva('text-s flex flex-row items-center gap-2 rounded-xs p-2 font-medium w-full', {
+  variants: {
+    isActive: {
+      true: 'bg-purple-96 text-purple-65',
+      false: 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
     },
   },
-);
+  defaultVariants: {
+    isActive: false,
+  },
+});
 
 export function SidebarLink({ Icon, labelTKey, to, children, className }: SidebarLinkProps) {
   const { t } = useTranslation(navigationI18n);
@@ -46,26 +43,26 @@ export function SidebarLink({ Icon, labelTKey, to, children, className }: Sideba
   );
 }
 
-export interface SidebarButtonProps
-  extends Omit<React.ComponentPropsWithoutRef<'button'>, 'children'> {
+export interface SidebarButtonProps extends Omit<React.ComponentPropsWithoutRef<'button'>, 'children'> {
   Icon: (props: Omit<IconProps, 'icon'>) => JSX.Element;
   labelTKey: ParseKeys<['navigation']>;
 }
 
-export const SidebarButton = React.forwardRef<HTMLButtonElement, SidebarButtonProps>(
-  function SidebarButton({ Icon, labelTKey, className, ...props }, ref) {
-    const { t } = useTranslation(navigationI18n);
+export const SidebarButton = React.forwardRef<HTMLButtonElement, SidebarButtonProps>(function SidebarButton(
+  { Icon, labelTKey, className, ...props },
+  ref,
+) {
+  const { t } = useTranslation(navigationI18n);
 
-    return (
-      <button ref={ref} className={sidebarLink({ className })} {...props}>
-        <Icon className="size-6 shrink-0" />
-        <span className="line-clamp-1 text-start opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
-          {t(labelTKey)}
-        </span>
-      </button>
-    );
-  },
-);
+  return (
+    <button ref={ref} className={sidebarLink({ className })} {...props}>
+      <Icon className="size-6 shrink-0" />
+      <span className="line-clamp-1 text-start opacity-0 transition-opacity group-aria-expanded/nav:opacity-100">
+        {t(labelTKey)}
+      </span>
+    </button>
+  );
+});
 
 export interface TabLinkProps {
   Icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
@@ -81,9 +78,7 @@ export function TabLink({ Icon, labelTKey, to }: TabLinkProps) {
       className={({ isActive }) =>
         clsx(
           'text-s flex flex-row items-center gap-2 rounded-sm px-4 py-2 font-medium',
-          isActive
-            ? 'bg-purple-96 text-purple-65'
-            : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+          isActive ? 'bg-purple-96 text-purple-65' : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65',
         )
       }
       to={to}

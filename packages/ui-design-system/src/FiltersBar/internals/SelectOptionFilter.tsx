@@ -10,9 +10,7 @@ import { useFiltersBarContext } from './FiltersBarContext';
 export function SelectOptionFilter({ options, placeholder, selectedValue, name }: SelectFilter) {
   const { t } = useI18n();
   const { emitSet } = useFiltersBarContext();
-  const [internalSelectedValue, setInternalSelectedValue] = useState<string>(
-    (selectedValue as string) || '',
-  );
+  const [internalSelectedValue, setInternalSelectedValue] = useState<string>((selectedValue as string) || '');
 
   const [open, setOpen] = useState(false);
 
@@ -39,15 +37,12 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
   const getSelectedLabel = () => {
     if (!internalSelectedValue) return placeholder || 'Select';
     const selectedOption = options?.find(
-      (option: string | { label: string; value: string }) =>
-        getOptionValue(option) === internalSelectedValue,
+      (option: string | { label: string; value: string }) => getOptionValue(option) === internalSelectedValue,
     );
     return selectedOption ? getOptionLabel(selectedOption) : internalSelectedValue;
   };
 
-  const maxOptionLabelLength = Math.max(
-    ...(options?.map((option) => getOptionLabel(option).length) ?? [0]),
-  );
+  const maxOptionLabelLength = Math.max(...(options?.map((option) => getOptionLabel(option).length) ?? [0]));
 
   return (
     <div className="flex flex-col gap-2 p-2">

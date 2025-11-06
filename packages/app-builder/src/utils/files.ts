@@ -1,13 +1,10 @@
-export const getCaseFileUploadEndpoint = (caseId: string) =>
-  `/cases/${encodeURIComponent(caseId)}/files`;
+export const getCaseFileUploadEndpoint = (caseId: string) => `/cases/${encodeURIComponent(caseId)}/files`;
 
 export const getCaseInvestigationDataDownloadEndpoint = (caseId: string) =>
   `/cases/${encodeURIComponent(caseId)}/data_for_investigation`;
 
-export const getCaseSuspiciousActivityReportFileUploadEndpointById = (
-  caseId: string,
-  reportId: string,
-) => `/cases/${caseId}/sar/${reportId}/file`;
+export const getCaseSuspiciousActivityReportFileUploadEndpointById = (caseId: string, reportId: string) =>
+  `/cases/${caseId}/sar/${reportId}/file`;
 
 export const getScreeningFileUploadEndpoint = (screeningId: string) =>
   `/screenings/${encodeURIComponent(screeningId)}/files`;

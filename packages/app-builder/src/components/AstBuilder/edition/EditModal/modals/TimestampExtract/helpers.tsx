@@ -6,10 +6,7 @@ import { type TFunction } from 'i18next';
 import { Trans } from 'react-i18next';
 import { assertNever } from 'typescript-utils';
 
-export function getNoTimezoneSetupWarning(
-  currentUser: CurrentUser,
-  t: TFunction<['scenarios']>,
-): React.ReactNode {
+export function getNoTimezoneSetupWarning(currentUser: CurrentUser, t: TFunction<['scenarios']>): React.ReactNode {
   return isAdmin(currentUser) ? (
     <span className="text-red-47">
       <Trans
@@ -26,9 +23,7 @@ export function getNoTimezoneSetupWarning(
       />
     </span>
   ) : (
-    <span className="text-red-47">
-      {t('scenarios:edit_timestamp_extract.missing_default_timezone_non_admin')}
-    </span>
+    <span className="text-red-47">{t('scenarios:edit_timestamp_extract.missing_default_timezone_non_admin')}</span>
   );
 }
 

@@ -2,13 +2,7 @@ import { type ParseKeys } from 'i18next';
 import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
 
-export const casesFilterNames = [
-  'dateRange',
-  'statuses',
-  'includeSnoozed',
-  'excludeAssigned',
-  'assignee',
-] as const;
+export const casesFilterNames = ['dateRange', 'statuses', 'includeSnoozed', 'excludeAssigned', 'assignee'] as const;
 
 export type CasesFilterName = (typeof casesFilterNames)[number];
 

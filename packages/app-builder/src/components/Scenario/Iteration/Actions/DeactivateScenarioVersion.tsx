@@ -10,13 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function DeactivateScenarioVersion({
-  scenarioId,
-  iterationId,
-}: {
-  scenarioId: string;
-  iterationId: string;
-}) {
+export function DeactivateScenarioVersion({ scenarioId, iterationId }: { scenarioId: string; iterationId: string }) {
   const { t } = useTranslation(['scenarios']);
   const [open, setOpen] = React.useState(false);
 
@@ -35,13 +29,7 @@ export function DeactivateScenarioVersion({
   );
 }
 
-function DeactivateScenarioVersionContent({
-  scenarioId,
-  iterationId,
-}: {
-  scenarioId: string;
-  iterationId: string;
-}) {
+function DeactivateScenarioVersionContent({ scenarioId, iterationId }: { scenarioId: string; iterationId: string }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const deactivateIterationMutation = useDeactivateIterationMutation(scenarioId, iterationId);
   const revalidate = useLoaderRevalidator();
@@ -90,13 +78,9 @@ function DeactivateScenarioVersionContent({
                 <Checkbox
                   name={field.name}
                   defaultChecked={field.state.value}
-                  onCheckedChange={(state) =>
-                    state !== 'indeterminate' && field.handleChange(state)
-                  }
+                  onCheckedChange={(state) => state !== 'indeterminate' && field.handleChange(state)}
                 />
-                <FormLabel name={field.name}>
-                  {t('scenarios:deployment_modal.deactivate.stop_operating')}
-                </FormLabel>
+                <FormLabel name={field.name}>{t('scenarios:deployment_modal.deactivate.stop_operating')}</FormLabel>
               </div>
             )}
           </form.Field>
@@ -112,9 +96,7 @@ function DeactivateScenarioVersionContent({
                 <Checkbox
                   name={field.name}
                   defaultChecked={field.state.value}
-                  onCheckedChange={(state) =>
-                    state !== 'indeterminate' && field.handleChange(state)
-                  }
+                  onCheckedChange={(state) => state !== 'indeterminate' && field.handleChange(state)}
                 />
                 <FormLabel name={field.name}>
                   {t('scenarios:deployment_modal.deactivate.change_is_immediate')}
@@ -122,9 +104,7 @@ function DeactivateScenarioVersionContent({
               </div>
             )}
           </form.Field>
-          <p className="text-grey-80 text-xs font-medium">
-            {t('scenarios:deployment_modal.deactivate.helper')}
-          </p>
+          <p className="text-grey-80 text-xs font-medium">{t('scenarios:deployment_modal.deactivate.helper')}</p>
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>

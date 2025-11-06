@@ -17,12 +17,7 @@ export type CalendarProps = PropsBase & (PropsSingle | PropsRange);
 
 export type { DateRange };
 
-export function Calendar({
-  classNames,
-  showOutsideDays = true,
-  fixedWeeks = true,
-  ...props
-}: CalendarProps) {
+export function Calendar({ classNames, showOutsideDays = true, fixedWeeks = true, ...props }: CalendarProps) {
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -71,9 +66,7 @@ export function Calendar({
         ...classNames,
       }}
       components={{
-        Chevron: (props) => (
-          <Icon icon={props.orientation === 'left' ? 'arrow-left' : 'arrow-right'} {...props} />
-        ),
+        Chevron: (props) => <Icon icon={props.orientation === 'left' ? 'arrow-left' : 'arrow-right'} {...props} />,
       }}
       {...props}
     />

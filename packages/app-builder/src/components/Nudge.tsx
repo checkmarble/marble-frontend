@@ -1,9 +1,4 @@
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardPortal,
-  HoverCardTrigger,
-} from '@radix-ui/react-hover-card';
+import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '@radix-ui/react-hover-card';
 import { cva } from 'class-variance-authority';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useTranslation } from 'react-i18next';
@@ -49,14 +44,7 @@ const iconClassName = cva('', {
   },
 });
 
-export const Nudge = ({
-  content,
-  link,
-  className,
-  kind = 'restricted',
-  iconClass,
-  collapsed = false,
-}: NudgeProps) => {
+export const Nudge = ({ content, link, className, kind = 'restricted', iconClass, collapsed = false }: NudgeProps) => {
   const { t } = useTranslation(['common']);
   return (
     <HoverCard>

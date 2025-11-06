@@ -32,18 +32,9 @@ export function DefaultTooltip({
     >
       <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
       <TooltipPrimitive.Portal>
-        <TooltipPrimitive.Content
-          side="top"
-          align="center"
-          className="z-50 drop-shadow-sm"
-          {...props}
-        >
-          <div className={cn('bg-grey-100 max-h-40 overflow-y-auto rounded-sm p-2', className)}>
-            {content}
-          </div>
-          {arrow ? (
-            <TooltipPrimitive.Arrow width={11} height={5} className="fill-grey-100" />
-          ) : null}
+        <TooltipPrimitive.Content side="top" align="center" className="z-50 drop-shadow-sm" {...props}>
+          <div className={cn('bg-grey-100 max-h-40 overflow-y-auto rounded-sm p-2', className)}>{content}</div>
+          {arrow ? <TooltipPrimitive.Arrow width={11} height={5} className="fill-grey-100" /> : null}
         </TooltipPrimitive.Content>
       </TooltipPrimitive.Portal>
     </TooltipPrimitive.Root>

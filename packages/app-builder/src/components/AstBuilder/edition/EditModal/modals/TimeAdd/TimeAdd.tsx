@@ -31,20 +31,14 @@ export function EditTimeAdd(props: Omit<OperandEditModalProps, 'node'>) {
   const evaluation = nodeSharp.select((s) => s.validation);
   const durationData = computed(() => {
     const durationNode = node.namedChildren.duration;
-    const iso8601Duration =
-      durationNode.constant !== '' ? durationNode.constant : defaultISO8601Duration;
+    const iso8601Duration = durationNode.constant !== '' ? durationNode.constant : defaultISO8601Duration;
     const temporalDuration = Temporal.Duration.from(iso8601Duration).round('seconds');
     return adaptDurationAndUnitFromTemporalDuration(temporalDuration);
   });
-  const [selectedDurationUnit, setSelectedDurationUnit] = useState<DurationUnit>(
-    durationData.value.durationUnit,
-  );
+  const [selectedDurationUnit, setSelectedDurationUnit] = useState<DurationUnit>(durationData.value.durationUnit);
 
   useEffect(() => {
-    node.namedChildren.duration.constant = getTemporalDuration(
-      durationData.value.duration,
-      selectedDurationUnit,
-    );
+    node.namedChildren.duration.constant = getTemporalDuration(durationData.value.duration, selectedDurationUnit);
     nodeSharp.actions.validate();
   }, [nodeSharp, node, durationData.value.duration, selectedDurationUnit]);
 

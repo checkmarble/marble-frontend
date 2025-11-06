@@ -49,9 +49,7 @@ export function SignInWithEmailAndPassword({
   const navigate = useAgnosticNavigation();
   const hydrated = useHydrated();
 
-  const emailAndPasswordSignIn = useEmailAndPasswordSignIn(
-    clientServices.authenticationClientService,
-  );
+  const emailAndPasswordSignIn = useEmailAndPasswordSignIn(clientServices.authenticationClientService);
 
   const form = useForm({
     defaultValues: {
@@ -70,10 +68,7 @@ export function SignInWithEmailAndPassword({
       } catch (error) {
         if (error instanceof EmailUnverified) {
           navigate(getRoute('/email-verification'));
-        } else if (
-          error instanceof WrongPasswordError ||
-          error instanceof InvalidLoginCredentials
-        ) {
+        } else if (error instanceof WrongPasswordError || error instanceof InvalidLoginCredentials) {
           formApi
             .getFieldMeta('credentials.password')
             ?.errors.push({ message: t('auth:sign_in.errors.invalid_login_credentials') });

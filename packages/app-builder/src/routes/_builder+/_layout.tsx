@@ -1,10 +1,6 @@
 import { navigationI18n, SidebarButton, SidebarLink } from '@app-builder/components';
 import { HelpCenter, useMarbleCoreResources } from '@app-builder/components/HelpCenter';
-import {
-  LeftSidebar,
-  LeftSidebarSharpFactory,
-  ToggleSidebar,
-} from '@app-builder/components/Layout/LeftSidebar';
+import { LeftSidebar, LeftSidebarSharpFactory, ToggleSidebar } from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
 import { DatasetFreshnessBanner } from '@app-builder/components/Screenings/DatasetFresshnessBanner';
 import { UnavailableBanner } from '@app-builder/components/Settings/UnavailableBanner';
@@ -12,10 +8,7 @@ import { UserInfo } from '@app-builder/components/UserInfo';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
-import {
-  isAnalyticsAvailable,
-  isAutoAssignmentAvailable,
-} from '@app-builder/services/feature-access';
+import { isAnalyticsAvailable, isAutoAssignmentAvailable } from '@app-builder/services/feature-access';
 import { OrganizationDetailsContextProvider } from '@app-builder/services/organization/organization-detail';
 import { OrganizationObjectTagsContextProvider } from '@app-builder/services/organization/organization-object-tags';
 import { OrganizationTagsContextProvider } from '@app-builder/services/organization/organization-tags';
@@ -31,43 +24,39 @@ import { ClientOnly } from 'remix-utils/client-only';
 import { match } from 'ts-pattern';
 import { Icon } from 'ui-icons';
 
-export const loader = createServerFn(
-  [authMiddleware],
-  async function appBuilderLayout({ request, context }) {
-    const { user, inbox, organization, entitlements } = context.authInfo;
-    const [organizationDetail, orgUsers, orgTags, orgObjectTags, inboxes] = await Promise.all([
-      organization.getCurrentOrganization(),
-      organization.listUsers(),
-      organization.listTags(),
-      organization.listTags({ target: 'object' }),
-      inbox.listInboxes(),
-    ]);
+export const loader = createServerFn([authMiddleware], async function appBuilderLayout({ request, context }) {
+  const { user, inbox, organization, entitlements } = context.authInfo;
+  const [organizationDetail, orgUsers, orgTags, orgObjectTags, inboxes] = await Promise.all([
+    organization.getCurrentOrganization(),
+    organization.listUsers(),
+    organization.listTags(),
+    organization.listTags({ target: 'object' }),
+    inbox.listInboxes(),
+  ]);
 
-    const settingsSections = getSettingsAccess(user, context.appConfig, inboxes);
-    const firstSetting = Object.values(settingsSections).find((s) => s.settings.length > 0)
-      ?.settings[0];
+  const settingsSections = getSettingsAccess(user, context.appConfig, inboxes);
+  const firstSetting = Object.values(settingsSections).find((s) => s.settings.length > 0)?.settings[0];
 
-    return {
-      user,
-      orgUsers,
-      organization: organizationDetail,
-      orgTags,
-      orgObjectTags,
-      featuresAccess: {
-        isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
-        analytics: entitlements.analytics,
-        settings: {
-          isAvailable: firstSetting !== undefined,
-          ...(firstSetting !== undefined && { to: firstSetting.to }),
-        },
-        isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
+  return {
+    user,
+    orgUsers,
+    organization: organizationDetail,
+    orgTags,
+    orgObjectTags,
+    featuresAccess: {
+      isAnalyticsAvailable: isAnalyticsAvailable(user, entitlements),
+      analytics: entitlements.analytics,
+      settings: {
+        isAvailable: firstSetting !== undefined,
+        ...(firstSetting !== undefined && { to: firstSetting.to }),
       },
-      versions: context.appConfig.versions,
-      authProvider: context.appConfig.auth.provider,
-      isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
-    };
-  },
-);
+      isAutoAssignmentAvailable: isAutoAssignmentAvailable(entitlements),
+    },
+    versions: context.appConfig.versions,
+    authProvider: context.appConfig.auth.provider,
+    isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
+  };
+});
 
 export const handle = {
   i18n: ['common', ...navigationI18n] satisfies Namespace,
@@ -137,9 +126,7 @@ export default function Builder() {
                           <li>
                             <SidebarLink
                               labelTKey="navigation:decisions"
-                              to={`${getRoute(
-                                '/decisions',
-                              )}?dateRange%5Btype%5D=dynamic&dateRange%5BfromNow%5D=-P30D`}
+                              to={`${getRoute('/decisions')}?dateRange%5Btype%5D=dynamic&dateRange%5BfromNow%5D=-P30D`}
                               Icon={(props) => <Icon icon="decision" {...props} />}
                             />
                           </li>

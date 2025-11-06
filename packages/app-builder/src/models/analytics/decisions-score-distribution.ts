@@ -45,15 +45,9 @@ export const adaptDecisionsScoreDistribution = (
   const totalDecisions = points.reduce((acc, cur) => acc + cur.decisions, 0);
   const computedThresholds = thresholds ?? {};
 
-  const approveCount = points
-    .filter((p) => p.outcome === 'approve')
-    .reduce((a, b) => a + b.decisions, 0);
-  const reviewCount = points
-    .filter((p) => p.outcome === 'review')
-    .reduce((a, b) => a + b.decisions, 0);
-  const declineCount = points
-    .filter((p) => p.outcome === 'decline')
-    .reduce((a, b) => a + b.decisions, 0);
+  const approveCount = points.filter((p) => p.outcome === 'approve').reduce((a, b) => a + b.decisions, 0);
+  const reviewCount = points.filter((p) => p.outcome === 'review').reduce((a, b) => a + b.decisions, 0);
+  const declineCount = points.filter((p) => p.outcome === 'decline').reduce((a, b) => a + b.decisions, 0);
 
   const approvePct = totalDecisions ? (approveCount / totalDecisions) * 100 : 0;
   const reviewPct = totalDecisions ? (reviewCount / totalDecisions) * 100 : 0;
@@ -65,18 +59,13 @@ export const adaptDecisionsScoreDistribution = (
   const minX = Math.min(0, minScore);
   const maxX = Math.max(
     maxScore,
-    computedThresholds.decline ??
-      computedThresholds.blockAndReview ??
-      computedThresholds.review ??
-      0,
+    computedThresholds.decline ?? computedThresholds.blockAndReview ?? computedThresholds.review ?? 0,
   );
 
   const stepSeries: Array<{ x: number; y: number }> = [];
   if (
     !totalDecisions ||
-    (!computedThresholds.review &&
-      !computedThresholds.blockAndReview &&
-      !computedThresholds.decline)
+    (!computedThresholds.review && !computedThresholds.blockAndReview && !computedThresholds.decline)
   ) {
     // Fallback: show raw per-score distribution if thresholds are not available
     stepSeries.push(

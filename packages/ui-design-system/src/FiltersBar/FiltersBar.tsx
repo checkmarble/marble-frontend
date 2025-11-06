@@ -30,24 +30,10 @@ import {
   type TextOperator,
 } from './types';
 
-export const NUMBER_OPERATORS: Set<NumberOperator> = new Set([
-  '=',
-  '!=',
-  '>',
-  '>=',
-  '<',
-  '<=',
-  'in',
-]);
+export const NUMBER_OPERATORS: Set<NumberOperator> = new Set(['=', '!=', '>', '>=', '<', '<=', 'in']);
 export const TEXT_OPERATORS: Set<TextOperator> = new Set(['in']);
 
-export function FiltersBar({
-  descriptors = [],
-  dynamicDescriptors = [],
-  value,
-  onChange,
-  onUpdate,
-}: FiltersBarProps) {
+export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, onChange, onUpdate }: FiltersBarProps) {
   const { t } = useI18n();
 
   const [draftValue, setDraftValue] = useState<Record<string, FilterValue>>(value);
@@ -193,10 +179,7 @@ export function FiltersBar({
     [mainFilters, additionalFilters],
   );
 
-  const allDescriptors = useMemo(
-    () => [...descriptors, ...dynamicDescriptors],
-    [descriptors, dynamicDescriptors],
-  );
+  const allDescriptors = useMemo(() => [...descriptors, ...dynamicDescriptors], [descriptors, dynamicDescriptors]);
 
   const contextValue = useMemo<FiltersBarContextValue>(() => {
     const emitSet = (name: string, newValue: FilterValue) => {
@@ -280,10 +263,7 @@ export function FiltersBar({
       <div className="flex flex-row gap-v2-md w-full">
         <div className="flex flex-col gap-v2-md">
           {filtersByPriority.map((filters, priorityIndex) => (
-            <div
-              key={priorityIndex}
-              className="flex flex-row items-center w-full gap-v2-xl h-v2-xl"
-            >
+            <div key={priorityIndex} className="flex flex-row items-center w-full gap-v2-xl h-v2-xl">
               {filters.map((filter) =>
                 match(filter)
                   .with({ type: 'text' }, (textFilter) => (
@@ -292,8 +272,7 @@ export function FiltersBar({
                       key={filter.name}
                       buttonState={buttonState({
                         state:
-                          textFilter.selectedValue?.value &&
-                          textFilter.selectedValue.value.length > 0
+                          textFilter.selectedValue?.value && textFilter.selectedValue.value.length > 0
                             ? 'enabled'
                             : 'disabled',
                       })}
@@ -325,9 +304,7 @@ export function FiltersBar({
                   .with({ type: 'date-range-popover' }, (dateRangePopoverFilter) => (
                     <DateRangeFilterPopover filter={dateRangePopoverFilter} key={filter.name} />
                   ))
-                  .with({ type: 'radio' }, () => (
-                    <div key={filter.name}>Radio filter not implemented yet</div>
-                  ))
+                  .with({ type: 'radio' }, () => <div key={filter.name}>Radio filter not implemented yet</div>)
                   .with({ type: 'multi-select' }, () => (
                     <div key={filter.name}>Multi-select filter not implemented yet</div>
                   ))
@@ -344,14 +321,8 @@ export function FiltersBar({
             >
               {t('filters:ds.clear_dynamic_button.label')}
             </ButtonV2>
-            <ButtonV2
-              variant="primary"
-              onClick={() => contextValue.emitUpdate()}
-              disabled={!hasChanges}
-            >
-              {hasChanges
-                ? t('filters:ds.reapply_button.label')
-                : t('filters:ds.apply_button.label')}
+            <ButtonV2 variant="primary" onClick={() => contextValue.emitUpdate()} disabled={!hasChanges}>
+              {hasChanges ? t('filters:ds.reapply_button.label') : t('filters:ds.apply_button.label')}
             </ButtonV2>
           </div>
         </div>

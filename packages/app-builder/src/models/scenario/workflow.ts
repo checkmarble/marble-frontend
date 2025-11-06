@@ -101,9 +101,7 @@ export function adaptWorkflowCondition(dto: WorkflowConditionDto): WorkflowCondi
   return dto;
 }
 
-export function transformWorkflowCondition(
-  condition: WorkflowCondition,
-): WorkflowConditionDetailDto {
+export function transformWorkflowCondition(condition: WorkflowCondition): WorkflowConditionDetailDto {
   if (condition.function === 'payload_evaluates') {
     return {
       function: 'payload_evaluates',
@@ -170,9 +168,7 @@ export type ScenarioRuleLatestVersion = {
 
 export type ScenarioRuleLatestVersionMap = Map<string, ScenarioRuleLatestVersion>;
 
-export function adaptScenarioRulesLatestVersion(
-  dto: ScenarioRuleLatestVersionDto,
-): ScenarioRuleLatestVersion {
+export function adaptScenarioRulesLatestVersion(dto: ScenarioRuleLatestVersionDto): ScenarioRuleLatestVersion {
   return {
     type: dto.type,
     stableId: dto.stable_id,

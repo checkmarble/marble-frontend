@@ -61,8 +61,7 @@ export const CaseAlerts = ({
               className={cn(
                 'border-grey-90 hover:bg-grey-98 group grid min-h-28 grid-cols-[82px_2fr_1.3fr_1fr] border-t transition-colors',
                 {
-                  'bg-purple-98':
-                    selectedDecision === decision.id && drawerContentMode === 'decision',
+                  'bg-purple-98': selectedDecision === decision.id && drawerContentMode === 'decision',
                 },
               )}
             >
@@ -82,9 +81,7 @@ export const CaseAlerts = ({
                       reviewStatus={decision.reviewStatus}
                       showBackground={false}
                     />
-                    <span className="text-grey-50 text-ellipsis text-xs font-normal">
-                      {decision.scenario.name}
-                    </span>
+                    <span className="text-grey-50 text-ellipsis text-xs font-normal">{decision.scenario.name}</span>
                     <ScoreModifier score={decision.score} />
                   </div>
                   <ButtonV2
@@ -119,10 +116,7 @@ export const CaseAlerts = ({
                         className="border-grey-90 flex w-fit gap-1 truncate rounded-xs border px-1.5 py-0.5 text-xs"
                       >
                         <span>{property}:</span>
-                        <FormatData
-                          data={parseUnknownData(decision.triggerObject[property])}
-                          language={language}
-                        />
+                        <FormatData data={parseUnknownData(decision.triggerObject[property])} language={language} />
                       </span>
                     ) : null;
                   }),

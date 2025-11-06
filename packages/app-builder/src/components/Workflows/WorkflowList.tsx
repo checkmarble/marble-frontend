@@ -49,11 +49,7 @@ export function WorkflowList() {
       <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <Droppable droppableId="workflow-rules" direction="vertical">
           {(provided) => (
-            <div
-              className="gap-8 py-8 max-w-7xl ml-8"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
+            <div className="gap-8 py-8 max-w-7xl ml-8" {...provided.droppableProps} ref={provided.innerRef}>
               {!isLoading && rules.length === 0 ? (
                 <div className="w-[800px] text-center text-grey-60 italic py-8">
                   {t('workflows:empty_state.no_rule_yet')}
@@ -64,25 +60,14 @@ export function WorkflowList() {
                 const isOtherRuleEditing = editingRuleId !== null && editingRuleId !== rule.id;
 
                 return (
-                  <Draggable
-                    key={rule.id}
-                    draggableId={rule.id}
-                    index={index}
-                    isDragDisabled={false}
-                  >
+                  <Draggable key={rule.id} draggableId={rule.id} index={index} isDragDisabled={false}>
                     {(provided, snapshot) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        className={`${
-                          isOtherRuleEditing ? 'opacity-40 pointer-events-none blur-xs' : ''
-                        }`}
+                        className={`${isOtherRuleEditing ? 'opacity-40 pointer-events-none blur-xs' : ''}`}
                       >
-                        <RuleProvider
-                          rule={rule}
-                          setEditingRuleId={setEditingRuleId}
-                          scenarioId={scenarioId}
-                        >
+                        <RuleProvider rule={rule} setEditingRuleId={setEditingRuleId} scenarioId={scenarioId}>
                           <WorkflowRule rule={rule} provided={provided} snapshot={snapshot} />
                         </RuleProvider>
                         {/* Else arrow - appears after each rule except the last one */}

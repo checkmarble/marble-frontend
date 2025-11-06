@@ -58,13 +58,7 @@ const FiltersMenuItem = forwardRef<
 });
 FiltersMenuItem.displayName = 'FiltersMenuItem';
 
-function FilterContent({
-  filterNames,
-  close,
-}: {
-  filterNames: readonly CasesFilterName[];
-  close: () => void;
-}) {
+function FilterContent({ filterNames, close }: { filterNames: readonly CasesFilterName[]; close: () => void }) {
   const [selectedFilter, setSelectedFilter] = useState<CasesFilterName>();
 
   if (selectedFilter) {

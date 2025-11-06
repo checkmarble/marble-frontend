@@ -2,12 +2,7 @@ import { mkdir, rm, writeFile } from 'fs/promises';
 import * as Oazapfts from 'oazapfts';
 import ora from 'ora';
 
-import {
-  type Config,
-  featureAccessApiConfig,
-  GENERATED_FOLDER,
-  marbleCoreApiConfig,
-} from './config';
+import { type Config, featureAccessApiConfig, GENERATED_FOLDER, marbleCoreApiConfig } from './config';
 
 async function openapiGenerator({ apiName, apiSpec, generatedApi, apiOptions }: Config) {
   const spinner = ora(`Start to generate ${apiName} client...`).start();

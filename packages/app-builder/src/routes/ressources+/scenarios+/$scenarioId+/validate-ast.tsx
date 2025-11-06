@@ -1,12 +1,6 @@
 import { type AstNode } from '@app-builder/models';
-import {
-  type AstValidation,
-  type ScenarioValidationErrorCode,
-} from '@app-builder/models/ast-validation';
-import {
-  isKnownOperandAstNode,
-  isLeafOperandAstNode,
-} from '@app-builder/models/astNode/builder-ast-node';
+import { type AstValidation, type ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
+import { isKnownOperandAstNode, isLeafOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import {
   type EvaluationError,
   type NodeEvaluation,
@@ -31,16 +25,11 @@ type UnifiedEvalutionError = {
   path: string | undefined;
 };
 
-function adaptUnifiedEvaluationError(
-  error: EvaluationError | UnifiedEvalutionError,
-): UnifiedEvalutionError {
+function adaptUnifiedEvaluationError(error: EvaluationError | UnifiedEvalutionError): UnifiedEvalutionError {
   return {
     error: error.error,
     message: error.message,
-    path:
-      error.path ??
-      (error as EvaluationError).argumentIndex?.toString() ??
-      (error as EvaluationError).argumentName,
+    path: error.path ?? (error as EvaluationError).argumentIndex?.toString() ?? (error as EvaluationError).argumentName,
   };
 }
 
@@ -141,10 +130,7 @@ export function generateFlatEvaluation(
   return [currentNodeEvaluation, ...childrenEvaluations, ...namedChildrenEvaluations];
 }
 
-export type AstValidationFunction = (
-  node: AstNode,
-  expectedReturnType?: ReturnValueType,
-) => Promise<NodeEvaluation>;
+export type AstValidationFunction = (node: AstNode, expectedReturnType?: ReturnValueType) => Promise<NodeEvaluation>;
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService } = initServerServices(request);

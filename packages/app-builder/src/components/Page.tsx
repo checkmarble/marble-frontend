@@ -7,12 +7,7 @@ import { cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <main
-      className={cn('bg-purple-99 flex flex-1 flex-col overflow-hidden', className)}
-      {...props}
-    />
-  );
+  return <main className={cn('bg-purple-99 flex flex-1 flex-col overflow-hidden', className)} {...props} />;
 }
 
 /**
@@ -44,22 +39,20 @@ function PageHeader({ className, children, ...props }: React.ComponentProps<'div
   );
 }
 
-const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(
-  function PageContainer({ className, children, ...props }, ref) {
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          'scrollbar-gutter-stable flex size-full flex-col overflow-y-scroll',
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  },
-);
+const PageContainer = forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(function PageContainer(
+  { className, children, ...props },
+  ref,
+) {
+  return (
+    <div
+      ref={ref}
+      className={cn('scrollbar-gutter-stable flex size-full flex-col overflow-y-scroll', className)}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+});
 
 function PageDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
@@ -104,9 +97,7 @@ function PageContentV2({ className, centered, ...props }: PageContentV2Props) {
   return <div className={PageContentV2ClassName({ centered, className })} {...props} />;
 }
 
-const pageBack = cva(
-  'border-grey-90 hover:bg-grey-98 flex items-center justify-center rounded-md border p-2',
-);
+const pageBack = cva('border-grey-90 hover:bg-grey-98 flex items-center justify-center rounded-md border p-2');
 
 function PageBackButton({ className, ...props }: React.ComponentProps<'button'>) {
   const navigate = useAgnosticNavigation();

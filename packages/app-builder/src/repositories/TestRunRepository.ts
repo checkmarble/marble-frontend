@@ -212,9 +212,7 @@ export const makeGetTestRunRepository = () => {
       return;
     },
     launchTestRun: async (args) => {
-      const { scenario_test_run } = await marbleCoreApiClient.createTestRun(
-        adaptTestRunCreateInputDto(args),
-      );
+      const { scenario_test_run } = await marbleCoreApiClient.createTestRun(adaptTestRunCreateInputDto(args));
       return adaptTestRun(scenario_test_run);
     },
     listTestRuns: async ({ scenarioId }) => {

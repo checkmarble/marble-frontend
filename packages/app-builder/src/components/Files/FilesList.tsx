@@ -1,8 +1,4 @@
-import {
-  AlreadyDownloadingError,
-  AuthRequestError,
-  useDownloadFile,
-} from '@app-builder/services/DownloadFilesService';
+import { AlreadyDownloadingError, AuthRequestError, useDownloadFile } from '@app-builder/services/DownloadFilesService';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
@@ -49,10 +45,7 @@ export function FilesList({ files, downloadEndpoint, uploadEndpoint }: FilesList
   return <FilesListTable downloadEndpoint={downloadEndpoint} files={files} />;
 }
 
-export function FilesListTable({
-  files,
-  downloadEndpoint,
-}: Omit<FilesListProps, 'uploadEndpoint'>) {
+export function FilesListTable({ files, downloadEndpoint }: Omit<FilesListProps, 'uploadEndpoint'>) {
   const { t } = useTranslation(['cases']);
   const language = useFormatLanguage();
 
@@ -78,9 +71,7 @@ export function FilesListTable({
         cell: ({ getValue }) => {
           const dateTime = getValue();
           return (
-            <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
-            </time>
+            <time dateTime={dateTime}>{formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}</time>
           );
         },
       }),

@@ -16,8 +16,7 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
   const revalidate = useLoaderRevalidator();
   const { t } = useTranslation(['cases', 'common']);
 
-  const { data, isPending, error, refetch, isSuccess, status } =
-    useCreateKycEnrichmentQuery(caseId);
+  const { data, isPending, error, refetch, isSuccess, status } = useCreateKycEnrichmentQuery(caseId);
   const addCommentMutation = useAddCommentMutation();
 
   useEffect(() => {
@@ -97,8 +96,7 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
           {isSuccess && data.success ? (
             <div className="flex flex-col gap-4 flex-1 min-h-0">
               <Callout variant="outlined">
-                {t('cases:kyc_enrichment.for')}{' '}
-                <strong>{data.kycCaseEnrichments[0].entityName}</strong>
+                {t('cases:kyc_enrichment.for')} <strong>{data.kycCaseEnrichments[0].entityName}</strong>
               </Callout>
               <ScrollAreaV2 orientation="vertical" className="flex-1 min-h-0">
                 <div className="p-4">
@@ -108,10 +106,7 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
                       <div key={`citation.${index}`} className="mb-2">
                         <span>[{index + 1}]</span>
                         <span>
-                          <a
-                            className="text-purple-65 hover:bg-purple-96 hover:text-grey-50"
-                            href={citation.url}
-                          >
+                          <a className="text-purple-65 hover:bg-purple-96 hover:text-grey-50" href={citation.url}>
                             {citation.title}
                           </a>
                         </span>
@@ -133,11 +128,7 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
               {t('cases:kyc_enrichment.attach_to_case')}
             </ButtonV2>
             <Modal.Close asChild>
-              <ButtonV2
-                disabled={addCommentMutation.isPending}
-                variant="secondary"
-                onClick={() => setOpen(false)}
-              >
+              <ButtonV2 disabled={addCommentMutation.isPending} variant="secondary" onClick={() => setOpen(false)}>
                 {t('common:close')}
               </ButtonV2>
             </Modal.Close>

@@ -13,9 +13,7 @@ interface DataModelFeatureAccess {
   isIngestDataAvailable: boolean;
 }
 
-const DataModelFeatureAccessContext = createSimpleContext<DataModelFeatureAccess>(
-  'DataModelFeatureAccessContext',
-);
+const DataModelFeatureAccessContext = createSimpleContext<DataModelFeatureAccess>('DataModelFeatureAccessContext');
 
 export function DataModelContextProvider({
   dataModel,

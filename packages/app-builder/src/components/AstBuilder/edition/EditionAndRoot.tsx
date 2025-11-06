@@ -57,11 +57,7 @@ export function EditionAstBuilderAndRoot(props: AstBuilderRootProps<AndAstNode>)
         </div>
         <div className="flex flex-row flex-wrap gap-2">
           <AddLogicalOperatorButton onClick={appendChild} operator="and" />
-          <EditionEvaluationErrors
-            direct
-            id={nodeStore.value.node.id}
-            filterOut={['ARGUMENT_MUST_BE_BOOLEAN']}
-          />
+          <EditionEvaluationErrors direct id={nodeStore.value.node.id} filterOut={['ARGUMENT_MUST_BE_BOOLEAN']} />
         </div>
       </div>
     </AstBuilderNodeSharpFactory.Provider>
@@ -75,13 +71,7 @@ type EditionRootAndLineProps = {
   nodeId: string;
   removeNode: () => void;
 };
-function EditionRootAndLine({
-  isFirst,
-  isLast,
-  path,
-  nodeId,
-  removeNode,
-}: EditionRootAndLineProps) {
+function EditionRootAndLine({ isFirst, isLast, path, nodeId, removeNode }: EditionRootAndLineProps) {
   return (
     <>
       {/* Row 1 */}
@@ -91,11 +81,7 @@ function EditionRootAndLine({
       <div className={clsx('border-grey-90 col-start-1 border-e', isLast && 'h-5')} />
       <div className="border-grey-90 col-start-2 h-5 border-b" />
 
-      <LogicalOperatorLabel
-        operator={isFirst ? 'where' : 'and'}
-        className="col-start-3"
-        type="contained"
-      />
+      <LogicalOperatorLabel operator={isFirst ? 'where' : 'and'} className="col-start-3" type="contained" />
 
       <div className={clsx('col-span-1 col-start-4 flex flex-col gap-2 px-2')}>
         <EditionAstBuilderNode path={path} root />

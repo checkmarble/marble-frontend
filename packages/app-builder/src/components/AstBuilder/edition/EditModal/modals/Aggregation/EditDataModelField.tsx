@@ -78,16 +78,8 @@ export const EditDataModelField = ({
           <MenuCommand.List>
             {optionsEntries.map(([tableName, fields]) => {
               return (
-                <MenuCommand.SubMenu
-                  key={tableName}
-                  trigger={<span>{tableName}</span>}
-                  className="text-s w-[300px]"
-                >
-                  <EditDataModelFieldTableMenu
-                    tableName={tableName}
-                    fields={fields}
-                    onChange={onChange}
-                  />
+                <MenuCommand.SubMenu key={tableName} trigger={<span>{tableName}</span>} className="text-s w-[300px]">
+                  <EditDataModelFieldTableMenu tableName={tableName} fields={fields} onChange={onChange} />
                 </MenuCommand.SubMenu>
               );
             })}
@@ -106,22 +98,14 @@ type EditDataModelFieldTableMenuProps = {
   onChange: (field: DataModelFieldOption) => void;
 };
 
-export const EditDataModelFieldTableMenu = ({
-  tableName,
-  fields,
-  onChange,
-}: EditDataModelFieldTableMenuProps) => {
+export const EditDataModelFieldTableMenu = ({ tableName, fields, onChange }: EditDataModelFieldTableMenuProps) => {
   const { t } = useTranslation(['scenarios']);
   return (
     <MenuCommand.List>
       <MenuCommand.Group
         heading={
           <div className="text-grey-50 mb-2 items-center px-2 pb-2 text-xs">
-            <Trans
-              t={t}
-              i18nKey="scenarios:edit_aggregation.available_fields"
-              values={{ tableName }}
-            />
+            <Trans t={t} i18nKey="scenarios:edit_aggregation.available_fields" values={{ tableName }} />
           </div>
         }
       >

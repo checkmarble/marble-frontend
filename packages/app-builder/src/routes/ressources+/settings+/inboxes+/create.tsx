@@ -44,19 +44,13 @@ export async function action({ request }: ActionFunctionArgs) {
       messageKey: 'common:success.save',
     });
 
-    return Response.json(
-      { success: true, errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: true, errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   } catch {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),
     });
 
-    return json(
-      { success: false, errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return json({ success: false, errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }

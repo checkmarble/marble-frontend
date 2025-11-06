@@ -12,11 +12,7 @@ export function EditStringTemplate(props: Omit<OperandEditModalProps, 'node'>) {
   const { t } = useTranslation(['scenarios', 'common']);
 
   return (
-    <OperandEditModalContainer
-      {...props}
-      title={t('scenarios:edit_string_template.title')}
-      size="medium"
-    >
+    <OperandEditModalContainer {...props} title={t('scenarios:edit_string_template.title')} size="medium">
       <Callout variant="outlined">
         <Modal.Description>
           <Trans

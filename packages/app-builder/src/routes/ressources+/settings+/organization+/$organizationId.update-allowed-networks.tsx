@@ -28,10 +28,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   try {
-    const subnets = await organization.updateAllowedNetworks(
-      organizationId,
-      payload.data.allowedNetworks,
-    );
+    const subnets = await organization.updateAllowedNetworks(organizationId, payload.data.allowedNetworks);
 
     setToastMessage(toastSession, {
       type: 'success',

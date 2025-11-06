@@ -3,11 +3,7 @@ import { type TFunction } from 'i18next';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export type CreateFieldValidationErrorCode =
-  | 'NAME_CONFLICT'
-  | 'NAME_MIN'
-  | 'NAME_REGEX'
-  | 'NAME_RESERVED';
+export type CreateFieldValidationErrorCode = 'NAME_CONFLICT' | 'NAME_MIN' | 'NAME_REGEX' | 'NAME_RESERVED';
 
 export function getCreateFieldValidationErrorTranslationKey(
   code: CreateFieldValidationErrorCode,
@@ -47,18 +43,9 @@ export function useGetCreateFieldValidationErrorMessage() {
   );
 }
 
-export function isCreateFieldValidationErrorCode(
-  value: unknown,
-): value is CreateFieldValidationErrorCode {
-  return (
-    value === 'NAME_CONFLICT' ||
-    value === 'NAME_MIN' ||
-    value === 'NAME_REGEX' ||
-    value === 'NAME_RESERVED'
-  );
+export function isCreateFieldValidationErrorCode(value: unknown): value is CreateFieldValidationErrorCode {
+  return value === 'NAME_CONFLICT' || value === 'NAME_MIN' || value === 'NAME_REGEX' || value === 'NAME_RESERVED';
 }
 
 export const createFieldErrorResolver: ErrorMessageResolver = (message) =>
-  isCreateFieldValidationErrorCode(message)
-    ? getCreateFieldValidationErrorTranslationKey(message)
-    : null;
+  isCreateFieldValidationErrorCode(message) ? getCreateFieldValidationErrorTranslationKey(message) : null;

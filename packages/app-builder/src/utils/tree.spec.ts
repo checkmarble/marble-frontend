@@ -58,10 +58,7 @@ describe('getParentPath', () => {
 
   it.each([
     ['root.children.0.namedChildren.foo.children.1', 'root.children.0.namedChildren.foo'],
-    [
-      'root.namedChildren.foo.namedChildren.bar.children.15',
-      'root.namedChildren.foo.namedChildren.bar',
-    ],
+    ['root.namedChildren.foo.namedChildren.bar.children.15', 'root.namedChildren.foo.namedChildren.bar'],
   ])('%s', (path, expected) => {
     const parsedPath = parsePath(path);
     const expectedPath = parsePath(expected);

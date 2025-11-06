@@ -40,9 +40,6 @@ export async function action({ request }: ActionFunctionArgs) {
       message: t('common:errors.unknown'),
     });
 
-    return Response.json(
-      { success: false, errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: false, errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }

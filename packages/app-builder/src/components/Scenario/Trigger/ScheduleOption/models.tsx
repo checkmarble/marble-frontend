@@ -54,11 +54,7 @@ export function adaptScheduleOption(schedule: string): ScheduleOption {
   };
 }
 
-export function adaptScheduleOptionToCron({
-  isScenarioScheduled,
-  frequency,
-  scheduleDetail,
-}: ScheduleOption): string {
+export function adaptScheduleOptionToCron({ isScenarioScheduled, frequency, scheduleDetail }: ScheduleOption): string {
   if (!isScenarioScheduled) {
     return '';
   }

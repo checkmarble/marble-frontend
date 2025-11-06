@@ -8,22 +8,17 @@ import { Icon } from 'ui-icons';
 
 import { filtersI18n } from './filters-i18n';
 
-export const ClearAllFiltersLink = forwardRef<
-  HTMLAnchorElement,
-  Omit<RemixLinkProps, 'className' | 'ref'>
->(function ClearAllFiltersButton(props, ref) {
-  const { t } = useTranslation(filtersI18n);
-  return (
-    <Link
-      className={clsx(CtaClassName({ variant: 'secondary', color: 'grey' }), 'shrink-0')}
-      ref={ref}
-      {...props}
-    >
-      <Icon icon="cross" className="size-5" />
-      <span className="line-clamp-1">{t('filters:clear_filters')}</span>
-    </Link>
-  );
-});
+export const ClearAllFiltersLink = forwardRef<HTMLAnchorElement, Omit<RemixLinkProps, 'className' | 'ref'>>(
+  function ClearAllFiltersButton(props, ref) {
+    const { t } = useTranslation(filtersI18n);
+    return (
+      <Link className={clsx(CtaClassName({ variant: 'secondary', color: 'grey' }), 'shrink-0')} ref={ref} {...props}>
+        <Icon icon="cross" className="size-5" />
+        <span className="line-clamp-1">{t('filters:clear_filters')}</span>
+      </Link>
+    );
+  },
+);
 
 export const ClearAllFiltersButton = forwardRef<
   HTMLButtonElement,
@@ -31,11 +26,7 @@ export const ClearAllFiltersButton = forwardRef<
 >(function ClearAllFiltersButton(props, ref) {
   const { t } = useTranslation(filtersI18n);
   return (
-    <button
-      className={clsx(CtaClassName({ variant: 'secondary', color: 'grey' }), 'shrink-0')}
-      ref={ref}
-      {...props}
-    >
+    <button className={clsx(CtaClassName({ variant: 'secondary', color: 'grey' }), 'shrink-0')} ref={ref} {...props}>
       <Icon icon="cross" className="size-5" />
       <span className="line-clamp-1">{t('filters:clear_filters')}</span>
     </button>

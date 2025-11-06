@@ -21,10 +21,7 @@ import {
   transformAvailableFiltersRequest,
 } from '@app-builder/models/analytics/available-filters';
 import { adaptRuleHitTable, RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
-import {
-  adaptScreeningHitTable,
-  ScreeningHitTableResponse,
-} from '@app-builder/models/analytics/screening-hit';
+import { adaptScreeningHitTable, ScreeningHitTableResponse } from '@app-builder/models/analytics/screening-hit';
 
 import { compareAsc, compareDesc, differenceInDays } from 'date-fns';
 
@@ -87,9 +84,7 @@ export function makeGetAnalyticsRepository() {
       return analytics.map(legacyAnalytics.adaptAnalytics);
     },
 
-    getDecisionOutcomesPerDay: async (
-      args: AnalyticsQuery,
-    ): Promise<DecisionOutcomesPerPeriod | null> => {
+    getDecisionOutcomesPerDay: async (args: AnalyticsQuery): Promise<DecisionOutcomesPerPeriod | null> => {
       const parsed = transformAnalyticsQuery.parse(args);
       if (!parsed.length) throw new Error('No date range provided');
       const [raw, rawCompare] = await Promise.all([
@@ -132,9 +127,7 @@ export function makeGetAnalyticsRepository() {
       return adaptRuleHitTable(raw);
     },
 
-    getScreeningHitsTable: async (
-      args: AnalyticsQuery,
-    ): Promise<ScreeningHitTableResponse[] | null> => {
+    getScreeningHitsTable: async (args: AnalyticsQuery): Promise<ScreeningHitTableResponse[] | null> => {
       const parsed = transformAnalyticsQuery.parse(args);
       if (!parsed.length) throw new Error('No date range provided');
 
@@ -142,9 +135,7 @@ export function makeGetAnalyticsRepository() {
       return adaptScreeningHitTable(raw);
     },
 
-    getDecisionsScoreDistribution: async (
-      args: AnalyticsQuery,
-    ): Promise<DecisionsScoreDistribution | null> => {
+    getDecisionsScoreDistribution: async (args: AnalyticsQuery): Promise<DecisionsScoreDistribution | null> => {
       const parsed = transformAnalyticsQuery.parse(args);
       if (!parsed.length) throw new Error('No date range provided');
 
@@ -204,18 +195,14 @@ export function makeGetAnalyticsRepository() {
       return adaptDecisionsScoreDistribution(raw, thresholds);
     },
 
-    getRuleVsDecisionOutcome: async (
-      args: AnalyticsQuery,
-    ): Promise<RuleVsDecisionOutcome[] | null> => {
+    getRuleVsDecisionOutcome: async (args: AnalyticsQuery): Promise<RuleVsDecisionOutcome[] | null> => {
       const parsed = transformAnalyticsQuery.parse(args);
       if (!parsed.length) throw new Error('No date range provided');
 
       return adaptRuleVsDecisionOutcome(await client.getRuleVsDecisionOutcome(parsed[0]!));
     },
 
-    getAvailableFilters: async (
-      args: AvailableFiltersRequest,
-    ): Promise<AvailableFiltersResponse> => {
+    getAvailableFilters: async (args: AvailableFiltersRequest): Promise<AvailableFiltersResponse> => {
       return client
         .getAvailableFilters(transformAvailableFiltersRequest(args))
         .then((response) => adaptAvailableFiltersResponse(response));

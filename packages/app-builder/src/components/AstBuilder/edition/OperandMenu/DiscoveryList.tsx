@@ -1,9 +1,5 @@
 import { type AstNode } from '@app-builder/models';
-import {
-  getOperandTypeIcon,
-  getOperandTypeTKey,
-  type OperandType,
-} from '@app-builder/models/operand-type';
+import { getOperandTypeIcon, getOperandTypeTKey, type OperandType } from '@app-builder/models/operand-type';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import clsx from 'clsx';
@@ -30,8 +26,7 @@ export function DiscoveryList({ onSelect }: SmartMenuListProps) {
     });
   }, [triggerObjectTable.value, enumValues, options]);
 
-  const { enumOptions, fieldOptions, functionOptions, modelingOptions, customListOptions } =
-    groupedOptions;
+  const { enumOptions, fieldOptions, functionOptions, modelingOptions, customListOptions } = groupedOptions;
   const subMenus = [
     { options: customListOptions, type: 'CustomList' },
     { options: functionOptions, type: 'Function' },
@@ -145,9 +140,7 @@ function MenuTitle({ operandType, count, className }: MenuTitleProps) {
 
   return (
     <div className={clsx('flex grow select-none flex-row items-center gap-1', className)}>
-      {icon ? (
-        <Icon aria-hidden="true" className="text-purple-65 size-5 shrink-0" icon={icon} />
-      ) : null}
+      {icon ? <Icon aria-hidden="true" className="text-purple-65 size-5 shrink-0" icon={icon} /> : null}
       {tKey ? (
         <span className="text-grey-00 text-m flex flex-1 flex-row items-baseline gap-1 break-all">
           <span className="font-semibold">{t(tKey, { count: count })}</span>

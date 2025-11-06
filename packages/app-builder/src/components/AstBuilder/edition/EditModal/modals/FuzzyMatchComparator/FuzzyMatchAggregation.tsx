@@ -30,11 +30,7 @@ export function EditFuzzyMatchAggregation(props: Omit<OperandEditModalProps, 'no
   });
 
   return (
-    <OperandEditModalContainer
-      {...props}
-      title={t('scenarios:edit_fuzzy_match.title.aggregation')}
-      size="medium"
-    >
+    <OperandEditModalContainer {...props} title={t('scenarios:edit_fuzzy_match.title.aggregation')} size="medium">
       <InnerEditFuzzyMatchModal
         fuzzMatchConfig={fuzzyMatchConfig}
         right={fuzzyMatchNode.namedChildren.value}

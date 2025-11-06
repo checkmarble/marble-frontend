@@ -4,10 +4,7 @@ import { isForbiddenHttpError } from './http-errors';
 type BackendGlobalError = 'DisallowedNetwork';
 
 export function adaptGlobalError(error: unknown): BackendGlobalError | null {
-  if (
-    isForbiddenHttpError(error) &&
-    hasHeader(error.headers, 'x-marble-global-error') === 'disallowed-network'
-  ) {
+  if (isForbiddenHttpError(error) && hasHeader(error.headers, 'x-marble-global-error') === 'disallowed-network') {
     return 'DisallowedNetwork';
   }
 

@@ -5,18 +5,10 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
-import {
-  type AstNode,
-  isUndefinedAstNode,
-  NewEmptyTriggerAstNode,
-  NewUndefinedAstNode,
-} from '@app-builder/models';
+import { type AstNode, isUndefinedAstNode, NewEmptyTriggerAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { type ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
-import {
-  createDecisionDocHref,
-  executeAScenarioDocHref,
-} from '@app-builder/services/documentation-href';
+import { createDecisionDocHref, executeAScenarioDocHref } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
@@ -38,10 +30,9 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository, scenario } =
-    await authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    });
+  const { customListsRepository, editor, dataModelRepository, scenario } = await authService.isAuthenticated(request, {
+    failureRedirect: getRoute('/sign-in'),
+  });
 
   const scenarioId = fromParams(params, 'scenarioId');
   const [currentScenario, customLists, dataModel, accessors] = await Promise.all([
@@ -137,9 +128,7 @@ export default function Trigger() {
   const nodeStoreRef = useRef<AstBuilderNodeStore | null>(null);
 
   const handleSave = () => {
-    const node = nodeStoreRef.current
-      ? nodeStoreRef.current.select((s) => s.$node).peek()
-      : NewUndefinedAstNode();
+    const node = nodeStoreRef.current ? nodeStoreRef.current.select((s) => s.$node).peek() : NewUndefinedAstNode();
 
     fetcher.submit(
       {
@@ -210,17 +199,10 @@ export default function Trigger() {
                   </ul>
                 </li>
                 <li>
-                  <Trans
-                    t={t}
-                    i18nKey="scenarios:trigger.run_scenario.description.batch_execution"
-                  />
+                  <Trans t={t} i18nKey="scenarios:trigger.run_scenario.description.batch_execution" />
                   <ul className="list-outside space-y-1 pl-4">
                     <li>
-                      <ScheduleOption
-                        schedule={schedule}
-                        setSchedule={setSchedule}
-                        viewOnly={editorMode === 'view'}
-                      />
+                      <ScheduleOption schedule={schedule} setSchedule={setSchedule} viewOnly={editorMode === 'view'} />
                     </li>
                   </ul>
                 </li>
@@ -256,11 +238,7 @@ export default function Trigger() {
                 </span>
               </div>
             ) : (
-              <AstBuilder.Provider
-                scenarioId={scenario.id}
-                initialData={{ ...builderOptions }}
-                mode={editorMode}
-              >
+              <AstBuilder.Provider scenarioId={scenario.id} initialData={{ ...builderOptions }} mode={editorMode}>
                 <AstBuilder.Root
                   node={trigger}
                   onStoreChange={(nodeStore) => {

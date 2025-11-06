@@ -54,13 +54,9 @@ export const CaseStatusBadge = ({
       >
         {match(status)
           .with('snoozed', () => <Icon icon="status_snoozed" className="text-purple-65 size-4" />)
-          .with('waiting_for_action', () => (
-            <Icon icon="waiting_for_action" className="text-red-47 size-4" />
-          ))
+          .with('waiting_for_action', () => <Icon icon="waiting_for_action" className="text-red-47 size-4" />)
           .with('pending', () => <div className="border-grey-80 size-3.5 rounded-full border-2" />)
-          .with('investigating', () => (
-            <Icon icon="investigating" className="text-blue-58 size-4" />
-          ))
+          .with('investigating', () => <Icon icon="investigating" className="text-blue-58 size-4" />)
           .with('closed', () => <Icon icon="resolved" className="text-purple-65 size-4" />)
           .exhaustive()}
         {showText ? (

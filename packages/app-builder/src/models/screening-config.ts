@@ -39,9 +39,7 @@ export function adaptScreeningConfig(dto: ScreeningConfigDto): ScreeningConfig {
     triggerRule: dto.trigger_rule ? adaptAstNode(dto.trigger_rule) : undefined,
     entityType: dto.entity_type,
     query: mapValues(dto.query ?? {}, (node) => (node ? adaptAstNode(node) : undefined)),
-    counterPartyId: dto.counterparty_id_expression
-      ? adaptAstNode(dto.counterparty_id_expression)
-      : undefined,
+    counterPartyId: dto.counterparty_id_expression ? adaptAstNode(dto.counterparty_id_expression) : undefined,
     preprocessing: dto.preprocessing
       ? {
           useNer: dto.preprocessing.use_ner,
@@ -67,9 +65,7 @@ export function adaptScreeningConfigDto(config: ScreeningConfig): ScreeningConfi
     query: mapValues(config.query ?? {}, (node) =>
       node ? adaptNodeDto(node) : undefined,
     ) as ScreeningConfigDto['query'],
-    counterparty_id_expression: config.counterPartyId
-      ? adaptNodeDto(config.counterPartyId)
-      : undefined,
+    counterparty_id_expression: config.counterPartyId ? adaptNodeDto(config.counterPartyId) : undefined,
     preprocessing: config.preprocessing
       ? {
           use_ner: config.preprocessing.useNer,

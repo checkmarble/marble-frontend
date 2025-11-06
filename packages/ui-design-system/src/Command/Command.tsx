@@ -8,10 +8,7 @@ const Command = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive
     ref={ref}
-    className={clsx(
-      'bg-grey-100 border-grey-90 flex flex-col overflow-hidden rounded-sm border p-2',
-      className,
-    )}
+    className={clsx('bg-grey-100 border-grey-90 flex flex-col overflow-hidden rounded-sm border p-2', className)}
     {...props}
   />
 ));
@@ -51,11 +48,7 @@ const CommandEmpty = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Empty>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>
 >((props, ref) => (
-  <CommandPrimitive.Empty
-    ref={ref}
-    className="text-grey-80 inline-flex items-center gap-2 p-2 text-xs"
-    {...props}
-  />
+  <CommandPrimitive.Empty ref={ref} className="text-grey-80 inline-flex items-center gap-2 p-2 text-xs" {...props} />
 ));
 
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName;

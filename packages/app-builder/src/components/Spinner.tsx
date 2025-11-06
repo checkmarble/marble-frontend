@@ -23,19 +23,7 @@ export function Spinner({ className }: SpinnerProps) {
   );
 }
 
-export function LoadingIcon({
-  className,
-  loading,
-  icon,
-}: {
-  className?: string;
-  icon: IconName;
-  loading: boolean;
-}) {
+export function LoadingIcon({ className, loading, icon }: { className?: string; icon: IconName; loading: boolean }) {
   const showSpinner = useSpinDelay(loading);
-  return showSpinner ? (
-    <Spinner className={className} />
-  ) : (
-    <Icon icon={icon} className={className} />
-  );
+  return showSpinner ? <Spinner className={className} /> : <Icon icon={icon} className={className} />;
 }

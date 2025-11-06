@@ -28,11 +28,7 @@ export function EditTimestampExtract(props: Omit<OperandEditModalProps, 'node'>)
   const evaluation = nodeSharp.select((s) => s.validation);
 
   return (
-    <OperandEditModalContainer
-      {...props}
-      title={t('scenarios:edit_timestamp_extract.title')}
-      size="medium"
-    >
+    <OperandEditModalContainer {...props} title={t('scenarios:edit_timestamp_extract.title')} size="medium">
       <Callout variant="outlined">
         <Modal.Description className="whitespace-pre-wrap">
           <Trans
@@ -46,9 +42,7 @@ export function EditTimestampExtract(props: Omit<OperandEditModalProps, 'node'>)
       </Callout>
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
-          <span className="first-letter:uppercase">
-            {t('scenarios:edit_timestamp_extract.extract_the')}
-          </span>
+          <span className="first-letter:uppercase">{t('scenarios:edit_timestamp_extract.extract_the')}</span>
           <OperatorSelect
             options={validTimestampExtractParts}
             operator={node.namedChildren.part.constant}

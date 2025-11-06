@@ -10,12 +10,7 @@ export function StartedAfterFilter() {
 
   return (
     <div className="p-4">
-      <Calendar
-        mode="single"
-        selected={startedAfter}
-        onSelect={setStartedAfter}
-        locale={getDateFnsLocale(language)}
-      />
+      <Calendar mode="single" selected={startedAfter} onSelect={setStartedAfter} locale={getDateFnsLocale(language)} />
     </div>
   );
 }

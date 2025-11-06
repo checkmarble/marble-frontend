@@ -22,17 +22,9 @@ test('Create new list', async ({ page }) => {
   await page.waitForLoadState();
 
   for (const value of values) {
-    await waitForThen(
-      page,
-      page.getByRole('button', { name: 'New value' }),
-      async (button) => await button.click(),
-    );
+    await waitForThen(page, page.getByRole('button', { name: 'New value' }), async (button) => await button.click());
 
-    await waitForThen(
-      page,
-      page.getByRole('textbox', { name: 'Value' }),
-      async (field) => await field.fill(value),
-    );
+    await waitForThen(page, page.getByRole('textbox', { name: 'Value' }), async (field) => await field.fill(value));
 
     await page.getByRole('button', { name: 'Save' }).click();
     await page.getByRole('textbox', { name: 'Value' }).waitFor({ state: 'hidden' });

@@ -48,11 +48,7 @@ const MultiSelectRoot = ({ children, id }: { children: React.ReactNode; id: unkn
     multiSelectSharp.actions.unselectAll();
   }, [id, multiSelectSharp]);
 
-  return (
-    <MultiSelectSharpFactory.Provider value={multiSelectSharp}>
-      {children}
-    </MultiSelectSharpFactory.Provider>
-  );
+  return <MultiSelectSharpFactory.Provider value={multiSelectSharp}>{children}</MultiSelectSharpFactory.Provider>;
 };
 
 type MultiSelectItemProps = {
@@ -73,17 +69,14 @@ const MultiSelectItem = ({ children, index, id, item }: MultiSelectItemProps) =>
 
     const lastAction = sharp.value.lastAction;
     const isIntendingMultiSelection = e.shiftKey;
-    const isMultiSelectionPossible =
-      lastAction !== null && lastAction[1] === 'select' && !isSelected;
+    const isMultiSelectionPossible = lastAction !== null && lastAction[1] === 'select' && !isSelected;
 
     if (isIntendingMultiSelection && isMultiSelectionPossible) {
       const lastClickedIdIndex = orderedItems.value.findIndex((item) => item.id === lastAction[0]!);
       const currentIndex = orderedItems.value.findIndex((item) => item.id === id);
 
       const [start, end] =
-        currentIndex > lastClickedIdIndex
-          ? [lastClickedIdIndex, currentIndex]
-          : [currentIndex, lastClickedIdIndex];
+        currentIndex > lastClickedIdIndex ? [lastClickedIdIndex, currentIndex] : [currentIndex, lastClickedIdIndex];
 
       for (let i = start; i <= end; i++) {
         const item = orderedItems.value[i];
@@ -114,18 +107,13 @@ const MultiSelectItem = ({ children, index, id, item }: MultiSelectItemProps) =>
 };
 
 type MultiSelectGlobalProps = {
-  children: (
-    state: boolean | 'indeterminate',
-    onSelect: (event: MouseEvent) => void,
-  ) => ReactElement;
+  children: (state: boolean | 'indeterminate', onSelect: (event: MouseEvent) => void) => ReactElement;
 };
 
 const MultiSelectGlobal = ({ children }: MultiSelectGlobalProps) => {
   const multiSelectSharp = MultiSelectSharpFactory.useSharp();
   const selectState = MultiSelectSharpFactory.select((state) => {
-    const selectedIds = state.selectedIds.filter((id) =>
-      state.items.find((item) => item.id === id),
-    );
+    const selectedIds = state.selectedIds.filter((id) => state.items.find((item) => item.id === id));
 
     if (selectedIds.length !== 0 && selectedIds.length !== state.items.length) {
       return 'indeterminate';

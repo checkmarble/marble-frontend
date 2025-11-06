@@ -149,12 +149,8 @@ export function HamburgerChart<T extends string>({
   return (
     <div className="flex flex-col gap-8">
       <RadioGroup onValueChange={(type) => setType(type as Type)} value={type}>
-        <RadioGroupItem value="absolute">
-          {t('scenarios:testrun.distribution.absolute')}
-        </RadioGroupItem>
-        <RadioGroupItem value="percentage">
-          {t('scenarios:testrun.distribution.percentage')}
-        </RadioGroupItem>
+        <RadioGroupItem value="absolute">{t('scenarios:testrun.distribution.absolute')}</RadioGroupItem>
+        <RadioGroupItem value="percentage">{t('scenarios:testrun.distribution.percentage')}</RadioGroupItem>
       </RadioGroup>
       <div className="flex h-60 w-full flex-row items-center justify-center gap-4 px-8">
         <Hamburger

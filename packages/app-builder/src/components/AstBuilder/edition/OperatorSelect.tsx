@@ -79,9 +79,7 @@ type Options<Op extends string> = {
   keywords?: string[];
 }[];
 
-function mapOptions<Op extends string>(
-  options: readonly Op[] | OperatorSelectOptions<Op>,
-): Options<Op> {
+function mapOptions<Op extends string>(options: readonly Op[] | OperatorSelectOptions<Op>): Options<Op> {
   const isOpSelect = isOperationSelectOptions(options);
   const values = isOpSelect ? (Object.keys(options) as Op[]) : options;
 

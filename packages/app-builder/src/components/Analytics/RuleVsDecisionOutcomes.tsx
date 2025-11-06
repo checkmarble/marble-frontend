@@ -35,9 +35,7 @@ export function RuleVsDecisionOutcomes({
   const maxValueScale = useMemo(
     () =>
       Math.max(
-        ...(data?.map((rule) =>
-          selectedOutcomes.reduce((acc, outcome) => acc + (rule[outcome] ?? 0), 0),
-        ) ?? []),
+        ...(data?.map((rule) => selectedOutcomes.reduce((acc, outcome) => acc + (rule[outcome] ?? 0), 0)) ?? []),
       ),
     [data, selectedOutcomes],
   );
@@ -50,8 +48,7 @@ export function RuleVsDecisionOutcomes({
   const MAX_RULE_NAME_LENGTH = 42;
   const MIN_LEFT_MARGIN = 8;
   const leftMargin = Math.max(
-    (data ? Math.max(...data.map((d) => Math.min(d.rule.length, MAX_RULE_NAME_LENGTH)), 0) : 0) *
-      MIN_LEFT_MARGIN +
+    (data ? Math.max(...data.map((d) => Math.min(d.rule.length, MAX_RULE_NAME_LENGTH)), 0) : 0) * MIN_LEFT_MARGIN +
       MIN_LEFT_MARGIN,
     MIN_LEFT_MARGIN,
   );
@@ -138,13 +135,7 @@ export function RuleVsDecisionOutcomes({
                       maximumFractionDigits: 0,
                     }).format((Number(value) || 0) / 100),
                   tickValues: maxValueScale
-                    ? [
-                        0,
-                        maxValueScale / 4,
-                        maxValueScale / 2,
-                        (3 * maxValueScale) / 4,
-                        maxValueScale,
-                      ]
+                    ? [0, maxValueScale / 4, maxValueScale / 2, (3 * maxValueScale) / 4, maxValueScale]
                     : undefined,
                 }}
                 tooltip={({ id, value, data }) => (

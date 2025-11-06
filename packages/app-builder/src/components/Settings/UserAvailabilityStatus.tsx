@@ -2,11 +2,7 @@ import { useUnavailabilitySettings } from '@app-builder/queries/personal-setting
 import { SetMyselfAvailable } from './SetMyselfAvailable';
 import { SetMyselfUnavailable } from './SetMyselfUnavailable';
 
-export function UserAvailabilityStatus({
-  isAutoAssignmentAvailable,
-}: {
-  isAutoAssignmentAvailable: boolean;
-}) {
+export function UserAvailabilityStatus({ isAutoAssignmentAvailable }: { isAutoAssignmentAvailable: boolean }) {
   const { query: unavailabilityQuery } = useUnavailabilitySettings();
 
   if (!isAutoAssignmentAvailable) {

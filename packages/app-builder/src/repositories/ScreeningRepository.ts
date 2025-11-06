@@ -67,10 +67,7 @@ export function makeGetScreeningRepository() {
           [entityType]: fields,
         },
       };
-      return R.map(
-        await marbleCoreApiClient.searchScreeningMatches(dto),
-        adaptScreeningMatchPayload,
-      );
+      return R.map(await marbleCoreApiClient.searchScreeningMatches(dto), adaptScreeningMatchPayload);
     },
     refineScreening: async ({ screeningId, entityType, fields }) => {
       const dto = {

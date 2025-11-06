@@ -12,11 +12,7 @@ type DatasetTagSelectProps = {
   setSelectedTags: Dispatch<SetStateAction<string[]>>;
 };
 
-export const DatasetTagSelect = ({
-  tags,
-  selectedTags,
-  setSelectedTags,
-}: DatasetTagSelectProps) => {
+export const DatasetTagSelect = ({ tags, selectedTags, setSelectedTags }: DatasetTagSelectProps) => {
   const filteredTags = useMemo(() => tags.filter((t) => t !== ''), [tags]);
 
   return (
@@ -46,12 +42,7 @@ export const DatasetTagSelect = ({
             </MenuCommand.Item>
           ))}
           <div className="bg-grey-100 sticky bottom-0 flex w-full gap-2">
-            <Button
-              variant="secondary"
-              size="small"
-              className="basis-full"
-              onClick={() => setSelectedTags([])}
-            >
+            <Button variant="secondary" size="small" className="basis-full" onClick={() => setSelectedTags([])}>
               <Icon icon="filters-off" className="size-4" />
             </Button>
             <Button

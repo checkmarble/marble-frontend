@@ -22,12 +22,7 @@ export type BatchActionsProps = {
   selectedCases: Case[];
 };
 
-export const BatchActions = ({
-  onMassUpdateCases,
-  assignableUsers,
-  inboxes,
-  selectedCases,
-}: BatchActionsProps) => {
+export const BatchActions = ({ onMassUpdateCases, assignableUsers, inboxes, selectedCases }: BatchActionsProps) => {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation(['common', 'cases']);
   const canReopen = selectedCases.some(({ status }) => status === 'closed');
@@ -45,16 +40,12 @@ export const BatchActions = ({
       <MenuCommand.Content side="right" align="start" sideOffset={4}>
         <MenuCommand.List>
           {canReopen ? (
-            <MenuCommand.Item
-              onSelect={() => onMassUpdateCases(selectedCases, { action: 'reopen' })}
-            >
+            <MenuCommand.Item onSelect={() => onMassUpdateCases(selectedCases, { action: 'reopen' })}>
               {t('cases:case.batch_actions.reopen')}
             </MenuCommand.Item>
           ) : null}
           {canClose ? (
-            <MenuCommand.Item
-              onSelect={() => onMassUpdateCases(selectedCases, { action: 'close' })}
-            >
+            <MenuCommand.Item onSelect={() => onMassUpdateCases(selectedCases, { action: 'close' })}>
               {t('cases:case.batch_actions.lose')}
             </MenuCommand.Item>
           ) : null}
@@ -64,9 +55,7 @@ export const BatchActions = ({
                 {assignableUsers.map(({ userId, firstName, lastName }) => (
                   <MenuCommand.Item
                     key={userId}
-                    onSelect={() =>
-                      onMassUpdateCases(selectedCases, { action: 'assign', assigneeId: userId })
-                    }
+                    onSelect={() => onMassUpdateCases(selectedCases, { action: 'assign', assigneeId: userId })}
                   >
                     <span className="flex items-center gap-v2-sm">
                       <Avatar size="xs" firstName={firstName} lastName={lastName} />
@@ -78,16 +67,12 @@ export const BatchActions = ({
             </MenuCommand.SubMenu>
           ) : null}
           {inboxes.length > 0 ? (
-            <MenuCommand.SubMenu
-              trigger={<span>{t('cases:case.batch_actions.move_to_inbox')}</span>}
-            >
+            <MenuCommand.SubMenu trigger={<span>{t('cases:case.batch_actions.move_to_inbox')}</span>}>
               <MenuCommand.List>
                 {inboxes.map(({ id, name }) => (
                   <MenuCommand.Item
                     key={id}
-                    onSelect={() =>
-                      onMassUpdateCases(selectedCases, { action: 'move_to_inbox', inboxId: id })
-                    }
+                    onSelect={() => onMassUpdateCases(selectedCases, { action: 'move_to_inbox', inboxId: id })}
                   >
                     {name}
                   </MenuCommand.Item>

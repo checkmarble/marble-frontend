@@ -10,15 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-export function EditListModal({
-  listId,
-  name,
-  description,
-}: {
-  listId: string;
-  name: string;
-  description: string;
-}) {
+export function EditListModal({ listId, name, description }: { listId: string; name: string; description: string }) {
   const { t } = useTranslation(['lists', 'navigation', 'common']);
   const editListMutation = useEditListMutation();
   const revalidate = useLoaderRevalidator();

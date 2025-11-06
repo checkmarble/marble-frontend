@@ -41,12 +41,7 @@ export function adaptScenarioIterationWithType(
 ): ScenarioIterationWithType {
   return {
     ...scenarioIteration,
-    type:
-      scenarioIteration.id === liveVersionId
-        ? 'live version'
-        : scenarioIteration.version
-          ? 'version'
-          : 'draft',
+    type: scenarioIteration.id === liveVersionId ? 'live version' : scenarioIteration.version ? 'version' : 'draft',
   };
 }
 
@@ -58,9 +53,7 @@ export interface UpdateScenarioIterationBody {
   schedule?: string;
 }
 
-export function adaptUpdateScenarioIterationBody(
-  input: UpdateScenarioIterationBody,
-): UpdateScenarioIterationBodyDto {
+export function adaptUpdateScenarioIterationBody(input: UpdateScenarioIterationBody): UpdateScenarioIterationBodyDto {
   return {
     body: {
       trigger_condition_ast_expression: input.triggerConditionAstExpression
@@ -74,9 +67,7 @@ export function adaptUpdateScenarioIterationBody(
   };
 }
 
-export function adaptScenarioIteration(
-  scenarioIterationWithBody: ScenarioIterationWithBodyDto,
-): ScenarioIteration {
+export function adaptScenarioIteration(scenarioIterationWithBody: ScenarioIterationWithBodyDto): ScenarioIteration {
   const triggerDto = scenarioIterationWithBody.body.trigger_condition_ast_expression;
   const configsDto = scenarioIterationWithBody.body.screening_configs;
 

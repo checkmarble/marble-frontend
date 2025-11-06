@@ -1,9 +1,6 @@
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateAnnotationMutation } from '@app-builder/queries/annotations/create-annotation';
-import {
-  createTagAnnotationSchema,
-  tagAnnotationFormSchema,
-} from '@app-builder/schemas/annotations';
+import { createTagAnnotationSchema, tagAnnotationFormSchema } from '@app-builder/schemas/annotations';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
@@ -99,9 +96,7 @@ export function ClientTagsEditSelect({
                 onSelect={() => field.handleChange((prev) => toggle(prev, tag.id))}
               >
                 <TagPreview name={tag.name} />
-                {field.state.value.includes(tag.id) ? (
-                  <Icon icon="tick" className="text-purple-65 size-5" />
-                ) : null}
+                {field.state.value.includes(tag.id) ? <Icon icon="tick" className="text-purple-65 size-5" /> : null}
               </MenuCommand.Item>
             ))}
             <MenuCommand.Empty>
@@ -110,9 +105,7 @@ export function ClientTagsEditSelect({
           </MenuCommand.List>
         )}
       </form.Field>
-      <form.Subscribe
-        selector={(state) => [isDeepEqual(state.values.payload.tags, tags), state.isSubmitting]}
-      >
+      <form.Subscribe selector={(state) => [isDeepEqual(state.values.payload.tags, tags), state.isSubmitting]}>
         {([isDefaultValue, isSubmitting]) =>
           !isDefaultValue ? (
             <div className="border-grey-90 flex justify-end gap-2 overflow-x-auto border-t p-2">

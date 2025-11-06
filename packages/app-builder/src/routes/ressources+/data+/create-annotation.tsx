@@ -46,10 +46,7 @@ export async function action({ request }: ActionFunctionArgs) {
       message: t('common:max_size_exceeded', { size: MAX_FILE_SIZE_MB }),
     });
 
-    return Response.json(
-      { success: false, errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: false, errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 
   const token = authSession.get('authToken')?.access_token;
@@ -78,37 +75,26 @@ export async function action({ request }: ActionFunctionArgs) {
           },
         });
 
-        return Response.json(
-          { success: true },
-          { headers: { 'Set-Cookie': await commitSession(session) } },
-        );
+        return Response.json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
       })
-      .with(
-        { type: 'tag' },
-        async ({ payload: { addedTags = [], removedAnnotations = [] }, ...data }) => {
-          const promises: Promise<Response | void>[] = [
-            ...addedTags.map((tagAdded) =>
-              dataModelRepository.createAnnotation(data.tableName, data.objectId, {
-                type: 'tag',
-                caseId: data.caseId,
-                payload: {
-                  tagId: tagAdded,
-                },
-              }),
-            ),
-            ...removedAnnotations.map((annotationId) =>
-              dataModelRepository.deleteAnnotation(annotationId),
-            ),
-          ];
+      .with({ type: 'tag' }, async ({ payload: { addedTags = [], removedAnnotations = [] }, ...data }) => {
+        const promises: Promise<Response | void>[] = [
+          ...addedTags.map((tagAdded) =>
+            dataModelRepository.createAnnotation(data.tableName, data.objectId, {
+              type: 'tag',
+              caseId: data.caseId,
+              payload: {
+                tagId: tagAdded,
+              },
+            }),
+          ),
+          ...removedAnnotations.map((annotationId) => dataModelRepository.deleteAnnotation(annotationId)),
+        ];
 
-          await Promise.all(promises);
+        await Promise.all(promises);
 
-          return Response.json(
-            { success: true },
-            { headers: { 'Set-Cookie': await commitSession(session) } },
-          );
-        },
-      )
+        return Response.json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
+      })
       .with({ type: 'file' }, async ({ payload: { files }, ...data }) => {
         const promises: Promise<Response>[] = [];
 
@@ -135,10 +121,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
         await Promise.all(promises);
 
-        return Response.json(
-          { success: true },
-          { headers: { 'Set-Cookie': await commitSession(session) } },
-        );
+        return Response.json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
       })
       .exhaustive();
   } catch (_err) {
@@ -147,9 +130,6 @@ export async function action({ request }: ActionFunctionArgs) {
       message: t('common:errors.unknown'),
     });
 
-    return Response.json(
-      { success: false },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: false }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }

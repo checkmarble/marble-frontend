@@ -19,11 +19,7 @@ export function IngestedObjectDetailModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation(['data']);
-  const {
-    load: fetcherLoad,
-    data,
-    state: fetchState,
-  } = useFetcher<{ object: DataModelObject | null }>();
+  const { load: fetcherLoad, data, state: fetchState } = useFetcher<{ object: DataModelObject | null }>();
 
   useEffect(() => {
     fetcherLoad(
@@ -52,9 +48,7 @@ export function IngestedObjectDetailModal({
           object={data.object}
         />
       ) : (
-        <div className="p-4 text-center">
-          {t('data:viewer.no_object_found', { tableName, objectId })}
-        </div>
+        <div className="p-4 text-center">{t('data:viewer.no_object_found', { tableName, objectId })}</div>
       )}
     </ModalV2.Content>
   );

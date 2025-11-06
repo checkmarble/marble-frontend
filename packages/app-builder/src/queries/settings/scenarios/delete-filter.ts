@@ -16,13 +16,7 @@ const endpoint = (tableId: string) =>
 export const useDeleteFilterMutation = () => {
   return useMutation({
     mutationKey: ['settings', 'data-model', 'exported-fields', 'delete'],
-    mutationFn: async ({
-      tableId,
-      payload,
-    }: {
-      tableId: string;
-      payload: DeleteExportedFieldPayload;
-    }) => {
+    mutationFn: async ({ tableId, payload }: { tableId: string; payload: DeleteExportedFieldPayload }) => {
       const response = await fetch(endpoint(tableId), {
         method: 'DELETE',
         headers: {

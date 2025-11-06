@@ -25,11 +25,7 @@ export function StatusesFilter() {
         <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((status) => {
             return (
-              <SelectWithCombobox.ComboboxItem
-                key={status}
-                value={status}
-                className="align-baseline"
-              >
+              <SelectWithCombobox.ComboboxItem key={status} value={status} className="align-baseline">
                 <CaseStatusBadge status={status} size="large" />
               </SelectWithCombobox.ComboboxItem>
             );

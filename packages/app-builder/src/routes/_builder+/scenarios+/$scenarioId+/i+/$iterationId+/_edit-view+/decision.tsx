@@ -89,30 +89,28 @@ function getFormSchema(t: TFunction<typeof handle.i18n>) {
         })
         .int(),
     })
-    .superRefine(
-      ({ scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold }, ctx) => {
-        if (scoreBlockAndReviewThreshold < scoreReviewThreshold) {
-          ctx.issues.push({
-            code: 'custom',
-            path: ['scoreBlockAndReviewThreshold'],
-            message: t('scenarios:validation.decision.score_threshold_min', {
-              replace: { min: scoreReviewThreshold },
-            }),
-            input: '',
-          });
-        }
-        if (scoreDeclineThreshold < scoreBlockAndReviewThreshold) {
-          ctx.issues.push({
-            code: 'custom',
-            path: ['scoreDeclineThreshold'],
-            message: t('scenarios:validation.decision.score_threshold_min', {
-              replace: { min: scoreBlockAndReviewThreshold },
-            }),
-            input: '',
-          });
-        }
-      },
-    );
+    .superRefine(({ scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold }, ctx) => {
+      if (scoreBlockAndReviewThreshold < scoreReviewThreshold) {
+        ctx.issues.push({
+          code: 'custom',
+          path: ['scoreBlockAndReviewThreshold'],
+          message: t('scenarios:validation.decision.score_threshold_min', {
+            replace: { min: scoreReviewThreshold },
+          }),
+          input: '',
+        });
+      }
+      if (scoreDeclineThreshold < scoreBlockAndReviewThreshold) {
+        ctx.issues.push({
+          code: 'custom',
+          path: ['scoreDeclineThreshold'],
+          message: t('scenarios:validation.decision.score_threshold_min', {
+            replace: { min: scoreBlockAndReviewThreshold },
+          }),
+          input: '',
+        });
+      }
+    });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -199,8 +197,7 @@ export default function Decision() {
 }
 
 function ViewScoreThresholds() {
-  const { scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold } =
-    useCurrentScenarioIteration();
+  const { scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold } = useCurrentScenarioIteration();
 
   return (
     <ScoreOutcomeThresholds
@@ -284,10 +281,7 @@ function EditScoreThresholds() {
   });
 
   const scoreReviewThreshold = useStore(form.store, (store) => store.values.scoreReviewThreshold);
-  const scoreBlockAndReviewThreshold = useStore(
-    form.store,
-    (store) => store.values.scoreBlockAndReviewThreshold,
-  );
+  const scoreBlockAndReviewThreshold = useStore(form.store, (store) => store.values.scoreBlockAndReviewThreshold);
   const scoreDeclineThreshold = useStore(form.store, (store) => store.values.scoreDeclineThreshold);
 
   const serverErrors = R.pipe(

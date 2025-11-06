@@ -86,12 +86,7 @@ export const AutoWidthInput = forwardRef<HTMLInputElement, AutowidthInputProps>(
 
         let width = sizerWidth;
 
-        if (
-          placeholderIsMinWidth &&
-          placeholderWidth &&
-          sizerWidth < placeholderWidth &&
-          placeholderSizerRef.current
-        ) {
+        if (placeholderIsMinWidth && placeholderWidth && sizerWidth < placeholderWidth && placeholderSizerRef.current) {
           width = placeholderWidth;
         }
 

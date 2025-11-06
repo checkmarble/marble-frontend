@@ -15,14 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Table, Tooltip, useTable } from 'ui-design-system';
 import { Score } from './Score';
 
-type Column =
-  | 'created_at'
-  | 'scenario_name'
-  | 'trigger_object_type'
-  | 'case'
-  | 'pivot_value'
-  | 'score'
-  | 'outcome';
+type Column = 'created_at' | 'scenario_name' | 'trigger_object_type' | 'case' | 'pivot_value' | 'score' | 'outcome';
 
 export interface DecisionViewModel {
   id: string;
@@ -95,9 +88,7 @@ export function DecisionsList({
         cell: ({ getValue }) => {
           const dateTime = getValue();
           return (
-            <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}
-            </time>
+            <time dateTime={dateTime}>{formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}</time>
           );
         },
       }),
@@ -123,9 +114,7 @@ export function DecisionsList({
         size: 100,
         minSize: 100,
         cell: ({ getValue }) => (
-          <span className="text-grey-00 text-s line-clamp-2 break-words font-normal">
-            {getValue()}
-          </span>
+          <span className="text-grey-00 text-s line-clamp-2 break-words font-normal">{getValue()}</span>
         ),
       }),
       columnHelper.accessor((row) => row.case?.name ?? '-', {
@@ -160,9 +149,7 @@ export function DecisionsList({
             <div className="relative flex flex-col gap-1">
               {pivotValues.map((pivotValue) => (
                 <Tooltip.Default key={pivotValue.id} content={pivotValue.value}>
-                  <span className="text-grey-00 text-s line-clamp-1 text-ellipsis">
-                    {pivotValue.value}
-                  </span>
+                  <span className="text-grey-00 text-s line-clamp-1 text-ellipsis">{pivotValue.value}</span>
                 </Tooltip.Default>
               ))}
             </div>

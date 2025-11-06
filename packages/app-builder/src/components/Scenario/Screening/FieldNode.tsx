@@ -1,8 +1,5 @@
 import { isUndefinedAstNode } from '@app-builder/models';
-import {
-  isKnownOperandAstNode,
-  type KnownOperandAstNode,
-} from '@app-builder/models/astNode/builder-ast-node';
+import { isKnownOperandAstNode, type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 
 import { MatchOperand } from './MatchOperand';
 

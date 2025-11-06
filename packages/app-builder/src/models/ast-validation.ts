@@ -21,14 +21,9 @@ export function adaptScenarioValidationErrorCode(
   return `${code}.${returnType}`;
 }
 
-export function adaptAstValidation(
-  dto: AstValidationDto,
-  expectedReturnType?: ReturnValueType,
-): AstValidation {
+export function adaptAstValidation(dto: AstValidationDto, expectedReturnType?: ReturnValueType): AstValidation {
   return {
-    errors: dto.errors.map(({ error }) =>
-      adaptScenarioValidationErrorCode(error, expectedReturnType),
-    ),
+    errors: dto.errors.map(({ error }) => adaptScenarioValidationErrorCode(error, expectedReturnType)),
     evaluation: adaptNodeEvaluation(dto.evaluation),
   };
 }

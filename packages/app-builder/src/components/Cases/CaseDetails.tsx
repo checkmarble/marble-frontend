@@ -61,10 +61,7 @@ export const CaseDetails = ({
     threshold: 1,
   });
   const reviewReactionMutation = useCaseReviewFeedbackMutation(detail.id, caseReview?.id);
-  const addReviewToCaseCommentsMutation = useAddReviewToCaseCommentsMutation(
-    detail.id,
-    caseReview?.id,
-  );
+  const addReviewToCaseCommentsMutation = useAddReviewToCaseCommentsMutation(detail.id, caseReview?.id);
 
   const [selectedTab, setSelectedTab] = useState<'caseDetails' | 'review'>('caseDetails');
   const revalidator = useRevalidator();
@@ -95,11 +92,7 @@ export const CaseDetails = ({
                 <SnoozeCase caseId={detail.id} snoozeUntil={detail.snoozedUntil} />
               </>
             ) : null}
-            {detail.status !== 'closed' ? (
-              <CloseCase id={detail.id} />
-            ) : (
-              <OpenCase id={detail.id} />
-            )}
+            {detail.status !== 'closed' ? <CloseCase id={detail.id} /> : <OpenCase id={detail.id} />}
           </div>
         </div>
 
@@ -115,10 +108,7 @@ export const CaseDetails = ({
             >
               {t('cases:case_detail.tab.principal')}
             </button>
-            <button
-              className={tabCva({ selected: selectedTab === 'review' })}
-              onClick={() => setSelectedTab('review')}
-            >
+            <button className={tabCva({ selected: selectedTab === 'review' })} onClick={() => setSelectedTab('review')}>
               <div
                 className={cn('size-5 rounded-md text-grey-0 p-0.5', {
                   'bg-purple-65 text-grey-100': selectedTab === 'review',
@@ -187,9 +177,7 @@ export const CaseDetails = ({
 
             {/* Investigation */}
             <div className="flex flex-col justify-start gap-1.5">
-              <span className="text-h2 text-grey-00 px-1 font-medium">
-                {t('cases:investigation')}
-              </span>
+              <span className="text-h2 text-grey-00 px-1 font-medium">{t('cases:investigation')}</span>
               <div className="border-grey-90 bg-grey-100 flex flex-col rounded-v2-lg border">
                 <div className="p-4">
                   <CaseEvents events={detail.events} inboxes={inboxes} root={containerRef} />

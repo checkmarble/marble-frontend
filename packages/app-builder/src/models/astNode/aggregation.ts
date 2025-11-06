@@ -1,17 +1,9 @@
 import { v7 as uuidv7 } from 'uuid';
 
 import { AggregationFuzzyMatchConfig } from '../fuzzy-match/aggregationFuzzyMatchConfig';
-import {
-  type BaseFuzzyMatchConfig,
-  type FuzzyMatchAlgorithm,
-} from '../fuzzy-match/baseFuzzyMatchConfig';
+import { type BaseFuzzyMatchConfig, type FuzzyMatchAlgorithm } from '../fuzzy-match/baseFuzzyMatchConfig';
 import { type AggregatorOperator } from '../modale-operators';
-import {
-  type AstNode,
-  type CheckNodeId,
-  type IdLessAstNode,
-  NewUndefinedAstNode,
-} from './ast-node';
+import { type AstNode, type CheckNodeId, type IdLessAstNode, NewUndefinedAstNode } from './ast-node';
 import { type KnownOperandAstNode } from './builder-ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
@@ -124,12 +116,11 @@ export type AggregationFilterAstNode =
   | BinaryAggregationFilterAstNode
   | ComplexAggregationFilterAstNode;
 
-export type GetAggregationFilterOperator<T extends AggregationFilterAstNode> =
-  T extends UnaryAggregationFilterAstNode
-    ? UnaryAggregationFilterOperator
-    : T extends BinaryAggregationFilterAstNode
-      ? BinaryAggregationFilterOperator
-      : ComplexAggregationFilterOperator;
+export type GetAggregationFilterOperator<T extends AggregationFilterAstNode> = T extends UnaryAggregationFilterAstNode
+  ? UnaryAggregationFilterOperator
+  : T extends BinaryAggregationFilterAstNode
+    ? BinaryAggregationFilterOperator
+    : ComplexAggregationFilterOperator;
 
 export const aggregationAstNodeName = 'Aggregator';
 export interface AggregationAstNode {
@@ -191,14 +182,10 @@ export function isAggregationFilterOperator(value: string): value is Aggregation
   return (aggregationFilterOperators as ReadonlyArray<string>).includes(value);
 }
 
-export function isUnaryAggregationFilterOperator(
-  value: string | null,
-): value is UnaryAggregationFilterOperator {
+export function isUnaryAggregationFilterOperator(value: string | null): value is UnaryAggregationFilterOperator {
   return (unaryAggregationFilterOperators as ReadonlyArray<string | null>).includes(value);
 }
-export function isBinaryAggregationFilterOperator(
-  value: string | null,
-): value is BinaryAggregationFilterOperator {
+export function isBinaryAggregationFilterOperator(value: string | null): value is BinaryAggregationFilterOperator {
   return (binaryAggregationFilterOperators as ReadonlyArray<string | null>).includes(value);
 }
 
@@ -216,9 +203,7 @@ export function isBinaryAggregationFilter(
   const operator = node.namedChildren.operator.constant;
   return (
     operator === null ||
-    (binaryAggregationFilterOperators as ReadonlyArray<AggregationFilterOperator>).includes(
-      operator,
-    )
+    (binaryAggregationFilterOperators as ReadonlyArray<AggregationFilterOperator>).includes(operator)
   );
 }
 
@@ -230,8 +215,6 @@ export function isComplexAggregationFilter(
   );
 }
 
-export function isAggregation(
-  node: IdLessAstNode | AstNode,
-): node is CheckNodeId<AggregationAstNode, typeof node> {
+export function isAggregation(node: IdLessAstNode | AstNode): node is CheckNodeId<AggregationAstNode, typeof node> {
   return node.name === aggregationAstNodeName;
 }

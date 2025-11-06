@@ -15,9 +15,7 @@ export function PivotDetails({ pivot }: { pivot: Pivot }) {
       </div>
       <div className="flex flex-row items-center gap-4">
         <span className="text-grey-50 text-s min-w-[90px]">{t('data:view_pivot.table')}</span>
-        <span className="text-m text-grey-00">
-          {pivot.type === 'link' ? pivot.pivotTable : pivot.baseTable}
-        </span>
+        <span className="text-m text-grey-00">{pivot.type === 'link' ? pivot.pivotTable : pivot.baseTable}</span>
       </div>
       <div className="flex flex-row items-center gap-4">
         <span className="text-grey-50 text-s min-w-[90px]">{t('data:view_pivot.definition')}</span>

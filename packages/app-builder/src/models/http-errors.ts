@@ -1,10 +1,4 @@
-import {
-  BAD_REQUEST,
-  CONFLICT,
-  FORBIDDEN,
-  NOT_FOUND,
-  UNAUTHORIZED,
-} from '@app-builder/utils/http/http-status-codes';
+import { BAD_REQUEST, CONFLICT, FORBIDDEN, NOT_FOUND, UNAUTHORIZED } from '@app-builder/utils/http/http-status-codes';
 import type * as Oazapfts from '@oazapfts/runtime';
 import * as z from 'zod/v4';
 
@@ -36,10 +30,7 @@ const marbleErrorSchema = z.object({
   error_code: z.string().optional(),
   message: z.string(),
 });
-export function isMarbleError(error: Oazapfts.HttpError): error is Omit<
-  Oazapfts.HttpError,
-  'data'
-> & {
+export function isMarbleError(error: Oazapfts.HttpError): error is Omit<Oazapfts.HttpError, 'data'> & {
   data: z.infer<typeof marbleErrorSchema>;
 } {
   const result = marbleErrorSchema.safeParse(error.data);

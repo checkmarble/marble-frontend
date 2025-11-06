@@ -40,10 +40,7 @@ interface AstNodeStringifierContext {
   customLists: CustomList[];
 }
 
-export function getAstNodeDisplayName(
-  astNode: IdLessAstNode,
-  context: AstNodeStringifierContext,
-): string {
+export function getAstNodeDisplayName(astNode: IdLessAstNode, context: AstNodeStringifierContext): string {
   if (isConstant(astNode)) {
     return formatConstant(astNode.constant, context);
   }
@@ -123,10 +120,7 @@ export function getAstNodeDisplayName(
   return `${astNode.name}(${args})`;
 }
 
-function getTimeAddDisplayName(
-  astNode: IdLessAstNode<TimeAddAstNode>,
-  context: AstNodeStringifierContext,
-): string {
+function getTimeAddDisplayName(astNode: IdLessAstNode<TimeAddAstNode>, context: AstNodeStringifierContext): string {
   const sign = astNode.namedChildren['sign']?.constant ?? '';
   const isoDuration = astNode.namedChildren['duration']?.constant ?? '';
   const timestampField = astNode.namedChildren['timestampField'];
@@ -226,10 +220,7 @@ function getTimestampExtractDisplayName(
   });
 }
 
-function getIsMultipleOfDisplayName(
-  astNode: IdLessAstNode<IsMultipleOfAstNode>,
-  context: AstNodeStringifierContext,
-) {
+function getIsMultipleOfDisplayName(astNode: IdLessAstNode<IsMultipleOfAstNode>, context: AstNodeStringifierContext) {
   const value = astNode.namedChildren.value;
   const divider = astNode.namedChildren.divider.constant;
 

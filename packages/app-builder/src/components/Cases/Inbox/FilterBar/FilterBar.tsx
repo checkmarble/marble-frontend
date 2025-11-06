@@ -29,10 +29,7 @@ export const InboxFilterBar = ({
   onInboxSelect,
 }: InboxFilterBarProps) => {
   const { t } = useTranslation(['cases']);
-  const allInboxes: PartialInbox[] = [
-    { id: MY_INBOX_ID, name: t('cases:inbox.my-inbox.link') },
-    ...inboxes,
-  ];
+  const allInboxes: PartialInbox[] = [{ id: MY_INBOX_ID, name: t('cases:inbox.my-inbox.link') }, ...inboxes];
   const selectedInbox = allInboxes.find((inbox) => inbox.id === inboxId) ?? allInboxes[0]!;
 
   return (
@@ -44,11 +41,7 @@ export const InboxFilterBar = ({
           onInboxSelect(inbox.id);
         }}
       />
-      <InboxFilters
-        allowedFilters={allowedFilters}
-        filters={filters}
-        updateFilters={updateFilters}
-      />
+      <InboxFilters allowedFilters={allowedFilters} filters={filters} updateFilters={updateFilters} />
     </div>
   );
 };
@@ -69,14 +62,7 @@ const InboxFilters = ({ allowedFilters, filters, updateFilters }: InboxFiltersPr
         const [filterName] = filter;
         const handleClear = () => updateFilters({ [filterName]: undefined });
 
-        return (
-          <ActivatedFilterItem
-            onUpdate={updateFilters}
-            onClear={handleClear}
-            key={filterName}
-            filter={filter}
-          />
-        );
+        return <ActivatedFilterItem onUpdate={updateFilters} onClear={handleClear} key={filterName} filter={filter} />;
       })}
 
       <MenuCommand.Menu open={open} onOpenChange={setOpen}>

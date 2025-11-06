@@ -7,10 +7,7 @@ import invariant from 'tiny-invariant';
 
 export type AstNodeErrors = Tree<{ errors: EvaluationError[] }>;
 
-export function getAstNodeEvaluationErrors(
-  astNode: AstNode,
-  astNodeErrors: AstNodeErrors,
-): EvaluationError[] {
+export function getAstNodeEvaluationErrors(astNode: AstNode, astNodeErrors: AstNodeErrors): EvaluationError[] {
   const errors: EvaluationError[] = [];
   if (astNodeErrors.errors) {
     errors.push(...astNodeErrors.errors);
@@ -175,10 +172,7 @@ export type ValidationStatus = 'valid' | 'error' | 'light-error';
  * @param viewModel
  * @returns the errors of the node and its children
  */
-export function computeLineErrors(
-  astNode: AstNode,
-  astNodeErrors: AstNodeErrors,
-): EvaluationError[] {
+export function computeLineErrors(astNode: AstNode, astNodeErrors: AstNodeErrors): EvaluationError[] {
   const errors = getAstNodeEvaluationErrors(astNode, astNodeErrors);
   // Stop the recursion if the node is a leaf
   if (isLeafOperandAstNode(astNode)) {

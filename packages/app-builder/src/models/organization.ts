@@ -13,9 +13,7 @@ export interface Organization {
 export const adaptOrganizationDto = (organizationDto: OrganizationDto): Organization => ({
   id: organizationDto.id,
   name: organizationDto.name,
-  defaultScenarioTimezone: organizationDto.default_scenario_timezone
-    ? organizationDto.default_scenario_timezone
-    : null,
+  defaultScenarioTimezone: organizationDto.default_scenario_timezone ? organizationDto.default_scenario_timezone : null,
   sanctionLimit: organizationDto.sanctions_limit,
   sanctionThreshold: organizationDto.sanctions_threshold,
   autoAssignQueueLimit: organizationDto.auto_assign_queue_limit,

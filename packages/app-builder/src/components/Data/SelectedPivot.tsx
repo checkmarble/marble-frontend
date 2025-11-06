@@ -25,13 +25,7 @@ export function useSelectedPivot() {
   return SelectedPivotContext.useValue();
 }
 
-export function SelectedPivotProvider({
-  dataModel,
-  children,
-}: {
-  dataModel: DataModel;
-  children: React.ReactNode;
-}) {
+export function SelectedPivotProvider({ dataModel, children }: { dataModel: DataModel; children: React.ReactNode }) {
   const linksToSingleMap = React.useMemo(() => getLinksToSingleMap(dataModel), [dataModel]);
 
   const [selectedPivot, setSelectedPivot] = React.useState<Pivot | undefined>(undefined);
@@ -66,9 +60,7 @@ export function SelectedPivotProvider({
         return selectedPivot.fieldId === fieldId;
       }
 
-      return selectedPathLinks.some(
-        (link) => link?.childFieldId === fieldId || link?.parentFieldId === fieldId,
-      );
+      return selectedPathLinks.some((link) => link?.childFieldId === fieldId || link?.parentFieldId === fieldId);
     },
     [selectedPivot, selectedPathLinks],
   );
@@ -80,9 +72,7 @@ export function SelectedPivotProvider({
         return selectedPivot.baseTableId === tableId;
       }
 
-      return selectedPathLinks.some(
-        (link) => link?.childTableId === tableId || link?.parentTableId === tableId,
-      );
+      return selectedPathLinks.some((link) => link?.childTableId === tableId || link?.parentTableId === tableId);
     },
     [selectedPivot, selectedPathLinks],
   );
@@ -111,9 +101,7 @@ export function SelectedPivotPanel() {
   return (
     <Panel position="bottom-center">
       <div className="bg-grey-100 border-grey-90 flex min-w-60 flex-col overflow-hidden rounded-sm border drop-shadow-md">
-        <p className="text-l bg-grey-98 border-b-grey-90 border-b p-4 font-semibold">
-          {t('data:view_pivot.title')}
-        </p>
+        <p className="text-l bg-grey-98 border-b-grey-90 border-b p-4 font-semibold">{t('data:view_pivot.title')}</p>
 
         <div className="flex flex-col gap-4 rounded-sm p-4">
           {selectedPivot ? <PivotDetails pivot={selectedPivot} /> : null}

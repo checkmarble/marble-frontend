@@ -15,8 +15,7 @@ import { useOutcomeAndReviewStatusFilter } from '../DecisionFiltersContext';
 export function OutcomeAndReviewStatusFilter() {
   const { t } = useTranslation(decisionsI18n);
   const [value, setSearchValue] = React.useState('');
-  const { selectedOutcomeAndReviewStatus, setOutcomeAndReviewStatus } =
-    useOutcomeAndReviewStatusFilter();
+  const { selectedOutcomeAndReviewStatus, setOutcomeAndReviewStatus } = useOutcomeAndReviewStatusFilter();
   const deferredValue = React.useDeferredValue(value);
   const outcomeAndReviewStatus = React.useMemo(
     () =>

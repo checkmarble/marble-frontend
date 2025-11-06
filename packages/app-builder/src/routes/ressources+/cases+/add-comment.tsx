@@ -45,19 +45,14 @@ export async function action({ request }: ActionFunctionArgs) {
       message: t('common:max_size_exceeded', { size: MAX_FILE_SIZE_MB }),
     });
 
-    return Response.json(
-      { success: false, errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: false, errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 
   const token = authSession.get('authToken')?.access_token;
 
   if (!token) return redirect(getRoute('/sign-in'));
 
-  const { data, success, error } = addCommentPayloadSchema.safeParse(
-    decode(raw, { arrays: ['files'] }),
-  );
+  const { data, success, error } = addCommentPayloadSchema.safeParse(decode(raw, { arrays: ['files'] }));
 
   if (!success) return Response.json({ success, errors: z.treeifyError(error) });
 
@@ -85,19 +80,13 @@ export async function action({ request }: ActionFunctionArgs) {
 
     await Promise.all(promises);
 
-    return Response.json(
-      { success, errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success, errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       messageKey: t('common:errors.unknown'),
     });
 
-    return Response.json(
-      { success: false, errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: false, errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }

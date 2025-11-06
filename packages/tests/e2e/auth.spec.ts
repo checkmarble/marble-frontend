@@ -13,14 +13,8 @@ test('Initial login page', async ({ page }) => {
 test('Invalid username', async ({ page }) => {
   await page.goto('/sign-in');
 
-  await page
-    .getByRole('textbox')
-    .and(page.locator('[name="credentials.email"]'))
-    .fill('invalid@zorg.com');
-  await page
-    .getByRole('textbox')
-    .and(page.locator('[name="credentials.password"]'))
-    .fill('very-secret');
+  await page.getByRole('textbox').and(page.locator('[name="credentials.email"]')).fill('invalid@zorg.com');
+  await page.getByRole('textbox').and(page.locator('[name="credentials.password"]')).fill('very-secret');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
 
   await expect(page.getByText('Invalid login credentials.')).toBeVisible();
@@ -29,14 +23,8 @@ test('Invalid username', async ({ page }) => {
 test('Invalid password', async ({ page }) => {
   await page.goto('/sign-in');
 
-  await page
-    .getByRole('textbox')
-    .and(page.locator('[name="credentials.email"]'))
-    .fill('jbe@zorg.com');
-  await page
-    .getByRole('textbox')
-    .and(page.locator('[name="credentials.password"]'))
-    .fill('invalid');
+  await page.getByRole('textbox').and(page.locator('[name="credentials.email"]')).fill('jbe@zorg.com');
+  await page.getByRole('textbox').and(page.locator('[name="credentials.password"]')).fill('invalid');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
 
   await expect(page.getByText('Invalid login credentials.')).toBeVisible();
@@ -47,14 +35,8 @@ const authState = path.join(path.dirname(fileURLToPath(import.meta.url)), '../au
 test('Authentication', async ({ page }) => {
   await page.goto('/sign-in');
 
-  await page
-    .getByRole('textbox')
-    .and(page.locator('[name="credentials.email"]'))
-    .fill('jbe@zorg.com');
-  await page
-    .getByRole('textbox')
-    .and(page.locator('[name="credentials.password"]'))
-    .fill('very-secret');
+  await page.getByRole('textbox').and(page.locator('[name="credentials.email"]')).fill('jbe@zorg.com');
+  await page.getByRole('textbox').and(page.locator('[name="credentials.password"]')).fill('very-secret');
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
 
   await page.waitForURL('/scenarios');

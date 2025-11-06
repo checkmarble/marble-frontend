@@ -8,14 +8,8 @@ import {
 
 export type SessionService<Data = SessionData, FlashData = Data> = {
   getSession: (request: Request, options?: CookieParseOptions) => Promise<Session<Data, FlashData>>;
-  commitSession: (
-    session: Session<Data, FlashData>,
-    options?: CookieSerializeOptions,
-  ) => Promise<string>;
-  destroySession: (
-    session: Session<Data, FlashData>,
-    options?: CookieSerializeOptions,
-  ) => Promise<string>;
+  commitSession: (session: Session<Data, FlashData>, options?: CookieSerializeOptions) => Promise<string>;
+  destroySession: (session: Session<Data, FlashData>, options?: CookieSerializeOptions) => Promise<string>;
 };
 
 export function makeSessionService<Data = SessionData, FlashData = Data>({
@@ -24,8 +18,7 @@ export function makeSessionService<Data = SessionData, FlashData = Data>({
   sessionStorage: SessionStorage<Data, FlashData>;
 }): SessionService<Data, FlashData> {
   return {
-    getSession: (request, options) =>
-      sessionStorage.getSession(request.headers.get('cookie'), options),
+    getSession: (request, options) => sessionStorage.getSession(request.headers.get('cookie'), options),
     commitSession: sessionStorage.commitSession,
     destroySession: sessionStorage.destroySession,
   };

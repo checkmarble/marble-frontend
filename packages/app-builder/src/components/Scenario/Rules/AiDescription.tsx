@@ -57,9 +57,7 @@ export function AiDescription({ isPending, description, className }: AiDescripti
           </div>
         </div>
       ) : null}
-      {isPending && description ? (
-        <div>{t('scenarios:rules.ai_description.check_reformulation')}</div>
-      ) : null}
+      {isPending && description ? <div>{t('scenarios:rules.ai_description.check_reformulation')}</div> : null}
     </div>
   );
 }

@@ -1,10 +1,6 @@
 import { Callout, CalloutV2, Page, scenarioI18n } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
-import {
-  BreadCrumbLink,
-  type BreadCrumbProps,
-  BreadCrumbs,
-} from '@app-builder/components/Breadcrumbs';
+import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
@@ -106,13 +102,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       failureRedirect: getRoute('/sign-in'),
     });
 
-  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, { sections }] =
-    await Promise.all([
-      editor.listAccessors({ scenarioId }),
-      dataModelRepository.getDataModel(),
-      customListsRepository.listCustomLists(),
-      screening.listDatasets(),
-    ]);
+  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, { sections }] = await Promise.all([
+    editor.listAccessors({ scenarioId }),
+    dataModelRepository.getDataModel(),
+    customListsRepository.listCustomLists(),
+    screening.listDatasets(),
+  ]);
 
   return {
     databaseAccessors,
@@ -151,8 +146,7 @@ type EditScreeningForm = z.infer<typeof editScreeningFormSchema>;
 const clearQuery = (
   entityType: EditScreeningForm['entityType'],
   query: Record<string, unknown>,
-): Record<string, unknown> =>
-  entityType ? pick(query, SEARCH_ENTITIES[entityType].fields) : query;
+): Record<string, unknown> => (entityType ? pick(query, SEARCH_ENTITIES[entityType].fields) : query);
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const {
@@ -199,20 +193,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
       message: t('common:success.save'),
     });
 
-    return Response.json(
-      { status: 'success' },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ status: 'success' }, { headers: { 'Set-Cookie': await commitSession(session) } });
   } catch (_error) {
     setToastMessage(session, {
       type: 'error',
       message: t('common:errors.unknown'),
     });
 
-    return Response.json(
-      { status: 'error' },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ status: 'error' }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 }
 
@@ -312,12 +300,9 @@ export default function ScreeningDetail() {
         <Page.Content className="pt-0 lg:pt-0">
           <form className="relative flex max-w-[800px] flex-col" onSubmit={handleSubmit(form)}>
             <div
-              className={cn(
-                'bg-purple-99 sticky top-0 z-40 flex h-[88px] items-center justify-between gap-4',
-                {
-                  'border-b-grey-90 border-b': !intersection?.isIntersecting,
-                },
-              )}
+              className={cn('bg-purple-99 sticky top-0 z-40 flex h-[88px] items-center justify-between gap-4', {
+                'border-b-grey-90 border-b': !intersection?.isIntersecting,
+              })}
             >
               <form.Field
                 name="name"
@@ -344,11 +329,7 @@ export default function ScreeningDetail() {
               </form.Field>
               {editor === 'edit' ? (
                 <div className="flex items-center gap-2">
-                  <DeleteScreeningRule
-                    iterationId={iterationId}
-                    scenarioId={scenario.id}
-                    screeningId={configId}
-                  >
+                  <DeleteScreeningRule iterationId={iterationId} scenarioId={scenario.id} screeningId={configId}>
                     <Button color="red" className="w-fit" size="small">
                       <Icon icon="delete" className="size-4" aria-hidden />
                       {t('common:delete')}
@@ -409,9 +390,7 @@ export default function ScreeningDetail() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <span className="text-s font-semibold">
-                  {t('scenarios:edit_sanction.global_settings')}
-                </span>
+                <span className="text-s font-semibold">{t('scenarios:edit_sanction.global_settings')}</span>
                 <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded-md border p-4">
                   <Callout variant="outlined">
                     <span>
@@ -419,9 +398,7 @@ export default function ScreeningDetail() {
                         t={t}
                         i18nKey="scenarios:sanction.trigger_object.callout"
                         components={{
-                          DocLink: (
-                            <ExternalLink href="https://docs.checkmarble.com/docs/getting-started" />
-                          ),
+                          DocLink: <ExternalLink href="https://docs.checkmarble.com/docs/getting-started" />,
                         }}
                       />
                     </span>
@@ -470,9 +447,7 @@ export default function ScreeningDetail() {
                             onChange={(e) => field.handleChange(+e.currentTarget.value)}
                             valid={field.state.meta.errors?.length === 0}
                           />
-                          <FormErrorOrDescription
-                            errors={getFieldErrors(field.state.meta.errors)}
-                          />
+                          <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                         </div>
                       )}
                     </form.Field>
@@ -496,9 +471,7 @@ export default function ScreeningDetail() {
                             selectedOutcome={field.state.value}
                             outcomes={difference(knownOutcomes, ['approve']) as ScreeningOutcome[]}
                           />
-                          <FormErrorOrDescription
-                            errors={getFieldErrors(field.state.meta.errors)}
-                          />
+                          <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                         </div>
                       )}
                     </form.Field>
@@ -515,11 +488,7 @@ export default function ScreeningDetail() {
                 <form.Field name="counterPartyId">
                   {(field) => (
                     <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
-                      <AstBuilder.Provider
-                        scenarioId={scenario.id}
-                        initialData={options}
-                        mode={editor}
-                      >
+                      <AstBuilder.Provider scenarioId={scenario.id} initialData={options} mode={editor}>
                         <FieldNode
                           value={field.state.value}
                           onChange={field.handleChange}
@@ -535,26 +504,18 @@ export default function ScreeningDetail() {
 
               <AstBuilder.Provider scenarioId={scenario.id} initialData={options} mode={editor}>
                 <div className="flex flex-col gap-2">
-                  <span className="text-s font-semibold">
-                    {t('scenarios:sanction.match_settings.title')}
-                  </span>
+                  <span className="text-s font-semibold">{t('scenarios:sanction.match_settings.title')}</span>
                   <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
                     <Callout variant="outlined">
-                      <p className="whitespace-pre-wrap">
-                        {t('scenarios:sanction.match_settings.callout')}
-                      </p>
+                      <p className="whitespace-pre-wrap">{t('scenarios:sanction.match_settings.callout')}</p>
                     </Callout>
                     <div className="flex flex-col gap-1">
                       <span className="text-s inline-flex items-center gap-1">
                         {t('scenarios:edit_sanction.entity_type.heading')}
-                        <FieldToolTip>
-                          {t('scenarios:edit_sanction.entity_type.tooltip')}
-                        </FieldToolTip>
+                        <FieldToolTip>{t('scenarios:edit_sanction.entity_type.tooltip')}</FieldToolTip>
                       </span>
                       <form.Field name="entityType">
-                        {(field) => (
-                          <FieldEntityType entityType={entityType} onChange={field.handleChange} />
-                        )}
+                        {(field) => <FieldEntityType entityType={entityType} onChange={field.handleChange} />}
                       </form.Field>
                     </div>
                     <div className="flex flex-col gap-2">
@@ -567,23 +528,17 @@ export default function ScreeningDetail() {
                                 <div className="flex flex-col gap-1">
                                   <span className="text-s inline-flex items-center gap-1">
                                     {t('scenarios:screening.filter.name')}
-                                    <FieldToolTip>
-                                      {t('scenarios:screening.filter.name.tooltip')}
-                                    </FieldToolTip>
+                                    <FieldToolTip>{t('scenarios:screening.filter.name.tooltip')}</FieldToolTip>
                                   </span>
                                   <FieldNodeConcat
                                     viewOnly={editor === 'view'}
-                                    value={
-                                      value && isStringConcatAstNode(value) ? value : undefined
-                                    }
+                                    value={value && isStringConcatAstNode(value) ? value : undefined}
                                     onChange={field.handleChange}
                                     onBlur={field.handleBlur}
                                     placeholder={t('scenarios:screening.filter.name_placeholder')}
                                     limit={5}
                                   />
-                                  <FormErrorOrDescription
-                                    errors={getFieldErrors(field.state.meta.errors)}
-                                  />
+                                  <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                 </div>
                               </div>
                             );
@@ -609,12 +564,8 @@ export default function ScreeningDetail() {
                                 onBlur={field.handleBlur}
                                 disabled={editor === 'view'}
                               />
-                              <span className="text-s">
-                                {t('scenarios:edit_sanction.exclude_numbers')}
-                              </span>
-                              <FieldToolTip>
-                                {t('scenarios:edit_sanction.exclude_numbers.tooltip')}
-                              </FieldToolTip>
+                              <span className="text-s">{t('scenarios:edit_sanction.exclude_numbers')}</span>
+                              <FieldToolTip>{t('scenarios:edit_sanction.exclude_numbers.tooltip')}</FieldToolTip>
                             </div>
                           )}
                         </form.Field>
@@ -637,13 +588,9 @@ export default function ScreeningDetail() {
                                   checked={field.state.value}
                                   onCheckedChange={(checked) => field.handleChange(checked)}
                                   onBlur={field.handleBlur}
-                                  disabled={
-                                    editor === 'view' || !isAccessible(entitlements.nameRecognition)
-                                  }
+                                  disabled={editor === 'view' || !isAccessible(entitlements.nameRecognition)}
                                 />
-                                <span className="text-s">
-                                  {t('scenarios:edit_sanction.enable_entity_recognition')}
-                                </span>
+                                <span className="text-s">{t('scenarios:edit_sanction.enable_entity_recognition')}</span>
                                 <FieldToolTip>
                                   {t('scenarios:edit_sanction.enable_entity_recognition.tooltip')}
                                 </FieldToolTip>
@@ -670,19 +617,13 @@ export default function ScreeningDetail() {
                                       </span>
                                       <FieldNodeConcat
                                         viewOnly={editor === 'view'}
-                                        value={
-                                          value && isStringConcatAstNode(value) ? value : undefined
-                                        }
+                                        value={value && isStringConcatAstNode(value) ? value : undefined}
                                         onChange={field.handleChange}
                                         onBlur={field.handleBlur}
-                                        placeholder={t(
-                                          'scenarios:edit_sanction.birthdate_placeholder',
-                                        )}
+                                        placeholder={t('scenarios:edit_sanction.birthdate_placeholder')}
                                         limit={5}
                                       />
-                                      <FormErrorOrDescription
-                                        errors={getFieldErrors(field.state.meta.errors)}
-                                      />
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -699,19 +640,13 @@ export default function ScreeningDetail() {
                                       </span>
                                       <FieldNodeConcat
                                         viewOnly={editor === 'view'}
-                                        value={
-                                          value && isStringConcatAstNode(value) ? value : undefined
-                                        }
+                                        value={value && isStringConcatAstNode(value) ? value : undefined}
                                         onChange={field.handleChange}
                                         onBlur={field.handleBlur}
-                                        placeholder={t(
-                                          'scenarios:edit_sanction.nationality_placeholder',
-                                        )}
+                                        placeholder={t('scenarios:edit_sanction.nationality_placeholder')}
                                         limit={5}
                                       />
-                                      <FormErrorOrDescription
-                                        errors={getFieldErrors(field.state.meta.errors)}
-                                      />
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -728,19 +663,13 @@ export default function ScreeningDetail() {
                                       </span>
                                       <FieldNodeConcat
                                         viewOnly={editor === 'view'}
-                                        value={
-                                          value && isStringConcatAstNode(value) ? value : undefined
-                                        }
+                                        value={value && isStringConcatAstNode(value) ? value : undefined}
                                         onChange={field.handleChange}
                                         onBlur={field.handleBlur}
-                                        placeholder={t(
-                                          'scenarios:edit_sanction.passport_number_placeholder',
-                                        )}
+                                        placeholder={t('scenarios:edit_sanction.passport_number_placeholder')}
                                         limit={5}
                                       />
-                                      <FormErrorOrDescription
-                                        errors={getFieldErrors(field.state.meta.errors)}
-                                      />
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -757,19 +686,13 @@ export default function ScreeningDetail() {
                                       </span>
                                       <FieldNodeConcat
                                         viewOnly={editor === 'view'}
-                                        value={
-                                          value && isStringConcatAstNode(value) ? value : undefined
-                                        }
+                                        value={value && isStringConcatAstNode(value) ? value : undefined}
                                         onChange={field.handleChange}
                                         onBlur={field.handleBlur}
-                                        placeholder={t(
-                                          'scenarios:edit_sanction.address_placeholder',
-                                        )}
+                                        placeholder={t('scenarios:edit_sanction.address_placeholder')}
                                         limit={5}
                                       />
-                                      <FormErrorOrDescription
-                                        errors={getFieldErrors(field.state.meta.errors)}
-                                      />
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -790,19 +713,13 @@ export default function ScreeningDetail() {
                                       </span>
                                       <FieldNodeConcat
                                         viewOnly={editor === 'view'}
-                                        value={
-                                          value && isStringConcatAstNode(value) ? value : undefined
-                                        }
+                                        value={value && isStringConcatAstNode(value) ? value : undefined}
                                         onChange={field.handleChange}
                                         onBlur={field.handleBlur}
-                                        placeholder={t(
-                                          'scenarios:edit_sanction.country_placeholder',
-                                        )}
+                                        placeholder={t('scenarios:edit_sanction.country_placeholder')}
                                         limit={5}
                                       />
-                                      <FormErrorOrDescription
-                                        errors={getFieldErrors(field.state.meta.errors)}
-                                      />
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -819,19 +736,13 @@ export default function ScreeningDetail() {
                                       </span>
                                       <FieldNodeConcat
                                         viewOnly={editor === 'view'}
-                                        value={
-                                          value && isStringConcatAstNode(value) ? value : undefined
-                                        }
+                                        value={value && isStringConcatAstNode(value) ? value : undefined}
                                         onChange={field.handleChange}
                                         onBlur={field.handleBlur}
-                                        placeholder={t(
-                                          'scenarios:edit_sanction.registrationnumber_placeholder',
-                                        )}
+                                        placeholder={t('scenarios:edit_sanction.registrationnumber_placeholder')}
                                         limit={5}
                                       />
-                                      <FormErrorOrDescription
-                                        errors={getFieldErrors(field.state.meta.errors)}
-                                      />
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -848,19 +759,13 @@ export default function ScreeningDetail() {
                                       </span>
                                       <FieldNodeConcat
                                         viewOnly={editor === 'view'}
-                                        value={
-                                          value && isStringConcatAstNode(value) ? value : undefined
-                                        }
+                                        value={value && isStringConcatAstNode(value) ? value : undefined}
                                         onChange={field.handleChange}
                                         onBlur={field.handleBlur}
-                                        placeholder={t(
-                                          'scenarios:edit_sanction.address_placeholder',
-                                        )}
+                                        placeholder={t('scenarios:edit_sanction.address_placeholder')}
                                         limit={5}
                                       />
-                                      <FormErrorOrDescription
-                                        errors={getFieldErrors(field.state.meta.errors)}
-                                      />
+                                      <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                     </div>
                                   </div>
                                 );
@@ -880,19 +785,13 @@ export default function ScreeningDetail() {
                                     </span>
                                     <FieldNodeConcat
                                       viewOnly={editor === 'view'}
-                                      value={
-                                        value && isStringConcatAstNode(value) ? value : undefined
-                                      }
+                                      value={value && isStringConcatAstNode(value) ? value : undefined}
                                       onChange={field.handleChange}
                                       onBlur={field.handleBlur}
-                                      placeholder={t(
-                                        'scenarios:edit_sanction.registrationnumber_placeholder',
-                                      )}
+                                      placeholder={t('scenarios:edit_sanction.registrationnumber_placeholder')}
                                       limit={5}
                                     />
-                                    <FormErrorOrDescription
-                                      errors={getFieldErrors(field.state.meta.errors)}
-                                    />
+                                    <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                                   </div>
                                 </div>
                               );

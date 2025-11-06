@@ -19,17 +19,10 @@ export function SignInFirstConnection({
         className={CtaClassName({ variant: 'secondary', className: 'text-center' })}
         to={getRoute('/create-password')}
       >
-        {t(
-          isSignInHomepage
-            ? 'auth:sign_up.set_password_sign_in'
-            : 'auth:sign_up.set_password_sign_in_email',
-        )}
+        {t(isSignInHomepage ? 'auth:sign_up.set_password_sign_in' : 'auth:sign_up.set_password_sign_in_email')}
       </Link>
       {showAskDemoButton ? (
-        <ExternalLink
-          className={CtaClassName({ variant: 'secondary' })}
-          href="https://www.checkmarble.com/demo-fraud"
-        >
+        <ExternalLink className={CtaClassName({ variant: 'secondary' })} href="https://www.checkmarble.com/demo-fraud">
           {t('auth:sign_up.no_account')}
         </ExternalLink>
       ) : null}

@@ -2,13 +2,7 @@ import { undefinedAstNodeName } from '@app-builder/models';
 import { getOperatorName } from '@app-builder/models/get-operator-name';
 import { useTranslation } from 'react-i18next';
 
-export function ViewingOperator({
-  operator,
-  isFilter = false,
-}: {
-  operator: string | null;
-  isFilter?: boolean;
-}) {
+export function ViewingOperator({ operator, isFilter = false }: { operator: string | null; isFilter?: boolean }) {
   const { t } = useTranslation(['common', 'scenarios']);
 
   const _value = operator !== undefinedAstNodeName && operator !== null ? operator : null;

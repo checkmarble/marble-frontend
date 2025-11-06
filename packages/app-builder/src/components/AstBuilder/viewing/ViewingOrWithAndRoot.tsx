@@ -1,8 +1,5 @@
 import { type AstNode } from '@app-builder/models';
-import {
-  type AndAstNode,
-  type OrWithAndAstNode,
-} from '@app-builder/models/astNode/builder-ast-node';
+import { type AndAstNode, type OrWithAndAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { type FlatAstValidation } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/validate-ast';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
 import { LogicalOperatorLabel } from '@ast-builder/styles/LogicalOperatorLabel';
@@ -16,15 +13,9 @@ import { adaptBooleanOrNullReturnValue } from './helpers';
 import { ViewingEvaluationErrors } from './ViewingEvaluationErrors';
 import { ViewingAstBuilderNode } from './ViewingNode';
 
-type ViewingAstBuilderOrWithAndRootProps = Omit<
-  AstBuilderRootProps<OrWithAndAstNode>,
-  'onStoreInit'
->;
+type ViewingAstBuilderOrWithAndRootProps = Omit<AstBuilderRootProps<OrWithAndAstNode>, 'onStoreInit'>;
 export function ViewingAstBuilderOrWithAndRoot(props: ViewingAstBuilderOrWithAndRootProps) {
-  const validation = useMemo(
-    () => props.validation ?? { errors: [], evaluation: [] },
-    [props.validation],
-  );
+  const validation = useMemo(() => props.validation ?? { errors: [], evaluation: [] }, [props.validation]);
 
   return (
     <div className="grid grid-cols-[40px_1fr_max-content] gap-2">
@@ -39,12 +30,7 @@ export function ViewingAstBuilderOrWithAndRoot(props: ViewingAstBuilderOrWithAnd
           />
         );
       })}
-      <ViewingEvaluationErrors
-        direct
-        id={props.node.id}
-        evaluation={validation.evaluation}
-        className="col-span-3"
-      />
+      <ViewingEvaluationErrors direct id={props.node.id} evaluation={validation.evaluation} className="col-span-3" />
     </div>
   );
 }

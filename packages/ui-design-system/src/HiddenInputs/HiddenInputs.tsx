@@ -1,6 +1,6 @@
-export function HiddenInputs<
-  Props extends Record<string, React.InputHTMLAttributes<HTMLInputElement>['value']>,
->(props: Props) {
+export function HiddenInputs<Props extends Record<string, React.InputHTMLAttributes<HTMLInputElement>['value']>>(
+  props: Props,
+) {
   return (
     <>
       {Object.entries(props)

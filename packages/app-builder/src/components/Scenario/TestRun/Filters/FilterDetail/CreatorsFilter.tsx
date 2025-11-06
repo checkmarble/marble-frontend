@@ -28,11 +28,7 @@ export function CreatorsFilter() {
         <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((user) => {
             return (
-              <SelectWithCombobox.ComboboxItem
-                key={user.userId}
-                value={user.userId}
-                className="align-baseline"
-              >
+              <SelectWithCombobox.ComboboxItem key={user.userId} value={user.userId} className="align-baseline">
                 <div className="flex flex-row items-center gap-4">
                   <Avatar firstName={user.firstName} lastName={user.lastName} size="m" />
                   <span className="text-grey-00 text-s">

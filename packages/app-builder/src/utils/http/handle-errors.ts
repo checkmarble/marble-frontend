@@ -14,11 +14,9 @@ import { badRequest } from './http-responses';
 export function handleParseParamError<Input>(request: Request, error: ZodError<Input>) {
   const { issues } = error;
   if (issues.some(isRawUUIDIssue)) {
-    const redirectURL = (issues as unknown[])
-      .filter(isRawUUIDIssue)
-      .reduce((acc, { params: { value } }) => {
-        return acc.replace(value, fromUUIDtoSUUID(value));
-      }, request.url);
+    const redirectURL = (issues as unknown[]).filter(isRawUUIDIssue).reduce((acc, { params: { value } }) => {
+      return acc.replace(value, fromUUIDtoSUUID(value));
+    }, request.url);
     return redirect(redirectURL);
   }
   return badRequest(error.issues);

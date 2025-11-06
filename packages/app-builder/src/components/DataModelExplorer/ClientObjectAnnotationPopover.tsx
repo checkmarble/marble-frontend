@@ -40,9 +40,7 @@ export function ClientObjectAnnotationPopover({
           <AnnotationSection title="Tags">
             <div className="flex justify-between">
               <div>
-                <ClientTagsList
-                  tagsIds={tagsAnnotations.map((annotation) => annotation.payload.tag_id)}
-                />
+                <ClientTagsList tagsIds={tagsAnnotations.map((annotation) => annotation.payload.tag_id)} />
               </div>
               <MenuCommand.Trigger>
                 <ButtonV2 mode="icon" variant="secondary">
@@ -78,13 +76,7 @@ export function ClientObjectAnnotationPopover({
                   <Icon icon="edit-square" className="text-grey-50 size-3.5" />
                 </ButtonV2>
               </Popover.Trigger>
-              <Popover.Content
-                side="right"
-                align="start"
-                sideOffset={4}
-                collisionPadding={10}
-                className="w-[340px]"
-              >
+              <Popover.Content side="right" align="start" sideOffset={4} collisionPadding={10} className="w-[340px]">
                 <ClientDocumentsPopover
                   caseId={caseId}
                   tableName={tableName}

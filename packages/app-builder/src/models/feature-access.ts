@@ -1,7 +1,4 @@
-import {
-  type FeatureAccessDto,
-  type FeatureAccessLevelDto,
-} from 'marble-api/generated/feature-access-api';
+import { type FeatureAccessDto, type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 
 export interface FeatureAccesses {
   workflows: FeatureAccessLevelDto;

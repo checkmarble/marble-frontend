@@ -55,11 +55,7 @@ export const BreadCrumbs = ({ back }: { back?: string }) => {
 
   return (
     <div className="flex flex-row items-center gap-4">
-      {back ? (
-        <Page.BackLink to={back} />
-      ) : links.length > 1 ? (
-        <Page.BackLink to={links.at(-2)!.pathname} />
-      ) : null}
+      {back ? <Page.BackLink to={back} /> : links.length > 1 ? <Page.BackLink to={links.at(-2)!.pathname} /> : null}
       {links.map(({ Elements, pathname, data }, linkIndex) => {
         const isLastLink = linkIndex === links.length - 1;
 
@@ -75,9 +71,7 @@ export const BreadCrumbs = ({ back }: { back?: string }) => {
                     isLast={isLastElement && isLastLink}
                     data={data}
                   />
-                  {!(isLastElement && isLastLink) ? (
-                    <span className="text-s text-grey-80 font-bold">/</span>
-                  ) : null}
+                  {!(isLastElement && isLastLink) ? <span className="text-s text-grey-80 font-bold">/</span> : null}
                 </div>
               );
             })

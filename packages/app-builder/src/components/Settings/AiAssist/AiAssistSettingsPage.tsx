@@ -69,16 +69,11 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                           className="max-w-96"
                           content={
                             <span className="font-normal text-pretty">
-                              {t(
-                                'settings:ai_assist.case_manager.general.org_description.field.tooltip',
-                              )}
+                              {t('settings:ai_assist.case_manager.general.org_description.field.tooltip')}
                             </span>
                           }
                         >
-                          <Icon
-                            icon="tip"
-                            className="size-4 shrink-0 cursor-pointer text-purple-65"
-                          />
+                          <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
                         </Tooltip.Default>
                       </FormLabel>
 
@@ -90,9 +85,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                         valid={field.state.meta.errors.length === 0}
                         resize="vertical"
                         className="min-h-24"
-                        placeholder={t(
-                          'settings:ai_assist.case_manager.general.org_description.field.placeholder',
-                        )}
+                        placeholder={t('settings:ai_assist.case_manager.general.org_description.field.placeholder')}
                       />
                     </div>
                   )}
@@ -112,32 +105,18 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                             </span>
                           }
                         >
-                          <Icon
-                            icon="tip"
-                            className="size-4 shrink-0 cursor-pointer text-purple-65"
-                          />
+                          <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
                         </Tooltip.Default>
                       </FormLabel>
                       <MenuCommand.Menu>
                         <MenuCommand.Trigger>
-                          <MenuCommand.SelectButton>
-                            {languages.get(field.state.value)}
-                          </MenuCommand.SelectButton>
+                          <MenuCommand.SelectButton>{languages.get(field.state.value)}</MenuCommand.SelectButton>
                         </MenuCommand.Trigger>
 
-                        <MenuCommand.Content
-                          sameWidth
-                          sideOffset={4}
-                          align="start"
-                          className="min-w-24"
-                        >
+                        <MenuCommand.Content sameWidth sideOffset={4} align="start" className="min-w-24">
                           <MenuCommand.List>
                             {Array.from(languages.entries()).map(([code, language]) => (
-                              <MenuCommand.Item
-                                key={code}
-                                value={code}
-                                onSelect={() => field.handleChange(code)}
-                              >
+                              <MenuCommand.Item key={code} value={code} onSelect={() => field.handleChange(code)}>
                                 {language}
                               </MenuCommand.Item>
                             ))}
@@ -161,18 +140,13 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                                 t={t}
                                 i18nKey="ai_assist.case_manager.general.structure.field.tooltip"
                                 components={{
-                                  DocLink: (
-                                    <ExternalLink href="https://www.markdownguide.org/basic-syntax/" />
-                                  ),
+                                  DocLink: <ExternalLink href="https://www.markdownguide.org/basic-syntax/" />,
                                 }}
                               />
                             </span>
                           }
                         >
-                          <Icon
-                            icon="tip"
-                            className="size-4 shrink-0 cursor-pointer text-purple-65"
-                          />
+                          <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
                         </Tooltip.Default>
                       </FormLabel>
                       <FormTextArea
@@ -183,9 +157,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                         valid={field.state.meta.errors.length === 0}
                         resize="vertical"
                         className="min-h-24"
-                        placeholder={t(
-                          'settings:ai_assist.case_manager.general.structure.field.placeholder',
-                        )}
+                        placeholder={t('settings:ai_assist.case_manager.general.structure.field.placeholder')}
                       />
                     </div>
                   )}
@@ -202,9 +174,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                 }}
               >
                 <CollapsiblePaper.Title>
-                  <span className="flex-1">
-                    {t('settings:ai_assist.case_manager.kyc_enrichment.title')}
-                  </span>
+                  <span className="flex-1">{t('settings:ai_assist.case_manager.kyc_enrichment.title')}</span>
                   <form.Field name="kycEnrichmentSetting.enabled">
                     {(field) => (
                       <div className="flex gap-2 text-pretty" onClick={(e) => e.stopPropagation()}>
@@ -237,9 +207,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                             {(field) => (
                               <div className="group flex w-full flex-col gap-2">
                                 <FormLabel name={field.name} className="flex items-center gap-2">
-                                  {t(
-                                    'settings:ai_assist.case_manager.kyc_enrichment.custom_instructions.field.label',
-                                  )}
+                                  {t('settings:ai_assist.case_manager.kyc_enrichment.custom_instructions.field.label')}
                                   <Tooltip.Default
                                     delayDuration={300}
                                     className="max-w-96"
@@ -257,10 +225,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                                       </span>
                                     }
                                   >
-                                    <Icon
-                                      icon="tip"
-                                      className="size-4 shrink-0 cursor-pointer text-purple-65"
-                                    />
+                                    <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
                                   </Tooltip.Default>
                                 </FormLabel>
                                 <FormTextArea
@@ -278,15 +243,10 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                               </div>
                             )}
                           </form.Field>
-                          <CalloutV2>
-                            {t('settings:ai_assist.case_manager.kyc_enrichment_callout')}
-                          </CalloutV2>
+                          <CalloutV2>{t('settings:ai_assist.case_manager.kyc_enrichment_callout')}</CalloutV2>
 
                           {domainsFilterField.state.value.map((_, idx) => (
-                            <form.Field
-                              key={idx}
-                              name={`kycEnrichmentSetting.domainsFilter[${idx}]`}
-                            >
+                            <form.Field key={idx} name={`kycEnrichmentSetting.domainsFilter[${idx}]`}>
                               {(field) => (
                                 <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-v2-sm">
                                   <Input
@@ -295,9 +255,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                                       field.handleChange(e.target.value);
                                       domainsFilterField.validate('change');
                                     }}
-                                    placeholder={t(
-                                      'settings:ai_assist.case_manager.domains_filter.placeholder',
-                                    )}
+                                    placeholder={t('settings:ai_assist.case_manager.domains_filter.placeholder')}
                                   />
                                   <ButtonV2
                                     mode="icon"
@@ -307,9 +265,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
                                     <Icon
                                       icon="delete"
                                       className={'size-3.5 shrink-0 cursor-pointer'}
-                                      aria-label={t(
-                                        'settings:ai_assist.case_manager.domains_filter.delete',
-                                      )}
+                                      aria-label={t('settings:ai_assist.case_manager.domains_filter.delete')}
                                     />
                                   </ButtonV2>
                                   <FormError
@@ -345,9 +301,7 @@ export function AiAssistSettingsPage({ settings }: { settings: AiSettingSchema }
             )}
           </form.Subscribe>
           <div className="flex justify-end">
-            <form.Subscribe
-              selector={(state) => ({ isDirty: state.isDirty, isSubmitting: state.isSubmitting })}
-            >
+            <form.Subscribe selector={(state) => ({ isDirty: state.isDirty, isSubmitting: state.isSubmitting })}>
               {({ isDirty, isSubmitting }) => (
                 <ButtonV2
                   type="submit"

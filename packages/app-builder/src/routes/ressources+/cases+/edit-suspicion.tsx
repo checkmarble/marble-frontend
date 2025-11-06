@@ -41,10 +41,7 @@ export async function action({ request }: ActionFunctionArgs) {
       message: t('common:max_size_exceeded', { size: MAX_FILE_SIZE_MB }),
     });
 
-    return Response.json(
-      { success: false, errors: [] },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
+    return Response.json({ success: false, errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
   }
 
   const { data, success, error } = editSuspicionPayloadSchema.safeParse(decode(raw));

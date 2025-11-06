@@ -20,13 +20,10 @@ export function DatasetFreshnessBanner() {
           t={t}
           i18nKey="common:dataset_freshness_banner"
           values={{
-            lastExport: formatDateTimeWithoutPresets(
-              datasetFreshnessQuery.data.datasetFreshnessInfo.lastExport,
-              {
-                language,
-                dateStyle: 'short',
-              },
-            ),
+            lastExport: formatDateTimeWithoutPresets(datasetFreshnessQuery.data.datasetFreshnessInfo.lastExport, {
+              language,
+              dateStyle: 'short',
+            }),
           }}
         />
       </span>

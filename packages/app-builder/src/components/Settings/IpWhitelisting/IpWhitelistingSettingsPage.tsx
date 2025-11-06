@@ -44,9 +44,7 @@ export const IpWhitelistingSettingsPage = ({
     },
   });
 
-  const removedNetworks = useStore(form.store, (state) =>
-    R.difference(allowedNetworks, state.values.allowedNetworks),
-  );
+  const removedNetworks = useStore(form.store, (state) => R.difference(allowedNetworks, state.values.allowedNetworks));
 
   return (
     <Page.Container>
@@ -65,16 +63,10 @@ export const IpWhitelistingSettingsPage = ({
             </Button>
             {removedNetworks.length > 0 ? (
               <ConfirmSaveModal onConfirm={() => form.handleSubmit()}>
-                <Button onClick={(e) => e.stopPropagation()}>
-                  {t('settings:ip_whitelisting.save')}
-                </Button>
+                <Button onClick={(e) => e.stopPropagation()}>{t('settings:ip_whitelisting.save')}</Button>
               </ConfirmSaveModal>
             ) : (
-              <Button
-                type="submit"
-                form="ip-whitelisting-form"
-                onClick={(e) => e.stopPropagation()}
-              >
+              <Button type="submit" form="ip-whitelisting-form" onClick={(e) => e.stopPropagation()}>
                 {t('settings:ip_whitelisting.save')}
               </Button>
             )}
@@ -101,11 +93,7 @@ export const IpWhitelistingSettingsPage = ({
                               placeholder={t('settings:ip_whitelisting.placeholder')}
                             />
                             <div className="flex items-center gap-v2-sm">
-                              <ButtonV2
-                                mode="icon"
-                                variant="secondary"
-                                onClick={() => networksField.removeValue(idx)}
-                              >
+                              <ButtonV2 mode="icon" variant="secondary" onClick={() => networksField.removeValue(idx)}>
                                 <Icon
                                   icon="delete"
                                   className={'size-3.5 shrink-0 cursor-pointer'}

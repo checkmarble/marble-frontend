@@ -26,9 +26,7 @@ export function ResetPassword({ prefilledEmail }: { prefilledEmail?: string | nu
   const { t } = useTranslation(['auth', 'common']);
   const clientServices = useClientServices();
 
-  const sendPasswordResetEmail = useSendPasswordResetEmail(
-    clientServices.authenticationClientService,
-  );
+  const sendPasswordResetEmail = useSendPasswordResetEmail(clientServices.authenticationClientService);
 
   const form = useForm({
     defaultValues: { email: prefilledEmail ?? '' } as ResetPasswordForm,

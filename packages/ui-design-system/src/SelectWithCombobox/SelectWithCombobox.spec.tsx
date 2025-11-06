@@ -16,10 +16,7 @@ function SelectFruitWithCombobox() {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const deferredValue = useDeferredValue(value);
 
-  const matches = useMemo(
-    () => fruits.filter((fruit) => fruit.includes(deferredValue)),
-    [deferredValue],
-  );
+  const matches = useMemo(() => fruits.filter((fruit) => fruit.includes(deferredValue)), [deferredValue]);
 
   return (
     <SelectWithCombobox.Root
@@ -33,9 +30,7 @@ function SelectFruitWithCombobox() {
       </SelectWithCombobox.Select>
 
       <SelectWithCombobox.Popover className="flex flex-col gap-2 p-2" fitViewport>
-        <SelectWithCombobox.Combobox
-          render={<Input className="shrink-0" placeholder="Search..." />}
-        />
+        <SelectWithCombobox.Combobox render={<Input className="shrink-0" placeholder="Search..." />} />
 
         <SelectWithCombobox.ComboboxList>
           {matches.map((fruit) => {

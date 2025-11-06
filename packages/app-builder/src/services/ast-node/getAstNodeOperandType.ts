@@ -4,10 +4,7 @@ import { isConstant } from '@app-builder/models/astNode/constant';
 import { isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
 import { isIsMultipleOf } from '@app-builder/models/astNode/multiple-of';
-import {
-  isFuzzyMatchComparator,
-  isStringTemplateAstNode,
-} from '@app-builder/models/astNode/strings';
+import { isFuzzyMatchComparator, isStringTemplateAstNode } from '@app-builder/models/astNode/strings';
 import { isTimeAdd, isTimeNow, isTimestampExtract } from '@app-builder/models/astNode/time';
 import { type OperandType } from '@app-builder/models/operand-type';
 import * as R from 'remeda';

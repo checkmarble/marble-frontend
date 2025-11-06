@@ -122,8 +122,7 @@ export const schemaProperties = {
   ] as const,
 } satisfies Record<OpenSanctionEntitySchema, string[]>;
 
-export type ScreeningEntityProperty =
-  (typeof schemaProperties)[keyof typeof schemaProperties][number];
+export type ScreeningEntityProperty = (typeof schemaProperties)[keyof typeof schemaProperties][number];
 
 const schemaInheritence = {
   Thing: null,
@@ -235,13 +234,7 @@ export function createPropertyTransformer(ctx: { language: string; formatLanguag
     timeStyle: undefined,
   });
 
-  return function TransformProperty({
-    property,
-    value,
-  }: {
-    property: ScreeningEntityProperty;
-    value: string;
-  }) {
+  return function TransformProperty({ property, value }: { property: ScreeningEntityProperty; value: string }) {
     const dataType = propertyMetadata[property].type;
     switch (dataType) {
       case 'string':

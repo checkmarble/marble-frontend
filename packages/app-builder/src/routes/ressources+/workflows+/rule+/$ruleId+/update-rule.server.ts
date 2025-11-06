@@ -127,13 +127,12 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
   await Promise.all(deleteMissingConditionsPromises);
 
   // Create new conditions
-  const createNewConditionsPromises = Array.from(
-    getNewItems(originalConditions, modifiedConditions).values(),
-  ).map((condition) =>
-    scenario.createWorkflowCondition({
-      ruleId: rule.id,
-      condition,
-    }),
+  const createNewConditionsPromises = Array.from(getNewItems(originalConditions, modifiedConditions).values()).map(
+    (condition) =>
+      scenario.createWorkflowCondition({
+        ruleId: rule.id,
+        condition,
+      }),
   );
   await Promise.all(createNewConditionsPromises);
 
@@ -173,10 +172,7 @@ export async function updateWorkflowRule(scenario: ScenarioRepository, rule: Rul
   // Update rule name
 
   // Update rule name
-  if (
-    originalRule.name !== modifiedRule.name ||
-    originalRule.fallthrough !== modifiedRule.fallthrough
-  ) {
+  if (originalRule.name !== modifiedRule.name || originalRule.fallthrough !== modifiedRule.fallthrough) {
     await scenario.updateWorkflowRule({
       ruleId: rule.id,
       name: modifiedRule.name,

@@ -67,11 +67,7 @@ export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) =
           <MenuCommand.Menu
             persistOnSelect
             onOpenChange={(open) => {
-              if (
-                open === false &&
-                form.state.isDirty &&
-                !isDeepEqual(form.options.defaultValues, form.state.values)
-              ) {
+              if (open === false && form.state.isDirty && !isDeepEqual(form.options.defaultValues, form.state.values)) {
                 form.handleSubmit();
               }
             }}
@@ -79,9 +75,7 @@ export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) =
             <MenuCommand.Trigger>
               <Button variant="secondary" size={ids.length ? 'icon' : 'xs'}>
                 <Icon icon={ids.length ? 'edit-square' : 'plus'} className="text-grey-50 size-4" />
-                {!ids.length ? (
-                  <span className="text-grey-50 text-xs">{t('common:add')}</span>
-                ) : null}
+                {!ids.length ? <span className="text-grey-50 text-xs">{t('common:add')}</span> : null}
               </Button>
             </MenuCommand.Trigger>
             <MenuCommand.Content className="mt-2 min-w-[200px]" side="bottom">
@@ -96,9 +90,7 @@ export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) =
                   >
                     <div className="inline-flex w-full justify-between">
                       <TagPreview key={caseId} name={formattedTags[caseId]!.name} />
-                      {ids.includes(caseId) ? (
-                        <Icon icon="tick" className="text-purple-65 size-6" />
-                      ) : null}
+                      {ids.includes(caseId) ? <Icon icon="tick" className="text-purple-65 size-6" /> : null}
                     </div>
                   </MenuCommand.Item>
                 ))}

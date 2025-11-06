@@ -1,8 +1,4 @@
-import {
-  defaultPaginationSize,
-  type PaginatedResponse,
-  type PaginationParams,
-} from '@app-builder/models/pagination';
+import { defaultPaginationSize, type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
@@ -52,10 +48,7 @@ function FormattedDatesRange({
     start.getFullYear() === end.getFullYear() &&
     start.getMonth() === end.getMonth() &&
     start.getDate() === end.getDate();
-  const isSameMinute =
-    isSameLocalDay &&
-    start.getHours() === end.getHours() &&
-    start.getMinutes() === end.getMinutes();
+  const isSameMinute = isSameLocalDay && start.getHours() === end.getHours() && start.getMinutes() === end.getMinutes();
   const isSameSecond = isSameMinute && end.getSeconds() === end.getSeconds();
 
   if (isSameSecond)
@@ -208,11 +201,7 @@ export function CursorPaginationButtons({
   return (
     <div className="flex items-center justify-end gap-2">
       {boundariesDisplay === 'ranks' ? (
-        <RankNumberRange
-          pageNumber={pageNb}
-          currentPageItemCount={items.length}
-          itemsPerPage={itemsPerPage}
-        />
+        <RankNumberRange pageNumber={pageNb} currentPageItemCount={items.length} itemsPerPage={itemsPerPage} />
       ) : (
         <FormattedDatesRange {...{ startTs, endTs, language }} />
       )}

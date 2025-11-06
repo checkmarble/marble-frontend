@@ -15,11 +15,7 @@ export const DateRangeFilterMenu = ({ onSelect }: DateRangeFilterMenuProps) => {
   return (
     <>
       <MenuCommand.List>
-        <DateRangeFilter.Root
-          dateRangeFilter={value}
-          setDateRangeFilter={setValue}
-          className="grid"
-        >
+        <DateRangeFilter.Root dateRangeFilter={value} setDateRangeFilter={setValue} className="grid">
           <DateRangeFilter.FromNowPicker title={t('cases:filters.date_range.title')} />
           <Separator className="bg-grey-90" decorative orientation="vertical" />
           <DateRangeFilter.Calendar />

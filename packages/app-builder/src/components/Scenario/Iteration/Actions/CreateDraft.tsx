@@ -17,23 +17,13 @@ export function CreateDraftIteration({
 }) {
   return (
     <>
-      {draftId === undefined ? (
-        <NewDraftButton iterationId={iterationId} scenarioId={scenarioId} />
-      ) : null}
-      {draftId ? (
-        <ExistingDraftModal iterationId={iterationId} scenarioId={scenarioId} draftId={draftId} />
-      ) : null}
+      {draftId === undefined ? <NewDraftButton iterationId={iterationId} scenarioId={scenarioId} /> : null}
+      {draftId ? <ExistingDraftModal iterationId={iterationId} scenarioId={scenarioId} draftId={draftId} /> : null}
     </>
   );
 }
 
-const NewDraftButton = ({
-  iterationId,
-  scenarioId,
-}: {
-  iterationId: string;
-  scenarioId: string;
-}) => {
+const NewDraftButton = ({ iterationId, scenarioId }: { iterationId: string; scenarioId: string }) => {
   const { t } = useTranslation(['common', 'scenarios']);
   const createDraftIterationMutation = useCreateDraftIterationMutation(scenarioId, iterationId);
   const revalidate = useLoaderRevalidator();
@@ -47,9 +37,7 @@ const NewDraftButton = ({
   return (
     <Button onClick={handleNewDraft}>
       <Icon icon="plus" className="size-6" />
-      <span className="line-clamp-1 hidden shrink-0 lg:block">
-        {t('scenarios:create_iteration.title')}
-      </span>
+      <span className="line-clamp-1 hidden shrink-0 lg:block">{t('scenarios:create_iteration.title')}</span>
     </Button>
   );
 };
@@ -79,9 +67,7 @@ const ExistingDraftModal = ({
       <Modal.Trigger asChild>
         <Button>
           <Icon icon="plus" className="size-6" />
-          <span className="line-clamp-1 hidden shrink-0 lg:block">
-            {t('scenarios:create_iteration.title')}
-          </span>
+          <span className="line-clamp-1 hidden shrink-0 lg:block">{t('scenarios:create_iteration.title')}</span>
         </Button>
       </Modal.Trigger>
       <Modal.Content>
@@ -89,9 +75,7 @@ const ExistingDraftModal = ({
         <div className="flex flex-col gap-6 p-6">
           <div className="text-s flex flex-1 flex-col gap-4">
             <p className="text-center">{t('scenarios:create_rule.draft_already_exist')}</p>
-            <p className="text-center">
-              {t('scenarios:create_rule.draft_already_exist_possibility')}
-            </p>
+            <p className="text-center">{t('scenarios:create_rule.draft_already_exist_possibility')}</p>
           </div>
           <div className="flex flex-1 flex-row gap-2">
             <Modal.Close asChild>
@@ -99,23 +83,13 @@ const ExistingDraftModal = ({
                 className="flex-1"
                 variant="secondary"
                 onClick={() =>
-                  navigate(
-                    location.pathname.replace(
-                      fromUUIDtoSUUID(iterationId),
-                      fromUUIDtoSUUID(draftId),
-                    ),
-                  )
+                  navigate(location.pathname.replace(fromUUIDtoSUUID(iterationId), fromUUIDtoSUUID(draftId)))
                 }
               >
                 {t('scenarios:create_draft.keep_existing_draft')}
               </Button>
             </Modal.Close>
-            <Button
-              className="flex-1"
-              variant="primary"
-              name="create"
-              onClick={handleOverrideDraft}
-            >
+            <Button className="flex-1" variant="primary" name="create" onClick={handleOverrideDraft}>
               {t('scenarios:create_draft.override_existing_draft')}
             </Button>
           </div>

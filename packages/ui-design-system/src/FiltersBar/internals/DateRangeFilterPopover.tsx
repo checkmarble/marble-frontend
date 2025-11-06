@@ -33,13 +33,10 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
       });
     }
 
-    const from =
-      drFilter.selectedValue?.type === 'static' ? drFilter.selectedValue.startDate : undefined;
-    const to =
-      drFilter.selectedValue?.type === 'static' ? drFilter.selectedValue.endDate : undefined;
+    const from = drFilter.selectedValue?.type === 'static' ? drFilter.selectedValue.startDate : undefined;
+    const to = drFilter.selectedValue?.type === 'static' ? drFilter.selectedValue.endDate : undefined;
     if (!from && !to) return drFilter.placeholder;
-    const fmt = (d?: Date) =>
-      d ? formatDateTimeWithoutPresets(d, { language, dateStyle: 'short' }) : '--/--/----';
+    const fmt = (d?: Date) => (d ? formatDateTimeWithoutPresets(d, { language, dateStyle: 'short' }) : '--/--/----');
     return from && to ? `${fmt(new Date(from))} → ${fmt(new Date(to))}` : drFilter.placeholder;
   })();
 
@@ -80,10 +77,7 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
           locale={dateFnsLocale}
         >
           <div className="flex flex-col md:flex-row gap-2">
-            <DateRangeFilter.FromNowPicker
-              title="Quick ranges"
-              className="border-r-1 border-grey-90 pr-v2-md"
-            />
+            <DateRangeFilter.FromNowPicker title="Quick ranges" className="border-r-1 border-grey-90 pr-v2-md" />
             <DateRangeFilter.Calendar locale={dateFnsLocale} />
           </div>
           <DateRangeFilter.Summary className="border-t-1 border-grey-90 pt-v2-sm mt-0" />

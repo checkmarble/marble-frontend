@@ -1,9 +1,5 @@
 import { createContentSecurityPolicy, createNonce } from '@mcansh/http-helmet';
-import {
-  createReadableStreamFromReadable,
-  type EntryContext,
-  type HandleErrorFunction,
-} from '@remix-run/node';
+import { createReadableStreamFromReadable, type EntryContext, type HandleErrorFunction } from '@remix-run/node';
 import { RemixServer } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import { isbot } from 'isbot';
@@ -37,12 +33,7 @@ export default async function handleRequest(
   const App = (
     <I18nextProvider i18n={i18n}>
       <NonceProvider value={nonce}>
-        <RemixServer
-          context={remixContext}
-          url={request.url}
-          abortDelay={ABORT_DELAY}
-          nonce={nonce}
-        />
+        <RemixServer context={remixContext} url={request.url} abortDelay={ABORT_DELAY} nonce={nonce} />
       </NonceProvider>
     </I18nextProvider>
   );
@@ -63,12 +54,7 @@ function isBotRequest(request: Request) {
   return isbot(userAgent);
 }
 
-function handleBotRequest(
-  responseStatusCode: number,
-  responseHeaders: Headers,
-  App: JSX.Element,
-  nonce?: string,
-) {
+function handleBotRequest(responseStatusCode: number, responseHeaders: Headers, App: JSX.Element, nonce?: string) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;
 
@@ -227,12 +213,7 @@ Sentry.init({
 
     // By default, remix will report a sentry error if a POST action is called on an endpoint that does not allow it (no action configured).
     // Those are noise, as we have no control on who calls out frontend remix server.
-    if (
-      error &&
-      typeof error === 'object' &&
-      'status' in error &&
-      (error.status === 404 || error.status === 405)
-    ) {
+    if (error && typeof error === 'object' && 'status' in error && (error.status === 404 || error.status === 405)) {
       return null;
     }
 

@@ -54,10 +54,7 @@ const getDurations = () => {
   return options;
 };
 
-export function SnoozeCase({
-  caseId,
-  snoozeUntil,
-}: Pick<SnoozeCasePayload, 'caseId'> & { snoozeUntil?: string }) {
+export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'caseId'> & { snoozeUntil?: string }) {
   const { t } = useTranslation(casesI18n);
   const language = useFormatLanguage();
   const snoozeCaseMutation = useSnoozeCaseMutation();
@@ -125,9 +122,7 @@ export function SnoozeCase({
                 {getDurations().map(({ duration, date }) => (
                   <MenuCommand.Item
                     onSelect={() => {
-                      field.handleChange(
-                        field.state.value === date.toISOString() ? null : date.toISOString(),
-                      );
+                      field.handleChange(field.state.value === date.toISOString() ? null : date.toISOString());
                       form.handleSubmit();
                     }}
                     key={duration}

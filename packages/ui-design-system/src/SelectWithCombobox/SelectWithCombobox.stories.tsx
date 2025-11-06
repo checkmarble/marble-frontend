@@ -11,10 +11,7 @@ function SelectFruitWithCombobox() {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const deferredValue = useDeferredValue(value);
 
-  const matches = useMemo(
-    () => fruits.filter((fruit) => fruit.includes(deferredValue)),
-    [deferredValue],
-  );
+  const matches = useMemo(() => fruits.filter((fruit) => fruit.includes(deferredValue)), [deferredValue]);
 
   return (
     <SelectWithCombobox.Root
@@ -45,10 +42,7 @@ function SelectFruitWithComboboxAndPopover() {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const deferredValue = useDeferredValue(value);
 
-  const matches = useMemo(
-    () => fruits.filter((fruit) => fruit.includes(deferredValue)),
-    [deferredValue],
-  );
+  const matches = useMemo(() => fruits.filter((fruit) => fruit.includes(deferredValue)), [deferredValue]);
 
   return (
     <SelectWithCombobox.Root

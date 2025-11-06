@@ -36,12 +36,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!isReadTagAvailable(user)) return redirect(getRoute('/'));
 
   const [caseTags, objectTags] = await Promise.all([
-    organization
-      .listTags({ withCaseCount: true })
-      .then((tags) => tags.map((t) => ({ ...t, target: 'case' as const }))),
-    organization
-      .listTags({ target: 'object' })
-      .then((tags) => tags.map((t) => ({ ...t, target: 'object' as const }))),
+    organization.listTags({ withCaseCount: true }).then((tags) => tags.map((t) => ({ ...t, target: 'case' as const }))),
+    organization.listTags({ target: 'object' }).then((tags) => tags.map((t) => ({ ...t, target: 'object' as const }))),
   ]);
 
   return json({
@@ -52,14 +48,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
-const columnHelper = createColumnHelper<
-  (Tag & { target: 'case' }) | (Tag & { target: 'object' })
->();
+const columnHelper = createColumnHelper<(Tag & { target: 'case' }) | (Tag & { target: 'object' })>();
 
 export default function Tags() {
   const { t } = useTranslation(['settings']);
-  const { tags, isCreateTagAvailable, isEditTagAvailable, isDeleteTagAvailable } =
-    useLoaderData<typeof loader>();
+  const { tags, isCreateTagAvailable, isEditTagAvailable, isDeleteTagAvailable } = useLoaderData<typeof loader>();
 
   const columns = useMemo(() => {
     return [

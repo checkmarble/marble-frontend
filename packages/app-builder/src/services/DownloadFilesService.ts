@@ -6,12 +6,7 @@ import { z } from 'zod/v4';
 export class AlreadyDownloadingError extends Error {}
 export class FetchLinkError extends Error {}
 export class AuthRequestError extends Error {}
-type DownloadFileError =
-  | AlreadyDownloadingError
-  | FetchLinkError
-  | DownloadError
-  | UnknownError
-  | AuthRequestError;
+type DownloadFileError = AlreadyDownloadingError | FetchLinkError | DownloadError | UnknownError | AuthRequestError;
 
 const handleJsonResponse = async (response: Response): Promise<void> => {
   const fileDownloadUrlSchema = z.object({
@@ -34,8 +29,7 @@ const handleDownloadResponse = async (response: Response): Promise<void> => {
   const contentType = response.headers.get('content-type')?.toLowerCase() || '';
 
   if (/application\/json/.test(contentType)) return handleJsonResponse(response);
-  if (/(application\/zip|application\/octet-stream)/.test(contentType))
-    return handleBlobResponse(response);
+  if (/(application\/zip|application\/octet-stream)/.test(contentType)) return handleBlobResponse(response);
   throw new FetchLinkError(`Internal error: Unsupported content type ${contentType}`);
 };
 

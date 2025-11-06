@@ -21,15 +21,7 @@ interface MenuProviderProps {
   rtl?: boolean;
 }
 
-function MenuProvider({
-  children,
-  searchValue,
-  onSearch,
-  isSubmenu,
-  open,
-  setOpen,
-  rtl,
-}: MenuProviderProps) {
+function MenuProvider({ children, searchValue, onSearch, isSubmenu, open, setOpen, rtl }: MenuProviderProps) {
   const withCombobox = searchValue !== undefined || onSearch !== undefined;
 
   const element = (
@@ -139,54 +131,46 @@ const CoreMenuButton = React.forwardRef<HTMLDivElement, CoreMenuButtonProps>(fun
 
 export type MenuButtonProps = Omit<CoreMenuButtonProps, 'isSubmenu'>;
 
-export const MenuButton = React.forwardRef<HTMLDivElement, MenuButtonProps>(
-  function MenuButton(props, ref) {
-    return <CoreMenuButton ref={ref} isSubmenu={false} {...props} />;
-  },
-);
+export const MenuButton = React.forwardRef<HTMLDivElement, MenuButtonProps>(function MenuButton(props, ref) {
+  return <CoreMenuButton ref={ref} isSubmenu={false} {...props} />;
+});
 
 export type SubMenuButtonProps = Omit<CoreMenuButtonProps, 'isSubmenu'>;
 
-export const SubMenuButton = React.forwardRef<HTMLDivElement, SubMenuButtonProps>(
-  function SubMenuButton(props, ref) {
-    return <CoreMenuButton ref={ref} isSubmenu {...props} />;
-  },
-);
+export const SubMenuButton = React.forwardRef<HTMLDivElement, SubMenuButtonProps>(function SubMenuButton(props, ref) {
+  return <CoreMenuButton ref={ref} isSubmenu {...props} />;
+});
 
 export interface MenuProps extends Ariakit.MenuProps<'div'> {}
 
-export const MenuPopover = React.forwardRef<HTMLDivElement, MenuProps>(
-  function MenuPopover(props, ref) {
-    return (
-      <Ariakit.Menu
-        ref={ref}
-        portal
-        overlap
-        unmountOnHide
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-        hideOnInteractOutside={(event) => {
-          event.stopPropagation();
-          return true;
-        }}
-        gutter={8}
-        {...props}
-        className={clsx(
-          'bg-grey-100 border-grey-90 flex max-h-[min(var(--popover-available-height),500px)] -translate-y-1 overflow-hidden rounded-sm border opacity-0 shadow-md outline-hidden transition-all data-enter:translate-y-0 data-enter:opacity-100',
-          props.className,
-        )}
-      />
-    );
-  },
-);
+export const MenuPopover = React.forwardRef<HTMLDivElement, MenuProps>(function MenuPopover(props, ref) {
+  return (
+    <Ariakit.Menu
+      ref={ref}
+      portal
+      overlap
+      unmountOnHide
+      onClick={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
+      hideOnInteractOutside={(event) => {
+        event.stopPropagation();
+        return true;
+      }}
+      gutter={8}
+      {...props}
+      className={clsx(
+        'bg-grey-100 border-grey-90 flex max-h-[min(var(--popover-available-height),500px)] -translate-y-1 overflow-hidden rounded-sm border opacity-0 shadow-md outline-hidden transition-all data-enter:translate-y-0 data-enter:opacity-100',
+        props.className,
+      )}
+    />
+  );
+});
 
 export interface MenuComboboxProps extends Ariakit.ComboboxProps<'input'> {}
 
-export const MenuCombobox = React.forwardRef<HTMLInputElement, MenuComboboxProps>(
-  function MenuCombobox(props, ref) {
-    return <Ariakit.Combobox ref={ref} autoSelect="always" {...props} />;
-  },
-);
+export const MenuCombobox = React.forwardRef<HTMLInputElement, MenuComboboxProps>(function MenuCombobox(props, ref) {
+  return <Ariakit.Combobox ref={ref} autoSelect="always" {...props} />;
+});
 
 export interface MenuContentProps {
   children: React.ReactNode;
@@ -201,9 +185,7 @@ export function MenuContent({ children, className }: MenuContentProps) {
   // - WithComboboxListContext is true if the parent menu has a combobox
   const withCombobox = React.useContext(WithComboboxContext);
 
-  const content = (
-    <div className={clsx('flex flex-col overflow-hidden', className)}>{children}</div>
-  );
+  const content = <div className={clsx('flex flex-col overflow-hidden', className)}>{children}</div>;
 
   return (
     <WithComboboxListContext.Provider value={withCombobox}>
@@ -220,39 +202,37 @@ export interface MenuItemProps extends Omit<Ariakit.ComboboxItemProps, 'store'> 
   name?: string;
 }
 
-export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
-  function MenuItem(props, ref) {
-    const hideAll = React.useContext(HideAllContext);
-    const searchable = React.useContext(WithComboboxListContext);
+export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(function MenuItem(props, ref) {
+  const hideAll = React.useContext(HideAllContext);
+  const searchable = React.useContext(WithComboboxListContext);
 
-    const defaultProps: MenuItemProps = {
-      ref,
-      focusOnHover: true,
-      blurOnHoverEnd: false,
-      ...props,
-    };
+  const defaultProps: MenuItemProps = {
+    ref,
+    focusOnHover: true,
+    blurOnHoverEnd: false,
+    ...props,
+  };
 
-    if (!searchable) {
-      return <Ariakit.MenuItem {...defaultProps} />;
-    }
+  if (!searchable) {
+    return <Ariakit.MenuItem {...defaultProps} />;
+  }
 
-    return (
-      <Ariakit.ComboboxItem
-        {...defaultProps}
-        setValueOnClick={false}
-        hideOnClick={(event) => {
-          // The popover won't be closed if the ComboboxItem is expandable (ex: a submenu)
-          const expandable = event.currentTarget.hasAttribute('aria-expanded');
-          if (expandable) return false;
+  return (
+    <Ariakit.ComboboxItem
+      {...defaultProps}
+      setValueOnClick={false}
+      hideOnClick={(event) => {
+        // The popover won't be closed if the ComboboxItem is expandable (ex: a submenu)
+        const expandable = event.currentTarget.hasAttribute('aria-expanded');
+        if (expandable) return false;
 
-          if (hideAll) {
-            hideAll();
-            return false;
-          }
-          // Fallback to the default behavior
-          return true;
-        }}
-      />
-    );
-  },
-);
+        if (hideAll) {
+          hideAll();
+          return false;
+        }
+        // Fallback to the default behavior
+        return true;
+      }}
+    />
+  );
+});

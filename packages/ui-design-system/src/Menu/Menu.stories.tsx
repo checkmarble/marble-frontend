@@ -34,10 +34,7 @@ function renderItems(items: typeof groceries, group?: string) {
 
     const element =
       typeof item === 'string' ? (
-        <MenuItem
-          name={group}
-          className="data-active-item:bg-purple-98 rounded-sm p-2 outline-hidden"
-        >
+        <MenuItem name={group} className="data-active-item:bg-purple-98 rounded-sm p-2 outline-hidden">
           {item}
         </MenuItem>
       ) : (
@@ -111,10 +108,7 @@ function renderNestedItems(items: typeof groceries, group?: string) {
 
     const element =
       typeof item === 'string' ? (
-        <MenuItem
-          name={group}
-          className="data-active-item:bg-purple-98 rounded-sm p-2 outline-hidden"
-        >
+        <MenuItem name={group} className="data-active-item:bg-purple-98 rounded-sm p-2 outline-hidden">
           {item}
         </MenuItem>
       ) : (
@@ -145,9 +139,7 @@ function NestedMenuWithCombobox({ items }: { items: typeof groceries }) {
   const flattenedItems = useMemo(
     () =>
       items.flatMap((item): { label: string; group?: string }[] =>
-        typeof item === 'string'
-          ? [{ label: item }]
-          : item.items.map((label) => ({ label, group: item.label })),
+        typeof item === 'string' ? [{ label: item }] : item.items.map((label) => ({ label, group: item.label })),
       ),
     [items],
   );
@@ -157,8 +149,7 @@ function NestedMenuWithCombobox({ items }: { items: typeof groceries }) {
     return matches.reduce<typeof items>((acc, item) => {
       if (item.group) {
         const group = acc.find(
-          (val): val is { label: string; items: string[] } =>
-            typeof val !== 'string' && val.label === item.group,
+          (val): val is { label: string; items: string[] } => typeof val !== 'string' && val.label === item.group,
         );
         if (group) {
           group.items.push(item.label);
@@ -178,9 +169,7 @@ function NestedMenuWithCombobox({ items }: { items: typeof groceries }) {
       <MenuPopover className="flex flex-col gap-2 p-2">
         <MenuCombobox render={<Input className="shrink-0" />} />
         <MenuContent>
-          <ScrollAreaV2 type="auto">
-            {renderMatches(matches) || renderNestedItems(items)}
-          </ScrollAreaV2>
+          <ScrollAreaV2 type="auto">{renderMatches(matches) || renderNestedItems(items)}</ScrollAreaV2>
         </MenuContent>
       </MenuPopover>
     </MenuRoot>

@@ -27,9 +27,7 @@ export const useCursorPagination = () => {
     setState((currentState) => ({
       ...currentState,
       cursor,
-      previousCursors: currentState.cursor
-        ? [...currentState.previousCursors, currentState.cursor]
-        : [],
+      previousCursors: currentState.cursor ? [...currentState.previousCursors, currentState.cursor] : [],
       lastAction: 'next',
       isPristine: false,
       hasPreviousPage: true,

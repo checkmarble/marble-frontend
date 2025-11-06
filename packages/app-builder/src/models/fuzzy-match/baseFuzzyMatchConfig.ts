@@ -1,14 +1,9 @@
 import { type TFunction } from 'i18next';
 import { assertNever } from 'typescript-utils';
 
-export type ComparatorFuzzyMatchAlgorithms =
-  | 'ratio'
-  | 'token_set_ratio'
-  | 'bag_of_words_similarity';
+export type ComparatorFuzzyMatchAlgorithms = 'ratio' | 'token_set_ratio' | 'bag_of_words_similarity';
 
-export type AggregationFuzzyMatchAlgorithms =
-  | 'bag_of_words_similarity_db'
-  | 'direct_string_similarity_db';
+export type AggregationFuzzyMatchAlgorithms = 'bag_of_words_similarity_db' | 'direct_string_similarity_db';
 
 export type FuzzyMatchAlgorithm = ComparatorFuzzyMatchAlgorithms | AggregationFuzzyMatchAlgorithms;
 
@@ -33,10 +28,7 @@ export interface BaseFuzzyMatchConfig {
   getDefaultThreshold(): number;
   isAlgorithm(value: string): boolean;
   isEditableAlgorithm(value: string): boolean;
-  getAlgorithmName(
-    t: TFunction<['common', 'scenarios'], undefined>,
-    algorithm: FuzzyMatchAlgorithm,
-  ): string;
+  getAlgorithmName(t: TFunction<['common', 'scenarios'], undefined>, algorithm: FuzzyMatchAlgorithm): string;
   adaptLevel(threshold: number): Level | undefined;
   adaptThreshold(level: Level): number;
 }
@@ -61,9 +53,7 @@ export function createBaseFuzzyMatchConfig<T extends FuzzyMatchAlgorithm>(
   }
 
   if (![...config.editablesAlgorithms].every((editable) => config.algorithms.has(editable))) {
-    throw new Error(
-      `Invalid configuration: editablesAlgorithms contains values that are not members of algorithms.`,
-    );
+    throw new Error(`Invalid configuration: editablesAlgorithms contains values that are not members of algorithms.`);
   }
 
   if (!config.editablesAlgorithms.has(config.defaultEditableAlgorithm)) {
@@ -73,9 +63,7 @@ export function createBaseFuzzyMatchConfig<T extends FuzzyMatchAlgorithm>(
   }
 
   if (!(config.defaultLevel in config.thresholds)) {
-    throw new Error(
-      `Invalid configuration: defaultLevel "${config.defaultLevel}" is not a key of thresholds.`,
-    );
+    throw new Error(`Invalid configuration: defaultLevel "${config.defaultLevel}" is not a key of thresholds.`);
   }
 
   return {
@@ -84,10 +72,7 @@ export function createBaseFuzzyMatchConfig<T extends FuzzyMatchAlgorithm>(
     getLevels: (): Level[] => Object.keys(config.thresholds) as Level[],
     isAlgorithm: (value: string): boolean => config.algorithms.has(value as T),
     isEditableAlgorithm: (value: string): boolean => config.editablesAlgorithms.has(value as T),
-    getAlgorithmName: (
-      t: TFunction<['common', 'scenarios'], undefined>,
-      fuzzyMatchAlgorithm: T,
-    ): string => {
+    getAlgorithmName: (t: TFunction<['common', 'scenarios'], undefined>, fuzzyMatchAlgorithm: T): string => {
       switch (fuzzyMatchAlgorithm) {
         case 'ratio':
           return t('scenarios:edit_fuzzy_match.algorithm.ratio');
@@ -103,9 +88,7 @@ export function createBaseFuzzyMatchConfig<T extends FuzzyMatchAlgorithm>(
       }
     },
     adaptLevel: (threshold: number): Level | undefined =>
-      (Object.entries(config.thresholds).find(([_, value]) => value === threshold)?.[0] as Level) ||
-      undefined,
-    adaptThreshold: (level: Level): number =>
-      config.thresholds[level] ?? config.thresholds[config.defaultLevel],
+      (Object.entries(config.thresholds).find(([_, value]) => value === threshold)?.[0] as Level) || undefined,
+    adaptThreshold: (level: Level): number => config.thresholds[level] ?? config.thresholds[config.defaultLevel],
   };
 }

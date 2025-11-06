@@ -64,11 +64,7 @@ export default function Webhooks() {
         cell: ({ getValue }) => {
           const eventTypes = getValue();
           if (eventTypes.length === 0) {
-            return (
-              <span className="text-grey-80 text-s">
-                {t('settings:webhooks.event_types.placeholder')}
-              </span>
-            );
+            return <span className="text-grey-80 text-s">{t('settings:webhooks.event_types.placeholder')}</span>;
           }
           return <EventTypes eventTypes={eventTypes} />;
         },
@@ -155,11 +151,7 @@ export function ErrorBoundary() {
         cell: ({ getValue }) => {
           const eventTypes = getValue();
           if (eventTypes.length === 0) {
-            return (
-              <span className="text-grey-80 text-s">
-                {t('settings:webhooks.event_types.placeholder')}
-              </span>
-            );
+            return <span className="text-grey-80 text-s">{t('settings:webhooks.event_types.placeholder')}</span>;
           }
           return <EventTypes eventTypes={eventTypes} />;
         },

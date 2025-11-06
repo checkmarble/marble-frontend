@@ -117,20 +117,13 @@ export default function Users() {
                     {isEditUserAvailable ? (
                       // TODO: inject trigger inside <UpdateUser /> and use style directly on it (so we can remove the container div) */}
                       <div className="group-hover:text-grey-00 focus-within:text-grey-00 text-transparent">
-                        <UpdateUser
-                          user={cell.row.original}
-                          userRoles={userRoles}
-                          access={entitlements.userRoles}
-                        />
+                        <UpdateUser user={cell.row.original} userRoles={userRoles} access={entitlements.userRoles} />
                       </div>
                     ) : null}
                     {isDeleteUserAvailable ? (
                       // TODO: inject trigger inside <DeleteUser /> and use style directly on it (so we can remove the container div) */}
                       <div className="group-hover:text-grey-00 focus-within:text-grey-00 text-transparent">
-                        <DeleteUser
-                          userId={cell.row.original.userId}
-                          currentUserId={user.actorIdentity.userId}
-                        />
+                        <DeleteUser userId={cell.row.original.userId} currentUserId={user.actorIdentity.userId} />
                       </div>
                     ) : null}
                   </div>
@@ -165,11 +158,7 @@ export default function Users() {
           <CollapsiblePaper.Title>
             <span className="flex-1">{t('settings:users')}</span>
             {isCreateUserAvailable ? (
-              <CreateUser
-                orgId={user.organizationId}
-                access={entitlements.userRoles}
-                userRoles={userRoles}
-              />
+              <CreateUser orgId={user.organizationId} access={entitlements.userRoles} userRoles={userRoles} />
             ) : null}
           </CollapsiblePaper.Title>
           <CollapsiblePaper.Content>

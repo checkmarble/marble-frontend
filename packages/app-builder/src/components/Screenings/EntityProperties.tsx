@@ -24,9 +24,7 @@ export function EntityProperties<T extends OpenSanctionEntity>({
   before?: ReactNode;
   after?: ReactNode;
 }) {
-  const [displayAll, setDisplayAll] = useState<Partial<Record<ScreeningEntityProperty, boolean>>>(
-    {},
-  );
+  const [displayAll, setDisplayAll] = useState<Partial<Record<ScreeningEntityProperty, boolean>>>({});
 
   const displayProperties = forcedProperties ?? getSanctionEntityProperties(entity.schema);
   const { t, i18n } = useTranslation(screeningsI18n);

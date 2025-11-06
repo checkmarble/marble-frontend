@@ -66,21 +66,13 @@ export function NewTimeNowAstNode(): TimeNowAstNode {
   };
 }
 
-export type TimestampFieldAstNode =
-  | DataAccessorAstNode
-  | TimeNowAstNode
-  | TimeAddAstNode
-  | UndefinedAstNode;
+export type TimestampFieldAstNode = DataAccessorAstNode | TimeNowAstNode | TimeAddAstNode | UndefinedAstNode;
 
 export function isTimestampFieldAstNode(node: AstNode): node is TimestampFieldAstNode {
-  return (
-    isDataAccessorAstNode(node) || isTimeNow(node) || isTimeAdd(node) || isUndefinedAstNode(node)
-  );
+  return isDataAccessorAstNode(node) || isTimeNow(node) || isTimeAdd(node) || isUndefinedAstNode(node);
 }
 
-export function isTimeAdd(
-  node: IdLessAstNode | AstNode,
-): node is CheckNodeId<TimeAddAstNode, typeof node> {
+export function isTimeAdd(node: IdLessAstNode | AstNode): node is CheckNodeId<TimeAddAstNode, typeof node> {
   return node.name === timeAddAstNodeName;
 }
 
@@ -90,20 +82,12 @@ export function isTimestampExtract(
   return node.name === timestampExtractAstNodeName;
 }
 
-export function isTimeNow(
-  node: IdLessAstNode | AstNode,
-): node is CheckNodeId<TimeNowAstNode, typeof node> {
+export function isTimeNow(node: IdLessAstNode | AstNode): node is CheckNodeId<TimeNowAstNode, typeof node> {
   return node.name === timeNowAstNodeName;
 }
 
 export const timestampExtractAstNodeName = 'TimestampExtract';
-export const validTimestampExtractParts = [
-  'year',
-  'month',
-  'day_of_month',
-  'day_of_week',
-  'hour',
-] as const;
+export const validTimestampExtractParts = ['year', 'month', 'day_of_month', 'day_of_week', 'hour'] as const;
 export type ValidTimestampExtractParts = (typeof validTimestampExtractParts)[number];
 
 export interface TimestampExtractAstNode {

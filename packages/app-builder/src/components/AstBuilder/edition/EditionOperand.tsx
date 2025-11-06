@@ -6,18 +6,12 @@ import {
   isUndefinedAstNode,
   NewUndefinedAstNode,
 } from '@app-builder/models';
-import {
-  type EditableAstNode,
-  isEditableAstNode,
-} from '@app-builder/models/astNode/builder-ast-node';
+import { type EditableAstNode, isEditableAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { type AstBuilderOperandProps } from '@ast-builder/Operand';
 import { AstBuilderDataSharpFactory } from '@ast-builder/Provider';
-import {
-  OperandDisplayName,
-  operandDisplayNameClassnames,
-} from '@ast-builder/styles/OperandDisplayName';
+import { OperandDisplayName, operandDisplayNameClassnames } from '@ast-builder/styles/OperandDisplayName';
 import { cva } from 'class-variance-authority';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,8 +38,7 @@ export const editionOperandLabelClassnames = cva(
       validationStatus: {
         valid: 'border enabled:border-grey-90 enabled:aria-[expanded=false]:focus:border-purple-65',
         error: 'border enabled:border-red-47 enabled:aria-[expanded=false]:focus:border-purple-65',
-        'light-error':
-          'border enabled:border-red-87 enabled:aria-[expanded=false]:focus:border-purple-65',
+        'light-error': 'border enabled:border-red-87 enabled:aria-[expanded=false]:focus:border-purple-65',
       },
     },
     defaultVariants: {
@@ -79,9 +72,7 @@ export const EditionOperandSharpFactory = createSharpFactory({
     filteredOptions(state) {
       const dataTypes = state.optionsDataType;
       return dataTypes
-        ? state.options.filter((o) =>
-            typeof dataTypes === 'function' ? dataTypes(o) : dataTypes.includes(o.dataType),
-          )
+        ? state.options.filter((o) => (typeof dataTypes === 'function' ? dataTypes(o) : dataTypes.includes(o.dataType)))
         : state.options;
     },
   });
@@ -212,11 +203,7 @@ export function EditionAstBuilderOperand({ onChange, ...props }: AstBuilderOpera
           </MenuCommand.Trigger>
         </AstBuilderOperandMenu>
         {editedNode ? (
-          <OperandEditModal
-            node={editedNode}
-            onSave={onEditSave}
-            onCancel={() => setEditedNode(null)}
-          />
+          <OperandEditModal node={editedNode} onSave={onEditSave} onCancel={() => setEditedNode(null)} />
         ) : null}
         {props.showErrors ? <EditionEvaluationErrors id={node.id} /> : null}
       </div>

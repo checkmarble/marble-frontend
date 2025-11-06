@@ -54,10 +54,7 @@ const DecisionRightPanelContext = createSimpleContext<{
 }>('DecisionRightPanelContext');
 export const useDecisionRightPanelContext = DecisionRightPanelContext.useValue;
 
-function DecisionRightPanelRoot({
-  children,
-  ...props
-}: Omit<RightPanelRootProps, 'open' | 'onClose'>) {
+function DecisionRightPanelRoot({ children, ...props }: Omit<RightPanelRootProps, 'open' | 'onClose'>) {
   const [state, dispatch] = useReducer(decisionRightPanelReducer, initialState);
 
   const value = {

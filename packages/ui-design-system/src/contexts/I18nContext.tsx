@@ -12,13 +12,7 @@ const defaultValue: I18nContextValue = {
 
 const I18nContext = createContext<I18nContextValue>(defaultValue);
 
-export function I18nProvider({
-  value,
-  children,
-}: {
-  value: I18nContextValue;
-  children: React.ReactNode;
-}) {
+export function I18nProvider({ value, children }: { value: I18nContextValue; children: React.ReactNode }) {
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
 

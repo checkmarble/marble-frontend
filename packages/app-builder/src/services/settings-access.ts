@@ -29,38 +29,26 @@ export type Sections = {
   ip_whitelisting: Section;
 };
 
-export function getSettingsAccess(
-  user: CurrentUser,
-  appConfig: AppConfig,
-  inboxes: Inbox[],
-): Sections {
+export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inboxes: Inbox[]): Sections {
   // Define all sections with their icon and settings, Order of the sections and settings is important
   const sections: Sections = {
     users: {
       icon: 'users',
-      settings: [
-        ...(isReadUserAvailable(user) ? [{ title: 'users', to: getRoute('/settings/users') }] : []),
-      ],
+      settings: [...(isReadUserAvailable(user) ? [{ title: 'users', to: getRoute('/settings/users') }] : [])],
     },
     scenarios: {
       icon: 'world',
       settings: [
         ...(isAdmin(user) ? [{ title: 'scenarios', to: getRoute('/settings/scenarios') }] : []),
-        ...(isAdmin(user)
-          ? [{ title: 'filters-settings', to: getRoute('/settings/analytics/filters') }]
-          : []),
+        ...(isAdmin(user) ? [{ title: 'filters-settings', to: getRoute('/settings/analytics/filters') }] : []),
       ],
     },
     case_manager: {
       icon: 'case-manager',
       settings: [
-        ...(canAccessInboxesSettings(user, inboxes)
-          ? [{ title: 'inboxes', to: getRoute('/settings/inboxes') }]
-          : []),
+        ...(canAccessInboxesSettings(user, inboxes) ? [{ title: 'inboxes', to: getRoute('/settings/inboxes') }] : []),
         ...(isReadTagAvailable(user) ? [{ title: 'tags', to: getRoute('/settings/tags') }] : []),
-        ...(isAdmin(user)
-          ? [{ title: 'data_display', to: getRoute('/settings/data-display') }]
-          : []),
+        ...(isAdmin(user) ? [{ title: 'data_display', to: getRoute('/settings/data-display') }] : []),
       ],
     },
     ...(isAdmin(user) &&
@@ -73,12 +61,8 @@ export function getSettingsAccess(
     api: {
       icon: 'world',
       settings: [
-        ...(isReadApiKeyAvailable(user)
-          ? [{ title: 'api', to: getRoute('/settings/api-keys') }]
-          : []),
-        ...(user.permissions.canManageWebhooks
-          ? [{ title: 'webhooks', to: getRoute('/settings/webhooks') }]
-          : []),
+        ...(isReadApiKeyAvailable(user) ? [{ title: 'api', to: getRoute('/settings/api-keys') }] : []),
+        ...(user.permissions.canManageWebhooks ? [{ title: 'webhooks', to: getRoute('/settings/webhooks') }] : []),
       ],
     },
     ip_whitelisting: {

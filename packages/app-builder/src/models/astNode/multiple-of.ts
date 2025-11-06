@@ -1,11 +1,6 @@
 import { v7 as uuidv7 } from 'uuid';
 
-import {
-  type AstNode,
-  type CheckNodeId,
-  type IdLessAstNode,
-  NewUndefinedAstNode,
-} from './ast-node';
+import { type AstNode, type CheckNodeId, type IdLessAstNode, NewUndefinedAstNode } from './ast-node';
 import { type KnownOperandAstNode } from './builder-ast-node';
 import { type ConstantAstNode, NewConstantAstNode } from './constant';
 
@@ -37,8 +32,6 @@ export function NewIsMultipleOfAstNode(
   };
 }
 
-export function isIsMultipleOf(
-  node: IdLessAstNode | AstNode,
-): node is CheckNodeId<IsMultipleOfAstNode, typeof node> {
+export function isIsMultipleOf(node: IdLessAstNode | AstNode): node is CheckNodeId<IsMultipleOfAstNode, typeof node> {
   return node.name === isMultipleOfAstNodeName;
 }

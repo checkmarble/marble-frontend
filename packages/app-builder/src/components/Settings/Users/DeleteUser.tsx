@@ -26,11 +26,7 @@ export function DeleteUser({ userId, currentUserId }: { userId: string; currentU
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
-        <Icon
-          icon="delete"
-          className="size-6 shrink-0"
-          aria-label={t('settings:users.delete_user')}
-        />
+        <Icon icon="delete" className="size-6 shrink-0" aria-label={t('settings:users.delete_user')} />
       </Modal.Trigger>
       <Modal.Content>
         <DeleteUserContent userId={userId} onSuccess={handleOnSuccess} />

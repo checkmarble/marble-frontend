@@ -12,10 +12,7 @@ export function VersionsFilter({ type }: { type: 'ref' | 'test' }) {
   const deferredValue = useDeferredValue(value);
   const iterations = useScenarioIterations();
 
-  const filteredIterations = useMemo(
-    () => iterations.filter(({ type }) => type !== 'draft'),
-    [iterations],
-  );
+  const filteredIterations = useMemo(() => iterations.filter(({ type }) => type !== 'draft'), [iterations]);
 
   const matches = useMemo(
     () => matchSorter(filteredIterations, deferredValue, { keys: ['version'] }),
@@ -34,11 +31,7 @@ export function VersionsFilter({ type }: { type: 'ref' | 'test' }) {
         <SelectWithCombobox.ComboboxList className="max-h-40">
           {matches.map((iteration) => {
             return (
-              <SelectWithCombobox.ComboboxItem
-                key={iteration.id}
-                value={iteration.id}
-                className="align-baseline"
-              >
+              <SelectWithCombobox.ComboboxItem key={iteration.id} value={iteration.id} className="align-baseline">
                 <span className="text-grey-00 text-s">{`V${iteration.version}`}</span>
               </SelectWithCombobox.ComboboxItem>
             );

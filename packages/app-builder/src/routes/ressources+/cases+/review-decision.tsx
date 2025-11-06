@@ -96,11 +96,7 @@ export function ReviewDecisionModal({
 }) {
   return (
     <ModalV2.Content store={store}>
-      <ReviewDecisionContent
-        setOpen={store.setOpen}
-        decisionId={decisionId}
-        screening={screening}
-      />
+      <ReviewDecisionContent setOpen={store.setOpen} decisionId={decisionId} screening={screening} />
     </ModalV2.Content>
   );
 }
@@ -174,15 +170,11 @@ function ReviewDecisionContent({
         >
           {(field) => (
             <div className="flex flex-col gap-2">
-              <FormLabel name={field.name}>
-                {t('cases:case_detail.review_decision.review_status.label')}
-              </FormLabel>
+              <FormLabel name={field.name}>{t('cases:case_detail.review_decision.review_status.label')}</FormLabel>
               <Select.Default
                 className="h-10 w-full"
                 defaultValue={field.state.value}
-                onValueChange={(status) =>
-                  field.handleChange(status as ReviewDecisionForm['reviewStatus'])
-                }
+                onValueChange={(status) => field.handleChange(status as ReviewDecisionForm['reviewStatus'])}
                 placeholder={t('cases:case_detail.review_decision.review_status.placeholder')}
                 //contentClassName="max-w-(--radix-select-trigger-width)"
               >
@@ -192,12 +184,7 @@ function ReviewDecisionContent({
                   return (
                     <Select.DefaultItem key={reviewStatus} value={reviewStatus}>
                       <div className="flex flex-col gap-2">
-                        <ReviewStatusTag
-                          border="square"
-                          size="big"
-                          className="w-fit"
-                          reviewStatus={reviewStatus}
-                        />
+                        <ReviewStatusTag border="square" size="big" className="w-fit" reviewStatus={reviewStatus} />
                         {disabled && reviewStatus === 'approve' ? (
                           <span className="text-red-43 text-xs">
                             {t('cases:case_detail.review_decision.warning_approve')}
@@ -222,9 +209,7 @@ function ReviewDecisionContent({
         >
           {(field) => (
             <div className="flex flex-col gap-2">
-              <FormLabel name={field.name}>
-                {t('cases:case_detail.review_decision.comment.label')}
-              </FormLabel>
+              <FormLabel name={field.name}>{t('cases:case_detail.review_decision.comment.label')}</FormLabel>
               <TextArea
                 className="w-full"
                 name={field.name}
@@ -240,15 +225,9 @@ function ReviewDecisionContent({
         </form.Field>
 
         <div className="flex flex-1 flex-row gap-2">
-          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>
-            {t('common:cancel')}
-          </ModalV2.Close>
+          <ModalV2.Close render={<Button className="flex-1" variant="secondary" />}>{t('common:cancel')}</ModalV2.Close>
           <Button className="flex-1" variant="primary" type="submit">
-            <LoadingIcon
-              icon="case-manager"
-              className="size-5"
-              loading={fetcher.state === 'submitting'}
-            />
+            <LoadingIcon icon="case-manager" className="size-5" loading={fetcher.state === 'submitting'} />
             {t('common:validate')}
           </Button>
         </div>

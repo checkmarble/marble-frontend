@@ -42,15 +42,10 @@ function useSiblings(stringPath: string) {
     return [];
   }
 
-  return [
-    ...parentNode.children.slice(0, childIndex),
-    ...parentNode.children.slice(childIndex + 1),
-  ];
+  return [...parentNode.children.slice(0, childIndex), ...parentNode.children.slice(childIndex + 1)];
 }
 
-const allMainAstOperatorFunctionsOptions: OperatorSelectOptions<
-  (typeof allMainAstOperatorFunctions)[number]
-> = {
+const allMainAstOperatorFunctionsOptions: OperatorSelectOptions<(typeof allMainAstOperatorFunctions)[number]> = {
   '=': {},
   '≠': { keywords: ['!='] },
   '<': {},
@@ -132,10 +127,8 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
 
   const children = match(node.value)
     .when(isMainAstBinaryNode, (node) => {
-      const hasNestedLeftChild =
-        isMainAstNode(node.children[0]) && node.children[0].children.length > 0;
-      const hasNestedRightChild =
-        isMainAstNode(node.children[1]) && node.children[1].children.length > 0;
+      const hasNestedLeftChild = isMainAstNode(node.children[0]) && node.children[0].children.length > 0;
+      const hasNestedRightChild = isMainAstNode(node.children[1]) && node.children[1].children.length > 0;
       const hasAllNestedChildren = hasNestedLeftChild && hasNestedRightChild;
       const hasDirectError = getErrorsForNode(nodeSharp.value.validation, node.id, true).length > 0;
       const showBrackets = !props.root || hasAllNestedChildren;
@@ -299,11 +292,7 @@ const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps
             onSelect={removeNesting}
             className="data-active-item:bg-red-95 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
           >
-            <Icon
-              aria-hidden="true"
-              className="text-red-43 col-start-1 size-5 shrink-0"
-              icon="delete"
-            />
+            <Icon aria-hidden="true" className="text-red-43 col-start-1 size-5 shrink-0" icon="delete" />
             <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
               <div className="text-grey-00 text-s w-full break-all text-start font-normal">
                 {t('scenarios:nesting.remove')}

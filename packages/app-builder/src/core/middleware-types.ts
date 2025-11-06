@@ -42,17 +42,12 @@ export type MiddlewareFunction<in out TInContext = any, TOutContext = any> = (
   exit: ExitFunction,
 ) => Promise<DataReturnType<any, TOutContext>>;
 
-export type MiddlewareObject<
-  TDependencies extends readonly MiddlewareObject[] = any,
-  TOutContext = any,
-> = {
+export type MiddlewareObject<TDependencies extends readonly MiddlewareObject[] = any, TOutContext = any> = {
   deps: readonly [...TDependencies];
   fn: MiddlewareFunction<Expand<MergeMiddlewareContext<TDependencies>>, TOutContext>;
 };
 
-export type MergeMiddlewareContext<T extends readonly MiddlewareObject[]> = T extends readonly [
-  infer M,
-]
+export type MergeMiddlewareContext<T extends readonly MiddlewareObject[]> = T extends readonly [infer M]
   ? M extends MiddlewareObject<any, infer TOutContext>
     ? TOutContext
     : never
@@ -81,15 +76,11 @@ export type DataWithOptions<Data> = {
 
 export type ServerFnResult<Data> = Promise<Data | DataWithOptions<Data>>;
 
-export type ServerFunction<TContext, Data> = (
-  args: DataFunctionArgs<TContext>,
-) => ServerFnResult<Data>;
+export type ServerFunction<TContext, Data> = (args: DataFunctionArgs<TContext>) => ServerFnResult<Data>;
 
 export type RemixDataFunctionArgs = {
   request: Request;
   params: Record<string, string>;
 };
 
-export type TypedResponse<T = unknown> = T extends Response
-  ? T
-  : Omit<Response, 'json'> & { json(): Promise<T> };
+export type TypedResponse<T = unknown> = T extends Response ? T : Omit<Response, 'json'> & { json(): Promise<T> };

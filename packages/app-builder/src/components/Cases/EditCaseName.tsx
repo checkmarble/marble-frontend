@@ -1,11 +1,7 @@
 import { casesI18n } from '@app-builder/components/Cases/cases-i18n';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import {
-  EditNamePayload,
-  editNamePayloadSchema,
-  useEditNameMutation,
-} from '@app-builder/queries/cases/edit-name';
+import { EditNamePayload, editNamePayloadSchema, useEditNameMutation } from '@app-builder/queries/cases/edit-name';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';

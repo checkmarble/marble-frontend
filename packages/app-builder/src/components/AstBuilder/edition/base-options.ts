@@ -1,17 +1,8 @@
-import {
-  type AstNode,
-  type DataType,
-  type IdLessAstNode,
-  NewUndefinedAstNode,
-} from '@app-builder/models';
+import { type AstNode, type DataType, type IdLessAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import { NewIsMultipleOfAstNode } from '@app-builder/models/astNode/multiple-of';
 import { NewFuzzyMatchComparatorAstNode } from '@app-builder/models/astNode/strings';
-import {
-  NewTimeAddAstNode,
-  NewTimeNowAstNode,
-  NewTimestampExtractAstNode,
-} from '@app-builder/models/astNode/time';
+import { NewTimeAddAstNode, NewTimeNowAstNode, NewTimestampExtractAstNode } from '@app-builder/models/astNode/time';
 import { ComparatorFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/comparatorFuzzyMatchConfig';
 import { aggregatorOperators } from '@app-builder/models/modale-operators';
 import { type OperandType } from '@app-builder/models/operand-type';

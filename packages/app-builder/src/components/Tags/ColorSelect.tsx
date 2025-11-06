@@ -4,13 +4,7 @@ import { Button, MenuCommand } from 'ui-design-system';
 
 import { ColorPreview } from './ColorPreview';
 
-export const ColorSelect = ({
-  onChange,
-  value,
-}: {
-  onChange: (color: TagColor) => void;
-  value: TagColor;
-}) => {
+export const ColorSelect = ({ onChange, value }: { onChange: (color: TagColor) => void; value: TagColor }) => {
   const [open, setOpen] = useState(false);
 
   return (

@@ -10,10 +10,7 @@ import { Icon } from 'ui-icons';
 export const SarCreatedDetail = ({ event }: { event: SarCreatedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
-  const user = useMemo(
-    () => (event.userId ? getOrgUserById(event.userId) : undefined),
-    [event.userId, getOrgUserById],
-  );
+  const user = useMemo(() => (event.userId ? getOrgUserById(event.userId) : undefined), [event.userId, getOrgUserById]);
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">

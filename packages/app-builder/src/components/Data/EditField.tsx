@@ -2,12 +2,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
-import {
-  type DataModelField,
-  EnumDataTypes,
-  type LinkToSingle,
-  UniqueDataTypes,
-} from '@app-builder/models';
+import { type DataModelField, EnumDataTypes, type LinkToSingle, UniqueDataTypes } from '@app-builder/models';
 import {
   type EditFieldPayload,
   editFieldPayloadSchema,
@@ -153,9 +148,7 @@ export function EditField({
               >
                 {(field) => (
                   <div className="flex flex-col gap-2">
-                    <FormLabel name={field.name}>
-                      {t('data:create_field.option_required')}
-                    </FormLabel>
+                    <FormLabel name={field.name}>{t('data:create_field.option_required')}</FormLabel>
                     <Select.Default
                       className="w-full overflow-hidden"
                       defaultValue={field.state.value}
@@ -224,17 +217,13 @@ export function EditField({
                           {t('data:edit_field.is_unique.cannot_untoggle_field_linked')}
                         </p>
                       ) : null}
-                      {field.state.value &&
-                      inputField.unicityConstraint === 'no_unicity_constraint' ? (
+                      {field.state.value && inputField.unicityConstraint === 'no_unicity_constraint' ? (
                         <p className="text-red-74 text-xs">
                           {t('data:edit_field.is_unique.warning_creation_asynchronous')}
                         </p>
                       ) : null}
-                      {inputField.unicityConstraint === 'active_unique_constraint' &&
-                      !field.state.value ? (
-                        <p className="text-red-74 text-xs">
-                          {t('data:edit_field.is_unique.warning_untoggle')}
-                        </p>
+                      {inputField.unicityConstraint === 'active_unique_constraint' && !field.state.value ? (
+                        <p className="text-red-74 text-xs">{t('data:edit_field.is_unique.warning_untoggle')}</p>
                       ) : null}
                     </FormLabel>
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />

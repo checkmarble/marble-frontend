@@ -61,110 +61,107 @@ function Root<T extends Value = Value>({
   );
 }
 
-const Select = forwardRef<
-  HTMLButtonElement,
-  Ariakit.SelectProps & VariantProps<typeof selectTrigger>
->(function SelectWithComboboxPopoverTrigger(
-  { className, border = 'square', borderColor = 'greyfigma-90', disabled, ...props },
+const Select = forwardRef<HTMLButtonElement, Ariakit.SelectProps & VariantProps<typeof selectTrigger>>(
+  function SelectWithComboboxPopoverTrigger(
+    { className, border = 'square', borderColor = 'greyfigma-90', disabled, ...props },
+    ref,
+  ) {
+    return (
+      <Ariakit.Select
+        ref={ref}
+        className={clsx(
+          'group',
+          selectTrigger({
+            border,
+            borderColor,
+            backgroundColor: disabled ? 'disabled' : 'enabled',
+          }),
+          className,
+        )}
+        disabled={disabled}
+        {...props}
+      />
+    );
+  },
+);
+
+const Arrow = forwardRef<HTMLSpanElement, Ariakit.SelectArrowProps>(function SelectWithComboboxArrow(
+  { className, ...props },
   ref,
 ) {
   return (
-    <Ariakit.Select
+    <Ariakit.SelectArrow
       ref={ref}
+      {...props}
+      render={
+        <Icon
+          icon="arrow-2-down"
+          // @ariakit/react inject width: 1em; height: 1em; into the style so use text-[24px] instead of size-6
+          className="pointer-events-none flex items-center justify-center text-[24px] group-aria-expanded:rotate-180"
+        />
+      }
+    />
+  );
+});
+
+const Popover = forwardRef<HTMLDivElement, Ariakit.SelectPopoverProps>(function SelectWithComboboxPopover(
+  { className, ...props },
+  ref,
+) {
+  return (
+    <Ariakit.SelectPopover
+      ref={ref}
+      fitViewport
+      gutter={8}
       className={clsx(
-        'group',
-        selectTrigger({
-          border,
-          borderColor,
-          backgroundColor: disabled ? 'disabled' : 'enabled',
-        }),
+        'bg-grey-100 border-grey-90 max-h-[min(var(--popover-available-height),300px)] -translate-y-1 rounded-sm border opacity-0 shadow-md transition-all data-enter:translate-y-0 data-enter:opacity-100',
         className,
       )}
-      disabled={disabled}
       {...props}
     />
   );
 });
 
-const Arrow = forwardRef<HTMLSpanElement, Ariakit.SelectArrowProps>(
-  function SelectWithComboboxArrow({ className, ...props }, ref) {
-    return (
-      <Ariakit.SelectArrow
-        ref={ref}
-        {...props}
-        render={
-          <Icon
-            icon="arrow-2-down"
-            // @ariakit/react inject width: 1em; height: 1em; into the style so use text-[24px] instead of size-6
-            className="pointer-events-none flex items-center justify-center text-[24px] group-aria-expanded:rotate-180"
-          />
-        }
-      />
-    );
-  },
-);
-
-const Popover = forwardRef<HTMLDivElement, Ariakit.SelectPopoverProps>(
-  function SelectWithComboboxPopover({ className, ...props }, ref) {
-    return (
-      <Ariakit.SelectPopover
-        ref={ref}
-        fitViewport
-        gutter={8}
-        className={clsx(
-          'bg-grey-100 border-grey-90 max-h-[min(var(--popover-available-height),300px)] -translate-y-1 rounded-sm border opacity-0 shadow-md transition-all data-enter:translate-y-0 data-enter:opacity-100',
-          className,
-        )}
-        {...props}
-      />
-    );
-  },
-);
-
-const ComboboxList = forwardRef<HTMLDivElement, Ariakit.ComboboxListProps>(
-  function ComboboxList(props, ref) {
-    return <Ariakit.ComboboxList ref={ref} render={<ScrollAreaV2 />} {...props} />;
-  },
-);
+const ComboboxList = forwardRef<HTMLDivElement, Ariakit.ComboboxListProps>(function ComboboxList(props, ref) {
+  return <Ariakit.ComboboxList ref={ref} render={<ScrollAreaV2 />} {...props} />;
+});
 
 export interface ComboboxItemProps extends Ariakit.SelectItemProps {
   children?: React.ReactNode;
 }
 
-const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
-  function ComboboxItem(props, ref) {
-    const store = Ariakit.useSelectContext();
-    const value = store?.useState('value');
-    const isMultiple = Array.isArray(value);
-    return (
-      // Here we're combining both SelectItem and ComboboxItem into the same
-      // element. SelectItem adds the multi-selectable attributes to the element
-      // (for example, aria-selected).
-      <Ariakit.SelectItem
-        ref={ref}
-        {...props}
-        className={clsx(
-          'data-active-item:bg-purple-98 group flex flex-row items-center gap-2 rounded-sm p-2',
-          props.className,
-        )}
-        render={<Ariakit.ComboboxItem render={props.render} />}
-      >
-        {isMultiple ? (
-          <Ariakit.SelectItemCheck
-            className={clsx(
-              'bg-grey-100 border-grey-90 flex shrink-0 items-center justify-center overflow-hidden rounded-xs border outline-hidden',
-              'group-aria-disabled:bg-grey-90 group-aria-disabled:text-grey-00',
-              'group-aria-selected:text-grey-100 group-aria-selected:border-purple-65 group-aria-selected:bg-purple-65',
-            )}
-          >
-            <Icon icon="tick" />
-          </Ariakit.SelectItemCheck>
-        ) : null}
-        {props.children || props.value}
-      </Ariakit.SelectItem>
-    );
-  },
-);
+const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(function ComboboxItem(props, ref) {
+  const store = Ariakit.useSelectContext();
+  const value = store?.useState('value');
+  const isMultiple = Array.isArray(value);
+  return (
+    // Here we're combining both SelectItem and ComboboxItem into the same
+    // element. SelectItem adds the multi-selectable attributes to the element
+    // (for example, aria-selected).
+    <Ariakit.SelectItem
+      ref={ref}
+      {...props}
+      className={clsx(
+        'data-active-item:bg-purple-98 group flex flex-row items-center gap-2 rounded-sm p-2',
+        props.className,
+      )}
+      render={<Ariakit.ComboboxItem render={props.render} />}
+    >
+      {isMultiple ? (
+        <Ariakit.SelectItemCheck
+          className={clsx(
+            'bg-grey-100 border-grey-90 flex shrink-0 items-center justify-center overflow-hidden rounded-xs border outline-hidden',
+            'group-aria-disabled:bg-grey-90 group-aria-disabled:text-grey-00',
+            'group-aria-selected:text-grey-100 group-aria-selected:border-purple-65 group-aria-selected:bg-purple-65',
+          )}
+        >
+          <Icon icon="tick" />
+        </Ariakit.SelectItemCheck>
+      ) : null}
+      {props.children || props.value}
+    </Ariakit.SelectItem>
+  );
+});
 /**
  * @deprecated Use MenuCommand instead
  */

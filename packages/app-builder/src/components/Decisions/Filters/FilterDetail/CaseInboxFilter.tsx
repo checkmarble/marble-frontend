@@ -10,10 +10,7 @@ export function CaseInboxFilter() {
   const { inboxes, selectedCaseInboxIds, setSelectedCaseInboxIds } = useCaseInboxFilter();
   const searchValue = useDeferredValue(value);
 
-  const matches = useMemo(
-    () => matchSorter(inboxes, searchValue, { keys: ['name'] }),
-    [searchValue, inboxes],
-  );
+  const matches = useMemo(() => matchSorter(inboxes, searchValue, { keys: ['name'] }), [searchValue, inboxes]);
 
   return (
     <div className="flex flex-col gap-2 p-2">

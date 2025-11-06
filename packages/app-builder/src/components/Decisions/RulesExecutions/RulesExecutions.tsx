@@ -6,22 +6,11 @@ import { Icon } from 'ui-icons';
 
 import { RuleExecutionStatus } from './RuleExecutionStatus';
 
-export function RulesExecutionsContainer({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
-  return (
-    <div
-      className={clsx('grid grid-cols-[max-content_1fr_max-content] gap-2', className)}
-      {...props}
-    />
-  );
+export function RulesExecutionsContainer({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+  return <div className={clsx('grid grid-cols-[max-content_1fr_max-content] gap-2', className)} {...props} />;
 }
 
-export function RuleExecutionCollapsible({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
+export function RuleExecutionCollapsible({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <CollapsibleV2.Provider>
       <div
@@ -49,10 +38,7 @@ export function RuleExecutionTitle({ ruleExecution }: { ruleExecution: RuleExecu
   );
 }
 
-export function RuleExecutionContent({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'>) {
+export function RuleExecutionContent({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <CollapsibleV2.Content className="col-span-full">
       <div className={clsx('flex flex-col gap-4 p-2', className)} {...props} />

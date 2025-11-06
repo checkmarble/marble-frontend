@@ -9,11 +9,7 @@ test('Create a simple scenario', async ({ page }) => {
 
   await page.getByRole('button', { name: 'New Scenario' }).click();
 
-  await waitForThen(
-    page,
-    page.getByRole('textbox', { name: 'Name' }),
-    async (field) => await field.fill(scenarioName),
-  );
+  await waitForThen(page, page.getByRole('textbox', { name: 'Name' }), async (field) => await field.fill(scenarioName));
 
   await page.getByRole('textbox', { name: 'Description' }).fill('DESC');
 
@@ -21,11 +17,7 @@ test('Create a simple scenario', async ({ page }) => {
 
   await page.waitForTimeout(200);
 
-  await waitForThen(
-    page,
-    page.getByRole('option', { name: 'transactions' }),
-    async (option) => await option.click(),
-  );
+  await waitForThen(page, page.getByRole('option', { name: 'transactions' }), async (option) => await option.click());
 
   await page.getByRole('button', { name: 'Save' }).click();
 
@@ -66,9 +58,7 @@ test('Create a simple scenario', async ({ page }) => {
   await page.getByRole('link', { name: `${scenarioName} DESC` }).click();
   await page.getByRole('link', { name: 'draft' }).click();
 
-  await expect(page.getByRole('button', { name: 'edit_operand.operator_type.' })).toHaveText(
-    'amount',
-  );
+  await expect(page.getByRole('button', { name: 'edit_operand.operator_type.' })).toHaveText('amount');
   await expect(page.getByRole('button', { name: '>' })).toHaveText('>');
   await expect(page.getByRole('button', { name: 'Number 100' })).toBeVisible();
 });

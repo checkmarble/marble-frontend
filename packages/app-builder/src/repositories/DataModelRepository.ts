@@ -39,19 +39,13 @@ export interface DataModelRepository {
   listPivots(args: { tableId?: string }): Promise<Pivot[]>;
   createPivot(pivot: CreatePivotInput): Promise<Pivot>;
   getIngestedObject(tableName: string, objectId: string): Promise<DataModelObject>;
-  listClientObjects(args: {
-    tableName: string;
-    body: ClientDataListRequestBody;
-  }): Promise<ClientDataListResponse>;
+  listClientObjects(args: { tableName: string; body: ClientDataListRequestBody }): Promise<ClientDataListResponse>;
   createNavigationOption(tableId: string, options: CreateNavigationOption): Promise<void>;
   getDataModelTableOptions(tableId: string): Promise<DataModelTableOptions>;
   setDataModelTableOptions(tableId: string, body: SetDataModelTableOptionsBody): Promise<void>;
   createAnnotation(tableName: string, objectId: string, body: CreateAnnotationBody): Promise<void>;
   deleteAnnotation(annotationId: string): Promise<void>;
-  updateDataModelTableExportedFields(
-    tableId: string,
-    body: ExportedFields,
-  ): Promise<ExportedFields>;
+  updateDataModelTableExportedFields(tableId: string, body: ExportedFields): Promise<ExportedFields>;
   getDataModelTableExportedFields(tableId: string): Promise<ExportedFields>;
 }
 
@@ -69,10 +63,7 @@ export function makeGetDataModelRepository() {
       return marbleCoreApiClient.getDataModelOpenApiOfVersion(version);
     },
     postDataModelTableField: async (tableId, createFieldInput) => {
-      await marbleCoreApiClient.postDataModelTableField(
-        tableId,
-        adaptCreateTableFieldDto(createFieldInput),
-      );
+      await marbleCoreApiClient.postDataModelTableField(tableId, adaptCreateTableFieldDto(createFieldInput));
     },
     patchDataModelField: async (tableId, updateFieldInput) => {
       await marbleCoreApiClient.patchDataModelField(tableId, adaptUpdateFieldDto(updateFieldInput));
@@ -85,9 +76,7 @@ export function makeGetDataModelRepository() {
       return pivots.map(adaptPivot);
     },
     createPivot: async (pivotInput) => {
-      const { pivot } = await marbleCoreApiClient.createDataModelPivot(
-        adaptCreatePivotInputDto(pivotInput),
-      );
+      const { pivot } = await marbleCoreApiClient.createDataModelPivot(adaptCreatePivotInputDto(pivotInput));
 
       return adaptPivot(pivot);
     },
@@ -96,51 +85,31 @@ export function makeGetDataModelRepository() {
     },
     listClientObjects: async (params) => {
       return adaptClientDataListResponse(
-        await marbleCoreApiClient.listClientObjects(
-          params.tableName,
-          adaptClientDataListRequestBodyDto(params.body),
-        ),
+        await marbleCoreApiClient.listClientObjects(params.tableName, adaptClientDataListRequestBodyDto(params.body)),
       );
     },
     createNavigationOption: async (tableId, options) => {
-      await marbleCoreApiClient.postDataModelTableNavigationOption(
-        tableId,
-        adaptCreateNavigationOptionDto(options),
-      );
+      await marbleCoreApiClient.postDataModelTableNavigationOption(tableId, adaptCreateNavigationOptionDto(options));
     },
     getDataModelTableOptions: async (tableId) => {
-      return adaptDataModelTableOptions(
-        await marbleCoreApiClient.getDataModelTableOptions(tableId),
-      );
+      return adaptDataModelTableOptions(await marbleCoreApiClient.getDataModelTableOptions(tableId));
     },
     setDataModelTableOptions: async (tableId, body) => {
-      await marbleCoreApiClient.setDataModelTableOptions(
-        tableId,
-        adaptSetDataModelTableOptionBodyDto(body),
-      );
+      await marbleCoreApiClient.setDataModelTableOptions(tableId, adaptSetDataModelTableOptionBodyDto(body));
     },
     createAnnotation: async (tableName, objectId, body) => {
-      await marbleCoreApiClient.createAnnotation(
-        tableName,
-        objectId,
-        adaptCreateAnnotationDto(body),
-      );
+      await marbleCoreApiClient.createAnnotation(tableName, objectId, adaptCreateAnnotationDto(body));
     },
     deleteAnnotation: async (annotationId) => {
       await marbleCoreApiClient.deleteAnnotation(annotationId);
     },
     updateDataModelTableExportedFields: async (tableId, body): Promise<ExportedFields> => {
       return adaptExportedFields(
-        await marbleCoreApiClient.updateDataModelTableExportedFields(
-          tableId,
-          adaptExportedFieldsDto(body),
-        ),
+        await marbleCoreApiClient.updateDataModelTableExportedFields(tableId, adaptExportedFieldsDto(body)),
       );
     },
     getDataModelTableExportedFields: async (tableId) => {
-      return adaptExportedFields(
-        await marbleCoreApiClient.getDataModelTableExportedFields(tableId),
-      );
+      return adaptExportedFields(await marbleCoreApiClient.getDataModelTableExportedFields(tableId));
     },
   });
 }

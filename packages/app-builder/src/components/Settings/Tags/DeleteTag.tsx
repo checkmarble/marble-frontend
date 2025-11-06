@@ -27,11 +27,7 @@ export function DeleteTag({ tag }: { tag: Tag }) {
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
       <Modal.Trigger>
-        <Icon
-          icon="delete"
-          className="size-6 shrink-0"
-          aria-label={t('settings:tags.delete_tag')}
-        />
+        <Icon icon="delete" className="size-6 shrink-0" aria-label={t('settings:tags.delete_tag')} />
       </Modal.Trigger>
       <Modal.Content>
         <DeleteTagContent tagId={tag.id} onSuccess={handleOnSuccess} />

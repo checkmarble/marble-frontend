@@ -113,9 +113,7 @@ export function UpdateOrganizationSettingsContents({
         >
           {(field) => (
             <div className="group flex flex-col gap-2">
-              <FormLabel name={field.name}>
-                {t('settings:global_settings.auto_assign_queue_limit')}
-              </FormLabel>
+              <FormLabel name={field.name}>{t('settings:global_settings.auto_assign_queue_limit')}</FormLabel>
               <FormInput
                 type="number"
                 min={0}

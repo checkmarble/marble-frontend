@@ -1,5 +1,4 @@
-export type GlobalMiddlewares =
-  import('@app-builder/core/middleware-config').MiddlewareConfig['GlobalMiddlewares'];
+export type GlobalMiddlewares = import('@app-builder/core/middleware-config').MiddlewareConfig['GlobalMiddlewares'];
 
 import type {
   DataReturnType,
@@ -43,10 +42,7 @@ function createDataReturnType(
   };
 }
 
-function createExecutionEnvironment(
-  request: Request,
-  params: Record<string, string>,
-): ExecutionEnvironment {
+function createExecutionEnvironment(request: Request, params: Record<string, string>): ExecutionEnvironment {
   return {
     queue: new Map(),
     request,
@@ -71,11 +67,7 @@ function buildResponse(ret: DataReturnType<any, any>): TypedResponse<any> {
   return Response.json(ret.data, { headers });
 }
 
-function createMiddlewareCallbable(
-  object: MiddlewareObject,
-  env: ExecutionEnvironment,
-  next: NextFunction,
-) {
+function createMiddlewareCallbable(object: MiddlewareObject, env: ExecutionEnvironment, next: NextFunction) {
   // Create a env specific to middleware queue to not pollute the global request one
   const middlewareCtx = { value: {} };
   const onMiddlewareNext = (nextArgs?: NextFunctionArgs<any>) => {
@@ -124,15 +116,10 @@ function createServerFunctionCallable(
   };
 
   const routeMiddlewareChain = createMiddlewareChain(middlewares, env, onFnNext, final);
-  const globalMiddlewareChain = createMiddlewareChain(
-    globalMiddlewares,
-    env,
-    onGlobalNext,
-    (nextArgs) => {
-      onGlobalNext(nextArgs);
-      return routeMiddlewareChain();
-    },
-  );
+  const globalMiddlewareChain = createMiddlewareChain(globalMiddlewares, env, onGlobalNext, (nextArgs) => {
+    onGlobalNext(nextArgs);
+    return routeMiddlewareChain();
+  });
 
   return globalMiddlewareChain;
 }
@@ -183,10 +170,7 @@ export function createMiddleware<T extends readonly MiddlewareObject[], TOutCont
   return { deps: middlewares, fn: fn as any };
 }
 
-export function createMiddlewareWithGlobalContext<
-  T extends readonly MiddlewareObject[],
-  TOutContext,
->(
+export function createMiddlewareWithGlobalContext<T extends readonly MiddlewareObject[], TOutContext>(
   middlewares: readonly [...T],
   fn: MiddlewareFunction<Expand<MergeMiddlewareContext<[...GlobalMiddlewares, ...T]>>, TOutContext>,
 ): MiddlewareObject<any, TOutContext> {

@@ -6,10 +6,7 @@ import { Avatar, Markdown } from 'ui-design-system';
 
 export const CommentAddedDetail = ({ event }: { event: CommentAddedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
-  const user = useMemo(
-    () => (event.userId ? getOrgUserById(event.userId) : undefined),
-    [event.userId, getOrgUserById],
-  );
+  const user = useMemo(() => (event.userId ? getOrgUserById(event.userId) : undefined), [event.userId, getOrgUserById]);
 
   return (
     <div key={event.id} className="flex items-start gap-2">

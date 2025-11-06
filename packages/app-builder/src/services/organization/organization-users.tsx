@@ -24,9 +24,7 @@ export function OrganizationUsersContextProvider({
       getOrgUserById: (userId: string) => orgUserMap.get(userId),
     };
   }, [orgUsers]);
-  return (
-    <OrganizationUsersContext.Provider value={value}>{children}</OrganizationUsersContext.Provider>
-  );
+  return <OrganizationUsersContext.Provider value={value}>{children}</OrganizationUsersContext.Provider>;
 }
 
 export const useOrganizationUsers = () => OrganizationUsersContext.useValue();

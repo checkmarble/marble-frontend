@@ -27,7 +27,5 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function IpWhitelistingSettings() {
   const { allowedNetworks, organizationId } = useLoaderData<typeof loader>();
 
-  return (
-    <IpWhitelistingSettingsPage organizationId={organizationId} allowedNetworks={allowedNetworks} />
-  );
+  return <IpWhitelistingSettingsPage organizationId={organizationId} allowedNetworks={allowedNetworks} />;
 }

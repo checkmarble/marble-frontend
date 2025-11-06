@@ -2,12 +2,7 @@ import { Callout } from '@app-builder/components';
 import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { RemoveButton } from '@app-builder/components/AstBuilder/styles/RemoveButton';
 import { scenarioI18n } from '@app-builder/components/Scenario';
-import {
-  type DataModel,
-  getEnumValues,
-  isUndefinedAstNode,
-  NewUndefinedAstNode,
-} from '@app-builder/models';
+import { type DataModel, getEnumValues, isUndefinedAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import {
   type AggregationAstNode,
   aggregationFilterOperators,
@@ -22,10 +17,7 @@ import {
   NewFuzzyMatchFilterOptionsAstNode,
   type UnaryAggregationFilterAstNode,
 } from '@app-builder/models/astNode/aggregation';
-import {
-  isKnownOperandAstNode,
-  type KnownOperandAstNode,
-} from '@app-builder/models/astNode/builder-ast-node';
+import { isKnownOperandAstNode, type KnownOperandAstNode } from '@app-builder/models/astNode/builder-ast-node';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { getAstNodeDisplayName } from '@app-builder/services/ast-node/getAstNodeDisplayName';
 import { useFormatLanguage } from '@app-builder/utils/format';
@@ -55,18 +47,14 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
   const language = useFormatLanguage();
   const customLists = AstBuilderDataSharpFactory.select((s) => s.data.customLists);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
-  const filters = nodeSharp.select(
-    (s) => (s.node as AggregationAstNode).namedChildren.filters.children,
-  );
+  const filters = nodeSharp.select((s) => (s.node as AggregationAstNode).namedChildren.filters.children);
   const evaluation = nodeSharp.select((s) => s.validation);
   const [filterEditedIndex, setEditedFilterIndex] = useState<number | null>(null);
 
   const tableName = aggregatedField?.tableName;
   const options = useMemo(() => {
     return tableName
-      ? dataModel
-          .find((t) => t.name === tableName)
-          ?.fields.map((f) => ({ tableName, fieldName: f.name, field: f }))
+      ? dataModel.find((t) => t.name === tableName)?.fields.map((f) => ({ tableName, fieldName: f.name, field: f }))
       : null;
   }, [tableName, dataModel]);
 
@@ -75,11 +63,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
       <div className="text-m">
         <Trans
           t={t}
-          i18nKey={
-            tableName
-              ? 'scenarios:edit_aggregation.filters_in'
-              : 'scenarios:edit_aggregation.filters'
-          }
+          i18nKey={tableName ? 'scenarios:edit_aggregation.filters_in' : 'scenarios:edit_aggregation.filters'}
           values={{ tableName }}
         />
       </div>
@@ -94,9 +78,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
               filter.namedChildren.tableName.id,
             ]);
             const operatorErrors = getErrorsForNode(evaluation, filter.namedChildren.operator.id);
-            const valueErrors = binaryFilter
-              ? getErrorsForNode(evaluation, filter.namedChildren.value.id, true)
-              : [];
+            const valueErrors = binaryFilter ? getErrorsForNode(evaluation, filter.namedChildren.value.id, true) : [];
 
             const displayName =
               complexFilter && !isUndefinedAstNode(filter.namedChildren.value.namedChildren.value)
@@ -167,8 +149,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                               const valueNode = match(filter)
                                 .when(
                                   isBinaryAggregationFilter,
-                                  (binFilter: BinaryAggregationFilterAstNode) =>
-                                    binFilter.namedChildren.value,
+                                  (binFilter: BinaryAggregationFilterAstNode) => binFilter.namedChildren.value,
                                 )
                                 .when(
                                   isComplexAggregationFilter,
@@ -189,8 +170,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                             const valueNode = match(filter)
                               .when(
                                 isBinaryAggregationFilter,
-                                (binFilter: BinaryAggregationFilterAstNode) =>
-                                  binFilter.namedChildren.value,
+                                (binFilter: BinaryAggregationFilterAstNode) => binFilter.namedChildren.value,
                               )
                               .when(
                                 isComplexAggregationFilter,
@@ -226,19 +206,14 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
                             optionsDataType={(opt) => opt.operandType !== 'Modeling'}
                             validationStatus={valueErrors.length > 0 ? 'error' : 'valid'}
                             enumValues={
-                              ['=', '!='].includes(filter.namedChildren.operator.constant)
-                                ? enumValues
-                                : undefined
+                              ['=', '!='].includes(filter.namedChildren.operator.constant) ? enumValues : undefined
                             }
                           />
                         </>
                       ) : null}
                       {complexFilter && filter.namedChildren.operator.constant ? (
                         <>
-                          <Button
-                            variant="secondary"
-                            onClick={() => setEditedFilterIndex(filterIndex)}
-                          >
+                          <Button variant="secondary" onClick={() => setEditedFilterIndex(filterIndex)}>
                             {displayName}
                           </Button>
                           {filter.namedChildren.value && filterEditedIndex === filterIndex ? (
@@ -298,9 +273,7 @@ export function EditFilters({ aggregatedField, dataModel }: EditFiltersProps) {
             );
           }}
         />
-        {filters.length === 0 ? (
-          <Callout>{t('scenarios:edit_aggregation.add_filter.callout')}</Callout>
-        ) : null}
+        {filters.length === 0 ? <Callout>{t('scenarios:edit_aggregation.add_filter.callout')}</Callout> : null}
       </div>
     </div>
   );

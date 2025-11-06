@@ -11,10 +11,7 @@ export interface OutcomeProps extends Omit<TagProps, 'color'> {
   disabled?: boolean;
 }
 
-const reviewStatusMapping: Record<
-  ReviewStatus,
-  { color: TagProps['color']; tKey: ParseKeys<['decisions']> }
-> = {
+const reviewStatusMapping: Record<ReviewStatus, { color: TagProps['color']; tKey: ParseKeys<['decisions']> }> = {
   pending: {
     color: 'orange',
     tKey: 'decisions:review_status.pending',

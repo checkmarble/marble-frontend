@@ -24,10 +24,7 @@ export function SelectLinkPath({
   const pathOptions = useMemo(
     () =>
       pivotOptions
-        .filter(
-          ({ type, parentTableId }) =>
-            type === 'link' && parentTableId === preferedPivotOption.parentTableId,
-        )
+        .filter(({ type, parentTableId }) => type === 'link' && parentTableId === preferedPivotOption.parentTableId)
         .sort((a, b) => (a.length ?? 0) - (b.length ?? 0)),
     [pivotOptions, preferedPivotOption],
   );

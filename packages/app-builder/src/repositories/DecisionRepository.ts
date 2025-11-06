@@ -53,10 +53,7 @@ export interface DecisionRepository {
   listScheduledExecutions(args?: { scenarioId?: string }): Promise<ScheduledExecution[]>;
   getDecisionById(id: string, args?: { includeRuleEvaluation?: boolean }): Promise<DecisionDetails>;
   getDecisionActiveSnoozes(decisionId: string): Promise<SnoozesOfDecision>;
-  createSnoozeForDecision(
-    decisionId: string,
-    snoozeDecisionInput: SnoozeDecisionInput,
-  ): Promise<SnoozesOfDecision>;
+  createSnoozeForDecision(decisionId: string, snoozeDecisionInput: SnoozeDecisionInput): Promise<SnoozesOfDecision>;
 }
 
 export function makeGetDecisionRepository() {

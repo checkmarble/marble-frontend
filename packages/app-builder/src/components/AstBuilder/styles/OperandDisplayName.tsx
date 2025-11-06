@@ -30,12 +30,7 @@ export const operandDisplayNameClassnames = cva(
 type OperandDisplayNameProps = Omit<AstBuilderOperandProps, 'onChange' | 'node'> & {
   node: IdLessAstNode<KnownOperandAstNode>;
 } & OperandTypeVariantProps;
-export function OperandDisplayName({
-  node,
-  enumValues,
-  interactionMode,
-  returnValue,
-}: OperandDisplayNameProps) {
+export function OperandDisplayName({ node, enumValues, interactionMode, returnValue }: OperandDisplayNameProps) {
   const { t } = useTranslation(['common', 'scenarios']);
   const language = useFormatLanguage();
   const dataSharp = AstBuilderDataSharpFactory.useSharp();
@@ -60,28 +55,13 @@ export function OperandDisplayName({
   return shouldDisplayReturnValue ? (
     <>
       <span className={operandDisplayNameClassnames()}>{returnValue}</span>
-      <OperandInfos
-        dataType={dataType}
-        displayName={displayName}
-        node={node}
-        operandType={operandType}
-      />
+      <OperandInfos dataType={dataType} displayName={displayName} node={node} operandType={operandType} />
     </>
   ) : (
     <>
-      <OperandTypeInfos
-        interactionMode={interactionMode}
-        t={t}
-        dataType={dataType}
-        operandType={operandType}
-      />
+      <OperandTypeInfos interactionMode={interactionMode} t={t} dataType={dataType} operandType={operandType} />
       <span className={operandDisplayNameClassnames()}>{displayName}</span>
-      <OperandInfos
-        dataType={dataType}
-        displayName={displayName}
-        node={node}
-        operandType={operandType}
-      />
+      <OperandInfos dataType={dataType} displayName={displayName} node={node} operandType={operandType} />
     </>
   );
 }

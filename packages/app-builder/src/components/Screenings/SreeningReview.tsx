@@ -21,10 +21,7 @@ export type ScreeningReviewSectionProps = {
   onRefineSuccess: (screeningId: string) => void;
 };
 
-export function ScreeningReviewSection({
-  screening,
-  onRefineSuccess,
-}: ScreeningReviewSectionProps) {
+export function ScreeningReviewSection({ screening, onRefineSuccess }: ScreeningReviewSectionProps) {
   const { t } = useTranslation(screeningsI18n);
   const [isRefining, setIsRefining] = useState(false);
   const matchesToReviewCount = filter(screening.matches, (m) => m.status === 'pending').length;

@@ -2,10 +2,7 @@ import { Callout } from '@app-builder/components/Callout';
 import { SEARCH_ENTITIES, type SearchableSchema } from '@app-builder/constants/screening-entity';
 import { type Screening, type ScreeningMatchPayload } from '@app-builder/models/screening';
 import { type action as refineAction } from '@app-builder/routes/ressources+/screenings+/refine';
-import {
-  refineSearchSchema,
-  type action as searchAction,
-} from '@app-builder/routes/ressources+/screenings+/search';
+import { refineSearchSchema, type action as searchAction } from '@app-builder/routes/ressources+/screenings+/search';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { getRoute } from '@app-builder/utils/routes';
@@ -92,10 +89,7 @@ export function RefineSearchModal({
 
   const onSearchEntityChange = ({ value }: { value: SearchableSchema }) => {
     if (value) {
-      form.setFieldValue(
-        'fields',
-        setAdditionalFields(SEARCH_ENTITIES[value].fields, form.state.values.fields),
-      );
+      form.setFieldValue('fields', setAdditionalFields(SEARCH_ENTITIES[value].fields, form.state.values.fields));
     }
   };
 
@@ -154,12 +148,7 @@ export function RefineSearchModal({
           </div>
           <ModalV2.Footer>
             <div className="bg-grey-100 flex gap-2 p-8">
-              <Button
-                className="flex-1"
-                variant="secondary"
-                name="cancel"
-                onClick={handleBackToSearch}
-              >
+              <Button className="flex-1" variant="secondary" name="cancel" onClick={handleBackToSearch}>
                 {t('screenings:refine_modal.back_search')}
               </Button>
               <Button
@@ -180,11 +169,7 @@ export function RefineSearchModal({
             <form.Field name="entityType" listeners={{ onChange: onSearchEntityChange }}>
               {(field) => (
                 <Field label={t('screenings:search_entity_type')}>
-                  <EntitySelect
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={field.handleChange}
-                  />
+                  <EntitySelect name={field.name} value={field.state.value} onChange={field.handleChange} />
                 </Field>
               )}
             </form.Field>
@@ -205,21 +190,12 @@ export function RefineSearchModal({
           </div>
           <ModalV2.Footer>
             <div className="bg-grey-100 flex gap-2 p-8">
-              <ModalV2.Close
-                render={<Button className="flex-1" variant="secondary" name="cancel" />}
-              >
+              <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
                 {t('common:cancel')}
               </ModalV2.Close>
-              <form.Subscribe
-                selector={(state) => [state.isPristine, state.canSubmit, state.isSubmitting]}
-              >
+              <form.Subscribe selector={(state) => [state.isPristine, state.canSubmit, state.isSubmitting]}>
                 {([isPristine, canSubmit, isSubmitting]) => (
-                  <Button
-                    type="submit"
-                    disabled={isPristine || !canSubmit}
-                    className="flex-1"
-                    variant="primary"
-                  >
+                  <Button type="submit" disabled={isPristine || !canSubmit} className="flex-1" variant="primary">
                     {isSubmitting ? '...' : t('screenings:refine_modal.test_search')}
                   </Button>
                 )}
