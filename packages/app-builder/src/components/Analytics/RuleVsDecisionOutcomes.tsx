@@ -42,21 +42,19 @@ export function RuleVsDecisionOutcomes({
     [data, selectedOutcomes],
   );
 
-  // Adaptive chart height: keep each rule bar thin, and overall height small when few rows
-  const perRowHeightPx = 20; // thin bars similar to the wireframe
-  const minHeightPx = 120; // small when few rules
-  const chartHeight = data ? Math.max(data.length * perRowHeightPx, minHeightPx) : 0;
-
-  // Dynamic left margin based on longest rule name
-  const maxRuleLength = data ? Math.max(...data.map((d) => d.rule.length), 0) : 0;
-  const pixelsPerChar = 7; // approximate pixels per character
-  const minLeftMargin = 8;
-  const leftMargin = Math.max(maxRuleLength * pixelsPerChar + 8, minLeftMargin);
-
   const getBarColors = (d: ComputedDatum<RuleVsDecisionOutcome>) => {
     const id = String(d.id) as Outcome;
     return outcomeColors[id] ?? '#9ca3af';
   };
+
+  const MAX_RULE_NAME_LENGTH = 42;
+  const MIN_LEFT_MARGIN = 8;
+  const leftMargin = Math.max(
+    (data ? Math.max(...data.map((d) => Math.min(d.rule.length, MAX_RULE_NAME_LENGTH)), 0) : 0) *
+      MIN_LEFT_MARGIN +
+      MIN_LEFT_MARGIN,
+    MIN_LEFT_MARGIN,
+  );
 
   const handleExportCsv = () => {
     if (!data || !data.length) return;
@@ -99,23 +97,23 @@ export function RuleVsDecisionOutcomes({
       </div>
 
       <div
-        aria-busy={isLoading}
-        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative min-h-v2-xxxl"
+        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm flex flex-col"
+        style={{ height: data?.length ? data.length * 42 + 120 : '48px' }}
       >
         {isLoading ? (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
             <Spinner className="size-6" />
           </div>
         ) : data?.length ? (
-          <div className="flex w-full flex-col items-start gap-v2-md">
-            <div className="w-full" style={{ height: chartHeight }}>
+          <div className="flex flex-col gap-v2-md h-full">
+            <div className="flex-1 w-full">
               <ResponsiveBar
                 data={data ?? []}
                 indexBy="rule"
                 enableLabel={false}
                 keys={selectedOutcomes}
                 padding={0.5}
-                margin={{ top: 8, right: 32, bottom: 32, left: leftMargin }}
+                margin={{ top: 8, right: 8, bottom: 42, left: leftMargin }}
                 colors={getBarColors}
                 layout="horizontal"
                 valueScale={{ type: 'linear', min: 0, max: maxValueScale }}
@@ -128,7 +126,11 @@ export function RuleVsDecisionOutcomes({
                     },
                   },
                 }}
-                axisLeft={{}}
+                axisLeft={{
+                  tickSize: 0,
+                  tickPadding: 4,
+                  truncateTickAt: MAX_RULE_NAME_LENGTH,
+                }}
                 axisBottom={{
                   format: (value: number) =>
                     new Intl.NumberFormat(language, {
