@@ -110,6 +110,7 @@ type SubMenuProps = Omit<RootProps, 'open' | 'onOpenChange'> & {
   arrow?: boolean;
   disabled?: boolean;
   persistOnSelect?: boolean;
+  withCombobox?: boolean;
 };
 
 function SubMenu({

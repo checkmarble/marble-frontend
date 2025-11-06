@@ -1,5 +1,7 @@
 {
   "clear_filters": "Effacer les filtres",
+  "date_range.duration": "Jusqu'à {{duration}}",
+  "date_range.range_value": "Du {{startDate}} au {{endDate}}",
   "ds.addNewFilter.label": "Ajouter un nouveau filtre",
   "ds.apply_button.label": "Appliquer",
   "ds.chooseFilter.label": "Choisir un filtre",

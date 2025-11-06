@@ -1,6 +1,6 @@
 import { createSimpleContext } from '@marble/shared';
 
-type Path = string | { pathname: string; search?: string; hash?: string };
+type Path = string | { pathname?: string; search?: string; hash?: string };
 
 type NavigateOptions = {
   replace?: boolean;

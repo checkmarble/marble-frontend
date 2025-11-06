@@ -1,5 +1,7 @@
 {
   "clear_filters": "مسح الفلاتر",
+  "date_range.duration": "من {{duration}}",
+  "date_range.range_value": "من {{startDate}} إلى {{endDate}}",
   "ds.addNewFilter.label": "إضافة فلتر جديد",
   "ds.apply_button.label": "تطبيق",
   "ds.chooseFilter.label": "اختر فلتر",

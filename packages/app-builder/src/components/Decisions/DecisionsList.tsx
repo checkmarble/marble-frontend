@@ -1,5 +1,5 @@
 import { CaseStatusBadge, decisionsI18n, OutcomeBadge } from '@app-builder/components';
-import { SelectionProps } from '@app-builder/hooks/useListSelection';
+import { SelectionProps } from '@app-builder/hooks/useTanstackTableListSelection';
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
