@@ -255,7 +255,6 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
 
       <div
         ref={divRef}
-        aria-busy={isLoading}
         className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative"
       >
         {isLoading ? (
