@@ -562,6 +562,11 @@ export const routes = [
         "file": "routes/ressources+/data+/$tableId.createNavigationOption.tsx"
       },
       {
+        "id": "routes/ressources+/data+/$tableName.$objectId.get",
+        "path": "ressources/data/:tableName/:objectId/get",
+        "file": "routes/ressources+/data+/$tableName.$objectId.get.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/$tableName.list-objects",
         "path": "ressources/data/:tableName/list-objects",
         "file": "routes/ressources+/data+/$tableName.list-objects.tsx"
@@ -610,6 +615,11 @@ export const routes = [
         "id": "routes/ressources+/data+/editTable",
         "path": "ressources/data/editTable",
         "file": "routes/ressources+/data+/editTable.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/update.data-display",
+        "path": "ressources/data/update/data-display",
+        "file": "routes/ressources+/data+/update.data-display.tsx"
       },
       {
         "id": "routes/ressources+/decisions+/$decisionId",
@@ -670,11 +680,6 @@ export const routes = [
         "id": "routes/ressources+/opensanctions+/dataset-freshness",
         "path": "ressources/opensanctions/dataset-freshness",
         "file": "routes/ressources+/opensanctions+/dataset-freshness.tsx"
-      },
-      {
-        "id": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId",
-        "path": "ressources/rule-snoozes/read/:ruleSnoozeId",
-        "file": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate",
