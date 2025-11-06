@@ -65,12 +65,7 @@ export const BreadCrumbs = ({ back }: { back?: string }) => {
 
               return (
                 <div className="flex items-center gap-4" key={`${pathname}-${elementIndex}`}>
-                  <Element
-                    key={pathname}
-                    // eslint-disable-next-line react/jsx-no-leaked-render
-                    isLast={isLastElement && isLastLink}
-                    data={data}
-                  />
+                  <Element key={pathname} isLast={isLastElement && isLastLink} data={data} />
                   {!(isLastElement && isLastLink) ? <span className="text-s text-grey-80 font-bold">/</span> : null}
                 </div>
               );

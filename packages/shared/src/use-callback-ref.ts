@@ -7,7 +7,6 @@ import * as React from 'react';
  * Inspired from @radix-ui/react-use-callback-ref
  */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useCallbackRef<T extends (...args: any[]) => any>(callback: T | undefined): T {
   const callbackRef = React.useRef<T | undefined>();
 

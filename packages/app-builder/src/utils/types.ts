@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Contra<T> = T extends any ? (arg: T) => void : never;
 
 type InferContra<T> = [T] extends [(arg: infer I) => void] ? I : never;

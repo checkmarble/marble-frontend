@@ -20,7 +20,6 @@ const useIntersection = (
         observer.disconnect();
       };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref.current, options.threshold, options.root, options.rootMargin]);
 
   return intersectionObserverEntry;

@@ -20,8 +20,7 @@ export type GetPathParams<Path extends string, Parts = NonEmptySplit<Path, '/'>>
   ? Head extends `:${infer Name}`
     ? { [K in Name]: string } & GetPathParams<Path, Tail>
     : GetPathParams<Path, Tail>
-  : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    {};
+  : {};
 
 export function getRoute<Path extends RoutePath>(
   path: Path,

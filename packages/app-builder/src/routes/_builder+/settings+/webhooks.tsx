@@ -95,7 +95,6 @@ export default function Webhooks() {
             <span className="flex-1">{t('settings:webhooks')}</span>
             {isCreateWebhookAvailable ? (
               // Necessary to prevent click events from propagating to the Collapsible
-              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <span onClick={(e) => e.stopPropagation()}>
                 <CreateWebhook webhookStatus={webhooksStatus}>
                   <Button>

@@ -195,7 +195,6 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                   <Button
                     type="submit"
                     className="basis-1/2 first-letter:capitalize"
-                    // eslint-disable-next-line react/jsx-no-leaked-render
                     disabled={isCompleted && reportFile === undefined}
                     onClick={() => {
                       field.handleChange('completed');

@@ -264,15 +264,7 @@ function CustomControls() {
   return (
     <>
       <SchemaMenuRoot>
-        <MenuButton
-          render={
-            <button
-              // eslint-disable-next-line tailwindcss/no-custom-classname
-              className="react-flow__controls-button"
-              title="Focus table"
-            />
-          }
-        >
+        <MenuButton render={<button className="react-flow__controls-button" title="Focus table" />}>
           <Icon icon="center-focus" />
         </MenuButton>
         <SchemaMenuMenuPopover>
