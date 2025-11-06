@@ -24,7 +24,7 @@
     "vite": "^6.2.7"
   },
   "dependencies": {
-    "@preact/signals-react": "^3.0.1",
+    "@preact/signals-react": "^3.3.1",
     "deepsignal": "^1.6.0",
     "zustand": "^5.0.3"
   },
