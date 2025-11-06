@@ -272,7 +272,9 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
                       key={filter.name}
                       buttonState={buttonState({
                         state:
-                          textFilter.selectedValue?.value && textFilter.selectedValue.value.length > 0
+                          !textFilter.unavailable &&
+                          textFilter.selectedValue?.value &&
+                          textFilter.selectedValue.value.length > 0
                             ? 'enabled'
                             : 'disabled',
                       })}

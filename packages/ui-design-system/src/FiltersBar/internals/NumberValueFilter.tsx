@@ -71,9 +71,9 @@ export function NumberValueFilter({ filter, buttonState }: { filter: NumberFilte
             const raw = (filter.selectedValue as any)?.value ?? localValue.value;
             const val = Array.isArray(raw) ? Number((raw as number[])[0]) : Number(raw as number);
             return (
-              <>
+              <span className={buttonState}>
                 {op} {val}
-              </>
+              </span>
             );
           })()}
           {filter.unavailable ? (
