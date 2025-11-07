@@ -85,12 +85,14 @@ export const analyticsQuery = analyticsFiltersQuery.extend({
 });
 
 export const transformTriggersFiltersToFieldsFilters = (filters: AnalyticsFiltersQuery['trigger']): FieldFilterDto[] =>
-  filters?.map((f) => ({
-    source: 'trigger_object',
-    field: f.name,
-    op: f.op,
-    values: f.value,
-  })) ?? [];
+  filters
+    ?.filter((f) => !f.unavailable)
+    .map((f) => ({
+      source: 'trigger_object',
+      field: f.name,
+      op: f.op,
+      values: f.value,
+    })) ?? [];
 
 // export const TransformAnalyticsQueryRequest = analyticsQuery.transform((val): AnalyticsQueryDto[] => {
 

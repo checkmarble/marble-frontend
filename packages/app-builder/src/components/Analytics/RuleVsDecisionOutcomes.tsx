@@ -94,7 +94,7 @@ export function RuleVsDecisionOutcomes({
       </div>
 
       <div
-        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm flex flex-col min-h-52"
+        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm flex flex-col min-h-52 relative"
         style={{ height: data?.length ? data.length * 42 + 120 : '48px' }}
       >
         {isLoading ? (

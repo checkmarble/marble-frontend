@@ -76,6 +76,7 @@ export const triggerFilter = z.object({
   name: z.string(),
   op: z.enum(['=', '!=', '>', '>=', '<', '<=', 'in']),
   value: z.array(z.union([z.string(), z.number(), z.boolean()])),
+  unavailable: z.boolean(),
 });
 
 export const mergeDateRanges = (dateRanges: DecisionOutcomesPerDayResponseDto[][]): DecisionOutcomesPerDayEntity[] =>

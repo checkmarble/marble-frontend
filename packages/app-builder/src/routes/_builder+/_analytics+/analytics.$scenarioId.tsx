@@ -251,7 +251,7 @@ export default function Analytics() {
           const values = Array.isArray(textFilter.value)
             ? (textFilter.value as string[]).filter((v) => v != null && String(v).length > 0)
             : [];
-          return values.length ? [{ name, op: textFilter.op, value: values }] : [];
+          return values.length ? [{ name, op: textFilter.op, value: values, unavailable: descriptor.unavailable }] : [];
         }
 
         case 'number': {
@@ -265,13 +265,15 @@ export default function Analytics() {
           const cleaned = (values as Array<string | number | boolean>).filter(
             (v) => v !== null && v !== undefined && (typeof v !== 'string' || v.length > 0),
           );
-          return cleaned.length ? [{ name, op: numFilter.op, value: cleaned }] : [];
+          return cleaned.length
+            ? [{ name, op: numFilter.op, value: cleaned, unavailable: descriptor.unavailable }]
+            : [];
         }
 
         case 'boolean': {
           // Boolean filter: boolean value
           if (typeof val !== 'boolean') return [] as any[];
-          return [{ name, op: '=', value: [val] }];
+          return [{ name, op: '=', value: [val], unavailable: descriptor.unavailable }];
         }
 
         default:

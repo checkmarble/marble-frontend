@@ -4,6 +4,7 @@ import { ButtonV2 } from '../../Button/Button';
 import { useI18n } from '../../contexts/I18nContext';
 import { Input } from '../../Input/Input';
 import { Tooltip } from '../../Tooltip/Tooltip';
+import { cn } from '../../utils';
 import { type TextFilter } from '../types';
 import { FilterItem, FilterPopover } from './FilterPopover';
 import { useFiltersBarContext } from './FiltersBarContext';
@@ -39,7 +40,7 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
         <FilterItem.Trigger id={filter.name}>
           <span className={buttonState}>{filter.name}</span>
           {filter.selectedValue?.value && filter.selectedValue.value.length > 0 ? (
-            <span className="font-medium">
+            <span className={cn('font-medium', buttonState)}>
               {t('filters:ds.text_match_filter.selected_values', {
                 values: filter.selectedValue.value.join(', '),
               })}
