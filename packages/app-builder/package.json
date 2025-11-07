@@ -34,7 +34,9 @@
     "remix-flat-routes": "^0.8.5",
     "tailwindcss": "4.1.13",
     "tsx": "^4.19.3",
-    "vite": "^6.2.7"
+    "vite": "^6.2.7",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "3.0.9"
   },
   "dependencies": {
     "@ariakit/react": "^0.4.15",
