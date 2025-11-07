@@ -391,9 +391,9 @@ export const routes = [
         "file": "routes/ressources+/analytics+/$scenarioId+/available_filters.ts"
       },
       {
-        "id": "routes/ressources+/analytics+/$scenarioId+/query",
-        "path": "ressources/analytics/:scenarioId/query",
-        "file": "routes/ressources+/analytics+/$scenarioId+/query.ts"
+        "id": "routes/ressources+/analytics+/$scenarioId+/query.$queryName",
+        "path": "ressources/analytics/:scenarioId/query/:queryName",
+        "file": "routes/ressources+/analytics+/$scenarioId+/query.$queryName.ts"
       },
       {
         "id": "routes/ressources+/annotations+/download-file.$annotationId.$fileId",
