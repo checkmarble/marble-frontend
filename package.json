@@ -8,8 +8,7 @@
     "@vitest/ui": "3.0.9",
     "lefthook": "^1.13.0",
     "react-refresh": "^0.16.0",
-    "typescript": "5.8.2",
-    "vitest": "3.0.9"
+    "typescript": "5.8.2"
   },
   "license": "MIT",
   "overrides": {
@@ -21,7 +20,7 @@
   "scripts": {
     "format:write": "biome format . --write",
     "format:check": "biome format .",
-    "test:all": "vitest",
+    "test:all": "bun run -F '*' test",
     "update-deps": "bun update --latest -r -i; clear; bun pm ls --all > packages-licenses.txt"
   },
   "sideEffect": false,
