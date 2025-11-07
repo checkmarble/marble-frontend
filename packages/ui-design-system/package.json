@@ -8,7 +8,7 @@
   "scripts": {
     "lint": "biome lint",
     "type-check": "tsc --noEmit",
-    "test": "vitest",
+    "unit-tests": "vitest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

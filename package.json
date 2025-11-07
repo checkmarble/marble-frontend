@@ -20,7 +20,7 @@
   "scripts": {
     "format:write": "biome format . --write",
     "format:check": "biome format .",
-    "test:all": "bun run -F '*' test",
+    "test:all": "bun run -F '*' unit-tests",
     "update-deps": "bun update --latest -r -i; clear; bun pm ls --all > packages-licenses.txt"
   },
   "sideEffect": false,
