@@ -95,7 +95,7 @@
         "remeda": "^2.21.2",
         "remix-auth-oauth2": "^3.4.1",
         "remix-auth-openid": "^0.3.0",
-        "remix-i18next": "^6.4.1",
+        "remix-i18next": "^7.4.2",
         "remix-utils": "^7.7.0",
         "sharpstate": "^0.0.13",
         "short-uuid": "^5.2.0",
@@ -2856,7 +2856,7 @@
 
     "remix-flat-routes": ["remix-flat-routes@0.8.5", "", { "dependencies": { "fs-extra": "^11.2.0", "minimatch": "^10.0.1" }, "bin": { "migrate-flat-routes": "dist/cli.cjs" } }, "sha512-30GcEpvwqFXCyTKiCTeqI3QSNyTg+f0qLGeIc95y6o3gaOEIhbC37qWpe8HrVEkdnj48xUyaUK03jm1zYFkhfA=="],
 
-    "remix-i18next": ["remix-i18next@6.4.1", "", { "peerDependencies": { "@remix-run/cloudflare": "^2.0.0", "@remix-run/deno": "^2.0.0", "@remix-run/node": "^2.0.0", "@remix-run/react": "^2.0.0", "i18next": "^23.1.0", "react": "^16.8.0 || ^17.0.0 || ^18.0.0", "react-i18next": "^13.0.0 || ^14.0.0 || ^15.0.0" }, "optionalPeers": ["@remix-run/cloudflare", "@remix-run/deno", "@remix-run/node"] }, "sha512-Ma4ESNj8uZmm/Fjq2ZHEbsGvYYO2rV1BtqwIFPAYUeitBaED+r0pNXktUzvsHEanvbFOZPAhEcp5f17vDslmeA=="],
+    "remix-i18next": ["remix-i18next@7.4.2", "", { "peerDependencies": { "i18next": "^24.0.0 || ^25.0.0", "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-i18next": "^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0", "react-router": "^7.0.0" } }, "sha512-k8IUyft4hXxJ6HNE+K2l29DXCvMywZJOC7jOw99Bb/Gh87i2umLiOGKV1Aiub6E+QflkTkd9/JgS2Jo5Ngw2VA=="],
 
     "remix-utils": ["remix-utils@7.7.0", "", { "dependencies": { "type-fest": "^4.18.1" }, "peerDependencies": { "@remix-run/cloudflare": "^2.0.0", "@remix-run/node": "^2.0.0", "@remix-run/react": "^2.0.0", "@remix-run/router": "^1.7.2", "crypto-js": "^4.1.1", "intl-parse-accept-language": "^1.0.0", "is-ip": "^5.0.1", "react": "^18.0.0", "zod": "^3.22.4" }, "optionalPeers": ["@remix-run/cloudflare", "@remix-run/node", "@remix-run/react", "@remix-run/router", "crypto-js", "intl-parse-accept-language", "is-ip", "react", "zod"] }, "sha512-J8NhP044nrNIam/xOT1L9a4RQ9FSaA2wyrUwmN8ZT+c/+CdAAf70yfaLnvMyKcV5U+8BcURQ/aVbth77sT6jGA=="],
 
@@ -3821,6 +3821,8 @@
     "remix-flat-routes/fs-extra": ["fs-extra@11.3.1", "", { "dependencies": { "graceful-fs": "^4.2.0", "jsonfile": "^6.0.1", "universalify": "^2.0.0" } }, "sha512-eXvGGwZ5CL17ZSwHWd3bbgk7UUpF6IFHtP57NYYakPvHOs8GDgDe5KJI36jIJzDkJ6eJjuzRA8eBQb6SkKue0g=="],
 
     "remix-flat-routes/minimatch": ["minimatch@10.0.3", "", { "dependencies": { "@isaacs/brace-expansion": "^5.0.0" } }, "sha512-IPZ167aShDZZUMdRk66cyQAW3qr0WzbHkPdMYa8bzZhlHhO3jALbKdxcaak7W9FfT2rZNpQuUu4Od7ILEpXSaw=="],
+
+    "remix-i18next/react-router": ["react-router@7.9.4", "", { "dependencies": { "cookie": "^1.0.1", "set-cookie-parser": "^2.6.0" }, "peerDependencies": { "react": ">=18", "react-dom": ">=18" }, "optionalPeers": ["react-dom"] }, "sha512-SD3G8HKviFHg9xj7dNODUKDFgpG4xqD5nhyd0mYoB5iISepuZAvzSr8ywxgxKJ52yRzf/HWtVHc9AWwoTbljvA=="],
 
     "restore-cursor/onetime": ["onetime@7.0.0", "", { "dependencies": { "mimic-function": "^5.0.0" } }, "sha512-VXJjc87FScF88uafS3JllDgvAm+c/Slfz06lorj2uAY34rlUu0Nt+v8wreiImcrgAjjIHp1rXpTDlLOGw29WwQ=="],
 
