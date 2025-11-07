@@ -16,8 +16,13 @@ import {
   FilterSource,
 } from '@app-builder/models/analytics';
 import { type Scenario } from '@app-builder/models/scenario';
-import { useGetAnalytics } from '@app-builder/queries/analytics/get-analytics';
-import { useGetAvailableFilters } from '@app-builder/queries/analytics/get-available-filters';
+import {
+  useGetAvailableFilters,
+  useGetDecisionsOutcomesPerDay,
+  useGetRuleHitTable,
+  useGetRuleVsDecisionOutcome,
+  useGetScreeningHitsTable,
+} from '@app-builder/queries/analytics';
 import { initServerServices } from '@app-builder/services/init.server';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -204,22 +209,20 @@ export default function Analytics() {
     return Array.from(descriptors.values());
   }, [availableFilters, seenAvailableFilters]);
 
-  const {
-    data: {
-      decisionOutcomesPerDay: decisionsData,
-      ruleHitTable: ruleHitTableData,
-      screeningHitsTable: screeningHitsTableData,
-      // decisionsScoreDistribution: decisionsScoreDistributionData,
-      ruleVsDecisionOutcome: ruleVsDecisionOutcomeData,
-    } = {
-      decisionOutcomesPerDay: null,
-      ruleHitTable: null,
-      screeningHitsTable: null,
-      // decisionsScoreDistribution: null,
-      ruleVsDecisionOutcome: null,
-    },
-    isFetching: isAnalyticsFetching,
-  } = useGetAnalytics({
+  const { data: decisionsOutcomesPerDayData, isFetching: isDecisionsOutcomesPerDayFetching } =
+    useGetDecisionsOutcomesPerDay({
+      scenarioId,
+      queryString: queryString ?? '',
+    });
+  const { data: ruleHitTableData, isFetching: isRuleHitTableFetching } = useGetRuleHitTable({
+    scenarioId,
+    queryString: queryString ?? '',
+  });
+  const { data: ruleVsDecisionOutcomeData, isFetching: isRuleVsDecisionOutcomeFetching } = useGetRuleVsDecisionOutcome({
+    scenarioId,
+    queryString: queryString ?? '',
+  });
+  const { data: screeningHitsTableData, isFetching: isScreeningHitsTableFetching } = useGetScreeningHitsTable({
     scenarioId,
     queryString: queryString ?? '',
   });
@@ -375,9 +378,9 @@ export default function Analytics() {
             <div className="flex flex-row gap-v2-md w-full items-stretch">
               <div className="basis-full min-w-0">
                 <Decisions
-                  data={decisionsData as DecisionOutcomesPerPeriod}
+                  data={decisionsOutcomesPerDayData as DecisionOutcomesPerPeriod}
                   scenarioVersions={scenarioVersions}
-                  isLoading={isAnalyticsFetching}
+                  isLoading={isDecisionsOutcomesPerDayFetching}
                 />
               </div>
               {/* <div className="basis-1/4 min-w-0">
@@ -385,9 +388,12 @@ export default function Analytics() {
               </div> */}
             </div>
 
-            <RulesHit data={ruleHitTableData ?? []} isLoading={isAnalyticsFetching} />
-            <RuleVsDecisionOutcomes data={ruleVsDecisionOutcomeData ?? null} isLoading={isAnalyticsFetching} />
-            <ScreeningHits data={screeningHitsTableData ?? []} isLoading={isAnalyticsFetching} />
+            <RulesHit data={ruleHitTableData ?? []} isLoading={isRuleHitTableFetching} />
+            <RuleVsDecisionOutcomes
+              data={ruleVsDecisionOutcomeData ?? null}
+              isLoading={isRuleVsDecisionOutcomeFetching}
+            />
+            <ScreeningHits data={screeningHitsTableData ?? []} isLoading={isScreeningHitsTableFetching} />
           </div>
         </div>
       </I18nProvider>
