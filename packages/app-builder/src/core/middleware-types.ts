@@ -84,3 +84,7 @@ export type RemixDataFunctionArgs = {
 };
 
 export type TypedResponse<T = unknown> = T extends Response ? T : Omit<Response, 'json'> & { json(): Promise<T> };
+
+export type ResponseReturnType<T = unknown> = T extends (...args: any[]) => Promise<TypedResponse<infer R>>
+  ? Awaited<ReturnType<TypedResponse<R>['json']>>
+  : any;
