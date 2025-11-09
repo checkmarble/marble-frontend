@@ -762,6 +762,21 @@ export const routes = [
         "file": "routes/ressources+/scenarios+/create.tsx"
       },
       {
+        "id": "routes/ressources+/scenarios+/edit-rule.$ruleId",
+        "path": "ressources/scenarios/edit-rule/:ruleId",
+        "file": "routes/ressources+/scenarios+/edit-rule.$ruleId.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/iteration+/$iterationId.edit-score-thresholds",
+        "path": "ressources/scenarios/iteration/:iterationId/edit-score-thresholds",
+        "file": "routes/ressources+/scenarios+/iteration+/$iterationId.edit-score-thresholds.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/iteration+/$iterationId.edit-trigger",
+        "path": "ressources/scenarios/iteration/:iterationId/edit-trigger",
+        "file": "routes/ressources+/scenarios+/iteration+/$iterationId.edit-trigger.tsx"
+      },
+      {
         "id": "routes/ressources+/scenarios+/iteration+/$iterationId.get-rules",
         "path": "ressources/scenarios/iteration/:iterationId/get-rules",
         "file": "routes/ressources+/scenarios+/iteration+/$iterationId.get-rules.tsx"
