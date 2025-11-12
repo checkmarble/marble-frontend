@@ -5,9 +5,9 @@ import {
   DecisionOutcomesPerPeriod,
   type DecisionsFilter,
   type Outcome,
-  outcomeColors,
   type RangeId,
 } from '@app-builder/models/analytics';
+import { OUTCOME_COLORS } from '@app-builder/routes/_builder+/_analytics+/analytics.$scenarioId';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { getWeek, getYear } from 'date-fns';
@@ -131,7 +131,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
 
   const getBarColors = (d: ComputedDatum<DecisionsPerOutcome>) => {
     const id = String(d.id) as 'approve' | 'decline' | 'review' | 'blockAndReview';
-    return outcomeColors[id] ?? '#9ca3af';
+    return OUTCOME_COLORS[id] ?? '#9ca3af';
   };
 
   const getTootlipDateFormat = (date: string) => {

@@ -9,6 +9,7 @@ import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationC
 import type {
   DateRangeFilter as AnalyticsDateRangeFilter,
   AvailableFiltersResponse,
+  Outcome,
 } from '@app-builder/models/analytics';
 import { type AnalyticsFiltersQuery, analyticsFiltersQuery, FilterSource } from '@app-builder/models/analytics';
 import { type Scenario } from '@app-builder/models/scenario';
@@ -44,6 +45,13 @@ interface LoaderData {
 }
 
 import { useRef } from 'react';
+
+export const OUTCOME_COLORS: Record<Outcome, string> = {
+  approve: '#46BB7F',
+  review: '#FDBD35',
+  blockAndReview: '#FF8533',
+  decline: '#DB5F4A',
+};
 
 export const handle = {
   i18n: ['navigation', 'filters', 'analytics'] satisfies Namespace,

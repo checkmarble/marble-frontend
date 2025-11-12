@@ -1,6 +1,7 @@
 import { Spinner } from '@app-builder/components/Spinner';
-import { type DecisionsFilter, type Outcome, outcomeColors } from '@app-builder/models/analytics';
+import { type DecisionsFilter, type Outcome } from '@app-builder/models/analytics';
 import { RuleVsDecisionOutcome } from '@app-builder/models/analytics/rule-vs-decision-outcome';
+import { OUTCOME_COLORS } from '@app-builder/routes/_builder+/_analytics+/analytics.$scenarioId';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { useMemo, useState } from 'react';
@@ -42,7 +43,7 @@ export function RuleVsDecisionOutcomes({
 
   const getBarColors = (d: ComputedDatum<RuleVsDecisionOutcome>) => {
     const id = String(d.id) as Outcome;
-    return outcomeColors[id] ?? '#9ca3af';
+    return OUTCOME_COLORS[id] ?? '#9ca3af';
   };
 
   const MAX_RULE_NAME_LENGTH = 42;
