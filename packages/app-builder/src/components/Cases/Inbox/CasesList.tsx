@@ -112,7 +112,7 @@ export function CasesList({
             <div className="p-v2-md">
               {caseItem.outcome && caseItem.outcome !== 'unset' ? (
                 <span
-                  className={cn('rounded-full border px-v2-sm py-v2-xs text-small', {
+                  className={cn('rounded-full border px-v2-sm py-v2-xs text-small text-nowrap', {
                     'border-red-47 text-red-47': caseItem.outcome === 'confirmed_risk',
                     'border-green-38 text-green-38': caseItem.outcome === 'valuable_alert',
                     'border-grey-50 text-grey-50': caseItem.outcome === 'false_positive',
