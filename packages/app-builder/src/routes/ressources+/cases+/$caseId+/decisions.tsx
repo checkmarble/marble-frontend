@@ -7,7 +7,7 @@ import { z } from 'zod/v4';
 
 const paginationSchema = z.object({
   limit: z.coerce.number().optional(),
-  cursorId: z.union([z.string(), z.coerce.number()]).optional(),
+  cursorId: z.string().optional(),
 });
 
 export async function loader({ request, params }: LoaderFunctionArgs) {

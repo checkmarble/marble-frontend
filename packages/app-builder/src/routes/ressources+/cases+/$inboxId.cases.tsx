@@ -3,6 +3,7 @@ import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { createServerFn, data } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
+import { caseStatuses } from '@app-builder/models/cases';
 import { filtersSchema } from '@app-builder/queries/cases/get-cases';
 import { badRequest } from '@app-builder/utils/http/http-responses';
 import { parseQuerySafe } from '@app-builder/utils/input-validation';
@@ -23,10 +24,12 @@ export const loader = createServerFn(
     }
     const filterInboxIds = inboxId === MY_INBOX_ID ? undefined : [inboxId];
     const assigneeIdFilter = parsedQuery.data.assignee ? { assigneeId: parsedQuery.data.assignee } : {};
+    const statusesFilter = parsedQuery.data.statuses ?? caseStatuses.filter((status) => status !== 'closed');
 
     const cases = await caseRepository.listCases({
       ...parsedQuery.data,
       ...parsedPagination.data,
+      statuses: statusesFilter,
       inboxIds: filterInboxIds,
       ...(filterInboxIds === undefined ? { assigneeId: user.actorIdentity.userId } : assigneeIdFilter),
     });

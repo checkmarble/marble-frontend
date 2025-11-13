@@ -95,14 +95,19 @@ export async function parseParams<Output>(params: Params, schema: ZodType<Output
 /**
  * Parse and validate a Request. Doesn't throw if validation fails.
  */
-export async function parseQuerySafe<Output>(request: Request, schema: ZodType<Output, any, any>) {
+type ParseQuerySafeResult<Output> =
+  | z.ZodSafeParseSuccess<Output>
+  | (z.ZodSafeParseError<Output> & { searchParams: Record<string, unknown> });
+
+export async function parseQuerySafe<T extends ZodType>(
+  request: Request,
+  schema: T,
+): Promise<ParseQuerySafeResult<z.output<T>>> {
   const searchParams = inputFromUrl(request);
   const result = await schema.safeParseAsync(searchParams);
+
   if (!result.success) {
-    return {
-      ...result,
-      searchParams,
-    };
+    return { ...result, searchParams };
   }
   return result;
 }
