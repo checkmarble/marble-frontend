@@ -1,12 +1,12 @@
 import { MultiSelect } from '@app-builder/components/MultiSelect';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
-import { formatDateRelative } from '@app-builder/utils/format';
+import { formatDateRelative, formatDateTimeWithoutPresets } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { MouseEventHandler, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, cn } from 'ui-design-system';
+import { Checkbox, cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CaseStatusBadge } from '../CaseStatus';
 import { AssignedContributors } from './AssignedContributors';
@@ -57,13 +57,7 @@ export function CasesList({
         <div className="grid grid-cols-subgrid col-span-full items-center group/table-row not-last:border-b border-grey-border">
           <HeaderCell className="ps-v2-xl relative col-span-2">
             <MultiSelect.Global>
-              {(state, onSelect) => (
-                <Checkbox
-                  checked={state}
-                  onClick={onSelect}
-                  className="absolute left-0 top-[50%] translate-[-50%] opacity-0 group-hover/table-row:opacity-100 data-[state=checked]:opacity-100 data-[state=indeterminate]:opacity-100"
-                />
-              )}
+              {(state, onSelect) => <SelectionCheckbox selectionState={state} onSelect={onSelect} />}
             </MultiSelect.Global>
             {t('cases:inbox.heading.status')}
           </HeaderCell>
@@ -96,13 +90,7 @@ export function CasesList({
             </div>
             <div className="relative p-v2-md ps-v2-xl w-25">
               <MultiSelect.Item index={index} id={caseItem.id} item={caseItem}>
-                {(isSelected, onSelect) => (
-                  <Checkbox
-                    checked={isSelected}
-                    onClick={onSelect}
-                    className="absolute left-0 top-[50%] translate-[-50%] opacity-0 group-hover/table-row:opacity-100 data-[state=checked]:opacity-100"
-                  />
-                )}
+                {(isSelected, onSelect) => <SelectionCheckbox selectionState={isSelected} onSelect={onSelect} />}
               </MultiSelect.Item>
               <CaseStatusBadge status={caseItem.status} size="large" showText={false} />
             </div>
@@ -112,7 +100,7 @@ export function CasesList({
             <div className="p-v2-md">
               {caseItem.outcome && caseItem.outcome !== 'unset' ? (
                 <span
-                  className={cn('rounded-full border px-v2-sm py-v2-xs text-small', {
+                  className={cn('rounded-full border px-v2-sm py-v2-xs text-small text-nowrap', {
                     'border-red-47 text-red-47': caseItem.outcome === 'confirmed_risk',
                     'border-green-38 text-green-38': caseItem.outcome === 'valuable_alert',
                     'border-grey-50 text-grey-50': caseItem.outcome === 'false_positive',
@@ -124,7 +112,17 @@ export function CasesList({
                 '-'
               )}
             </div>
-            <div className="p-v2-md">{formatDateRelative(caseItem.createdAt, { language })}</div>
+            <div className="p-v2-md">
+              <Tooltip.Default
+                content={formatDateTimeWithoutPresets(caseItem.createdAt, {
+                  language,
+                  dateStyle: 'long',
+                  timeStyle: 'short',
+                })}
+              >
+                <time dateTime={caseItem.createdAt}>{formatDateRelative(caseItem.createdAt, { language })}</time>
+              </Tooltip.Default>
+            </div>
             <div className="p-v2-md flex gap-v2-sm">
               {caseItem.tags.map((tagItem) => {
                 const tag = orgTags.find((tag) => tag.id === tagItem.tagId);
@@ -163,3 +161,19 @@ const TagPreview = ({ name }: { name: string }) => (
     <span className="text-purple-65 text-xs font-normal">{name}</span>
   </div>
 );
+
+type SelectionCheckboxProps = {
+  selectionState: boolean | 'indeterminate';
+  onSelect: MouseEventHandler;
+};
+
+const SelectionCheckbox = ({ selectionState, onSelect }: SelectionCheckboxProps) => {
+  return (
+    <div
+      className="group/checkbox-parent absolute left-0 top-[50%] translate-[-50%] p-v2-md opacity-0 group-hover/table-row:opacity-100 has-data-[state=checked]:opacity-100"
+      onClick={onSelect}
+    >
+      <Checkbox checked={selectionState} />
+    </div>
+  );
+};

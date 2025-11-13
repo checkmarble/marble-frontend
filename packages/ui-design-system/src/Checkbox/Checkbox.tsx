@@ -8,7 +8,7 @@ export type { CheckedState } from '@radix-ui/react-checkbox';
 const checkbox = cva(
   [
     'flex shrink-0 items-center justify-center rounded-sm border outline-hidden',
-    'bg-grey-100 hover:bg-purple-98 enabled:radix-state-checked:border-none enabled:radix-state-checked:bg-purple-65',
+    'bg-grey-100 hover:bg-purple-98 group-hover/checkbox-parent:bg-purple-98 enabled:radix-state-checked:border-none enabled:radix-state-checked:bg-purple-65',
     'disabled:bg-grey-90 disabled:border-grey-80 disabled:radix-state-checked:border disabled:radix-state-checked:bg-grey-90 disabled:cursor-not-allowed',
   ],
   {
