@@ -1,12 +1,12 @@
 import { MultiSelect } from '@app-builder/components/MultiSelect';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
-import { formatDateRelative } from '@app-builder/utils/format';
+import { formatDateRelative, formatDateTimeWithoutPresets } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
 import { MouseEventHandler, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Checkbox, cn } from 'ui-design-system';
+import { Checkbox, cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CaseStatusBadge } from '../CaseStatus';
 import { AssignedContributors } from './AssignedContributors';
@@ -112,7 +112,17 @@ export function CasesList({
                 '-'
               )}
             </div>
-            <div className="p-v2-md">{formatDateRelative(caseItem.createdAt, { language })}</div>
+            <div className="p-v2-md">
+              <Tooltip.Default
+                content={formatDateTimeWithoutPresets(caseItem.createdAt, {
+                  language,
+                  dateStyle: 'long',
+                  timeStyle: 'short',
+                })}
+              >
+                <time dateTime={caseItem.createdAt}>{formatDateRelative(caseItem.createdAt, { language })}</time>
+              </Tooltip.Default>
+            </div>
             <div className="p-v2-md flex gap-v2-sm">
               {caseItem.tags.map((tagItem) => {
                 const tag = orgTags.find((tag) => tag.id === tagItem.tagId);

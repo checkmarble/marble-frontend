@@ -22,12 +22,13 @@ export const loader = createServerFn(
       throw badRequest('Invalid query');
     }
     const filterInboxIds = inboxId === MY_INBOX_ID ? undefined : [inboxId];
+    const assigneeIdFilter = parsedQuery.data.assignee ? { assigneeId: parsedQuery.data.assignee } : {};
 
     const cases = await caseRepository.listCases({
       ...parsedQuery.data,
       ...parsedPagination.data,
       inboxIds: filterInboxIds,
-      ...(filterInboxIds === undefined ? { assigneeId: user.actorIdentity.userId } : {}),
+      ...(filterInboxIds === undefined ? { assigneeId: user.actorIdentity.userId } : assigneeIdFilter),
     });
 
     return data({ data: cases });
