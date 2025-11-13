@@ -57,13 +57,7 @@ export function CasesList({
         <div className="grid grid-cols-subgrid col-span-full items-center group/table-row not-last:border-b border-grey-border">
           <HeaderCell className="ps-v2-xl relative col-span-2">
             <MultiSelect.Global>
-              {(state, onSelect) => (
-                <Checkbox
-                  checked={state}
-                  onClick={onSelect}
-                  className="absolute left-0 top-[50%] translate-[-50%] opacity-0 group-hover/table-row:opacity-100 data-[state=checked]:opacity-100 data-[state=indeterminate]:opacity-100"
-                />
-              )}
+              {(state, onSelect) => <SelectionCheckbox selectionState={state} onSelect={onSelect} />}
             </MultiSelect.Global>
             {t('cases:inbox.heading.status')}
           </HeaderCell>
@@ -96,13 +90,7 @@ export function CasesList({
             </div>
             <div className="relative p-v2-md ps-v2-xl w-25">
               <MultiSelect.Item index={index} id={caseItem.id} item={caseItem}>
-                {(isSelected, onSelect) => (
-                  <Checkbox
-                    checked={isSelected}
-                    onClick={onSelect}
-                    className="absolute left-0 top-[50%] translate-[-50%] opacity-0 group-hover/table-row:opacity-100 data-[state=checked]:opacity-100"
-                  />
-                )}
+                {(isSelected, onSelect) => <SelectionCheckbox selectionState={isSelected} onSelect={onSelect} />}
               </MultiSelect.Item>
               <CaseStatusBadge status={caseItem.status} size="large" showText={false} />
             </div>
@@ -163,3 +151,19 @@ const TagPreview = ({ name }: { name: string }) => (
     <span className="text-purple-65 text-xs font-normal">{name}</span>
   </div>
 );
+
+type SelectionCheckboxProps = {
+  selectionState: boolean | 'indeterminate';
+  onSelect: MouseEventHandler;
+};
+
+const SelectionCheckbox = ({ selectionState, onSelect }: SelectionCheckboxProps) => {
+  return (
+    <div
+      className="group/checkbox-parent absolute left-0 top-[50%] translate-[-50%] p-v2-md opacity-0 group-hover/table-row:opacity-100 has-data-[state=checked]:opacity-100"
+      onClick={onSelect}
+    >
+      <Checkbox checked={selectionState} />
+    </div>
+  );
+};
