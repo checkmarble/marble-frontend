@@ -8,6 +8,7 @@ import { DEFAULT_CASE_PAGINATION_SIZE } from '@app-builder/repositories/CaseRepo
 import { getRoute } from '@app-builder/utils/routes';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useLoaderData } from '@remix-run/react';
+import { SerializeFrom } from '@remix-run/server-runtime/dist/single-fetch';
 import { Namespace } from 'i18next';
 import QueryString from 'qs';
 import { useTranslation } from 'react-i18next';
@@ -27,11 +28,14 @@ export const handle = {
         </BreadCrumbLink>
       );
     },
-    ({ isLast }: BreadCrumbProps) => {
-      const { t } = useTranslation(['navigation']);
+    ({ isLast, data }: BreadCrumbProps<SerializeFrom<typeof loader>>) => {
+      const { t } = useTranslation(['navigation', 'cases']);
+      const currentInboxName = data.currentInbox?.name ?? t('cases:inbox.my-inbox.link');
+      const currentInboxId = data.currentInbox ? fromUUIDtoSUUID(data.currentInbox.id) : MY_INBOX_ID;
+
       return (
-        <BreadCrumbLink to={getRoute('/cases/inboxes')} isLast={isLast}>
-          {t('navigation:case_manager.cases')}
+        <BreadCrumbLink to={getRoute('/cases/inboxes/:inboxId', { inboxId: currentInboxId })} isLast={isLast}>
+          {currentInboxName}
         </BreadCrumbLink>
       );
     },
@@ -47,10 +51,11 @@ const pageQueryStringSchema = z.object({
 export const loader = createServerFn([authMiddleware], async function casesInboxesLoader({ request, params, context }) {
   const { inbox: inboxRepository } = context.authInfo;
   const inboxes = await inboxRepository.listInboxesWithCaseCount();
-  const inboxId = params['inboxId'];
+  const inboxIdParam = params['inboxId'];
 
-  invariant(inboxId, 'inboxId is required');
+  invariant(inboxIdParam, 'inboxId is required');
 
+  const inboxId = inboxIdParam === MY_INBOX_ID ? inboxIdParam : fromSUUIDtoUUID(inboxIdParam);
   let inboxUsersIds: string[] = [];
   let currentInbox = inboxes.find((inbox) => inbox.id === inboxId);
   if (currentInbox) {
@@ -62,7 +67,8 @@ export const loader = createServerFn([authMiddleware], async function casesInbox
   const parsedSearchParams = pageQueryStringSchema.parse(Object.fromEntries(searchParams));
 
   return {
-    inboxId: inboxId === MY_INBOX_ID ? inboxId : fromSUUIDtoUUID(inboxId),
+    inboxId,
+    currentInbox,
     inboxes,
     inboxUsersIds,
     query: parsedSearchParams.q,
