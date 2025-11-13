@@ -27,6 +27,7 @@ type MenuCommandContextValue = {
   persistOnSelect: boolean;
   onSelect: () => void;
   hasCombobox: boolean;
+  listeners: (() => void)[];
 };
 export const InternalMenuSharpFactory = createSharpFactory({
   name: 'InternalMenu',
@@ -35,7 +36,19 @@ export const InternalMenuSharpFactory = createSharpFactory({
     persistOnSelect: boolean;
     onSelect: () => void;
   }): MenuCommandContextValue => {
-    return { ...initialState, hasCombobox: false };
+    return { ...initialState, hasCombobox: false, listeners: [] };
+  },
+}).withActions({
+  closeAllSubmenus(api) {
+    api.value.listeners.forEach((listener) => {
+      listener();
+    });
+  },
+  addListener(api, listener: () => void) {
+    api.value.listeners.push(listener);
+    return () => {
+      api.value.listeners = api.value.listeners.filter((l) => l !== listener);
+    };
   },
 });
 
@@ -122,7 +135,22 @@ function SubMenu({
   disabled = false,
   ...props
 }: SubMenuProps) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpenImperative] = React.useState(false);
+  const internalSharp = InternalMenuSharpFactory.useSharp();
+  const setOpen = (open: boolean) => {
+    if (!hover && !open) {
+      return;
+    }
+    setOpenImperative(open);
+  };
+  const listener = useCallbackRef(() => {
+    setOpenImperative(false);
+  });
+
+  React.useEffect(() => {
+    return internalSharp.actions.addListener(listener);
+  }, []);
+
   return (
     <Command.Group forceMount={forceMount}>
       <Root {...props} hover={hover} open={open} onOpenChange={setOpen}>
@@ -131,7 +159,12 @@ function SubMenu({
             disabled={disabled}
             className={cn('group/menu-item flex w-full items-center justify-between')}
             onSelect={() => {
-              setOpen(true);
+              if (!hover) {
+                internalSharp.actions.closeAllSubmenus();
+              }
+              if (!open) {
+                setOpenImperative(true);
+              }
             }}
           >
             {trigger}
