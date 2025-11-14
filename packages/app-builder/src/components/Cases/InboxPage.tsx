@@ -9,11 +9,12 @@ import { useBase64Query } from '@app-builder/hooks/useBase64Query';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { Case } from '@app-builder/models/cases';
 import { InboxWithCasesCount } from '@app-builder/models/inbox';
+import { PaginatedResponse } from '@app-builder/models/pagination';
 import { filtersSchema, useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
 import { useMassUpdateCasesMutation } from '@app-builder/queries/cases/mass-update';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2, cn, Input } from 'ui-design-system';
@@ -77,6 +78,26 @@ export const InboxPage = ({
     threshold: 1,
   });
   const isSubsequentlyFetching = casesQuery.isFetchingNextPage || (casesQuery.isFetching && !casesQuery.isPending);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  // region: To avoid flickering the results only reset the current page when data arrives (only on filters or inbox change)
+  const lastFirstPageResultRef = useRef<PaginatedResponse<Case> | undefined>();
+  const hasChangedFiltersOrInboxRef = useRef(false);
+
+  useEffect(() => {
+    hasChangedFiltersOrInboxRef.current = true;
+  }, [inboxId, query]);
+
+  useEffect(() => {
+    if (lastFirstPageResultRef.current !== casesQuery.data?.pages[0]) {
+      lastFirstPageResultRef.current = casesQuery.data?.pages[0];
+      if (hasChangedFiltersOrInboxRef.current) {
+        hasChangedFiltersOrInboxRef.current = false;
+        setCurrentPage(0);
+      }
+    }
+  }, [casesQuery.data?.pages[0]]);
+  // endregion
 
   const onMassUpdateCases: MassUpdateCasesFn = (items, params) => {
     const caseIds = items.map((item) => item.id);
@@ -181,6 +202,8 @@ export const InboxPage = ({
                         setLimit={(newLimit) => updatePage(query, newLimit, order)}
                         onSortingChange={(newOrder) => updatePage(query, limit, newOrder)}
                         isPaginationSticky={!(intersection?.isIntersecting ?? true)}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
                       />
                     );
                   })

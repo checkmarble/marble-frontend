@@ -4,7 +4,7 @@ import { formatDateRelative, formatDateTimeWithoutPresets } from '@app-builder/u
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
-import { MouseEventHandler, useEffect, useRef, useState } from 'react';
+import { MouseEventHandler, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Checkbox, cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -19,6 +19,8 @@ export type CasesListProps = {
   limit: number;
   setLimit: (limit: number) => void;
   isPaginationSticky: boolean;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
 };
 
 const handleRowClick: MouseEventHandler = (e) => {
@@ -35,13 +37,14 @@ export function CasesList({
   limit,
   setLimit,
   isPaginationSticky,
+  currentPage,
+  setCurrentPage,
 }: CasesListProps) {
   const {
     t,
     i18n: { language },
   } = useTranslation(['cases']);
   const lastPageRef = useRef<number>(0);
-  const [currentPage, setCurrentPage] = useState(0);
   const cases = casesQuery.data?.pages[currentPage]?.items ?? casesQuery.data?.pages[lastPageRef.current]?.items ?? [];
   const { orgTags } = useOrganizationTags();
 
