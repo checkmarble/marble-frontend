@@ -112,6 +112,11 @@ export const routes = [
             "file": "routes/_builder+/cases+/inboxes.index.tsx"
           },
           {
+            "id": "routes/_builder+/cases+/overview",
+            "path": "cases/overview",
+            "file": "routes/_builder+/cases+/overview.tsx"
+          },
+          {
             "id": "routes/_builder+/data+/_layout",
             "path": "data",
             "file": "routes/_builder+/data+/_layout.tsx",
@@ -394,6 +399,16 @@ export const routes = [
         "id": "routes/ressources+/analytics+/$scenarioId+/query.$queryName",
         "path": "ressources/analytics/:scenarioId/query/:queryName",
         "file": "routes/ressources+/analytics+/$scenarioId+/query.$queryName.ts"
+      },
+      {
+        "id": "routes/ressources+/analytics+/case-status-by-date",
+        "path": "ressources/analytics/case-status-by-date",
+        "file": "routes/ressources+/analytics+/case-status-by-date.tsx"
+      },
+      {
+        "id": "routes/ressources+/analytics+/case-status-by-inbox",
+        "path": "ressources/analytics/case-status-by-inbox",
+        "file": "routes/ressources+/analytics+/case-status-by-inbox.tsx"
       },
       {
         "id": "routes/ressources+/annotations+/download-file.$annotationId.$fileId",
