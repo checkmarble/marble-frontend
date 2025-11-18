@@ -25,6 +25,7 @@ import { Icon } from 'ui-icons';
 import { Spinner } from '../Spinner';
 import { BatchActions, MassUpdateCasesFn } from './Inbox/BatchActions';
 import { SelectCaseById } from './Inbox/SelectCaseById';
+import { CasesNavigationTabs } from './Navigation/Tabs';
 
 const ALLOWED_FILTERS = ['dateRange', 'statuses', 'includeSnoozed', 'excludeAssigned', 'assignee'] as const;
 const EXCLUDED_FILTERS = ['excludeAssigned', 'assignee'] as const;
@@ -134,6 +135,7 @@ export const InboxPage = ({
       <CaseRightPanel.Root className="overflow-hidden">
         <Page.Container ref={wrapperRef}>
           <Page.ContentV2 className="bg-white gap-v2-md">
+            <CasesNavigationTabs />
             <div className="flex flex-col gap-v2-md relative">
               <MultiSelect.Root id={inboxId}>
                 <div className="flex justify-between">

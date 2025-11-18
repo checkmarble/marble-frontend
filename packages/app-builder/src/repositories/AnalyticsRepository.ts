@@ -20,6 +20,8 @@ import {
   adaptAvailableFiltersResponse,
   transformAvailableFiltersRequest,
 } from '@app-builder/models/analytics/available-filters';
+import { adaptCaseStatusByInbox, CaseStatusByInboxResponse } from '@app-builder/models/analytics/case-status-by-inbox';
+import { adaptCaseStatusByDate, CaseStatusByDateResponse } from '@app-builder/models/analytics/cases-status-by-date';
 import { adaptRuleHitTable, RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 import { adaptScreeningHitTable, ScreeningHitTableResponse } from '@app-builder/models/analytics/screening-hit';
 
@@ -72,6 +74,8 @@ export interface AnalyticsRepository {
   getScreeningHitsTable(args: AnalyticsQuery): Promise<ScreeningHitTableResponse[] | null>;
   getDecisionsScoreDistribution(args: AnalyticsQuery): Promise<DecisionsScoreDistribution>;
   getRuleVsDecisionOutcome(args: AnalyticsQuery): Promise<RuleVsDecisionOutcome[] | null>;
+  getCaseStatusByDate(): Promise<CaseStatusByDateResponse[] | null>;
+  getCaseStatusByInbox(): Promise<CaseStatusByInboxResponse[] | null>;
   getAvailableFilters(args: AvailableFiltersRequest): Promise<AvailableFiltersResponse>;
 }
 
@@ -150,6 +154,14 @@ export function makeGetAnalyticsRepository() {
       if (!parsed.length) throw new Error('No date range provided');
 
       return adaptRuleVsDecisionOutcome(await client.getRuleVsDecisionOutcome(parsed[0]!));
+    },
+
+    getCaseStatusByDate: async (): Promise<CaseStatusByDateResponse[] | null> => {
+      return (await client.getCaseStatusByDate()).map(adaptCaseStatusByDate);
+    },
+
+    getCaseStatusByInbox: async (): Promise<CaseStatusByInboxResponse[] | null> => {
+      return (await client.getCaseStatusByInbox()).map(adaptCaseStatusByInbox);
     },
 
     getAvailableFilters: async (args: AvailableFiltersRequest): Promise<AvailableFiltersResponse> => {

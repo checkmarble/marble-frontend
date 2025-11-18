@@ -491,5 +491,9 @@ DecisionsScoreDistributionResponseDto:
   $ref: analytics.yml#/components/schemas/DecisionsScoreDistributionResponseDto
 RuleVsDecisionOutcomeResponseDto:
   $ref: analytics.yml#/components/schemas/RuleVsDecisionOutcomeResponseDto
+CaseStatusByDateResponseDto:
+  $ref: analytics.yml#/components/schemas/CaseStatusByDateResponseDto
+CaseStatusByInboxResponseDto:
+  $ref: analytics.yml#/components/schemas/CaseStatusByInboxResponseDto
 AvailableFiltersResponseDto:
   $ref: analytics.yml#/components/schemas/AvailableFiltersResponseDto
