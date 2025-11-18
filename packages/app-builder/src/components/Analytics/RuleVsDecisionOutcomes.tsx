@@ -78,9 +78,15 @@ export function RuleVsDecisionOutcomes({
     a.remove();
     URL.revokeObjectURL(url);
   };
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="mt-v2-xl">
+    <div
+      className="mt-v2-xl"
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+    >
       <div className="flex items-center justify-between">
         <h2 className="text-h2 font-semibold">{t('analytics:rule_vs_decision_outcomes.title')}</h2>
         <ButtonV2
@@ -160,7 +166,7 @@ export function RuleVsDecisionOutcomes({
               />
             </div>
             <div className="flex w-full justify-center">
-              <OutcomeFilter decisions={decisions} onChange={setDecisions} />
+              <OutcomeFilter decisions={decisions} onChange={setDecisions} highlight={isHovered} />
             </div>
           </div>
         ) : (

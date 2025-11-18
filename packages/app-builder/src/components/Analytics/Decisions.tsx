@@ -56,6 +56,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
   const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
   const [percentage, setPercentage] = useState(false);
   const [groupDate, setGroupDate] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [isHovered, setIsHovered] = useState(false);
 
   const currentDataGroup = useMemo(() => data?.[groupDate], [data, groupDate]);
 
@@ -228,7 +229,11 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
   };
 
   return (
-    <div>
+    <div
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+    >
       <div className="flex items-center justify-between">
         <h2 className="text-h2 font-semibold">{t('analytics:decisions.title')}</h2>
         <ButtonV2
@@ -392,7 +397,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
             </div>
           </div>
           <div className="flex w-full justify-center">
-            <OutcomeFilter decisions={decisions} onChange={setDecisions} />
+            <OutcomeFilter decisions={decisions} onChange={setDecisions} highlight={isHovered} />
           </div>
         </div>
       </div>
