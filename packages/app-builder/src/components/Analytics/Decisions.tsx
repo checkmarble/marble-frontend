@@ -181,6 +181,13 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     }
   };
 
+  const getOutcomeTranslationKey = (outcome: Outcome): string => {
+    if (outcome === 'blockAndReview') {
+      return 'decisions:outcome.block_and_review';
+    }
+    return `decisions:outcome.${outcome}`;
+  };
+
   const getXTickValues = () => {
     if (!currentDataGroup?.gridXValues) {
       return [];
@@ -342,16 +349,47 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                   });
                 },
               }}
-              tooltip={({ id, value, data }) => (
-                <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
-                  <div className="flex items-center gap-v2-sm">
-                    <strong className="text-grey-00 font-semibold">
-                      {id}: {percentage ? `${value.toFixed(1)}%` : value}
-                    </strong>
+              tooltip={({ data }) => {
+                const outcomes: Outcome[] = ['approve', 'decline', 'review', 'blockAndReview'];
+                const totalValue = !percentage && typeof data.total === 'number' ? data.total : undefined;
+                return (
+                  <div className="flex flex-col gap-v2-xs bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm">
+                    <div className="text-s text-grey-60 mb-v2-xs">{getTootlipDateFormat(data?.date)}</div>
+                    <div className="flex flex-col gap-v2-xs">
+                      {outcomes.map((outcome) => {
+                        const outcomeValue = data?.[outcome] ?? 0;
+                        const displayValue = percentage ? `${outcomeValue.toFixed(1)}%` : outcomeValue;
+                        return (
+                          <div key={outcome} className="flex items-center gap-v2-sm whitespace-nowrap">
+                            <div
+                              className="size-3 rounded-sm flex-shrink-0"
+                              style={{ backgroundColor: OUTCOME_COLORS[outcome] }}
+                            />
+                            <span className="text-s text-grey-00">
+                              {t(getOutcomeTranslationKey(outcome))}:{' '}
+                              <strong className="font-semibold">{displayValue}</strong>
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {!percentage && totalValue !== undefined && (
+                      <div className="flex items-center gap-v2-sm pt-v2-xs border-t border-grey-90 mt-v2-xs">
+                        <span className="text-s text-grey-00 font-semibold">
+                          {t('analytics:decisions.tooltip.total', { defaultValue: 'Total' })}: {totalValue}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  <div className="text-s text-grey-60">{getTootlipDateFormat(data?.date)}</div>
-                </div>
-              )}
+                );
+              }}
+              theme={{
+                tooltip: {
+                  container: {
+                    transform: 'translateX(16px)',
+                  },
+                },
+              }}
               layout="vertical"
               motionConfig={{
                 mass: 1,
