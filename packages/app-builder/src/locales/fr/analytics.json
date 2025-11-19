@@ -5,6 +5,7 @@
   "decisions.tooltip.daily": "Date: {{date}}",
   "decisions.tooltip.weekly": "Semaine du {{date}} <Br/>(Semaine {{weekNumber}})",
   "filters.select_comparison_date_range.placeholder": "Ajouter une période à comparer",
+  "legacy-analytics-link": "Voir les métriques sur les investigations",
   "no_data": "Aucun donnée disponible",
   "rule_hits.columns.hit_count": "# d'activations",
   "rule_hits.columns.hit_count.tooltip": "Nombre de fois que la règle a été activée",

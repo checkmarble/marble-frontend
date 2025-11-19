@@ -5,6 +5,7 @@
   "decisions.tooltip.daily": "التاريخ: {{date}}",
   "decisions.tooltip.weekly": "أسبوع {{date}} <Br/>(الأسبوع {{weekNumber}})",
   "filters.select_comparison_date_range.placeholder": "إضافة فترة للمقارنة",
+  "legacy-analytics-link": "عرض التحليلات القديمة",
   "no_data": "لا يوجد بيانات",
   "rule_hits.columns.hit_count": "# مرات التطابق",
   "rule_hits.columns.hit_count.tooltip": "عدد مرات التطابق",
