@@ -18,7 +18,6 @@ function createAnalyticsQuery<TData>(queryName: string) {
       scenarioId,
       queryName,
     });
-    console.log('endpoint', endpoint);
     const qs = queryString ? atob(queryString) : null;
     const parsed: AnalyticsFiltersQuery = JSON.parse(qs || '{}');
 
