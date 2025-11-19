@@ -83,7 +83,7 @@ function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderG
               <Table.TH header={header} key={header.id}>
                 {header.isPlaceholder ? null : (
                   <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
-                    <p className="flex flex-1">{flexRender(header.column.columnDef.header, context)}</p>
+                    <div className="flex flex-1">{flexRender(header.column.columnDef.header, context)}</div>
                     {{
                       asc: <Icon icon="arrow-2-up" className="size-6" />,
                       desc: <Icon icon="arrow-2-down" className="size-6" />,
