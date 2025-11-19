@@ -300,7 +300,7 @@ export default function Analytics() {
         },
       compareRange: draft['compareRange'] as AnalyticsFiltersQuery['compareRange'],
       ...(parsedFiltersResult?.scenarioVersion ? { scenarioVersion: parsedFiltersResult.scenarioVersion } : {}),
-      ...(trigger.length ? { trigger } : {}),
+      ...(trigger.length && nextScenarioId === scenarioId ? { trigger } : {}),
     };
 
     return navigate(
