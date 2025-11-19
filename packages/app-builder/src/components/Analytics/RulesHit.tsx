@@ -4,7 +4,8 @@ import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, useTable } from 'ui-design-system';
+import { Table, TooltipV2, useTable } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 const columnHelper = createColumnHelper<RuleHitTableResponse>();
 
@@ -32,25 +33,81 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
       }),
       columnHelper.accessor((row) => row.hitCount, {
         id: 'hitCount',
-        header: t('analytics:rule_hits.columns.hit_count'),
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:rule_hits.columns.hit_count')}
+            <TooltipV2.Provider>
+              <TooltipV2.Tooltip>
+                <TooltipV2.TooltipTrigger asChild>
+                  <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
+                </TooltipV2.TooltipTrigger>
+                <TooltipV2.TooltipContent>
+                  <span className="font-normal">{t('analytics:rule_hits.columns.hit_count.tooltip')}</span>
+                </TooltipV2.TooltipContent>
+              </TooltipV2.Tooltip>
+            </TooltipV2.Provider>
+          </div>
+        ),
         size: 100,
         cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
       }),
       columnHelper.accessor((row) => row.hitRatio, {
         id: 'hitRatio',
-        header: t('analytics:rule_hits.columns.hit_ratio'),
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:rule_hits.columns.hit_ratio')}
+            <TooltipV2.Provider>
+              <TooltipV2.Tooltip>
+                <TooltipV2.TooltipTrigger asChild>
+                  <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
+                </TooltipV2.TooltipTrigger>
+                <TooltipV2.TooltipContent>
+                  <span className="font-normal">{t('analytics:rule_hits.columns.hit_ratio.tooltip')}</span>
+                </TooltipV2.TooltipContent>
+              </TooltipV2.Tooltip>
+            </TooltipV2.Provider>
+          </div>
+        ),
         size: 120,
         cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
       }),
       columnHelper.accessor((row) => row.distinctPivots, {
         id: 'distinctPivots',
-        header: t('analytics:rule_hits.columns.pivot_count'),
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:rule_hits.columns.pivot_count')}
+            <TooltipV2.Provider>
+              <TooltipV2.Tooltip>
+                <TooltipV2.TooltipTrigger asChild>
+                  <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
+                </TooltipV2.TooltipTrigger>
+                <TooltipV2.TooltipContent>
+                  <span className="font-normal">{t('analytics:rule_hits.columns.pivot_count.tooltip')}</span>
+                </TooltipV2.TooltipContent>
+              </TooltipV2.Tooltip>
+            </TooltipV2.Provider>
+          </div>
+        ),
         size: 140,
         cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
       }),
       columnHelper.accessor((row) => row.repeatRatio, {
         id: 'repeatRatio',
-        header: t('analytics:rule_hits.columns.pivot_ratio'),
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:rule_hits.columns.pivot_ratio')}
+            <TooltipV2.Provider>
+              <TooltipV2.Tooltip>
+                <TooltipV2.TooltipTrigger asChild>
+                  <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
+                </TooltipV2.TooltipTrigger>
+                <TooltipV2.TooltipContent>
+                  <span className="font-normal">{t('analytics:rule_hits.columns.pivot_ratio.tooltip')}</span>
+                </TooltipV2.TooltipContent>
+              </TooltipV2.Tooltip>
+            </TooltipV2.Provider>
+          </div>
+        ),
         size: 160,
         cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
       }),
