@@ -76,7 +76,7 @@ export function SelectTargetEntity({
   return (
     <form onSubmit={handleSubmit(form)}>
       <div className="bg-grey-100 flex flex-col gap-6 p-6">
-        <Modal.Description className="whitespace-pre text-balance">
+        <Modal.Description className="text-pretty">
           <Trans
             t={t}
             i18nKey="data:create_pivot.entity_selection.description"
@@ -134,7 +134,7 @@ export function SelectTargetEntity({
         {hasFieldOptions ? (
           <div className="flex flex-col gap-4">
             <div className="w-full border-b text-center leading-[0.1em]">
-              <span className="text-grey-50 bg-grey-100 px-[10px]">or</span>
+              <span className="text-grey-50 bg-grey-100 px-[10px]">{t('common:or')}</span>
             </div>
             <p className="text-grey-50">
               <Trans
