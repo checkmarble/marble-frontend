@@ -1,4 +1,4 @@
-import { type LinksFunction, type LoaderFunctionArgs, type MetaFunction } from '@remix-run/node';
+import { type LinksFunction, type MetaFunction } from '@remix-run/node';
 import {
   Link,
   Links,
@@ -30,7 +30,8 @@ import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
 import { AgnosticNavigationContext } from './contexts/AgnosticNavigationContext';
 import { AppConfigContext } from './contexts/AppConfigContext';
 import { LoaderRevalidatorContext } from './contexts/LoaderRevalidatorContext';
-import { initServerServices } from './services/init.server';
+import { HeaderEntry } from './core/middleware-types';
+import { createServerFn, data } from './core/requests';
 import { useSegmentPageTracking } from './services/segment';
 import { SegmentScript } from './services/segment/SegmentScript';
 import { getSegmentScript } from './services/segment/segment.server';
@@ -65,11 +66,11 @@ export const links: LinksFunction = () => [
   { rel: 'icon', href: '/favicon.ico' },
 ];
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { i18nextService, toastSessionService, csrfService, appConfigRepository } = initServerServices(request);
-  const locale = await i18nextService.getLocale(request);
+export const loader = createServerFn([], async function loader({ request, context }) {
+  const { i18nextService, toastSessionService, csrfService, appConfigRepository } = context.services;
 
-  const [toastSession, [csrfToken, csrfCookieHeader]] = await Promise.all([
+  const [locale, toastSession, [csrfToken, csrfCookieHeader]] = await Promise.all([
+    i18nextService.getLocale(request),
     toastSessionService.getSession(request),
     csrfService.commitToken(request),
   ]);
@@ -78,28 +79,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const ENV = getClientEnvVars();
 
-  const headers = new Headers();
-  headers.append('set-cookie', await toastSessionService.commitSession(toastSession));
-  if (csrfCookieHeader) headers.append('set-cookie', csrfCookieHeader);
+  const headers: HeaderEntry[] = [['set-cookie', await toastSessionService.commitSession(toastSession)]];
+  if (csrfCookieHeader) {
+    headers.push(['set-cookie', csrfCookieHeader]);
+  }
 
   const segmentApiKey = getServerEnv('SEGMENT_WRITE_KEY');
   const disableSegment = getServerEnv('DISABLE_SEGMENT') ?? false;
   const appConfig = await appConfigRepository.getAppConfig();
 
-  return Response.json(
-    {
-      ENV,
-      locale,
-      csrf: csrfToken,
-      toastMessage,
-      segmentScript: !disableSegment && segmentApiKey ? getSegmentScript(segmentApiKey) : undefined,
-      appConfig,
-    },
-    {
-      headers,
-    },
-  );
-}
+  const segmentScript = !disableSegment && segmentApiKey ? getSegmentScript(segmentApiKey) : undefined;
+
+  return data({ ENV, locale, csrf: csrfToken, toastMessage, segmentScript, appConfig }, headers);
+});
 
 export const handle = {
   i18n: ['common', 'navigation'] satisfies Namespace,
@@ -123,6 +115,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const { i18n } = useTranslation();
   const nonce = useNonce();
+  const navigate = useNavigate();
+  const revalidator = useRevalidator();
 
   useSegmentPageTracking();
 
@@ -136,18 +130,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ExternalScripts />
       </head>
       <body className="selection:text-grey-100 selection:bg-purple-65 h-screen w-full overflow-hidden antialiased">
-        <AuthenticityTokenProvider token={loaderData?.['csrf'] ?? ''}>
-          <Tooltip.Provider>{children}</Tooltip.Provider>
-        </AuthenticityTokenProvider>
-        <script
-          nonce={nonce}
-          dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(loaderData?.ENV ?? {})}`,
-          }}
-        />
-        <ScrollRestoration nonce={nonce} />
-        <Scripts nonce={nonce} />
-        <ClientOnly>{() => <MarbleToaster toastMessage={loaderData?.toastMessage} />}</ClientOnly>
+        <LoaderRevalidatorContext.Provider value={revalidator.revalidate}>
+          <AgnosticNavigationContext.Provider value={navigate}>
+            <AuthenticityTokenProvider token={loaderData?.['csrf'] ?? ''}>
+              <Tooltip.Provider>{children}</Tooltip.Provider>
+            </AuthenticityTokenProvider>
+            <script
+              nonce={nonce}
+              dangerouslySetInnerHTML={{
+                __html: `window.ENV = ${JSON.stringify(loaderData?.ENV ?? {})}`,
+              }}
+            />
+            <ScrollRestoration nonce={nonce} />
+            <Scripts nonce={nonce} />
+            <ClientOnly>{() => <MarbleToaster toastMessage={loaderData?.toastMessage} />}</ClientOnly>
+          </AgnosticNavigationContext.Provider>
+        </LoaderRevalidatorContext.Provider>
       </body>
     </html>
   );
@@ -191,19 +189,13 @@ function App() {
       }),
   );
   const { locale, appConfig } = useLoaderData<typeof loader>();
-  const revalidator = useRevalidator();
-  const navigate = useNavigate();
 
   useChangeLanguage(locale);
 
   return (
     <QueryClientProvider client={queryClient}>
       <AppConfigContext.Provider value={appConfig}>
-        <LoaderRevalidatorContext.Provider value={revalidator.revalidate}>
-          <AgnosticNavigationContext.Provider value={navigate}>
-            <Outlet />
-          </AgnosticNavigationContext.Provider>
-        </LoaderRevalidatorContext.Provider>
+        <Outlet />
       </AppConfigContext.Provider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
