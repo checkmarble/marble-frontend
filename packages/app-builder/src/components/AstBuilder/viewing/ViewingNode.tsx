@@ -30,6 +30,7 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
       const hasNestedLeftChild = isMainAstNode(node.children[0]) && node.children[0].children.length > 0;
       const hasNestedRightChild = isMainAstNode(node.children[1]) && node.children[1].children.length > 0;
       const hasAllNestedChildren = hasNestedLeftChild && hasNestedRightChild;
+      const showBrackets = !props.root || hasAllNestedChildren;
 
       const children = (
         <>
@@ -47,13 +48,17 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
         </>
       );
 
-      return !props.root || hasAllNestedChildren ? (
-        <Brackets>{children}</Brackets>
+      const wrappedChildren = showBrackets ? <Brackets>{children}</Brackets> : children;
+
+      return props.root ? (
+        <div className="inline-flex flex-row flex-wrap items-center gap-2">{wrappedChildren}</div>
       ) : (
-        <div className="inline-flex flex-row flex-wrap items-center gap-2">{children}</div>
+        wrappedChildren
       );
     })
     .when(isMainAstUnaryNode, (node) => {
+      const showBrackets = !props.root;
+
       const children = (
         <>
           <ViewingAstBuilderNode
@@ -65,10 +70,12 @@ export const ViewingAstBuilderNode = memo(function ViewingAstBuilderNode(props: 
         </>
       );
 
-      return !props.root ? (
-        <Brackets>{children}</Brackets>
+      const wrappedChildren = showBrackets ? <Brackets>{children}</Brackets> : children;
+
+      return props.root ? (
+        <div className="inline-flex flex-row flex-wrap items-center gap-2">{wrappedChildren}</div>
       ) : (
-        <div className="inline-flex flex-row flex-wrap items-center gap-2">{children}</div>
+        wrappedChildren
       );
     })
     .when(isKnownOperandAstNode, (node) => {
