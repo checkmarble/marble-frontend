@@ -1,7 +1,6 @@
 import { clsx } from 'clsx';
 import { add, type Locale, sub } from 'date-fns';
 import { createContext, useCallback, useContext } from 'react';
-import { Temporal } from 'temporal-polyfill';
 import { Calendar, type DateRange } from '../../Calendar/Calendar';
 import { useFormatting } from '../../contexts/FormattingContext';
 import { useI18n } from '../../contexts/I18nContext';
@@ -93,17 +92,15 @@ function DateRangeFilterRoot({
   );
 }
 
-export const fromNowDurations = [
-  Temporal.Duration.from({ days: -7 }).toString(),
-  Temporal.Duration.from({ days: -14 }).toString(),
-  Temporal.Duration.from({ days: -30 }).toString(),
-  Temporal.Duration.from({ months: -3 }).toString(),
-  Temporal.Duration.from({ months: -6 }).toString(),
-  Temporal.Duration.from({ months: -12 }).toString(),
-] as const;
-
-function DateRangeFilterFromNowPicker({ title, className }: { title: string; className?: string }) {
-  const { language, formatDuration } = useFormatting();
+function DateRangeFilterFromNowPicker({
+  presetDurations,
+  title,
+  className,
+}: {
+  presetDurations: Map<string, string>;
+  title: string;
+  className?: string;
+}) {
   const { onFromNowSelect } = useDateRangeFilterContext();
   const { fromNow } = useDateRangeFilterContext();
 
@@ -113,7 +110,7 @@ function DateRangeFilterFromNowPicker({ title, className }: { title: string; cla
         <p className="text-grey-80 text-s font-normal first-letter:capitalize">{title}</p>
       </div>
       <div className="flex flex-col gap-1">
-        {fromNowDurations.map((duration) => (
+        {Array.from(presetDurations.entries()).map(([duration, label]) => (
           <button
             key={duration}
             onClick={() => {
@@ -125,7 +122,7 @@ function DateRangeFilterFromNowPicker({ title, className }: { title: string; cla
               fromNow === duration && 'bg-purple-96 border-purple-65 text-purple-65', // highlight the currently selected
             )}
           >
-            <time dateTime={duration}>{formatDuration(duration, language)}</time>
+            <time dateTime={duration}>{label}</time>
           </button>
         ))}
       </div>
@@ -149,12 +146,25 @@ function DateRangeFilterCalendar({ className, locale }: { className?: string; lo
   );
 }
 
-function DateRangeFilterSummary({ className }: { className?: string }) {
+function DateRangeFilterSummary({
+  presetDurations,
+  className,
+}: {
+  presetDurations: Map<string, string>;
+  className?: string;
+}) {
   const { language, formatDuration } = useFormatting();
   const { t } = useI18n();
   const { fromNow, calendarSelected } = useDateRangeFilterContext();
 
   if (fromNow) {
+    if (presetDurations.has(fromNow)) {
+      return (
+        <div className={clsx('m-4 flex h-10 w-full items-center justify-center', className)}>
+          {presetDurations.get(fromNow)}
+        </div>
+      );
+    }
     return (
       <div className={clsx('m-4 flex h-10 w-full items-center justify-center', className)}>
         <time className="text-s text-grey-00 flex h-10 items-center rounded-sm p-2 outline-hidden" dateTime={fromNow}>
