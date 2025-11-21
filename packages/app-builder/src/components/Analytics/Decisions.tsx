@@ -1,4 +1,5 @@
 import { Spinner } from '@app-builder/components/Spinner';
+import { OUTCOME_COLORS } from '@app-builder/constants/analytics';
 import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
 import type {
   DecisionOutcomes,
@@ -8,7 +9,6 @@ import type {
   Outcome,
   RangeId,
 } from '@app-builder/models/analytics';
-import { OUTCOME_COLORS } from '@app-builder/routes/_builder+/_analytics+/analytics.$scenarioId';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { differenceInDays, getWeek, getYear } from 'date-fns';

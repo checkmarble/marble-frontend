@@ -1,7 +1,7 @@
 import { Spinner } from '@app-builder/components/Spinner';
+import { OUTCOME_COLORS } from '@app-builder/constants/analytics';
 import { type DecisionsFilter, type Outcome } from '@app-builder/models/analytics';
 import { RuleVsDecisionOutcome } from '@app-builder/models/analytics/rule-vs-decision-outcome';
-import { OUTCOME_COLORS } from '@app-builder/routes/_builder+/_analytics+/analytics.$scenarioId';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { useMemo, useState } from 'react';

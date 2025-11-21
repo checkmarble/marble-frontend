@@ -1,5 +1,5 @@
+import { OUTCOME_COLORS } from '@app-builder/constants/analytics';
 import { DecisionsFilter, type Outcome } from '@app-builder/models/analytics';
-import { OUTCOME_COLORS } from '@app-builder/routes/_builder+/_analytics+/analytics.$scenarioId';
 import { useRef } from 'react';
 import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
