@@ -1,5 +1,6 @@
 import { ErrorComponent } from '@app-builder/components';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
+import { DecisionsScoreDistribution } from '@app-builder/components/Analytics/DecisionsScoreDistribution';
 import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
 import { RuleVsDecisionOutcomes } from '@app-builder/components/Analytics/RuleVsDecisionOutcomes';
 import { ScreeningHits } from '@app-builder/components/Analytics/ScreeningHits';
@@ -11,13 +12,14 @@ import type {
 } from '@app-builder/models/analytics';
 import { type AnalyticsFiltersQuery, analyticsFiltersQuery, FilterSource } from '@app-builder/models/analytics';
 import { type Scenario } from '@app-builder/models/scenario';
+import { useGetAvailableFilters } from '@app-builder/queries/analytics/get-available-filters';
 import {
-  useGetAvailableFilters,
   useGetDecisionsOutcomesPerDay,
+  useGetDecisionsScoreDistribution,
   useGetRuleHitTable,
   useGetRuleVsDecisionOutcome,
   useGetScreeningHitsTable,
-} from '@app-builder/queries/analytics';
+} from '@app-builder/queries/analytics/get-data';
 import { initServerServices } from '@app-builder/services/init.server';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -208,6 +210,10 @@ export default function Analytics() {
     scenarioId,
     queryString: queryString ?? '',
   });
+  const decisionsScoreDistributionData = useGetDecisionsScoreDistribution({
+    scenarioId,
+    queryString: queryString ?? '',
+  });
   const ruleHitTableData = useGetRuleHitTable({
     scenarioId,
     queryString: queryString ?? '',
@@ -286,7 +292,7 @@ export default function Analytics() {
         },
       compareRange: draft['compareRange'] as AnalyticsFiltersQuery['compareRange'],
       ...(parsedFiltersResult?.scenarioVersion ? { scenarioVersion: parsedFiltersResult.scenarioVersion } : {}),
-      ...(trigger.length ? { trigger } : {}),
+      ...(trigger.length && nextScenarioId === scenarioId ? { trigger } : {}),
     };
 
     return navigate(
@@ -332,13 +338,13 @@ export default function Analytics() {
       removable: false,
       instantUpdate: true,
     },
-    // {
-    //   type: 'date-range-popover',
-    //   name: 'compareRange',
-    //   placeholder: t('analytics:filters.select_comparison_date_range.placeholder'),
-    //   removable: true,
-    //   instantUpdate: true,
-    // },
+    {
+      type: 'date-range-popover',
+      name: 'compareRange',
+      placeholder: t('analytics:filters.select_comparison_date_range.placeholder'),
+      removable: true,
+      instantUpdate: true,
+    },
   ];
 
   return (
@@ -370,16 +376,16 @@ export default function Analytics() {
               </div>
             </div>
             <div className="flex flex-row gap-v2-md w-full items-stretch">
-              <div className="basis-full min-w-0">
+              <div className="basis-3/4 min-w-0">
                 <Decisions
                   data={decisionsOutcomesPerDayData?.data ?? null}
                   scenarioVersions={scenarioVersions}
                   isLoading={decisionsOutcomesPerDayData?.isFetching ?? true}
                 />
               </div>
-              {/* <div className="basis-1/4 min-w-0">
-                <DecisionsScoreDistribution data={decisionsScoreDistributionData ?? []} />
-              </div> */}
+              <div className="basis-1/4 min-w-0">
+                <DecisionsScoreDistribution data={decisionsScoreDistributionData?.data ?? null} />
+              </div>
             </div>
 
             <RulesHit data={ruleHitTableData?.data ?? []} isLoading={ruleHitTableData?.isFetching ?? true} />

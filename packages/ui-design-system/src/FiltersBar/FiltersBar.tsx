@@ -264,6 +264,23 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
         <div className="flex flex-col gap-v2-md">
           {filtersByPriority.map((filters, priorityIndex) => (
             <div key={priorityIndex} className="flex flex-row items-center w-full gap-v2-xl h-v2-xl">
+              {priorityIndex === 1 ? (
+                <ButtonV2
+                  className="min-w-[110px] justify-center"
+                  variant="primary"
+                  size="default"
+                  onClick={() => contextValue.emitUpdate()}
+                  disabled={!hasChanges}
+                >
+                  {hasChanges ? t('filters:ds.reapply_button.label') : t('filters:ds.apply_button.label')}
+                </ButtonV2>
+              ) : null}
+              {/* {priorityIndex === 1 && filters.length === 0 ? (
+                <div className="flex flex-row justify-start items-center gap-v2-sm">
+                  <Icon icon="settings" className="size-4" />
+                  <a href={'/settings/analytics/filters'}>{t('filters:ds.add_filter_button.label')}</a>
+                </div>
+              ) : null} */}
               {filters.map((filter) =>
                 match(filter)
                   .with({ type: 'text' }, (textFilter) => (
@@ -312,22 +329,18 @@ export function FiltersBar({ descriptors = [], dynamicDescriptors = [], value, o
                   ))
                   .otherwise(() => <div key={filter.name}>Filter not implemented yet</div>),
               )}
+              {priorityIndex === 1 && dynamicDescriptors.length ? (
+                <ButtonV2
+                  variant="secondary"
+                  size="default"
+                  onClick={clearDynamicFilters}
+                  disabled={!hasAnyDynamicSelected}
+                >
+                  {t('filters:ds.clear_dynamic_button.label')}
+                </ButtonV2>
+              ) : null}
             </div>
           ))}
-
-          <div className="flex flex-row justify-start gap-v2-md">
-            <ButtonV2
-              variant="secondary"
-              size="default"
-              onClick={clearDynamicFilters}
-              disabled={!hasAnyDynamicSelected || dynamicDescriptors.length === 0}
-            >
-              {t('filters:ds.clear_dynamic_button.label')}
-            </ButtonV2>
-            <ButtonV2 variant="primary" size="default" onClick={() => contextValue.emitUpdate()} disabled={!hasChanges}>
-              {hasChanges ? t('filters:ds.reapply_button.label') : t('filters:ds.apply_button.label')}
-            </ButtonV2>
-          </div>
         </div>
       </div>
     </FiltersBarContext.Provider>

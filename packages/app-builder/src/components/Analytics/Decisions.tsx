@@ -1,16 +1,17 @@
 import { Spinner } from '@app-builder/components/Spinner';
+import { OUTCOME_COLORS } from '@app-builder/constants/analytics';
 import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
-import {
-  type DecisionOutcomesAbsolute,
+import type {
+  DecisionOutcomes,
+  DecisionOutcomesAbsolute,
   DecisionOutcomesPerPeriod,
-  type DecisionsFilter,
-  type Outcome,
-  outcomeColors,
-  type RangeId,
+  DecisionsFilter,
+  Outcome,
+  RangeId,
 } from '@app-builder/models/analytics';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
-import { getWeek, getYear } from 'date-fns';
+import { differenceInDays, getWeek, getYear } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ButtonV2 } from 'ui-design-system';
@@ -37,6 +38,26 @@ interface DecisionsProps {
   isLoading?: boolean;
 }
 
+// Decision filter default values
+const defaultDecisions: DecisionsFilter = new Map([
+  ['decline', true],
+  ['blockAndReview', true],
+  ['review', true],
+  ['approve', true],
+]);
+
+const getBarColors = (d: ComputedDatum<DecisionsPerOutcome>) => {
+  const id = String(d.id) as 'approve' | 'decline' | 'review' | 'blockAndReview';
+  return OUTCOME_COLORS[id] ?? '#9ca3af';
+};
+
+const getOutcomeTranslationKey = (outcome: Outcome): string => {
+  if (outcome === 'blockAndReview') {
+    return 'decisions:outcome.block_and_review';
+  }
+  return `decisions:outcome.${outcome}`;
+};
+
 export function Decisions({ data, scenarioVersions, isLoading = false }: DecisionsProps) {
   const { t } = useTranslation();
   const language = useFormatLanguage();
@@ -46,40 +67,23 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     observeHeight: false,
   });
 
-  // Decision filter default values
-  const defaultDecisions: DecisionsFilter = new Map([
-    ['decline', true],
-    ['blockAndReview', true],
-    ['review', true],
-    ['approve', true],
-  ]);
+  const SYMLOG_SCALE_MIN_ENABLED = false;
+
   const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
   const [percentage, setPercentage] = useState(false);
+  const [scale, setScale] = useState<'linear' | 'symlog'>('linear');
   const [groupDate, setGroupDate] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [isHovered, setIsHovered] = useState(false);
 
   const currentDataGroup = useMemo(() => data?.[groupDate], [data, groupDate]);
 
-  // Sanitize data to ensure all values are valid numbers
-  const sanitizedData = useMemo(() => {
-    const sourceData = percentage ? (currentDataGroup?.data.ratio ?? []) : (currentDataGroup?.data.absolute ?? []);
+  const sanitizedData = useMemo(
+    (): DecisionOutcomes[] | DecisionOutcomesAbsolute[] =>
+      percentage ? (currentDataGroup?.data.ratio ?? []) : (currentDataGroup?.data.absolute ?? []),
+    [percentage, currentDataGroup],
+  );
 
-    return sourceData.map((item) => {
-      const sanitized: DecisionsPerOutcome = {
-        ...item,
-        approve: Number.isFinite(item.approve) ? item.approve : 0,
-        decline: Number.isFinite(item.decline) ? item.decline : 0,
-        review: Number.isFinite(item.review) ? item.review : 0,
-        blockAndReview: Number.isFinite(item.blockAndReview) ? item.blockAndReview : 0,
-      };
-
-      // Only add total if it exists (absolute data has total, ratio doesn't)
-      if ('total' in item && typeof item.total === 'number') {
-        sanitized.total = Number.isFinite(item.total) ? item.total : 0;
-      }
-
-      return sanitized;
-    });
-  }, [percentage, currentDataGroup]);
+  const chartData = useMemo(() => sanitizedData as DecisionsPerOutcome[], [sanitizedData]);
 
   const isSameYear: boolean = getYear(data?.metadata.start!) === getYear(data?.metadata.end!);
 
@@ -129,10 +133,25 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
   //       .filter((v) => v !== undefined);
   //   };
 
-  const getBarColors = (d: ComputedDatum<DecisionsPerOutcome>) => {
-    const id = String(d.id) as 'approve' | 'decline' | 'review' | 'blockAndReview';
-    return outcomeColors[id] ?? '#9ca3af';
-  };
+  const padding = useMemo(() => {
+    if (scale !== 'symlog') {
+      return 0.5;
+    }
+    if (!data?.metadata.start || !data?.metadata.end) {
+      return 0.01;
+    }
+
+    const days = Math.abs(differenceInDays(new Date(data.metadata.end), new Date(data.metadata.start)));
+    const threshold = 90; // 3 months
+
+    if (days > threshold) {
+      return 0.01;
+    }
+
+    // progressively increase from 0.01 (at 90 days) to 0.5 (at 0 days)
+    const ratio = days / threshold;
+    return 0.5 - ratio * (0.5 - 0.01);
+  }, [scale, data?.metadata.start, data?.metadata.end]);
 
   const getTootlipDateFormat = (date: string) => {
     const dateObj = new Date(date);
@@ -228,7 +247,11 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
   };
 
   return (
-    <div>
+    <div
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+    >
       <div className="flex items-center justify-between">
         <h2 className="text-h2 font-semibold">{t('analytics:decisions.title')}</h2>
         <ButtonV2
@@ -285,23 +308,50 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 </ButtonV2>
               </div>
             </div>
+
+            {SYMLOG_SCALE_MIN_ENABLED ? (
+              <div className="flex items-center gap-v2-sm">
+                <span className="text-s">{t('analytics:decisions.scale.label')}:</span>
+                <div className="flex gap-v2-sm">
+                  <ButtonV2
+                    variant="secondary"
+                    onClick={() => {
+                      setScale('linear');
+                      setDecisions(
+                        new Map([
+                          ['decline', true],
+                          ['blockAndReview', true],
+                          ['review', true],
+                          ['approve', true],
+                        ]),
+                      );
+                    }}
+                    className={scale === 'linear' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
+                  >
+                    {t('analytics:decisions.scale.linear.label')}
+                  </ButtonV2>
+                  <ButtonV2
+                    variant="secondary"
+                    onClick={() => setScale('symlog')}
+                    className={scale === 'symlog' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
+                  >
+                    {t('analytics:decisions.scale.symlog.label')}
+                  </ButtonV2>
+                </div>
+              </div>
+            ) : null}
           </div>
           <div className="flex-1 w-full">
             <ResponsiveBar<DecisionsPerOutcome>
               key={`${percentage ? 'percentage' : 'absolute'}-${groupDate}`}
-              data={sanitizedData}
+              data={chartData}
               indexBy="date"
               enableLabel={false}
-              keys={
-                // percentage
-                //   ? ['decline', 'blockAndReview', 'review', 'approve']
-                //   :
-                Array.from(decisions)
-                  .filter(([_, value]) => value)
-                  .map(([key]) => key)
-              }
-              padding={0.5}
-              margin={{ top: 5, right: 5, bottom: 24, left: 50 }}
+              keys={Array.from(decisions)
+                .filter(([_, value]) => value)
+                .map(([key]) => key)}
+              padding={padding}
+              margin={{ top: 5, right: 5, bottom: 24, left: 54 }}
               colors={getBarColors}
               defs={[
                 {
@@ -319,7 +369,12 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                   id: 'compareOpacity',
                 },
               ]}
-              valueScale={!data?.metadata.totalDecisions ? { type: 'linear', min: 0, max: 1000 } : undefined}
+              groupMode={scale === 'symlog' ? 'grouped' : 'stacked'}
+              valueScale={
+                !data?.metadata.totalDecisions
+                  ? { type: 'linear', min: 0, max: 1000 }
+                  : { type: scale, round: true, nice: true }
+              }
               axisLeft={{
                 legend: 'outcome (indexBy)',
                 legendOffset: -70,
@@ -337,16 +392,47 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                   });
                 },
               }}
-              tooltip={({ id, value, data }) => (
-                <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
-                  <div className="flex items-center gap-v2-sm">
-                    <strong className="text-grey-00 font-semibold">
-                      {id}: {percentage ? `${value.toFixed(1)}%` : value}
-                    </strong>
+              tooltip={({ data }) => {
+                const outcomes: Outcome[] = ['approve', 'decline', 'review', 'blockAndReview'];
+                const totalValue = !percentage && typeof data.total === 'number' ? data.total : undefined;
+                return (
+                  <div className="flex flex-col gap-v2-xs bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm">
+                    <div className="text-s text-grey-60 mb-v2-xs">{getTootlipDateFormat(data?.date)}</div>
+                    <div className="flex flex-col gap-v2-xs">
+                      {outcomes.map((outcome) => {
+                        const outcomeValue = data?.[outcome] ?? 0;
+                        const displayValue = percentage ? `${outcomeValue.toFixed(1)}%` : outcomeValue;
+                        return (
+                          <div key={outcome} className="flex items-center gap-v2-sm whitespace-nowrap">
+                            <div
+                              className="size-3 rounded-sm flex-shrink-0"
+                              style={{ backgroundColor: OUTCOME_COLORS[outcome] }}
+                            />
+                            <span className="text-s text-grey-00">
+                              {t(getOutcomeTranslationKey(outcome))}:{' '}
+                              <strong className="font-semibold">{displayValue}</strong>
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {!percentage && totalValue !== undefined && (
+                      <div className="flex items-center gap-v2-sm pt-v2-xs border-t border-grey-90 mt-v2-xs">
+                        <span className="text-s text-grey-00 font-semibold">
+                          {t('analytics:decisions.tooltip.total', { defaultValue: 'Total' })}: {totalValue}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  <div className="text-s text-grey-60">{getTootlipDateFormat(data?.date)}</div>
-                </div>
-              )}
+                );
+              }}
+              theme={{
+                tooltip: {
+                  container: {
+                    transform: 'translateX(16px)',
+                  },
+                },
+              }}
               layout="vertical"
               motionConfig={{
                 mass: 1,
@@ -356,7 +442,6 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 precision: 0.01,
                 velocity: 0,
               }}
-
               //   markers={currentDataGroup?.scenarioVersionsXMarkers}
             />
           </div>
@@ -392,7 +477,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
             </div>
           </div>
           <div className="flex w-full justify-center">
-            <OutcomeFilter decisions={decisions} onChange={setDecisions} />
+            <OutcomeFilter decisions={decisions} onChange={setDecisions} highlight={isHovered} />
           </div>
         </div>
       </div>

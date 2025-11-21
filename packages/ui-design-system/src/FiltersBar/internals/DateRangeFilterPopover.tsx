@@ -3,12 +3,15 @@ import { ar, enUS, fr } from 'date-fns/locale';
 import { useMemo, useState } from 'react';
 import { Temporal } from 'temporal-polyfill';
 import { useFormatting } from '../../contexts/FormattingContext';
+import { useI18n } from '../../contexts/I18nContext';
 import type { DateRangeFilterType, DateRangePopoverFilter } from '../types';
 import { DateRangeFilter } from './DateRangeFilter';
 import { FilterItem, FilterPopover } from './FilterPopover';
 import { useFiltersBarContext } from './FiltersBarContext';
 
 export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFilter }) {
+  const { t } = useI18n();
+
   const drFilter = filter;
   const { language, formatDateTimeWithoutPresets } = useFormatting();
   const { emitSet, emitRemove } = useFiltersBarContext();
@@ -23,8 +26,24 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
     }
   }, [language]);
 
+  const presetDurations = useMemo(
+    () =>
+      new Map([
+        [Temporal.Duration.from({ days: -7 }).toString(), t('filters:date_range_filter.preset.last_7_days')],
+        [Temporal.Duration.from({ days: -14 }).toString(), t('filters:date_range_filter.preset.last_14_days')],
+        [Temporal.Duration.from({ days: -30 }).toString(), t('filters:date_range_filter.preset.last_30_days')],
+        [Temporal.Duration.from({ months: -3 }).toString(), t('filters:date_range_filter.preset.last_3_months')],
+        [Temporal.Duration.from({ months: -6 }).toString(), t('filters:date_range_filter.preset.last_6_months')],
+        [Temporal.Duration.from({ months: -12 }).toString(), t('filters:date_range_filter.preset.last_12_months')],
+      ]),
+    [t],
+  );
+
   const summary = (() => {
     if (drFilter.selectedValue?.type === 'dynamic') {
+      const presetDuration = presetDurations.get(drFilter.selectedValue.fromNow);
+      if (presetDuration) return presetDuration;
+
       const date = new Date();
       const duration = Temporal.Duration.from(drFilter.selectedValue.fromNow);
       return formatDistanceStrict(add(date, duration), date, {
@@ -77,10 +96,17 @@ export function DateRangeFilterPopover({ filter }: { filter: DateRangePopoverFil
           locale={dateFnsLocale}
         >
           <div className="flex flex-col md:flex-row gap-2">
-            <DateRangeFilter.FromNowPicker title="Quick ranges" className="border-r-1 border-grey-90 pr-v2-md" />
+            <DateRangeFilter.FromNowPicker
+              presetDurations={presetDurations}
+              title="Quick ranges"
+              className="border-r-1 border-grey-90 pr-v2-md"
+            />
             <DateRangeFilter.Calendar locale={dateFnsLocale} />
           </div>
-          <DateRangeFilter.Summary className="border-t-1 border-grey-90 pt-v2-sm mt-0" />
+          <DateRangeFilter.Summary
+            className="border-t-1 border-grey-90 pt-v2-sm mt-0"
+            presetDurations={presetDurations}
+          />
         </DateRangeFilter.Root>
       </FilterPopover.Content>
     </FilterPopover.Root>

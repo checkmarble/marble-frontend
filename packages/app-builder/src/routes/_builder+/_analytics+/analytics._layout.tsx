@@ -6,9 +6,10 @@ import { getServerEnv } from '@app-builder/utils/environment';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
-import { Outlet, useRouteError } from '@remix-run/react';
+import { Link, Outlet, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { type Namespace } from 'i18next';
+import { type Namespace, t } from 'i18next';
+import { Icon } from 'ui-icons';
 
 export type DecisionsPerOutcome = {
   date: string;
@@ -54,6 +55,14 @@ export default function Analytics() {
     <Page.Main className="bg-grey-background-light">
       <Page.Header className="justify-between">
         <BreadCrumbs />
+        <Link
+          to={getRoute('/analytics-legacy')}
+          target="_blank"
+          className="text-s text-grey-50 flex flex-row items-center font-semibold gap-v2-xs"
+        >
+          <Icon icon="openinnew" className="size-4" />
+          <span>{t('analytics:legacy-analytics-link')}</span>
+        </Link>
       </Page.Header>
       <Outlet />
     </Page.Main>
