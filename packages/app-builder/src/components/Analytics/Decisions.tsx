@@ -12,7 +12,7 @@ import { OUTCOME_COLORS } from '@app-builder/routes/_builder+/_analytics+/analyt
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { BarItem, type BarItemProps, type ComputedDatum, ResponsiveBar } from '@nivo/bar';
-import { getWeek, getYear } from 'date-fns';
+import { differenceInDays, getWeek, getYear } from 'date-fns';
 import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ButtonV2 } from 'ui-design-system';
@@ -68,6 +68,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
 
   const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
   const [percentage, setPercentage] = useState(false);
+  const [scale, setScale] = useState<'linear' | 'symlog'>('linear');
   const [groupDate, setGroupDate] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
   const [isHovered, setIsHovered] = useState(false);
 
@@ -142,6 +143,26 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     const id = String(d.id) as 'approve' | 'decline' | 'review' | 'blockAndReview';
     return OUTCOME_COLORS[id] ?? '#9ca3af';
   };
+
+  const padding = useMemo(() => {
+    if (scale !== 'symlog') {
+      return 0.5;
+    }
+    if (!data?.metadata.start || !data?.metadata.end) {
+      return 0.01;
+    }
+
+    const days = Math.abs(differenceInDays(new Date(data.metadata.end), new Date(data.metadata.start)));
+    const threshold = 90; // 3 months
+
+    if (days > threshold) {
+      return 0.01;
+    }
+
+    // progressively increase from 0.01 (at 90 days) to 0.5 (at 0 days)
+    const ratio = days / threshold;
+    return 0.5 - ratio * (0.5 - 0.01);
+  }, [scale, data?.metadata.start, data?.metadata.end]);
 
   const getTootlipDateFormat = (date: string) => {
     const dateObj = new Date(date);
@@ -305,6 +326,36 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 </ButtonV2>
               </div>
             </div>
+
+            <div className="flex items-center gap-v2-sm">
+              <span className="text-s">scale:</span>
+              <div className="flex gap-v2-sm">
+                <ButtonV2
+                  variant="secondary"
+                  onClick={() => {
+                    setScale('linear');
+                    setDecisions(
+                      new Map([
+                        ['decline', true],
+                        ['blockAndReview', true],
+                        ['review', true],
+                        ['approve', true],
+                      ]),
+                    );
+                  }}
+                  className={scale === 'linear' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
+                >
+                  linear
+                </ButtonV2>
+                <ButtonV2
+                  variant="secondary"
+                  onClick={() => setScale('symlog')}
+                  className={scale === 'symlog' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
+                >
+                  log
+                </ButtonV2>
+              </div>
+            </div>
           </div>
           <div className="flex-1 w-full">
             <StackAdjustmentsContext.Provider value={{ stackAdjustments: stackAdjustmentsRef, decisions }}>
@@ -316,7 +367,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 keys={Array.from(decisions)
                   .filter(([_, value]) => value)
                   .map(([key]) => key)}
-                padding={0.5}
+                padding={padding}
                 margin={{ top: 5, right: 5, bottom: 24, left: 54 }}
                 colors={getBarColors}
                 defs={[
@@ -335,7 +386,12 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                     id: 'compareOpacity',
                   },
                 ]}
-                valueScale={!data?.metadata.totalDecisions ? { type: 'linear', min: 0, max: 1000 } : undefined}
+                groupMode={scale === 'symlog' ? 'grouped' : 'stacked'}
+                valueScale={
+                  !data?.metadata.totalDecisions
+                    ? { type: 'linear', min: 0, max: 1000 }
+                    : { type: scale, round: true, nice: true }
+                }
                 axisLeft={{
                   legend: 'outcome (indexBy)',
                   legendOffset: -70,
