@@ -9,11 +9,10 @@ import type {
   RangeId,
 } from '@app-builder/models/analytics';
 import { OUTCOME_COLORS } from '@app-builder/routes/_builder+/_analytics+/analytics.$scenarioId';
-import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useFormatLanguage } from '@app-builder/utils/format';
-import { BarItem, type BarItemProps, type ComputedDatum, ResponsiveBar } from '@nivo/bar';
+import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { differenceInDays, getWeek, getYear } from 'date-fns';
-import { MutableRefObject, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -33,8 +32,6 @@ export type DecisionsPerOutcome = {
   total?: number;
 };
 
-const MIN_BAR_HEIGHT_PX = 3;
-
 // Decision filter default values
 const defaultDecisions: DecisionsFilter = new Map([
   ['decline', true],
@@ -48,14 +45,6 @@ interface DecisionsProps {
   scenarioVersions: { version: number; createdAt: string }[];
   isLoading?: boolean;
 }
-
-type StackAdjustments = Record<Outcome, number>;
-
-type StackAdjustmentsContextValue = {
-  stackAdjustments: MutableRefObject<Map<string, StackAdjustments>>;
-  decisions: DecisionsFilter;
-};
-const StackAdjustmentsContext = createSimpleContext<StackAdjustmentsContextValue>('StackAdjustments');
 
 export function Decisions({ data, scenarioVersions, isLoading = false }: DecisionsProps) {
   const { t } = useTranslation();
@@ -81,15 +70,6 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
   );
 
   const chartData = useMemo(() => sanitizedData as DecisionsPerOutcome[], [sanitizedData]);
-
-  const stackAdjustmentsRef = useRef<Map<string, StackAdjustments>>(new Map());
-
-  // const isBarRounded = (bar: ComputedBarDatum<DecisionsPerOutcome>, decisions: DecisionsFilter): boolean =>
-  //   bar.height !== 0 &&
-  //   (bar.data.id === 'approve' ||
-  //     (bar.data.id === 'review' && !decisions.get('approve')) ||
-  //     (bar.data.id === 'blockAndReview' && !decisions.get('review')) ||
-  //     (bar.data.id === 'decline' && !decisions.get('blockAndReview')));
 
   const isSameYear: boolean = getYear(data?.metadata.start!) === getYear(data?.metadata.end!);
 
@@ -358,111 +338,108 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
             </div>
           </div>
           <div className="flex-1 w-full">
-            <StackAdjustmentsContext.Provider value={{ stackAdjustments: stackAdjustmentsRef, decisions }}>
-              <ResponsiveBar<DecisionsPerOutcome>
-                key={`${percentage ? 'percentage' : 'absolute'}-${groupDate}`}
-                data={chartData}
-                indexBy="date"
-                enableLabel={false}
-                keys={Array.from(decisions)
-                  .filter(([_, value]) => value)
-                  .map(([key]) => key)}
-                padding={padding}
-                margin={{ top: 5, right: 5, bottom: 24, left: 54 }}
-                colors={getBarColors}
-                defs={[
-                  {
-                    id: 'compareOpacity',
-                    type: 'linearGradient',
-                    colors: [
-                      { offset: 0, color: 'inherit', opacity: 0.5 },
-                      { offset: 100, color: 'inherit', opacity: 0.5 },
-                    ],
-                  },
-                ]}
-                fill={[
-                  {
-                    match: (n) => n.data.data.rangeId === 'compare',
-                    id: 'compareOpacity',
-                  },
-                ]}
-                groupMode={scale === 'symlog' ? 'grouped' : 'stacked'}
-                valueScale={
-                  !data?.metadata.totalDecisions
-                    ? { type: 'linear', min: 0, max: 1000 }
-                    : { type: scale, round: true, nice: true }
-                }
-                axisLeft={{
-                  legend: 'outcome (indexBy)',
-                  legendOffset: -70,
-                  tickValues: !data?.metadata.totalDecisions ? [0, 200, 400, 600, 800, 1000] : undefined,
-                }}
-                axisBottom={{
-                  tickValues: getXTickValues(),
-                  format: (value: string) => {
-                    // Convert the ISO string to a Date object and format it
-                    const date = new Date(value);
-                    return date.toLocaleDateString(language, {
-                      year: !isSameYear ? 'numeric' : undefined,
-                      month: 'short',
-                      day: groupDate !== 'monthly' ? 'numeric' : undefined,
-                    });
-                  },
-                }}
-                tooltip={({ data }) => {
-                  const outcomes: Outcome[] = ['approve', 'decline', 'review', 'blockAndReview'];
-                  const totalValue = !percentage && typeof data.total === 'number' ? data.total : undefined;
-                  return (
-                    <div className="flex flex-col gap-v2-xs bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm">
-                      <div className="text-s text-grey-60 mb-v2-xs">{getTootlipDateFormat(data?.date)}</div>
-                      <div className="flex flex-col gap-v2-xs">
-                        {outcomes.map((outcome) => {
-                          const outcomeValue = data?.[outcome] ?? 0;
-                          const displayValue = percentage ? `${outcomeValue.toFixed(1)}%` : outcomeValue;
-                          return (
-                            <div key={outcome} className="flex items-center gap-v2-sm whitespace-nowrap">
-                              <div
-                                className="size-3 rounded-sm flex-shrink-0"
-                                style={{ backgroundColor: OUTCOME_COLORS[outcome] }}
-                              />
-                              <span className="text-s text-grey-00">
-                                {t(getOutcomeTranslationKey(outcome))}:{' '}
-                                <strong className="font-semibold">{displayValue}</strong>
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      {!percentage && totalValue !== undefined && (
-                        <div className="flex items-center gap-v2-sm pt-v2-xs border-t border-grey-90 mt-v2-xs">
-                          <span className="text-s text-grey-00 font-semibold">
-                            {t('analytics:decisions.tooltip.total', { defaultValue: 'Total' })}: {totalValue}
-                          </span>
-                        </div>
-                      )}
+            <ResponsiveBar<DecisionsPerOutcome>
+              key={`${percentage ? 'percentage' : 'absolute'}-${groupDate}`}
+              data={chartData}
+              indexBy="date"
+              enableLabel={false}
+              keys={Array.from(decisions)
+                .filter(([_, value]) => value)
+                .map(([key]) => key)}
+              padding={padding}
+              margin={{ top: 5, right: 5, bottom: 24, left: 54 }}
+              colors={getBarColors}
+              defs={[
+                {
+                  id: 'compareOpacity',
+                  type: 'linearGradient',
+                  colors: [
+                    { offset: 0, color: 'inherit', opacity: 0.5 },
+                    { offset: 100, color: 'inherit', opacity: 0.5 },
+                  ],
+                },
+              ]}
+              fill={[
+                {
+                  match: (n) => n.data.data.rangeId === 'compare',
+                  id: 'compareOpacity',
+                },
+              ]}
+              groupMode={scale === 'symlog' ? 'grouped' : 'stacked'}
+              valueScale={
+                !data?.metadata.totalDecisions
+                  ? { type: 'linear', min: 0, max: 1000 }
+                  : { type: scale, round: true, nice: true }
+              }
+              axisLeft={{
+                legend: 'outcome (indexBy)',
+                legendOffset: -70,
+                tickValues: !data?.metadata.totalDecisions ? [0, 200, 400, 600, 800, 1000] : undefined,
+              }}
+              axisBottom={{
+                tickValues: getXTickValues(),
+                format: (value: string) => {
+                  // Convert the ISO string to a Date object and format it
+                  const date = new Date(value);
+                  return date.toLocaleDateString(language, {
+                    year: !isSameYear ? 'numeric' : undefined,
+                    month: 'short',
+                    day: groupDate !== 'monthly' ? 'numeric' : undefined,
+                  });
+                },
+              }}
+              tooltip={({ data }) => {
+                const outcomes: Outcome[] = ['approve', 'decline', 'review', 'blockAndReview'];
+                const totalValue = !percentage && typeof data.total === 'number' ? data.total : undefined;
+                return (
+                  <div className="flex flex-col gap-v2-xs bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm">
+                    <div className="text-s text-grey-60 mb-v2-xs">{getTootlipDateFormat(data?.date)}</div>
+                    <div className="flex flex-col gap-v2-xs">
+                      {outcomes.map((outcome) => {
+                        const outcomeValue = data?.[outcome] ?? 0;
+                        const displayValue = percentage ? `${outcomeValue.toFixed(1)}%` : outcomeValue;
+                        return (
+                          <div key={outcome} className="flex items-center gap-v2-sm whitespace-nowrap">
+                            <div
+                              className="size-3 rounded-sm flex-shrink-0"
+                              style={{ backgroundColor: OUTCOME_COLORS[outcome] }}
+                            />
+                            <span className="text-s text-grey-00">
+                              {t(getOutcomeTranslationKey(outcome))}:{' '}
+                              <strong className="font-semibold">{displayValue}</strong>
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                }}
-                theme={{
-                  tooltip: {
-                    container: {
-                      transform: 'translateX(16px)',
-                    },
+                    {!percentage && totalValue !== undefined && (
+                      <div className="flex items-center gap-v2-sm pt-v2-xs border-t border-grey-90 mt-v2-xs">
+                        <span className="text-s text-grey-00 font-semibold">
+                          {t('analytics:decisions.tooltip.total', { defaultValue: 'Total' })}: {totalValue}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              }}
+              theme={{
+                tooltip: {
+                  container: {
+                    transform: 'translateX(16px)',
                   },
-                }}
-                layout="vertical"
-                motionConfig={{
-                  mass: 1,
-                  tension: 170,
-                  friction: 8,
-                  clamp: true,
-                  precision: 0.01,
-                  velocity: 0,
-                }}
-                barComponent={MinHeightBarComponent}
-                //   markers={currentDataGroup?.scenarioVersionsXMarkers}
-              />
-            </StackAdjustmentsContext.Provider>
+                },
+              }}
+              layout="vertical"
+              motionConfig={{
+                mass: 1,
+                tension: 170,
+                friction: 8,
+                clamp: true,
+                precision: 0.01,
+                velocity: 0,
+              }}
+              //   markers={currentDataGroup?.scenarioVersionsXMarkers}
+            />
           </div>
           <div className="flex w-full justify-end mt-v2-sm">
             <div className="flex gap-v2-sm">
@@ -503,62 +480,3 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     </div>
   );
 }
-
-const sumStackAdjustments = (
-  stackAdjustments: StackAdjustments,
-  decision: Outcome,
-  decisions: DecisionsFilter,
-): number => {
-  const outcomes = Array.from(decisions.entries())
-    .filter(([, value]) => value)
-    .map(([key]) => key);
-  const outcomesBeforeCurrent = outcomes.slice(0, outcomes.indexOf(decision) + 1);
-  return outcomesBeforeCurrent.reduce((acc, outcome) => acc + (stackAdjustments[outcome] ?? 0), 0);
-};
-
-const MinHeightBarComponent = (props: BarItemProps<DecisionsPerOutcome>) => {
-  const { bar, style } = props;
-  const { stackAdjustments, decisions } = StackAdjustmentsContext.useValue();
-  // const lastHeightRef = useRef<number | undefined>(undefined);
-  const adjustedHeight = bar.height !== 0 ? Math.max(bar.height, MIN_BAR_HEIGHT_PX) : 0;
-  const delta = adjustedHeight - bar.height;
-
-  const stackKey = `${String(bar.data.indexValue)}-${bar.data.data.rangeId ?? 'base'}`;
-  const currentStackAdjustments = stackAdjustments.current.get(stackKey) ?? {
-    approve: 0,
-    decline: 0,
-    review: 0,
-    blockAndReview: 0,
-  };
-
-  stackAdjustments.current.set(stackKey, {
-    ...currentStackAdjustments,
-    [bar.data.id]: delta,
-  });
-
-  const remappedHeight =
-    style?.height?.to((value) => {
-      return value > 0 ? Math.max(value, MIN_BAR_HEIGHT_PX) : 0;
-    }) ?? 0;
-
-  const remappedTransform =
-    style?.transform?.to((value) => {
-      const match = /translate\(([-\d.]+),\s*([-\d.]+)\)/.exec(value);
-      if (!match) return value;
-      const x = match[1];
-      const y = Number(match[2]) - sumStackAdjustments(currentStackAdjustments, bar.data.id as Outcome, decisions);
-      return `translate(${x}, ${y})`;
-    }) ?? 0;
-
-  return (
-    <BarItem
-      {...props}
-      style={{
-        ...style,
-        height: (remappedHeight as unknown as typeof style.height | undefined) ?? style?.height,
-        transform: (remappedTransform as unknown as typeof style.transform | undefined) ?? style?.transform,
-      }}
-    />
-  );
-};
-MinHeightBarComponent.displayName = 'MinHeightBarComponent';
