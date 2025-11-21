@@ -55,6 +55,8 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     observeHeight: false,
   });
 
+  const SYMLOG_SCALE_MIN_ENABLED = false;
+
   const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
   const [percentage, setPercentage] = useState(false);
   const [scale, setScale] = useState<'linear' | 'symlog'>('linear');
@@ -307,35 +309,37 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
               </div>
             </div>
 
-            <div className="flex items-center gap-v2-sm">
-              <span className="text-s">scale:</span>
-              <div className="flex gap-v2-sm">
-                <ButtonV2
-                  variant="secondary"
-                  onClick={() => {
-                    setScale('linear');
-                    setDecisions(
-                      new Map([
-                        ['decline', true],
-                        ['blockAndReview', true],
-                        ['review', true],
-                        ['approve', true],
-                      ]),
-                    );
-                  }}
-                  className={scale === 'linear' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
-                >
-                  linear
-                </ButtonV2>
-                <ButtonV2
-                  variant="secondary"
-                  onClick={() => setScale('symlog')}
-                  className={scale === 'symlog' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
-                >
-                  log
-                </ButtonV2>
+            {SYMLOG_SCALE_MIN_ENABLED ? (
+              <div className="flex items-center gap-v2-sm">
+                <span className="text-s">{t('analytics:decisions.scale.label')}:</span>
+                <div className="flex gap-v2-sm">
+                  <ButtonV2
+                    variant="secondary"
+                    onClick={() => {
+                      setScale('linear');
+                      setDecisions(
+                        new Map([
+                          ['decline', true],
+                          ['blockAndReview', true],
+                          ['review', true],
+                          ['approve', true],
+                        ]),
+                      );
+                    }}
+                    className={scale === 'linear' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
+                  >
+                    {t('analytics:decisions.scale.linear.label')}
+                  </ButtonV2>
+                  <ButtonV2
+                    variant="secondary"
+                    onClick={() => setScale('symlog')}
+                    className={scale === 'symlog' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
+                  >
+                    {t('analytics:decisions.scale.symlog.label')}
+                  </ButtonV2>
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
           <div className="flex-1 w-full">
             <ResponsiveBar<DecisionsPerOutcome>

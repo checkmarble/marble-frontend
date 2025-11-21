@@ -1,6 +1,9 @@
 {
   "decisions_score_distribution.title": "Distribution des scores des décisions",
   "decisions.export.button": "Exporter",
+  "decisions.scale.label": "Échelle",
+  "decisions.scale.linear.label": "Linéaire",
+  "decisions.scale.symlog.label": "Symlog",
   "decisions.title": "Décisions",
   "decisions.tooltip.daily": "Date: {{date}}",
   "decisions.tooltip.weekly": "Semaine du {{date}} <Br/>(Semaine {{weekNumber}})",

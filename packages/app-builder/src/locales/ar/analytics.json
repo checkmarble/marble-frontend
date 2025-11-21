@@ -1,6 +1,9 @@
 {
   "decisions_score_distribution.title": "توزيع درجات القرارات",
   "decisions.export.button": "تصدير",
+  "decisions.scale.label": "المقياس",
+  "decisions.scale.linear.label": "خطي",
+  "decisions.scale.symlog.label": "Symlog",
   "decisions.title": "القرارات",
   "decisions.tooltip.daily": "التاريخ: {{date}}",
   "decisions.tooltip.weekly": "أسبوع {{date}} <Br/>(الأسبوع {{weekNumber}})",
