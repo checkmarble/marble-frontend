@@ -32,6 +32,12 @@ export type DecisionsPerOutcome = {
   total?: number;
 };
 
+interface DecisionsProps {
+  data: DecisionOutcomesPerPeriod | null;
+  scenarioVersions: { version: number; createdAt: string }[];
+  isLoading?: boolean;
+}
+
 // Decision filter default values
 const defaultDecisions: DecisionsFilter = new Map([
   ['decline', true],
@@ -40,11 +46,17 @@ const defaultDecisions: DecisionsFilter = new Map([
   ['approve', true],
 ]);
 
-interface DecisionsProps {
-  data: DecisionOutcomesPerPeriod | null;
-  scenarioVersions: { version: number; createdAt: string }[];
-  isLoading?: boolean;
-}
+const getBarColors = (d: ComputedDatum<DecisionsPerOutcome>) => {
+  const id = String(d.id) as 'approve' | 'decline' | 'review' | 'blockAndReview';
+  return OUTCOME_COLORS[id] ?? '#9ca3af';
+};
+
+const getOutcomeTranslationKey = (outcome: Outcome): string => {
+  if (outcome === 'blockAndReview') {
+    return 'decisions:outcome.block_and_review';
+  }
+  return `decisions:outcome.${outcome}`;
+};
 
 export function Decisions({ data, scenarioVersions, isLoading = false }: DecisionsProps) {
   const { t } = useTranslation();
@@ -121,11 +133,6 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
   //       .filter((v) => v !== undefined);
   //   };
 
-  const getBarColors = (d: ComputedDatum<DecisionsPerOutcome>) => {
-    const id = String(d.id) as 'approve' | 'decline' | 'review' | 'blockAndReview';
-    return OUTCOME_COLORS[id] ?? '#9ca3af';
-  };
-
   const padding = useMemo(() => {
     if (scale !== 'symlog') {
       return 0.5;
@@ -190,13 +197,6 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
           />
         );
     }
-  };
-
-  const getOutcomeTranslationKey = (outcome: Outcome): string => {
-    if (outcome === 'blockAndReview') {
-      return 'decisions:outcome.block_and_review';
-    }
-    return `decisions:outcome.${outcome}`;
   };
 
   const getXTickValues = () => {
