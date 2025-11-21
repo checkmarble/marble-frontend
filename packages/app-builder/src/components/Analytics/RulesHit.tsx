@@ -17,13 +17,6 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
 
   const visibleData = useMemo(() => (expanded ? data : data.slice(0, 5)), [expanded, data]);
 
-  const toPercent = (value: number) =>
-    formatNumber(value > 1 ? value / 100 : value, {
-      language,
-      style: 'percent',
-      maximumFractionDigits: 1,
-    });
-
   const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row.ruleName, {
@@ -56,7 +49,10 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
           </div>
         ),
         size: 120,
-        cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
+
+        cell: ({ getValue }) => (
+          <span>{formatNumber(Number(getValue()), { language, maximumFractionDigits: 2 })} %</span>
+        ),
       }),
       columnHelper.accessor((row) => row.distinctPivots, {
         id: 'distinctPivots',
@@ -82,7 +78,9 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
           </div>
         ),
         size: 160,
-        cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
+        cell: ({ getValue }) => (
+          <span>{formatNumber(Number(getValue()), { language, maximumFractionDigits: 2 })} %</span>
+        ),
       }),
     ],
     [columnHelper, language, t],
