@@ -6,9 +6,10 @@ import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, TooltipV2 } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OutcomeFilter } from './OutcomeFilter';
+import { AnalyticsTooltip } from './Tooltip';
 
 export function RuleVsDecisionOutcomes({
   data,
@@ -90,16 +91,9 @@ export function RuleVsDecisionOutcomes({
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-v2-sm">
           <h2 className="text-h2 font-semibold">{t('analytics:rule_vs_decision_outcomes.title')}</h2>
-          <TooltipV2.Provider>
-            <TooltipV2.Tooltip>
-              <TooltipV2.TooltipTrigger asChild>
-                <Icon icon="tip" className="size-5 text-grey-60 hover:text-purple-65 cursor-pointer" />
-              </TooltipV2.TooltipTrigger>
-              <TooltipV2.TooltipContent>
-                <span className="font-normal">{t('analytics:rule_vs_decision_outcomes.tooltip')}</span>
-              </TooltipV2.TooltipContent>
-            </TooltipV2.Tooltip>
-          </TooltipV2.Provider>
+          <AnalyticsTooltip content={t('analytics:rule_vs_decision_outcomes.tooltip')}>
+            <Icon icon="tip" className="size-5 text-grey-60 hover:text-purple-65 cursor-pointer" />
+          </AnalyticsTooltip>
         </span>
         <ButtonV2
           variant="secondary"

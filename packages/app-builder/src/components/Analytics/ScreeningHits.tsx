@@ -3,9 +3,10 @@ import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, TooltipV2, useTable } from 'ui-design-system';
+import { Table, useTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Spinner } from '../Spinner';
+import { AnalyticsTooltip } from './Tooltip';
 
 const columnHelper = createColumnHelper<ScreeningHitTableResponse>();
 
@@ -35,16 +36,9 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
         header: () => (
           <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
             {t('analytics:screening_hits.columns.execs')}
-            <TooltipV2.Provider>
-              <TooltipV2.Tooltip>
-                <TooltipV2.TooltipTrigger asChild>
-                  <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
-                </TooltipV2.TooltipTrigger>
-                <TooltipV2.TooltipContent>
-                  <span className="font-normal">{t('analytics:screening_hits.columns.execs.tooltip')}</span>
-                </TooltipV2.TooltipContent>
-              </TooltipV2.Tooltip>
-            </TooltipV2.Provider>
+            <AnalyticsTooltip content={t('analytics:screening_hits.columns.execs.tooltip')}>
+              <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
+            </AnalyticsTooltip>
           </div>
         ),
       }),
@@ -53,16 +47,9 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
         header: () => (
           <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
             {t('analytics:screening_hits.columns.hits')}
-            <TooltipV2.Provider>
-              <TooltipV2.Tooltip>
-                <TooltipV2.TooltipTrigger asChild>
-                  <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
-                </TooltipV2.TooltipTrigger>
-                <TooltipV2.TooltipContent>
-                  <span className="font-normal">{t('analytics:screening_hits.columns.hits.tooltip')}</span>
-                </TooltipV2.TooltipContent>
-              </TooltipV2.Tooltip>
-            </TooltipV2.Provider>
+            <AnalyticsTooltip content={t('analytics:screening_hits.columns.hits.tooltip')}>
+              <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
+            </AnalyticsTooltip>
           </div>
         ),
       }),
@@ -71,16 +58,9 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
         header: () => (
           <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
             {t('analytics:screening_hits.columns.hit_ratio')}
-            <TooltipV2.Provider>
-              <TooltipV2.Tooltip>
-                <TooltipV2.TooltipTrigger asChild>
-                  <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
-                </TooltipV2.TooltipTrigger>
-                <TooltipV2.TooltipContent>
-                  <span className="font-normal">{t('analytics:screening_hits.columns.hit_ratio.tooltip')}</span>
-                </TooltipV2.TooltipContent>
-              </TooltipV2.Tooltip>
-            </TooltipV2.Provider>
+            <AnalyticsTooltip content={t('analytics:screening_hits.columns.hit_ratio.tooltip')}>
+              <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
+            </AnalyticsTooltip>
           </div>
         ),
         cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
@@ -90,18 +70,9 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
         header: () => (
           <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
             {t('analytics:screening_hits.columns.avg_hits_per_screening')}
-            <TooltipV2.Provider>
-              <TooltipV2.Tooltip>
-                <TooltipV2.TooltipTrigger asChild>
-                  <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
-                </TooltipV2.TooltipTrigger>
-                <TooltipV2.TooltipContent>
-                  <span className="font-normal">
-                    {t('analytics:screening_hits.columns.avg_hits_per_screening.tooltip')}
-                  </span>
-                </TooltipV2.TooltipContent>
-              </TooltipV2.Tooltip>
-            </TooltipV2.Provider>
+            <AnalyticsTooltip content={t('analytics:screening_hits.columns.avg_hits_per_screening.tooltip')}>
+              <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
+            </AnalyticsTooltip>
           </div>
         ),
         cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
