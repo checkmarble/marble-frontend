@@ -43,7 +43,7 @@ const defaultDecisions: DecisionsFilter = new Map([
   ['decline', true],
   ['blockAndReview', true],
   ['review', true],
-  ['approve', true],
+  ['approve', false],
 ]);
 
 const getBarColors = (d: ComputedDatum<DecisionsPerOutcome>) => {
@@ -67,7 +67,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     observeHeight: false,
   });
 
-  const SYMLOG_SCALE_MIN_ENABLED = false;
+  const SYMLOG_SCALE_MIN_ENABLED = true;
 
   const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
   const [percentage, setPercentage] = useState(false);
@@ -337,14 +337,6 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                     variant="secondary"
                     onClick={() => {
                       setScale('linear');
-                      setDecisions(
-                        new Map([
-                          ['decline', true],
-                          ['blockAndReview', true],
-                          ['review', true],
-                          ['approve', true],
-                        ]),
-                      );
                     }}
                     className={scale === 'linear' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
                   >
@@ -352,7 +344,10 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                   </ButtonV2>
                   <ButtonV2
                     variant="secondary"
-                    onClick={() => setScale('symlog')}
+                    onClick={() => {
+                      setGroupDate('weekly');
+                      setScale('symlog');
+                    }}
                     className={scale === 'symlog' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
                   >
                     {t('analytics:decisions.scale.symlog.label')}
@@ -476,7 +471,10 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 disabled={!data?.daily || !data?.metadata.totalDecisions}
                 variant="secondary"
                 mode="normal"
-                onClick={() => setGroupDate('daily')}
+                onClick={() => {
+                  setGroupDate('daily');
+                  setScale('linear');
+                }}
                 className={groupDate === 'daily' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
               >
                 {t('analytics:time_granularity.day')}
