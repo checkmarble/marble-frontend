@@ -1,6 +1,6 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { getRoute } from '@app-builder/utils/routes';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
 export const createCasePayloadSchema = z.object({
@@ -14,8 +14,10 @@ const endpoint = getRoute('/ressources/cases/create-case');
 
 export const useCreateCaseMutation = () => {
   const navigate = useAgnosticNavigation();
+  const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: ['cases', 'create-case'],
     mutationFn: async (payload: CreateCasePayload) => {
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -28,6 +30,9 @@ export const useCreateCaseMutation = () => {
       }
 
       return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cases'] });
     },
   });
 };

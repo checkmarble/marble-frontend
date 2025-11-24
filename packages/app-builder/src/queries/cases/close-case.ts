@@ -1,6 +1,6 @@
 import { finalOutcomes } from '@app-builder/models/cases';
 import { getRoute } from '@app-builder/utils/routes';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import z from 'zod/v4';
 
 export const closeCasePayloadSchema = z.object({
@@ -14,6 +14,8 @@ export type CloseCasePayload = z.infer<typeof closeCasePayloadSchema>;
 const endpoint = getRoute('/ressources/cases/close-case');
 
 export const useCloseCaseMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ['cases', 'close-case'],
     mutationFn: async (payload: CloseCasePayload) => {
@@ -23,6 +25,9 @@ export const useCloseCaseMutation = () => {
       });
 
       return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cases'] });
     },
   });
 };

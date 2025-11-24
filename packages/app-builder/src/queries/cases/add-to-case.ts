@@ -1,6 +1,6 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { getRoute } from '@app-builder/utils/routes';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
 export const addToCasePayloadSchema = z.discriminatedUnion('newCase', [
@@ -23,6 +23,7 @@ const endpoint = getRoute('/ressources/cases/add-to-case');
 
 export const useAddToCaseMutation = () => {
   const navigate = useAgnosticNavigation();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: ['cases', 'add-to-case'],
@@ -40,6 +41,9 @@ export const useAddToCaseMutation = () => {
       }
 
       return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cases'] });
     },
   });
 };

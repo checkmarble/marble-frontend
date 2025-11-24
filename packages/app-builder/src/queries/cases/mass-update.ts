@@ -1,5 +1,5 @@
 import { getRoute } from '@app-builder/utils/routes';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
 export const massUpdateCasesPayloadSchema = z.union([
@@ -38,6 +38,8 @@ export type MassUpdateCasesPayload = z.input<typeof massUpdateCasesPayloadSchema
 const endpoint = getRoute('/ressources/cases/mass-update');
 
 export const useMassUpdateCasesMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: ['cases', 'mass-update'],
     mutationFn: async (payload: MassUpdateCasesPayload) => {
@@ -47,6 +49,9 @@ export const useMassUpdateCasesMutation = () => {
       });
 
       return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cases'] });
     },
   });
 };
