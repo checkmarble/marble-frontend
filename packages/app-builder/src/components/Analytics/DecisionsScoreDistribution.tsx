@@ -1,18 +1,32 @@
 import type { DecisionsScoreDistribution as DecisionsScoreDistributionModel } from '@app-builder/models/analytics';
 import { ResponsiveLine } from '@nivo/line';
+import { ButtonV2 } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 
 export const DecisionsScoreDistribution = ({ data }: { data: DecisionsScoreDistributionModel | null }) => {
-  const thresholds = data?.thresholds ?? {};
-  const series = [
-    {
-      id: 'percentage',
-      data: data?.stepSeries ?? [],
-    },
-  ];
+  const handleExportCsv = () => {
+    if (!data) return;
+    const headers = ['score', 'percentage'];
+    const lines = data.stepSeries.map(({ x, y }) => [x, y]);
+    const csv = [headers.join(','), ...lines].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8,' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'decisions_score_distribution.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
   return (
     <div className="w-full">
       <div className="flex items-center justify-between">
         <h2 className="text-h2 font-semibold">t('analytics:decisions_score_distribution.title')</h2>
+        <ButtonV2 variant="secondary" className="flex items-center gap-v2-sm" onClick={handleExportCsv}>
+          <Icon icon="download" className="size-4" />
+          Export CSV
+        </ButtonV2>
       </div>
       <div className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative">
         <div className="flex w-full h-[500px] flex-col items-start gap-v2-md">
