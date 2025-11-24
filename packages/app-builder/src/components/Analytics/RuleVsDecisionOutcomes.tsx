@@ -83,7 +83,6 @@ export function RuleVsDecisionOutcomes({
 
   return (
     <div
-      className="mt-v2-xl"
       onMouseEnter={() => {
         setIsHovered(true);
       }}

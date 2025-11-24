@@ -85,7 +85,7 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
     enableSorting: false,
   });
   return (
-    <div className="mt-v2-xl">
+    <div>
       <div className="flex items-center justify-between">
         <h2 className="text-h2 font-semibold">{t('analytics:rule_hits.title')}</h2>
       </div>

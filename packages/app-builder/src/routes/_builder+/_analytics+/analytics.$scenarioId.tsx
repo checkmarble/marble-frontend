@@ -43,6 +43,7 @@ interface LoaderData {
   }>;
 }
 
+import { Spinner } from '@app-builder/components/Spinner';
 import { useRef } from 'react';
 
 export const handle = {
@@ -363,7 +364,7 @@ export default function Analytics() {
         }}
       >
         <div className="overflow-y-auto">
-          <div className="flex flex-col overflow-y-auto p-v2-lg min-[2000px]:px-40">
+          <div className="flex flex-col overflow-y-auto p-v2-lg min-[2000px]:px-40 gap-v2-md">
             <div className="flex flex-row gap-v2-md mb-v2-lg w-full">
               <div className="flex flex-row gap-v2-sm items-start min-h-[88px] w-full">
                 <FiltersBar
@@ -375,7 +376,7 @@ export default function Analytics() {
                 />
               </div>
             </div>
-            <div className="flex flex-col min-[1000px]:flex-row gap-v2-md w-full items-stretch">
+            <div className="flex flex-col min-[1000px]:flex-row gap-v2-md w-full items-stretch h-auto">
               <div className="min-[1000px]:basis-3/4 min-w-0">
                 <Decisions
                   data={decisionsOutcomesPerDayData?.data ?? null}
@@ -383,8 +384,14 @@ export default function Analytics() {
                   isLoading={decisionsOutcomesPerDayData?.isFetching ?? true}
                 />
               </div>
-              <div className="min-[1000px]:basis-1/4 min-w-0">
-                <DecisionsScoreDistribution data={decisionsScoreDistributionData?.data ?? null} />
+              <div className="min-[1000px]:basis-1/4 min-w-0 min-h-[500px]">
+                {(decisionsScoreDistributionData?.isFetching ?? true) ? (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
+                    <Spinner className="size-6" />
+                  </div>
+                ) : (
+                  <DecisionsScoreDistribution data={decisionsScoreDistributionData?.data ?? null} />
+                )}
               </div>
             </div>
 
