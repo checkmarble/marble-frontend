@@ -427,6 +427,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 );
               }}
               theme={{
+                grid: { line: { stroke: '#E5E7EB', strokeWidth: 1, strokeDasharray: '4 4' } },
                 tooltip: {
                   container: {
                     transform: 'translateX(16px)',
