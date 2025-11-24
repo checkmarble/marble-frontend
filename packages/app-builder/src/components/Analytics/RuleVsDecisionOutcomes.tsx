@@ -91,9 +91,7 @@ export function RuleVsDecisionOutcomes({
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-v2-sm">
           <h2 className="text-h2 font-semibold">{t('analytics:rule_vs_decision_outcomes.title')}</h2>
-          <AnalyticsTooltip content={t('analytics:rule_vs_decision_outcomes.tooltip')}>
-            <Icon icon="tip" className="size-5 text-grey-60 hover:text-purple-65 cursor-pointer" />
-          </AnalyticsTooltip>
+          <AnalyticsTooltip className="size-5" content={t('analytics:rule_vs_decision_outcomes.tooltip')} />
         </span>
         <ButtonV2
           variant="secondary"

@@ -5,7 +5,6 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { AnalyticsTooltip } from './Tooltip';
 
 const columnHelper = createColumnHelper<RuleHitTableResponse>();
@@ -30,9 +29,7 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
         header: () => (
           <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
             {t('analytics:rule_hits.columns.hit_count')}
-            <AnalyticsTooltip content={t('analytics:rule_hits.columns.hit_count.tooltip')}>
-              <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
-            </AnalyticsTooltip>
+            <AnalyticsTooltip className="size-4" content={t('analytics:rule_hits.columns.hit_count.tooltip')} />
           </div>
         ),
         size: 100,
@@ -43,9 +40,7 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
         header: () => (
           <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
             {t('analytics:rule_hits.columns.hit_ratio')}
-            <AnalyticsTooltip content={t('analytics:rule_hits.columns.hit_ratio.tooltip')}>
-              <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
-            </AnalyticsTooltip>
+            <AnalyticsTooltip className="size-4" content={t('analytics:rule_hits.columns.hit_ratio.tooltip')} />
           </div>
         ),
         size: 120,
@@ -59,9 +54,7 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
         header: () => (
           <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
             {t('analytics:rule_hits.columns.pivot_count')}
-            <AnalyticsTooltip content={t('analytics:rule_hits.columns.pivot_count.tooltip')}>
-              <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
-            </AnalyticsTooltip>
+            <AnalyticsTooltip className="size-4" content={t('analytics:rule_hits.columns.pivot_count.tooltip')} />
           </div>
         ),
         size: 140,
@@ -72,9 +65,7 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
         header: () => (
           <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
             {t('analytics:rule_hits.columns.pivot_ratio')}
-            <AnalyticsTooltip content={t('analytics:rule_hits.columns.pivot_ratio.tooltip')}>
-              <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
-            </AnalyticsTooltip>
+            <AnalyticsTooltip className="size-4" content={t('analytics:rule_hits.columns.pivot_ratio.tooltip')} />
           </div>
         ),
         size: 160,

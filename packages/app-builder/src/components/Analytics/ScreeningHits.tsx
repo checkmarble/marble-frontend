@@ -4,7 +4,6 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 import { Spinner } from '../Spinner';
 import { AnalyticsTooltip } from './Tooltip';
 
@@ -36,9 +35,7 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
         header: () => (
           <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
             {t('analytics:screening_hits.columns.execs')}
-            <AnalyticsTooltip content={t('analytics:screening_hits.columns.execs.tooltip')}>
-              <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
-            </AnalyticsTooltip>
+            <AnalyticsTooltip className="size-4" content={t('analytics:screening_hits.columns.execs.tooltip')} />
           </div>
         ),
       }),
@@ -47,9 +44,7 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
         header: () => (
           <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
             {t('analytics:screening_hits.columns.hits')}
-            <AnalyticsTooltip content={t('analytics:screening_hits.columns.hits.tooltip')}>
-              <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
-            </AnalyticsTooltip>
+            <AnalyticsTooltip className="size-4" content={t('analytics:screening_hits.columns.hits.tooltip')} />
           </div>
         ),
       }),
@@ -58,9 +53,7 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
         header: () => (
           <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
             {t('analytics:screening_hits.columns.hit_ratio')}
-            <AnalyticsTooltip content={t('analytics:screening_hits.columns.hit_ratio.tooltip')}>
-              <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
-            </AnalyticsTooltip>
+            <AnalyticsTooltip className="size-4" content={t('analytics:screening_hits.columns.hit_ratio.tooltip')} />
           </div>
         ),
         cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
@@ -70,9 +63,10 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
         header: () => (
           <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
             {t('analytics:screening_hits.columns.avg_hits_per_screening')}
-            <AnalyticsTooltip content={t('analytics:screening_hits.columns.avg_hits_per_screening.tooltip')}>
-              <Icon icon="tip" className="size-4 text-grey-60 hover:text-purple-65 cursor-pointer ml-v2-sm" />
-            </AnalyticsTooltip>
+            <AnalyticsTooltip
+              className="size-4"
+              content={t('analytics:screening_hits.columns.avg_hits_per_screening.tooltip')}
+            />
           </div>
         ),
         cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
