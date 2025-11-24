@@ -363,7 +363,7 @@ export default function Analytics() {
         }}
       >
         <div className="overflow-y-auto">
-          <div className="flex flex-col overflow-y-auto p-v2-lg">
+          <div className="flex flex-col overflow-y-auto p-v2-lg min-[2000px]:px-40">
             <div className="flex flex-row gap-v2-md mb-v2-lg w-full">
               <div className="flex flex-row gap-v2-sm items-start min-h-[88px] w-full">
                 <FiltersBar
@@ -375,15 +375,15 @@ export default function Analytics() {
                 />
               </div>
             </div>
-            <div className="flex flex-row gap-v2-md w-full items-stretch">
-              <div className="basis-3/4 min-w-0">
+            <div className="flex flex-col min-[1000px]:flex-row gap-v2-md w-full items-stretch">
+              <div className="min-[1000px]:basis-3/4 min-w-0">
                 <Decisions
                   data={decisionsOutcomesPerDayData?.data ?? null}
                   scenarioVersions={scenarioVersions}
                   isLoading={decisionsOutcomesPerDayData?.isFetching ?? true}
                 />
               </div>
-              <div className="basis-1/4 min-w-0">
+              <div className="min-[1000px]:basis-1/4 min-w-0">
                 <DecisionsScoreDistribution data={decisionsScoreDistributionData?.data ?? null} />
               </div>
             </div>
