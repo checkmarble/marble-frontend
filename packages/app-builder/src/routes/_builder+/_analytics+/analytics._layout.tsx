@@ -8,7 +8,8 @@ import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { Link, Outlet, useRouteError } from '@remix-run/react';
 import { captureRemixErrorBoundaryError } from '@sentry/remix';
-import { type Namespace, t } from 'i18next';
+import { type Namespace } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
 export type DecisionsPerOutcome = {
@@ -51,6 +52,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function Analytics() {
+  const { t } = useTranslation(handle.i18n);
   return (
     <Page.Main className="bg-grey-background-light">
       <Page.Header className="justify-between">
