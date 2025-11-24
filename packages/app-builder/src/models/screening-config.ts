@@ -21,6 +21,7 @@ export type ScreeningConfig = Partial<{
   counterPartyId: AstNode;
   preprocessing?: {
     useNer?: boolean;
+    nerIgnoreClassification?: boolean;
     skipIfUnder?: number;
     removeNumbers?: boolean;
     blacklistListId?: string;
@@ -43,6 +44,7 @@ export function adaptScreeningConfig(dto: ScreeningConfigDto): ScreeningConfig {
     preprocessing: dto.preprocessing
       ? {
           useNer: dto.preprocessing.use_ner,
+          nerIgnoreClassification: dto.preprocessing.ner_ignore_classification,
           skipIfUnder: dto.preprocessing.skip_if_under,
           removeNumbers: dto.preprocessing.remove_numbers,
           blacklistListId: dto.preprocessing.ignore_list_id,
