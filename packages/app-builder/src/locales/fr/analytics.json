@@ -1,7 +1,7 @@
 {
   "decisions_score_distribution.bottom-axis-legend": "Score",
   "decisions_score_distribution.left-axis-legend": "Occurences en %",
-  "decisions_score_distribution.title": "Score",
+  "decisions_score_distribution.title": "Distribution des décisions par score",
   "decisions.scale.label": "Échelle",
   "decisions.scale.linear.label": "Linéaire",
   "decisions.scale.symlog.label": "Symlog",
