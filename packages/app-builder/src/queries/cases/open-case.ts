@@ -1,5 +1,5 @@
 import { getRoute } from '@app-builder/utils/routes';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
 export const openCasePayloadSchema = z.object({
@@ -12,7 +12,10 @@ export type OpenCasePayload = z.infer<typeof openCasePayloadSchema>;
 const endpoint = getRoute('/ressources/cases/open-case');
 
 export const useOpenCaseMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
+    mutationKey: ['cases', 'open-case'],
     mutationFn: async (payload: OpenCasePayload) => {
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -20,6 +23,9 @@ export const useOpenCaseMutation = () => {
       });
 
       return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cases'] });
     },
   });
 };

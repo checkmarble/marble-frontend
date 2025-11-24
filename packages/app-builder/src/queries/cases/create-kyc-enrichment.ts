@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
-export const useCreateKycEnrichmentQuery = (caseId: string) =>
-  useQuery({
-    queryKey: ['case', 'create-kyc-enrichment', caseId],
+export const useCreateKycEnrichmentQuery = (caseId: string) => {
+  return useQuery({
+    queryKey: ['cases', 'create-kyc-enrichment', caseId],
     queryFn: async () =>
       fetch(`/ressources/cases/${caseId}/enrich-kyc`, {
         method: 'POST',
@@ -11,3 +11,4 @@ export const useCreateKycEnrichmentQuery = (caseId: string) =>
     enabled: false,
     staleTime: Infinity,
   });
+};

@@ -1,5 +1,5 @@
 import { getRoute } from '@app-builder/utils/routes';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
 export const durationUnitOptions = ['hours', 'days', 'weeks'] as const;
@@ -17,14 +17,19 @@ export type AddRuleSnoozePayload = z.infer<typeof addRuleSnoozePayloadSchema>;
 const endpoint = getRoute('/ressources/cases/add-rule-snooze');
 
 export const useAddRuleSnoozeMutation = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationKey: ['case', 'add-rule-snooze'],
+    mutationKey: ['cases', 'add-rule-snooze'],
     mutationFn: async (payload: AddRuleSnoozePayload) => {
       const response = await fetch(endpoint, {
         method: 'POST',
         body: JSON.stringify(payload),
       });
       return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cases'] });
     },
   });
 };
