@@ -16,7 +16,23 @@ const getFocusRange = (data: { x: number; y: number }[], percentile = 0.9, paddi
   // 1. Extract all Y values
   const values = data.map((d) => d.y).sort((a, b) => a - b);
 
-  if (!values) return { min: 0, max: 'auto' };
+  if (!values.length) return { min: 0, max: 'auto' };
+
+  const minVal = Math.min(...values);
+  const maxVal = Math.max(...values);
+
+  // If the spread is small (less than 20%), we don't want to filter outliers
+  if (maxVal - minVal < 20) {
+    const range = maxVal - minVal;
+    const suggestedMax = maxVal + range * padding;
+    const suggestedMin = Math.max(0, minVal - range * padding);
+
+    return {
+      min: suggestedMin,
+      max: suggestedMax,
+      hasOutliers: false,
+    };
+  }
 
   // 2. Find the index of the percentile cutoff
   // e.g., if 20 items, 0.90 * 20 = index 18
@@ -29,13 +45,13 @@ const getFocusRange = (data: { x: number; y: number }[], percentile = 0.9, paddi
   // 3. Filter data to find the 'normal' min/max
   const normalValues = values.filter((v) => v <= outlierThreshold);
 
-  const minVal = Math.min(...normalValues);
-  const maxVal = Math.max(...normalValues);
+  const normalMinVal = Math.min(...normalValues);
+  const normalMaxVal = Math.max(...normalValues);
 
   // 4. Add visual padding so the line doesn't hit the edges hard
-  const range = maxVal - minVal;
-  const suggestedMax = maxVal + range * padding;
-  const suggestedMin = Math.max(0, minVal - range * padding); // Assuming ratio >= 0
+  const range = normalMaxVal - normalMinVal;
+  const suggestedMax = normalMaxVal + range * padding;
+  const suggestedMin = Math.max(0, normalMinVal - range * padding); // Assuming ratio >= 0
 
   return {
     min: suggestedMin,
