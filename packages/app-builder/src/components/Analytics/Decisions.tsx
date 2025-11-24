@@ -199,6 +199,26 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     }
   };
 
+  const getSymlogTickValues = () => {
+    if (chartData.length === 0) return [0];
+
+    const values = chartData.flatMap((d) => [d.approve, d.decline, d.review, d.blockAndReview]);
+    const maxValue = Math.max(...values);
+
+    if (maxValue === 0) return [0];
+
+    const ticks = new Set([0]);
+    let step = 1;
+    while (step <= maxValue) {
+      ticks.add(step);
+      if (step * 2 <= maxValue) ticks.add(step * 2);
+      if (step * 5 <= maxValue) ticks.add(step * 5);
+      step *= 10;
+    }
+
+    return Array.from(ticks).sort((a, b) => a - b);
+  };
+
   const getXTickValues = () => {
     if (!currentDataGroup?.gridXValues) {
       return [];
@@ -378,7 +398,11 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
               axisLeft={{
                 legend: 'outcome (indexBy)',
                 legendOffset: -70,
-                tickValues: !data?.metadata.totalDecisions ? [0, 200, 400, 600, 800, 1000] : undefined,
+                tickValues: !data?.metadata.totalDecisions
+                  ? [0, 200, 400, 600, 800, 1000]
+                  : scale === 'symlog'
+                    ? getSymlogTickValues()
+                    : undefined,
               }}
               axisBottom={{
                 tickValues: getXTickValues(),
