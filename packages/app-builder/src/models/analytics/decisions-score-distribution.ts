@@ -16,16 +16,6 @@ export type DecisionsScoreDistribution = {
   stepSeries: Array<{ x: number; y: number }>;
 };
 
-// For testing purpose, increase first 9 points by 1000
-const _increaseFirst9Points = (
-  values: DecisionsScoreDistributionResponseDto[],
-): DecisionsScoreDistributionResponseDto[] =>
-  values.map(({ score, decisions }) => ({
-    score,
-    decisions,
-    // decisions: score <= 4 ? decisions * 1000 : decisions,
-  }));
-
 export const adaptDecisionsScoreDistribution = (
   values: DecisionsScoreDistributionResponseDto[],
 ): DecisionsScoreDistribution => {
