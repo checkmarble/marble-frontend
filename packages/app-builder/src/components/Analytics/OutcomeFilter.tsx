@@ -1,6 +1,6 @@
 import { OUTCOME_COLORS } from '@app-builder/constants/analytics';
 import { DecisionsFilter, type Outcome } from '@app-builder/models/analytics';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -13,7 +13,13 @@ export function OutcomeFilter({
   highlight: boolean;
   onChange: (decisions: DecisionsFilter) => void;
 }) {
-  const hasHighlightedRef = useRef<boolean>(highlight);
+  const hasHighlightedRef = useRef(false);
+
+  useEffect(() => {
+    if (!highlight) {
+      hasHighlightedRef.current = false;
+    }
+  }, [highlight]);
 
   const handleToggle = (key: Outcome) => {
     const newDecisions = new Map(decisions);
