@@ -1,16 +1,23 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
-import { type AnalyticsFiltersQuery } from '@app-builder/models/analytics';
+import {
+  type AnalyticsFiltersQuery,
+  DecisionOutcomesPerPeriod,
+  DecisionsScoreDistribution,
+  RuleVsDecisionOutcome,
+  ScreeningHitTableResponse,
+} from '@app-builder/models/analytics';
+
+import { RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 import { getRoute } from '@app-builder/utils/routes';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-export function createAnalyticsQuery<TData>(queryName: string) {
+function createAnalyticsQuery<TData>(queryName: string) {
   return ({ scenarioId, queryString }: { scenarioId: string; queryString: string }) => {
     const navigate = useAgnosticNavigation();
     const endpoint = getRoute('/ressources/analytics/:scenarioId/query/:queryName', {
       scenarioId,
       queryName,
     });
-    console.log('endpoint', endpoint);
     const qs = queryString ? atob(queryString) : null;
     const parsed: AnalyticsFiltersQuery = JSON.parse(qs || '{}');
 
@@ -43,3 +50,14 @@ export function createAnalyticsQuery<TData>(queryName: string) {
     });
   };
 }
+
+export const useGetDecisionsOutcomesPerDay =
+  createAnalyticsQuery<DecisionOutcomesPerPeriod>('decision-outcomes-per-day');
+export const useGetDecisionsScoreDistribution =
+  createAnalyticsQuery<DecisionsScoreDistribution>('decisions-score-distribution');
+
+export const useGetRuleHitTable = createAnalyticsQuery<RuleHitTableResponse[]>('rule-hit-table');
+
+export const useGetRuleVsDecisionOutcome = createAnalyticsQuery<RuleVsDecisionOutcome[]>('rule-vs-decision-outcome');
+
+export const useGetScreeningHitsTable = createAnalyticsQuery<ScreeningHitTableResponse[]>('screening-hits-table');

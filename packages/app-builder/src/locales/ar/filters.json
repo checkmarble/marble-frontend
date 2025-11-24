@@ -1,5 +1,11 @@
 {
   "clear_filters": "مسح الفلاتر",
+  "date_range_filter.preset.last_3_months": "آخر 3 أشهر",
+  "date_range_filter.preset.last_6_months": "آخر 6 أشهر",
+  "date_range_filter.preset.last_7_days": "آخر 7 أيام",
+  "date_range_filter.preset.last_12_months": "آخر 12 شهر",
+  "date_range_filter.preset.last_14_days": "آخر 14 يوم",
+  "date_range_filter.preset.last_30_days": "آخر 30 يوم",
   "date_range.duration": "من {{duration}}",
   "date_range.range_value": "من {{startDate}} إلى {{endDate}}",
   "ds.addNewFilter.label": "إضافة فلتر جديد",

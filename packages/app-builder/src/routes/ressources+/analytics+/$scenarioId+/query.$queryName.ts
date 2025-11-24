@@ -37,6 +37,17 @@ export const action = createServerFn(
           };
         }
 
+        case 'decisions-score-distribution': {
+          const data = await context.authInfo.analytics.getDecisionsScoreDistribution({
+            ...queryParams,
+            scenarioId: urlParams.scenarioId,
+          });
+          return {
+            success: true,
+            data,
+          };
+        }
+
         case 'rule-hit-table': {
           const data = await context.authInfo.analytics.getRuleHitTable({
             ...queryParams,

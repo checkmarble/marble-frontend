@@ -5,6 +5,7 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
+import { AnalyticsTooltip } from './Tooltip';
 
 const columnHelper = createColumnHelper<RuleHitTableResponse>();
 
@@ -14,13 +15,6 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
   const [expanded, setExpanded] = useState(false);
 
   const visibleData = useMemo(() => (expanded ? data : data.slice(0, 5)), [expanded, data]);
-
-  const toPercent = (value: number) =>
-    formatNumber(value > 1 ? value / 100 : value, {
-      language,
-      style: 'percent',
-      maximumFractionDigits: 1,
-    });
 
   const columns = useMemo(
     () => [
@@ -32,27 +26,52 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
       }),
       columnHelper.accessor((row) => row.hitCount, {
         id: 'hitCount',
-        header: t('analytics:rule_hits.columns.hit_count'),
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:rule_hits.columns.hit_count')}
+            <AnalyticsTooltip className="size-4" content={t('analytics:rule_hits.columns.hit_count.tooltip')} />
+          </div>
+        ),
         size: 100,
         cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
       }),
       columnHelper.accessor((row) => row.hitRatio, {
         id: 'hitRatio',
-        header: t('analytics:rule_hits.columns.hit_ratio'),
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:rule_hits.columns.hit_ratio')}
+            <AnalyticsTooltip className="size-4" content={t('analytics:rule_hits.columns.hit_ratio.tooltip')} />
+          </div>
+        ),
         size: 120,
-        cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
+
+        cell: ({ getValue }) => (
+          <span>{formatNumber(Number(getValue()), { language, maximumFractionDigits: 2 })} %</span>
+        ),
       }),
       columnHelper.accessor((row) => row.distinctPivots, {
         id: 'distinctPivots',
-        header: t('analytics:rule_hits.columns.pivot_count'),
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:rule_hits.columns.pivot_count')}
+            <AnalyticsTooltip className="size-4" content={t('analytics:rule_hits.columns.pivot_count.tooltip')} />
+          </div>
+        ),
         size: 140,
         cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
       }),
       columnHelper.accessor((row) => row.repeatRatio, {
         id: 'repeatRatio',
-        header: t('analytics:rule_hits.columns.pivot_ratio'),
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:rule_hits.columns.pivot_ratio')}
+            <AnalyticsTooltip className="size-4" content={t('analytics:rule_hits.columns.pivot_ratio.tooltip')} />
+          </div>
+        ),
         size: 160,
-        cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
+        cell: ({ getValue }) => (
+          <span>{formatNumber(Number(getValue()), { language, maximumFractionDigits: 2 })} %</span>
+        ),
       }),
     ],
     [columnHelper, language, t],

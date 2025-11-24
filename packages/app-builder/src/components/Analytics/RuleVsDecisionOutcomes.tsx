@@ -1,5 +1,6 @@
 import { Spinner } from '@app-builder/components/Spinner';
-import { type DecisionsFilter, type Outcome, outcomeColors } from '@app-builder/models/analytics';
+import { OUTCOME_COLORS } from '@app-builder/constants/analytics';
+import { type DecisionsFilter, type Outcome } from '@app-builder/models/analytics';
 import { RuleVsDecisionOutcome } from '@app-builder/models/analytics/rule-vs-decision-outcome';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
@@ -8,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { OutcomeFilter } from './OutcomeFilter';
+import { AnalyticsTooltip } from './Tooltip';
 
 export function RuleVsDecisionOutcomes({
   data,
@@ -42,7 +44,7 @@ export function RuleVsDecisionOutcomes({
 
   const getBarColors = (d: ComputedDatum<RuleVsDecisionOutcome>) => {
     const id = String(d.id) as Outcome;
-    return outcomeColors[id] ?? '#9ca3af';
+    return OUTCOME_COLORS[id] ?? '#9ca3af';
   };
 
   const MAX_RULE_NAME_LENGTH = 42;
@@ -77,11 +79,20 @@ export function RuleVsDecisionOutcomes({
     a.remove();
     URL.revokeObjectURL(url);
   };
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="mt-v2-xl">
+    <div
+      className="mt-v2-xl"
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+    >
       <div className="flex items-center justify-between">
-        <h2 className="text-h2 font-semibold">{t('analytics:rule_vs_decision_outcomes.title')}</h2>
+        <span className="flex items-center gap-v2-sm">
+          <h2 className="text-h2 font-semibold">{t('analytics:rule_vs_decision_outcomes.title')}</h2>
+          <AnalyticsTooltip className="size-5" content={t('analytics:rule_vs_decision_outcomes.tooltip')} />
+        </span>
         <ButtonV2
           variant="secondary"
           className="flex items-center gap-v2-sm"
@@ -159,7 +170,7 @@ export function RuleVsDecisionOutcomes({
               />
             </div>
             <div className="flex w-full justify-center">
-              <OutcomeFilter decisions={decisions} onChange={setDecisions} />
+              <OutcomeFilter decisions={decisions} onChange={setDecisions} highlight={isHovered} />
             </div>
           </div>
         ) : (

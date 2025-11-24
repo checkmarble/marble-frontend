@@ -1,5 +1,11 @@
 {
   "clear_filters": "Effacer les filtres",
+  "date_range_filter.preset.last_3_months": "Derniers 3 mois",
+  "date_range_filter.preset.last_6_months": "Derniers 6 mois",
+  "date_range_filter.preset.last_7_days": "Derniers 7 jours",
+  "date_range_filter.preset.last_12_months": "Derniers 12 mois",
+  "date_range_filter.preset.last_14_days": "Derniers 14 jours",
+  "date_range_filter.preset.last_30_days": "Derniers 30 jours",
   "date_range.duration": "Jusqu'à {{duration}}",
   "date_range.range_value": "Du {{startDate}} au {{endDate}}",
   "ds.addNewFilter.label": "Ajouter un nouveau filtre",

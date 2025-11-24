@@ -1,44 +1,65 @@
-import { DecisionsFilter, type Outcome, outcomeColors } from '@app-builder/models/analytics';
+import { OUTCOME_COLORS } from '@app-builder/constants/analytics';
+import { DecisionsFilter, type Outcome } from '@app-builder/models/analytics';
+import { useEffect, useRef } from 'react';
+import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function OutcomeFilter({
   decisions,
+  highlight = false,
   onChange,
 }: {
   decisions: DecisionsFilter;
+  highlight: boolean;
   onChange: (decisions: DecisionsFilter) => void;
 }) {
+  const hasHighlightedRef = useRef(false);
+
+  useEffect(() => {
+    if (!highlight) {
+      hasHighlightedRef.current = false;
+    }
+  }, [highlight]);
+
   const handleToggle = (key: Outcome) => {
     const newDecisions = new Map(decisions);
     newDecisions.set(key, !decisions.get(key));
+    hasHighlightedRef.current = true;
     onChange(newDecisions);
   };
-
   const FilterItem = ({ label, outcome, checked }: { label: string; outcome: Outcome; checked: boolean }) => (
-    <div
-      className={`flex items-center gap-2 cursor-pointer flex-1 min-w-0 ${outcome === 'blockAndReview' ? 'min-w-40' : ''} ${!checked ? 'text-grey-50' : ''}`}
-      onClick={() => handleToggle(outcome)}
-    >
+    <div className={cn('flex items-center gap-2 cursor-pointer flex-1 min-w-40')} onClick={() => handleToggle(outcome)}>
       <button
         className={
           'w-4 h-4 border border-grey-90 rounded-sm flex items-center justify-center hover:bg-grey-50 ' +
-          (checked ? outcomeColors[outcome] : 'bg-transparent') +
+          (checked ? OUTCOME_COLORS[outcome] : 'bg-transparent') +
           ' ' +
-          outcomeColors[outcome]
+          OUTCOME_COLORS[outcome]
         }
-        style={{ backgroundColor: outcomeColors[outcome] }}
+        style={{ backgroundColor: OUTCOME_COLORS[outcome] }}
       ></button>
       <div className="flex items-center flex-1 whitespace-nowrap min-w-0">
         <span className="text-xs">{label}</span>
-        <div className="w-4 h-4 flex items-center justify-center flex-shrink-0 ml-4">
-          {!checked && <Icon icon="eye-slash" className="w-4 h-4 text-gray-400" />}
+        <div className="w-4 h-4 flex items-center justify-center flex-shrink-0 ml-4 relative">
+          {highlight && !hasHighlightedRef.current ? (
+            <Icon
+              icon={checked ? 'eye' : 'eye-slash'}
+              className={cn('absolute size-4 animate-ping-once', checked ? 'text-blue-58' : 'text-grey-50')}
+            />
+          ) : null}
+          {highlight || !checked ? (
+            <Icon
+              icon={checked ? 'eye' : 'eye-slash'}
+              className={cn('relative size-4', checked ? 'text-blue-58' : 'text-grey-50')}
+            />
+          ) : null}
         </div>
       </div>
     </div>
   );
 
   return (
-    <div className={`flex flex-row gap-6`}>
+    <div className="flex flex-row gap-6 select-none">
       <FilterItem label="Approve" outcome="approve" checked={decisions.get('approve') ?? false} />
       <FilterItem label="Review" outcome="review" checked={decisions.get('review') ?? false} />
       <FilterItem

@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 import { Spinner } from '../Spinner';
+import { AnalyticsTooltip } from './Tooltip';
 
 const columnHelper = createColumnHelper<ScreeningHitTableResponse>();
 
@@ -31,20 +32,43 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
       }),
       columnHelper.accessor((row) => row.execs, {
         id: 'execs',
-        header: t('analytics:screening_hits.columns.execs'),
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:screening_hits.columns.execs')}
+            <AnalyticsTooltip className="size-4" content={t('analytics:screening_hits.columns.execs.tooltip')} />
+          </div>
+        ),
       }),
       columnHelper.accessor((row) => row.hits, {
         id: 'hits',
-        header: t('analytics:screening_hits.columns.hits'),
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:screening_hits.columns.hits')}
+            <AnalyticsTooltip className="size-4" content={t('analytics:screening_hits.columns.hits.tooltip')} />
+          </div>
+        ),
       }),
       columnHelper.accessor((row) => row.hitRatio, {
         id: 'hitRatio',
-        header: t('analytics:screening_hits.columns.hit_ratio'),
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:screening_hits.columns.hit_ratio')}
+            <AnalyticsTooltip className="size-4" content={t('analytics:screening_hits.columns.hit_ratio.tooltip')} />
+          </div>
+        ),
         cell: ({ getValue }) => <span>{toPercent(getValue())}</span>,
       }),
       columnHelper.accessor((row) => row.avgHitsPerScreening, {
         id: 'avgHitsPerScreening',
-        header: t('analytics:screening_hits.columns.avg_hits_per_screening'),
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:screening_hits.columns.avg_hits_per_screening')}
+            <AnalyticsTooltip
+              className="size-4"
+              content={t('analytics:screening_hits.columns.avg_hits_per_screening.tooltip')}
+            />
+          </div>
+        ),
         cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
       }),
     ],
