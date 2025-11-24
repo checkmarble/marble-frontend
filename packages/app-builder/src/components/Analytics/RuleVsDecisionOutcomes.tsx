@@ -100,7 +100,7 @@ export function RuleVsDecisionOutcomes({
           onClick={handleExportCsv}
         >
           <Icon icon="download" className="size-4" />
-          {t('analytics:decisions.export.button', 'Export CSV')}
+          {t('analytics:export.button')}
         </ButtonV2>
       </div>
 

@@ -267,7 +267,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
           onClick={handleExportCsv}
         >
           <Icon icon="download" className="size-4" />
-          {t('analytics:decisions.export.button')}
+          {t('analytics:export.button')}
         </ButtonV2>
       </div>
 

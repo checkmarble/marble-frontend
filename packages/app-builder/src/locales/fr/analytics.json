@@ -7,6 +7,7 @@
   "decisions.title": "Décisions",
   "decisions.tooltip.daily": "Date: {{date}}",
   "decisions.tooltip.weekly": "Semaine du {{date}} <Br/>(Semaine {{weekNumber}})",
+  "export.button": "Exporter",
   "filters.select_comparison_date_range.placeholder": "Ajouter une période à comparer",
   "legacy-analytics-link": "Voir les métriques sur les investigations",
   "no_data": "Aucun donnée disponible",
