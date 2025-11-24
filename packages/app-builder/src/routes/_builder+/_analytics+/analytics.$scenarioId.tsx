@@ -376,15 +376,15 @@ export default function Analytics() {
                 />
               </div>
             </div>
-            <div className="flex flex-col min-[1000px]:flex-row gap-v2-md w-full items-stretch h-auto">
-              <div className="min-[1000px]:basis-3/4 min-w-0">
+            <div className="flex flex-col lg-analytics:flex-row gap-v2-md w-full items-stretch h-auto">
+              <div className="lg-analytics:basis-3/4 min-w-0">
                 <Decisions
                   data={decisionsOutcomesPerDayData?.data ?? null}
                   scenarioVersions={scenarioVersions}
                   isLoading={decisionsOutcomesPerDayData?.isFetching ?? true}
                 />
               </div>
-              <div className="min-[1000px]:basis-1/4 min-w-0 min-h-[500px]">
+              <div className="lg-analytics:basis-1/4 min-w-0 min-h-[500px]">
                 {(decisionsScoreDistributionData?.isFetching ?? true) ? (
                   <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
                     <Spinner className="size-6" />
