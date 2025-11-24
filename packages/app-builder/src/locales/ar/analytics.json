@@ -1,6 +1,7 @@
 {
-  "decisions_score_distribution.title": "توزيع درجات القرارات",
-  "decisions.export.button": "تصدير",
+  "decisions_score_distribution.bottom-axis-legend": "الدرجة",
+  "decisions_score_distribution.left-axis-legend": "عدد بالنسبة المئوية",
+  "decisions_score_distribution.title": "الدرجات",
   "decisions.scale.label": "المقياس",
   "decisions.scale.linear.label": "خطي",
   "decisions.scale.symlog.label": "Symlog",

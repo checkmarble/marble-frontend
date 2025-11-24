@@ -1,6 +1,7 @@
 {
-  "decisions_score_distribution.title": "Decisions Score Distribution",
-  "decisions.export.button": "Export",
+  "decisions_score_distribution.bottom-axis-legend": "Score",
+  "decisions_score_distribution.left-axis-legend": "Count in %",
+  "decisions_score_distribution.title": "Score",
   "decisions.scale.label": "Scale",
   "decisions.scale.linear.label": "Linear",
   "decisions.scale.symlog.label": "Symlog",
