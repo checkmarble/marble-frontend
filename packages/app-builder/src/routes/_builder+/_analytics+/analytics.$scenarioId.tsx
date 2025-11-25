@@ -385,12 +385,12 @@ export default function Analytics() {
                 />
               </div>
               <div className="lg-analytics:basis-1/3 min-w-0 min-h-[500px] relative">
-                {(decisionsScoreDistributionData?.isFetching ?? true) ? (
+                {decisionsScoreDistributionData.isFetching ? (
                   <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
                     <Spinner className="size-6" />
                   </div>
                 ) : (
-                  <DecisionsScoreDistribution data={decisionsScoreDistributionData?.data ?? []} />
+                  <DecisionsScoreDistribution data={decisionsScoreDistributionData.data ?? []} />
                 )}
               </div>
             </div>
