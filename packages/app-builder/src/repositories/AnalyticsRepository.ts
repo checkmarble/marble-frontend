@@ -70,7 +70,7 @@ export interface AnalyticsRepository {
   getDecisionOutcomesPerDay(args: AnalyticsQuery): Promise<DecisionOutcomesPerPeriod | null>;
   getRuleHitTable(args: AnalyticsQuery): Promise<RuleHitTableResponse[] | null>;
   getScreeningHitsTable(args: AnalyticsQuery): Promise<ScreeningHitTableResponse[] | null>;
-  getDecisionsScoreDistribution(args: AnalyticsQuery): Promise<DecisionsScoreDistribution | null>;
+  getDecisionsScoreDistribution(args: AnalyticsQuery): Promise<DecisionsScoreDistribution>;
   getRuleVsDecisionOutcome(args: AnalyticsQuery): Promise<RuleVsDecisionOutcome[] | null>;
   getAvailableFilters(args: AvailableFiltersRequest): Promise<AvailableFiltersResponse>;
 }
@@ -135,7 +135,7 @@ export function makeGetAnalyticsRepository() {
       return adaptScreeningHitTable(raw);
     },
 
-    getDecisionsScoreDistribution: async (args: AnalyticsQuery): Promise<DecisionsScoreDistribution | null> => {
+    getDecisionsScoreDistribution: async (args: AnalyticsQuery): Promise<DecisionsScoreDistribution> => {
       const parsed = transformAnalyticsQuery.parse(args);
       if (!parsed.length) throw new Error('No date range provided');
       return adaptDecisionsScoreDistribution(await client.getDecisionsScoreDistribution(parsed[0]!));

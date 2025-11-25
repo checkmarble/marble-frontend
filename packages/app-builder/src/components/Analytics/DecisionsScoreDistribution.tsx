@@ -16,7 +16,7 @@ const getFocusRange = (data: { x: number; y: number }[], percentile = 0.9, paddi
   // 1. Extract all Y values
   const values = data.map((d) => d.y).sort((a, b) => a - b);
 
-  if (!values.length) return { min: 0, max: 'auto' };
+  if (!values.length) return { min: 0, max: 100 };
 
   const minVal = Math.min(...values);
   const maxVal = Math.max(...values);
@@ -28,8 +28,8 @@ const getFocusRange = (data: { x: number; y: number }[], percentile = 0.9, paddi
     const suggestedMin = Math.max(0, minVal - range * padding);
 
     return {
-      min: suggestedMin,
-      max: suggestedMax,
+      min: Math.floor(suggestedMin),
+      max: Math.ceil(suggestedMax),
       hasOutliers: false,
     };
   }
@@ -54,29 +54,40 @@ const getFocusRange = (data: { x: number; y: number }[], percentile = 0.9, paddi
   const suggestedMin = Math.max(0, normalMinVal - range * padding); // Assuming ratio >= 0
 
   return {
-    min: suggestedMin,
-    max: suggestedMax,
+    min: Math.floor(suggestedMin),
+    max: Math.ceil(suggestedMax),
     hasOutliers: values.some((v) => v > suggestedMax), // Flag to turn on your dashed line
   };
 };
 
-export const DecisionsScoreDistribution = ({ data }: { data: DecisionsScoreDistributionModel | null }) => {
+export const DecisionsScoreDistribution = ({ data }: { data: DecisionsScoreDistributionModel }) => {
   const { t } = useTranslation();
-  const { min, max, hasOutliers } = useMemo(() => getFocusRange(data?.stepSeries ?? []), [data?.stepSeries]);
-  const series = useMemo(() => {
-    const rawData = data?.stepSeries ?? [];
-    if (!rawData.length) return [{ id: 'percentage', data: [] }];
+  const bucketSize = Math.abs((data[1]?.x ?? 0) - (data[0]?.x ?? 0));
+  console.log('bucketSize', bucketSize);
+  const { min, max, hasOutliers } = useMemo(() => getFocusRange(data ?? []), [data, bucketSize]);
+
+  console.log(data);
+
+  const lastIndex = useMemo(() => {
+    return data.length - 1;
+  }, [data]);
+
+  const values = useMemo(() => {
+    const rawData = data ?? [];
+    if (!rawData.length) return [];
+    // return rawData;
     const lastPoint = rawData[rawData.length - 1];
-    if (!lastPoint) return [{ id: 'percentage', data: rawData }];
-    return [{ id: 'percentage', data: [...rawData, { x: lastPoint.x + 5, y: lastPoint.y }] }];
-  }, [data?.stepSeries]);
+    if (!lastPoint) return rawData;
+    if (bucketSize === 0) return rawData;
+    return [{ x: rawData[0]!.x, y: min }, ...rawData, { x: lastPoint.x + bucketSize, y: min }];
+  }, [data]);
 
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleExportCsv = () => {
     if (!data) return;
     const headers = ['score', 'percentage'];
-    const lines = data.stepSeries.map(({ x, y }) => [x, y]);
+    const lines = data.map(({ x, y }) => [x, y]);
     const csv = [headers.join(','), ...lines].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8,' });
     const url = URL.createObjectURL(blob);
@@ -114,12 +125,26 @@ export const DecisionsScoreDistribution = ({ data }: { data: DecisionsScoreDistr
           </div>
           <div className="flex-1 w-full">
             <ResponsiveLine
-              data={series}
+              data={[
+                {
+                  id: 'distribution',
+                  data: values,
+                },
+              ]}
               margin={{ top: 5, right: 10, bottom: 50, left: 50 }}
-              xScale={{ type: 'linear' }}
-              yScale={{ type: 'linear', min: Number(min), max: isExpanded ? undefined : Number(max) }}
+              xScale={{
+                type: 'linear',
+                min: values[0]?.x ?? 0,
+                max: values[values.length - 1]?.x ?? 100,
+              }}
+              yScale={{
+                type: 'linear',
+                min,
+                max: isExpanded ? undefined : max,
+              }}
               curve="stepAfter"
               enableArea={false}
+              areaBaselineValue={Number(min)}
               enablePoints={false}
               useMesh={true}
               theme={{
@@ -141,14 +166,19 @@ export const DecisionsScoreDistribution = ({ data }: { data: DecisionsScoreDistr
                 legendOffset: 40,
               }}
               yFormat={(value: number) => `${Number(value).toFixed(1)}%`}
-              tooltip={({ point }: { point: any }) => (
-                <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
-                  <div className="flex items-center gap-v2-sm">
-                    <strong className="text-grey-00 font-semibold">{`Score: ${point.data.x}`}</strong>
+              tooltip={({ point }: { point: any }) => {
+                if (point.absIndex === 0 || point.absIndex > lastIndex) {
+                  return null;
+                }
+                return (
+                  <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
+                    <div className="flex items-center gap-v2-sm">
+                      <strong className="text-grey-00 font-semibold">{`Score: ${point.data.x.toFixed(0)}->${(point.data.x + bucketSize).toFixed(0)}`}</strong>
+                    </div>
+                    <div className="text-s text-grey-60">{`${point.data.y.toFixed(2)} %`}</div>
                   </div>
-                  <div className="text-s text-grey-60">{`${point.data.y} %`}</div>
-                </div>
-              )}
+                );
+              }}
               colors={['#6D28D9']}
               motionConfig={{
                 mass: 1,

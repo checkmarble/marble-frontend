@@ -390,7 +390,7 @@ export default function Analytics() {
                     <Spinner className="size-6" />
                   </div>
                 ) : (
-                  <DecisionsScoreDistribution data={decisionsScoreDistributionData?.data ?? null} />
+                  <DecisionsScoreDistribution data={decisionsScoreDistributionData?.data ?? []} />
                 )}
               </div>
             </div>
