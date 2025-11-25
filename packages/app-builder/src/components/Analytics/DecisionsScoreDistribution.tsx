@@ -68,10 +68,6 @@ export const DecisionsScoreDistribution = ({ data }: { data: DecisionsScoreDistr
     return { bucketSize, min, max, hasOutliers };
   }, [data]);
 
-  const lastIndex = useMemo(() => {
-    return data.length - 1;
-  }, [data]);
-
   const values = useMemo(() => {
     const rawData = data ?? [];
     if (!rawData.length) return [];
@@ -167,7 +163,7 @@ export const DecisionsScoreDistribution = ({ data }: { data: DecisionsScoreDistr
               }}
               yFormat={(value: number) => `${Number(value).toFixed(1)}%`}
               tooltip={({ point }: { point: any }) => {
-                if (point.absIndex === 0 || point.absIndex > lastIndex) {
+                if (point.absIndex === 0 || point.absIndex > data.length) {
                   return null;
                 }
                 return (
