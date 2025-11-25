@@ -229,6 +229,8 @@
   "edit_sanction.required_fields_disclaimer": "Pour un filtrage efficace, il est recommandé de remplir au moins le nom ou le numéro d'enregistrement pour une organisation/véhicule, et au moins le nom ou le numéro d'identité pour une personne.",
   "edit_sanction.select_list": "Sélectionnez une liste",
   "edit_sanction.similarity_score": "Score de similitude minimum (%)",
+  "edit_sanction.skip_entity_recognition": "Chercher des correspondances dans les listes tous types d'entités confondues",
+  "edit_sanction.skip_entity_recognition.tooltip": "Si activé, les entités extraites par la reconnaissance de noms seront recherchées sans filtrer par type d'entité. Si désactivé, le filtrage s'effectuera uniquement sur les entités 'Personne' ou 'Organisation', selon leur nom.",
   "edit_sanction.trigger_title": "Conditions de déclenchement",
   "edit_string_template.description": "Créer un texte avec des valeurs de champs (<DocLink>en savoir plus</DocLink>)",
   "edit_string_template.template_field.label": "Modèle",

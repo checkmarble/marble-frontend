@@ -71,6 +71,7 @@ export function adaptScreeningConfigDto(config: ScreeningConfig): ScreeningConfi
     preprocessing: config.preprocessing
       ? {
           use_ner: config.preprocessing.useNer,
+          ner_ignore_classification: config.preprocessing.nerIgnoreClassification,
           skip_if_under: config.preprocessing.skipIfUnder,
           remove_numbers: config.preprocessing.removeNumbers,
           ignore_list_id: config.preprocessing.blacklistListId,
