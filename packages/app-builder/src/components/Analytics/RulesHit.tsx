@@ -4,10 +4,14 @@ import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, useTable } from 'ui-design-system';
+import { cn, Table, useTable } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { AnalyticsTooltip } from './Tooltip';
 
 const columnHelper = createColumnHelper<RuleHitTableResponse>();
+
+const getCompareClassName = (value: number, compare: number): string =>
+  compare === value ? 'text-purple-60' : compare > value ? 'text-green-38' : 'text-red-47';
 
 export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; isLoading: boolean }) {
   const { t } = useTranslation(['analytics']);
@@ -33,7 +37,12 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
           </div>
         ),
         size: 100,
-        cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
+        cell: ({ getValue }) => (
+          <>
+            <span>{formatNumber(getValue().value, { language })}</span>{' '}
+            {getValue().compare ? <span>{formatNumber(Number(getValue().compare), { language })}</span> : null}
+          </>
+        ),
       }),
       columnHelper.accessor((row) => row.hitRatio, {
         id: 'hitRatio',
@@ -45,9 +54,29 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
         ),
         size: 120,
 
-        cell: ({ getValue }) => (
-          <span>{formatNumber(Number(getValue()), { language, maximumFractionDigits: 2 })} %</span>
-        ),
+        cell: ({ getValue }) => {
+          const value = getValue().value;
+          const compare = getValue().compare;
+          return (
+            <span className="flex flex-row flex-1 items-start gap-v2-sm font-semibold">
+              <span>{formatNumber(Number(value), { language, maximumFractionDigits: 2 })}%</span>
+              {compare ? (
+                <>
+                  <span className={cn(getCompareClassName(value, compare))}>
+                    {formatNumber(Number(compare), { language, maximumFractionDigits: 2 })}%
+                  </span>
+
+                  <span className={cn('flex flex-row items-center', getCompareClassName(value, compare))}>
+                    <Icon icon={compare > value ? 'arrow-2-up' : 'arrow-2-down'} className="size-6" />
+                    <span className="font-medium">
+                      {formatNumber(Math.abs(compare - value), { language, maximumFractionDigits: 2 })}pts
+                    </span>
+                  </span>
+                </>
+              ) : null}
+            </span>
+          );
+        },
       }),
       columnHelper.accessor((row) => row.distinctPivots, {
         id: 'distinctPivots',
@@ -58,7 +87,7 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
           </div>
         ),
         size: 140,
-        cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
+        cell: ({ getValue }) => <span>{formatNumber(getValue().value, { language })}</span>,
       }),
       columnHelper.accessor((row) => row.repeatRatio, {
         id: 'repeatRatio',
@@ -70,7 +99,7 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
         ),
         size: 160,
         cell: ({ getValue }) => (
-          <span>{formatNumber(Number(getValue()), { language, maximumFractionDigits: 2 })} %</span>
+          <span>{formatNumber(Number(getValue().value), { language, maximumFractionDigits: 2 })} %</span>
         ),
       }),
     ],
