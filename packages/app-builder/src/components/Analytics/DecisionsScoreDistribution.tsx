@@ -1,4 +1,5 @@
 import type { DecisionsScoreDistribution as DecisionsScoreDistributionModel } from '@app-builder/models/analytics';
+import { downloadFile } from '@app-builder/utils/download-file';
 import { ResponsiveLine } from '@nivo/line';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -87,13 +88,7 @@ export const DecisionsScoreDistribution = ({ data }: { data: DecisionsScoreDistr
     const csv = [headers.join(','), ...lines].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8,' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'decisions_score_distribution.csv';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    downloadFile(url, 'decisions_score_distribution.csv');
   };
 
   return (

@@ -2,6 +2,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { OUTCOME_COLORS } from '@app-builder/constants/analytics';
 import { type DecisionsFilter, type Outcome } from '@app-builder/models/analytics';
 import { RuleVsDecisionOutcome } from '@app-builder/models/analytics/rule-vs-decision-outcome';
+import { downloadFile } from '@app-builder/utils/download-file';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { useMemo, useState } from 'react';
@@ -71,13 +72,7 @@ export function RuleVsDecisionOutcomes({
     const csv = [headers.join(','), ...lines].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8,' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `rule_vs_decision_outcomes.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    downloadFile(url, `rule_vs_decision_outcomes.csv`);
   };
   const [isHovered, setIsHovered] = useState(false);
 
