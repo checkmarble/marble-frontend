@@ -24,16 +24,11 @@ export const adaptDecisionsScoreDistribution = (
 
   const totalDecisions = values.reduce((acc, v) => acc + v.decisions, 0);
 
-  const points = Array.from({ length: numberOfBuckets }, (_, i) => {
-    return {
-      score: firstScore + i * bucketSize,
-      decisions: values.slice(i * bucketSize, (i + 1) * bucketSize).reduce((acc, v) => acc + v.decisions, 0),
-    };
-  });
-
-  const stepSeries = points.map((p) => ({ x: p.score, y: totalDecisions ? (100 * p.decisions) / totalDecisions : 0 }));
-
-  console.log('stepSeries', stepSeries);
-
-  return stepSeries;
+  return Array.from({ length: numberOfBuckets }, (_, i) => ({
+    x: firstScore + i * bucketSize,
+    y: totalDecisions
+      ? (100 * values.slice(i * bucketSize, (i + 1) * bucketSize).reduce((acc, v) => acc + v.decisions, 0)) /
+        totalDecisions
+      : 0,
+  }));
 };
