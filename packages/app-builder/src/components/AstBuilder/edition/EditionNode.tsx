@@ -121,6 +121,7 @@ export const EditionAstBuilderNode = memo(function EditionAstBuilderNode(props: 
       } else if (isBinaryMainAstOperatorFunction(operator) && node.value.children.length < 2) {
         node.value.children = [node.value.children[0]!, NewUndefinedAstNode()];
       }
+      nodeSharp.actions.triggerUpdate();
       nodeSharp.actions.validate();
     }
   };
