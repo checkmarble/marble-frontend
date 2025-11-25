@@ -9,6 +9,7 @@ import type {
   Outcome,
   RangeId,
 } from '@app-builder/models/analytics';
+import { downloadFile } from '@app-builder/utils/download-file';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
 import { differenceInDays, getWeek, getYear } from 'date-fns';
@@ -43,7 +44,7 @@ const defaultDecisions: DecisionsFilter = new Map([
   ['decline', true],
   ['blockAndReview', true],
   ['review', true],
-  ['approve', true],
+  ['approve', false],
 ]);
 
 const getBarColors = (d: ComputedDatum<DecisionsPerOutcome>) => {
@@ -67,7 +68,9 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     observeHeight: false,
   });
 
-  const SYMLOG_SCALE_MIN_ENABLED = false;
+  const MAX_RANGE_SIZE_FOR_DAILY = 182; // 6 months
+
+  const SYMLOG_SCALE_MIN_ENABLED = true;
 
   const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
   const [percentage, setPercentage] = useState(false);
@@ -87,14 +90,19 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
 
   const isSameYear: boolean = getYear(data?.metadata.start!) === getYear(data?.metadata.end!);
 
+  const isDailyViewAvailable = useMemo(
+    () => differenceInDays(new Date(data?.metadata.end!), new Date(data?.metadata.start!)) <= MAX_RANGE_SIZE_FOR_DAILY,
+    [data?.metadata.start, data?.metadata.end],
+  );
+
   useEffect(() => {
     if (!data?.metadata.totalDecisions) {
       return setGroupDate('daily');
     }
-    if (!data?.daily && groupDate === 'daily') {
+    if (!isDailyViewAvailable && groupDate === 'daily') {
       return setGroupDate('weekly');
     }
-  }, [data?.metadata.totalDecisions]);
+  }, [data?.metadata.totalDecisions, isDailyViewAvailable]);
 
   // for future use
 
@@ -199,6 +207,26 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     }
   };
 
+  const getSymlogTickValues = () => {
+    if (chartData.length === 0) return [0];
+
+    const values = chartData.flatMap((d) => [d.approve, d.decline, d.review, d.blockAndReview]);
+    const maxValue = Math.max(...values);
+
+    if (maxValue === 0) return [0];
+
+    const ticks = new Set([0]);
+    let step = 1;
+    while (step <= maxValue) {
+      ticks.add(step);
+      if (step * 2 <= maxValue) ticks.add(step * 2);
+      if (step * 5 <= maxValue) ticks.add(step * 5);
+      step *= 10;
+    }
+
+    return Array.from(ticks).sort((a, b) => a - b);
+  };
+
   const getXTickValues = () => {
     if (!currentDataGroup?.gridXValues) {
       return [];
@@ -217,13 +245,10 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
   };
 
   const handleExportCsv = () => {
-    if (!currentDataGroup) return;
-    const rows = currentDataGroup.data.absolute;
-    if (!rows.length) return;
+    if (!data?.daily?.data?.absolute.length) return;
 
     const headers = ['date', 'rangeId', ...decisions.keys(), ['total']];
-
-    const lines = rows.map((row) => {
+    const lines = data.daily.data.absolute.map((row) => {
       const base = [row.date, row.rangeId];
       type OutcomeValues = Pick<DecisionsPerOutcome, Outcome>;
       const outcomeValues = Array.from(decisions.entries()).map(([k]) => {
@@ -237,13 +262,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     const csv = [headers.join(','), ...lines].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8,' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `decisions_${groupDate}_${percentage ? 'percentage' : 'absolute'}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    downloadFile(url, `decisions_outcomes_per_day.csv`);
   };
 
   return (
@@ -267,7 +286,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
           onClick={handleExportCsv}
         >
           <Icon icon="download" className="size-4" />
-          {t('analytics:decisions.export.button')}
+          {t('analytics:export.button')}
         </ButtonV2>
       </div>
 
@@ -317,14 +336,6 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                     variant="secondary"
                     onClick={() => {
                       setScale('linear');
-                      setDecisions(
-                        new Map([
-                          ['decline', true],
-                          ['blockAndReview', true],
-                          ['review', true],
-                          ['approve', true],
-                        ]),
-                      );
                     }}
                     className={scale === 'linear' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
                   >
@@ -332,7 +343,10 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                   </ButtonV2>
                   <ButtonV2
                     variant="secondary"
-                    onClick={() => setScale('symlog')}
+                    onClick={() => {
+                      setGroupDate('weekly');
+                      setScale('symlog');
+                    }}
                     className={scale === 'symlog' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
                   >
                     {t('analytics:decisions.scale.symlog.label')}
@@ -378,7 +392,11 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
               axisLeft={{
                 legend: 'outcome (indexBy)',
                 legendOffset: -70,
-                tickValues: !data?.metadata.totalDecisions ? [0, 200, 400, 600, 800, 1000] : undefined,
+                tickValues: !data?.metadata.totalDecisions
+                  ? [0, 200, 400, 600, 800, 1000]
+                  : scale === 'symlog'
+                    ? getSymlogTickValues()
+                    : undefined,
               }}
               axisBottom={{
                 tickValues: getXTickValues(),
@@ -427,6 +445,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 );
               }}
               theme={{
+                grid: { line: { stroke: '#E5E7EB', strokeWidth: 1, strokeDasharray: '4 4' } },
                 tooltip: {
                   container: {
                     transform: 'translateX(16px)',
@@ -448,10 +467,13 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
           <div className="flex w-full justify-end mt-v2-sm">
             <div className="flex gap-v2-sm">
               <ButtonV2
-                disabled={!data?.daily || !data?.metadata.totalDecisions}
+                disabled={!isDailyViewAvailable || !data?.metadata.totalDecisions}
                 variant="secondary"
                 mode="normal"
-                onClick={() => setGroupDate('daily')}
+                onClick={() => {
+                  setGroupDate('daily');
+                  setScale('linear');
+                }}
                 className={groupDate === 'daily' ? 'bg-purple-98 border-purple-65 text-purple-65' : ''}
               >
                 {t('analytics:time_granularity.day')}

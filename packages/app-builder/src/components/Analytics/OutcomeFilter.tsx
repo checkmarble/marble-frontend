@@ -28,7 +28,7 @@ export function OutcomeFilter({
     onChange(newDecisions);
   };
   const FilterItem = ({ label, outcome, checked }: { label: string; outcome: Outcome; checked: boolean }) => (
-    <div className={cn('flex items-center gap-2 cursor-pointer flex-1 min-w-40')} onClick={() => handleToggle(outcome)}>
+    <div className="flex items-center gap-2 cursor-pointer flex-1 min-w-fit" onClick={() => handleToggle(outcome)}>
       <button
         className={
           'w-4 h-4 border border-grey-90 rounded-sm flex items-center justify-center hover:bg-grey-50 ' +
@@ -40,7 +40,7 @@ export function OutcomeFilter({
       ></button>
       <div className="flex items-center flex-1 whitespace-nowrap min-w-0">
         <span className="text-xs">{label}</span>
-        <div className="w-4 h-4 flex items-center justify-center flex-shrink-0 ml-4 relative">
+        <div className="w-4 h-4 flex items-center justify-center flex-shrink-0 lg-analytics:ml-4 ml-0 relative">
           {highlight && !hasHighlightedRef.current ? (
             <Icon
               icon={checked ? 'eye' : 'eye-slash'}
