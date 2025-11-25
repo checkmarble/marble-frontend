@@ -62,8 +62,11 @@ const getFocusRange = (data: { x: number; y: number }[], percentile = 0.9, paddi
 
 export const DecisionsScoreDistribution = ({ data }: { data: DecisionsScoreDistributionModel }) => {
   const { t } = useTranslation();
-  const bucketSize = Math.abs((data[1]?.x ?? 0) - (data[0]?.x ?? 0));
-  const { min, max, hasOutliers } = useMemo(() => getFocusRange(data ?? []), [data, bucketSize]);
+  const { bucketSize, min, max, hasOutliers } = useMemo(() => {
+    const bucketSize = Math.abs((data[1]?.x ?? 0) - (data[0]?.x ?? 0));
+    const { min, max, hasOutliers } = getFocusRange(data ?? []);
+    return { bucketSize, min, max, hasOutliers };
+  }, [data]);
 
   const lastIndex = useMemo(() => {
     return data.length - 1;
