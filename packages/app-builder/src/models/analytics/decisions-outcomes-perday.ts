@@ -6,7 +6,6 @@ import {
   getISODay,
   getISOWeek,
   getMonth,
-  isAfter,
   isBefore,
   isFirstDayOfMonth,
   startOfMonth,
@@ -212,11 +211,11 @@ export const adaptDecisionOutcomesPerDay = (val: DecisionOutcomesPerDayEntity[])
   const absoluteDailyData: DecisionOutcomesAbsolute[] = val.map((v) => ({
     rangeId: v.rangeId,
     date: v.date,
-    approve: v.approve,
+    approve: 1000 * v.approve,
     blockAndReview: v.block_and_review,
     decline: v.decline,
     review: v.review,
-    total: v.approve + v.block_and_review + v.decline + v.review,
+    total: 1000 * v.approve + v.block_and_review + v.decline + v.review,
   }));
 
   const absoluteCountsByWeek = new Map<number, DecisionOutcomesAbsolute>();
@@ -257,15 +256,13 @@ export const adaptDecisionOutcomesPerDay = (val: DecisionOutcomesPerDayEntity[])
   const absoluteCountsByMonthArray = Array.from(absoluteCountsByMonth.values());
 
   return {
-    daily: isAfter(end, addMonths(start, 6))
-      ? null
-      : {
-          data: {
-            absolute: absoluteDailyData,
-            ratio: absoluteDailyData.map((item) => getRatio(item)),
-          },
-          gridXValues: getGridXValues(absoluteDailyData, start, end, 'day'),
-        },
+    daily: {
+      data: {
+        absolute: absoluteDailyData,
+        ratio: absoluteDailyData.map((item) => getRatio(item)),
+      },
+      gridXValues: getGridXValues(absoluteDailyData, start, end, 'day'),
+    },
     weekly: {
       data: {
         absolute: absoluteCountsByWeekArray,

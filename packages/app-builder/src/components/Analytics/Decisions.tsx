@@ -68,6 +68,8 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
     observeHeight: false,
   });
 
+  const MAX_RANGE_SIZE_FOR_DAILY = 182; // 6 months
+
   const SYMLOG_SCALE_MIN_ENABLED = true;
 
   const [decisions, setDecisions] = useState<DecisionsFilter>(defaultDecisions);
@@ -88,14 +90,19 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
 
   const isSameYear: boolean = getYear(data?.metadata.start!) === getYear(data?.metadata.end!);
 
+  const isDailyViewAvailable = useMemo(
+    () => differenceInDays(new Date(data?.metadata.end!), new Date(data?.metadata.start!)) <= MAX_RANGE_SIZE_FOR_DAILY,
+    [data?.metadata.start, data?.metadata.end],
+  );
+
   useEffect(() => {
     if (!data?.metadata.totalDecisions) {
       return setGroupDate('daily');
     }
-    if (!data?.daily && groupDate === 'daily') {
+    if (!isDailyViewAvailable && groupDate === 'daily') {
       return setGroupDate('weekly');
     }
-  }, [data?.metadata.totalDecisions]);
+  }, [data?.metadata.totalDecisions, isDailyViewAvailable]);
 
   // for future use
 
@@ -238,13 +245,10 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
   };
 
   const handleExportCsv = () => {
-    if (!currentDataGroup) return;
-    const rows = currentDataGroup.data.absolute;
-    if (!rows.length) return;
+    if (!data?.daily?.data?.absolute.length) return;
 
     const headers = ['date', 'rangeId', ...decisions.keys(), ['total']];
-
-    const lines = rows.map((row) => {
+    const lines = data.daily.data.absolute.map((row) => {
       const base = [row.date, row.rangeId];
       type OutcomeValues = Pick<DecisionsPerOutcome, Outcome>;
       const outcomeValues = Array.from(decisions.entries()).map(([k]) => {
@@ -463,7 +467,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
           <div className="flex w-full justify-end mt-v2-sm">
             <div className="flex gap-v2-sm">
               <ButtonV2
-                disabled={!data?.daily || !data?.metadata.totalDecisions}
+                disabled={!isDailyViewAvailable || !data?.metadata.totalDecisions}
                 variant="secondary"
                 mode="normal"
                 onClick={() => {
