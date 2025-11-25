@@ -346,6 +346,9 @@ components:
             use_ner:
               description: Whether the counterparty name should go through Name Entity Recognition
               type: boolean
+            ner_ignore_classification:
+              description: Whether NER produces generic screening queries (true) or queries matching the detected classification (false).
+              type: boolean
             skip_if_under:
               description: Whether to skip the rule if the counterparty name is under X characters
               type: integer

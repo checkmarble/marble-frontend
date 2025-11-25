@@ -134,6 +134,7 @@ const editScreeningFormSchema = z.object({
   preprocessing: z
     .object({
       useNer: z.boolean().optional(),
+      nerIgnoreClassification: z.boolean().optional(),
       skipIfUnder: z.number().nullish(),
       removeNumbers: z.boolean().optional(),
       blacklistListId: z.string().nullish(),
@@ -182,6 +183,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         preprocessing: {
           ...data.preprocessing,
           useNer: data.entityType === 'Thing' ? data.preprocessing?.useNer : undefined,
+          nerIgnoreClassification: data.preprocessing?.useNer ? data.preprocessing?.nerIgnoreClassification : undefined,
           skipIfUnder: data.preprocessing?.skipIfUnder ?? undefined,
           blacklistListId: data.preprocessing?.blacklistListId ?? undefined,
         },
@@ -274,6 +276,7 @@ export default function ScreeningDetail() {
 
   const entityType = useStore(form.store, (state) => state.values.entityType);
   const query = useStore(form.store, (state) => state.values.query);
+  const useNerEnabled = useStore(form.store, (state) => state.values.preprocessing?.useNer === true);
 
   const hasRequiredFields = useMemo(
     () =>
@@ -597,6 +600,23 @@ export default function ScreeningDetail() {
                                 <span className="text-xs rounded-full bg-purple-65 px-2 py-0.5 text-grey-100">
                                   beta
                                 </span>
+                              </div>
+                            )}
+                          </form.Field>
+                        ) : null}
+                        {useNerEnabled ? (
+                          <form.Field name="preprocessing.nerIgnoreClassification">
+                            {(field) => (
+                              <div className="flex items-center gap-2 ml-12 mt-1">
+                                <Switch
+                                  checked={field.state.value}
+                                  onCheckedChange={(checked) => field.handleChange(checked)}
+                                  onBlur={field.handleBlur}
+                                />
+                                <span className="text-s">{t('scenarios:edit_sanction.skip_entity_recognition')}</span>
+                                <FieldToolTip>
+                                  {t('scenarios:edit_sanction.skip_entity_recognition.tooltip')}
+                                </FieldToolTip>
                               </div>
                             )}
                           </form.Field>

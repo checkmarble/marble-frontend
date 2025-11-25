@@ -742,6 +742,8 @@ export type ScreeningConfigDto = {
     preprocessing?: {
         /** Whether the counterparty name should go through Name Entity Recognition */
         use_ner?: boolean;
+        /** Whether NER produces generic screening queries (true) or queries matching the detected classification (false). */
+        ner_ignore_classification?: boolean;
         /** Whether to skip the rule if the counterparty name is under X characters */
         skip_if_under?: number;
         /** Whether to strip numbers from the counterparty name */

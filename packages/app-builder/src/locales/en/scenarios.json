@@ -229,6 +229,8 @@
   "edit_sanction.required_fields_disclaimer": "For effective screening, it is recommended to fill in at least the name or registration number for an organization/vehicle, or the name or ID number for a person.",
   "edit_sanction.select_list": "Select a list",
   "edit_sanction.similarity_score": "Minimum similarity score (%)",
+  "edit_sanction.skip_entity_recognition": "Skip entity type filters while searching",
+  "edit_sanction.skip_entity_recognition.tooltip": "If toggled, named entity candidates found by named entity recognition are searched without any entity type filter. If left untoggled, the screening will search for either 'Person' or 'Organization' entities, depending on their name.",
   "edit_sanction.trigger_title": "Trigger conditions",
   "edit_string_template.description": "Create a text with field values (<DocLink>learn more</DocLink>)",
   "edit_string_template.template_field.label": "Template",

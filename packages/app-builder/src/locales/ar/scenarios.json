@@ -229,6 +229,8 @@
   "edit_sanction.required_fields_disclaimer": "لتحقيق فحص فعّال، يُنصح بإدخال الاسم أو رقم التسجيل للمنظمة/المركبة، أو الاسم أو رقم الهوية للشخص على الأقل.",
   "edit_sanction.select_list": "حدد قائمة",
   "edit_sanction.similarity_score": "الحد الأدنى لدرجة التشابه (%)",
+  "edit_sanction.skip_entity_recognition": "ابحث عن المرشحين في جميع أنواع الكيانات",
+  "edit_sanction.skip_entity_recognition.tooltip": "إذا تم تفعيلها، سيتم البحث عن الكيانات المُحددة عبر التعرّف الذكي للأسماء دون تصفية حسب نوع الكيان. إذا لم يتم تفعيلها، سيتم البحث فقط في كيانات 'شخص' أو 'منظمة' حسب الاسم.",
   "edit_sanction.trigger_title": "شروط المُشغِّل",
   "edit_string_template.description": "قم بإنشاء نص بقيم الحقول (<DocLink>معرفة المزيد</DocLink>)",
   "edit_string_template.template_field.label": "نموذج",
