@@ -3,6 +3,7 @@ import { CasesNavigationTabs } from '@app-builder/components/Cases/Navigation/Ta
 import { Page } from '@app-builder/components/Page';
 import { CaseByDateGraph } from './CaseByDateGraph';
 import { CaseByInboxGraph } from './CaseByInboxGraph';
+import { ConfigurationPanel } from './ConfigurationPanel';
 
 export const OverviewPage = () => {
   return (
@@ -20,10 +21,7 @@ export const OverviewPage = () => {
                 <CaseByInboxGraph />
               </div>
             </div>
-            <div className="flex flex-col gap-v2-md">
-              <div className="text-h2 font-semibold">Configuration générales</div>
-              <div className="border border-grey-border rounded-v2-lg p-v2-md h-100 bg-grey-background-light"></div>
-            </div>
+            <ConfigurationPanel />
           </div>
         </Page.ContentV2>
       </Page.Container>
