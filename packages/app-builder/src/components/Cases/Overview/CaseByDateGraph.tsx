@@ -4,11 +4,14 @@ import { useCaseStatusByDate } from '@app-builder/queries/cases/case-status-by-d
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { ResponsiveBar } from '@nivo/bar';
 import { Fragment, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
+import { ButtonV2 } from 'ui-design-system';
 import { CaseStatusBadge } from '../CaseStatus';
 import { getYAxisTicksValues, graphCaseStatuses, graphStatusesColors } from './constants';
 
 export const CaseByDateGraph = () => {
+  const { t } = useTranslation(['common']);
   const caseStatusByDateQuery = useCaseStatusByDate();
   const language = useFormatLanguage();
   const [hovering, setHovering] = useState<string | null>(null);
@@ -23,14 +26,21 @@ export const CaseByDateGraph = () => {
               <Spinner className="size-12" />
             </div>
           ))
-          .with({ isError: true }, () => <div>Error</div>)
+          .with({ isError: true }, () => (
+            <div className="grid place-items-center h-full">
+              <div className="flex flex-col items-center gap-v2-sm">
+                <span className="text-s text-grey-60">{t('common:generic_fetch_data_error')}</span>
+                <ButtonV2 variant="secondary" onClick={() => caseStatusByDateQuery.refetch()}>
+                  Retry
+                </ButtonV2>
+              </div>
+            </div>
+          ))
           .with({ isSuccess: true }, (query) => {
             if (!query.data) return null;
 
             const yAxisTicksValues = getYAxisTicksValues(query.data);
             const maxValue = yAxisTicksValues[yAxisTicksValues.length - 1];
-
-            // return <BarGraph data={query.data} indexBy="date" keys={[]} />;
 
             return (
               <>
@@ -108,6 +118,9 @@ export const CaseByDateGraph = () => {
                         </div>
                       </div>
                     )}
+                    theme={{
+                      grid: { line: { stroke: '#E5E7EB', strokeWidth: 1, strokeDasharray: '4 4' } },
+                    }}
                   />
                 </div>
               </>
