@@ -51,13 +51,22 @@ function createAnalyticsQuery<TData>(queryName: string) {
   };
 }
 
-export const useGetDecisionsOutcomesPerDay =
-  createAnalyticsQuery<DecisionOutcomesPerPeriod>('decision-outcomes-per-day');
-export const useGetDecisionsScoreDistribution =
+const useGetDecisionsOutcomesPerDay = createAnalyticsQuery<DecisionOutcomesPerPeriod>('decision-outcomes-per-day');
+const useGetDecisionsScoreDistribution =
   createAnalyticsQuery<DecisionsScoreDistribution>('decisions-score-distribution');
 
-export const useGetRuleHitTable = createAnalyticsQuery<RuleHitTableResponse[]>('rule-hit-table');
+const useGetRuleHitTable = createAnalyticsQuery<RuleHitTableResponse[]>('rule-hit-table');
 
-export const useGetRuleVsDecisionOutcome = createAnalyticsQuery<RuleVsDecisionOutcome[]>('rule-vs-decision-outcome');
+const useGetRuleVsDecisionOutcome = createAnalyticsQuery<RuleVsDecisionOutcome[]>('rule-vs-decision-outcome');
 
-export const useGetScreeningHitsTable = createAnalyticsQuery<ScreeningHitTableResponse[]>('screening-hits-table');
+const useGetScreeningHitsTable = createAnalyticsQuery<ScreeningHitTableResponse[]>('screening-hits-table');
+
+export const useAnalyticsDataQuery = ({ scenarioId, queryString }: { scenarioId: string; queryString: string }) => {
+  return {
+    decisionsOutcomesPerDayQuery: useGetDecisionsOutcomesPerDay({ scenarioId, queryString }),
+    decisionsScoreDistributionQuery: useGetDecisionsScoreDistribution({ scenarioId, queryString }),
+    ruleHitTableQuery: useGetRuleHitTable({ scenarioId, queryString }),
+    ruleVsDecisionOutcomeQuery: useGetRuleVsDecisionOutcome({ scenarioId, queryString }),
+    screeningHitsTableQuery: useGetScreeningHitsTable({ scenarioId, queryString }),
+  };
+};

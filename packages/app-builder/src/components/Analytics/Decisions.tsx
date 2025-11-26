@@ -9,6 +9,7 @@ import type {
   Outcome,
   RangeId,
 } from '@app-builder/models/analytics';
+import { getOutcomeTranslationKey } from '@app-builder/utils/analytics';
 import { downloadFile } from '@app-builder/utils/download-file';
 import { useFormatLanguage } from '@app-builder/utils/format';
 import { type ComputedDatum, ResponsiveBar } from '@nivo/bar';
@@ -50,13 +51,6 @@ const defaultDecisions: DecisionsFilter = new Map([
 const getBarColors = (d: ComputedDatum<DecisionsPerOutcome>) => {
   const id = String(d.id) as 'approve' | 'decline' | 'review' | 'blockAndReview';
   return OUTCOME_COLORS[id] ?? '#9ca3af';
-};
-
-const getOutcomeTranslationKey = (outcome: Outcome): string => {
-  if (outcome === 'blockAndReview') {
-    return 'decisions:outcome.block_and_review';
-  }
-  return `decisions:outcome.${outcome}`;
 };
 
 export function Decisions({ data, scenarioVersions, isLoading = false }: DecisionsProps) {

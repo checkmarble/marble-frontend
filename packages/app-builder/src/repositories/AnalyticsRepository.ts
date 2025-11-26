@@ -127,7 +127,8 @@ export function makeGetAnalyticsRepository() {
         client.getRuleHitTable(parsed[0]!),
         parsed[1] && client.getRuleHitTable(parsed[1]),
       ]);
-      return adaptRuleHitTable([raw, ...(rawCompare ? [rawCompare] : [])]);
+
+      return adaptRuleHitTable(raw, rawCompare);
     },
 
     getScreeningHitsTable: async (args: AnalyticsQuery): Promise<ScreeningHitTableResponse[] | null> => {

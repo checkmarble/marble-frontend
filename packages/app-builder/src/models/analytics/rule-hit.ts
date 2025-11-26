@@ -12,41 +12,54 @@ export type RuleHitTableResponse = {
   repeatRatio: ValueWithOptionalCompare;
 };
 
-export const adaptRuleHitTable = (values: RuleHitTableResponseDto[][]): RuleHitTableResponse[] => {
+const adaptRuleHit = (
+  value: RuleHitTableResponseDto,
+  compareValue?: RuleHitTableResponseDto | undefined,
+): RuleHitTableResponse => {
+  return {
+    ruleName: value.rule_name,
+    hitCount: { value: value.hit_count, compare: compareValue?.hit_count },
+    hitRatio: { value: value.hit_ratio, compare: compareValue?.hit_ratio },
+    distinctPivots: { value: value.distinct_pivots, compare: compareValue?.distinct_pivots },
+    repeatRatio: {
+      value: value.hit_count > 0 ? value.repeat_ratio : 0,
+      compare: compareValue && compareValue.hit_count > 0 ? compareValue.repeat_ratio : 0,
+    },
+  };
+};
+
+const createCompareValue = (value: number, compare: number): ValueWithOptionalCompare => {
+  return {
+    value,
+    compare,
+  };
+};
+
+export const adaptRuleHitTable = (
+  values: RuleHitTableResponseDto[],
+  compareValues: RuleHitTableResponseDto[] | undefined,
+): RuleHitTableResponse[] => {
   const rulesMap = new Map<string, RuleHitTableResponse>();
 
-  values.forEach((ruleHitResponse, index) =>
-    ruleHitResponse.forEach((val) => {
-      const rule = rulesMap.get(val.rule_name);
-      if (!rule)
-        return rulesMap.set(val.rule_name, {
-          ruleName: val.rule_name,
-          hitCount: { value: val.hit_count },
-          hitRatio: { value: val.hit_ratio },
-          distinctPivots: { value: val.distinct_pivots },
-          repeatRatio: { value: val.hit_count > 0 ? val.repeat_ratio : 0 },
-        });
+  values.forEach((value) => {
+    rulesMap.set(value.rule_name, adaptRuleHit(value));
+  });
 
-      if (index == 0) {
-        return rulesMap.set(val.rule_name, {
-          ...rule,
-          hitCount: { value: val.hit_count },
-          hitRatio: { value: val.hit_ratio },
-          distinctPivots: { value: val.distinct_pivots },
-          repeatRatio: { value: val.hit_count > 0 ? val.repeat_ratio : 0 },
-        });
-      }
-      return rulesMap.set(val.rule_name, {
+  compareValues?.forEach((compareValue) => {
+    const rule = rulesMap.get(compareValue.rule_name);
+    if (rule) {
+      rulesMap.set(compareValue.rule_name, {
         ...rule,
-        hitCount: { ...rule.hitCount, compare: val.hit_count },
-        hitRatio: { ...rule.hitRatio, compare: val.hit_ratio },
-        distinctPivots: { ...rule.distinctPivots, compare: val.distinct_pivots },
-        repeatRatio: {
-          ...rule.repeatRatio,
-          compare: val.hit_count > 0 ? val.repeat_ratio : 0,
-        },
+        hitCount: createCompareValue(rule.hitCount.value, compareValue.hit_count),
+        hitRatio: createCompareValue(rule.hitRatio.value, compareValue.hit_ratio),
+        distinctPivots: createCompareValue(rule.distinctPivots.value, compareValue.distinct_pivots),
+        repeatRatio: createCompareValue(
+          rule.repeatRatio.value,
+          compareValue.hit_count > 0 ? compareValue.repeat_ratio : 0,
+        ),
       });
-    }),
-  );
+    }
+  });
+
   return Array.from(rulesMap.values());
 };
