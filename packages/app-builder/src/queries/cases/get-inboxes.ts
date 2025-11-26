@@ -1,4 +1,4 @@
-import { Inbox } from '@app-builder/models/inbox';
+import { InboxWithCasesCount } from '@app-builder/models/inbox';
 import { getRoute } from '@app-builder/utils/routes';
 import { useQuery } from '@tanstack/react-query';
 
@@ -9,7 +9,7 @@ export const useGetInboxesQuery = () => {
     queryKey: ['cases', 'inboxes'],
     queryFn: async () => {
       const response = await fetch(endpoint);
-      return response.json() as Promise<{ inboxes: Inbox[] }>;
+      return response.json() as Promise<{ inboxes: InboxWithCasesCount[] }>;
     },
   });
 };

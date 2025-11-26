@@ -4,15 +4,12 @@ import { type LoaderFunctionArgs } from '@remix-run/node';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { inbox, cases } = await authService.isAuthenticated(request, {
+  const { inbox } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
-  const inboxes = await inbox.listInboxes();
+  const inboxes = await inbox.listInboxesWithCaseCount();
 
   return Response.json({
     inboxes,
-    casesList: await cases.listCases({
-      inboxIds: inboxes.map(({ id }) => id),
-    }),
   });
 }

@@ -15,7 +15,7 @@ export const CaseByInboxGraph = () => {
 
   return (
     <div className="h-100 bg-grey-background-light rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
-      <span className="font-medium">Volume de cas créés par inbox</span>
+      <span className="font-medium text-s">Volume de cas créés par inbox</span>
       <div className="border border-grey-border rounded-v2-lg p-v2-sm bg-white h-full flex flex-col gap-v2-xs">
         {match(caseStatusByInboxQuery)
           .with({ isPending: true }, () => (

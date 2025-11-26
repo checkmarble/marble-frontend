@@ -8,19 +8,30 @@ export function CasesNavigationTabs() {
         to="/cases/overview"
         className={({ isActive }) =>
           cn(
-            'flex items-center h-10 p-v2-sm rounded-v2-s',
-            isActive ? 'bg-purple-65 text-white' : 'bg-purple-96 text-purple-65',
+            'flex items-center h-8 px-v2-sm text-s font-medium',
+            isActive ? 'bg-purple-65 text-white rounded-v2-md' : 'bg-purple-96 text-purple-65',
           )
         }
       >
         <span>Overview</span>
       </NavLink>
       <NavLink
+        to="/cases/analytics"
+        className={({ isActive }) =>
+          cn(
+            'flex items-center h-8 px-v2-sm text-s font-medium',
+            isActive ? 'bg-purple-65 text-white rounded-v2-md' : 'bg-purple-96 text-purple-65',
+          )
+        }
+      >
+        <span>Analytics</span>
+      </NavLink>
+      <NavLink
         to="/cases/inboxes"
         className={({ isActive }) =>
           cn(
-            'flex items-center h-10 p-v2-sm rounded-v2-s',
-            isActive ? 'bg-purple-65 text-white' : 'bg-purple-96 text-purple-65',
+            'flex items-center h-8 px-v2-sm text-s font-medium',
+            isActive ? 'bg-purple-65 text-white rounded-v2-md' : 'bg-purple-96 text-purple-65',
           )
         }
       >
