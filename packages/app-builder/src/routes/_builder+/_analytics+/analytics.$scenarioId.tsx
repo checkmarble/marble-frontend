@@ -13,13 +13,6 @@ import type {
 import { type AnalyticsFiltersQuery, analyticsFiltersQuery, FilterSource } from '@app-builder/models/analytics';
 import { type Scenario } from '@app-builder/models/scenario';
 import { useGetAvailableFilters } from '@app-builder/queries/analytics/get-available-filters';
-import {
-  useGetDecisionsOutcomesPerDay,
-  useGetDecisionsScoreDistribution,
-  useGetRuleHitTable,
-  useGetRuleVsDecisionOutcome,
-  useGetScreeningHitsTable,
-} from '@app-builder/queries/analytics/get-data';
 import { initServerServices } from '@app-builder/services/init.server';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -44,6 +37,7 @@ interface LoaderData {
 }
 
 import { Spinner } from '@app-builder/components/Spinner';
+import { useAnalyticsDataQuery } from '@app-builder/queries/analytics/get-data';
 import { useRef } from 'react';
 
 export const handle = {
@@ -207,26 +201,13 @@ export default function Analytics() {
     return Array.from(descriptors.values());
   }, [availableFilters, seenAvailableFilters]);
 
-  const decisionsOutcomesPerDayData = useGetDecisionsOutcomesPerDay({
-    scenarioId,
-    queryString: queryString ?? '',
-  });
-  const decisionsScoreDistributionData = useGetDecisionsScoreDistribution({
-    scenarioId,
-    queryString: queryString ?? '',
-  });
-  const ruleHitTableData = useGetRuleHitTable({
-    scenarioId,
-    queryString: queryString ?? '',
-  });
-  const ruleVsDecisionOutcomeData = useGetRuleVsDecisionOutcome({
-    scenarioId,
-    queryString: queryString ?? '',
-  });
-  const screeningHitsTableData = useGetScreeningHitsTable({
-    scenarioId,
-    queryString: queryString ?? '',
-  });
+  const {
+    decisionsOutcomesPerDayQuery,
+    decisionsScoreDistributionQuery,
+    ruleHitTableQuery,
+    ruleVsDecisionOutcomeQuery,
+    screeningHitsTableQuery,
+  } = useAnalyticsDataQuery({ scenarioId, queryString: queryString ?? '' });
 
   const onFiltersUpdate = (next: { value: Record<string, FilterValue> }) => {
     const draft = next.value;
@@ -379,31 +360,32 @@ export default function Analytics() {
             <div className="flex flex-col lg-analytics:flex-row gap-v2-md w-full items-stretch h-auto">
               <div className="lg-analytics:basis-2/3 min-w-0">
                 <Decisions
-                  data={decisionsOutcomesPerDayData?.data ?? null}
+                  data={decisionsOutcomesPerDayQuery.data ?? null}
                   scenarioVersions={scenarioVersions}
-                  isLoading={decisionsOutcomesPerDayData?.isFetching ?? true}
+                  isLoading={decisionsOutcomesPerDayQuery.isFetching}
                 />
               </div>
               <div className="lg-analytics:basis-1/3 min-w-0 min-h-[500px] relative">
-                {decisionsScoreDistributionData.isFetching ? (
+                {decisionsScoreDistributionQuery.isFetching ? (
                   <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
                     <Spinner className="size-6" />
                   </div>
                 ) : (
-                  <DecisionsScoreDistribution data={decisionsScoreDistributionData.data ?? []} />
+                  <DecisionsScoreDistribution data={decisionsScoreDistributionQuery.data ?? []} />
                 )}
               </div>
             </div>
 
-            <RulesHit data={ruleHitTableData?.data ?? []} isLoading={ruleHitTableData?.isFetching ?? true} />
+            <RulesHit
+              isComparingRanges={effectiveRanges.length > 1}
+              data={ruleHitTableQuery.data ?? []}
+              isLoading={ruleHitTableQuery.isFetching}
+            />
             <RuleVsDecisionOutcomes
-              data={ruleVsDecisionOutcomeData?.data ?? null}
-              isLoading={ruleVsDecisionOutcomeData?.isFetching ?? true}
+              data={ruleVsDecisionOutcomeQuery.data ?? null}
+              isLoading={ruleVsDecisionOutcomeQuery.isFetching}
             />
-            <ScreeningHits
-              data={screeningHitsTableData?.data ?? []}
-              isLoading={screeningHitsTableData?.isFetching ?? true}
-            />
+            <ScreeningHits data={screeningHitsTableQuery.data ?? []} isLoading={screeningHitsTableQuery.isFetching} />
           </div>
         </div>
       </I18nProvider>

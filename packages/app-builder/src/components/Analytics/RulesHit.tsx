@@ -2,14 +2,22 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { type RuleHitTableResponse } from '@app-builder/models/analytics/rule-hit';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
+import { cva } from 'class-variance-authority';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
+import { Icon } from 'ui-icons';
 import { AnalyticsTooltip } from './Tooltip';
 
 const columnHelper = createColumnHelper<RuleHitTableResponse>();
 
-export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; isLoading: boolean }) {
+export type RulesHitProps = {
+  isComparingRanges: boolean;
+  data: RuleHitTableResponse[];
+  isLoading: boolean;
+};
+
+export function RulesHit({ isComparingRanges, data, isLoading }: RulesHitProps) {
   const { t } = useTranslation(['analytics']);
   const language = useFormatLanguage();
   const [expanded, setExpanded] = useState(false);
@@ -24,17 +32,21 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
         size: 220,
         cell: ({ getValue }) => <span className="line-clamp-1">{getValue()}</span>,
       }),
-      columnHelper.accessor((row) => row.hitCount, {
-        id: 'hitCount',
-        header: () => (
-          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
-            {t('analytics:rule_hits.columns.hit_count')}
-            <AnalyticsTooltip className="size-4" content={t('analytics:rule_hits.columns.hit_count.tooltip')} />
-          </div>
-        ),
-        size: 100,
-        cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
-      }),
+      ...(!isComparingRanges
+        ? [
+            columnHelper.accessor((row) => row.hitCount, {
+              id: 'hitCount',
+              header: () => (
+                <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+                  {t('analytics:rule_hits.columns.hit_count')}
+                  <AnalyticsTooltip className="size-4" content={t('analytics:rule_hits.columns.hit_count.tooltip')} />
+                </div>
+              ),
+              size: 100,
+              cell: ({ getValue }) => <span>{formatNumber(getValue().value, { language })}</span>,
+            }),
+          ]
+        : []),
       columnHelper.accessor((row) => row.hitRatio, {
         id: 'hitRatio',
         header: () => (
@@ -45,21 +57,35 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
         ),
         size: 120,
 
-        cell: ({ getValue }) => (
-          <span>{formatNumber(Number(getValue()), { language, maximumFractionDigits: 2 })} %</span>
-        ),
+        cell: ({ getValue }) => {
+          const value = getValue().value;
+          const compare = getValue().compare;
+
+          return (
+            <span className="grid grid-cols-3 items-start font-semibold w-50">
+              <span>{formatNumber(Number(value), { language, maximumFractionDigits: 2 })}%</span>
+              {compare !== undefined ? (
+                <CompareValue value={compare} delta={compare - value} className="text-purple-65" />
+              ) : null}
+            </span>
+          );
+        },
       }),
-      columnHelper.accessor((row) => row.distinctPivots, {
-        id: 'distinctPivots',
-        header: () => (
-          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
-            {t('analytics:rule_hits.columns.pivot_count')}
-            <AnalyticsTooltip className="size-4" content={t('analytics:rule_hits.columns.pivot_count.tooltip')} />
-          </div>
-        ),
-        size: 140,
-        cell: ({ getValue }) => <span>{formatNumber(getValue(), { language })}</span>,
-      }),
+      ...(!isComparingRanges
+        ? [
+            columnHelper.accessor((row) => row.distinctPivots, {
+              id: 'distinctPivots',
+              header: () => (
+                <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+                  {t('analytics:rule_hits.columns.pivot_count')}
+                  <AnalyticsTooltip className="size-4" content={t('analytics:rule_hits.columns.pivot_count.tooltip')} />
+                </div>
+              ),
+              size: 140,
+              cell: ({ getValue }) => <span>{formatNumber(getValue().value, { language })}</span>,
+            }),
+          ]
+        : []),
       columnHelper.accessor((row) => row.repeatRatio, {
         id: 'repeatRatio',
         header: () => (
@@ -69,12 +95,22 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
           </div>
         ),
         size: 160,
-        cell: ({ getValue }) => (
-          <span>{formatNumber(Number(getValue()), { language, maximumFractionDigits: 2 })} %</span>
-        ),
+        cell: ({ getValue }) => {
+          const value = getValue().value;
+          const compare = getValue().compare;
+
+          return (
+            <span className="grid grid-cols-3 items-start w-50">
+              <span>{formatNumber(Number(getValue().value), { language, maximumFractionDigits: 2 })} %</span>
+              {compare !== undefined ? (
+                <CompareValue value={compare} delta={compare - value} className="text-purple-65" />
+              ) : null}
+            </span>
+          );
+        },
       }),
     ],
-    [columnHelper, language, t],
+    [columnHelper, language, t, isComparingRanges],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
@@ -129,5 +165,66 @@ export function RulesHit({ data, isLoading }: { data: RuleHitTableResponse[]; is
         ) : null}
       </div>
     </div>
+  );
+}
+
+type CompareValueProps = {
+  value: number;
+  delta: number;
+  className?: string;
+  higherIsBetter?: boolean;
+};
+
+const deltaColor = cva('flex flex-row items-center text-xs', {
+  variants: {
+    higherIsBetter: {
+      true: '',
+      false: '',
+      undefined: 'text-purple-65',
+    },
+    delta: {
+      higher: '',
+      lower: '',
+      equal: 'text-purple-65',
+    },
+  },
+  compoundVariants: [
+    {
+      higherIsBetter: true,
+      delta: 'higher',
+      class: 'text-green-38',
+    },
+    {
+      higherIsBetter: true,
+      delta: 'lower',
+      class: 'text-red-47',
+    },
+    {
+      higherIsBetter: false,
+      delta: 'lower',
+      class: 'text-green-38',
+    },
+    {
+      higherIsBetter: false,
+      delta: 'higher',
+      class: 'text-red-47',
+    },
+  ],
+});
+
+function CompareValue({ value, delta, className, higherIsBetter }: CompareValueProps) {
+  const language = useFormatLanguage();
+  const absoluteDelta = Math.abs(delta);
+
+  return (
+    <>
+      <span className={className}>
+        {formatNumber(value / 100, { language, maximumFractionDigits: 2, style: 'percent' })}
+      </span>
+      <span className={deltaColor({ higherIsBetter, delta: delta > 0 ? 'higher' : delta === 0 ? 'equal' : 'lower' })}>
+        <Icon icon={delta > 0 ? 'arrow-2-up' : 'arrow-2-down'} className="size-6 shrink-0" />
+        {formatNumber(absoluteDelta, { language, maximumFractionDigits: 2 })}pts
+      </span>
+    </>
   );
 }

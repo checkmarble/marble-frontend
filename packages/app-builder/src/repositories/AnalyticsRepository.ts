@@ -123,8 +123,12 @@ export function makeGetAnalyticsRepository() {
       const parsed = transformAnalyticsQuery.parse(args);
       if (!parsed.length) throw new Error('No date range provided');
 
-      const raw = await client.getRuleHitTable(parsed[0]!);
-      return adaptRuleHitTable(raw);
+      const [raw, rawCompare] = await Promise.all([
+        client.getRuleHitTable(parsed[0]!),
+        parsed[1] && client.getRuleHitTable(parsed[1]),
+      ]);
+
+      return adaptRuleHitTable(raw, rawCompare);
     },
 
     getScreeningHitsTable: async (args: AnalyticsQuery): Promise<ScreeningHitTableResponse[] | null> => {
