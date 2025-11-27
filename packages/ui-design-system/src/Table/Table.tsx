@@ -76,7 +76,11 @@ function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderG
             const context = header.getContext();
             if (header.id === internalRowLink) {
               return (
-                <th colSpan={header.colSpan} key={header.id} className="bg-grey-100 border-grey-90 w-0 border-b"></th>
+                <th
+                  colSpan={header.colSpan}
+                  key={`${header.id}-${index}`}
+                  className="bg-grey-100 border-grey-90 w-0 border-b"
+                ></th>
               );
             }
             return (
@@ -258,13 +262,13 @@ function Row<TData extends RowData>({
       )}
       {...props}
     >
-      {row.getVisibleCells().map((cell) => {
+      {row.getVisibleCells().map((cell, index) => {
         const context = cell.getContext();
         if (context.column.id === internalRowLink) {
-          return <td key={cell.id}>{flexRender(cell.column.columnDef.cell, context)}</td>;
+          return <td key={`${cell.id}-${index}`}>{flexRender(cell.column.columnDef.cell, context)}</td>;
         }
         return (
-          <td key={cell.id} className="text-s w-full truncate px-4 font-normal">
+          <td key={`${cell.id}-${index}`} className="text-s w-full truncate px-4 font-normal">
             {flexRender(cell.column.columnDef.cell, context)}
           </td>
         );
