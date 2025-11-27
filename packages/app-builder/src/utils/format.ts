@@ -91,3 +91,7 @@ export function formatDateRelative(date: string | Date, options: { language: str
     locale: getDateFnsLocale(options.language),
   });
 }
+
+export function formatPercentage(percentage: number, language: string) {
+  return Intl.NumberFormat(language, { style: 'percent', maximumFractionDigits: 0 }).format(percentage / 100);
+}
