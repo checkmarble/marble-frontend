@@ -7,8 +7,8 @@ import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from 'ui-design-system';
-import { CaseStatusBadge } from '../CaseStatus';
-import { getYAxisTicksValues, graphCaseStatuses, graphStatusesColors } from './constants';
+import { CaseStatusBadge } from '../../CaseStatus';
+import { getYAxisTicksValues, graphCaseStatuses, graphStatusesColors } from '../constants';
 
 export const CaseByInboxGraph = () => {
   const { t } = useTranslation(['common']);
