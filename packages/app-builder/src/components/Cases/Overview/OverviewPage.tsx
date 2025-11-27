@@ -3,8 +3,8 @@ import { CasesNavigationTabs } from '@app-builder/components/Cases/Navigation/Ta
 import { Page } from '@app-builder/components/Page';
 import { AIConfigSection } from './AIConfigSection';
 import { AutoAssignmentSection } from './AutoAssignmentSection';
-import { CaseByDateGraph } from './CaseByDateGraph';
-import { CaseByInboxGraph } from './CaseByInboxGraph';
+import { CaseByDateGraph } from './Graph/CaseByDateGraph';
+import { CaseByInboxGraph } from './Graph/CaseByInboxGraph';
 import { WorkflowConfigSection } from './WorkflowConfigSection';
 
 export const OverviewPage = () => {
