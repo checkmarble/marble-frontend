@@ -293,7 +293,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
         <div className="flex w-full h-[500px] flex-col items-start gap-v2-md">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-v2-sm">
-              <span className="text-s">Count:</span>
+              <span className="text-s">{t('analytics:decisions.count.label')}:</span>
               <div className="flex gap-v2-sm">
                 <ButtonV2
                   variant="secondary"
