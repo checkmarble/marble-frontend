@@ -2,6 +2,14 @@ import { CaseStatusByInboxResponse } from '@app-builder/models/analytics/case-st
 import { CaseStatusByDateResponse } from '@app-builder/models/analytics/cases-status-by-date';
 import { CaseStatus } from '@app-builder/models/cases';
 
+export const inboxUserRoles = ['admin', 'member'] as const;
+export type InboxUserRole = (typeof inboxUserRoles)[number];
+
+export const inboxUserRoleLabels: Record<InboxUserRole, string> = {
+  admin: 'Admin',
+  member: 'Member',
+};
+
 export const graphCaseStatuses = ['snoozed', 'pending', 'investigating', 'closed'] as const;
 export const graphStatusesColors: Record<Exclude<CaseStatus, 'waiting_for_action'>, string> = {
   snoozed: '#C1C0C8',

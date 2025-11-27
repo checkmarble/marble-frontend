@@ -1,9 +1,11 @@
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CasesNavigationTabs } from '@app-builder/components/Cases/Navigation/Tabs';
 import { Page } from '@app-builder/components/Page';
+import { AIConfigSection } from './AIConfigSection';
+import { AutoAssignmentSection } from './AutoAssignmentSection';
 import { CaseByDateGraph } from './CaseByDateGraph';
 import { CaseByInboxGraph } from './CaseByInboxGraph';
-import { ConfigurationPanel } from './ConfigurationPanel';
+import { WorkflowConfigSection } from './WorkflowConfigSection';
 
 export const OverviewPage = () => {
   return (
@@ -21,7 +23,12 @@ export const OverviewPage = () => {
                 <CaseByInboxGraph />
               </div>
             </div>
-            <ConfigurationPanel />
+            <div className="flex flex-col gap-v2-lg">
+              <h2 className="text-h2 font-semibold">Configurations générales</h2>
+              <AutoAssignmentSection />
+              <AIConfigSection />
+              <WorkflowConfigSection />
+            </div>
           </div>
         </Page.ContentV2>
       </Page.Container>
