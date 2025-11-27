@@ -2,7 +2,6 @@ import { ErrorComponent, Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { isAnalyticsAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
-import { getServerEnv } from '@app-builder/utils/environment';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -31,10 +30,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   if (!isAnalyticsAvailable(user, entitlements)) {
     return redirect(getRoute('/'));
-  }
-
-  if (!getServerEnv('ANALYTICS_V2')?.split(',').includes(user.organizationId)) {
-    return redirect(getRoute('/analytics-legacy'));
   }
 
   if (!params['scenarioId']) {
