@@ -33,7 +33,7 @@ export const AutoAssignmentSection = () => {
                 {displayedInboxes.map((inbox) => (
                   <div key={inbox.id} className="flex items-center gap-2 h-6">
                     <button type="button" className="size-6 flex items-center justify-center text-purple-65" disabled>
-                      <Icon icon="arrow-2-down" className="size-4" />
+                      <Icon icon="arrow-down" className="size-4" />
                     </button>
                     <div className="flex-1 flex items-center gap-v2-xs">
                       <span className="text-s font-medium">{inbox.name}</span>
