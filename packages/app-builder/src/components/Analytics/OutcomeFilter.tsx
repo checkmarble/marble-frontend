@@ -35,6 +35,7 @@ export function OutcomeFilter({
     <div className="flex flex-row gap-6 select-none">
       {outcomes.map((outcome: Outcome) => (
         <FilterItem
+          key={outcome}
           handleToggle={handleToggle}
           label={t(getOutcomeTranslationKey(outcome))}
           outcome={outcome}
