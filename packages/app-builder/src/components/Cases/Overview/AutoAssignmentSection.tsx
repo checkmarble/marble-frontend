@@ -1,11 +1,27 @@
 import { Spinner } from '@app-builder/components/Spinner';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
+import { useState } from 'react';
 import { match } from 'ts-pattern';
-import { Switch, Tag } from 'ui-design-system';
+import { cn, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
+import { InboxUserRow } from './InboxUserRow';
 
 export const AutoAssignmentSection = () => {
   const inboxesQuery = useGetInboxesQuery();
+  const [expandedInboxIds, setExpandedInboxIds] = useState<Set<string>>(new Set());
+
+  const toggleInbox = (inboxId: string) => {
+    setExpandedInboxIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(inboxId)) {
+        next.delete(inboxId);
+      } else {
+        next.add(inboxId);
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex flex-col gap-v2-md">
@@ -30,24 +46,46 @@ export const AutoAssignmentSection = () => {
 
             return (
               <>
-                {displayedInboxes.map((inbox) => (
-                  <div key={inbox.id} className="flex items-center gap-2 h-6">
-                    <button type="button" className="size-6 flex items-center justify-center text-purple-65" disabled>
-                      <Icon icon="arrow-down" className="size-4" />
-                    </button>
-                    <div className="flex-1 flex items-center gap-v2-xs">
-                      <span className="text-s font-medium">{inbox.name}</span>
-                      <Tag color="purple" size="small" border="rounded-sm">
-                        {inbox.casesCount} cases
-                      </Tag>
+                {displayedInboxes.map((inbox) => {
+                  const isExpanded = expandedInboxIds.has(inbox.id);
+                  const hasUsers = inbox.users && inbox.users.length > 0;
+
+                  return (
+                    <div key={inbox.id} className="flex flex-col gap-v2-sm">
+                      <div className="flex items-center gap-2 h-6">
+                        {hasUsers ? (
+                          <button
+                            type="button"
+                            className="size-6 flex items-center justify-center text-purple-65"
+                            onClick={() => toggleInbox(inbox.id)}
+                          >
+                            <Icon icon="arrow-down" className={cn('size-4', { 'rotate-180': isExpanded })} />
+                          </button>
+                        ) : (
+                          <div className="size-6" />
+                        )}
+                        <div className="flex-1 flex items-center gap-v2-xs">
+                          <span className="text-s">{inbox.name}</span>
+                          <Tag color="purple" size="small" border="rounded-sm">
+                            {inbox.casesCount} cases
+                          </Tag>
+                        </div>
+                        <div className="opacity-50">
+                          <Switch checked={inbox.autoAssignEnabled} disabled />
+                        </div>
+                      </div>
+                      {isExpanded && hasUsers && (
+                        <div className="flex flex-col gap-v2-sm">
+                          {inbox.users.map((user) => (
+                            <InboxUserRow key={user.id} user={user} />
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    <div className="opacity-50">
-                      <Switch checked={inbox.autoAssignEnabled} disabled />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {hasMore && (
-                  <button type="button" className="text-s text-purple-65 font-medium self-start" disabled>
+                  <button type="button" className="text-s text-grey-50 font-medium self-start" disabled>
                     Voir +
                   </button>
                 )}
