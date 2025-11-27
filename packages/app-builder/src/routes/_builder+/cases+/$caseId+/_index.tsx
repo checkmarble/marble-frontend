@@ -21,7 +21,7 @@ import { DetailedCaseDecision } from '@app-builder/models/cases';
 import { useEnqueueCaseReviewMutation } from '@app-builder/queries/ask-case-review';
 import { initServerServices } from '@app-builder/services/init.server';
 import { badRequest } from '@app-builder/utils/http/http-responses';
-import { parseIdParamSafe } from '@app-builder/utils/input-validation';
+import { parseIdParamSafe, parseQuerySafe } from '@app-builder/utils/input-validation';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import { getRoute } from '@app-builder/utils/routes';
@@ -47,6 +47,7 @@ import {
   TabsTrigger,
 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { z } from 'zod/v4';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const {
@@ -66,7 +67,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     return badRequest('Invalid UUID');
   }
   const { caseId } = parsedResult.data;
-  const [toastSession, t] = await Promise.all([getSession(request), getFixedT(request, ['common', 'cases'])]);
+  const [toastSession, t, query] = await Promise.all([
+    getSession(request),
+    getFixedT(request, ['common', 'cases']),
+    parseQuerySafe(request, z.object({ fromInbox: z.string() }).optional()),
+  ]);
 
   const [currentCase, inboxes] = await Promise.all([
     cases.getCase({ caseId }).catch(async (err) => {
@@ -76,14 +81,23 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
           message: t('cases:errors.case_not_found'),
         });
 
-        throw redirect(getRoute('/cases/inboxes/:inboxId', { inboxId: MY_INBOX_ID }), {
-          headers: { 'Set-Cookie': await commitSession(toastSession) },
-        });
+        throw redirect(
+          getRoute('/cases/inboxes/:inboxId', {
+            inboxId: query.data?.fromInbox ? query.data.fromInbox : MY_INBOX_ID,
+          }),
+          {
+            headers: { 'Set-Cookie': await commitSession(toastSession) },
+          },
+        );
       }
       throw err;
     }),
     inbox.listInboxes(),
   ]);
+
+  if (query.data?.fromInbox) {
+    return redirect(getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseId) }));
+  }
 
   const currentInbox = inboxes.find((inbox) => inbox.id === currentCase.inboxId);
   if (!currentInbox) {

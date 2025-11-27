@@ -5,6 +5,7 @@ import { CasesList } from '@app-builder/components/Cases/Inbox/CasesList';
 import { InboxFilterBar } from '@app-builder/components/Cases/Inbox/FilterBar/FilterBar';
 import { MultiSelect } from '@app-builder/components/MultiSelect';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
+import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { useBase64Query } from '@app-builder/hooks/useBase64Query';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { Case } from '@app-builder/models/cases';
@@ -13,6 +14,8 @@ import { PaginatedResponse } from '@app-builder/models/pagination';
 import { filtersSchema, useGetCasesQuery } from '@app-builder/queries/cases/get-cases';
 import { useMassUpdateCasesMutation } from '@app-builder/queries/cases/mass-update';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
+import { getRoute } from '@app-builder/utils/routes';
+import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +24,7 @@ import { ButtonV2, cn, Input } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Spinner } from '../Spinner';
 import { BatchActions, MassUpdateCasesFn } from './Inbox/BatchActions';
+import { SelectCaseById } from './Inbox/SelectCaseById';
 
 const ALLOWED_FILTERS = ['dateRange', 'statuses', 'includeSnoozed', 'excludeAssigned', 'assignee'] as const;
 const EXCLUDED_FILTERS = ['excludeAssigned', 'assignee'] as const;
@@ -49,6 +53,7 @@ export const InboxPage = ({
   const { t } = useTranslation(['common', 'cases']);
   const [searchValue, setSearchValue] = useState('');
   const { orgUsers } = useOrganizationUsers();
+  const navigate = useAgnosticNavigation();
 
   const assignableUsers = useMemo(() => {
     return orgUsers.filter(({ userId, role }) => inboxUsersIds.includes(userId) || role === 'ADMIN');
@@ -106,6 +111,13 @@ export const InboxPage = ({
     });
   };
 
+  const handleNavigate = (caseId: string) => {
+    navigate({
+      pathname: getRoute('/cases/:caseId', { caseId: fromUUIDtoSUUID(caseId) }),
+      search: inboxId === MY_INBOX_ID ? undefined : `?fromInbox=${fromUUIDtoSUUID(inboxId)}`,
+    });
+  };
+
   return (
     <Page.Main className="flex flex-col">
       <Page.Header>
@@ -150,6 +162,7 @@ export const InboxPage = ({
                     />
                   </div>
                   <div className="flex gap-v2-sm">
+                    <SelectCaseById onNavigate={handleNavigate} />
                     <Input
                       endAdornment="search"
                       adornmentClassName="size-5"

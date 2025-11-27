@@ -241,6 +241,7 @@
   "sar.status.pending": "للتنفيذ",
   "sar.title": "تقرير النشاط المشبوه",
   "search.placeholder": "البحث بالاسم",
+  "search.select_by_id": "اختر بالمعرف",
   "snooze_case.callout": "مؤجّلة حتى {{date}}",
   "snooze_case.title": "ذكّرني لاحقًا",
   "snooze.modal.heading": "إدارة التأجيل",
