@@ -12,18 +12,14 @@ export type RuleHitTableResponse = {
   repeatRatio: ValueWithOptionalCompare;
 };
 
-const adaptRuleHit = (
-  value: RuleHitTableResponseDto,
-  compareValue?: RuleHitTableResponseDto | undefined,
-): RuleHitTableResponse => {
+const adaptRuleHit = (value: RuleHitTableResponseDto): RuleHitTableResponse => {
   return {
     ruleName: value.rule_name,
-    hitCount: { value: value.hit_count, compare: compareValue?.hit_count },
-    hitRatio: { value: value.hit_ratio, compare: compareValue?.hit_ratio },
-    distinctPivots: { value: value.distinct_pivots, compare: compareValue?.distinct_pivots },
+    hitCount: { value: value.hit_count },
+    hitRatio: { value: value.hit_ratio },
+    distinctPivots: { value: value.distinct_pivots },
     repeatRatio: {
       value: value.hit_count > 0 ? value.repeat_ratio : 0,
-      compare: compareValue && compareValue.hit_count > 0 ? compareValue.repeat_ratio : 0,
     },
   };
 };
