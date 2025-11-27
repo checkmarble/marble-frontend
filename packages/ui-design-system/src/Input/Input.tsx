@@ -26,10 +26,19 @@ export interface InputProps extends React.ComponentPropsWithoutRef<'input'> {
   startAdornment?: IconName;
   endAdornment?: IconName;
   adornmentClassName?: string;
+  onAdornmentClick?: () => void;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { className, startAdornment, endAdornment, borderColor = 'greyfigma-90', adornmentClassName, ...props },
+  {
+    className,
+    startAdornment,
+    endAdornment,
+    borderColor = 'greyfigma-90',
+    adornmentClassName,
+    onAdornmentClick,
+    ...props
+  },
   ref,
 ) {
   return (
@@ -43,10 +52,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       {startAdornment ? (
         <div
           className={clsx(
-            'pointer-events-none absolute flex items-center',
+            'absolute flex items-center',
             'text-grey-50 peer-focus:text-grey-00',
             'inset-y-0 start-0 ps-2',
+            { 'cursor-pointer': onAdornmentClick, 'pointer-events-none': !onAdornmentClick },
           )}
+          onClick={onAdornmentClick}
         >
           <Icon icon={startAdornment} className={cn('size-6', adornmentClassName)} />
         </div>
@@ -54,10 +65,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       {endAdornment ? (
         <div
           className={clsx(
-            'pointer-events-none absolute flex items-center',
+            'absolute flex items-center',
             'text-grey-50 peer-focus:text-grey-00',
             'inset-y-0 end-0 pe-2',
+            { 'cursor-pointer': onAdornmentClick, 'pointer-events-none': !onAdornmentClick },
           )}
+          onClick={onAdornmentClick}
         >
           <Icon icon={endAdornment} className={cn('size-6', adornmentClassName)} />
         </div>

@@ -241,6 +241,7 @@
   "sar.status.pending": "To do",
   "sar.title": "Suspicious Activity Report",
   "search.placeholder": "Search by name",
+  "search.select_by_id": "Select by ID",
   "snooze_case.callout": "Snoozed until {{date}}",
   "snooze_case.title": "Remind me later",
   "unsnooze_case.callout": "By continuing, you will unsnooze this case",

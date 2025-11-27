@@ -241,6 +241,7 @@
   "sar.status.pending": "À faire",
   "sar.title": "Déclaration de soupçon",
   "search.placeholder": "Chercher par nom",
+  "search.select_by_id": "Sélectionner par ID",
   "snooze_case.callout": "En veille jusqu'au {{date}}",
   "snooze_case.title": "Me le rappeler plus tard",
   "unsnooze_case.callout": "En continuant, vous réactiverez cette investigation",
