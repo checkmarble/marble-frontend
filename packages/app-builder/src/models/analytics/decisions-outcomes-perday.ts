@@ -211,11 +211,11 @@ export const adaptDecisionOutcomesPerDay = (val: DecisionOutcomesPerDayEntity[])
   const absoluteDailyData: DecisionOutcomesAbsolute[] = val.map((v) => ({
     rangeId: v.rangeId,
     date: v.date,
-    approve: 1000 * v.approve,
+    approve: v.approve,
     blockAndReview: v.block_and_review,
     decline: v.decline,
     review: v.review,
-    total: 1000 * v.approve + v.block_and_review + v.decline + v.review,
+    total: v.approve + v.block_and_review + v.decline + v.review,
   }));
 
   const absoluteCountsByWeek = new Map<number, DecisionOutcomesAbsolute>();
