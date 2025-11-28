@@ -1246,6 +1246,9 @@ export type InboxDto = {
     cases_count?: number;
     escalation_inbox_id?: string;
     auto_assign_enabled: boolean;
+    case_review_manual?: boolean;
+    case_review_on_case_created?: boolean;
+    case_review_on_escalate?: boolean;
 };
 export type CreateInboxBodyDto = {
     name: string;
@@ -4302,6 +4305,9 @@ export function updateInbox(inboxId: string, body: {
     name: string;
     escalation_inbox_id?: string;
     auto_assign_enabled?: boolean;
+    case_review_manual?: boolean;
+    case_review_on_case_created?: boolean;
+    case_review_on_escalate?: boolean;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;

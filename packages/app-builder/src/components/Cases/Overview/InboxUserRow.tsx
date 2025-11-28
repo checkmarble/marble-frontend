@@ -3,45 +3,52 @@ import { useOrganizationUsers } from '@app-builder/services/organization/organiz
 import { getFullName } from '@app-builder/services/user';
 import { cn, Switch, Tag } from 'ui-design-system';
 
-import { type InboxUserRole, inboxUserRoleLabels } from './constants';
+import {
+  INBOX_USER_ROW_VARIANTS,
+  type InboxUserRole,
+  type InboxUserRowVariant,
+  inboxUserRoleLabels,
+} from './constants';
 
 interface InboxUserRowProps {
   user: InboxUser;
   checked?: boolean;
   onToggle?: (userId: string, checked: boolean) => void;
-  variant?: 'default' | 'panel';
+  variant?: InboxUserRowVariant;
 }
 
-export const InboxUserRow = ({ user, checked, onToggle, variant = 'default' }: InboxUserRowProps) => {
+export const InboxUserRow = ({
+  user,
+  checked,
+  onToggle,
+  variant = INBOX_USER_ROW_VARIANTS.default,
+}: InboxUserRowProps) => {
   const { getOrgUserById } = useOrganizationUsers();
   const orgUser = getOrgUserById(user.userId);
   const userName = getFullName(orgUser) ?? 'Unknown';
   const roleLabel = inboxUserRoleLabels[user.role as InboxUserRole] ?? user.role;
-  const isEditable = !!onToggle;
   const isChecked = checked ?? user.autoAssignable;
 
   return (
-    <div className={cn('flex items-center gap-2', { 'pl-12': variant === 'default' })}>
+    <div className={cn('flex items-center gap-v2-sm', { 'pl-12': variant === INBOX_USER_ROW_VARIANTS.default })}>
       <div className="flex-1 flex items-center gap-v2-xs">
         <span className="text-xs">{userName}</span>
         <Tag color="purple" size="small" border="rounded-sm">
           {roleLabel}
         </Tag>
       </div>
-      <div>
-        {variant === 'default' && (
-          <Tag color={isChecked ? 'green' : 'grey'} size="small" border="rounded-sm">
-            {isChecked ? 'Active' : 'Disabled'}
-          </Tag>
-        )}
-        {variant === 'panel' && (
-          <Switch
-            checked={isChecked}
-            disabled={!isEditable}
-            onCheckedChange={(newChecked) => onToggle?.(user.id, newChecked)}
-          />
-        )}
-      </div>
+      {variant === INBOX_USER_ROW_VARIANTS.default && (
+        <Tag color={isChecked ? 'green' : 'grey'} size="small" border="rounded-sm">
+          {isChecked ? 'Active' : 'Disabled'}
+        </Tag>
+      )}
+      {variant === INBOX_USER_ROW_VARIANTS.panel && (
+        <Switch
+          checked={isChecked}
+          disabled={!onToggle}
+          onCheckedChange={(newChecked) => onToggle?.(user.id, newChecked)}
+        />
+      )}
     </div>
   );
 };

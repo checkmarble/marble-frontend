@@ -5,7 +5,7 @@ import { match } from 'ts-pattern';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { AIConfigPanelContent } from './Panel/AIConfigPanelContent';
+import { AIConfigPanelContent } from '../Panel/AIConfigPanelContent';
 
 export function AIConfigSection() {
   const { openPanel, closePanel } = usePanel();
@@ -30,9 +30,10 @@ export function AIConfigSection() {
       {/* Section header */}
       <div className="flex items-center gap-v2-sm h-7">
         <span className="flex-1 text-s font-medium">Configurations IA</span>
-        <Tag color="purple" size="small" border="rounded-sm">
+        {/* @TODO: Add credit usage when ready */}
+        {/* <Tag color="purple" size="small" border="rounded-sm">
           5/10 crédit IA utilisés
-        </Tag>
+        </Tag> */}
       </div>
 
       {match(aiSettingsQuery)
@@ -66,13 +67,11 @@ export function AIConfigSection() {
                       {isGeneralConfigured ? 'Configuré' : 'A configurer'}
                     </Tag>
                   </div>
-                  <button
-                    type="button"
-                    className="size-6 flex items-center justify-center text-purple-65 hover:text-purple-60"
+                  <Icon
+                    icon="edit"
+                    className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
                     onClick={handleOpenPanel}
-                  >
-                    <Icon icon="edit" className="size-4" />
-                  </button>
+                  />
                 </div>
               </div>
 
@@ -90,13 +89,11 @@ export function AIConfigSection() {
                       </Tag>
                     )}
                   </div>
-                  <button
-                    type="button"
-                    className="size-6 flex items-center justify-center text-purple-65 hover:text-purple-60"
+                  <Icon
+                    icon="arrow-right"
+                    className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
                     onClick={handleOpenPanel}
-                  >
-                    <Icon icon="arrow-right" className="size-4" />
-                  </button>
+                  />
                 </div>
               </div>
             </>

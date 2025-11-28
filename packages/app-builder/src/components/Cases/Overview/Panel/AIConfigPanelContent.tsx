@@ -57,7 +57,7 @@ export function AIConfigPanelContent({ settings, onSuccess }: AIConfigPanelConte
         </PanelHeader>
 
         <PanelContent>
-          <form id="ai-config-panel-form" className="flex flex-col gap-[10px]" onSubmit={handleSubmit(form)}>
+          <form id="ai-config-panel-form" className="flex flex-col gap-v2-sm" onSubmit={handleSubmit(form)}>
             {/* Section: Informations générales */}
             <div className="bg-grey-background-light border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
               <span className="text-s font-medium">{t('settings:ai_assist.case_manager.general.title')}</span>
@@ -212,18 +212,21 @@ export function AIConfigPanelContent({ settings, onSuccess }: AIConfigPanelConte
 
         <PanelFooter>
           <form.Subscribe selector={(state) => state.isSubmitting}>
-            {(isSubmitting) => (
-              <ButtonV2
-                type="submit"
-                form="ai-config-panel-form"
-                variant="primary"
-                size="default"
-                className="w-full justify-center"
-                disabled={isSubmitting || updateMutation.isPending}
-              >
-                Valider la configuration
-              </ButtonV2>
-            )}
+            {(isSubmitting) => {
+              const isPending = isSubmitting || updateMutation.isPending;
+              return (
+                <ButtonV2
+                  type="submit"
+                  form="ai-config-panel-form"
+                  variant="primary"
+                  size="default"
+                  className="w-full justify-center"
+                  disabled={isPending}
+                >
+                  {isPending ? <Icon icon="spinner" className="size-4 animate-spin" /> : 'Valider la configuration'}
+                </ButtonV2>
+              );
+            }}
           </form.Subscribe>
         </PanelFooter>
       </PanelContainer>

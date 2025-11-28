@@ -10,6 +10,13 @@ export const inboxUserRoleLabels: Record<InboxUserRole, string> = {
   member: 'Member',
 };
 
+export const INBOX_USER_ROW_VARIANTS = {
+  default: 'default',
+  panel: 'panel',
+} as const;
+
+export type InboxUserRowVariant = (typeof INBOX_USER_ROW_VARIANTS)[keyof typeof INBOX_USER_ROW_VARIANTS];
+
 export const graphCaseStatuses = ['snoozed', 'pending', 'investigating', 'closed'] as const;
 export const graphStatusesColors: Record<Exclude<CaseStatus, 'waiting_for_action'>, string> = {
   snoozed: '#C1C0C8',
