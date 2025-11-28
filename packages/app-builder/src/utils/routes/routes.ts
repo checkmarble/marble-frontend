@@ -531,6 +531,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/escalate-case.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/get-ai-settings",
+        "path": "ressources/cases/get-ai-settings",
+        "file": "routes/ressources+/cases+/get-ai-settings.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/get-inboxes",
         "path": "ressources/cases/get-inboxes",
         "file": "routes/ressources+/cases+/get-inboxes.tsx"
@@ -570,6 +575,16 @@ export const routes = [
         "id": "routes/ressources+/cases+/snooze-case",
         "path": "ressources/cases/snooze-case",
         "file": "routes/ressources+/cases+/snooze-case.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/update-inbox-escalation",
+        "path": "ressources/cases/update-inbox-escalation",
+        "file": "routes/ressources+/cases+/update-inbox-escalation.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/update-inbox-workflow",
+        "path": "ressources/cases/update-inbox-workflow",
+        "file": "routes/ressources+/cases+/update-inbox-workflow.tsx"
       },
       {
         "id": "routes/ressources+/data+/$tableId.createNavigationOption",

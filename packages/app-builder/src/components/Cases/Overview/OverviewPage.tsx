@@ -1,11 +1,11 @@
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CasesNavigationTabs } from '@app-builder/components/Cases/Navigation/Tabs';
 import { Page } from '@app-builder/components/Page';
-import { AIConfigSection } from './AIConfigSection';
-import { AutoAssignmentSection } from './AutoAssignmentSection';
 import { CaseByDateGraph } from './Graph/CaseByDateGraph';
 import { CaseByInboxGraph } from './Graph/CaseByInboxGraph';
-import { WorkflowConfigSection } from './WorkflowConfigSection';
+import { AIConfigSection } from './Section/AIConfigSection';
+import { AutoAssignmentSection } from './Section/AutoAssignmentSection';
+import { WorkflowConfigSection } from './Section/WorkflowConfigSection';
 
 export const OverviewPage = () => {
   return (

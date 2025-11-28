@@ -1,18 +1,19 @@
 import type { InboxWithCasesCount } from '@app-builder/models/inbox';
 import { Switch, Tag } from 'ui-design-system';
 
+import { INBOX_USER_ROW_VARIANTS } from '../constants';
 import { InboxUserRow } from '../InboxUserRow';
 
 interface InboxCardProps {
   inbox: InboxWithCasesCount;
   inboxChecked?: boolean;
-  userCheckedMap?: Map<string, boolean>;
+  userCheckedMap?: Record<string, boolean>;
   onToggleInbox?: (inboxId: string, checked: boolean) => void;
   onToggleUser?: (userId: string, checked: boolean) => void;
 }
 
 export const InboxCard = ({ inbox, inboxChecked, userCheckedMap, onToggleInbox, onToggleUser }: InboxCardProps) => {
-  const hasUsers = inbox.users && inbox.users.length > 0;
+  const hasUsers = inbox.users?.length > 0;
   const isInboxChecked = inboxChecked ?? inbox.autoAssignEnabled;
 
   return (
@@ -32,9 +33,9 @@ export const InboxCard = ({ inbox, inboxChecked, userCheckedMap, onToggleInbox, 
             <InboxUserRow
               key={user.id}
               user={user}
-              checked={userCheckedMap?.get(user.id)}
+              checked={userCheckedMap?.[user.id]}
               onToggle={onToggleUser}
-              variant="panel"
+              variant={INBOX_USER_ROW_VARIANTS.panel}
             />
           ))}
         </div>
