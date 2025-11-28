@@ -7,7 +7,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { InboxCard } from './InboxCard';
 
@@ -145,9 +145,14 @@ export const AutoAssignmentPanelContent = () => {
             .exhaustive()}
         </PanelContent>
         <PanelFooter>
-          <Button className="w-full" onClick={handleSave} disabled={isSaving || !hasChanges}>
+          <ButtonV2
+            size="default"
+            className="w-full justify-center"
+            onClick={handleSave}
+            disabled={isSaving || !hasChanges}
+          >
             {isSaving ? <Spinner className="size-4" /> : 'Valider'}
-          </Button>
+          </ButtonV2>
         </PanelFooter>
       </PanelContainer>
     </PanelOverlay>

@@ -116,7 +116,7 @@ interface PanelContentProps {
 }
 
 export function PanelContent({ children, className }: PanelContentProps) {
-  return <div className={cn('flex-1 overflow-y-auto', className)}>{children}</div>;
+  return <div className={cn('flex-1 overflow-y-auto pb-4', className)}>{children}</div>;
 }
 
 interface PanelFooterProps {

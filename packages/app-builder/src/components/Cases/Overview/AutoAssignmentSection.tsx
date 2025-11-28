@@ -3,7 +3,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useState } from 'react';
 import { match } from 'ts-pattern';
-import { cn, Tag } from 'ui-design-system';
+import { ButtonV2, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { InboxUserRow } from './InboxUserRow';
 import { AutoAssignmentPanelContent } from './Panel/AutoAssignmentPanelContent';
@@ -91,13 +91,13 @@ export const AutoAssignmentSection = () => {
                   );
                 })}
                 {hasMore && (
-                  <button
-                    type="button"
-                    className="text-s text-grey-50 font-medium self-start hover:text-grey-00"
+                  <ButtonV2
+                    variant="secondary"
+                    appearance="link"
                     onClick={() => openPanel(<AutoAssignmentPanelContent />)}
                   >
                     Voir +
-                  </button>
+                  </ButtonV2>
                 )}
               </>
             );
