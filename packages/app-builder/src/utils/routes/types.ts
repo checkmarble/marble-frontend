@@ -85,6 +85,7 @@ export type RoutePath =
   | '/ressources/cases/edit-suspicion'
   | '/ressources/cases/edit-tags'
   | '/ressources/cases/escalate-case'
+  | '/ressources/cases/get-ai-settings'
   | '/ressources/cases/get-inboxes'
   | '/ressources/cases/mass-update'
   | '/ressources/cases/open-case'
