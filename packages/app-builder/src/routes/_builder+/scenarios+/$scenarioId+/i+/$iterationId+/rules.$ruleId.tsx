@@ -2,32 +2,37 @@ import { Page, scenarioI18n } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps, BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
-import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { DeleteRule } from '@app-builder/components/Scenario/Rules/Actions/DeleteRule';
 import { DuplicateRule } from '@app-builder/components/Scenario/Rules/Actions/DuplicateRule';
 import { AiDescription } from '@app-builder/components/Scenario/Rules/AiDescription';
 import { FieldAstFormula } from '@app-builder/components/Scenario/Screening/FieldAstFormula';
 import { FieldRuleGroup } from '@app-builder/components/Scenario/Screening/FieldRuleGroup';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import useIntersection from '@app-builder/hooks/useIntersection';
 import { AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
+import {
+  AdaptedEditRulePayloadSchema,
+  EditRulePayload,
+  editRulePayloadSchema,
+  useEditRuleMutation,
+} from '@app-builder/queries/scenarios/edit-rule';
 import { useRuleDescriptionMutation } from '@app-builder/queries/scenarios/rule-description';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { initServerServices } from '@app-builder/services/init.server';
-import { getFieldErrors } from '@app-builder/utils/form';
+import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as Ariakit from '@ariakit/react';
 import { useDebouncedCallbackRef } from '@marble/shared';
-import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
-import { useFetcher, useLoaderData } from '@remix-run/react';
+import { type LoaderFunctionArgs } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { type Namespace } from 'i18next';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, CtaClassName, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod/v4';
 import { useCurrentScenarioIterationRule, useRuleGroups } from './_layout';
 
 export const handle = {
@@ -86,14 +91,19 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     failureRedirect: getRoute('/sign-in'),
   });
 
+  const scenarioId = fromParams(params, 'scenarioId');
+  const iterationId = fromParams(params, 'iterationId');
+
   const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, appConfig] = await Promise.all([
-    editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
+    editor.listAccessors({ scenarioId }),
     dataModelRepository.getDataModel(),
     customListsRepository.listCustomLists(),
     appConfigRepository.getAppConfig(),
   ]);
 
   return {
+    iterationId,
+    scenarioId,
     databaseAccessors,
     payloadAccessors,
     dataModel,
@@ -102,86 +112,25 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   };
 }
 
-const editRuleFormSchema = z.object({
-  name: z.string().nonempty(),
-  description: z.string().optional(),
-  ruleGroup: z.string().optional(),
-  scoreModifier: z.number().int().min(-1000).max(1000),
-  formula: z.any(),
-});
-
-type EditRuleForm = z.infer<typeof editRuleFormSchema>;
-
-export async function action({ request, params }: ActionFunctionArgs) {
-  const {
-    authService,
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
-
-  const [session, data, { scenarioIterationRuleRepository }] = await Promise.all([
-    getSession(request),
-    request.json(),
-    authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    }),
-  ]);
-
-  const result = editRuleFormSchema.safeParse(data);
-
-  if (!result.success) {
-    return json(
-      { status: 'error', errors: z.treeifyError(result.error) },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  }
-
-  try {
-    await scenarioIterationRuleRepository.updateRule({
-      ruleId: fromParams(params, 'ruleId'),
-      ...result.data,
-    });
-
-    setToastMessage(session, {
-      type: 'success',
-      messageKey: 'common:success.save',
-    });
-
-    return json(
-      { status: 'success', errors: [] },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  } catch (_error) {
-    setToastMessage(session, {
-      type: 'error',
-      messageKey: 'common:errors.unknown',
-    });
-
-    return json(
-      { status: 'error', errors: [] },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  }
-}
-
 export default function RuleDetail() {
-  const { databaseAccessors, payloadAccessors, dataModel, customLists, isAiRuleDescriptionEnabled } =
-    useLoaderData<typeof loader>();
+  const {
+    iterationId,
+    scenarioId,
+    databaseAccessors,
+    payloadAccessors,
+    dataModel,
+    customLists,
+    isAiRuleDescriptionEnabled,
+  } = useLoaderData<typeof loader>();
 
   const { t } = useTranslation(handle.i18n);
-  const iterationId = useParam('iterationId');
-  const scenarioId = useParam('scenarioId');
+  const revalidate = useLoaderRevalidator();
 
-  const fetcher = useFetcher<typeof action>();
   const scenario = useCurrentScenario();
   const rule = useCurrentScenarioIterationRule();
   const editor = useEditorMode();
   const ruleGroups = useRuleGroups();
+  const editRuleMutation = useEditRuleMutation(rule.id);
 
   const descriptionRef = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -194,13 +143,15 @@ export default function RuleDetail() {
   const form = useForm({
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        fetcher.submit(value, { method: 'PATCH', encType: 'application/json' });
+        editRuleMutation.mutateAsync(value).then((res) => {
+          revalidate();
+        });
       }
     },
     validators: {
-      onSubmit: editRuleFormSchema,
+      onSubmit: editRulePayloadSchema as AdaptedEditRulePayloadSchema,
     },
-    defaultValues: rule as EditRuleForm,
+    defaultValues: rule as EditRulePayload,
   });
 
   const ruleDescriptionMutation = useRuleDescriptionMutation(rule.id);
@@ -250,23 +201,11 @@ export default function RuleDetail() {
   return (
     <Page.Main>
       <Page.Header>
-        <BreadCrumbs
-          back={getRoute('/scenarios/:scenarioId/i/:iterationId/rules', {
-            iterationId: fromUUIDtoSUUID(iterationId),
-            scenarioId: fromUUIDtoSUUID(scenario.id),
-          })}
-        />
+        <BreadCrumbs back={getRoute('/scenarios/:scenarioId/i/:iterationId/rules', { iterationId, scenarioId })} />
       </Page.Header>
       <Page.Container>
         <Page.Content>
-          <form
-            className="relative flex flex-col"
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              form.handleSubmit();
-            }}
-          >
+          <form className="relative flex flex-col" onSubmit={handleSubmit(form)}>
             <div
               className={cn('bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between gap-4 max-w-3xl', {
                 'border-b-grey-90 border-b': !intersection?.isIntersecting,
@@ -275,8 +214,8 @@ export default function RuleDetail() {
               <form.Field
                 name="name"
                 validators={{
-                  onChange: editRuleFormSchema.shape.name,
-                  onBlur: editRuleFormSchema.shape.name,
+                  onChange: editRulePayloadSchema.shape.name,
+                  onBlur: editRulePayloadSchema.shape.name,
                 }}
               >
                 {(field) => (
@@ -339,8 +278,8 @@ export default function RuleDetail() {
                 <form.Field
                   name="description"
                   validators={{
-                    onChange: editRuleFormSchema.shape.description,
-                    onBlur: editRuleFormSchema.shape.description,
+                    onChange: editRulePayloadSchema.shape.description,
+                    onBlur: editRulePayloadSchema.shape.description,
                   }}
                 >
                   {(field) => (
@@ -361,8 +300,8 @@ export default function RuleDetail() {
                 <form.Field
                   name="ruleGroup"
                   validators={{
-                    onChange: editRuleFormSchema.shape.ruleGroup,
-                    onBlur: editRuleFormSchema.shape.ruleGroup,
+                    onChange: editRulePayloadSchema.shape.ruleGroup,
+                    onBlur: editRulePayloadSchema.shape.ruleGroup,
                   }}
                 >
                   {(field) => (
@@ -386,8 +325,8 @@ export default function RuleDetail() {
                     <form.Field
                       name="formula"
                       validators={{
-                        onChange: editRuleFormSchema.shape.formula,
-                        onBlur: editRuleFormSchema.shape.formula,
+                        onChange: editRulePayloadSchema.shape.formula,
+                        onBlur: editRulePayloadSchema.shape.formula,
                       }}
                     >
                       {(field) => (
@@ -423,8 +362,8 @@ export default function RuleDetail() {
                     <form.Field
                       name="scoreModifier"
                       validators={{
-                        onChange: editRuleFormSchema.shape.scoreModifier,
-                        onBlur: editRuleFormSchema.shape.scoreModifier,
+                        onChange: editRulePayloadSchema.shape.scoreModifier,
+                        onBlur: editRulePayloadSchema.shape.scoreModifier,
                       }}
                     >
                       {(field) => (

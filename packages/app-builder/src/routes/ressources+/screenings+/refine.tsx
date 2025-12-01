@@ -1,26 +1,23 @@
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import type { ActionFunctionArgs } from '@remix-run/node';
-import { decode as decodeFormdata } from 'decode-formdata';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
+import { refineScreeningPayloadSchema } from '@app-builder/queries/screening/schemas';
 
-import { refineSearchSchema } from './search';
+export const action = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function screeningRefineAction({ request, context }) {
+    const { screening } = context.authInfo;
 
-export async function action({ request }: ActionFunctionArgs) {
-  const { authService } = initServerServices(request);
+    const rawPayload = await request.json();
+    const submission = refineScreeningPayloadSchema.safeParse(rawPayload);
 
-  const { screening } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+    if (submission.success) {
+      return {
+        success: true,
+        data: await screening.refineScreening(submission.data),
+      };
+    }
 
-  const data = decodeFormdata(await request.formData());
-  const submission = refineSearchSchema.safeParse(data);
-
-  if (submission.success) {
-    return {
-      success: true,
-      data: await screening.refineScreening(submission.data),
-    };
-  }
-
-  return { success: false, error: submission.error } as const;
-}
+    return { success: false, error: submission.error } as const;
+  },
+);
