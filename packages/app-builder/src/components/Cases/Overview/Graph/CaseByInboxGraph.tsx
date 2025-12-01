@@ -29,7 +29,7 @@ export const CaseByInboxGraph = () => {
           .with({ isError: true }, () => (
             <div className="grid place-items-center h-full">
               <div className="flex flex-col items-center gap-v2-sm">
-                <span className="text-s text-grey-60">{t('common:generic_fetch_data_error')}</span>
+                <span className="text-s text-grey-60 text-center">{t('common:generic_fetch_data_error')}</span>
                 <ButtonV2 variant="secondary" onClick={() => caseStatusByInboxQuery.refetch()}>
                   Retry
                 </ButtonV2>

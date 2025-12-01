@@ -14,9 +14,10 @@ interface WorkflowInboxCardProps {
   inbox: InboxWithCasesCount;
   settings: WorkflowSettings;
   onToggle: (field: keyof WorkflowSettings, value: boolean) => void;
+  disabled?: boolean;
 }
 
-export const WorkflowInboxCard = ({ inbox, settings, onToggle }: WorkflowInboxCardProps) => {
+export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled }: WorkflowInboxCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const isConfigured = settings.caseReviewManual || settings.caseReviewOnCaseCreated || settings.caseReviewOnEscalate;
@@ -46,6 +47,7 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle }: WorkflowInboxCa
               <Switch
                 checked={settings.caseReviewOnCaseCreated}
                 onCheckedChange={(checked) => onToggle('caseReviewOnCaseCreated', checked)}
+                disabled={disabled}
               />
               <span className="text-s">Nouveau cas créé dans cette inbox</span>
             </div>
@@ -54,6 +56,7 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle }: WorkflowInboxCa
               <Switch
                 checked={settings.caseReviewOnEscalate}
                 onCheckedChange={(checked) => onToggle('caseReviewOnEscalate', checked)}
+                disabled={disabled}
               />
               <span className="text-s">Cas escaladé dans cette inbox</span>
             </div>
@@ -62,6 +65,7 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle }: WorkflowInboxCa
               <Switch
                 checked={settings.caseReviewManual}
                 onCheckedChange={(checked) => onToggle('caseReviewManual', checked)}
+                disabled={disabled}
               />
               <span className="text-s">Demande manuelle</span>
             </div>

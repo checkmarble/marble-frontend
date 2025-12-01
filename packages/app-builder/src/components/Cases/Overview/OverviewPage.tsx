@@ -7,7 +7,25 @@ import { AIConfigSection } from './Section/AIConfigSection';
 import { AutoAssignmentSection } from './Section/AutoAssignmentSection';
 import { WorkflowConfigSection } from './Section/WorkflowConfigSection';
 
-export const OverviewPage = () => {
+interface OverviewPageProps {
+  currentUserId?: string;
+  isGlobalAdmin: boolean;
+  hasAutoAssignmentEntitlement: boolean;
+  hasAIEntitlement: boolean;
+  hasWorkflowEntitlement: boolean;
+}
+
+export const OverviewPage = ({
+  currentUserId,
+  isGlobalAdmin,
+  hasAutoAssignmentEntitlement,
+  hasAIEntitlement,
+  hasWorkflowEntitlement,
+}: OverviewPageProps) => {
+  // AI and Workflow: only global admin can edit
+  const canEditAI = hasAIEntitlement && isGlobalAdmin;
+  const canEditWorkflow = hasWorkflowEntitlement && isGlobalAdmin;
+
   return (
     <Page.Main>
       <Page.Header>
@@ -25,9 +43,13 @@ export const OverviewPage = () => {
             </div>
             <div className="flex flex-col gap-v2-lg">
               <h2 className="text-h2 font-semibold">Configurations générales</h2>
-              <AutoAssignmentSection />
-              <AIConfigSection />
-              <WorkflowConfigSection />
+              <AutoAssignmentSection
+                currentUserId={currentUserId}
+                isGlobalAdmin={isGlobalAdmin}
+                hasEntitlement={hasAutoAssignmentEntitlement}
+              />
+              <AIConfigSection canEdit={canEditAI} />
+              <WorkflowConfigSection canEdit={canEditWorkflow} />
             </div>
           </div>
         </Page.ContentV2>

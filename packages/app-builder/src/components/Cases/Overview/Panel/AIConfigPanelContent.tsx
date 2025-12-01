@@ -17,9 +17,10 @@ import { LanguageDropdown } from './LanguageDropdown';
 interface AIConfigPanelContentProps {
   settings: AiSettingSchema;
   onSuccess?: () => void;
+  readOnly?: boolean;
 }
 
-export function AIConfigPanelContent({ settings, onSuccess }: AIConfigPanelContentProps) {
+export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfigPanelContentProps) {
   const { t } = useTranslation(['settings', 'common']);
   const updateMutation = useUpdateAiSettings();
 
@@ -74,8 +75,9 @@ export function AIConfigPanelContent({ settings, onSuccess }: AIConfigPanelConte
                       defaultValue={field.state.value}
                       valid={field.state.meta.errors.length === 0}
                       resize="vertical"
-                      className="min-h-[140px]"
+                      className="min-h-[140px] disabled:cursor-not-allowed"
                       placeholder={t('settings:ai_assist.case_manager.general.org_description.field.placeholder')}
+                      disabled={readOnly}
                     />
                   </div>
                 )}
@@ -94,8 +96,9 @@ export function AIConfigPanelContent({ settings, onSuccess }: AIConfigPanelConte
                       defaultValue={field.state.value}
                       valid={field.state.meta.errors.length === 0}
                       resize="vertical"
-                      className="min-h-[140px]"
+                      className="min-h-[140px] disabled:cursor-not-allowed"
                       placeholder={t('settings:ai_assist.case_manager.general.structure.field.placeholder')}
+                      disabled={readOnly}
                     />
                   </div>
                 )}
@@ -103,7 +106,11 @@ export function AIConfigPanelContent({ settings, onSuccess }: AIConfigPanelConte
 
               <form.Field name="caseReviewSetting.language">
                 {(field) => (
-                  <LanguageDropdown value={field.state.value} onChange={(value) => field.handleChange(value)} />
+                  <LanguageDropdown
+                    value={field.state.value}
+                    onChange={(value) => field.handleChange(value)}
+                    disabled={readOnly}
+                  />
                 )}
               </form.Field>
             </div>
@@ -118,6 +125,7 @@ export function AIConfigPanelContent({ settings, onSuccess }: AIConfigPanelConte
                       className="shrink-0"
                       checked={field.state.value}
                       onCheckedChange={(val) => field.handleChange(val)}
+                      disabled={readOnly}
                     />
                     <div className="flex flex-col gap-v2-xs">
                       <span className="text-s font-medium">
@@ -150,10 +158,11 @@ export function AIConfigPanelContent({ settings, onSuccess }: AIConfigPanelConte
                       defaultValue={field.state.value}
                       valid={field.state.meta.errors.length === 0}
                       resize="vertical"
-                      className="min-h-[140px]"
+                      className="min-h-[140px] disabled:cursor-not-allowed"
                       placeholder={t(
                         'settings:ai_assist.case_manager.kyc_enrichment.custom_instructions.field.placeholder',
                       )}
+                      disabled={readOnly}
                     />
                   </div>
                 )}
@@ -170,22 +179,25 @@ export function AIConfigPanelContent({ settings, onSuccess }: AIConfigPanelConte
                           <div className="flex flex-col gap-v2-xs">
                             <div className="flex gap-v2-sm items-center">
                               <Input
-                                className="flex-1"
+                                className="flex-1 [&>input]:disabled:cursor-not-allowed"
                                 value={field.state.value}
                                 onChange={(e) => {
                                   field.handleChange(e.target.value);
                                   domainsField.validate('change');
                                 }}
                                 placeholder={t('settings:ai_assist.case_manager.domains_filter.placeholder')}
+                                disabled={readOnly}
                               />
-                              <ButtonV2
-                                mode="icon"
-                                variant="secondary"
-                                type="button"
-                                onClick={() => domainsField.removeValue(idx)}
-                              >
-                                <Icon icon="delete" className="size-4 text-purple-65" />
-                              </ButtonV2>
+                              {!readOnly && (
+                                <ButtonV2
+                                  mode="icon"
+                                  variant="secondary"
+                                  type="button"
+                                  onClick={() => domainsField.removeValue(idx)}
+                                >
+                                  <Icon icon="delete" className="size-4 text-purple-65" />
+                                </ButtonV2>
+                              )}
                             </div>
                             <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
                           </div>
@@ -193,16 +205,18 @@ export function AIConfigPanelContent({ settings, onSuccess }: AIConfigPanelConte
                       </form.Field>
                     ))}
 
-                    <ButtonV2
-                      type="button"
-                      variant="primary"
-                      appearance="stroked"
-                      disabled={domainsField.state.value.length >= 10}
-                      onClick={() => domainsField.pushValue('')}
-                      className="w-fit"
-                    >
-                      {t('settings:ai_assist.case_manager.kyc_enrichment.add_new.button')}
-                    </ButtonV2>
+                    {!readOnly && (
+                      <ButtonV2
+                        type="button"
+                        variant="primary"
+                        appearance="stroked"
+                        disabled={domainsField.state.value.length >= 10}
+                        onClick={() => domainsField.pushValue('')}
+                        className="w-fit"
+                      >
+                        {t('settings:ai_assist.case_manager.kyc_enrichment.add_new.button')}
+                      </ButtonV2>
+                    )}
                   </div>
                 )}
               </form.Field>
@@ -210,25 +224,27 @@ export function AIConfigPanelContent({ settings, onSuccess }: AIConfigPanelConte
           </form>
         </PanelContent>
 
-        <PanelFooter>
-          <form.Subscribe selector={(state) => state.isSubmitting}>
-            {(isSubmitting) => {
-              const isPending = isSubmitting || updateMutation.isPending;
-              return (
-                <ButtonV2
-                  type="submit"
-                  form="ai-config-panel-form"
-                  variant="primary"
-                  size="default"
-                  className="w-full justify-center"
-                  disabled={isPending}
-                >
-                  {isPending ? <Icon icon="spinner" className="size-4 animate-spin" /> : 'Valider la configuration'}
-                </ButtonV2>
-              );
-            }}
-          </form.Subscribe>
-        </PanelFooter>
+        {!readOnly && (
+          <PanelFooter>
+            <form.Subscribe selector={(state) => state.isSubmitting}>
+              {(isSubmitting) => {
+                const isPending = isSubmitting || updateMutation.isPending;
+                return (
+                  <ButtonV2
+                    type="submit"
+                    form="ai-config-panel-form"
+                    variant="primary"
+                    size="default"
+                    className="w-full justify-center"
+                    disabled={isPending}
+                  >
+                    {isPending ? <Icon icon="spinner" className="size-4 animate-spin" /> : 'Valider la configuration'}
+                  </ButtonV2>
+                );
+              }}
+            </form.Subscribe>
+          </PanelFooter>
+        )}
       </PanelContainer>
     </PanelOverlay>
   );

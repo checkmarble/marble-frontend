@@ -7,7 +7,11 @@ import { Icon } from 'ui-icons';
 
 import { AIConfigPanelContent } from '../Panel/AIConfigPanelContent';
 
-export function AIConfigSection() {
+interface AIConfigSectionProps {
+  canEdit: boolean;
+}
+
+export function AIConfigSection({ canEdit }: AIConfigSectionProps) {
   const { openPanel, closePanel } = usePanel();
   const aiSettingsQuery = useGetAiSettingsQuery();
 
@@ -17,6 +21,7 @@ export function AIConfigSection() {
     openPanel(
       <AIConfigPanelContent
         settings={aiSettingsQuery.data.settings}
+        readOnly={!canEdit}
         onSuccess={() => {
           closePanel();
           aiSettingsQuery.refetch();
@@ -63,15 +68,25 @@ export function AIConfigSection() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 flex items-center gap-v2-xs">
                     <span className="text-s font-medium">Général</span>
-                    <Tag color={isGeneralConfigured ? 'green' : 'orange'} size="small" border="rounded-sm">
-                      {isGeneralConfigured ? 'Configuré' : 'A configurer'}
-                    </Tag>
+                    {canEdit ? (
+                      <Tag color={isGeneralConfigured ? 'green' : 'orange'} size="small" border="rounded-sm">
+                        {isGeneralConfigured ? 'Configuré' : 'A configurer'}
+                      </Tag>
+                    ) : (
+                      <Tag color="purple" size="small" border="rounded-sm">
+                        View only
+                      </Tag>
+                    )}
                   </div>
-                  <Icon
-                    icon="edit"
-                    className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
-                    onClick={handleOpenPanel}
-                  />
+                  {canEdit ? (
+                    <Icon
+                      icon="edit"
+                      className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
+                      onClick={handleOpenPanel}
+                    />
+                  ) : (
+                    <Icon icon="eye" className="size-5 cursor-pointer text-purple-65" onClick={handleOpenPanel} />
+                  )}
                 </div>
               </div>
 
@@ -80,20 +95,32 @@ export function AIConfigSection() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 flex items-center gap-v2-xs">
                     <span className="text-s font-medium">AI case review KYC enrichment</span>
-                    <Tag color={isKycEnabled ? 'green' : 'grey'} size="small" border="rounded-sm">
-                      {isKycEnabled ? 'Actif' : 'Inactif'}
-                    </Tag>
-                    {isKycEnabled && !isKycConfigured && (
-                      <Tag color="orange" size="small" border="rounded-sm" className="whitespace-nowrap">
-                        A configurer
+                    {canEdit ? (
+                      <>
+                        <Tag color={isKycEnabled ? 'green' : 'grey'} size="small" border="rounded-sm">
+                          {isKycEnabled ? 'Actif' : 'Inactif'}
+                        </Tag>
+                        {isKycEnabled && !isKycConfigured && (
+                          <Tag color="orange" size="small" border="rounded-sm" className="whitespace-nowrap">
+                            A configurer
+                          </Tag>
+                        )}
+                      </>
+                    ) : (
+                      <Tag color="purple" size="small" border="rounded-sm">
+                        View only
                       </Tag>
                     )}
                   </div>
-                  <Icon
-                    icon="arrow-right"
-                    className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
-                    onClick={handleOpenPanel}
-                  />
+                  {canEdit ? (
+                    <Icon
+                      icon="arrow-right"
+                      className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
+                      onClick={handleOpenPanel}
+                    />
+                  ) : (
+                    <Icon icon="eye" className="size-5 cursor-pointer text-purple-65" onClick={handleOpenPanel} />
+                  )}
                 </div>
               </div>
             </>

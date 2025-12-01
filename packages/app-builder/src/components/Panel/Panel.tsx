@@ -75,7 +75,7 @@ export function PanelContainer({ children, className, size = 'md' }: PanelContai
     <div
       ref={panelRef}
       className={cn(
-        'fixed inset-y-0 right-0 bg-grey-100 border-l border-grey-border p-6 w-full flex flex-col animate-slideRightAndFadeIn',
+        'fixed inset-y-0 right-0 bg-grey-100 border-l border-grey-border p-v2-lg w-full flex flex-col animate-slideRightAndFadeIn',
         sizeClasses[size],
         className,
       )}
@@ -96,16 +96,14 @@ export function PanelHeader({ children, className }: PanelHeaderProps) {
   const { closePanel } = usePanel();
 
   return (
-    <div className={cn('flex items-center justify-between pb-4', className)}>
+    <div className={cn('flex items-center justify-between pb-v2-md', className)}>
       <h2 className="text-l font-bold text-grey-00">{children}</h2>
-      <button
-        type="button"
+      <Icon
+        icon="cross"
+        className="size-5 cursor-pointer text-grey-50 hover:text-grey-00"
         onClick={closePanel}
-        className="size-6 flex items-center justify-center text-grey-50 hover:text-grey-00"
         aria-label="Close panel"
-      >
-        <Icon icon="cross" className="size-5" />
-      </button>
+      />
     </div>
   );
 }
@@ -116,7 +114,7 @@ interface PanelContentProps {
 }
 
 export function PanelContent({ children, className }: PanelContentProps) {
-  return <div className={cn('flex-1 overflow-y-auto pb-4', className)}>{children}</div>;
+  return <div className={cn('flex-1 overflow-y-auto pb-v2-md', className)}>{children}</div>;
 }
 
 interface PanelFooterProps {
@@ -125,5 +123,5 @@ interface PanelFooterProps {
 }
 
 export function PanelFooter({ children, className }: PanelFooterProps) {
-  return <div className={cn('pt-4 border-t border-grey-border mt-auto', className)}>{children}</div>;
+  return <div className={cn('pt-v2-md border-t border-grey-border mt-auto', className)}>{children}</div>;
 }

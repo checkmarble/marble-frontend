@@ -7,6 +7,7 @@ import {
   usePanel,
 } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
+import { type InboxWithCasesCount } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useEditInboxUserAutoAssignMutation } from '@app-builder/queries/settings/inboxes/edit-inbox-user-auto-assign';
 import { useUpdateInboxMutation } from '@app-builder/queries/settings/inboxes/update-inbox';
@@ -24,7 +25,17 @@ interface AutoAssignmentChanges {
   users: Record<string, boolean>;
 }
 
-export const AutoAssignmentPanelContent = () => {
+interface AutoAssignmentPanelContentProps {
+  currentUserId?: string;
+  isGlobalAdmin: boolean;
+  hasEntitlement: boolean;
+}
+
+export const AutoAssignmentPanelContent = ({
+  currentUserId,
+  isGlobalAdmin,
+  hasEntitlement,
+}: AutoAssignmentPanelContentProps) => {
   const inboxesQuery = useGetInboxesQuery();
   const { closePanel } = usePanel();
   const queryClient = useQueryClient();
@@ -37,7 +48,23 @@ export const AutoAssignmentPanelContent = () => {
   });
   const [isSaving, setIsSaving] = useState(false);
 
-  const inboxes = inboxesQuery.data?.inboxes ?? [];
+  const allInboxes = inboxesQuery.data?.inboxes ?? [];
+
+  // Check if user is a member of the inbox (any role)
+  const isInboxMember = (inbox: InboxWithCasesCount) => inbox.users.some((u) => u.userId === currentUserId);
+
+  // Check if user is admin of the inbox
+  const isInboxAdmin = (inbox: InboxWithCasesCount) =>
+    inbox.users.some((u) => u.userId === currentUserId && u.role === 'admin');
+
+  // Can edit inbox if global admin OR inbox admin
+  const canEditInbox = (inbox: InboxWithCasesCount) => hasEntitlement && (isGlobalAdmin || isInboxAdmin(inbox));
+
+  // Global admin sees all inboxes, others see only their inboxes (where they are a member)
+  const inboxes = isGlobalAdmin ? allInboxes : allInboxes.filter(isInboxMember);
+
+  // Can save if user has entitlement and can edit at least one inbox
+  const canSave = hasEntitlement && (isGlobalAdmin || inboxes.some(isInboxAdmin));
 
   const handleToggleInbox = (inboxId: string, checked: boolean) => {
     const inbox = inboxes.find((i) => i.id === inboxId);
@@ -137,22 +164,25 @@ export const AutoAssignmentPanelContent = () => {
                     userCheckedMap={changes.users}
                     onToggleInbox={handleToggleInbox}
                     onToggleUser={handleToggleUser}
+                    disabled={!canEditInbox(inbox)}
                   />
                 ))}
               </div>
             ))
             .exhaustive()}
         </PanelContent>
-        <PanelFooter>
-          <ButtonV2
-            size="default"
-            className="w-full justify-center"
-            onClick={handleSave}
-            disabled={isSaving || !hasChanges}
-          >
-            {isSaving ? <Icon icon="spinner" className="size-4 animate-spin" /> : 'Valider'}
-          </ButtonV2>
-        </PanelFooter>
+        {canSave && (
+          <PanelFooter>
+            <ButtonV2
+              size="default"
+              className="w-full justify-center"
+              onClick={handleSave}
+              disabled={isSaving || !hasChanges}
+            >
+              {isSaving ? <Icon icon="spinner" className="size-4 animate-spin" /> : 'Valider'}
+            </ButtonV2>
+          </PanelFooter>
+        )}
       </PanelContainer>
     </PanelOverlay>
   );

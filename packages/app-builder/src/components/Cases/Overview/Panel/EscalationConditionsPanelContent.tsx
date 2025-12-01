@@ -11,7 +11,11 @@ import { Icon } from 'ui-icons';
 
 import { type EscalationCondition, EscalationConditionRow } from './EscalationConditionRow';
 
-export const EscalationConditionsPanelContent = () => {
+interface EscalationConditionsPanelContentProps {
+  readOnly?: boolean;
+}
+
+export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditionsPanelContentProps) => {
   const inboxesQuery = useGetInboxesQuery();
   const { closePanel } = usePanel();
   const queryClient = useQueryClient();
@@ -132,25 +136,30 @@ export const EscalationConditionsPanelContent = () => {
                         usedSourceIds={conditions.filter((_, i) => i !== index).map((c) => c.sourceInboxId)}
                         onUpdate={(field, value) => handleUpdateCondition(index, field, value)}
                         onRemove={() => handleRemoveCondition(index)}
+                        disabled={readOnly}
                       />
                     ))}
 
-                    <div>
-                      <ButtonV2 variant="primary" appearance="stroked" onClick={handleAddCondition}>
-                        Ajouter une condition
-                      </ButtonV2>
-                    </div>
+                    {!readOnly && (
+                      <div>
+                        <ButtonV2 variant="primary" appearance="stroked" onClick={handleAddCondition}>
+                          Ajouter une condition
+                        </ButtonV2>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             ))
             .exhaustive()}
         </PanelContent>
-        <PanelFooter>
-          <ButtonV2 size="default" className="w-full justify-center" onClick={handleSave} disabled={isSaving}>
-            {isSaving ? <Spinner className="size-4" /> : 'Valider la configuration'}
-          </ButtonV2>
-        </PanelFooter>
+        {!readOnly && (
+          <PanelFooter>
+            <ButtonV2 size="default" className="w-full justify-center" onClick={handleSave} disabled={isSaving}>
+              {isSaving ? <Spinner className="size-4" /> : 'Valider la configuration'}
+            </ButtonV2>
+          </PanelFooter>
+        )}
       </PanelContainer>
     </PanelOverlay>
   );

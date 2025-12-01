@@ -10,9 +10,17 @@ interface InboxCardProps {
   userCheckedMap?: Record<string, boolean>;
   onToggleInbox?: (inboxId: string, checked: boolean) => void;
   onToggleUser?: (userId: string, checked: boolean) => void;
+  disabled?: boolean;
 }
 
-export const InboxCard = ({ inbox, inboxChecked, userCheckedMap, onToggleInbox, onToggleUser }: InboxCardProps) => {
+export const InboxCard = ({
+  inbox,
+  inboxChecked,
+  userCheckedMap,
+  onToggleInbox,
+  onToggleUser,
+  disabled,
+}: InboxCardProps) => {
   const hasUsers = inbox.users?.length > 0;
   const isInboxChecked = inboxChecked ?? inbox.autoAssignEnabled;
 
@@ -25,7 +33,11 @@ export const InboxCard = ({ inbox, inboxChecked, userCheckedMap, onToggleInbox, 
             {inbox.casesCount} cases
           </Tag>
         </div>
-        <Switch checked={isInboxChecked} onCheckedChange={(checked) => onToggleInbox?.(inbox.id, checked)} />
+        <Switch
+          checked={isInboxChecked}
+          disabled={disabled}
+          onCheckedChange={(checked) => onToggleInbox?.(inbox.id, checked)}
+        />
       </div>
       {hasUsers && (
         <div className="flex flex-col gap-v2-sm">
@@ -34,7 +46,7 @@ export const InboxCard = ({ inbox, inboxChecked, userCheckedMap, onToggleInbox, 
               key={user.id}
               user={user}
               checked={userCheckedMap?.[user.id]}
-              onToggle={onToggleUser}
+              onToggle={disabled ? undefined : onToggleUser}
               variant={INBOX_USER_ROW_VARIANTS.panel}
             />
           ))}

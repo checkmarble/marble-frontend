@@ -1,5 +1,6 @@
 import { usePanel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
+import { type InboxWithCasesCount } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useState } from 'react';
 import { match } from 'ts-pattern';
@@ -11,13 +12,28 @@ import { AutoAssignmentPanelContent } from '../Panel/AutoAssignmentPanelContent'
 
 const MAX_DISPLAYED_INBOXES = 3;
 
-export const AutoAssignmentSection = () => {
+interface AutoAssignmentSectionProps {
+  currentUserId?: string;
+  isGlobalAdmin: boolean;
+  hasEntitlement: boolean;
+}
+
+export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, hasEntitlement }: AutoAssignmentSectionProps) => {
   const inboxesQuery = useGetInboxesQuery();
   const { openPanel } = usePanel();
   const [expandedInboxIds, setExpandedInboxIds] = useState<string[]>([]);
 
+  // Check if user is a member of the inbox (any role)
+  const isInboxMember = (inbox: InboxWithCasesCount) => inbox.users.some((u) => u.userId === currentUserId);
+
   const handleOpenPanel = () => {
-    openPanel(<AutoAssignmentPanelContent />);
+    openPanel(
+      <AutoAssignmentPanelContent
+        currentUserId={currentUserId}
+        isGlobalAdmin={isGlobalAdmin}
+        hasEntitlement={hasEntitlement}
+      />,
+    );
   };
 
   const toggleInbox = (inboxId: string) => {
@@ -28,11 +44,20 @@ export const AutoAssignmentSection = () => {
     <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex flex-col gap-v2-md">
       <div className="flex items-center gap-v2-md">
         <span className="flex-1 font-medium text-s">Auto-assignment activation by inbox</span>
-        <Icon
-          icon="edit"
-          className="size-5 cursor-pointer text-purple-65 hover:text-purple-50"
-          onClick={handleOpenPanel}
-        />
+        {hasEntitlement ? (
+          <Icon
+            icon="edit"
+            className="size-5 cursor-pointer text-purple-65 hover:text-purple-50"
+            onClick={handleOpenPanel}
+          />
+        ) : (
+          <div className="flex items-center gap-v2-xs cursor-pointer" onClick={handleOpenPanel}>
+            <Tag color="purple" size="small" border="rounded-sm">
+              View only
+            </Tag>
+            <Icon icon="eye" className="size-5 text-purple-65" />
+          </div>
+        )}
       </div>
       <div className="flex flex-col gap-v2-sm">
         {match(inboxesQuery)
@@ -43,7 +68,9 @@ export const AutoAssignmentSection = () => {
           ))
           .with({ isError: true }, () => <div className="text-s text-grey-50">Error loading inboxes</div>)
           .with({ isSuccess: true }, ({ data }) => {
-            const inboxes = data?.inboxes ?? [];
+            const allInboxes = data?.inboxes ?? [];
+            // Global admin sees all inboxes, others see only their inboxes (where they are a member)
+            const inboxes = isGlobalAdmin ? allInboxes : allInboxes.filter(isInboxMember);
             const displayedInboxes = inboxes.slice(0, MAX_DISPLAYED_INBOXES);
             const hasMore = inboxes.length > MAX_DISPLAYED_INBOXES;
 

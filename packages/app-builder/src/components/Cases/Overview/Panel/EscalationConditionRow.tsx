@@ -14,6 +14,7 @@ interface EscalationConditionRowProps {
   usedSourceIds: string[];
   onUpdate: (field: 'sourceInboxId' | 'targetInboxId', value: string | null) => void;
   onRemove: () => void;
+  disabled?: boolean;
 }
 
 export const EscalationConditionRow = ({
@@ -22,6 +23,7 @@ export const EscalationConditionRow = ({
   usedSourceIds,
   onUpdate,
   onRemove,
+  disabled,
 }: EscalationConditionRowProps) => {
   const [sourceOpen, setSourceOpen] = useState(false);
   const [targetOpen, setTargetOpen] = useState(false);
@@ -42,9 +44,9 @@ export const EscalationConditionRow = ({
       <span className="text-s text-grey-50 px-2">if</span>
 
       <div className="flex-1">
-        <MenuCommand.Menu open={sourceOpen} onOpenChange={setSourceOpen}>
+        <MenuCommand.Menu open={disabled ? false : sourceOpen} onOpenChange={disabled ? undefined : setSourceOpen}>
           <MenuCommand.Trigger>
-            <MenuCommand.SelectButton className="w-full">
+            <MenuCommand.SelectButton className="w-full" disabled={disabled}>
               {sourceInbox?.name ?? 'select an inbox'}
             </MenuCommand.SelectButton>
           </MenuCommand.Trigger>
@@ -70,9 +72,9 @@ export const EscalationConditionRow = ({
       <span className="text-s text-grey-50 px-2">escalate to</span>
 
       <div className="flex-1">
-        <MenuCommand.Menu open={targetOpen} onOpenChange={setTargetOpen}>
+        <MenuCommand.Menu open={disabled ? false : targetOpen} onOpenChange={disabled ? undefined : setTargetOpen}>
           <MenuCommand.Trigger>
-            <MenuCommand.SelectButton className="w-full">
+            <MenuCommand.SelectButton className="w-full" disabled={disabled}>
               {targetInbox?.name ?? 'select an inbox'}
             </MenuCommand.SelectButton>
           </MenuCommand.Trigger>
@@ -95,9 +97,11 @@ export const EscalationConditionRow = ({
         </MenuCommand.Menu>
       </div>
 
-      <ButtonV2 mode="icon" variant="secondary" onClick={onRemove}>
-        <Icon icon="delete" className="size-4 text-purple-65" />
-      </ButtonV2>
+      {!disabled && (
+        <ButtonV2 mode="icon" variant="secondary" onClick={onRemove}>
+          <Icon icon="delete" className="size-4 text-purple-65" />
+        </ButtonV2>
+      )}
     </div>
   );
 };

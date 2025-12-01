@@ -8,16 +8,20 @@ import { Icon } from 'ui-icons';
 import { EscalationConditionsPanelContent } from '../Panel/EscalationConditionsPanelContent';
 import { WorkflowConfigPanelContent } from '../Panel/WorkflowConfigPanelContent';
 
-export const WorkflowConfigSection = () => {
+interface WorkflowConfigSectionProps {
+  canEdit: boolean;
+}
+
+export const WorkflowConfigSection = ({ canEdit }: WorkflowConfigSectionProps) => {
   const { openPanel } = usePanel();
   const inboxesQuery = useGetInboxesQuery();
 
   const handleOpenEscalationPanel = () => {
-    openPanel(<EscalationConditionsPanelContent />);
+    openPanel(<EscalationConditionsPanelContent readOnly={!canEdit} />);
   };
 
   const handleOpenWorkflowPanel = () => {
-    openPanel(<WorkflowConfigPanelContent />);
+    openPanel(<WorkflowConfigPanelContent readOnly={!canEdit} />);
   };
 
   return (
@@ -59,15 +63,29 @@ export const WorkflowConfigSection = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 flex items-center gap-v2-xs">
                     <span className="text-s font-medium">Conditions d'escalation</span>
-                    <Tag color={hasEscalationConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
-                      {hasEscalationConfig ? `${escalationConfigured}/${escalationTotal} configurés` : 'A configurer'}
-                    </Tag>
+                    {canEdit ? (
+                      <Tag color={hasEscalationConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
+                        {hasEscalationConfig ? `${escalationConfigured}/${escalationTotal} configurés` : 'A configurer'}
+                      </Tag>
+                    ) : (
+                      <Tag color="purple" size="small" border="rounded-sm">
+                        View only
+                      </Tag>
+                    )}
                   </div>
-                  <Icon
-                    icon="edit"
-                    className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
-                    onClick={handleOpenEscalationPanel}
-                  />
+                  {canEdit ? (
+                    <Icon
+                      icon="edit"
+                      className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
+                      onClick={handleOpenEscalationPanel}
+                    />
+                  ) : (
+                    <Icon
+                      icon="eye"
+                      className="size-5 cursor-pointer text-purple-65"
+                      onClick={handleOpenEscalationPanel}
+                    />
+                  )}
                 </div>
               </div>
 
@@ -76,15 +94,29 @@ export const WorkflowConfigSection = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex-1 flex items-center gap-v2-xs">
                     <span className="text-s font-medium">Déclenchement revue AI</span>
-                    <Tag color={hasWorkflowConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
-                      {hasWorkflowConfig ? `${workflowConfigured}/${escalationTotal} configurés` : 'A configurer'}
-                    </Tag>
+                    {canEdit ? (
+                      <Tag color={hasWorkflowConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
+                        {hasWorkflowConfig ? `${workflowConfigured}/${escalationTotal} configurés` : 'A configurer'}
+                      </Tag>
+                    ) : (
+                      <Tag color="purple" size="small" border="rounded-sm">
+                        View only
+                      </Tag>
+                    )}
                   </div>
-                  <Icon
-                    icon="arrow-right"
-                    className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
-                    onClick={handleOpenWorkflowPanel}
-                  />
+                  {canEdit ? (
+                    <Icon
+                      icon="arrow-right"
+                      className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
+                      onClick={handleOpenWorkflowPanel}
+                    />
+                  ) : (
+                    <Icon
+                      icon="eye"
+                      className="size-5 cursor-pointer text-purple-65"
+                      onClick={handleOpenWorkflowPanel}
+                    />
+                  )}
                 </div>
               </div>
             </>

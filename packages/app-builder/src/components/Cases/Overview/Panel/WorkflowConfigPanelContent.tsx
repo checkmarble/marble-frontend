@@ -20,7 +20,11 @@ import { WorkflowInboxCard, type WorkflowSettings } from './WorkflowInboxCard';
 
 type InboxWorkflowState = Map<string, WorkflowSettings>;
 
-export const WorkflowConfigPanelContent = () => {
+interface WorkflowConfigPanelContentProps {
+  readOnly?: boolean;
+}
+
+export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelContentProps) => {
   const inboxesQuery = useGetInboxesQuery();
   const { closePanel } = usePanel();
   const queryClient = useQueryClient();
@@ -126,6 +130,7 @@ export const WorkflowConfigPanelContent = () => {
                       inbox={inbox}
                       settings={settings}
                       onToggle={(field, value) => handleToggle(inbox.id, field, value)}
+                      disabled={readOnly}
                     />
                   );
                 })}
@@ -133,11 +138,13 @@ export const WorkflowConfigPanelContent = () => {
             ))
             .exhaustive()}
         </PanelContent>
-        <PanelFooter>
-          <ButtonV2 size="default" className="w-full justify-center" onClick={handleSave} disabled={isSaving}>
-            {isSaving ? <Icon icon="spinner" className="size-4 animate-spin" /> : 'Valider la configuration'}
-          </ButtonV2>
-        </PanelFooter>
+        {!readOnly && (
+          <PanelFooter>
+            <ButtonV2 size="default" className="w-full justify-center" onClick={handleSave} disabled={isSaving}>
+              {isSaving ? <Icon icon="spinner" className="size-4 animate-spin" /> : 'Valider la configuration'}
+            </ButtonV2>
+          </PanelFooter>
+        )}
       </PanelContainer>
     </PanelOverlay>
   );
