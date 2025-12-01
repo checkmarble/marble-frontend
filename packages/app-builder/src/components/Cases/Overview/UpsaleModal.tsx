@@ -57,8 +57,8 @@ export function UpsaleModal({ title, description, benefits = [], showWand = fals
             <p className="mb-2">{displayDescription}</p>
             {benefits.length > 0 && (
               <ul className="list-disc list-inside">
-                {benefits.map((benefit, index) => (
-                  <li key={index}>{benefit}</li>
+                {benefits.map((benefit) => (
+                  <li key={benefit}>{benefit}</li>
                 ))}
               </ul>
             )}

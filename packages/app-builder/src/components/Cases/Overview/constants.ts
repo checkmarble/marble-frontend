@@ -2,14 +2,6 @@ import { CaseStatusByInboxResponse } from '@app-builder/models/analytics/case-st
 import { CaseStatusByDateResponse } from '@app-builder/models/analytics/cases-status-by-date';
 import { CaseStatus } from '@app-builder/models/cases';
 
-export const inboxUserRoles = ['admin', 'member'] as const;
-export type InboxUserRole = (typeof inboxUserRoles)[number];
-
-export const inboxUserRoleLabels: Record<InboxUserRole, string> = {
-  admin: 'Admin',
-  member: 'Member',
-};
-
 export const INBOX_USER_ROW_VARIANTS = {
   default: 'default',
   panel: 'panel',

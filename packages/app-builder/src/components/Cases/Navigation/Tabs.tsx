@@ -16,9 +16,10 @@ export function CasesNavigationTabs() {
       <NavLink to="/cases/overview" className={tabClassName}>
         <span>{t('cases:overview.navigation.overview')}</span>
       </NavLink>
-      <NavLink to="/cases/analytics" className={tabClassName}>
+      {/* TODO: Add analytics tab */}
+      {/* <NavLink to="/cases/analytics" className={tabClassName}>
         <span>{t('cases:overview.navigation.analytics')}</span>
-      </NavLink>
+      </NavLink> */}
       <NavLink to="/cases/inboxes" className={tabClassName}>
         <span>{t('cases:overview.navigation.cases')}</span>
       </NavLink>
