@@ -6,9 +6,8 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Tag } from 'ui-design-system';
-
-import { ConfigRow } from '../ConfigRow';
 import { AIConfigPanelContent } from '../Panel/AIConfigPanelContent';
+import { ConfigRow } from './ConfigRow';
 
 interface AIConfigSectionProps {
   isGlobalAdmin: boolean;

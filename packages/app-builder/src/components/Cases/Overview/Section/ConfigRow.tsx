@@ -4,7 +4,7 @@ import { match } from 'ts-pattern';
 import { cn, Tag } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
 
-import { UpsaleModal } from './UpsaleModal';
+import { UpsaleModal } from '../UpsaleModal';
 
 interface ConfigRowProps {
   isRestricted: boolean;

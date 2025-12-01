@@ -6,10 +6,9 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Tag } from 'ui-design-system';
-
-import { ConfigRow } from '../ConfigRow';
 import { EscalationConditionsPanelContent } from '../Panel/EscalationConditionsPanelContent';
 import { WorkflowConfigPanelContent } from '../Panel/WorkflowConfigPanelContent';
+import { ConfigRow } from './ConfigRow';
 
 interface WorkflowConfigSectionProps {
   isGlobalAdmin: boolean;
