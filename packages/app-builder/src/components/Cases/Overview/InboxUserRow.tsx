@@ -1,14 +1,10 @@
 import type { InboxUser } from '@app-builder/models/inbox';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
+import { useTranslation } from 'react-i18next';
 import { cn, Switch, Tag } from 'ui-design-system';
 
-import {
-  INBOX_USER_ROW_VARIANTS,
-  type InboxUserRole,
-  type InboxUserRowVariant,
-  inboxUserRoleLabels,
-} from './constants';
+import { INBOX_USER_ROW_VARIANTS, type InboxUserRowVariant } from './constants';
 
 interface InboxUserRowProps {
   user: InboxUser;
@@ -23,10 +19,16 @@ export const InboxUserRow = ({
   onToggle,
   variant = INBOX_USER_ROW_VARIANTS.default,
 }: InboxUserRowProps) => {
+  const { t } = useTranslation(['cases']);
   const { getOrgUserById } = useOrganizationUsers();
   const orgUser = getOrgUserById(user.userId);
-  const userName = getFullName(orgUser) ?? 'Unknown';
-  const roleLabel = inboxUserRoleLabels[user.role as InboxUserRole] ?? user.role;
+  const userName = getFullName(orgUser) ?? t('cases:overview.inbox.unknown_user');
+  const roleLabel =
+    user.role === 'admin'
+      ? t('cases:overview.inbox.role.admin')
+      : user.role === 'member'
+        ? t('cases:overview.inbox.role.member')
+        : user.role;
   const isChecked = checked ?? user.autoAssignable;
 
   return (
@@ -39,7 +41,7 @@ export const InboxUserRow = ({
       </div>
       {variant === INBOX_USER_ROW_VARIANTS.default && (
         <Tag color={isChecked ? 'green' : 'grey'} size="small" border="rounded-sm">
-          {isChecked ? 'Active' : 'Disabled'}
+          {isChecked ? t('cases:overview.config.active') : t('cases:overview.config.inactive')}
         </Tag>
       )}
       {variant === INBOX_USER_ROW_VARIANTS.panel && (

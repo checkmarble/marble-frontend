@@ -1,5 +1,6 @@
 import { type InboxWithCasesCount } from '@app-builder/models/inbox';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ButtonV2, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -25,6 +26,7 @@ export const EscalationConditionRow = ({
   onRemove,
   disabled,
 }: EscalationConditionRowProps) => {
+  const { t } = useTranslation(['cases']);
   const [sourceOpen, setSourceOpen] = useState(false);
   const [targetOpen, setTargetOpen] = useState(false);
 
@@ -41,13 +43,13 @@ export const EscalationConditionRow = ({
 
   return (
     <div className="flex items-center gap-v2-sm">
-      <span className="text-s text-grey-50 px-2">if</span>
+      <span className="text-s text-grey-50 px-2">{t('cases:overview.panel.escalation.if')}</span>
 
       <div className="flex-1">
         <MenuCommand.Menu open={disabled ? false : sourceOpen} onOpenChange={disabled ? undefined : setSourceOpen}>
           <MenuCommand.Trigger>
             <MenuCommand.SelectButton className="w-full" disabled={disabled}>
-              {sourceInbox?.name ?? 'select an inbox'}
+              {sourceInbox?.name ?? t('cases:overview.panel.escalation.select_inbox')}
             </MenuCommand.SelectButton>
           </MenuCommand.Trigger>
           <MenuCommand.Content align="start" sameWidth sideOffset={4}>
@@ -69,13 +71,13 @@ export const EscalationConditionRow = ({
         </MenuCommand.Menu>
       </div>
 
-      <span className="text-s text-grey-50 px-2">escalate to</span>
+      <span className="text-s text-grey-50 px-2">{t('cases:overview.panel.escalation.escalate_to')}</span>
 
       <div className="flex-1">
         <MenuCommand.Menu open={disabled ? false : targetOpen} onOpenChange={disabled ? undefined : setTargetOpen}>
           <MenuCommand.Trigger>
             <MenuCommand.SelectButton className="w-full" disabled={disabled}>
-              {targetInbox?.name ?? 'select an inbox'}
+              {targetInbox?.name ?? t('cases:overview.panel.escalation.select_inbox')}
             </MenuCommand.SelectButton>
           </MenuCommand.Trigger>
           <MenuCommand.Content align="start" sameWidth sideOffset={4}>

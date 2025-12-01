@@ -3,6 +3,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { isAccessible, isRestricted } from '@app-builder/services/feature-access';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
+import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { Tag } from 'ui-design-system';
 
@@ -16,6 +17,7 @@ interface WorkflowConfigSectionProps {
 }
 
 export const WorkflowConfigSection = ({ isGlobalAdmin, access }: WorkflowConfigSectionProps) => {
+  const { t } = useTranslation(['cases']);
   const { openPanel } = usePanel();
   const inboxesQuery = useGetInboxesQuery();
 
@@ -35,7 +37,7 @@ export const WorkflowConfigSection = ({ isGlobalAdmin, access }: WorkflowConfigS
     <div className="flex flex-col gap-v2-sm">
       {/* Section header */}
       <div className="flex items-center gap-v2-sm h-7">
-        <span className="flex-1 text-s font-medium">Configurations workflow</span>
+        <span className="flex-1 text-s font-medium">{t('cases:overview.config.workflow_title')}</span>
       </div>
 
       {match(inboxesQuery)
@@ -46,7 +48,7 @@ export const WorkflowConfigSection = ({ isGlobalAdmin, access }: WorkflowConfigS
         ))
         .with({ isError: true }, () => (
           <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex items-center justify-center min-h-[100px] text-red-47">
-            Erreur de chargement
+            {t('cases:overview.config.error_loading')}
           </div>
         ))
         .with({ isSuccess: true }, ({ data }) => {
@@ -68,10 +70,15 @@ export const WorkflowConfigSection = ({ isGlobalAdmin, access }: WorkflowConfigS
               <ConfigRow
                 isRestricted={restricted}
                 canEdit={canEdit}
-                label="Conditions d'escalation"
+                label={t('cases:overview.config.escalation_conditions')}
                 statusTag={
                   <Tag color={hasEscalationConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
-                    {hasEscalationConfig ? `${escalationConfigured}/${escalationTotal} configurés` : 'A configurer'}
+                    {hasEscalationConfig
+                      ? t('cases:overview.config.x_of_y_configured', {
+                          configured: escalationConfigured,
+                          total: escalationTotal,
+                        })
+                      : t('cases:overview.config.not_configured')}
                   </Tag>
                 }
                 editIcon="edit"
@@ -80,10 +87,15 @@ export const WorkflowConfigSection = ({ isGlobalAdmin, access }: WorkflowConfigS
               <ConfigRow
                 isRestricted={restricted}
                 canEdit={canEdit}
-                label="Déclenchement revue AI"
+                label={t('cases:overview.config.ai_review_trigger')}
                 statusTag={
                   <Tag color={hasWorkflowConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
-                    {hasWorkflowConfig ? `${workflowConfigured}/${escalationTotal} configurés` : 'A configurer'}
+                    {hasWorkflowConfig
+                      ? t('cases:overview.config.x_of_y_configured', {
+                          configured: workflowConfigured,
+                          total: escalationTotal,
+                        })
+                      : t('cases:overview.config.not_configured')}
                   </Tag>
                 }
                 editIcon="arrow-right"

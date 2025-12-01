@@ -21,7 +21,7 @@ interface AIConfigPanelContentProps {
 }
 
 export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfigPanelContentProps) {
-  const { t } = useTranslation(['settings', 'common']);
+  const { t } = useTranslation(['cases', 'settings', 'common']);
   const updateMutation = useUpdateAiSettings();
 
   const form = useForm({
@@ -53,7 +53,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
         <PanelHeader>
           <div className="flex items-center gap-v2-sm">
             <Icon icon="left-panel-open" className="size-4" />
-            <span>Configuration IA</span>
+            <span>{t('cases:overview.panel.ai_config.title')}</span>
           </div>
         </PanelHeader>
 
@@ -117,7 +117,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
 
             {/* Section: IA (KYC Enrichment) */}
             <div className="bg-grey-background-light border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
-              <span className="text-s font-medium">IA</span>
+              <span className="text-s font-medium">{t('cases:overview.panel.ai_config.section_ai')}</span>
               <form.Field name="kycEnrichmentSetting.enabled">
                 {(field) => (
                   <div className="flex gap-2 text-pretty">
@@ -238,7 +238,11 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                     className="w-full justify-center"
                     disabled={isPending}
                   >
-                    {isPending ? <Icon icon="spinner" className="size-4 animate-spin" /> : 'Valider la configuration'}
+                    {isPending ? (
+                      <Icon icon="spinner" className="size-4 animate-spin" />
+                    ) : (
+                      t('cases:overview.validate_config')
+                    )}
                   </ButtonV2>
                 );
               }}

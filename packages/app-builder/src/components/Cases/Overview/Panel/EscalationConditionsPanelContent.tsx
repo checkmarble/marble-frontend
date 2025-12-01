@@ -5,6 +5,7 @@ import { useUpdateInboxEscalationMutation } from '@app-builder/queries/cases/upd
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -16,6 +17,7 @@ interface EscalationConditionsPanelContentProps {
 }
 
 export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditionsPanelContentProps) => {
+  const { t } = useTranslation(['cases']);
   const inboxesQuery = useGetInboxesQuery();
   const { closePanel } = usePanel();
   const queryClient = useQueryClient();
@@ -98,10 +100,10 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
       await Promise.all(updates);
       await queryClient.invalidateQueries({ queryKey: ['cases', 'inboxes'] });
 
-      toast.success('Configuration des escalations sauvegardée');
+      toast.success(t('cases:overview.panel.escalation.saved'));
       closePanel();
     } catch {
-      toast.error('Erreur lors de la sauvegarde');
+      toast.error(t('cases:overview.panel.workflow.save_error'));
     } finally {
       setIsSaving(false);
     }
@@ -112,7 +114,7 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
       <PanelContainer size="xxl">
         <div className="flex items-center gap-v2-sm pb-4">
           <Icon icon="left-panel-open" className="size-4" />
-          <h2 className="text-l font-semibold">Configuration conditions d'escalation</h2>
+          <h2 className="text-l font-semibold">{t('cases:overview.panel.escalation.title')}</h2>
         </div>
         <PanelContent>
           {match(inboxesQuery)
@@ -121,11 +123,13 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
                 <Spinner className="size-8" />
               </div>
             ))
-            .with({ isError: true }, () => <div className="text-s text-grey-50 py-4">Erreur de chargement</div>)
+            .with({ isError: true }, () => (
+              <div className="text-s text-grey-50 py-4">{t('cases:overview.config.error_loading')}</div>
+            ))
             .with({ isSuccess: true }, () => (
               <div className="flex flex-col gap-v2-md">
                 <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex flex-col gap-v2-md">
-                  <div className="text-s font-medium">Conditions d'escalation</div>
+                  <div className="text-s font-medium">{t('cases:overview.panel.escalation.conditions_title')}</div>
 
                   <div className="flex flex-col gap-v2-md">
                     {conditions.map((condition, index) => (
@@ -143,7 +147,7 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
                     {!readOnly && (
                       <div>
                         <ButtonV2 variant="primary" appearance="stroked" onClick={handleAddCondition}>
-                          Ajouter une condition
+                          {t('cases:overview.panel.escalation.add_condition')}
                         </ButtonV2>
                       </div>
                     )}
@@ -156,7 +160,7 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
         {!readOnly && (
           <PanelFooter>
             <ButtonV2 size="default" className="w-full justify-center" onClick={handleSave} disabled={isSaving}>
-              {isSaving ? <Spinner className="size-4" /> : 'Valider la configuration'}
+              {isSaving ? <Spinner className="size-4" /> : t('cases:overview.validate_config')}
             </ButtonV2>
           </PanelFooter>
         )}

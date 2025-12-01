@@ -11,14 +11,14 @@ import { CaseStatusBadge } from '../../CaseStatus';
 import { getYAxisTicksValues, graphCaseStatuses, graphStatusesColors } from '../constants';
 
 export const CaseByInboxGraph = () => {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['cases', 'common']);
   const caseStatusByInboxQuery = useCaseStatusByInbox();
   const language = useFormatLanguage();
   const [hovering, setHovering] = useState<string | null>(null);
 
   return (
     <div className="h-100 bg-grey-background-light rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
-      <span className="font-medium text-s">Volume de cas créés par inbox</span>
+      <span className="font-medium text-s">{t('cases:overview.graph.cases_by_inbox.title')}</span>
       <div className="border border-grey-border rounded-v2-lg p-v2-sm bg-white h-full flex flex-col gap-v2-xs">
         {match(caseStatusByInboxQuery)
           .with({ isPending: true }, () => (
@@ -31,7 +31,7 @@ export const CaseByInboxGraph = () => {
               <div className="flex flex-col items-center gap-v2-sm">
                 <span className="text-s text-grey-60 text-center">{t('common:generic_fetch_data_error')}</span>
                 <ButtonV2 variant="secondary" onClick={() => caseStatusByInboxQuery.refetch()}>
-                  Retry
+                  {t('common:retry')}
                 </ButtonV2>
               </div>
             </div>
@@ -44,7 +44,7 @@ export const CaseByInboxGraph = () => {
 
             return (
               <>
-                <span className="text-xs text-grey-60">Count</span>
+                <span className="text-xs text-grey-60">{t('cases:overview.graph.count')}</span>
                 <div className="flex-1">
                   <ResponsiveBar<CaseStatusByInboxResponse>
                     enableLabel={false}
@@ -54,7 +54,7 @@ export const CaseByInboxGraph = () => {
                     valueScale={{ type: 'linear', min: 0, max: maxValue }}
                     gridYValues={yAxisTicksValues}
                     axisLeft={{
-                      legend: 'Count',
+                      legend: t('cases:overview.graph.count'),
                       legendOffset: -70,
                       tickValues: yAxisTicksValues,
                       format: (value: number) => {
@@ -87,7 +87,7 @@ export const CaseByInboxGraph = () => {
                     padding={0.3}
                     layout="vertical"
                     onMouseEnter={(d) => setHovering(d.indexValue as string)}
-                    onMouseLeave={(d) => setHovering(null)}
+                    onMouseLeave={() => setHovering(null)}
                     legends={[
                       {
                         dataFrom: 'keys',

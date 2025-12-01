@@ -5,6 +5,7 @@ import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { isAccessible, isRestricted } from '@app-builder/services/feature-access';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -21,6 +22,7 @@ interface AutoAssignmentSectionProps {
 }
 
 export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: AutoAssignmentSectionProps) => {
+  const { t } = useTranslation(['cases']);
   const inboxesQuery = useGetInboxesQuery();
   const { openPanel } = usePanel();
   const [expandedInboxIds, setExpandedInboxIds] = useState<string[]>([]);
@@ -54,7 +56,7 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
       })}
     >
       <div className="flex items-center gap-v2-md">
-        <span className="flex-1 font-medium text-s">Auto-assignment activation by inbox</span>
+        <span className="flex-1 font-medium text-s">{t('cases:overview.panel.auto_assignment.title')}</span>
         {match({ restricted, canEdit })
           .with({ restricted: true }, () => <UpsaleModal />)
           .with({ canEdit: true }, () => (
@@ -75,7 +77,9 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
               <Spinner className="size-6" />
             </div>
           ))
-          .with({ isError: true }, () => <div className="text-s text-grey-50">Error loading inboxes</div>)
+          .with({ isError: true }, () => (
+            <div className="text-s text-grey-50">{t('cases:overview.config.error_loading')}</div>
+          ))
           .with({ isSuccess: true }, ({ data }) => {
             const allInboxes = data?.inboxes ?? [];
             // Global admin sees all inboxes, others see only their inboxes (where they are a member)
@@ -104,11 +108,13 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
                         <div className="flex-1 flex items-center gap-v2-xs">
                           <span className="text-s">{inbox.name}</span>
                           <Tag color="purple" size="small" border="rounded-sm">
-                            {inbox.casesCount} cases
+                            {t('cases:overview.inbox.cases_count', { count: inbox.casesCount })}
                           </Tag>
                         </div>
                         <Tag color={inbox.autoAssignEnabled ? 'green' : 'grey'} size="small" border="rounded-sm">
-                          {inbox.autoAssignEnabled ? 'Active' : 'Disabled'}
+                          {inbox.autoAssignEnabled
+                            ? t('cases:overview.config.active')
+                            : t('cases:overview.config.inactive')}
                         </Tag>
                       </div>
                       {isExpanded && hasUsers && (
@@ -123,7 +129,7 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
                 })}
                 {hasMore && (
                   <ButtonV2 variant="secondary" appearance="link" onClick={handleOpenPanel}>
-                    Voir +
+                    {t('cases:overview.config.view_more')}
                   </ButtonV2>
                 )}
               </>

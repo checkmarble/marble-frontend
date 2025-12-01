@@ -14,6 +14,7 @@ import { useUpdateInboxMutation } from '@app-builder/queries/settings/inboxes/up
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -36,6 +37,7 @@ export const AutoAssignmentPanelContent = ({
   isGlobalAdmin,
   hasEntitlement,
 }: AutoAssignmentPanelContentProps) => {
+  const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const { closePanel } = usePanel();
   const queryClient = useQueryClient();
@@ -126,10 +128,10 @@ export const AutoAssignmentPanelContent = ({
 
       await queryClient.invalidateQueries({ queryKey: ['cases', 'inboxes'] });
 
-      toast.success('Auto-assignment settings saved');
+      toast.success(t('cases:overview.panel.auto_assignment.saved'));
       closePanel();
     } catch {
-      toast.error('Failed to save auto-assignment settings');
+      toast.error(t('cases:overview.panel.auto_assignment.save_error'));
     } finally {
       setIsSaving(false);
     }
@@ -143,7 +145,7 @@ export const AutoAssignmentPanelContent = ({
         <PanelHeader>
           <div className="flex items-center gap-v2-sm">
             <Icon icon="left-panel-open" className="size-4" />
-            <span>Auto-assignment activation by inbox</span>
+            <span>{t('cases:overview.panel.auto_assignment.title')}</span>
           </div>
         </PanelHeader>
         <PanelContent>
@@ -153,7 +155,9 @@ export const AutoAssignmentPanelContent = ({
                 <Spinner className="size-8" />
               </div>
             ))
-            .with({ isError: true }, () => <div className="text-s text-grey-50 py-4">Error loading inboxes</div>)
+            .with({ isError: true }, () => (
+              <div className="text-s text-grey-50 py-4">{t('cases:overview.config.error_loading')}</div>
+            ))
             .with({ isSuccess: true }, () => (
               <div className="flex flex-col gap-v2-md">
                 {inboxes.map((inbox) => (
@@ -179,7 +183,7 @@ export const AutoAssignmentPanelContent = ({
               onClick={handleSave}
               disabled={isSaving || !hasChanges}
             >
-              {isSaving ? <Icon icon="spinner" className="size-4 animate-spin" /> : 'Valider'}
+              {isSaving ? <Icon icon="spinner" className="size-4 animate-spin" /> : t('cases:overview.validate')}
             </ButtonV2>
           </PanelFooter>
         )}

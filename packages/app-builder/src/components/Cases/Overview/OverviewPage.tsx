@@ -2,6 +2,7 @@ import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CasesNavigationTabs } from '@app-builder/components/Cases/Navigation/Tabs';
 import { Page } from '@app-builder/components/Page';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
+import { useTranslation } from 'react-i18next';
 
 import { CaseByDateGraph } from './Graph/CaseByDateGraph';
 import { CaseByInboxGraph } from './Graph/CaseByInboxGraph';
@@ -20,6 +21,8 @@ interface OverviewPageProps {
 }
 
 export const OverviewPage = ({ currentUserId, isGlobalAdmin, entitlements }: OverviewPageProps) => {
+  const { t } = useTranslation(['cases']);
+
   return (
     <Page.Main>
       <Page.Header>
@@ -36,7 +39,7 @@ export const OverviewPage = ({ currentUserId, isGlobalAdmin, entitlements }: Ove
               </div>
             </div>
             <div className="flex flex-col gap-v2-lg">
-              <h2 className="text-h2 font-semibold">Configurations générales</h2>
+              <h2 className="text-h2 font-semibold">{t('cases:overview.general_config.title')}</h2>
               <AutoAssignmentSection
                 currentUserId={currentUserId}
                 isGlobalAdmin={isGlobalAdmin}

@@ -1,6 +1,7 @@
 import { type InboxWithCasesCount } from '@app-builder/models/inbox';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -18,6 +19,7 @@ interface WorkflowInboxCardProps {
 }
 
 export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled }: WorkflowInboxCardProps) => {
+  const { t } = useTranslation(['cases']);
   const [isOpen, setIsOpen] = useState(false);
 
   const isConfigured = settings.caseReviewManual || settings.caseReviewOnCaseCreated || settings.caseReviewOnEscalate;
@@ -36,7 +38,7 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled }: Workf
             />
             <span className="flex-1 text-m font-semibold">{inbox.name}</span>
             <Tag color={isConfigured ? 'green' : 'grey'} size="small" border="rounded-sm">
-              {isConfigured ? 'Configuré' : 'Inactif'}
+              {isConfigured ? t('cases:overview.config.configured') : t('cases:overview.config.inactive')}
             </Tag>
           </button>
         </Collapsible.Trigger>
@@ -49,7 +51,7 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled }: Workf
                 onCheckedChange={(checked) => onToggle('caseReviewOnCaseCreated', checked)}
                 disabled={disabled}
               />
-              <span className="text-s">Nouveau cas créé dans cette inbox</span>
+              <span className="text-s">{t('cases:overview.workflow.case_created')}</span>
             </div>
 
             <div className="flex items-center gap-v2-sm">
@@ -58,7 +60,7 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled }: Workf
                 onCheckedChange={(checked) => onToggle('caseReviewOnEscalate', checked)}
                 disabled={disabled}
               />
-              <span className="text-s">Cas escaladé dans cette inbox</span>
+              <span className="text-s">{t('cases:overview.workflow.case_escalated')}</span>
             </div>
 
             <div className="flex items-center gap-v2-sm">
@@ -67,7 +69,7 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled }: Workf
                 onCheckedChange={(checked) => onToggle('caseReviewManual', checked)}
                 disabled={disabled}
               />
-              <span className="text-s">Demande manuelle</span>
+              <span className="text-s">{t('cases:overview.workflow.manual_request')}</span>
             </div>
           </div>
         </Collapsible.Content>

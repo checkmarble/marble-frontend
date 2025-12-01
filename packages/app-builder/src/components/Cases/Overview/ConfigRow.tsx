@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { cn, Tag } from 'ui-design-system';
 import { Icon, type IconName } from 'ui-icons';
@@ -15,6 +16,7 @@ interface ConfigRowProps {
   editIcon?: IconName;
   /** Show wand icon in upsale modal for AI-related features */
   showWand?: boolean;
+  /** Title for the upsale modal */
   onClick: () => void;
 }
 
@@ -27,6 +29,8 @@ export function ConfigRow({
   showWand,
   onClick,
 }: ConfigRowProps) {
+  const { t } = useTranslation(['cases']);
+
   return (
     <div
       className={cn('border rounded-v2-lg p-v2-md flex flex-col gap-v2-md', {
@@ -42,7 +46,7 @@ export function ConfigRow({
             .with({ canEdit: true }, () => statusTag)
             .otherwise(() => (
               <Tag color="purple" size="small" border="rounded-sm">
-                View only
+                {t('cases:overview.config.view_only')}
               </Tag>
             ))}
         </div>

@@ -12,6 +12,7 @@ import { useUpdateInboxWorkflowMutation } from '@app-builder/queries/cases/updat
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -25,6 +26,7 @@ interface WorkflowConfigPanelContentProps {
 }
 
 export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelContentProps) => {
+  const { t } = useTranslation(['cases']);
   const inboxesQuery = useGetInboxesQuery();
   const { closePanel } = usePanel();
   const queryClient = useQueryClient();
@@ -92,10 +94,10 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
       await Promise.all(updates);
       await queryClient.invalidateQueries({ queryKey: ['cases', 'inboxes'] });
 
-      toast.success('Configuration workflow sauvegardée');
+      toast.success(t('cases:overview.panel.workflow.saved'));
       closePanel();
     } catch {
-      toast.error('Erreur lors de la sauvegarde');
+      toast.error(t('cases:overview.panel.workflow.save_error'));
     } finally {
       setIsSaving(false);
     }
@@ -107,7 +109,7 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
         <PanelHeader>
           <div className="flex items-center gap-v2-sm">
             <Icon icon="left-panel-open" className="size-4" />
-            <span>Configuration workflow</span>
+            <span>{t('cases:overview.panel.workflow.title')}</span>
           </div>
         </PanelHeader>
         <PanelContent>
@@ -117,7 +119,9 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
                 <Spinner className="size-8" />
               </div>
             ))
-            .with({ isError: true }, () => <div className="text-s text-grey-50 py-4">Erreur de chargement</div>)
+            .with({ isError: true }, () => (
+              <div className="text-s text-grey-50 py-4">{t('cases:overview.config.error_loading')}</div>
+            ))
             .with({ isSuccess: true }, () => (
               <div className="flex flex-col gap-v2-md">
                 {inboxes.map((inbox) => {
@@ -141,7 +145,7 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
         {!readOnly && (
           <PanelFooter>
             <ButtonV2 size="default" className="w-full justify-center" onClick={handleSave} disabled={isSaving}>
-              {isSaving ? <Icon icon="spinner" className="size-4 animate-spin" /> : 'Valider la configuration'}
+              {isSaving ? <Icon icon="spinner" className="size-4 animate-spin" /> : t('cases:overview.validate_config')}
             </ButtonV2>
           </PanelFooter>
         )}

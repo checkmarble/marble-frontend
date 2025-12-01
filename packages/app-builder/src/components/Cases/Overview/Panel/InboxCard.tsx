@@ -1,4 +1,5 @@
 import type { InboxWithCasesCount } from '@app-builder/models/inbox';
+import { useTranslation } from 'react-i18next';
 import { Switch, Tag } from 'ui-design-system';
 
 import { INBOX_USER_ROW_VARIANTS } from '../constants';
@@ -21,6 +22,7 @@ export const InboxCard = ({
   onToggleUser,
   disabled,
 }: InboxCardProps) => {
+  const { t } = useTranslation(['cases']);
   const hasUsers = inbox.users?.length > 0;
   const isInboxChecked = inboxChecked ?? inbox.autoAssignEnabled;
 
@@ -30,7 +32,7 @@ export const InboxCard = ({
         <div className="flex-1 flex items-center gap-v2-sm">
           <span className="text-s font-medium">{inbox.name}</span>
           <Tag color="purple" size="small" border="rounded-sm">
-            {inbox.casesCount} cases
+            {t('cases:overview.inbox.cases_count', { count: inbox.casesCount })}
           </Tag>
         </div>
         <Switch
