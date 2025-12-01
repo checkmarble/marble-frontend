@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
@@ -8,7 +7,7 @@ interface UpsaleTagProps {
 }
 
 export function UpsaleTag({ onClick, showStar }: UpsaleTagProps) {
-  const { t } = useTranslation(['common']);
+  // const { t } = useTranslation(['common']);
 
   return (
     <div className="flex items-center gap-v2-xs cursor-pointer" onClick={onClick}>
@@ -18,7 +17,7 @@ export function UpsaleTag({ onClick, showStar }: UpsaleTagProps) {
         border="rounded-sm"
         className="border border-[#fde9af] bg-[#fef6df] text-[#eea200]"
       >
-        {t('common:upsale.discover')}
+        {/* {t('common:upsale.discover')} */}
         {showStar && ' ✨'}
       </Tag>
       <Icon icon="arrow-right" className="size-5 text-purple-65" />
