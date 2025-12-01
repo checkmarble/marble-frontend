@@ -1,19 +1,26 @@
 import { usePanel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useGetAiSettingsQuery } from '@app-builder/queries/cases/get-ai-settings';
+import { isAccessible, isRestricted } from '@app-builder/services/feature-access';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { match } from 'ts-pattern';
 import { Tag } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 
+import { ConfigRow } from '../ConfigRow';
 import { AIConfigPanelContent } from '../Panel/AIConfigPanelContent';
 
 interface AIConfigSectionProps {
-  canEdit: boolean;
+  isGlobalAdmin: boolean;
+  access: FeatureAccessLevelDto;
 }
 
-export function AIConfigSection({ canEdit }: AIConfigSectionProps) {
+export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps) {
   const { openPanel, closePanel } = usePanel();
   const aiSettingsQuery = useGetAiSettingsQuery();
+
+  const restricted = isRestricted(access);
+  const hasAccess = isAccessible(access);
+  const canEdit = hasAccess && isGlobalAdmin;
 
   const handleOpenPanel = () => {
     if (!aiSettingsQuery.data) return;
@@ -63,66 +70,38 @@ export function AIConfigSection({ canEdit }: AIConfigSectionProps) {
 
           return (
             <>
-              {/* Général panel */}
-              <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex flex-col gap-v2-md">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 flex items-center gap-v2-xs">
-                    <span className="text-s font-medium">Général</span>
-                    {canEdit ? (
-                      <Tag color={isGeneralConfigured ? 'green' : 'orange'} size="small" border="rounded-sm">
-                        {isGeneralConfigured ? 'Configuré' : 'A configurer'}
-                      </Tag>
-                    ) : (
-                      <Tag color="purple" size="small" border="rounded-sm">
-                        View only
-                      </Tag>
-                    )}
-                  </div>
-                  {canEdit ? (
-                    <Icon
-                      icon="edit"
-                      className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
-                      onClick={handleOpenPanel}
-                    />
-                  ) : (
-                    <Icon icon="eye" className="size-5 cursor-pointer text-purple-65" onClick={handleOpenPanel} />
-                  )}
-                </div>
-              </div>
-
-              {/* AI case review KYC enrichment panel */}
-              <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex flex-col gap-v2-md">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 flex items-center gap-v2-xs">
-                    <span className="text-s font-medium">AI case review KYC enrichment</span>
-                    {canEdit ? (
-                      <>
-                        <Tag color={isKycEnabled ? 'green' : 'grey'} size="small" border="rounded-sm">
-                          {isKycEnabled ? 'Actif' : 'Inactif'}
-                        </Tag>
-                        {isKycEnabled && !isKycConfigured && (
-                          <Tag color="orange" size="small" border="rounded-sm" className="whitespace-nowrap">
-                            A configurer
-                          </Tag>
-                        )}
-                      </>
-                    ) : (
-                      <Tag color="purple" size="small" border="rounded-sm">
-                        View only
+              <ConfigRow
+                isRestricted={restricted}
+                canEdit={canEdit}
+                label="Général"
+                statusTag={
+                  <Tag color={isGeneralConfigured ? 'green' : 'orange'} size="small" border="rounded-sm">
+                    {isGeneralConfigured ? 'Configuré' : 'A configurer'}
+                  </Tag>
+                }
+                editIcon="edit"
+                onClick={handleOpenPanel}
+              />
+              <ConfigRow
+                isRestricted={restricted}
+                canEdit={canEdit}
+                label="AI case review KYC enrichment"
+                showWand
+                statusTag={
+                  <>
+                    <Tag color={isKycEnabled ? 'green' : 'grey'} size="small" border="rounded-sm">
+                      {isKycEnabled ? 'Actif' : 'Inactif'}
+                    </Tag>
+                    {isKycEnabled && !isKycConfigured && (
+                      <Tag color="orange" size="small" border="rounded-sm" className="whitespace-nowrap">
+                        A configurer
                       </Tag>
                     )}
-                  </div>
-                  {canEdit ? (
-                    <Icon
-                      icon="arrow-right"
-                      className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
-                      onClick={handleOpenPanel}
-                    />
-                  ) : (
-                    <Icon icon="eye" className="size-5 cursor-pointer text-purple-65" onClick={handleOpenPanel} />
-                  )}
-                </div>
-              </div>
+                  </>
+                }
+                editIcon="arrow-right"
+                onClick={handleOpenPanel}
+              />
             </>
           );
         })

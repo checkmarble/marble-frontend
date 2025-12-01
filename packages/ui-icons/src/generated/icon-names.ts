@@ -134,6 +134,7 @@ export const iconNames = [
   'visibility',
   'visibility_off',
   'waiting_for_action',
+  'wand',
   'warning',
   'world',
 ] as const;

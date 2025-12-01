@@ -2,7 +2,6 @@ import { OverviewPage } from '@app-builder/components/Cases/Overview/OverviewPag
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
-import { isAccessible, isAutoAssignmentAvailable, isWorkflowsAvailable } from '@app-builder/services/feature-access';
 import { useLoaderData } from '@remix-run/react';
 
 export const loader = createServerFn([authMiddleware], async function casesOverviewLoader({ context }) {
@@ -11,9 +10,11 @@ export const loader = createServerFn([authMiddleware], async function casesOverv
   return {
     currentUserId: user.actorIdentity.userId,
     isGlobalAdmin: isAdmin(user),
-    hasAutoAssignmentEntitlement: isAutoAssignmentAvailable(entitlements),
-    hasAIEntitlement: isAccessible(entitlements.AiAssist),
-    hasWorkflowEntitlement: isWorkflowsAvailable(entitlements),
+    entitlements: {
+      autoAssignment: entitlements.autoAssignment,
+      aiAssist: entitlements.AiAssist,
+      workflows: entitlements.workflows,
+    },
   };
 });
 

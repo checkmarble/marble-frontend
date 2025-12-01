@@ -1,20 +1,27 @@
 import { usePanel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
+import { isAccessible, isRestricted } from '@app-builder/services/feature-access';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { match } from 'ts-pattern';
 import { Tag } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 
+import { ConfigRow } from '../ConfigRow';
 import { EscalationConditionsPanelContent } from '../Panel/EscalationConditionsPanelContent';
 import { WorkflowConfigPanelContent } from '../Panel/WorkflowConfigPanelContent';
 
 interface WorkflowConfigSectionProps {
-  canEdit: boolean;
+  isGlobalAdmin: boolean;
+  access: FeatureAccessLevelDto;
 }
 
-export const WorkflowConfigSection = ({ canEdit }: WorkflowConfigSectionProps) => {
+export const WorkflowConfigSection = ({ isGlobalAdmin, access }: WorkflowConfigSectionProps) => {
   const { openPanel } = usePanel();
   const inboxesQuery = useGetInboxesQuery();
+
+  const restricted = isRestricted(access);
+  const hasAccess = isAccessible(access);
+  const canEdit = hasAccess && isGlobalAdmin;
 
   const handleOpenEscalationPanel = () => {
     openPanel(<EscalationConditionsPanelContent readOnly={!canEdit} />);
@@ -58,67 +65,30 @@ export const WorkflowConfigSection = ({ canEdit }: WorkflowConfigSectionProps) =
 
           return (
             <>
-              {/* Conditions d'escalation panel */}
-              <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex flex-col gap-v2-md">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 flex items-center gap-v2-xs">
-                    <span className="text-s font-medium">Conditions d'escalation</span>
-                    {canEdit ? (
-                      <Tag color={hasEscalationConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
-                        {hasEscalationConfig ? `${escalationConfigured}/${escalationTotal} configurés` : 'A configurer'}
-                      </Tag>
-                    ) : (
-                      <Tag color="purple" size="small" border="rounded-sm">
-                        View only
-                      </Tag>
-                    )}
-                  </div>
-                  {canEdit ? (
-                    <Icon
-                      icon="edit"
-                      className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
-                      onClick={handleOpenEscalationPanel}
-                    />
-                  ) : (
-                    <Icon
-                      icon="eye"
-                      className="size-5 cursor-pointer text-purple-65"
-                      onClick={handleOpenEscalationPanel}
-                    />
-                  )}
-                </div>
-              </div>
-
-              {/* Déclenchement revue AI panel */}
-              <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex flex-col gap-v2-md">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 flex items-center gap-v2-xs">
-                    <span className="text-s font-medium">Déclenchement revue AI</span>
-                    {canEdit ? (
-                      <Tag color={hasWorkflowConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
-                        {hasWorkflowConfig ? `${workflowConfigured}/${escalationTotal} configurés` : 'A configurer'}
-                      </Tag>
-                    ) : (
-                      <Tag color="purple" size="small" border="rounded-sm">
-                        View only
-                      </Tag>
-                    )}
-                  </div>
-                  {canEdit ? (
-                    <Icon
-                      icon="arrow-right"
-                      className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
-                      onClick={handleOpenWorkflowPanel}
-                    />
-                  ) : (
-                    <Icon
-                      icon="eye"
-                      className="size-5 cursor-pointer text-purple-65"
-                      onClick={handleOpenWorkflowPanel}
-                    />
-                  )}
-                </div>
-              </div>
+              <ConfigRow
+                isRestricted={restricted}
+                canEdit={canEdit}
+                label="Conditions d'escalation"
+                statusTag={
+                  <Tag color={hasEscalationConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
+                    {hasEscalationConfig ? `${escalationConfigured}/${escalationTotal} configurés` : 'A configurer'}
+                  </Tag>
+                }
+                editIcon="edit"
+                onClick={handleOpenEscalationPanel}
+              />
+              <ConfigRow
+                isRestricted={restricted}
+                canEdit={canEdit}
+                label="Déclenchement revue AI"
+                statusTag={
+                  <Tag color={hasWorkflowConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
+                    {hasWorkflowConfig ? `${workflowConfigured}/${escalationTotal} configurés` : 'A configurer'}
+                  </Tag>
+                }
+                editIcon="arrow-right"
+                onClick={handleOpenWorkflowPanel}
+              />
             </>
           );
         })

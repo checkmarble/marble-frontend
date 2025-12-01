@@ -2,26 +2,32 @@ import { usePanel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type InboxWithCasesCount } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
+import { isAccessible, isRestricted } from '@app-builder/services/feature-access';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useState } from 'react';
 import { match } from 'ts-pattern';
 import { ButtonV2, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { InboxUserRow } from '../InboxUserRow';
 import { AutoAssignmentPanelContent } from '../Panel/AutoAssignmentPanelContent';
+import { UpsaleModal } from '../UpsaleModal';
 
 const MAX_DISPLAYED_INBOXES = 3;
 
 interface AutoAssignmentSectionProps {
   currentUserId?: string;
   isGlobalAdmin: boolean;
-  hasEntitlement: boolean;
+  access: FeatureAccessLevelDto;
 }
 
-export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, hasEntitlement }: AutoAssignmentSectionProps) => {
+export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: AutoAssignmentSectionProps) => {
   const inboxesQuery = useGetInboxesQuery();
   const { openPanel } = usePanel();
   const [expandedInboxIds, setExpandedInboxIds] = useState<string[]>([]);
+
+  const restricted = isRestricted(access);
+  const hasAccess = isAccessible(access);
+  const canEdit = hasAccess && isGlobalAdmin;
 
   // Check if user is a member of the inbox (any role)
   const isInboxMember = (inbox: InboxWithCasesCount) => inbox.users.some((u) => u.userId === currentUserId);
@@ -31,7 +37,7 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, hasEntitle
       <AutoAssignmentPanelContent
         currentUserId={currentUserId}
         isGlobalAdmin={isGlobalAdmin}
-        hasEntitlement={hasEntitlement}
+        hasEntitlement={hasAccess}
       />,
     );
   };
@@ -41,23 +47,26 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, hasEntitle
   };
 
   return (
-    <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex flex-col gap-v2-md">
+    <div
+      className={cn('border rounded-v2-lg p-v2-md flex flex-col gap-v2-md', {
+        'border-[#ada7fd] bg-[#f7f6ff]': restricted,
+        'border-grey-border bg-grey-background-light': !restricted,
+      })}
+    >
       <div className="flex items-center gap-v2-md">
         <span className="flex-1 font-medium text-s">Auto-assignment activation by inbox</span>
-        {hasEntitlement ? (
-          <Icon
-            icon="edit"
-            className="size-5 cursor-pointer text-purple-65 hover:text-purple-50"
-            onClick={handleOpenPanel}
-          />
-        ) : (
-          <div className="flex items-center gap-v2-xs cursor-pointer" onClick={handleOpenPanel}>
-            <Tag color="purple" size="small" border="rounded-sm">
-              View only
-            </Tag>
-            <Icon icon="eye" className="size-5 text-purple-65" />
-          </div>
-        )}
+        {match({ restricted, canEdit })
+          .with({ restricted: true }, () => <UpsaleModal />)
+          .with({ canEdit: true }, () => (
+            <Icon
+              icon="edit"
+              className="size-5 cursor-pointer text-purple-65 hover:text-purple-50"
+              onClick={handleOpenPanel}
+            />
+          ))
+          .otherwise(() => (
+            <Icon icon="eye" className="size-5 cursor-pointer text-purple-65" onClick={handleOpenPanel} />
+          ))}
       </div>
       <div className="flex flex-col gap-v2-sm">
         {match(inboxesQuery)

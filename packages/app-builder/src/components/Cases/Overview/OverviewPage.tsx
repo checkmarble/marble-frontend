@@ -1,6 +1,8 @@
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CasesNavigationTabs } from '@app-builder/components/Cases/Navigation/Tabs';
 import { Page } from '@app-builder/components/Page';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
+
 import { CaseByDateGraph } from './Graph/CaseByDateGraph';
 import { CaseByInboxGraph } from './Graph/CaseByInboxGraph';
 import { AIConfigSection } from './Section/AIConfigSection';
@@ -10,22 +12,14 @@ import { WorkflowConfigSection } from './Section/WorkflowConfigSection';
 interface OverviewPageProps {
   currentUserId?: string;
   isGlobalAdmin: boolean;
-  hasAutoAssignmentEntitlement: boolean;
-  hasAIEntitlement: boolean;
-  hasWorkflowEntitlement: boolean;
+  entitlements: {
+    autoAssignment: FeatureAccessLevelDto;
+    aiAssist: FeatureAccessLevelDto;
+    workflows: FeatureAccessLevelDto;
+  };
 }
 
-export const OverviewPage = ({
-  currentUserId,
-  isGlobalAdmin,
-  hasAutoAssignmentEntitlement,
-  hasAIEntitlement,
-  hasWorkflowEntitlement,
-}: OverviewPageProps) => {
-  // AI and Workflow: only global admin can edit
-  const canEditAI = hasAIEntitlement && isGlobalAdmin;
-  const canEditWorkflow = hasWorkflowEntitlement && isGlobalAdmin;
-
+export const OverviewPage = ({ currentUserId, isGlobalAdmin, entitlements }: OverviewPageProps) => {
   return (
     <Page.Main>
       <Page.Header>
@@ -46,10 +40,10 @@ export const OverviewPage = ({
               <AutoAssignmentSection
                 currentUserId={currentUserId}
                 isGlobalAdmin={isGlobalAdmin}
-                hasEntitlement={hasAutoAssignmentEntitlement}
+                access={entitlements.autoAssignment}
               />
-              <AIConfigSection canEdit={canEditAI} />
-              <WorkflowConfigSection canEdit={canEditWorkflow} />
+              <AIConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.aiAssist} />
+              <WorkflowConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.workflows} />
             </div>
           </div>
         </Page.ContentV2>

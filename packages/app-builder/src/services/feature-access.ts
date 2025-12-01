@@ -6,6 +6,8 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 export const isAccessible = (featureAccess: FeatureAccessLevelDto): boolean =>
   featureAccess !== 'restricted' && featureAccess !== 'missing_configuration';
 
+export const isRestricted = (featureAccess: FeatureAccessLevelDto): boolean => featureAccess === 'restricted';
+
 export const isAnalyticsAvailable = ({ permissions }: CurrentUser, entitlements: FeatureAccesses) =>
   isAccessible(entitlements.analytics) && permissions.canReadAnalytics;
 
