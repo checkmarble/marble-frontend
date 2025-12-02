@@ -13,6 +13,7 @@ import { WorkflowConfigSection } from './Section/WorkflowConfigSection';
 interface OverviewPageProps {
   currentUserId?: string;
   isGlobalAdmin: boolean;
+  canViewAdminSections: boolean;
   entitlements: {
     autoAssignment: FeatureAccessLevelDto;
     aiAssist: FeatureAccessLevelDto;
@@ -20,7 +21,12 @@ interface OverviewPageProps {
   };
 }
 
-export const OverviewPage = ({ currentUserId, isGlobalAdmin, entitlements }: OverviewPageProps) => {
+export const OverviewPage = ({
+  currentUserId,
+  isGlobalAdmin,
+  canViewAdminSections,
+  entitlements,
+}: OverviewPageProps) => {
   const { t } = useTranslation(['cases']);
 
   return (
@@ -40,13 +46,17 @@ export const OverviewPage = ({ currentUserId, isGlobalAdmin, entitlements }: Ove
             </div>
             <div className="flex flex-col gap-v2-lg">
               <h2 className="text-h2 font-semibold">{t('cases:overview.general_config.title')}</h2>
-              <AutoAssignmentSection
-                currentUserId={currentUserId}
-                isGlobalAdmin={isGlobalAdmin}
-                access={entitlements.autoAssignment}
-              />
-              <AIConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.aiAssist} />
-              <WorkflowConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.workflows} />
+              {canViewAdminSections ? (
+                <AutoAssignmentSection
+                  currentUserId={currentUserId}
+                  isGlobalAdmin={isGlobalAdmin}
+                  access={entitlements.autoAssignment}
+                />
+              ) : null}
+              {isGlobalAdmin ? <AIConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.aiAssist} /> : null}
+              {isGlobalAdmin ? (
+                <WorkflowConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.workflows} />
+              ) : null}
             </div>
           </div>
         </Page.ContentV2>

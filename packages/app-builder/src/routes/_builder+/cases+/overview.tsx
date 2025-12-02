@@ -2,14 +2,19 @@ import { OverviewPage } from '@app-builder/components/Cases/Overview/OverviewPag
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
+import { isInboxAdmin } from '@app-builder/services/feature-access';
 import { useLoaderData } from '@remix-run/react';
 
 export const loader = createServerFn([authMiddleware], async function casesOverviewLoader({ context }) {
-  const { user, entitlements } = context.authInfo;
+  const { user, entitlements, inbox: inboxRepository } = context.authInfo;
+
+  const inboxes = await inboxRepository.listInboxes();
+  const canViewAdminSections = isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
 
   return {
     currentUserId: user.actorIdentity.userId,
     isGlobalAdmin: isAdmin(user),
+    canViewAdminSections,
     entitlements: {
       autoAssignment: entitlements.autoAssignment,
       aiAssist: entitlements.AiAssist,
