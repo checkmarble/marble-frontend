@@ -19,6 +19,8 @@ export const graphStatusesColors: Record<Exclude<CaseStatus, 'waiting_for_action
 
 // region: graph helpers
 
+const DEFAULT_TICKS_VALUES = [0, 200, 400, 600, 800, 1000];
+
 function getTotalValue(data: CaseStatusByDateResponse | CaseStatusByInboxResponse) {
   return graphCaseStatuses.reduce((acc, status) => acc + data[status], 0);
 }
@@ -29,9 +31,13 @@ function getLastTickValue(maxValue: number) {
 }
 
 export function getYAxisTicksValues(data: CaseStatusByDateResponse[] | CaseStatusByInboxResponse[]) {
+  if (!data.length) {
+    return DEFAULT_TICKS_VALUES;
+  }
+
   const maxValue = Math.max(...data.map(getTotalValue));
   if (maxValue === 0) {
-    return [0, 200, 400, 600, 800, 1000];
+    return DEFAULT_TICKS_VALUES;
   }
 
   const lastTickValue = getLastTickValue(maxValue);
