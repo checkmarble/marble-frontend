@@ -83,6 +83,8 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
                   </Tag>
                 }
                 editIcon="edit"
+                upsaleTitle={t('cases:overview.upsale.ai_config.title')}
+                upsaleDescription={t('cases:overview.upsale.ai_config.description')}
                 onClick={handleOpenPanel}
               />
               <ConfigRow
@@ -103,6 +105,8 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
                   </>
                 }
                 editIcon="arrow-right"
+                upsaleTitle={t('cases:overview.upsale.ai_config.title')}
+                upsaleDescription={t('cases:overview.upsale.ai_config.description')}
                 onClick={handleOpenPanel}
               />
             </>

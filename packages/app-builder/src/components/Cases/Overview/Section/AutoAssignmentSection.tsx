@@ -58,7 +58,12 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
       <div className="flex items-center gap-v2-md">
         <span className="flex-1 font-medium text-s">{t('cases:overview.panel.auto_assignment.title')}</span>
         {match({ restricted, canEdit })
-          .with({ restricted: true }, () => <UpsaleModal />)
+          .with({ restricted: true }, () => (
+            <UpsaleModal
+              title={t('cases:overview.upsale.auto_assignment.title')}
+              description={t('cases:overview.upsale.auto_assignment.description')}
+            />
+          ))
           .with({ canEdit: true }, () => (
             <Icon
               icon="edit"

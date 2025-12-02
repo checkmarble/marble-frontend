@@ -17,6 +17,9 @@ interface ConfigRowProps {
   /** Show wand icon in upsale modal for AI-related features */
   showWand?: boolean;
   /** Title for the upsale modal */
+  upsaleTitle?: string;
+  /** Description for the upsale modal */
+  upsaleDescription?: string;
   onClick: () => void;
 }
 
@@ -27,6 +30,8 @@ export function ConfigRow({
   statusTag,
   editIcon = 'edit',
   showWand,
+  upsaleTitle,
+  upsaleDescription,
   onClick,
 }: ConfigRowProps) {
   const { t } = useTranslation(['cases']);
@@ -51,7 +56,9 @@ export function ConfigRow({
             ))}
         </div>
         {match({ isRestricted, canEdit })
-          .with({ isRestricted: true }, () => <UpsaleModal showWand={showWand} />)
+          .with({ isRestricted: true }, () => (
+            <UpsaleModal title={upsaleTitle} description={upsaleDescription} showWand={showWand} />
+          ))
           .with({ canEdit: true }, () => (
             <Icon
               icon={editIcon}

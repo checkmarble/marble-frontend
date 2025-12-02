@@ -81,6 +81,8 @@ export const WorkflowConfigSection = ({ isGlobalAdmin, access }: WorkflowConfigS
                   </Tag>
                 }
                 editIcon="edit"
+                upsaleTitle={t('cases:overview.upsale.workflow_config.title')}
+                upsaleDescription={t('cases:overview.upsale.workflow_config.description')}
                 onClick={handleOpenEscalationPanel}
               />
               <ConfigRow
@@ -98,6 +100,8 @@ export const WorkflowConfigSection = ({ isGlobalAdmin, access }: WorkflowConfigS
                   </Tag>
                 }
                 editIcon="arrow-right"
+                upsaleTitle={t('cases:overview.upsale.workflow_config.title')}
+                upsaleDescription={t('cases:overview.upsale.workflow_config.description')}
                 onClick={handleOpenWorkflowPanel}
               />
             </>
