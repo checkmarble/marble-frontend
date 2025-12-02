@@ -1,0 +1,557 @@
+/continuous-screenings/configs:
+  get:
+    summary: List continuous screening configurations
+    operationId: listContinuousScreeningConfigs
+    tags:
+      - Continuous Screenings
+    responses:
+      '200':
+        description: List of continuous screening configurations
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContinuousScreeningConfigDto'
+  post:
+    summary: Create a continuous screening configuration
+    operationId: createContinuousScreeningConfig
+    tags:
+      - Continuous Screenings
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateContinuousScreeningConfigDto'
+    responses:
+      '201':
+        description: Created continuous screening configuration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContinuousScreeningConfigDto'
+
+/continuous-screenings/configs/{stable_id}:
+  get:
+    summary: Get a continuous screening configuration
+    operationId: getContinuousScreeningConfig
+    tags:
+      - Continuous Screenings
+    parameters:
+      - name: stable_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Continuous screening configuration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContinuousScreeningConfigDto'
+  patch:
+    summary: Update a continuous screening configuration
+    operationId: updateContinuousScreeningConfig
+    tags:
+      - Continuous Screenings
+    parameters:
+      - name: stable_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateContinuousScreeningConfigDto'
+    responses:
+      '200':
+        description: Updated continuous screening configuration
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContinuousScreeningConfigDto'
+
+/continuous-screenings/objects:
+  get:
+    summary: List monitored objects
+    operationId: listContinuousScreeningObjects
+    tags:
+      - Continuous Screenings
+    parameters:
+      - name: object_type[]
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+      - name: object_id[]
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+      - name: config_stable_id[]
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+      - name: start_date
+        in: query
+        schema:
+          type: string
+          format: date-time
+      - name: end_date
+        in: query
+        schema:
+          type: string
+          format: date-time
+      - $ref: '_common.yml#/parameters/limit'
+      - $ref: '_common.yml#/parameters/order'
+      - name: sort_by
+        in: query
+        schema:
+          type: string
+    responses:
+      '200':
+        description: List of monitored objects
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContinuousScreeningObjectDto'
+  post:
+    summary: Add an object under continuous screening with given configuration
+    operationId: createContinuousScreeningObject
+    tags:
+      - Continuous Screenings
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateContinuousScreeningObjectDto'
+    responses:
+      '201':
+        description: Created monitored object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContinuousScreeningDto'
+  delete:
+    summary: Remove an object from continuous screening
+    operationId: deleteContinuousScreeningObject
+    tags:
+      - Continuous Screenings
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeleteContinuousScreeningObjectDto'
+    responses:
+      '204':
+        description: Monitored object deleted
+
+/continuous-screenings/matches/{id}:
+  patch:
+    summary: Update a continuous screening match status
+    operationId: updateContinuousScreeningMatch
+    tags:
+      - Continuous Screenings
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: 'screenings.yml#/components/schemas/updateScreeningMatchDto'
+    responses:
+      '200':
+        description: Updated match
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContinuousScreeningMatchDto'
+
+/continuous-screenings:
+  get:
+    summary: List continuous screenings for organization
+    operationId: listContinuousScreenings
+    tags:
+      - Continuous Screenings
+    parameters:
+      - $ref: '_common.yml#/parameters/limit'
+      - $ref: '_common.yml#/parameters/order'
+      - name: sort_by
+        in: query
+        schema:
+          type: string
+    responses:
+      '200':
+        description: List of continuous screenings
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ContinuousScreeningDto'
+
+/continuous-screenings/{id}/dismiss:
+  patch:
+    summary: Dismiss a continuous screening
+    operationId: dismissContinuousScreening
+    tags:
+      - Continuous Screenings
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Dismissed continuous screening
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContinuousScreeningDto'
+
+/continuous-screenings/{id}/load-more:
+  post:
+    summary: Load more matches for a continuous screening
+    operationId: loadMoreContinuousScreeningMatches
+    tags:
+      - Continuous Screenings
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Continuous screening with more matches
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContinuousScreeningDto'
+
+components:
+  schemas:
+    ContinuousScreeningConfigDto:
+      type: object
+      required:
+        - id
+        - stable_id
+        - inbox_id
+        - name
+        - object_types
+        - algorithm
+        - datasets
+        - match_threshold
+        - match_limit
+        - enabled
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        stable_id:
+          type: string
+          format: uuid
+        inbox_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        object_types:
+          type: array
+          items:
+            type: string
+        algorithm:
+          type: string
+        datasets:
+          type: array
+          items:
+            type: string
+        match_threshold:
+          type: integer
+        match_limit:
+          type: integer
+        enabled:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateContinuousScreeningConfigDto:
+      type: object
+      required:
+        - name
+        - inbox_id
+        - algorithm
+        - datasets
+        - match_threshold
+        - match_limit
+        - object_types
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        inbox_id:
+          type: string
+          format: uuid
+        algorithm:
+          type: string
+        datasets:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        match_threshold:
+          type: integer
+          minimum: 0
+          maximum: 100
+        match_limit:
+          type: integer
+          minimum: 1
+        object_types:
+          type: array
+          minItems: 1
+          items:
+            type: string
+
+    UpdateContinuousScreeningConfigDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        inbox_id:
+          type: string
+          format: uuid
+        algorithm:
+          type: string
+        datasets:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        match_threshold:
+          type: integer
+          minimum: 0
+          maximum: 100
+        match_limit:
+          type: integer
+          minimum: 1
+        enabled:
+          type: boolean
+
+    ContinuousScreeningObjectDto:
+      type: object
+      required:
+        - id
+        - object_type
+        - object_id
+        - config_stable_id
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        object_type:
+          type: string
+        object_id:
+          type: string
+        config_stable_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+
+    CreateContinuousScreeningObjectDto:
+      type: object
+      required:
+        - object_type
+        - config_stable_id
+      properties:
+        object_type:
+          type: string
+        config_stable_id:
+          type: string
+          format: uuid
+        object_id:
+          type: string
+        object_payload:
+          type: object
+      oneOf:
+        - required:
+            - object_id
+        - required:
+            - object_payload
+
+    DeleteContinuousScreeningObjectDto:
+      type: object
+      required:
+        - object_type
+        - object_id
+        - config_stable_id
+      properties:
+        object_type:
+          type: string
+        object_id:
+          type: string
+        config_stable_id:
+          type: string
+          format: uuid
+    
+    ContinuousScreeningRequestDto:
+      type: object
+      required:
+        - search_input
+      properties:
+        search_input:
+          type: object
+          required:
+            - queries
+          properties:
+            queries:
+              type: object
+              additionalProperties:
+                $ref: 'screenings.yml#/components/schemas/ScreeningQueryDto'
+
+    ContinuousScreeningDto:
+      type: object
+      required:
+        - id
+        - org_id
+        - continuous_screening_config_id
+        - continuous_screening_config_stable_id
+        - object_type
+        - object_id
+        - object_internal_id
+        - status
+        - trigger_type
+        - request
+        - partial
+        - number_of_matches
+        - matches
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        org_id:
+          type: string
+          format: uuid
+        continuous_screening_config_id:
+          type: string
+          format: uuid
+        continuous_screening_config_stable_id:
+          type: string
+          format: uuid
+        case_id:
+          type: string
+          format: uuid
+        object_type:
+          type: string
+        object_id:
+          type: string
+        object_internal_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: 
+            - in_review
+            - error
+            - confirmed_hit
+            - no_hit
+        trigger_type:
+          type: string
+          enum: 
+            - object_added
+            - object_updated
+            - dataset_updated
+        request:
+          $ref: '#/components/schemas/ContinuousScreeningRequestDto'
+        partial:
+          type: boolean
+        number_of_matches:
+          type: integer
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContinuousScreeningMatchDto'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ContinuousScreeningMatchDto:
+      type: object
+      required:
+        - id
+        - continuous_screening_id
+        - opensanction_entity_id
+        - status
+        - payload
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        continuous_screening_id:
+          type: string
+          format: uuid
+        opensanction_entity_id:
+          type: string
+        status:
+          type: string
+          enum: 
+            - pending
+            - confirmed_hit
+            - no_hit
+            - skipped
+        payload:
+          type: object
+        reviewed_by:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time

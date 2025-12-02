@@ -12,6 +12,8 @@ tags:
     description: Operations about authorization.
   - name: Analytics
     description: Operations about analytics.
+  - name: Continuous Screenings
+    description: Operations about continuous screenings.
   - name: ApiKeys
     description: Operations about api keys.
   - name: Users
@@ -225,6 +227,23 @@ paths:
     $ref: ./marblecore-api/scenario-iteration-rules.yml#/~1scenario-iteration-rules~1{ruleId}
   /scenario-iteration-rules/{ruleId}/ai-description:
     $ref: ./marblecore-api/scenario-iteration-rules.yml#/~1scenario-iteration-rules~1{ruleId}~1ai-description
+
+  # CONTINUOUS SCREENINGS
+
+  /continuous-screenings/configs:
+    $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1configs
+  /continuous-screenings/configs/{stable_id}:
+    $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1configs~1{stable_id}
+  /continuous-screenings/objects:
+    $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1objects
+  /continuous-screenings/matches/{id}:
+    $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1matches~1{id}
+  /continuous-screenings:
+    $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings
+  /continuous-screenings/{id}/dismiss:
+    $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1{id}~1dismiss
+  /continuous-screenings/{id}/load-more:
+    $ref: ./marblecore-api/continuous-screenings.yml#/~1continuous-screenings~1{id}~1load-more
 
   # SCENARIO PUBLICATIONS
 
