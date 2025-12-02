@@ -5,6 +5,7 @@ import { makeGetAnalyticsRepository } from './AnalyticsRepository';
 import { makeGetApiKeyRepository } from './ApiKeyRepository';
 import { makeGetAppConfigRepository } from './AppConfigRepository';
 import { makeGetCaseRepository } from './CaseRepository';
+import { makeGetContinuousScreeningRepository } from './ContinuousScreeningRepository';
 import { makeGetCustomListRepository } from './CustomListRepository';
 import { makeGetDataModelRepository } from './DataModelRepository';
 import { makeGetDecisionRepository } from './DecisionRepository';
@@ -56,6 +57,7 @@ export function makeServerRepositories({
     getEditorRepository: makeGetEditorRepository(),
     getDecisionRepository: makeGetDecisionRepository(),
     getCaseRepository: makeGetCaseRepository(),
+    getContinuousScreeningRepository: makeGetContinuousScreeningRepository(),
     getScreeningRepository: makeGetScreeningRepository(),
     getCustomListRepository: makeGetCustomListRepository(),
     getScenarioRepository: makeGetScenarioRepository(),

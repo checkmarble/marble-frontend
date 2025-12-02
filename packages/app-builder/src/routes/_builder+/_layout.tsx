@@ -17,6 +17,7 @@ import { OrganizationTagsContextProvider } from '@app-builder/services/organizat
 import { OrganizationUsersContextProvider } from '@app-builder/services/organization/organization-users';
 import { useSegmentIdentification } from '@app-builder/services/segment';
 import { getSettingsAccess } from '@app-builder/services/settings-access';
+import { getServerEnv } from '@app-builder/utils/environment';
 import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { Outlet, useLoaderData } from '@remix-run/react';
@@ -57,6 +58,7 @@ export const loader = createServerFn([authMiddleware], async function appBuilder
     versions: context.appConfig.versions,
     authProvider: context.appConfig.auth.provider,
     isMenuExpanded: getPreferencesCookie(request, 'menuExpd'),
+    isContinuousScreeningEnabled: getServerEnv('CONTINUOUS_SCREENING_ENABLED') ?? false,
   };
 });
 
@@ -79,6 +81,7 @@ export default function Builder() {
     featuresAccess,
     versions,
     isMenuExpanded,
+    isContinuousScreeningEnabled,
     authProvider,
   } = useLoaderData<typeof loader>();
   useSegmentIdentification(user);
@@ -141,6 +144,15 @@ export default function Builder() {
                                 Icon={(props) => <Icon icon="case-manager" {...props} />}
                               />
                             </li>
+                            {isContinuousScreeningEnabled ? (
+                              <li>
+                                <SidebarLink
+                                  labelTKey="navigation:continuous_screening"
+                                  to={getRoute('/continuous-screening')}
+                                  Icon={(props) => <Icon icon="scan-eye" {...props} />}
+                                />
+                              </li>
+                            ) : null}
                             <li>
                               {match(featuresAccess.analytics)
                                 .with('allowed', () =>

@@ -13,6 +13,7 @@ import {
   type ExportedFieldsDto,
   type FieldDto,
   FieldStatisticsDto,
+  FtmEntity,
   type GroupedAnnotations,
   type LinkToSingleDto,
   type NavigationOptionDto,
@@ -42,6 +43,7 @@ export interface DataModelField {
   tableId: string;
   values?: EnumValue[];
   unicityConstraint: UnicityConstraintType;
+  ftmProperty?: string;
 }
 
 function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
@@ -55,6 +57,7 @@ function adaptDataModelField(dataModelFieldDto: FieldDto): DataModelField {
     tableId: dataModelFieldDto.table_id,
     values: dataModelFieldDto.values,
     unicityConstraint: dataModelFieldDto.unicity_constraint,
+    ftmProperty: dataModelFieldDto.ftm_property,
   };
 }
 
@@ -123,6 +126,7 @@ export interface TableModel {
   fields: DataModelField[];
   linksToSingle: LinkToSingle[];
   navigationOptions?: NavigationOption[];
+  ftmEntity?: FtmEntity;
 }
 
 function adaptTableModel(tableDto: TableDto): TableModel {
@@ -137,6 +141,7 @@ function adaptTableModel(tableDto: TableDto): TableModel {
       R.map(([linkName, linkDto]) => adaptLinkToSingle(linkName, linkDto)),
     ),
     navigationOptions: tableDto.navigation_options?.map(adaptNavigationOptions),
+    ftmEntity: tableDto.ftm_entity,
   };
 }
 

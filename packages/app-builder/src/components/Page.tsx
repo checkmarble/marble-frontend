@@ -82,19 +82,27 @@ function PageContent({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-const PageContentV2ClassName = cva('flex flex-1 flex-col p-v2-lg text-default', {
+const PageContentV2ClassName = cva('flex flex-1 flex-col text-default', {
   variants: {
     centered: {
       true: 'mx-auto',
       false: null,
     },
+    paddingLess: {
+      true: 'p-0',
+      false: 'p-v2-lg',
+    },
+  },
+  defaultVariants: {
+    paddingLess: false,
+    centered: false,
   },
 });
 
 type PageContentV2Props = React.ComponentProps<'div'> & VariantProps<typeof PageContentV2ClassName>;
 
-function PageContentV2({ className, centered, ...props }: PageContentV2Props) {
-  return <div className={PageContentV2ClassName({ centered, className })} {...props} />;
+function PageContentV2({ className, centered, paddingLess, ...props }: PageContentV2Props) {
+  return <div className={PageContentV2ClassName({ centered, paddingLess, className })} {...props} />;
 }
 
 const pageBack = cva('border-grey-90 hover:bg-grey-98 flex items-center justify-center rounded-md border p-2');
