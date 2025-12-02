@@ -5,7 +5,7 @@ import { cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 const variances = cva(
-  'border-grey-90 text-grey-00 hover:bg-grey-95 active:bg-grey-90 flex w-fit shrink-0 cursor-pointer select-none items-center break-all rounded-sm border font-normal transition-colors',
+  'border-grey-90 text-grey-00 hover:bg-grey-95 active:bg-grey-90 flex w-fit shrink-0 cursor-pointer select-none items-center break-all border font-normal transition-colors',
   {
     variants: {
       size: {
@@ -16,10 +16,15 @@ const variances = cva(
         true: 'text-grey-50',
         false: null,
       },
+      rounded: {
+        true: 'rounded-full',
+        false: 'rounded-sm',
+      },
     },
     defaultVariants: {
       dimmed: false,
       size: 'lg',
+      rounded: false,
     },
   },
 );
@@ -30,12 +35,12 @@ export type CopyToClipboardButtonProps = ComponentPropsWithoutRef<'button'> &
   };
 
 export const CopyToClipboardButton = forwardRef<HTMLButtonElement, CopyToClipboardButtonProps>(
-  function CopyToClipboardButton({ children, className, toCopy, dimmed, size, ...props }, ref) {
+  function CopyToClipboardButton({ children, className, toCopy, dimmed, size, rounded, ...props }, ref) {
     const getCopyToClipboardProps = useGetCopyToClipboard();
     return (
       <button
         ref={ref}
-        className={variances({ dimmed, className, size })}
+        className={variances({ dimmed, className, size, rounded })}
         {...getCopyToClipboardProps(toCopy)}
         {...props}
       >

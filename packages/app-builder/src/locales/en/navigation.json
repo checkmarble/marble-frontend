@@ -9,6 +9,8 @@
   "case_manager.hits": "Matches",
   "case_manager.information": "Information",
   "collapse": "Collapse",
+  "continuous_screening": "Continuous Screening",
+  "continuous-screening.configurations": "Continuous Screening Configurations",
   "data": "Your Data",
   "data.list": "Data Model List",
   "data.schema": "Data Model Schema",
