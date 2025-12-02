@@ -971,6 +971,99 @@ export type ScenarioIterationRuleAiDescriptionDto = {
     /** The AI description for the scenario iteration rule */
     description: string;
 };
+export type ContinuousScreeningConfigDto = {
+    id: string;
+    stable_id: string;
+    inbox_id: string;
+    name: string;
+    description?: string;
+    object_types: string[];
+    algorithm: string;
+    datasets: string[];
+    match_threshold: number;
+    match_limit: number;
+    enabled: boolean;
+    created_at: string;
+    updated_at: string;
+};
+export type CreateContinuousScreeningConfigDto = {
+    name: string;
+    description?: string;
+    inbox_id: string;
+    algorithm: string;
+    datasets: string[];
+    match_threshold: number;
+    match_limit: number;
+    object_types: string[];
+};
+export type UpdateContinuousScreeningConfigDto = {
+    name?: string;
+    description?: string;
+    inbox_id?: string;
+    algorithm?: string;
+    datasets?: string[];
+    match_threshold?: number;
+    match_limit?: number;
+    enabled?: boolean;
+};
+export type ContinuousScreeningObjectDto = {
+    id: string;
+    object_type: string;
+    object_id: string;
+    config_stable_id: string;
+    created_at: string;
+};
+export type CreateContinuousScreeningObjectDto = {
+    object_type: string;
+    config_stable_id: string;
+    object_id: string;
+    object_payload?: object;
+} | {
+    object_type: string;
+    config_stable_id: string;
+    object_id?: string;
+    object_payload: object;
+};
+export type ContinuousScreeningRequestDto = {
+    search_input: {
+        queries: {
+            [key: string]: Items;
+        };
+    };
+};
+export type ContinuousScreeningMatchDto = {
+    id: string;
+    continuous_screening_id: string;
+    opensanction_entity_id: string;
+    status: "pending" | "confirmed_hit" | "no_hit" | "skipped";
+    payload: object;
+    reviewed_by?: string;
+    created_at: string;
+    updated_at: string;
+};
+export type ContinuousScreeningDto = {
+    id: string;
+    org_id: string;
+    continuous_screening_config_id: string;
+    continuous_screening_config_stable_id: string;
+    case_id?: string;
+    object_type: string;
+    object_id: string;
+    object_internal_id: string;
+    status: "in_review" | "error" | "confirmed_hit" | "no_hit";
+    trigger_type: "object_added" | "object_updated" | "dataset_updated";
+    request: ContinuousScreeningRequestDto;
+    partial: boolean;
+    number_of_matches: number;
+    matches: ContinuousScreeningMatchDto[];
+    created_at: string;
+    updated_at: string;
+};
+export type DeleteContinuousScreeningObjectDto = {
+    object_type: string;
+    object_id: string;
+    config_stable_id: string;
+};
 export type PublicationAction = "publish" | "unpublish";
 export type ScenarioPublication = {
     id: string;
@@ -3420,6 +3513,162 @@ export function getScenarioIterationRuleAiDescription(ruleId: string, opts?: Oaz
         data: string;
     }>(`/scenario-iteration-rules/${encodeURIComponent(ruleId)}/ai-description`, {
         ...opts
+    }));
+}
+/**
+ * List continuous screening configurations
+ */
+export function listContinuousScreeningConfigs(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ContinuousScreeningConfigDto[];
+    }>("/continuous-screenings/configs", {
+        ...opts
+    }));
+}
+/**
+ * Create a continuous screening configuration
+ */
+export function createContinuousScreeningConfig(createContinuousScreeningConfigDto: CreateContinuousScreeningConfigDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: ContinuousScreeningConfigDto;
+    }>("/continuous-screenings/configs", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createContinuousScreeningConfigDto
+    })));
+}
+/**
+ * Get a continuous screening configuration
+ */
+export function getContinuousScreeningConfig(stableId: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ContinuousScreeningConfigDto;
+    }>(`/continuous-screenings/configs/${encodeURIComponent(stableId)}`, {
+        ...opts
+    }));
+}
+/**
+ * Update a continuous screening configuration
+ */
+export function updateContinuousScreeningConfig(stableId: string, updateContinuousScreeningConfigDto: UpdateContinuousScreeningConfigDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ContinuousScreeningConfigDto;
+    }>(`/continuous-screenings/configs/${encodeURIComponent(stableId)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateContinuousScreeningConfigDto
+    })));
+}
+/**
+ * List monitored objects
+ */
+export function listContinuousScreeningObjects({ objectType, objectId, configStableId, startDate, endDate, limit, order, sortBy }: {
+    objectType?: string[];
+    objectId?: string[];
+    configStableId?: string[];
+    startDate?: string;
+    endDate?: string;
+    limit?: number;
+    order?: "ASC" | "DESC";
+    sortBy?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ContinuousScreeningObjectDto[];
+    }>(`/continuous-screenings/objects${QS.query(QS.explode({
+        "object_type[]": objectType,
+        "object_id[]": objectId,
+        "config_stable_id[]": configStableId,
+        start_date: startDate,
+        end_date: endDate,
+        limit,
+        order,
+        sort_by: sortBy
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * Add an object under continuous screening with given configuration
+ */
+export function createContinuousScreeningObject(createContinuousScreeningObjectDto: CreateContinuousScreeningObjectDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 201;
+        data: ContinuousScreeningDto;
+    }>("/continuous-screenings/objects", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createContinuousScreeningObjectDto
+    })));
+}
+/**
+ * Remove an object from continuous screening
+ */
+export function deleteContinuousScreeningObject(deleteContinuousScreeningObjectDto: DeleteContinuousScreeningObjectDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchText("/continuous-screenings/objects", oazapfts.json({
+        ...opts,
+        method: "DELETE",
+        body: deleteContinuousScreeningObjectDto
+    })));
+}
+/**
+ * Update a continuous screening match status
+ */
+export function updateContinuousScreeningMatch(id: string, updateScreeningMatchDto: UpdateScreeningMatchDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ContinuousScreeningMatchDto;
+    }>(`/continuous-screenings/matches/${encodeURIComponent(id)}`, oazapfts.json({
+        ...opts,
+        method: "PATCH",
+        body: updateScreeningMatchDto
+    })));
+}
+/**
+ * List continuous screenings for organization
+ */
+export function listContinuousScreenings({ limit, order, sortBy }: {
+    limit?: number;
+    order?: "ASC" | "DESC";
+    sortBy?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ContinuousScreeningDto[];
+    }>(`/continuous-screenings${QS.query(QS.explode({
+        limit,
+        order,
+        sort_by: sortBy
+    }))}`, {
+        ...opts
+    }));
+}
+/**
+ * Dismiss a continuous screening
+ */
+export function dismissContinuousScreening(id: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ContinuousScreeningDto;
+    }>(`/continuous-screenings/${encodeURIComponent(id)}/dismiss`, {
+        ...opts,
+        method: "PATCH"
+    }));
+}
+/**
+ * Load more matches for a continuous screening
+ */
+export function loadMoreContinuousScreeningMatches(id: string, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ContinuousScreeningDto;
+    }>(`/continuous-screenings/${encodeURIComponent(id)}/load-more`, {
+        ...opts,
+        method: "POST"
     }));
 }
 /**

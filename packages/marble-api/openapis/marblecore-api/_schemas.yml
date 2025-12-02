@@ -497,3 +497,24 @@ CaseStatusByInboxResponseDto:
   $ref: analytics.yml#/components/schemas/CaseStatusByInboxResponseDto
 AvailableFiltersResponseDto:
   $ref: analytics.yml#/components/schemas/AvailableFiltersResponseDto
+
+# CONTINUOUS SCREENINGS
+
+ContinuousScreeningConfigDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningConfigDto
+CreateContinuousScreeningConfigDto:
+  $ref: continuous-screenings.yml#/components/schemas/CreateContinuousScreeningConfigDto
+UpdateContinuousScreeningConfigDto:
+  $ref: continuous-screenings.yml#/components/schemas/UpdateContinuousScreeningConfigDto
+ContinuousScreeningObjectDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningObjectDto
+CreateContinuousScreeningObjectDto:
+  $ref: continuous-screenings.yml#/components/schemas/CreateContinuousScreeningObjectDto
+DeleteContinuousScreeningObjectDto:
+  $ref: continuous-screenings.yml#/components/schemas/DeleteContinuousScreeningObjectDto
+ContinuousScreeningDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningDto
+ContinuousScreeningMatchDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningMatchDto
+ContinuousScreeningRequestDto:
+  $ref: continuous-screenings.yml#/components/schemas/ContinuousScreeningRequestDto
