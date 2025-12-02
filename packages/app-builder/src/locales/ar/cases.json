@@ -192,6 +192,8 @@
   "filter.closed_only.label": "المغلقة فقط",
   "filter.exclude_assigned.label": "غير المُسنَدين فقط",
   "filter.include_snoozed.label": "تضمين المؤجّلة",
+  "filter.tags.label": "Tags",
+  "filter.tags.search_placeholder": "البحث عن tags...",
   "filters.date_range.title": "تاريخ الإنشاء:",
   "inbox.cases_count": "{{count}} حالات",
   "inbox.heading.assigned_and_contributors": "مُسند & داعمون",

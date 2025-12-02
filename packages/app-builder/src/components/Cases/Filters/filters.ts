@@ -2,7 +2,14 @@ import { type ParseKeys } from 'i18next';
 import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
 
-export const casesFilterNames = ['dateRange', 'statuses', 'includeSnoozed', 'excludeAssigned', 'assignee'] as const;
+export const casesFilterNames = [
+  'dateRange',
+  'statuses',
+  'includeSnoozed',
+  'excludeAssigned',
+  'assignee',
+  'tagId',
+] as const;
 
 export type CasesFilterName = (typeof casesFilterNames)[number];
 
@@ -17,6 +24,7 @@ export const getFilterIcon = (filterName: CasesFilterName) =>
     .with('includeSnoozed', () => 'snooze')
     .with('excludeAssigned', () => 'person')
     .with('assignee', () => 'person')
+    .with('tagId', () => 'label')
     .exhaustive();
 
 export const getFilterTKey = (filterName: CasesFilterName) =>
@@ -26,4 +34,5 @@ export const getFilterTKey = (filterName: CasesFilterName) =>
     .with('includeSnoozed', () => 'cases:filter.include_snoozed.label')
     .with('excludeAssigned', () => 'cases:filter.exclude_assigned.label')
     .with('assignee', () => 'cases:filter.assignee.label')
+    .with('tagId', () => 'cases:filter.tags.label')
     .exhaustive();

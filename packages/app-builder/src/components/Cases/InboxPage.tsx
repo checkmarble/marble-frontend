@@ -26,7 +26,7 @@ import { Spinner } from '../Spinner';
 import { BatchActions, MassUpdateCasesFn } from './Inbox/BatchActions';
 import { SelectCaseById } from './Inbox/SelectCaseById';
 
-const ALLOWED_FILTERS = ['dateRange', 'statuses', 'includeSnoozed', 'excludeAssigned', 'assignee'] as const;
+const ALLOWED_FILTERS = ['dateRange', 'statuses', 'includeSnoozed', 'excludeAssigned', 'assignee', 'tagId'] as const;
 const EXCLUDED_FILTERS = ['excludeAssigned', 'assignee'] as const;
 
 type InboxPageProps = {
