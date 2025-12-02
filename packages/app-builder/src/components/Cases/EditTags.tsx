@@ -1,4 +1,5 @@
 import { casesI18n } from '@app-builder/components/Cases/cases-i18n';
+import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { editTagsPayloadSchema, useEditTagsMutation } from '@app-builder/queries/cases/edit-tags';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
@@ -12,12 +13,6 @@ import { Button, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type SimpleTag = Pick<Tag, 'color' | 'id' | 'name'>;
-
-const TagPreview = ({ name }: { name: string }) => (
-  <div className="bg-purple-96 flex size-fit flex-row items-center gap-2 rounded-full px-2 py-[3px]">
-    <span className="text-purple-65 text-xs font-normal">{name}</span>
-  </div>
-);
 
 export const EditCaseTags = ({ id, tagIds }: { id: string; tagIds: string[] }) => {
   const editTagsMutation = useEditTagsMutation();

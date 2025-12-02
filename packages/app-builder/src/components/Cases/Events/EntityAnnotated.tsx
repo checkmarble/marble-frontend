@@ -1,4 +1,5 @@
 import { IngestedObjectDetailModal } from '@app-builder/components/Data/IngestedObjectDetailModal';
+import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { type EntityAnnotatedEvent } from '@app-builder/models/cases';
 import { useOrganizationObjectTags } from '@app-builder/services/organization/organization-object-tags';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
@@ -15,12 +16,6 @@ import { EventTime } from './Time';
 type EntityAnnotatedProps = {
   event: EntityAnnotatedEvent;
 };
-
-const TagPreview = ({ name }: { name: string }) => (
-  <div className="bg-purple-96 ms-2 flex size-fit flex-row items-center gap-2 rounded-full px-2 py-[3px]">
-    <span className="text-purple-65 text-xs font-normal">{name}</span>
-  </div>
-);
 
 const ClickableCode = ({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
   return (
@@ -64,7 +59,7 @@ export function EntityAnnotated({ event }: EntityAnnotatedProps) {
           {match(event.annotation)
             .with({ type: 'tag' }, (annotation) => {
               const tag = getTagById(annotation.payload.tag_id);
-              return tag ? <TagPreview name={tag.name} /> : null;
+              return tag ? <TagPreview name={tag.name} className="ms-2" /> : null;
             })
             .with({ type: 'file' }, (annotation) => {
               return (

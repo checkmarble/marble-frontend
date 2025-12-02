@@ -21,6 +21,7 @@ export type WorkflowAction = {
         inboxId: string;
         anyInbox?: boolean;
         titleTemplate?: AstNode;
+        tagIds?: string[];
       };
     }
 );
@@ -132,6 +133,8 @@ export function adaptWorkflowAction(dto: WorkflowActionDto): WorkflowAction {
           inboxId: dto.params.inbox_id,
           anyInbox: dto.params.any_inbox,
           titleTemplate: dto.params.title_template && adaptAstNode(dto.params.title_template),
+          // TODO: Remove cast when backend supports tag_ids in WorkflowActionDto
+          tagIds: (dto.params as { tag_ids?: string[] }).tag_ids,
         },
       };
     default:
@@ -143,14 +146,16 @@ export function transformWorkflowAction(action: WorkflowAction): WorkflowActionD
   switch (action.action) {
     case 'CREATE_CASE':
     case 'ADD_TO_CASE_IF_POSSIBLE':
+      // TODO: Remove cast when backend supports tag_ids in WorkflowActionDto
       return {
         ...action,
         params: {
           inbox_id: action.params.inboxId,
           any_inbox: action.params.anyInbox,
           title_template: action.params.titleTemplate && adaptNodeDto(action.params.titleTemplate),
+          tag_ids: action.params.tagIds,
         },
-      };
+      } as WorkflowActionDto;
     case 'DISABLED':
       return {
         id: action.id,
