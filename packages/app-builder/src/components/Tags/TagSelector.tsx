@@ -12,9 +12,17 @@ type SimpleTag = Pick<Tag, 'color' | 'id' | 'name'>;
 interface TagSelectorProps {
   selectedTagIds: string[];
   onSelectedTagIdsChange: (tagIds: string[]) => void;
+  onOpenChange?: (open: boolean) => void;
+  /** Maximum number of tags to display inline. Additional tags show as "+X" */
+  maxVisibleTags?: number;
 }
 
-export function TagSelector({ selectedTagIds, onSelectedTagIdsChange }: TagSelectorProps) {
+export function TagSelector({
+  selectedTagIds,
+  onSelectedTagIdsChange,
+  onOpenChange,
+  maxVisibleTags,
+}: TagSelectorProps) {
   const { t } = useTranslation(['workflows', 'common']);
   const { orgTags } = useOrganizationTags();
 
@@ -44,7 +52,7 @@ export function TagSelector({ selectedTagIds, onSelectedTagIdsChange }: TagSelec
 
   return (
     <div className="flex items-center gap-2">
-      <MenuCommand.Menu persistOnSelect>
+      <MenuCommand.Menu persistOnSelect onOpenChange={onOpenChange}>
         <MenuCommand.Trigger>
           <Button variant="secondary" size={selectedTagIds.length ? 'icon' : 'xs'}>
             <Icon icon={selectedTagIds.length ? 'edit-square' : 'plus'} className="text-grey-50 size-4" />
@@ -73,9 +81,12 @@ export function TagSelector({ selectedTagIds, onSelectedTagIdsChange }: TagSelec
           </MenuCommand.List>
         </MenuCommand.Content>
       </MenuCommand.Menu>
-      {selectedTagIds.map((id) => (
+      {(maxVisibleTags ? selectedTagIds.slice(0, maxVisibleTags) : selectedTagIds).map((id) => (
         <TagPreview key={id} name={formattedTags[id]?.name ?? id} />
       ))}
+      {maxVisibleTags && selectedTagIds.length > maxVisibleTags ? (
+        <span className="text-grey-50 text-xs">+{selectedTagIds.length - maxVisibleTags}</span>
+      ) : null}
     </div>
   );
 }

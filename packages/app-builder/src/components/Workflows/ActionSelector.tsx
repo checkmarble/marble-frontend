@@ -268,7 +268,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
               />
             </div>
           </div>
-          <div className="flex items-start gap-2">
+          <div className="flex items-center gap-2">
             <div className="bg-grey-20 px-3 py-1 rounded-sm min-w-20 flex justify-center h-10 items-center">
               <span className="text-grey-60 font-bold text-sm text-nowrap">{t('workflows:action.with_tags')}</span>
             </div>
@@ -276,6 +276,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
               <TagSelector
                 selectedTagIds={action && 'params' in action ? (action.params?.tagIds ?? []) : []}
                 onSelectedTagIdsChange={handleTagsChange}
+                maxVisibleTags={2}
               />
             </div>
           </div>
