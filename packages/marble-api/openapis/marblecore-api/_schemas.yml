@@ -312,6 +312,8 @@ LinkToSingleDto:
   $ref: data-model.yml#/components/schemas/LinkToSingleDto
 FieldDto:
   $ref: data-model.yml#/components/schemas/FieldDto
+FtmEntity:
+  $ref: data-model.yml#/components/schemas/FtmEntity
 TableDto:
   $ref: data-model.yml#/components/schemas/TableDto
 DataModelDto:
