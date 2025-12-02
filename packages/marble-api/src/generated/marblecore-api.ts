@@ -1089,6 +1089,7 @@ export type FieldDto = {
     table_id: string;
     values?: (string | number)[];
     unicity_constraint: "no_unicity_constraint" | "pending_unique_constraint" | "active_unique_constraint";
+    ftm_property?: string;
 };
 export type LinkToSingleDto = {
     id: string;
@@ -1120,6 +1121,7 @@ export type NavigationOptionDto = {
     /** status of the index that is created in the database to allow data exploration on the child table. */
     status: "pending" | "valid" | "invalid";
 };
+export type FtmEntity = "Company" | "Person" | "Vessel";
 export type TableDto = {
     id: string;
     name: string;
@@ -1131,6 +1133,7 @@ export type TableDto = {
         [key: string]: LinkToSingleDto;
     };
     navigation_options?: NavigationOptionDto[];
+    ftm_entity?: FtmEntity;
 };
 export type DataModelDto = {
     tables: {
@@ -1140,9 +1143,11 @@ export type DataModelDto = {
 export type CreateTableBody = {
     name: string;
     description: string;
+    ftm_entity?: FtmEntity;
 };
 export type UpdateTableBody = {
     description?: string;
+    ftm_entity?: FtmEntity;
 };
 export type CreateTableFieldDto = {
     name: string;
@@ -1151,12 +1156,14 @@ export type CreateTableFieldDto = {
     nullable: boolean;
     is_enum?: boolean;
     is_unique?: boolean;
+    ftm_property?: string;
 };
 export type UpdateTableFieldDto = {
     description?: string;
     is_enum?: boolean;
     is_unique?: boolean;
     is_nullable?: boolean;
+    ftm_property?: string;
 };
 export type CreateTableLinkBody = {
     name: string;
