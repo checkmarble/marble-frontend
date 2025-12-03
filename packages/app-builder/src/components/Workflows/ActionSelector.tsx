@@ -237,7 +237,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
         </MenuCommand.Content>
       </MenuCommand.Menu>
 
-      {needsInbox && (
+      {needsInbox ? (
         <div className="flex flex-col gap-3">
           <div className="flex items-start gap-2">
             <div className="bg-grey-20 px-3 py-1 rounded-sm min-w-20 flex justify-center h-10 items-center">
@@ -281,7 +281,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
