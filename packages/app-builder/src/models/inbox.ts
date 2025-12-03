@@ -71,7 +71,7 @@ export interface InboxUpdateBody {
 
 export function adaptUpdateInboxDto(model: InboxUpdateBody): {
   name: string;
-  escalation_inbox_id?: string;
+  escalation_inbox_id?: string | null;
   auto_assign_enabled?: boolean;
   case_review_manual?: boolean;
   case_review_on_case_created?: boolean;
@@ -79,7 +79,8 @@ export function adaptUpdateInboxDto(model: InboxUpdateBody): {
 } {
   return {
     name: model.name,
-    escalation_inbox_id: model.escalationInboxId ?? undefined,
+    // Preserve null to allow clearing escalation inbox (null !== undefined for API)
+    escalation_inbox_id: model.escalationInboxId,
     auto_assign_enabled: model.autoAssignEnabled ?? undefined,
     case_review_manual: model.caseReviewManual,
     case_review_on_case_created: model.caseReviewOnCaseCreated,

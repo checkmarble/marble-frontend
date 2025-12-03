@@ -3,7 +3,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useUpdateInboxEscalationMutation } from '@app-builder/queries/cases/update-inbox-escalation';
-import { useCallback, useEffect, useId, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from 'ui-design-system';
@@ -28,7 +28,7 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
   const baseId = useId();
 
   const [conditions, setConditions] = useState<ConditionWithId[]>([]);
-  const [conditionCounter, setConditionCounter] = useState(0);
+  const conditionCounterRef = useRef(0);
 
   const inboxes = inboxesQuery.data?.inboxes ?? [];
 
@@ -47,12 +47,9 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
   }, [inboxesQuery.dataUpdatedAt]);
 
   const handleAddCondition = useCallback(() => {
-    setConditionCounter((prev) => prev + 1);
-    setConditions((prev) => [
-      ...prev,
-      { id: `${baseId}-new-${conditionCounter}`, sourceInboxId: '', targetInboxId: null },
-    ]);
-  }, [baseId, conditionCounter]);
+    const counter = conditionCounterRef.current++;
+    setConditions((prev) => [...prev, { id: `${baseId}-new-${counter}`, sourceInboxId: '', targetInboxId: null }]);
+  }, [baseId]);
 
   const handleRemoveCondition = useCallback((id: string) => {
     setConditions((prev) => prev.filter((c) => c.id !== id));
