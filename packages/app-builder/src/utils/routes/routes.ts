@@ -577,6 +577,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/snooze-case.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/update-auto-assign",
+        "path": "ressources/cases/update-auto-assign",
+        "file": "routes/ressources+/cases+/update-auto-assign.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/update-inbox-escalation",
         "path": "ressources/cases/update-inbox-escalation",
         "file": "routes/ressources+/cases+/update-inbox-escalation.tsx"
