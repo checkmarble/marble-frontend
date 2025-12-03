@@ -3,10 +3,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
 export const updateInboxWorkflowPayloadSchema = z.object({
-  inboxId: z.uuid(),
-  caseReviewManual: z.boolean(),
-  caseReviewOnCaseCreated: z.boolean(),
-  caseReviewOnEscalate: z.boolean(),
+  updates: z.array(
+    z.object({
+      inboxId: z.uuid(),
+      caseReviewManual: z.boolean(),
+      caseReviewOnCaseCreated: z.boolean(),
+      caseReviewOnEscalate: z.boolean(),
+    }),
+  ),
 });
 
 export type UpdateInboxWorkflowPayload = z.infer<typeof updateInboxWorkflowPayloadSchema>;
@@ -27,7 +31,7 @@ export const useUpdateInboxWorkflowMutation = () => {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cases', 'inboxes'] });
+      void queryClient.invalidateQueries({ queryKey: ['cases', 'inboxes'] });
     },
   });
 };

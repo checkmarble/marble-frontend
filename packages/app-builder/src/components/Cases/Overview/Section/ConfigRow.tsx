@@ -39,7 +39,7 @@ export function ConfigRow({
   return (
     <div
       className={cn('border rounded-v2-lg p-v2-md flex flex-col gap-v2-md', {
-        'border-[#ada7fd] bg-[#f7f6ff]': isRestricted,
+        'border-purple-restricted-border bg-purple-restricted-background': isRestricted,
         'border-grey-border bg-grey-background-light': !isRestricted,
       })}
     >

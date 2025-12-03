@@ -1,10 +1,9 @@
 import { PanelContainer, PanelContent, PanelFooter, PanelOverlay, usePanel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useUpdateInboxEscalationMutation } from '@app-builder/queries/cases/update-inbox-escalation';
-import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useState } from 'react';
-import { toast } from 'react-hot-toast';
+import { useCallback, useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from 'ui-design-system';
@@ -16,15 +15,20 @@ interface EscalationConditionsPanelContentProps {
   readOnly?: boolean;
 }
 
+interface ConditionWithId extends EscalationCondition {
+  id: string;
+}
+
 export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditionsPanelContentProps) => {
   const { t } = useTranslation(['cases']);
   const inboxesQuery = useGetInboxesQuery();
   const { closePanel } = usePanel();
-  const queryClient = useQueryClient();
   const updateEscalationMutation = useUpdateInboxEscalationMutation();
+  const revalidate = useLoaderRevalidator();
+  const baseId = useId();
 
-  const [conditions, setConditions] = useState<EscalationCondition[]>([]);
-  const [isSaving, setIsSaving] = useState(false);
+  const [conditions, setConditions] = useState<ConditionWithId[]>([]);
+  const [conditionCounter, setConditionCounter] = useState(0);
 
   const inboxes = inboxesQuery.data?.inboxes ?? [];
 
@@ -33,7 +37,8 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
     if (inboxesQuery.isSuccess) {
       const existingConditions = inboxesQuery.data.inboxes
         .filter((inbox) => inbox.escalationInboxId)
-        .map((inbox) => ({
+        .map((inbox, idx) => ({
+          id: `existing-${inbox.id}-${idx}`,
           sourceInboxId: inbox.id,
           targetInboxId: inbox.escalationInboxId ?? null,
         }));
@@ -42,71 +47,61 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
   }, [inboxesQuery.dataUpdatedAt]);
 
   const handleAddCondition = useCallback(() => {
-    setConditions((prev) => [...prev, { sourceInboxId: '', targetInboxId: null }]);
-  }, []);
+    setConditionCounter((prev) => prev + 1);
+    setConditions((prev) => [
+      ...prev,
+      { id: `${baseId}-new-${conditionCounter}`, sourceInboxId: '', targetInboxId: null },
+    ]);
+  }, [baseId, conditionCounter]);
 
-  const handleRemoveCondition = useCallback((index: number) => {
-    setConditions((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveCondition = useCallback((id: string) => {
+    setConditions((prev) => prev.filter((c) => c.id !== id));
   }, []);
 
   const handleUpdateCondition = useCallback(
-    (index: number, field: 'sourceInboxId' | 'targetInboxId', value: string | null) => {
-      setConditions((prev) => prev.map((cond, i) => (i === index ? { ...cond, [field]: value } : cond)));
+    (id: string, field: 'sourceInboxId' | 'targetInboxId', value: string | null) => {
+      setConditions((prev) => prev.map((cond) => (cond.id === id ? { ...cond, [field]: value } : cond)));
     },
     [],
   );
 
-  const handleSave = async () => {
-    setIsSaving(true);
+  const handleSave = () => {
+    // Get original conditions to detect changes
+    const originalConditions = new Map(
+      inboxes.filter((inbox) => inbox.escalationInboxId).map((inbox) => [inbox.id, inbox.escalationInboxId]),
+    );
 
-    try {
-      // Get original conditions to detect changes
-      const originalConditions = new Map(
-        inboxes.filter((inbox) => inbox.escalationInboxId).map((inbox) => [inbox.id, inbox.escalationInboxId]),
-      );
+    // Current conditions map
+    const currentConditions = new Map(
+      conditions.filter((c) => c.sourceInboxId && c.targetInboxId).map((c) => [c.sourceInboxId, c.targetInboxId]),
+    );
 
-      // Current conditions map
-      const currentConditions = new Map(
-        conditions.filter((c) => c.sourceInboxId && c.targetInboxId).map((c) => [c.sourceInboxId, c.targetInboxId]),
-      );
+    const updates: { inboxId: string; escalationInboxId: string | null }[] = [];
 
-      const updates: Promise<unknown>[] = [];
-
-      // Find removed escalations (were in original but not in current)
-      for (const [sourceId] of originalConditions) {
-        if (!currentConditions.has(sourceId)) {
-          updates.push(
-            updateEscalationMutation.mutateAsync({
-              inboxId: sourceId,
-              escalationInboxId: null,
-            }),
-          );
-        }
+    // Find removed escalations (were in original but not in current)
+    for (const [sourceId] of originalConditions) {
+      if (!currentConditions.has(sourceId)) {
+        updates.push({ inboxId: sourceId, escalationInboxId: null });
       }
-
-      // Find added or changed escalations
-      for (const [sourceId, targetId] of currentConditions) {
-        const originalTarget = originalConditions.get(sourceId);
-        if (originalTarget !== targetId) {
-          updates.push(
-            updateEscalationMutation.mutateAsync({
-              inboxId: sourceId,
-              escalationInboxId: targetId,
-            }),
-          );
-        }
-      }
-
-      await Promise.all(updates);
-      await queryClient.invalidateQueries({ queryKey: ['cases', 'inboxes'] });
-
-      toast.success(t('cases:overview.panel.escalation.saved'));
-      closePanel();
-    } catch {
-      toast.error(t('cases:overview.panel.workflow.save_error'));
-    } finally {
-      setIsSaving(false);
     }
+
+    // Find added or changed escalations
+    for (const [sourceId, targetId] of currentConditions) {
+      const originalTarget = originalConditions.get(sourceId);
+      if (originalTarget !== targetId) {
+        updates.push({ inboxId: sourceId, escalationInboxId: targetId });
+      }
+    }
+
+    updateEscalationMutation.mutate(
+      { updates },
+      {
+        onSuccess: () => {
+          revalidate();
+          closePanel();
+        },
+      },
+    );
   };
 
   return (
@@ -132,19 +127,19 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
                   <div className="text-s font-medium">{t('cases:overview.panel.escalation.conditions_title')}</div>
 
                   <div className="flex flex-col gap-v2-md">
-                    {conditions.map((condition, index) => (
+                    {conditions.map((condition) => (
                       <EscalationConditionRow
-                        key={index}
+                        key={condition.id}
                         condition={condition}
                         inboxes={inboxes}
-                        usedSourceIds={conditions.filter((_, i) => i !== index).map((c) => c.sourceInboxId)}
-                        onUpdate={(field, value) => handleUpdateCondition(index, field, value)}
-                        onRemove={() => handleRemoveCondition(index)}
+                        usedSourceIds={conditions.filter((c) => c.id !== condition.id).map((c) => c.sourceInboxId)}
+                        onUpdate={(field, value) => handleUpdateCondition(condition.id, field, value)}
+                        onRemove={() => handleRemoveCondition(condition.id)}
                         disabled={readOnly}
                       />
                     ))}
 
-                    {!readOnly && (
+                    {readOnly ? null : (
                       <div>
                         <ButtonV2 variant="primary" appearance="stroked" onClick={handleAddCondition}>
                           {t('cases:overview.panel.escalation.add_condition')}
@@ -157,10 +152,19 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
             ))
             .exhaustive()}
         </PanelContent>
-        {!readOnly && (
+        {readOnly ? null : (
           <PanelFooter>
-            <ButtonV2 size="default" className="w-full justify-center" onClick={handleSave} disabled={isSaving}>
-              {isSaving ? <Spinner className="size-4" /> : t('cases:overview.validate_config')}
+            <ButtonV2
+              size="default"
+              className="w-full justify-center"
+              onClick={handleSave}
+              disabled={updateEscalationMutation.isPending}
+            >
+              {updateEscalationMutation.isPending ? (
+                <Icon icon="spinner" className="size-4 animate-spin" />
+              ) : (
+                t('cases:overview.validate_config')
+              )}
             </ButtonV2>
           </PanelFooter>
         )}

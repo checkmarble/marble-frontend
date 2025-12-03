@@ -7,13 +7,11 @@ import {
   usePanel,
 } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type InboxWithCasesCount } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
-import { useEditInboxUserAutoAssignMutation } from '@app-builder/queries/settings/inboxes/edit-inbox-user-auto-assign';
-import { useUpdateInboxMutation } from '@app-builder/queries/settings/inboxes/update-inbox';
-import { useQueryClient } from '@tanstack/react-query';
+import { useUpdateAutoAssignMutation } from '@app-builder/queries/cases/update-auto-assign';
 import { useState } from 'react';
-import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from 'ui-design-system';
@@ -40,15 +38,13 @@ export const AutoAssignmentPanelContent = ({
   const { t } = useTranslation(['cases', 'common']);
   const inboxesQuery = useGetInboxesQuery();
   const { closePanel } = usePanel();
-  const queryClient = useQueryClient();
-  const updateInboxMutation = useUpdateInboxMutation();
-  const editUserMutation = useEditInboxUserAutoAssignMutation();
+  const updateAutoAssignMutation = useUpdateAutoAssignMutation();
+  const revalidate = useLoaderRevalidator();
 
   const [changes, setChanges] = useState<AutoAssignmentChanges>({
     inboxes: {},
     users: {},
   });
-  const [isSaving, setIsSaving] = useState(false);
 
   const allInboxes = inboxesQuery.data?.inboxes ?? [];
 
@@ -98,43 +94,16 @@ export const AutoAssignmentPanelContent = ({
     });
   };
 
-  const handleSave = async () => {
-    setIsSaving(true);
-
-    try {
-      // Update inboxes
-      const inboxPromises = Object.entries(changes.inboxes).map(([inboxId, autoAssignEnabled]) => {
-        const inbox = inboxes.find((i) => i.id === inboxId);
-        if (!inbox) return Promise.resolve();
-
-        return updateInboxMutation.mutateAsync({
-          id: inboxId,
-          name: inbox.name,
-          escalationInboxId: inbox.escalationInboxId ?? null,
-          autoAssignEnabled,
-          redirectRoute: '/cases/overview',
-        });
-      });
-
-      // Update users
-      const userPromises = Object.entries(changes.users).map(([userId, autoAssignable]) => {
-        return editUserMutation.mutateAsync({
-          id: userId,
-          autoAssignable,
-        });
-      });
-
-      await Promise.all([...inboxPromises, ...userPromises]);
-
-      await queryClient.invalidateQueries({ queryKey: ['cases', 'inboxes'] });
-
-      toast.success(t('cases:overview.panel.auto_assignment.saved'));
-      closePanel();
-    } catch {
-      toast.error(t('cases:overview.panel.auto_assignment.save_error'));
-    } finally {
-      setIsSaving(false);
-    }
+  const handleSave = () => {
+    updateAutoAssignMutation.mutate(
+      { inboxes: changes.inboxes, users: changes.users },
+      {
+        onSuccess: () => {
+          revalidate();
+          closePanel();
+        },
+      },
+    );
   };
 
   const hasChanges = Object.keys(changes.inboxes).length > 0 || Object.keys(changes.users).length > 0;
@@ -175,18 +144,22 @@ export const AutoAssignmentPanelContent = ({
             ))
             .exhaustive()}
         </PanelContent>
-        {canSave && (
+        {canSave ? (
           <PanelFooter>
             <ButtonV2
               size="default"
               className="w-full justify-center"
               onClick={handleSave}
-              disabled={isSaving || !hasChanges}
+              disabled={updateAutoAssignMutation.isPending || !hasChanges}
             >
-              {isSaving ? <Icon icon="spinner" className="size-4 animate-spin" /> : t('cases:overview.validate')}
+              {updateAutoAssignMutation.isPending ? (
+                <Icon icon="spinner" className="size-4 animate-spin" />
+              ) : (
+                t('cases:overview.validate')
+              )}
             </ButtonV2>
           </PanelFooter>
-        )}
+        ) : null}
       </PanelContainer>
     </PanelOverlay>
   );

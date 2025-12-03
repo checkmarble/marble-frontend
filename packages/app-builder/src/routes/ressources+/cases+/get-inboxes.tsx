@@ -1,15 +1,11 @@
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
-import { type LoaderFunctionArgs } from '@remix-run/node';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { inbox } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-  const inboxes = await inbox.listInboxesWithCaseCount();
-
-  return Response.json({
-    inboxes,
-  });
-}
+export const loader = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function getInboxesLoader({ context }) {
+    const inboxes = await context.authInfo.inbox.listInboxesWithCaseCount();
+    return { inboxes };
+  },
+);

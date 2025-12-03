@@ -122,21 +122,21 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
                             : t('cases:overview.config.inactive')}
                         </Tag>
                       </div>
-                      {isExpanded && hasUsers && (
+                      {isExpanded && hasUsers ? (
                         <div className="flex flex-col gap-v2-sm">
                           {inbox.users.map((user) => (
                             <InboxUserRow key={user.id} user={user} />
                           ))}
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   );
                 })}
-                {hasMore && (
+                {hasMore ? (
                   <ButtonV2 variant="secondary" appearance="link" onClick={handleOpenPanel}>
                     {t('cases:overview.config.view_more')}
                   </ButtonV2>
-                )}
+                ) : null}
               </>
             );
           })

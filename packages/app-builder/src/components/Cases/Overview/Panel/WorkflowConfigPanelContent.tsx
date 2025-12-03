@@ -7,11 +7,10 @@ import {
   usePanel,
 } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useUpdateInboxWorkflowMutation } from '@app-builder/queries/cases/update-inbox-workflow';
-import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from 'ui-design-system';
@@ -29,11 +28,10 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
   const { t } = useTranslation(['cases']);
   const inboxesQuery = useGetInboxesQuery();
   const { closePanel } = usePanel();
-  const queryClient = useQueryClient();
   const updateWorkflowMutation = useUpdateInboxWorkflowMutation();
+  const revalidate = useLoaderRevalidator();
 
   const [workflowState, setWorkflowState] = useState<InboxWorkflowState>(new Map());
-  const [isSaving, setIsSaving] = useState(false);
 
   const inboxes = inboxesQuery.data?.inboxes ?? [];
 
@@ -63,43 +61,46 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
     });
   };
 
-  const handleSave = async () => {
-    setIsSaving(true);
+  const handleSave = () => {
+    const updates: {
+      inboxId: string;
+      caseReviewManual: boolean;
+      caseReviewOnCaseCreated: boolean;
+      caseReviewOnEscalate: boolean;
+    }[] = [];
 
-    try {
-      const updates: Promise<unknown>[] = [];
+    for (const inbox of inboxes) {
+      const currentSettings = workflowState.get(inbox.id);
+      if (!currentSettings) continue;
 
-      for (const inbox of inboxes) {
-        const currentSettings = workflowState.get(inbox.id);
-        if (!currentSettings) continue;
+      // Check if settings changed
+      const hasChanged =
+        currentSettings.caseReviewManual !== inbox.caseReviewManual ||
+        currentSettings.caseReviewOnCaseCreated !== inbox.caseReviewOnCaseCreated ||
+        currentSettings.caseReviewOnEscalate !== inbox.caseReviewOnEscalate;
 
-        // Check if settings changed
-        const hasChanged =
-          currentSettings.caseReviewManual !== inbox.caseReviewManual ||
-          currentSettings.caseReviewOnCaseCreated !== inbox.caseReviewOnCaseCreated ||
-          currentSettings.caseReviewOnEscalate !== inbox.caseReviewOnEscalate;
-
-        if (hasChanged) {
-          updates.push(
-            updateWorkflowMutation.mutateAsync({
-              inboxId: inbox.id,
-              caseReviewManual: currentSettings.caseReviewManual,
-              caseReviewOnCaseCreated: currentSettings.caseReviewOnCaseCreated,
-              caseReviewOnEscalate: currentSettings.caseReviewOnEscalate,
-            }),
-          );
-        }
+      if (hasChanged) {
+        updates.push({
+          inboxId: inbox.id,
+          caseReviewManual: currentSettings.caseReviewManual,
+          caseReviewOnCaseCreated: currentSettings.caseReviewOnCaseCreated,
+          caseReviewOnEscalate: currentSettings.caseReviewOnEscalate,
+        });
       }
+    }
 
-      await Promise.all(updates);
-      await queryClient.invalidateQueries({ queryKey: ['cases', 'inboxes'] });
-
-      toast.success(t('cases:overview.panel.workflow.saved'));
+    if (updates.length > 0) {
+      updateWorkflowMutation.mutate(
+        { updates },
+        {
+          onSuccess: () => {
+            revalidate();
+            closePanel();
+          },
+        },
+      );
+    } else {
       closePanel();
-    } catch {
-      toast.error(t('cases:overview.panel.workflow.save_error'));
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -142,10 +143,19 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
             ))
             .exhaustive()}
         </PanelContent>
-        {!readOnly && (
+        {readOnly ? null : (
           <PanelFooter>
-            <ButtonV2 size="default" className="w-full justify-center" onClick={handleSave} disabled={isSaving}>
-              {isSaving ? <Icon icon="spinner" className="size-4 animate-spin" /> : t('cases:overview.validate_config')}
+            <ButtonV2
+              size="default"
+              className="w-full justify-center"
+              onClick={handleSave}
+              disabled={updateWorkflowMutation.isPending}
+            >
+              {updateWorkflowMutation.isPending ? (
+                <Icon icon="spinner" className="size-4 animate-spin" />
+              ) : (
+                t('cases:overview.validate_config')
+              )}
             </ButtonV2>
           </PanelFooter>
         )}

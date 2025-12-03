@@ -3,11 +3,7 @@ import { getRoute } from '@app-builder/utils/routes';
 import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
-export const createInboxRedirectRouteOptions = [
-  '/cases/inboxes/:inboxId',
-  '/settings/inboxes/:inboxId',
-  '/cases/overview',
-] as const;
+export const createInboxRedirectRouteOptions = ['/cases/inboxes/:inboxId', '/settings/inboxes/:inboxId'] as const;
 
 export const createInboxPayloadSchema = z.object({
   name: z.string().min(1),

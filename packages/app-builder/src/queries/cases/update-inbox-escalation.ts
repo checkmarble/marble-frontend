@@ -3,8 +3,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
 export const updateInboxEscalationPayloadSchema = z.object({
-  inboxId: z.uuid(),
-  escalationInboxId: z.union([z.uuid(), z.null()]),
+  updates: z.array(
+    z.object({
+      inboxId: z.uuid(),
+      escalationInboxId: z.union([z.uuid(), z.null()]),
+    }),
+  ),
 });
 
 export type UpdateInboxEscalationPayload = z.infer<typeof updateInboxEscalationPayloadSchema>;
@@ -25,7 +29,7 @@ export const useUpdateInboxEscalationMutation = () => {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cases', 'inboxes'] });
+      void queryClient.invalidateQueries({ queryKey: ['cases', 'inboxes'] });
     },
   });
 };
