@@ -62,8 +62,10 @@ export const adaptRuleVsDecisionOutcome = (val: RuleVsDecisionOutcomeResponseDto
     }),
   );
 
-  return Object.entries(grouped).map(([rule, outcomes]) => ({
+  const rulesArray = Object.entries(grouped).map(([rule, outcomes]) => ({
     rule,
     ...outcomes,
   }));
+
+  return rulesArray.toReversed();
 };
