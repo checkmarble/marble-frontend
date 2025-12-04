@@ -20,8 +20,8 @@ const releaseMarkdownComponents: Components = {
     <code className="bg-grey-background-light text-s font-mono rounded px-1 py-0.5">{children}</code>
   ),
   pre: ({ children }) => (
-    <div className="bg-grey-background-light rounded-sm p-3 mb-2 flex gap-2">
-      <Icon icon="code" className="size-4 shrink-0  text-purple-65" />
+    <div className="bg-grey-background-light rounded-sm p-3 mb-2 flex gap-2 items-start">
+      <Icon icon="code" className="size-4 shrink-0 text-purple-65 mt-0.5" />
       <pre className="text-s font-mono overflow-x-auto flex-1">{children}</pre>
     </div>
   ),
