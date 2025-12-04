@@ -1,5 +1,6 @@
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 
 export type VersionUpdateResource = {
   needsUpdate: boolean;
@@ -57,24 +58,27 @@ docker-compose up -d
 
 > **Important:** Make sure to backup your database before upgrading.`;
 
-export const loader = createServerFn([authMiddleware], async function checkUpdate() {
-  if (MOCK_ENABLED) {
+export const loader = createServerFn(
+  [handleRedirectMiddleware, authMiddleware],
+  async function checkUpdate({ context: _context }) {
+    if (MOCK_ENABLED) {
+      return {
+        needsUpdate: true,
+        version: '0.52.0',
+        releaseNotes: mockReleaseNotes,
+        releaseUrl: 'https://github.com/checkmarble/marble-backend/releases/tag/v0.52.0',
+      } satisfies VersionUpdateResource;
+    }
+
+    // Future: Real backend call
+    // const updateInfo = await _context.authInfo.version.checkForUpdates();
+    // return updateInfo;
+
     return {
-      needsUpdate: true,
-      version: '0.52.0',
-      releaseNotes: mockReleaseNotes,
-      releaseUrl: 'https://github.com/checkmarble/marble-backend/releases/tag/v0.52.0',
+      needsUpdate: false,
+      version: '',
+      releaseNotes: '',
+      releaseUrl: '',
     } satisfies VersionUpdateResource;
-  }
-
-  // Future: Real backend call
-  // const updateInfo = await context.authInfo.version.checkForUpdates();
-  // return updateInfo;
-
-  return {
-    needsUpdate: false,
-    version: '',
-    releaseNotes: '',
-    releaseUrl: '',
-  } satisfies VersionUpdateResource;
-});
+  },
+);
