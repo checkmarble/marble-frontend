@@ -1,0 +1,66 @@
+import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
+import { CasesNavigationTabs } from '@app-builder/components/Cases/Navigation/Tabs';
+import { Page } from '@app-builder/components/Page';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
+import { useTranslation } from 'react-i18next';
+
+import { CaseByDateGraph } from './Graph/CaseByDateGraph';
+import { CaseByInboxGraph } from './Graph/CaseByInboxGraph';
+import { AIConfigSection } from './Section/AIConfigSection';
+import { AutoAssignmentSection } from './Section/AutoAssignmentSection';
+import { WorkflowConfigSection } from './Section/WorkflowConfigSection';
+
+interface OverviewPageProps {
+  currentUserId?: string;
+  isGlobalAdmin: boolean;
+  canViewAdminSections: boolean;
+  entitlements: {
+    autoAssignment: FeatureAccessLevelDto;
+    aiAssist: FeatureAccessLevelDto;
+    workflows: FeatureAccessLevelDto;
+  };
+}
+
+export const OverviewPage = ({
+  currentUserId,
+  isGlobalAdmin,
+  canViewAdminSections,
+  entitlements,
+}: OverviewPageProps) => {
+  const { t } = useTranslation(['cases']);
+
+  return (
+    <Page.Main>
+      <Page.Header>
+        <BreadCrumbs />
+      </Page.Header>
+      <Page.Container>
+        <Page.ContentV2 className="bg-white gap-v2-md">
+          <div className="grid grid-cols-[1fr_calc(var(--spacing-v2-xs)_*_90)] gap-v2-lg">
+            <div className="flex flex-col gap-v2-md">
+              <CasesNavigationTabs />
+              <div className="grid grid-cols-2 gap-v2-md">
+                <CaseByDateGraph />
+                <CaseByInboxGraph />
+              </div>
+            </div>
+            <div className="flex flex-col gap-v2-lg">
+              <h2 className="text-h2 font-semibold">{t('cases:overview.general_config.title')}</h2>
+              {canViewAdminSections ? (
+                <AutoAssignmentSection
+                  currentUserId={currentUserId}
+                  isGlobalAdmin={isGlobalAdmin}
+                  access={entitlements.autoAssignment}
+                />
+              ) : null}
+              {isGlobalAdmin ? <AIConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.aiAssist} /> : null}
+              {isGlobalAdmin ? (
+                <WorkflowConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.workflows} />
+              ) : null}
+            </div>
+          </div>
+        </Page.ContentV2>
+      </Page.Container>
+    </Page.Main>
+  );
+};

@@ -9,6 +9,7 @@ export const iconNames = [
   'analytics',
   'arrow-2-down',
   'arrow-2-up',
+  'arrow-down',
   'arrow-forward',
   'arrow-left',
   'arrow-range',
@@ -133,6 +134,7 @@ export const iconNames = [
   'visibility',
   'visibility_off',
   'waiting_for_action',
+  'wand',
   'warning',
   'world',
 ] as const;

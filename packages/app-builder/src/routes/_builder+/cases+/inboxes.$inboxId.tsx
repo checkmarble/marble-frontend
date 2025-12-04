@@ -4,7 +4,9 @@ import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { isAdmin } from '@app-builder/models';
 import { DEFAULT_CASE_PAGINATION_SIZE } from '@app-builder/repositories/CaseRepository';
+import { isInboxAdmin } from '@app-builder/services/feature-access';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useLoaderData } from '@remix-run/react';
@@ -49,8 +51,9 @@ const pageQueryStringSchema = z.object({
 });
 
 export const loader = createServerFn([authMiddleware], async function casesInboxesLoader({ request, params, context }) {
-  const { inbox: inboxRepository } = context.authInfo;
+  const { user, inbox: inboxRepository } = context.authInfo;
   const inboxes = await inboxRepository.listInboxesWithCaseCount();
+  const canViewNavigationTabs = isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
   const inboxIdParam = params['inboxId'];
 
   invariant(inboxIdParam, 'inboxId is required');
@@ -71,6 +74,7 @@ export const loader = createServerFn([authMiddleware], async function casesInbox
     currentInbox,
     inboxes,
     inboxUsersIds,
+    canViewNavigationTabs,
     query: parsedSearchParams.q,
     limit: parsedSearchParams.limit,
     order: parsedSearchParams.order,
@@ -79,7 +83,8 @@ export const loader = createServerFn([authMiddleware], async function casesInbox
 
 export default function CasesInboxesPage() {
   const navigate = useAgnosticNavigation();
-  const { inboxId, inboxes, inboxUsersIds, query, limit, order } = useLoaderData<typeof loader>();
+  const { inboxId, inboxes, inboxUsersIds, canViewNavigationTabs, query, limit, order } =
+    useLoaderData<typeof loader>();
   const updatePage = (newQuery: string, newLimit: number, newOrder: 'ASC' | 'DESC') => {
     const qs = QueryString.stringify(
       {
@@ -102,6 +107,7 @@ export default function CasesInboxesPage() {
       inboxId={inboxId}
       inboxes={inboxes}
       inboxUsersIds={inboxUsersIds}
+      canViewNavigationTabs={canViewNavigationTabs}
       query={query}
       limit={limit}
       order={order}

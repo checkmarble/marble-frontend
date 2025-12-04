@@ -112,6 +112,11 @@ export const routes = [
             "file": "routes/_builder+/cases+/inboxes.index.tsx"
           },
           {
+            "id": "routes/_builder+/cases+/overview",
+            "path": "cases/overview",
+            "file": "routes/_builder+/cases+/overview.tsx"
+          },
+          {
             "id": "routes/_builder+/data+/_layout",
             "path": "data",
             "file": "routes/_builder+/data+/_layout.tsx",
@@ -396,6 +401,16 @@ export const routes = [
         "file": "routes/ressources+/analytics+/$scenarioId+/query.$queryName.ts"
       },
       {
+        "id": "routes/ressources+/analytics+/case-status-by-date",
+        "path": "ressources/analytics/case-status-by-date",
+        "file": "routes/ressources+/analytics+/case-status-by-date.tsx"
+      },
+      {
+        "id": "routes/ressources+/analytics+/case-status-by-inbox",
+        "path": "ressources/analytics/case-status-by-inbox",
+        "file": "routes/ressources+/analytics+/case-status-by-inbox.tsx"
+      },
+      {
         "id": "routes/ressources+/annotations+/download-file.$annotationId.$fileId",
         "path": "ressources/annotations/download-file/:annotationId/:fileId",
         "file": "routes/ressources+/annotations+/download-file.$annotationId.$fileId.tsx"
@@ -516,6 +531,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/escalate-case.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/get-ai-settings",
+        "path": "ressources/cases/get-ai-settings",
+        "file": "routes/ressources+/cases+/get-ai-settings.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/get-inboxes",
         "path": "ressources/cases/get-inboxes",
         "file": "routes/ressources+/cases+/get-inboxes.tsx"
@@ -555,6 +575,21 @@ export const routes = [
         "id": "routes/ressources+/cases+/snooze-case",
         "path": "ressources/cases/snooze-case",
         "file": "routes/ressources+/cases+/snooze-case.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/update-auto-assign",
+        "path": "ressources/cases/update-auto-assign",
+        "file": "routes/ressources+/cases+/update-auto-assign.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/update-inbox-escalation",
+        "path": "ressources/cases/update-inbox-escalation",
+        "file": "routes/ressources+/cases+/update-inbox-escalation.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/update-inbox-workflow",
+        "path": "ressources/cases/update-inbox-workflow",
+        "file": "routes/ressources+/cases+/update-inbox-workflow.tsx"
       },
       {
         "id": "routes/ressources+/data+/$tableId.createNavigationOption",

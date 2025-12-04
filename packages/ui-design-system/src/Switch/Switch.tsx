@@ -12,7 +12,7 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps & { className?: 
       className={clsx(
         'bg-grey-90 radix-state-checked:bg-purple-65 focus:border-purple-65 relative h-6 w-10 rounded-full outline-hidden transition-all',
         'focus:ring-purple-65 focus:ring-2',
-        'disabled:bg-grey-90',
+        'disabled:bg-grey-90 disabled:opacity-50 disabled:cursor-not-allowed',
         className,
       )}
       {...props}

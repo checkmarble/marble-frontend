@@ -112,6 +112,19 @@ export const CtaV2ClassName = cva(
         class:
           'bg-white border-purple-65 text-purple-65 hover:bg-purple-96 hover:border-purple-60 disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-80',
       },
+      // Link appearance
+      {
+        variant: 'primary',
+        appearance: 'link',
+        class:
+          'bg-transparent border-transparent p-0 h-auto rounded-none hover:underline hover:bg-transparent text-purple-65 hover:text-purple-60 disabled:text-grey-80',
+      },
+      {
+        variant: 'secondary',
+        appearance: 'link',
+        class:
+          'bg-transparent border-transparent p-0 h-auto rounded-none hover:underline hover:bg-transparent text-grey-50 hover:text-grey-00 disabled:text-grey-80',
+      },
     ],
     defaultVariants: {
       variant: 'primary',

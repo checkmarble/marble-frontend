@@ -47,6 +47,7 @@
   "false": "خطأ",
   "from": "من {{input}}",
   "from_to": "من <Date>{{start_date}}</Date> إلى <Date>{{end_date}}</Date>",
+  "generic_fetch_data_error": "حدث خطأ أثناء جلب البيانات",
   "global_error": "حدث خطأ ما.",
   "go_back": "رجوع",
   "help_center.chat_with_us": "تحدث معنا",
