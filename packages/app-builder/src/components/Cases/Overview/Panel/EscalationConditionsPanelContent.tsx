@@ -44,7 +44,7 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
         }));
       setConditions(existingConditions);
     }
-  }, [inboxesQuery.dataUpdatedAt]);
+  }, [inboxesQuery.data]);
 
   const handleAddCondition = useCallback(() => {
     const counter = conditionCounterRef.current++;

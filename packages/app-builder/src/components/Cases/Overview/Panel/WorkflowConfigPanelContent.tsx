@@ -48,7 +48,7 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
       }
       setWorkflowState(initialState);
     }
-  }, [inboxesQuery.dataUpdatedAt]);
+  }, [inboxesQuery.data]);
 
   const handleToggle = (inboxId: string, field: keyof WorkflowSettings, value: boolean) => {
     setWorkflowState((prev) => {
