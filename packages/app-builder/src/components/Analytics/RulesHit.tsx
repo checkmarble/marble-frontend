@@ -121,15 +121,12 @@ export function RulesHit({ isComparingRanges, data, isLoading }: RulesHitProps) 
     enableSorting: false,
   });
   return (
-    <div>
+    <div className="bg-grey-background-light rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
       <div className="flex items-center justify-between">
         <h2 className="text-h2 font-semibold">{t('analytics:rule_hits.title')}</h2>
       </div>
 
-      <div
-        aria-busy={isLoading}
-        className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative"
-      >
+      <div aria-busy={isLoading} className="relative">
         {isLoading ? (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
             <Spinner className="size-6" />

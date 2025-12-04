@@ -1,4 +1,3 @@
-import { Spinner } from '@app-builder/components/Spinner';
 import { OUTCOME_COLORS } from '@app-builder/constants/analytics';
 import { useResizeObserver } from '@app-builder/hooks/useResizeObserver';
 import type {
@@ -18,6 +17,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+import { GraphSpinnerOverlay } from './GraphSpinnerOverlay';
 import { OutcomeFilter } from './OutcomeFilter';
 
 export type DateRange = {
@@ -261,6 +261,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
 
   return (
     <div
+      className="bg-grey-background-light rounded-v2-lg p-v2-md flex flex-col gap-v2-sm"
       onMouseEnter={() => {
         setIsHovered(true);
       }}
@@ -284,12 +285,8 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
         </ButtonV2>
       </div>
 
-      <div ref={divRef} className="bg-white border border-grey-90 rounded-lg p-v2-md shadow-sm mt-v2-sm relative">
-        {isLoading ? (
-          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
-            <Spinner className="size-6" />
-          </div>
-        ) : null}
+      <div ref={divRef} className="bg-white border border-grey-border rounded-lg p-v2-md mt-v2-sm relative">
+        {isLoading ? <GraphSpinnerOverlay /> : null}
         <div className="flex w-full h-[500px] flex-col items-start gap-v2-md">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-v2-sm">

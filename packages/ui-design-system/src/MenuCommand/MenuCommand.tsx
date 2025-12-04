@@ -25,7 +25,7 @@ const MenuCommandSharpFactory = createSharpFactory({
 type MenuCommandContextValue = {
   hover: boolean;
   persistOnSelect: boolean;
-  onSelect: () => void;
+  onSelect: (persisted?: boolean) => void;
   hasCombobox: boolean;
   listeners: (() => void)[];
 };
@@ -34,7 +34,7 @@ export const InternalMenuSharpFactory = createSharpFactory({
   initializer: (initialState: {
     hover: boolean;
     persistOnSelect: boolean;
-    onSelect: () => void;
+    onSelect: (persisted?: boolean) => void;
   }): MenuCommandContextValue => {
     return { ...initialState, hasCombobox: false, listeners: [] };
   },
@@ -98,11 +98,12 @@ function Root({ hover = false, persistOnSelect, ...props }: RootProps) {
   const internalSharp = InternalMenuSharpFactory.createSharp({
     hover,
     persistOnSelect: shouldPersistOnSelect,
-    onSelect: () => {
-      if (!shouldPersistOnSelect) {
+    onSelect: (persisted: boolean = false) => {
+      const shouldPersistMenu = shouldPersistOnSelect || persisted;
+      if (!shouldPersistMenu) {
         onOpenChange?.(false);
       }
-      parentInternalSharp?.value.onSelect();
+      parentInternalSharp?.value.onSelect(shouldPersistMenu);
     },
   });
   const RootEl = internalSharp.value.hover ? HoverCard.Root : Popover.Root;

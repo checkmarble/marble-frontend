@@ -70,7 +70,7 @@ export function SelectOptionFilter({ options, placeholder, selectedValue, name }
             <MenuCommand.Arrow />
           </ButtonV2>
         </MenuCommand.Trigger>
-        <MenuCommand.Content sameWidth align="start">
+        <MenuCommand.Content sameWidth align="start" sideOffset={4}>
           <MenuCommand.List>
             {hasOptions ? (
               options?.map((option: string | { label: string; value: string }) => {
