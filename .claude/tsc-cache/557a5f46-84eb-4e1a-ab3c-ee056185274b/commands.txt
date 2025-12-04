@@ -1,0 +1,2 @@
+packages/app-builder:build:cd /Users/sinan/Project/Marble/marble-frontend/packages/app-builder && npm run build
+packages/app-builder:tsc:cd /Users/sinan/Project/Marble/marble-frontend/packages/app-builder && npx tsc --noEmit

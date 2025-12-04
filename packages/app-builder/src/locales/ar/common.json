@@ -98,5 +98,8 @@
   "upgrade": "ترقية الآن",
   "validate": "تحقق",
   "validation_error_one": "{{count}} خطأ في التحقق",
-  "validation_error_other": "{{count}} أخطاء في التحقق"
+  "validation_error_other": "{{count}} أخطاء في التحقق",
+  "version_update.snooze": "ذكّرني لاحقًا",
+  "version_update.title": "إصدار جديد: v{{version}}",
+  "version_update.view_release": "عرض الإصدار على GitHub"
 }

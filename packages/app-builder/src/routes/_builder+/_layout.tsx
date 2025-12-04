@@ -6,6 +6,7 @@ import { PanelProvider } from '@app-builder/components/Panel';
 import { DatasetFreshnessBanner } from '@app-builder/components/Screenings/DatasetFresshnessBanner';
 import { UnavailableBanner } from '@app-builder/components/Settings/UnavailableBanner';
 import { UserInfo } from '@app-builder/components/UserInfo';
+import { VersionUpdateModalContainer } from '@app-builder/components/VersionUpdate';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { useRefreshToken } from '@app-builder/routes/ressources+/auth+/refresh';
@@ -89,6 +90,7 @@ export default function Builder() {
   return (
     <>
       <ClientOnly>{() => (authProvider === 'firebase' ? <TokenRefresher /> : null)}</ClientOnly>
+      <ClientOnly>{() => <VersionUpdateModalContainer />}</ClientOnly>
       <OrganizationDetailsContextProvider org={organization} currentUser={user}>
         <OrganizationUsersContextProvider orgUsers={orgUsers}>
           <OrganizationTagsContextProvider orgTags={orgTags}>

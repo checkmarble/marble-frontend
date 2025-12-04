@@ -1,0 +1,111 @@
+{
+  "version": "1.0",
+  "description": "Skill activation triggers for Claude Code. Controls when skills automatically suggest or block actions.",
+  "skills": {
+    "skill-developer": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "Meta-skill for creating and managing Claude Code skills",
+      "promptTriggers": {
+        "keywords": [
+          "skill system",
+          "create skill",
+          "add skill",
+          "skill triggers",
+          "skill rules",
+          "hook system",
+          "skill development",
+          "skill-rules.json"
+        ],
+        "intentPatterns": [
+          "(how do|how does|explain).*?skill",
+          "(create|add|modify|build).*?skill",
+          "skill.*?(work|trigger|activate|system)"
+        ]
+      }
+    },
+    "frontend-dev-guidelines": {
+      "type": "guardrail",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "React/TypeScript best practices for Marble with Radix UI, Tailwind CSS, TanStack Query, and Remix",
+      "promptTriggers": {
+        "keywords": [
+          "component",
+          "react component",
+          "UI",
+          "interface",
+          "page",
+          "modal",
+          "dialog",
+          "form",
+          "Radix",
+          "Tailwind",
+          "styling",
+          "frontend",
+          "React",
+          "query",
+          "mutation",
+          "route",
+          "loader"
+        ],
+        "intentPatterns": [
+          "(create|add|make|build|update|modify|edit).*?(component|UI|page|modal|dialog|form)",
+          "(how to|best practice).*?(component|react|radix|tailwind)",
+          "(style|design|layout).*?(component|UI)",
+          "(fetch|query|mutation).*?(data|API)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          "packages/app-builder/src/**/*.tsx",
+          "packages/app-builder/src/**/*.ts",
+          "packages/ui-design-system/src/**/*.tsx",
+          "packages/ui-design-system/src/**/*.ts",
+          "packages/ui-icons/src/**/*.tsx"
+        ],
+        "pathExclusions": [
+          "**/*.test.tsx",
+          "**/*.test.ts",
+          "**/*.spec.tsx",
+          "**/*.spec.ts",
+          "**/vite.config.ts",
+          "**/tsconfig.json"
+        ],
+        "contentPatterns": [
+          "from 'ui-design-system'",
+          "from '@radix-ui",
+          "@tanstack/react-query",
+          "@tanstack/react-form",
+          "@remix-run/react",
+          "from 'remeda'",
+          "from 'ts-pattern'"
+        ]
+      },
+      "skipConditions": {
+        "sessionSkillUsed": true,
+        "fileMarkers": ["@skip-validation"],
+        "envOverride": "SKIP_FRONTEND_GUIDELINES"
+      }
+    }
+  },
+  "notes": {
+    "enforcement_types": {
+      "suggest": "Skill suggestion appears but doesn't block execution",
+      "block": "Requires skill to be used before proceeding (guardrail)",
+      "warn": "Shows warning but allows proceeding"
+    },
+    "priority_levels": {
+      "critical": "Highest - Always trigger when matched",
+      "high": "Important - Trigger for most matches",
+      "medium": "Moderate - Trigger for clear matches",
+      "low": "Optional - Trigger only for explicit matches"
+    },
+    "customization": {
+      "pathPatterns": "Adjust to match your project structure (blog-api, auth-service, etc.)",
+      "keywords": "Add domain-specific terms relevant to your project",
+      "intentPatterns": "Use regex for flexible user intent matching"
+    }
+  }
+}
