@@ -27,7 +27,7 @@ export function getPreferencesCookie<K extends PreferencesCookieKey>(
 
   try {
     const parsed = PreferencesCookieSchema.partial().parse(parsedObj);
-    return parsed[name] as PreferencesCookie[K] | undefined;
+    return parsed[name];
   } catch {
     return undefined;
   }

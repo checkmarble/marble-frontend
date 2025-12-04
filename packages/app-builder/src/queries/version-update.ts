@@ -4,7 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 
 const endpoint = () => getRoute('/ressources/version/check-update');
 
-export function useVersionUpdateQuery() {
+interface UseVersionUpdateQueryOptions {
+  enabled?: boolean;
+}
+
+export function useVersionUpdateQuery({ enabled = true }: UseVersionUpdateQueryOptions = {}) {
   const queryKey = ['version-update'] as const;
 
   return useQuery({
@@ -15,5 +19,6 @@ export function useVersionUpdateQuery() {
     },
     staleTime: 1000 * 60 * 60, // 1 hour - don't refetch too frequently
     refetchOnWindowFocus: false,
+    enabled,
   });
 }

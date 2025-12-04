@@ -1,43 +1,29 @@
 import { useVersionUpdateQuery } from '@app-builder/queries/version-update';
-import { COOKIE_NAME, type PreferencesCookie } from '@app-builder/utils/preferences-cookies/config';
-import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
-import Cookie from 'js-cookie';
-import { type FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { useLocalStorage } from '@app-builder/utils/hooks';
+import { type FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { VersionUpdateModal } from './VersionUpdateModal';
 
+const STORAGE_KEY = 'version-snooze';
 const SNOOZE_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
-function getSnoozeState(): Pick<PreferencesCookie, 'versionSnoozeExpiry' | 'versionSnoozedVersion'> {
-  try {
-    const raw = Cookie.get(COOKIE_NAME);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return {
-      versionSnoozeExpiry: parsed.versionSnoozeExpiry ? Number(parsed.versionSnoozeExpiry) : undefined,
-      versionSnoozedVersion: parsed.versionSnoozedVersion,
-    };
-  } catch {
-    return {};
-  }
-}
-
-function isSnoozed(version: string): boolean {
-  const { versionSnoozeExpiry, versionSnoozedVersion } = getSnoozeState();
-
-  if (!versionSnoozeExpiry || !versionSnoozedVersion) return false;
-
-  const isExpired = Date.now() > versionSnoozeExpiry;
-  const isSameVersion = versionSnoozedVersion === version;
-
-  return !isExpired && isSameVersion;
+interface SnoozeState {
+  expiry: number;
+  version: string;
 }
 
 export const VersionUpdateModalContainer: FunctionComponent = () => {
   const [open, setOpen] = useState(false);
-  const { data, isSuccess } = useVersionUpdateQuery();
+  const snoozeStorage = useLocalStorage<SnoozeState>(STORAGE_KEY);
+
+  const shouldFetch = useMemo(() => {
+    const state = snoozeStorage.get();
+    return !state || Date.now() > state.expiry;
+  }, [snoozeStorage]);
+
+  const { data, isSuccess } = useVersionUpdateQuery({ enabled: shouldFetch });
 
   useEffect(() => {
-    if (isSuccess && data?.needsUpdate && !isSnoozed(data.version)) {
+    if (isSuccess && data?.needsUpdate) {
       setOpen(true);
     }
   }, [isSuccess, data]);
@@ -45,10 +31,9 @@ export const VersionUpdateModalContainer: FunctionComponent = () => {
   const handleSnooze = useCallback(() => {
     if (!data) return;
 
-    setPreferencesCookie('versionSnoozeExpiry', Date.now() + SNOOZE_DURATION_MS);
-    setPreferencesCookie('versionSnoozedVersion', data.version);
+    snoozeStorage.set({ expiry: Date.now() + SNOOZE_DURATION_MS, version: data.version });
     setOpen(false);
-  }, [data]);
+  }, [data, snoozeStorage]);
 
   if (!data?.needsUpdate) return null;
 
