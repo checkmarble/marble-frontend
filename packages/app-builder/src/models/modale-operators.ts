@@ -1,6 +1,16 @@
 import { type ValidTimestampExtractParts, validTimestampExtractParts } from './astNode/time';
 
-export const aggregatorOperators = ['AVG', 'COUNT', 'COUNT_DISTINCT', 'MAX', 'MIN', 'SUM'] as const;
+export const aggregatorOperators = [
+  'AVG',
+  'COUNT',
+  'COUNT_DISTINCT',
+  'MAX',
+  'MIN',
+  'SUM',
+  'STDDEV',
+  'PCTILE',
+  'MEDIAN',
+] as const;
 export type AggregatorOperator = (typeof aggregatorOperators)[number];
 
 export function isAggregatorOperator(value: string): value is AggregatorOperator {

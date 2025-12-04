@@ -2,13 +2,13 @@ import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/P
 import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type AggregationAstNode } from '@app-builder/models/astNode/aggregation';
+import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import { aggregatorOperators } from '@app-builder/models/modale-operators';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
 import { computed } from '@preact/signals-react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Input, Modal } from 'ui-design-system';
 import { Logo } from 'ui-icons';
-
 import { EditionEvaluationErrors } from '../../../EvaluationErrors';
 import { AstBuilderNodeSharpFactory } from '../../../node-store';
 import { OperatorSelect } from '../../../OperatorSelect';
@@ -81,8 +81,13 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
             )}
           /> */}
         </div>
-        <div className="grid grid-cols-[240px_1fr] gap-2">
+        <div
+          className={`grid ${node.namedChildren.aggregator.constant == 'PCTILE' ? 'grid-cols-[240px_120px_1fr]' : 'grid-cols-[240px_1fr]'} gap-2`}
+        >
           <div>{t('scenarios:edit_aggregation.function_title')}</div>
+          {node.namedChildren.aggregator.constant == 'PCTILE' ? (
+            <div>{t('scenarios:edit_aggregation.percentile_value')}</div>
+          ) : null}
           <div>{t('scenarios:edit_aggregation.object_field_title')}</div>
           <div className="flex flex-col gap-2">
             <OperatorSelect
@@ -100,6 +105,21 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
               )}
             /> */}
           </div>
+          {node.namedChildren.aggregator.constant == 'PCTILE' ? (
+            // TODO: here, we want the percentile value to be serialized as a float, but having it parsed and rerendered as a float while the user is typing is weird since partial number are parsed incorrectly.
+            // For example, if the value is 0.5 and we remove the 5, value is 0. which is parsed to 0, which prevents us from changing the value in a wonderful doom loop.
+            <div className="flex flex-col gap-2">
+              <Input
+                type="text"
+                id="aggregation.percentile_value"
+                placeholder={t('scenarios:edit_aggregation.percentile_value')}
+                value={node.namedChildren.percentile?.constant ?? '0.5'}
+                onChange={(e) => {
+                  node.namedChildren.percentile = NewConstantAstNode({ constant: e.target.value });
+                }}
+              />
+            </div>
+          ) : null}
           <div className="flex flex-col gap-2">
             <EditDataModelField
               placeholder={t('scenarios:edit_aggregation.select_a_field')}
