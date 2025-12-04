@@ -9,7 +9,6 @@ interface VersionUpdateModalProps {
   version: string;
   releaseNotes: string;
   releaseUrl: string;
-  onSnooze: () => void;
 }
 
 export const VersionUpdateModal: FunctionComponent<VersionUpdateModalProps> = ({
@@ -18,7 +17,6 @@ export const VersionUpdateModal: FunctionComponent<VersionUpdateModalProps> = ({
   version,
   releaseNotes,
   releaseUrl,
-  onSnooze,
 }) => {
   const { t } = useTranslation(['common']);
 
@@ -38,7 +36,7 @@ export const VersionUpdateModal: FunctionComponent<VersionUpdateModalProps> = ({
 
         <Modal.Footer>
           <div className="flex items-center justify-end gap-2 p-4">
-            <ButtonV2 appearance="stroked" onClick={onSnooze}>
+            <ButtonV2 appearance="stroked" onClick={() => onOpenChange(false)}>
               {t('common:understand')}
             </ButtonV2>
             <ButtonV2 onClick={() => window.open(releaseUrl, '_blank')}>

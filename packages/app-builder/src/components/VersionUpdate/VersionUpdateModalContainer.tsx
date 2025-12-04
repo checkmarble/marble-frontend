@@ -1,6 +1,6 @@
 import { useVersionUpdateQuery } from '@app-builder/queries/version-update';
 import { useLocalStorage } from '@app-builder/utils/hooks';
-import { type FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { type FunctionComponent, useEffect, useState } from 'react';
 import { VersionUpdateModal } from './VersionUpdateModal';
 
 const STORAGE_KEY = 'version-snooze';
@@ -15,10 +15,8 @@ export const VersionUpdateModalContainer: FunctionComponent = () => {
   const [open, setOpen] = useState(false);
   const snoozeStorage = useLocalStorage<SnoozeState>(STORAGE_KEY);
 
-  const shouldFetch = useMemo(() => {
-    const state = snoozeStorage.get();
-    return !state || Date.now() > state.expiry;
-  }, [snoozeStorage]);
+  const snoozeState = snoozeStorage.get();
+  const shouldFetch = !snoozeState || Date.now() > snoozeState.expiry;
 
   const { data, isSuccess } = useVersionUpdateQuery({ enabled: shouldFetch });
 
@@ -28,23 +26,22 @@ export const VersionUpdateModalContainer: FunctionComponent = () => {
     }
   }, [isSuccess, data]);
 
-  const handleSnooze = useCallback(() => {
-    if (!data) return;
-
-    snoozeStorage.set({ expiry: Date.now() + SNOOZE_DURATION_MS, version: data.version });
-    setOpen(false);
-  }, [data, snoozeStorage]);
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen && data) {
+      snoozeStorage.set({ expiry: Date.now() + SNOOZE_DURATION_MS, version: data.version });
+    }
+    setOpen(isOpen);
+  };
 
   if (!data?.needsUpdate) return null;
 
   return (
     <VersionUpdateModal
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={handleOpenChange}
       version={data.version}
       releaseNotes={data.releaseNotes}
       releaseUrl={data.releaseUrl}
-      onSnooze={handleSnooze}
     />
   );
 };
