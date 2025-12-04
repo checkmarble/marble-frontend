@@ -63,6 +63,13 @@
         required: false
         schema:
           type: string
+      - name: tag
+        description: Include cases that have a specific tag (only one)
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
     responses:
       "200":
         description: List of corresponding cases
