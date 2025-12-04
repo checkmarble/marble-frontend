@@ -147,6 +147,7 @@
               escalation_inbox_id:
                 type: string
                 format: uuid
+                nullable: true
               auto_assign_enabled:
                 type: boolean
               case_review_manual:

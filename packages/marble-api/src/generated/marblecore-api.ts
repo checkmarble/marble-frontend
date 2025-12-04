@@ -4303,7 +4303,7 @@ export function getInbox(inboxId: string, opts?: Oazapfts.RequestOpts) {
  */
 export function updateInbox(inboxId: string, body: {
     name: string;
-    escalation_inbox_id?: string;
+    escalation_inbox_id?: string | null;
     auto_assign_enabled?: boolean;
     case_review_manual?: boolean;
     case_review_on_case_created?: boolean;
