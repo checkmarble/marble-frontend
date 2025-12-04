@@ -1,1 +1,0 @@
-packages/ui-design-system:tsc:cd /Users/sinan/Project/Marble/marble-frontend/packages/ui-design-system && npx tsc --noEmit

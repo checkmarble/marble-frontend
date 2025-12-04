@@ -1,2 +1,0 @@
-packages/app-builder
-packages/ui-design-system
