@@ -47,6 +47,7 @@
   "false": "Faux",
   "from": "De {{input}}",
   "from_to": "Du <Date>{{start_date}}</Date> au <Date>{{end_date}}</Date>",
+  "generic_fetch_data_error": "Une erreur est survenue lors de la récupération des données",
   "global_error": "Une erreur est survenue",
   "go_back": "Retour",
   "help_center.chat_with_us": "Nous contacter",

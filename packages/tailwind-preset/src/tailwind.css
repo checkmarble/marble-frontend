@@ -32,9 +32,12 @@
   --color-purple-60: oklch(51.34% 0.2286 277.47);
   --color-purple-65: oklch(55.15% 0.2424 277.49);
   --color-purple-82: oklch(76.65% 0.1218 286.34);
+  --color-purple-85: oklch(78.5% 0.1 285); /* #ada7fd - restricted border */
   --color-purple-96: oklch(95.19% 0.0227 288.67);
   --color-purple-98: oklch(97.65% 0.011964760849213694 291.2928951486998);
   --color-purple-99: oklch(99.19% 0.003955633727212019 286.3274403025669);
+  --color-purple-restricted-border: var(--color-purple-85);
+  --color-purple-restricted-background: oklch(98.8% 0.008 285); /* #f7f6ff */
 
   /* Green scale */
   --color-green-34: oklch(60.19% 0.1439 155.06);

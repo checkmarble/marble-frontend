@@ -373,6 +373,10 @@ paths:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1query~1decisions_score_distribution
   /analytics/query/rule_vs_decision_outcome:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1query~1rule_vs_decision_outcome
+  /analytics/query/case_status_by_date:
+    $ref: ./marblecore-api/analytics.yml#/~1analytics~1query~1case_status_by_date
+  /analytics/query/case_status_by_inbox:
+    $ref: ./marblecore-api/analytics.yml#/~1analytics~1query~1case_status_by_inbox
   /analytics/available-filters:
     $ref: ./marblecore-api/analytics.yml#/~1analytics~1available-filters
 

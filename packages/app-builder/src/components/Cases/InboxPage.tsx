@@ -25,6 +25,7 @@ import { Icon } from 'ui-icons';
 import { Spinner } from '../Spinner';
 import { BatchActions, MassUpdateCasesFn } from './Inbox/BatchActions';
 import { SelectCaseById } from './Inbox/SelectCaseById';
+import { CasesNavigationTabs } from './Navigation/Tabs';
 
 const ALLOWED_FILTERS = ['dateRange', 'statuses', 'includeSnoozed', 'excludeAssigned', 'assignee', 'tagId'] as const;
 const EXCLUDED_FILTERS = ['excludeAssigned', 'assignee'] as const;
@@ -33,6 +34,7 @@ type InboxPageProps = {
   inboxId: string;
   inboxes: InboxWithCasesCount[];
   inboxUsersIds: string[];
+  canViewNavigationTabs: boolean;
   query: string;
   limit: number;
   order: 'ASC' | 'DESC';
@@ -44,6 +46,7 @@ export const InboxPage = ({
   inboxId,
   inboxes,
   inboxUsersIds,
+  canViewNavigationTabs,
   query,
   limit,
   order,
@@ -134,6 +137,7 @@ export const InboxPage = ({
       <CaseRightPanel.Root className="overflow-hidden">
         <Page.Container ref={wrapperRef}>
           <Page.ContentV2 className="bg-white gap-v2-md">
+            {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
             <div className="flex flex-col gap-v2-md relative">
               <MultiSelect.Root id={inboxId}>
                 <div className="flex justify-between">

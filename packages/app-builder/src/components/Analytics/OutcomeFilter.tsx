@@ -10,10 +10,12 @@ export function OutcomeFilter({
   decisions,
   highlight = false,
   onChange,
+  disabled = false,
 }: {
   decisions: DecisionsFilter;
   highlight: boolean;
   onChange: (decisions: DecisionsFilter) => void;
+  disabled?: boolean;
 }) {
   const hasHighlightedRef = useRef(false);
   const { t } = useTranslation(['analytics', 'decisions']);
@@ -32,9 +34,10 @@ export function OutcomeFilter({
   };
 
   return (
-    <div className="flex flex-row gap-6 select-none">
+    <div className={cn('flex flex-row gap-6 select-none', { 'opacity-50': disabled, 'pointer-events-none': disabled })}>
       {outcomes.map((outcome: Outcome) => (
         <FilterItem
+          key={outcome}
           handleToggle={handleToggle}
           label={t(getOutcomeTranslationKey(outcome))}
           outcome={outcome}

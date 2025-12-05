@@ -47,6 +47,7 @@
   "false": "False",
   "from": "From {{input}}",
   "from_to": "From <Date>{{start_date}}</Date> to <Date>{{end_date}}</Date>",
+  "generic_fetch_data_error": "Something went wrong while fetching the data",
   "global_error": "Something went wrong.",
   "go_back": "Go back",
   "help_center.chat_with_us": "Chat with us",

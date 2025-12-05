@@ -1,4 +1,4 @@
-import { ErrorComponent } from '@app-builder/components';
+import { ErrorComponent, Page } from '@app-builder/components';
 import { Decisions } from '@app-builder/components/Analytics/Decisions';
 import { DecisionsScoreDistribution } from '@app-builder/components/Analytics/DecisionsScoreDistribution';
 import { RulesHit } from '@app-builder/components/Analytics/RulesHit';
@@ -36,12 +36,11 @@ interface LoaderData {
   }>;
 }
 
-import { Spinner } from '@app-builder/components/Spinner';
 import { useAnalyticsDataQuery } from '@app-builder/queries/analytics/get-data';
 import { useRef } from 'react';
 
 export const handle = {
-  i18n: ['navigation', 'filters', 'analytics'] satisfies Namespace,
+  i18n: ['navigation', 'filters', 'analytics', 'decisions'] satisfies Namespace,
   BreadCrumbs: [
     ({ isLast }: BreadCrumbProps) => {
       const { t } = useTranslation(['navigation', 'filters', 'analytics']);
@@ -344,8 +343,8 @@ export default function Analytics() {
           t: t as (key: string, options?: Record<string, unknown>) => string,
         }}
       >
-        <div className="overflow-y-auto">
-          <div className="flex flex-col overflow-y-auto p-v2-lg min-[2000px]:px-40 gap-v2-md">
+        <Page.Container>
+          <Page.ContentV2 className="bg-white min-[2000px]:px-40 gap-v2-md">
             <div className="flex flex-row gap-v2-md mb-v2-lg w-full">
               <div className="flex flex-row gap-v2-sm items-start min-h-[88px] w-full">
                 <FiltersBar
@@ -365,14 +364,8 @@ export default function Analytics() {
                   isLoading={decisionsOutcomesPerDayQuery.isFetching}
                 />
               </div>
-              <div className="lg-analytics:basis-1/3 min-w-0 min-h-[500px] relative">
-                {decisionsScoreDistributionQuery.isFetching ? (
-                  <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
-                    <Spinner className="size-6" />
-                  </div>
-                ) : (
-                  <DecisionsScoreDistribution data={decisionsScoreDistributionQuery.data ?? []} />
-                )}
+              <div className="lg-analytics:basis-1/3 min-w-0">
+                <DecisionsScoreDistribution query={decisionsScoreDistributionQuery} />
               </div>
             </div>
 
@@ -386,8 +379,8 @@ export default function Analytics() {
               isLoading={ruleVsDecisionOutcomeQuery.isFetching}
             />
             <ScreeningHits data={screeningHitsTableQuery.data ?? []} isLoading={screeningHitsTableQuery.isFetching} />
-          </div>
-        </div>
+          </Page.ContentV2>
+        </Page.Container>
       </I18nProvider>
     </FormattingProvider>
   );

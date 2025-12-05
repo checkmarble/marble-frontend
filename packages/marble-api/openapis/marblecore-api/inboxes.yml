@@ -147,7 +147,14 @@
               escalation_inbox_id:
                 type: string
                 format: uuid
+                nullable: true
               auto_assign_enabled:
+                type: boolean
+              case_review_manual:
+                type: boolean
+              case_review_on_case_created:
+                type: boolean
+              case_review_on_escalate:
                 type: boolean
       required: true
     responses:
@@ -450,6 +457,12 @@ components:
           type: string
           format: uuid
         auto_assign_enabled:
+          type: boolean
+        case_review_manual:
+          type: boolean
+        case_review_on_case_created:
+          type: boolean
+        case_review_on_escalate:
           type: boolean
     InboxMetadataDto:
       type: object

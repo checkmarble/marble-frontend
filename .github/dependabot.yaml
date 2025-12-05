@@ -9,3 +9,5 @@ updates:
       patch:
         update-types:
           - "patch"
+    cooldown:
+      default-days: 14

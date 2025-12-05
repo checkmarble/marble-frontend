@@ -11,6 +11,9 @@ export interface Inbox {
   users: InboxUser[];
   escalationInboxId?: string;
   autoAssignEnabled: boolean;
+  caseReviewManual: boolean;
+  caseReviewOnCaseCreated: boolean;
+  caseReviewOnEscalate: boolean;
 }
 
 export function adaptInbox(inbox: InboxDto): Inbox {
@@ -23,6 +26,9 @@ export function adaptInbox(inbox: InboxDto): Inbox {
     users: (inbox.users ?? []).map(adaptInboxUser),
     escalationInboxId: inbox.escalation_inbox_id,
     autoAssignEnabled: inbox.auto_assign_enabled,
+    caseReviewManual: inbox.case_review_manual ?? false,
+    caseReviewOnCaseCreated: inbox.case_review_on_case_created ?? false,
+    caseReviewOnEscalate: inbox.case_review_on_escalate ?? false,
   };
 }
 
@@ -58,17 +64,27 @@ export interface InboxUpdateBody {
   name: string;
   escalationInboxId?: string | null;
   autoAssignEnabled?: boolean;
+  caseReviewManual?: boolean;
+  caseReviewOnCaseCreated?: boolean;
+  caseReviewOnEscalate?: boolean;
 }
 
 export function adaptUpdateInboxDto(model: InboxUpdateBody): {
   name: string;
-  escalation_inbox_id?: string;
+  escalation_inbox_id?: string | null;
   auto_assign_enabled?: boolean;
+  case_review_manual?: boolean;
+  case_review_on_case_created?: boolean;
+  case_review_on_escalate?: boolean;
 } {
   return {
     name: model.name,
-    escalation_inbox_id: model.escalationInboxId ?? undefined,
+    // Preserve null to allow removing escalation (undefined is omitted in JSON serialization)
+    escalation_inbox_id: model.escalationInboxId === undefined ? undefined : model.escalationInboxId,
     auto_assign_enabled: model.autoAssignEnabled ?? undefined,
+    case_review_manual: model.caseReviewManual,
+    case_review_on_case_created: model.caseReviewOnCaseCreated,
+    case_review_on_escalate: model.caseReviewOnEscalate,
   };
 }
 

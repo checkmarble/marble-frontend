@@ -1246,6 +1246,9 @@ export type InboxDto = {
     cases_count?: number;
     escalation_inbox_id?: string;
     auto_assign_enabled: boolean;
+    case_review_manual?: boolean;
+    case_review_on_case_created?: boolean;
+    case_review_on_escalate?: boolean;
 };
 export type CreateInboxBodyDto = {
     name: string;
@@ -1452,6 +1455,20 @@ export type RuleVsDecisionOutcomeResponseDto = {
     rule_name: string;
     outcome: OutcomeDto;
     decisions: number;
+};
+export type CaseStatusByDateResponseDto = {
+    date: string;
+    pending: number;
+    investigating: number;
+    closed: number;
+    snoozed: number;
+};
+export type CaseStatusByInboxResponseDto = {
+    inbox: string;
+    pending: number;
+    investigating: number;
+    closed: number;
+    snoozed: number;
 };
 export type AvailableFiltersRequestDto = {
     scenario_id: string;
@@ -4289,8 +4306,11 @@ export function getInbox(inboxId: string, opts?: Oazapfts.RequestOpts) {
  */
 export function updateInbox(inboxId: string, body: {
     name: string;
-    escalation_inbox_id?: string;
+    escalation_inbox_id?: string | null;
     auto_assign_enabled?: boolean;
+    case_review_manual?: boolean;
+    case_review_on_case_created?: boolean;
+    case_review_on_escalate?: boolean;
 }, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -5143,6 +5163,54 @@ export function getRuleVsDecisionOutcome(analyticsQueryDto: AnalyticsQueryDto, o
         method: "POST",
         body: analyticsQueryDto
     })));
+}
+/**
+ * Get case status by date
+ */
+export function getCaseStatusByDate(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CaseStatusByDateResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/analytics/query/case_status_by_date", {
+        ...opts,
+        method: "POST"
+    }));
+}
+/**
+ * Get case status by inbox
+ */
+export function getCaseStatusByInbox(opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: CaseStatusByInboxResponseDto[];
+    } | {
+        status: 400;
+        data: string;
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/analytics/query/case_status_by_inbox", {
+        ...opts,
+        method: "POST"
+    }));
 }
 /**
  * Get available filters
