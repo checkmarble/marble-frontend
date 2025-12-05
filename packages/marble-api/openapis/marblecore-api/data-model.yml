@@ -550,6 +550,8 @@ components:
         unicity_constraint:
           type: string
           enum: [no_unicity_constraint, pending_unique_constraint, active_unique_constraint]
+        ftm_property:
+          type: string
       required:
         - id
         - data_type
@@ -582,11 +584,20 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NavigationOptionDto'
+        ftm_entity:
+          $ref: '#/components/schemas/FtmEntity'
       required:
         - id
         - name
         - description
         - fields
+    FtmEntity:
+      type: string
+      enum:
+        - Company
+        - Person
+        - Vessel
+
     DataModelDto:
       type: object
       properties:
@@ -606,11 +617,15 @@ components:
           type: string
         description:
           type: string
+        ftm_entity:
+          $ref: '#/components/schemas/FtmEntity'
     UpdateTableBody:
       type: object
       properties:
         description:
           type: string
+        ftm_entity:
+          $ref: '#/components/schemas/FtmEntity'
     CreateTableFieldDto:
       type: object
       required:
@@ -632,6 +647,8 @@ components:
           type: boolean
         is_unique:
           type: boolean
+        ftm_property:
+          type: string
     UpdateTableFieldDto:
       type: object
       properties:
@@ -643,6 +660,8 @@ components:
           type: boolean
         is_nullable:
           type: boolean
+        ftm_property:
+          type: string
     CreateTableLinkBody:
       type: object
       required:
