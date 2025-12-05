@@ -65,6 +65,7 @@ const workflowActionSchema = z
           inboxId: z.string(),
           anyInbox: z.boolean().optional(),
           titleTemplate: astNodeSchema.optional(),
+          tagIds: z.array(z.string()).optional(),
         }),
       }),
     ]),

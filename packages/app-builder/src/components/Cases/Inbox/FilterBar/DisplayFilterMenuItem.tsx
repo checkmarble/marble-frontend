@@ -4,6 +4,7 @@ import { MenuCommand } from 'ui-design-system';
 import { AssigneeFilterMenuItem } from './AssigneeFilterMenuItem';
 import { DateRangeFilterMenu } from './DateRangeFilterMenu';
 import { InboxFilterLabel } from './FilterLabel';
+import { TagsFilterMenuItem } from './TagsFilterMenuItem';
 
 type DisplayFilterMenuItemProps = {
   filterName: keyof Filters;
@@ -53,6 +54,19 @@ export const DisplayFilterMenuItem = ({ filterName, onSelect }: DisplayFilterMen
         className="max-h-[600px]"
       >
         <DateRangeFilterMenu onSelect={(value) => onSelect({ [filterName]: value })} />
+      </MenuCommand.SubMenu>
+    ))
+    .with('tagId', () => (
+      <MenuCommand.SubMenu
+        arrow={false}
+        hover={false}
+        trigger={
+          <span>
+            <InboxFilterLabel name={filterName} />
+          </span>
+        }
+      >
+        <TagsFilterMenuItem onSelect={(tagId) => onSelect({ [filterName]: tagId })} />
       </MenuCommand.SubMenu>
     ))
     .exhaustive();

@@ -192,6 +192,8 @@
   "filter.closed_only.label": "Closed only",
   "filter.exclude_assigned.label": "Unassigned only",
   "filter.include_snoozed.label": "Include snoozed",
+  "filter.tags.label": "Tags",
+  "filter.tags.search_placeholder": "Search tags...",
   "filters.date_range.title": "creation date is:",
   "inbox.cases_count": "{{count}} cases",
   "inbox.heading.assigned_and_contributors": "Assigned & Contributors",

@@ -600,3 +600,8 @@ components:
               default: false
             title_template:
               $ref: "ast.yml#/components/schemas/NodeDto"
+            tags_to_add:
+              type: array
+              items:
+                type: string
+                format: uuid

@@ -1,4 +1,5 @@
 import { MultiSelect } from '@app-builder/components/MultiSelect';
+import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { formatDateRelative, formatDateTimeWithoutPresets } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
@@ -158,12 +159,6 @@ const HeaderCell = ({ children, className }: { children: React.ReactNode; classN
     </div>
   );
 };
-
-const TagPreview = ({ name }: { name: string }) => (
-  <div className="bg-purple-96 flex size-fit flex-row items-center gap-2 rounded-full px-2 py-[3px]">
-    <span className="text-purple-65 text-xs font-normal">{name}</span>
-  </div>
-);
 
 type SelectionCheckboxProps = {
   selectionState: boolean | 'indeterminate';
