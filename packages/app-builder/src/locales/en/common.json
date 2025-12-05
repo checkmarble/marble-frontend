@@ -98,5 +98,8 @@
   "upgrade": "Upgrade now",
   "validate": "Validate",
   "validation_error_one": "{{count}} validation error",
-  "validation_error_other": "{{count}} validation errors"
+  "validation_error_other": "{{count}} validation errors",
+  "version_update.snooze": "Remind me later",
+  "version_update.title": "New release: v{{version}}",
+  "version_update.view_release": "View release on GitHub"
 }

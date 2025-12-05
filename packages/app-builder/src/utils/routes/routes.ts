@@ -959,6 +959,11 @@ export const routes = [
         "file": "routes/ressources+/user+/language.tsx"
       },
       {
+        "id": "routes/ressources+/version+/check-update",
+        "path": "ressources/version/check-update",
+        "file": "routes/ressources+/version+/check-update.tsx"
+      },
+      {
         "id": "routes/ressources+/workflows+/$scenarioId+/_index",
         "index": true,
         "path": "ressources/workflows/:scenarioId",
