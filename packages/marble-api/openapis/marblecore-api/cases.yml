@@ -63,7 +63,7 @@
         required: false
         schema:
           type: string
-      - name: tag
+      - name: tag_id
         description: Include cases that have a specific tag (only one)
         in: query
         required: false

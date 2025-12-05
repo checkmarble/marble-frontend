@@ -1569,7 +1569,7 @@ export function getAnnotation(annotationId: string, opts?: Oazapfts.RequestOpts)
 /**
  * List cases
  */
-export function listCases({ status, inboxId, startDate, endDate, sorting, name, offsetId, limit, order, includeSnoozed, excludeAssigned, assigneeId, tag }: {
+export function listCases({ status, inboxId, startDate, endDate, sorting, name, offsetId, limit, order, includeSnoozed, excludeAssigned, assigneeId, tagId }: {
     status?: CaseStatusDto[];
     inboxId?: string[];
     startDate?: string;
@@ -1582,7 +1582,7 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, name, 
     includeSnoozed?: boolean;
     excludeAssigned?: boolean;
     assigneeId?: string;
-    tag?: string;
+    tagId?: string;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
@@ -1608,7 +1608,7 @@ export function listCases({ status, inboxId, startDate, endDate, sorting, name, 
         include_snoozed: includeSnoozed,
         exclude_assigned: excludeAssigned,
         assignee_id: assigneeId,
-        tag
+        tag_id: tagId
     }))}`, {
         ...opts
     }));
