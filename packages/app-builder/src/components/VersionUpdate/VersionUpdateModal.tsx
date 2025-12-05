@@ -25,7 +25,7 @@ export const VersionUpdateModal: FunctionComponent<VersionUpdateModalProps> = ({
       <Modal.Content size="xlarge" fixedHeight className="max-h-[80vh] flex flex-col">
         <div className="flex items-center gap-2 border-b border-grey-90 p-4">
           <Icon icon="speakerphone" className="size-8 shrink-0 text-purple-65" />
-          <Modal.Title className="text-l font-semibold text-left !bg-transparent !border-none !p-0 !rounded-none">
+          <Modal.Title className="text-l font-semibold text-left">
             {t('common:version_update.title', { version })}
           </Modal.Title>
         </div>
