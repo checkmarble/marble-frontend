@@ -306,6 +306,7 @@ components:
         - hit_ratio
         - distinct_pivots
         - repeat_ratio
+        - false_positive_ratio
       properties:
         rule_name:
           type: string
@@ -316,6 +317,8 @@ components:
         distinct_pivots:
           type: integer
         repeat_ratio:
+          type: number
+        false_positive_ratio:
           type: number
     ScreeningHitTableResponseDto:
       type: object
