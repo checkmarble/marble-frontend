@@ -14,7 +14,7 @@
   "legacy-analytics-link": "View investigations analytics",
   "no_data": "No data available",
   "rule_hits.columns.false_positive_ratio": "% false pos. among hits",
-  "rule_hits.columns.false_positive_ratio.tooltip": "Percentage of hits that were false positives, out of all the hits",
+  "rule_hits.columns.false_positive_ratio.tooltip": "Percentage of hits that were marked as false positive in the case manager, out of all hits",
   "rule_hits.columns.hit_count": "# hits",
   "rule_hits.columns.hit_count.tooltip": "Number of times the rule hit over the time period",
   "rule_hits.columns.hit_ratio": "% hits",
