@@ -43,7 +43,7 @@ export const EscalationConditionRow = ({
 
   return (
     <div className="flex items-center gap-v2-sm">
-      <span className="text-s text-grey-50 px-2">{t('cases:overview.panel.escalation.if')}</span>
+      <span className="text-s text-grey-50 px-2">{t('cases:overview.panel.escalation.from')}</span>
 
       <div className="flex-1">
         <MenuCommand.Menu open={disabled ? false : sourceOpen} onOpenChange={disabled ? undefined : setSourceOpen}>
