@@ -97,6 +97,7 @@ components:
       type: object
       required:
         - version
+        - outdated
         - status
         - urls
         - auth
@@ -105,6 +106,21 @@ components:
       properties:
         version:
           type: string
+        outdated:
+          type: object
+          required: [outdated]
+          properties:
+            outdated:
+              type: boolean
+            latest_version:
+              type: string
+            latest_url:
+              type: string
+              format: url
+            release_notes:
+              type: array
+              items:
+                type: string
         status:
           type: object
           required:

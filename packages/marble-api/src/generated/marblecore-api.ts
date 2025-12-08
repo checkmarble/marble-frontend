@@ -1131,6 +1131,12 @@ export type LegacyAnalyticsDto = {
 };
 export type AppConfigDto = {
     version: string;
+    outdated: {
+        outdated: boolean;
+        latest_version?: string;
+        latest_url?: string;
+        release_notes?: string[];
+    };
     status: {
         migrations: boolean;
         has_org: boolean;
