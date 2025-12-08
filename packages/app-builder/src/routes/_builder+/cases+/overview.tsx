@@ -13,13 +13,17 @@ export const handle = {
 export const loader = createServerFn([authMiddleware], async function casesOverviewLoader({ context }) {
   const { user, entitlements, inbox: inboxRepository } = context.authInfo;
 
-  const inboxes = await inboxRepository.listInboxes();
+  const [inboxes, allInboxesMetadata] = await Promise.all([
+    inboxRepository.listInboxes(),
+    inboxRepository.listInboxesMetadata(),
+  ]);
   const canViewAdminSections = isAdmin(user) || inboxes.some((inbox) => isInboxAdmin(user, inbox));
 
   return {
     currentUserId: user.actorIdentity.userId,
     isGlobalAdmin: isAdmin(user),
     canViewAdminSections,
+    allInboxesMetadata,
     entitlements: {
       autoAssignment: entitlements.autoAssignment,
       aiAssist: entitlements.AiAssist,

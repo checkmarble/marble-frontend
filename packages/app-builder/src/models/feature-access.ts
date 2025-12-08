@@ -39,6 +39,6 @@ export function adaptFeatureAccesses(dto: FeatureAccessDto): FeatureAccesses {
     sanctions: dto.sanctions,
     nameRecognition: dto.name_recognition,
     AiAssist: dto.ai_assist,
-    autoAssignment: dto.auto_assignment,
+    autoAssignment: dto.case_auto_assign,
   };
 }

@@ -56,7 +56,7 @@ components:
           $ref: "#/components/schemas/FeatureAccessLevelDto"
         ai_assist:
           $ref: "#/components/schemas/FeatureAccessLevelDto"
-        auto_assignment:
+        case_auto_assign:
           $ref: "#/components/schemas/FeatureAccessLevelDto"
       required:
         - workflows
@@ -68,7 +68,7 @@ components:
         - sanctions
         - name_recognition
         - ai_assist
-        - auto_assignment
+        - case_auto_assign
   responses:
     "401":
       description: Unauthorized

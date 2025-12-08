@@ -1,6 +1,7 @@
 import { PanelContainer, PanelContent, PanelFooter, PanelOverlay, usePanel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { type InboxMetadata } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useUpdateInboxEscalationMutation } from '@app-builder/queries/cases/update-inbox-escalation';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
@@ -13,13 +14,17 @@ import { type EscalationCondition, EscalationConditionRow } from './EscalationCo
 
 interface EscalationConditionsPanelContentProps {
   readOnly?: boolean;
+  allInboxesMetadata: InboxMetadata[];
 }
 
 interface ConditionWithId extends EscalationCondition {
   id: string;
 }
 
-export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditionsPanelContentProps) => {
+export const EscalationConditionsPanelContent = ({
+  readOnly,
+  allInboxesMetadata,
+}: EscalationConditionsPanelContentProps) => {
   const { t } = useTranslation(['cases']);
   const inboxesQuery = useGetInboxesQuery();
   const { closePanel } = usePanel();
@@ -127,7 +132,7 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
                       <EscalationConditionRow
                         key={condition.id}
                         condition={condition}
-                        inboxes={inboxes}
+                        allInboxesMetadata={allInboxesMetadata}
                         usedSourceIds={conditions.filter((c) => c.id !== condition.id).map((c) => c.sourceInboxId)}
                         onUpdate={(field, value) => handleUpdateCondition(condition.id, field, value)}
                         onRemove={() => handleRemoveCondition(condition.id)}

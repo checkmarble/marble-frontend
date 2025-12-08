@@ -1,5 +1,6 @@
 import { usePanel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
+import { type InboxMetadata } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { isAccessible, isRestricted } from '@app-builder/services/feature-access';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
@@ -13,23 +14,25 @@ import { ConfigRow } from './ConfigRow';
 interface WorkflowConfigSectionProps {
   isGlobalAdmin: boolean;
   access: FeatureAccessLevelDto;
+  allInboxesMetadata: InboxMetadata[];
 }
 
-export const WorkflowConfigSection = ({ isGlobalAdmin, access }: WorkflowConfigSectionProps) => {
+export const WorkflowConfigSection = ({ isGlobalAdmin, access, allInboxesMetadata }: WorkflowConfigSectionProps) => {
   const { t } = useTranslation(['cases']);
   const { openPanel } = usePanel();
   const inboxesQuery = useGetInboxesQuery();
 
   const restricted = isRestricted(access);
   const hasAccess = isAccessible(access);
-  const canEdit = hasAccess && isGlobalAdmin;
 
   const handleOpenEscalationPanel = () => {
-    openPanel(<EscalationConditionsPanelContent readOnly={!canEdit} />);
+    openPanel(<EscalationConditionsPanelContent readOnly={!isGlobalAdmin} allInboxesMetadata={allInboxesMetadata} />);
   };
 
+  const canEditAiReview = hasAccess && isGlobalAdmin;
+
   const handleOpenWorkflowPanel = () => {
-    openPanel(<WorkflowConfigPanelContent readOnly={!canEdit} />);
+    openPanel(<WorkflowConfigPanelContent readOnly={!canEditAiReview} />);
   };
 
   return (
@@ -67,8 +70,8 @@ export const WorkflowConfigSection = ({ isGlobalAdmin, access }: WorkflowConfigS
           return (
             <>
               <ConfigRow
-                isRestricted={restricted}
-                canEdit={canEdit}
+                isRestricted={false}
+                canEdit={isGlobalAdmin}
                 label={t('cases:overview.config.escalation_conditions')}
                 statusTag={
                   <Tag color={hasEscalationConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
@@ -85,25 +88,27 @@ export const WorkflowConfigSection = ({ isGlobalAdmin, access }: WorkflowConfigS
                 upsaleDescription={t('cases:overview.upsale.workflow_config.description')}
                 onClick={handleOpenEscalationPanel}
               />
-              <ConfigRow
-                isRestricted={restricted}
-                canEdit={canEdit}
-                label={t('cases:overview.config.ai_review_trigger')}
-                statusTag={
-                  <Tag color={hasWorkflowConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
-                    {hasWorkflowConfig
-                      ? t('cases:overview.config.x_of_y_configured', {
-                          configured: workflowConfigured,
-                          total: escalationTotal,
-                        })
-                      : t('cases:overview.config.not_configured')}
-                  </Tag>
-                }
-                editIcon="arrow-right"
-                upsaleTitle={t('cases:overview.upsale.workflow_config.title')}
-                upsaleDescription={t('cases:overview.upsale.workflow_config.description')}
-                onClick={handleOpenWorkflowPanel}
-              />
+              {isGlobalAdmin ? (
+                <ConfigRow
+                  isRestricted={restricted}
+                  canEdit={canEditAiReview}
+                  label={t('cases:overview.config.ai_review_trigger')}
+                  statusTag={
+                    <Tag color={hasWorkflowConfig ? 'green' : 'orange'} size="small" border="rounded-sm">
+                      {hasWorkflowConfig
+                        ? t('cases:overview.config.x_of_y_configured', {
+                            configured: workflowConfigured,
+                            total: escalationTotal,
+                          })
+                        : t('cases:overview.config.not_configured')}
+                    </Tag>
+                  }
+                  editIcon="arrow-right"
+                  upsaleTitle={t('cases:overview.upsale.workflow_config.title')}
+                  upsaleDescription={t('cases:overview.upsale.workflow_config.description')}
+                  onClick={handleOpenWorkflowPanel}
+                />
+              ) : null}
             </>
           );
         })

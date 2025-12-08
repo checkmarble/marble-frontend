@@ -1,4 +1,4 @@
-import { type InboxWithCasesCount } from '@app-builder/models/inbox';
+import { type InboxMetadata } from '@app-builder/models/inbox';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2, MenuCommand } from 'ui-design-system';
@@ -11,7 +11,7 @@ export interface EscalationCondition {
 
 interface EscalationConditionRowProps {
   condition: EscalationCondition;
-  inboxes: InboxWithCasesCount[];
+  allInboxesMetadata: InboxMetadata[];
   usedSourceIds: string[];
   onUpdate: (field: 'sourceInboxId' | 'targetInboxId', value: string | null) => void;
   onRemove: () => void;
@@ -20,7 +20,7 @@ interface EscalationConditionRowProps {
 
 export const EscalationConditionRow = ({
   condition,
-  inboxes,
+  allInboxesMetadata,
   usedSourceIds,
   onUpdate,
   onRemove,
@@ -30,16 +30,16 @@ export const EscalationConditionRow = ({
   const [sourceOpen, setSourceOpen] = useState(false);
   const [targetOpen, setTargetOpen] = useState(false);
 
-  const sourceInbox = inboxes.find((i) => i.id === condition.sourceInboxId);
-  const targetInbox = inboxes.find((i) => i.id === condition.targetInboxId);
+  const sourceInbox = allInboxesMetadata.find((i) => i.id === condition.sourceInboxId);
+  const targetInbox = allInboxesMetadata.find((i) => i.id === condition.targetInboxId);
 
   // Filter out already used source inboxes and the target inbox
-  const availableSourceInboxes = inboxes.filter(
+  const availableSourceInboxes = allInboxesMetadata.filter(
     (i) => !usedSourceIds.includes(i.id) && i.id !== condition.targetInboxId,
   );
 
   // Filter out the source inbox from target options
-  const availableTargetInboxes = inboxes.filter((i) => i.id !== condition.sourceInboxId);
+  const availableTargetInboxes = allInboxesMetadata.filter((i) => i.id !== condition.sourceInboxId);
 
   return (
     <div className="flex items-center gap-v2-sm">

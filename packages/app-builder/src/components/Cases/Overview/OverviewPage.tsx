@@ -1,6 +1,7 @@
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CasesNavigationTabs } from '@app-builder/components/Cases/Navigation/Tabs';
 import { Page } from '@app-builder/components/Page';
+import { type InboxMetadata } from '@app-builder/models/inbox';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 import { useTranslation } from 'react-i18next';
 
@@ -14,6 +15,7 @@ interface OverviewPageProps {
   currentUserId?: string;
   isGlobalAdmin: boolean;
   canViewAdminSections: boolean;
+  allInboxesMetadata: InboxMetadata[];
   entitlements: {
     autoAssignment: FeatureAccessLevelDto;
     aiAssist: FeatureAccessLevelDto;
@@ -25,6 +27,7 @@ export const OverviewPage = ({
   currentUserId,
   isGlobalAdmin,
   canViewAdminSections,
+  allInboxesMetadata,
   entitlements,
 }: OverviewPageProps) => {
   const { t } = useTranslation(['cases']);
@@ -56,8 +59,12 @@ export const OverviewPage = ({
               {canViewAdminSections ? (
                 <AIConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.aiAssist} />
               ) : null}
-              {isGlobalAdmin ? (
-                <WorkflowConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.workflows} />
+              {canViewAdminSections ? (
+                <WorkflowConfigSection
+                  isGlobalAdmin={isGlobalAdmin}
+                  access={entitlements.workflows}
+                  allInboxesMetadata={allInboxesMetadata}
+                />
               ) : null}
             </div>
           </div>

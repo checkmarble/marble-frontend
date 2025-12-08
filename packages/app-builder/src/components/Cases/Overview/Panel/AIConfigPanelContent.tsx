@@ -176,6 +176,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                         <Trans
                           t={t}
                           i18nKey="settings:ai_assist.case_manager.kyc_enrichment.enabled.field.label"
+                          ns="settings"
                           components={{
                             bold: <span className="font-semibold" />,
                           }}
