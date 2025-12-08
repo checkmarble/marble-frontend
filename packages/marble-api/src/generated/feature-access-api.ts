@@ -24,8 +24,10 @@ export type FeatureAccessDto = {
     test_run: FeatureAccessLevelDto;
     sanctions: FeatureAccessLevelDto;
     name_recognition: FeatureAccessLevelDto;
+    /** Deprecated feature flag. Only used for the hidden 'AI assist' modale in the case manager, do not use for other things. */
     ai_assist: FeatureAccessLevelDto;
     auto_assignment: FeatureAccessLevelDto;
+    case_ai_assist: FeatureAccessLevelDto;
 };
 /**
  * Get the entitlements of an organization
