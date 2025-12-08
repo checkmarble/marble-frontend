@@ -1,37 +1,37 @@
-import {
-  HoverCard,
-  HoverCardArrow,
-  HoverCardContent,
-  HoverCardPortal,
-  HoverCardTrigger,
-} from '@radix-ui/react-hover-card';
+import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { type Components } from 'react-markdown';
 import { Icon } from 'ui-icons';
 import { Markdown } from './Markdown';
 
 const releaseMarkdownComponents: Components = {
   a: ({ children, href, title }) => (
-    // replace with tooltip component
-    <HoverCard>
-      <HoverCardTrigger>
+    <TooltipPrimitive.Root delayDuration={300}>
+      <TooltipPrimitive.Trigger asChild>
         <a
           href={href}
-          className="text-purple-65 hover:bg-purple-96 hover:text-grey-50 text-underline underline-offset-4 decoration-purple-65"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-purple-65 hover:bg-purple-96 hover:text-grey-50 underline underline-offset-4 decoration-purple-65"
         >
           {children}
         </a>
-      </HoverCardTrigger>
-      <HoverCardPortal>
-        <HoverCardContent className="bg-grey-100 flex flex-col gap-2 items-center border border-grey-90 rounded-sm shadow-md z-50">
-          <HoverCardArrow className="fill-grey-100" />
-
-          <p className="text-m font-medium">{title}</p>
-          <a href={href} className="text-s text-purple-65">
-            {href}
-          </a>
-        </HoverCardContent>
-      </HoverCardPortal>
-    </HoverCard>
+      </TooltipPrimitive.Trigger>
+      <TooltipPrimitive.Portal>
+        <TooltipPrimitive.Content
+          side="top"
+          className="z-50 bg-grey-100 border border-grey-90 rounded-sm shadow-md p-2"
+          sideOffset={5}
+        >
+          <div className="flex flex-col gap-1 items-center">
+            {title ? <p className="text-s font-medium">{title}</p> : null}
+            <a href={href} target="_blank" rel="noopener noreferrer" className="text-s text-purple-65 hover:underline">
+              {href}
+            </a>
+          </div>
+          <TooltipPrimitive.Arrow className="fill-grey-100" />
+        </TooltipPrimitive.Content>
+      </TooltipPrimitive.Portal>
+    </TooltipPrimitive.Root>
   ),
   h1: ({ children }) => <div className="text-l font-semibold text-grey-00 mb-4 first:mt-0">{children}</div>,
   h2: ({ children }) => <div className="text-s font-medium text-purple-65 mb-2 mt-4 first:mt-0">{children}</div>,

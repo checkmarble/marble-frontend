@@ -44,6 +44,12 @@ export type AppConfig = {
     segment: boolean;
   };
   isManagedMarble: boolean;
+  outdated: {
+    isOutdated: boolean;
+    latestVersion?: string;
+    latestUrl?: string;
+    releaseNotes?: string[];
+  };
 };
 
 export function adaptAppConfig(dto: AppConfigDto, appVersion: string): AppConfig {
@@ -87,5 +93,11 @@ export function adaptAppConfig(dto: AppConfigDto, appVersion: string): AppConfig
       segment: dto.features.segment,
     },
     isManagedMarble: process.env['NODE_ENV'] === 'development' ? true : dto.is_managed_marble,
+    outdated: {
+      isOutdated: dto.outdated.outdated,
+      latestVersion: dto.outdated.latest_version,
+      latestUrl: dto.outdated.latest_url,
+      releaseNotes: dto.outdated.release_notes,
+    },
   };
 }

@@ -100,6 +100,6 @@
   "validation_error_one": "{{count}} erreur de validation",
   "validation_error_other": "{{count}} erreurs de validation",
   "version_update.snooze": "Me rappeler plus tard",
-  "version_update.title": "Nouvelle version : v{{version}}",
+  "version_update.title": "Nouvelle version : {{version}}",
   "version_update.view_release": "Voir la release sur GitHub"
 }
