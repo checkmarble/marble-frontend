@@ -14,7 +14,7 @@
   "legacy-analytics-link": "Voir les métriques sur les investigations",
   "no_data": "Aucun donnée disponible",
   "rule_hits.columns.false_positive_ratio": "% faux positifs parmi les activations",
-  "rule_hits.columns.false_positive_ratio.tooltip": "Pourcentage d'activations qui étaient des faux positifs, parmi toutes les activations",
+  "rule_hits.columns.false_positive_ratio.tooltip": "Pourcentage d'activations marquées comme faux positifs après investigation",
   "rule_hits.columns.hit_count": "# d'activations",
   "rule_hits.columns.hit_count.tooltip": "Nombre de décisions pour lesquelles la règle a été activée",
   "rule_hits.columns.hit_ratio": "% d'activation",
