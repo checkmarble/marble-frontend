@@ -986,25 +986,52 @@ export type ContinuousScreeningConfigDto = {
     created_at: string;
     updated_at: string;
 };
+export type ContinuousScreeningMappingFieldDto = {
+    object_field_id: string;
+    ftm_property: string;
+};
+export type ContinuousScreeningMappingConfigDto = {
+    object_type: string;
+    ftm_entity: string;
+    object_field_mappings?: ContinuousScreeningMappingFieldDto[];
+};
 export type CreateContinuousScreeningConfigDto = {
     name: string;
     description?: string;
     inbox_id: string;
-    algorithm: string;
+    /** Name of the inbox to create */
+    inbox_name?: string;
+    algorithm?: string;
     datasets: string[];
     match_threshold: number;
     match_limit: number;
     object_types: string[];
+    mapping_configs?: ContinuousScreeningMappingConfigDto[];
+} | {
+    name: string;
+    description?: string;
+    inbox_id?: string;
+    /** Name of the inbox to create */
+    inbox_name: string;
+    algorithm?: string;
+    datasets: string[];
+    match_threshold: number;
+    match_limit: number;
+    object_types: string[];
+    mapping_configs?: ContinuousScreeningMappingConfigDto[];
 };
 export type UpdateContinuousScreeningConfigDto = {
     name?: string;
     description?: string;
     inbox_id?: string;
+    /** Name of the inbox to create and linked to the config */
+    inbox_name?: string;
     algorithm?: string;
     datasets?: string[];
     match_threshold?: number;
     match_limit?: number;
     enabled?: boolean;
+    mapping_configs?: ContinuousScreeningMappingConfigDto[];
 };
 export type ContinuousScreeningObjectDto = {
     id: string;

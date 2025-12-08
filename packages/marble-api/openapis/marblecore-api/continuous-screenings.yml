@@ -308,12 +308,38 @@ components:
           type: string
           format: date-time
 
+    ContinuousScreeningMappingFieldDto:
+      type: object
+      required:
+        - object_field_id
+        - ftm_property
+      properties:
+        object_field_id:
+          type: string
+          format: uuid
+        ftm_property:
+          type: string
+
+    ContinuousScreeningMappingConfigDto:
+      type: object
+      required:
+        - object_type
+        - ftm_entity
+      properties:
+        object_type:
+          type: string
+        ftm_entity:
+          type: string
+        object_field_mappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContinuousScreeningMappingFieldDto'
+        
+
     CreateContinuousScreeningConfigDto:
       type: object
       required:
         - name
-        - inbox_id
-        - algorithm
         - datasets
         - match_threshold
         - match_limit
@@ -326,6 +352,9 @@ components:
         inbox_id:
           type: string
           format: uuid
+        inbox_name:
+          type: string
+          description: Name of the inbox to create
         algorithm:
           type: string
         datasets:
@@ -345,6 +374,15 @@ components:
           minItems: 1
           items:
             type: string
+        mapping_configs:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContinuousScreeningMappingConfigDto'
+      oneOf:
+        - required:
+            - inbox_id
+        - required:
+            - inbox_name
 
     UpdateContinuousScreeningConfigDto:
       type: object
@@ -356,6 +394,9 @@ components:
         inbox_id:
           type: string
           format: uuid
+        inbox_name:
+          type: string
+          description: Name of the inbox to create and linked to the config
         algorithm:
           type: string
         datasets:
@@ -372,6 +413,10 @@ components:
           minimum: 1
         enabled:
           type: boolean
+        mapping_configs:
+          type: array
+          items: 
+            $ref: '#/components/schemas/ContinuousScreeningMappingConfigDto'
 
     ContinuousScreeningObjectDto:
       type: object
