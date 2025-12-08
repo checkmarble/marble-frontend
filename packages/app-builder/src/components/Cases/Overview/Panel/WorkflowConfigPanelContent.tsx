@@ -39,7 +39,7 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
   useEffect(() => {
     if (inboxesQuery.isSuccess) {
       const initialState = new Map<string, WorkflowSettings>();
-      for (const inbox of inboxesQuery.data.inboxes) {
+      for (const inbox of inboxesQuery.data?.inboxes ?? []) {
         initialState.set(inbox.id, {
           caseReviewManual: inbox.caseReviewManual,
           caseReviewOnCaseCreated: inbox.caseReviewOnCaseCreated,

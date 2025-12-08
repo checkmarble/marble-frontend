@@ -54,7 +54,7 @@ export const WorkflowConfigSection = ({ isGlobalAdmin, access, allInboxesMetadat
           </div>
         ))
         .with({ isSuccess: true }, ({ data }) => {
-          const inboxes = data.inboxes;
+          const inboxes = data?.inboxes ?? [];
 
           // Count escalation configurations
           const escalationConfigured = inboxes.filter((i) => i.escalationInboxId).length;

@@ -40,7 +40,7 @@ export const EscalationConditionsPanelContent = ({
   // Sync conditions when query data updates
   useEffect(() => {
     if (inboxesQuery.isSuccess) {
-      const existingConditions = inboxesQuery.data.inboxes
+      const existingConditions = (inboxesQuery.data?.inboxes ?? [])
         .filter((inbox) => inbox.escalationInboxId)
         .map((inbox, idx) => ({
           id: `existing-${inbox.id}-${idx}`,
