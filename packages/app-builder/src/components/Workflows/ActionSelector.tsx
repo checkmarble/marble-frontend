@@ -1,3 +1,4 @@
+import { TagSelector } from '@app-builder/components/Tags/TagSelector';
 import { type AstNode } from '@app-builder/models';
 import { adaptAstNode, adaptNodeDto } from '@app-builder/models/astNode/ast-node';
 import { NewPayloadAstNode } from '@app-builder/models/astNode/data-accessor';
@@ -97,6 +98,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
             inboxId: inboxesQuery.data?.[0]?.id ?? '',
             anyInbox: false,
             titleTemplate: adaptAstNode(adaptNodeDto(createDefaultTitleTemplate())),
+            tagIds: [],
           },
         };
         break;
@@ -108,6 +110,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
             inboxId: inboxesQuery.data?.[0]?.id ?? '',
             anyInbox: false,
             titleTemplate: adaptAstNode(adaptNodeDto(createDefaultTitleTemplate())),
+            tagIds: [],
           },
         };
         break;
@@ -144,6 +147,20 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
       params: {
         ...action.params,
         titleTemplate: safeTemplate,
+      },
+    };
+
+    onChange?.(newAction);
+  };
+
+  const handleTagsChange = (tagIds: string[]) => {
+    if (!action || action.action === 'DISABLED' || !('params' in action)) return;
+
+    const newAction: WorkflowAction = {
+      ...action,
+      params: {
+        ...action.params,
+        tagIds,
       },
     };
 
@@ -220,7 +237,7 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
         </MenuCommand.Content>
       </MenuCommand.Menu>
 
-      {needsInbox && (
+      {needsInbox ? (
         <div className="flex flex-col gap-3">
           <div className="flex items-start gap-2">
             <div className="bg-grey-20 px-3 py-1 rounded-sm min-w-20 flex justify-center h-10 items-center">
@@ -251,8 +268,20 @@ export function ActionSelector({ action, onChange }: ActionSelectorProps) {
               />
             </div>
           </div>
+          <div className="flex items-center gap-2">
+            <div className="bg-grey-20 px-3 py-1 rounded-sm min-w-20 flex justify-center h-10 items-center">
+              <span className="text-grey-60 font-bold text-sm text-nowrap">{t('workflows:action.with_tags')}</span>
+            </div>
+            <div>
+              <TagSelector
+                selectedTagIds={action && 'params' in action ? (action.params?.tagIds ?? []) : []}
+                onSelectedTagIdsChange={handleTagsChange}
+                maxVisibleTags={2}
+              />
+            </div>
+          </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

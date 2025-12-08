@@ -1,5 +1,7 @@
+import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { QueryEntry } from '@app-builder/hooks/useBase64Query';
 import type { Filters, filtersSchema } from '@app-builder/queries/cases/get-cases';
+import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { useCallbackRef } from '@marble/shared';
@@ -13,8 +15,9 @@ import { Icon } from 'ui-icons';
 import { AssigneeFilterMenuItem } from './AssigneeFilterMenuItem';
 import { DateRangeFilterMenu } from './DateRangeFilterMenu';
 import { InboxFilterLabel } from './FilterLabel';
+import { TagsFilterMenuItem } from './TagsFilterMenuItem';
 
-const EDITABLE_FILTERS = ['dateRange', 'assignee'] as const satisfies readonly (keyof Filters)[];
+const EDITABLE_FILTERS = ['dateRange', 'assignee', 'tagId'] as const satisfies readonly (keyof Filters)[];
 
 type ActivatedFilterItemProps = {
   filter: QueryEntry<typeof filtersSchema>;
@@ -122,6 +125,11 @@ const DisplayFilterValue = ({ filter }: DisplayFilterValueProps) => {
         </span>
       );
     })
+    .with(['tagId', P.string], ([name, tagId]) => (
+      <span className="inline-flex items-center gap-v2-xs">
+        <InboxFilterLabel name={name} />: <TagFilterValue tagId={tagId} />
+      </span>
+    ))
     .exhaustive();
 };
 
@@ -143,6 +151,13 @@ const AssigneeFilterValue = ({ value }: { value: string }) => {
   );
 };
 
+const TagFilterValue = ({ tagId }: { tagId: string }) => {
+  const { orgTags } = useOrganizationTags();
+  const tag = orgTags.find((t) => t.id === tagId);
+
+  return tag ? <TagPreview name={tag.name} /> : null;
+};
+
 type EditFilterContentProps = {
   filter: QueryEntry<typeof filtersSchema>;
   onUpdate: (filters: Partial<Filters>) => void;
@@ -154,6 +169,9 @@ const EditFilterContent = ({ filter, onUpdate }: EditFilterContentProps) => {
       <AssigneeFilterMenuItem onSelect={(userId) => onUpdate({ [name]: userId })} />
     ))
     .with(['dateRange', P.any], ([name]) => <DateRangeFilterMenu onSelect={(value) => onUpdate({ [name]: value })} />)
+    .with(['tagId', P.string], ([name]) => (
+      <TagsFilterMenuItem onSelect={(newTagId) => onUpdate({ [name]: newTagId })} />
+    ))
     .with(['name', P.string], ([name, value]) => null)
     .with(['statuses', P.array(P.string)], ([name, value]) => null)
     .with(['includeSnoozed', P.boolean], ([name]) => null)

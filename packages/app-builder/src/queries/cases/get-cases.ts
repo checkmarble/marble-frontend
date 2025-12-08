@@ -35,6 +35,7 @@ export const filtersSchema = z.object({
   excludeAssigned: stringableBooleanSchema.optional(),
   assignee: z.string().optional(),
   dateRange: dateRangeSchema.optional(),
+  tagId: z.string().optional(),
 });
 
 export type Filters = z.infer<typeof filtersSchema>;

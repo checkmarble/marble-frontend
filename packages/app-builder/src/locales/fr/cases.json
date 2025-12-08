@@ -192,6 +192,8 @@
   "filter.closed_only.label": "Investigations résolues uniquement",
   "filter.exclude_assigned.label": "Non assignées uniquement",
   "filter.include_snoozed.label": "Inclure les investigations en attente",
+  "filter.tags.label": "Tags",
+  "filter.tags.search_placeholder": "Rechercher des tags...",
   "filters.date_range.title": "Date de création :",
   "inbox.cases_count": "{{count}} investigations",
   "inbox.heading.assigned_and_contributors": "Assigné & Contributeurs",

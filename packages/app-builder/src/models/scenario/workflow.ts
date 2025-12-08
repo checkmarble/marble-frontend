@@ -21,6 +21,7 @@ export type WorkflowAction = {
         inboxId: string;
         anyInbox?: boolean;
         titleTemplate?: AstNode;
+        tagIds?: string[];
       };
     }
 );
@@ -132,6 +133,7 @@ export function adaptWorkflowAction(dto: WorkflowActionDto): WorkflowAction {
           inboxId: dto.params.inbox_id,
           anyInbox: dto.params.any_inbox,
           titleTemplate: dto.params.title_template && adaptAstNode(dto.params.title_template),
+          tagIds: dto.params.tags_to_add,
         },
       };
     default:
@@ -149,6 +151,7 @@ export function transformWorkflowAction(action: WorkflowAction): WorkflowActionD
           inbox_id: action.params.inboxId,
           any_inbox: action.params.anyInbox,
           title_template: action.params.titleTemplate && adaptNodeDto(action.params.titleTemplate),
+          tags_to_add: action.params.tagIds,
         },
       };
     case 'DISABLED':

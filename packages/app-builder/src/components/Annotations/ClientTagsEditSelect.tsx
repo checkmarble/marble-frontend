@@ -1,3 +1,4 @@
+import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useCreateAnnotationMutation } from '@app-builder/queries/annotations/create-annotation';
 import { createTagAnnotationSchema, tagAnnotationFormSchema } from '@app-builder/schemas/annotations';
@@ -19,12 +20,6 @@ type ClientTagsEditSelectProps = {
   annotations: GroupedAnnotations['tags'];
   onAnnotateSuccess?: () => void;
 };
-
-const TagPreview = ({ name }: { name: string }) => (
-  <div className="bg-purple-96 flex size-fit flex-row items-center gap-2 rounded-full px-2 py-[3px]">
-    <span className="text-purple-65 text-xs font-normal">{name}</span>
-  </div>
-);
 
 export function ClientTagsEditSelect({
   caseId,
