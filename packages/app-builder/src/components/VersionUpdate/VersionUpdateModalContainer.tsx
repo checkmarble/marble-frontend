@@ -33,7 +33,7 @@ export const VersionUpdateModalContainer: FunctionComponent = () => {
     setOpen(isOpen);
   };
 
-  if (!data?.needsUpdate) return null;
+  if (!isSuccess || !data?.needsUpdate) return null;
 
   return (
     <VersionUpdateModal
