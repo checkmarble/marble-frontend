@@ -53,7 +53,9 @@ export const OverviewPage = ({
                   access={entitlements.autoAssignment}
                 />
               ) : null}
-              {isGlobalAdmin ? <AIConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.aiAssist} /> : null}
+              {canViewAdminSections ? (
+                <AIConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.aiAssist} />
+              ) : null}
               {isGlobalAdmin ? (
                 <WorkflowConfigSection isGlobalAdmin={isGlobalAdmin} access={entitlements.workflows} />
               ) : null}

@@ -75,73 +75,75 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
             <Icon icon="eye" className="size-5 cursor-pointer text-purple-65" onClick={handleOpenPanel} />
           ))}
       </div>
-      <div className="flex flex-col gap-v2-sm">
-        {match(inboxesQuery)
-          .with({ isPending: true }, () => (
-            <div className="flex items-center justify-center py-4">
-              <Spinner className="size-6" />
-            </div>
-          ))
-          .with({ isError: true }, () => (
-            <div className="text-s text-grey-50">{t('cases:overview.config.error_loading')}</div>
-          ))
-          .with({ isSuccess: true }, ({ data }) => {
-            const allInboxes = data?.inboxes ?? [];
-            // Global admin sees all inboxes, others see only their inboxes (where they are a member)
-            const inboxes = isGlobalAdmin ? allInboxes : allInboxes.filter(isInboxMember);
-            const displayedInboxes = inboxes.slice(0, MAX_DISPLAYED_INBOXES);
-            const hasMore = inboxes.length > MAX_DISPLAYED_INBOXES;
+      {!restricted ? (
+        <div className="flex flex-col gap-v2-sm">
+          {match(inboxesQuery)
+            .with({ isPending: true }, () => (
+              <div className="flex items-center justify-center py-4">
+                <Spinner className="size-6" />
+              </div>
+            ))
+            .with({ isError: true }, () => (
+              <div className="text-s text-grey-50">{t('cases:overview.config.error_loading')}</div>
+            ))
+            .with({ isSuccess: true }, ({ data }) => {
+              const allInboxes = data?.inboxes ?? [];
+              // Global admin sees all inboxes, others see only their inboxes (where they are a member)
+              const inboxes = isGlobalAdmin ? allInboxes : allInboxes.filter(isInboxMember);
+              const displayedInboxes = inboxes.slice(0, MAX_DISPLAYED_INBOXES);
+              const hasMore = inboxes.length > MAX_DISPLAYED_INBOXES;
 
-            return (
-              <>
-                {displayedInboxes.map((inbox) => {
-                  const isExpanded = expandedInboxIds.includes(inbox.id);
-                  const hasUsers = inbox.users?.length > 0;
+              return (
+                <>
+                  {displayedInboxes.map((inbox) => {
+                    const isExpanded = expandedInboxIds.includes(inbox.id);
+                    const hasUsers = inbox.users?.length > 0;
 
-                  return (
-                    <div key={inbox.id} className="flex flex-col gap-v2-sm">
-                      <div className="flex items-center gap-v2-sm h-6">
-                        <Icon
-                          icon="arrow-down"
-                          className={cn('size-5 text-purple-65', {
-                            '-rotate-90': !isExpanded,
-                            'cursor-pointer': hasUsers,
-                            invisible: !hasUsers,
-                          })}
-                          onClick={hasUsers ? () => toggleInbox(inbox.id) : undefined}
-                        />
-                        <div className="flex-1 flex items-center gap-v2-xs">
-                          <span className="text-s">{inbox.name}</span>
-                          <Tag color="purple" size="small" border="rounded-sm">
-                            {t('cases:overview.inbox.cases_count', { count: inbox.casesCount })}
+                    return (
+                      <div key={inbox.id} className="flex flex-col gap-v2-sm">
+                        <div className="flex items-center gap-v2-sm h-6">
+                          <Icon
+                            icon="arrow-down"
+                            className={cn('size-5 text-purple-65', {
+                              '-rotate-90': !isExpanded,
+                              'cursor-pointer': hasUsers,
+                              invisible: !hasUsers,
+                            })}
+                            onClick={hasUsers ? () => toggleInbox(inbox.id) : undefined}
+                          />
+                          <div className="flex-1 flex items-center gap-v2-xs">
+                            <span className="text-s">{inbox.name}</span>
+                            <Tag color="purple" size="small" border="rounded-sm">
+                              {t('cases:overview.inbox.cases_count', { count: inbox.casesCount })}
+                            </Tag>
+                          </div>
+                          <Tag color={inbox.autoAssignEnabled ? 'green' : 'grey'} size="small" border="rounded-sm">
+                            {inbox.autoAssignEnabled
+                              ? t('cases:overview.config.active')
+                              : t('cases:overview.config.inactive')}
                           </Tag>
                         </div>
-                        <Tag color={inbox.autoAssignEnabled ? 'green' : 'grey'} size="small" border="rounded-sm">
-                          {inbox.autoAssignEnabled
-                            ? t('cases:overview.config.active')
-                            : t('cases:overview.config.inactive')}
-                        </Tag>
+                        {isExpanded && hasUsers ? (
+                          <div className="flex flex-col gap-v2-sm">
+                            {inbox.users.map((user) => (
+                              <InboxUserRow key={user.id} user={user} />
+                            ))}
+                          </div>
+                        ) : null}
                       </div>
-                      {isExpanded && hasUsers ? (
-                        <div className="flex flex-col gap-v2-sm">
-                          {inbox.users.map((user) => (
-                            <InboxUserRow key={user.id} user={user} />
-                          ))}
-                        </div>
-                      ) : null}
-                    </div>
-                  );
-                })}
-                {hasMore ? (
-                  <ButtonV2 variant="secondary" appearance="link" onClick={handleOpenPanel}>
-                    {t('cases:overview.config.view_more')}
-                  </ButtonV2>
-                ) : null}
-              </>
-            );
-          })
-          .exhaustive()}
-      </div>
+                    );
+                  })}
+                  {hasMore ? (
+                    <ButtonV2 variant="secondary" appearance="link" onClick={handleOpenPanel}>
+                      {t('cases:overview.config.view_more')}
+                    </ButtonV2>
+                  ) : null}
+                </>
+              );
+            })
+            .exhaustive()}
+        </div>
+      ) : null}
     </div>
   );
 };
