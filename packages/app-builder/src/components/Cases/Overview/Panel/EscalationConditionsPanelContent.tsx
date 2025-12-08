@@ -105,7 +105,6 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
     <PanelOverlay>
       <PanelContainer size="xxl">
         <div className="flex items-center gap-v2-sm pb-4">
-          <Icon icon="left-panel-open" className="size-4" />
           <h2 className="text-l font-semibold">{t('cases:overview.panel.escalation.title')}</h2>
         </div>
         <PanelContent>
@@ -136,7 +135,7 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
                       />
                     ))}
 
-                    {readOnly ? null : (
+                    {readOnly || conditions.length === inboxes.length ? null : (
                       <div>
                         <ButtonV2 variant="primary" appearance="stroked" onClick={handleAddCondition}>
                           {t('cases:overview.panel.escalation.add_condition')}

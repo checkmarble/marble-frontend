@@ -74,7 +74,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
               <ConfigRow
                 isRestricted={restricted}
                 canEdit={canEdit}
-                label={t('cases:overview.config.general')}
+                label={t('cases:overview.config.ai_review')}
                 statusTag={
                   <Tag color={isGeneralConfigured ? 'green' : 'orange'} size="small" border="rounded-sm">
                     {isGeneralConfigured

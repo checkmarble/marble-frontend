@@ -10,7 +10,7 @@
   "ai_assist.case_manager.general.structure.field.label": "Structure de sortie de l'analyse",
   "ai_assist.case_manager.general.structure.field.placeholder": "L'analyse doit contenir les sections suivantes : ...",
   "ai_assist.case_manager.general.structure.field.tooltip": "Structure de sortie souhaitée pour les analyses IA, en <DocLink>format Markdown</DocLink>. À utiliser uniquement pour le formatage de base, appliqué avec la traduction après la génération et la validation de l'analyse.",
-  "ai_assist.case_manager.general.title": "Général",
+  "ai_assist.case_manager.general.title": "Règles de revue par l'analyste IA",
   "ai_assist.case_manager.kyc_enrichment_callout": "Configurez jusqu'à 10 domaines autorisés pour l'enrichissement des données client. L'agent peut utiliser ces domaines pour rechercher en ligne des informations pertinentes sur votre client.",
   "ai_assist.case_manager.kyc_enrichment.add_new.button": "Ajouter un domaine",
   "ai_assist.case_manager.kyc_enrichment.custom_instructions.field.label": "Instructions personnalisées (optionnel)",

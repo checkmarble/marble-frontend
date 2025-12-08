@@ -16,11 +16,12 @@ interface WorkflowInboxCardProps {
   settings: WorkflowSettings;
   onToggle: (field: keyof WorkflowSettings, value: boolean) => void;
   disabled?: boolean;
+  defaultOpen?: boolean;
 }
 
-export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled }: WorkflowInboxCardProps) => {
+export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled, defaultOpen }: WorkflowInboxCardProps) => {
   const { t } = useTranslation(['cases']);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
 
   const isConfigured = settings.caseReviewManual || settings.caseReviewOnCaseCreated || settings.caseReviewOnEscalate;
 
@@ -53,7 +54,6 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled }: Workf
               />
               <span className="text-s">{t('cases:overview.workflow.case_created')}</span>
             </div>
-
             <div className="flex items-center gap-v2-sm">
               <Switch
                 checked={settings.caseReviewOnEscalate}
@@ -62,15 +62,15 @@ export const WorkflowInboxCard = ({ inbox, settings, onToggle, disabled }: Workf
               />
               <span className="text-s">{t('cases:overview.workflow.case_escalated')}</span>
             </div>
-
-            <div className="flex items-center gap-v2-sm">
+            {/* TODO: re-enable this once we have actually shipped the button to (re)generate a case review */}
+            {/* <div className="flex items-center gap-v2-sm">
               <Switch
                 checked={settings.caseReviewManual}
                 onCheckedChange={(checked) => onToggle('caseReviewManual', checked)}
                 disabled={disabled}
               />
               <span className="text-s">{t('cases:overview.workflow.manual_request')}</span>
-            </div>
+            </div> */}
           </div>
         </Collapsible.Content>
       </div>
