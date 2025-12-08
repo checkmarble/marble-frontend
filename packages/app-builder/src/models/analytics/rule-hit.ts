@@ -9,6 +9,7 @@ export type RuleHitTableResponse = {
   hitCount: ValueWithOptionalCompare;
   hitRatio: ValueWithOptionalCompare;
   distinctPivots: ValueWithOptionalCompare;
+  falsePositiveRatio: ValueWithOptionalCompare;
   repeatRatio: ValueWithOptionalCompare;
 };
 
@@ -18,6 +19,7 @@ const adaptRuleHit = (value: RuleHitTableResponseDto): RuleHitTableResponse => {
     hitCount: { value: value.hit_count },
     hitRatio: { value: value.hit_ratio },
     distinctPivots: { value: value.distinct_pivots },
+    falsePositiveRatio: { value: value.false_positive_ratio },
     repeatRatio: {
       value: value.hit_count > 0 ? value.repeat_ratio : 0,
     },
@@ -49,6 +51,7 @@ export const adaptRuleHitTable = (
         hitCount: createCompareValue(rule.hitCount.value, compareValue.hit_count),
         hitRatio: createCompareValue(rule.hitRatio.value, compareValue.hit_ratio),
         distinctPivots: createCompareValue(rule.distinctPivots.value, compareValue.distinct_pivots),
+        falsePositiveRatio: createCompareValue(rule.falsePositiveRatio.value, compareValue.false_positive_ratio),
         repeatRatio: createCompareValue(
           rule.repeatRatio.value,
           compareValue.hit_count > 0 ? compareValue.repeat_ratio : 0,

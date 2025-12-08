@@ -13,6 +13,8 @@
   "filters.select_comparison_date_range.placeholder": "أضف فترة للمقارنة",
   "legacy-analytics-link": "عرض تحليلات التحقيقات",
   "no_data": "لا توجد بيانات متاحة",
+  "rule_hits.columns.false_positive_ratio": "% الخطأ المطبق",
+  "rule_hits.columns.false_positive_ratio.tooltip": "النسبة المئوية للتفعيلات التي كانت خطئة، من بين جميع التفعيلات",
   "rule_hits.columns.hit_count": "عدد التفعيلات",
   "rule_hits.columns.hit_count.tooltip": "عدد القرارات التي تم تفعيل القاعدة لها",
   "rule_hits.columns.hit_ratio": "نسبة التفعيل",

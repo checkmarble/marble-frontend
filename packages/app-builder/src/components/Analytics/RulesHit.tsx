@@ -71,6 +71,38 @@ export function RulesHit({ isComparingRanges, data, isLoading }: RulesHitProps) 
           );
         },
       }),
+      columnHelper.accessor((row) => row.falsePositiveRatio, {
+        id: 'falsePositiveRatio',
+        header: () => (
+          <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+            {t('analytics:rule_hits.columns.false_positive_ratio')}
+            <AnalyticsTooltip
+              className="size-4"
+              content={t('analytics:rule_hits.columns.false_positive_ratio.tooltip')}
+            />
+          </div>
+        ),
+        size: 120,
+
+        cell: ({ getValue }) => {
+          const value = getValue().value;
+          const compare = getValue().compare;
+
+          return (
+            <span className="grid grid-cols-3 items-start font-semibold w-50">
+              <span>{formatNumber(Number(value), { language, maximumFractionDigits: 2 })}%</span>
+              {compare !== undefined ? (
+                <CompareValue
+                  higherIsBetter={false}
+                  value={compare}
+                  delta={compare - value}
+                  className="text-purple-65"
+                />
+              ) : null}
+            </span>
+          );
+        },
+      }),
       ...(!isComparingRanges
         ? [
             columnHelper.accessor((row) => row.distinctPivots, {

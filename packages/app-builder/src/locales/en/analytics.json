@@ -13,6 +13,8 @@
   "filters.select_comparison_date_range.placeholder": "Add period to compare",
   "legacy-analytics-link": "View investigations analytics",
   "no_data": "No data available",
+  "rule_hits.columns.false_positive_ratio": "% false pos. among hits",
+  "rule_hits.columns.false_positive_ratio.tooltip": "Percentage of hits that were false positives, out of all the hits",
   "rule_hits.columns.hit_count": "# hits",
   "rule_hits.columns.hit_count.tooltip": "Number of times the rule hit over the time period",
   "rule_hits.columns.hit_ratio": "% hits",
