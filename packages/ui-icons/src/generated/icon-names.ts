@@ -114,6 +114,7 @@ export const iconNames = [
   'snooze',
   'speakerphone',
   'spinner',
+  'star',
   'status',
   'status_snoozed',
   'stop',
