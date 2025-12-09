@@ -19,7 +19,6 @@
   "ai_assist.case_manager.kyc_enrichment.domains_filter.add_new.error": "Please enter a valid domain, for example checkmarble.com",
   "ai_assist.case_manager.kyc_enrichment.enabled.field.label": "Enable the KYC enrichment feature. <bold>This feature calls external APIs that treat any data received in the United States.</bold>",
   "ai_assist.case_manager.kyc_enrichment.title": "KYC enrichment",
-  "ai_case_manager": "Case Manager",
   "api": "API",
   "api_keys": "API Keys",
   "api_keys.copy_api_key": "Make sure to copy it now and store it in a secure place as you will not be able to see this again.",

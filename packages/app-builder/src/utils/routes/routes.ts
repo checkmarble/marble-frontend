@@ -14,6 +14,11 @@ export const routes = [
         "file": "routes/_auth+/_layout.tsx",
         "children": [
           {
+            "id": "routes/_auth+/auth-redirect",
+            "path": "auth-redirect",
+            "file": "routes/_auth+/auth-redirect.tsx"
+          },
+          {
             "id": "routes/_auth+/create-password",
             "path": "create-password",
             "file": "routes/_auth+/create-password.tsx"
@@ -293,11 +298,6 @@ export const routes = [
                 "id": "routes/_builder+/settings+/_index",
                 "index": true,
                 "file": "routes/_builder+/settings+/_index.tsx"
-              },
-              {
-                "id": "routes/_builder+/settings+/ai-case-review",
-                "path": "ai-case-review",
-                "file": "routes/_builder+/settings+/ai-case-review.tsx"
               },
               {
                 "id": "routes/_builder+/settings+/analytics+/filters",

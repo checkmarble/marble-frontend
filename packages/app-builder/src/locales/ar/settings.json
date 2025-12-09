@@ -19,7 +19,6 @@
   "ai_assist.case_manager.kyc_enrichment.domains_filter.add_new.error": "يرجى إدخال نطاق صحيح، على سبيل المثال checkmarble.com",
   "ai_assist.case_manager.kyc_enrichment.enabled.field.label": "تمكين ميزة إثراء KYC. <bold>تستدعي هذه الميزة واجهات برمجة التطبيقات الخارجية التي تعالج البيانات المستلمة في الولايات المتحدة.</bold>",
   "ai_assist.case_manager.kyc_enrichment.title": "إثراء KYC",
-  "ai_case_manager": "مدير الحالات",
   "api": "واجهة برمجة التطبيقات",
   "api_keys": "مفاتيح API",
   "api_keys.copy_api_key": "تأكد من نسخه الآن وتخزينه في مكان آمن، حيث لن تتمكن من رؤيته مرة أخرى.",
