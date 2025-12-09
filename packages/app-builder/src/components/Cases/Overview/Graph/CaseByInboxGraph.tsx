@@ -7,8 +7,8 @@ import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from 'ui-design-system';
+import { CaseStatusBadge } from '../../CaseStatus';
 import { getYAxisTicksValues, graphCaseStatuses, graphStatusesColors } from '../constants';
-import { GraphStatusBadge } from './GraphStatusBadge';
 
 export const CaseByInboxGraph = () => {
   const { t } = useTranslation(['cases', 'common']);
@@ -83,7 +83,7 @@ export const CaseByInboxGraph = () => {
                       },
                     ]}
                     colorBy="id"
-                    colors={graphCaseStatuses.map((status) => graphStatusesColors[status].bar)}
+                    colors={Object.values(graphStatusesColors)}
                     padding={0.3}
                     layout="vertical"
                     onMouseEnter={(d) => setHovering(d.indexValue as string)}
@@ -101,14 +101,14 @@ export const CaseByInboxGraph = () => {
                         translateY: 100,
                       },
                     ]}
-                    tooltip={({ data }) => (
+                    tooltip={({ id, value, data }) => (
                       <div className="flex flex-col gap-v2-sm w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
                         <div className="text-s text-grey-60">{data.inbox}</div>
-                        <div className="grid grid-cols-[calc(var(--spacing)_*_10)_1fr] gap-v2-xs items-center">
+                        <div className="grid grid-cols-[calc(var(--spacing)_*_10)_1fr] gap-v2-xs">
                           {graphCaseStatuses.map((caseStatus) => (
                             <Fragment key={caseStatus}>
-                              <div className="text-s">{data[caseStatus]}</div>
-                              <GraphStatusBadge status={caseStatus} />
+                              <div>{data[caseStatus]}</div>
+                              <CaseStatusBadge status={caseStatus} />
                             </Fragment>
                           ))}
                         </div>
