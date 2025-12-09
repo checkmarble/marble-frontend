@@ -45,7 +45,7 @@ export const WorkflowConfigSection = ({ isGlobalAdmin, access, allInboxesMetadat
       {match(inboxesQuery)
         .with({ isPending: true }, () => (
           <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex items-center justify-center min-h-[100px]">
-            <Spinner />
+            <Spinner className="size-6" />
           </div>
         ))
         .with({ isError: true }, () => (
