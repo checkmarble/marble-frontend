@@ -17,7 +17,7 @@ export const FavoriteInboxButton: FunctionComponent<FavoriteInboxButtonProps> = 
 
   const handleClick = () => {
     if (isFavorite) {
-      setPreferencesCookie('favInbox', '');
+      setPreferencesCookie('favInbox', undefined);
       onToggle(undefined);
     } else {
       const inboxIdToStore = inboxId === MY_INBOX_ID ? inboxId : fromUUIDtoSUUID(inboxId);
@@ -37,7 +37,7 @@ export const FavoriteInboxButton: FunctionComponent<FavoriteInboxButtonProps> = 
       {t('cases:inbox.favorite')}
       <Icon
         icon="star"
-        className={isFavorite ? 'size-5 fill-purple-65 text-purple-65' : 'size-5 fill-transparent text-grey-50'}
+        className={isFavorite ? 'size-5 fill-purple-65 text-purple-65' : 'size-5 fill-none text-grey-50'}
       />
     </ButtonV2>
   );
