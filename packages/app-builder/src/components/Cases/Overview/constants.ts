@@ -10,11 +10,15 @@ export const INBOX_USER_ROW_VARIANTS = {
 export type InboxUserRowVariant = (typeof INBOX_USER_ROW_VARIANTS)[keyof typeof INBOX_USER_ROW_VARIANTS];
 
 export const graphCaseStatuses = ['snoozed', 'pending', 'investigating', 'closed'] as const;
-export const graphStatusesColors: Record<Exclude<CaseStatus, 'waiting_for_action'>, string> = {
-  snoozed: '#C1C0C8',
-  pending: '#FFD57E',
-  investigating: '#ADA7FD',
-  closed: '#89D4AD',
+
+export const graphStatusesColors: Record<
+  Exclude<CaseStatus, 'waiting_for_action'>,
+  { bar: string; bg: string; text: string }
+> = {
+  snoozed: { bar: '#C1C0C8', bg: '#F3F3F4', text: '#838292' },
+  pending: { bar: '#F5D37A', bg: '#FEF6DF', text: '#C78700' },
+  investigating: { bar: '#ADA7FD', bg: '#EEEDFE', text: '#5A50FA' },
+  closed: { bar: '#7DD4A3', bg: '#E1F4EA', text: '#18AA5F' },
 };
 
 // region: graph helpers
