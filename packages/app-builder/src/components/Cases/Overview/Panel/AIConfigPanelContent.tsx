@@ -1,4 +1,5 @@
 import { CalloutV2 } from '@app-builder/components/Callout';
+import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea';
@@ -9,7 +10,7 @@ import { useUpdateAiSettings } from '@app-builder/queries/settings/ai/update';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
-import { ButtonV2, Input, Switch } from 'ui-design-system';
+import { ButtonV2, Input, Switch, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { LanguageDropdown } from './LanguageDropdown';
@@ -52,7 +53,6 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
       <PanelContainer size="xxl">
         <PanelHeader>
           <div className="flex items-center gap-v2-sm">
-            <Icon icon="left-panel-open" className="size-4" />
             <span>{t('cases:overview.panel.ai_config.title')}</span>
           </div>
         </PanelHeader>
@@ -65,8 +65,19 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
               <form.Field name="caseReviewSetting.orgDescription">
                 {(field) => (
                   <div className="flex flex-col gap-v2-xs">
-                    <FormLabel name={field.name} className="text-xs">
+                    <FormLabel name={field.name} className="text-xs flex items-center gap-2">
                       {t('settings:ai_assist.case_manager.general.org_description.field.label')}
+                      <Tooltip.Default
+                        delayDuration={300}
+                        className="max-w-96"
+                        content={
+                          <span className="font-normal text-pretty">
+                            {t('settings:ai_assist.case_manager.general.org_description.field.tooltip')}
+                          </span>
+                        }
+                      >
+                        <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
+                      </Tooltip.Default>
                     </FormLabel>
                     <FormTextArea
                       name={field.name}
@@ -86,8 +97,25 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
               <form.Field name="caseReviewSetting.structure">
                 {(field) => (
                   <div className="flex flex-col gap-v2-xs">
-                    <FormLabel name={field.name} className="text-xs">
+                    <FormLabel name={field.name} className="text-xs flex items-center gap-2">
                       {t('settings:ai_assist.case_manager.general.structure.field.label')}
+                      <Tooltip.Default
+                        delayDuration={300}
+                        className="max-w-96"
+                        content={
+                          <span className="font-normal">
+                            <Trans
+                              t={t}
+                              i18nKey="settings:ai_assist.case_manager.general.structure.field.tooltip"
+                              components={{
+                                DocLink: <ExternalLink href="https://www.markdownguide.org/basic-syntax/" />,
+                              }}
+                            />
+                          </span>
+                        }
+                      >
+                        <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
+                      </Tooltip.Default>
                     </FormLabel>
                     <FormTextArea
                       name={field.name}
@@ -106,18 +134,34 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
 
               <form.Field name="caseReviewSetting.language">
                 {(field) => (
-                  <LanguageDropdown
-                    value={field.state.value}
-                    onChange={(value) => field.handleChange(value)}
-                    disabled={readOnly}
-                  />
+                  <div className="flex flex-col gap-v2-xs">
+                    <FormLabel name={field.name} className="text-xs flex items-center gap-2">
+                      {t('settings:ai_assist.case_manager.general.language.field.label')}
+                      <Tooltip.Default
+                        delayDuration={300}
+                        className="max-w-96"
+                        content={
+                          <span className="font-normal">
+                            {t('settings:ai_assist.case_manager.general.language.field.tooltip')}
+                          </span>
+                        }
+                      >
+                        <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
+                      </Tooltip.Default>
+                    </FormLabel>
+                    <LanguageDropdown
+                      value={field.state.value}
+                      onChange={(value) => field.handleChange(value)}
+                      disabled={readOnly}
+                    />
+                  </div>
                 )}
               </form.Field>
             </div>
 
             {/* Section: IA (KYC Enrichment) */}
             <div className="bg-grey-background-light border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
-              <span className="text-s font-medium">{t('cases:overview.panel.ai_config.section_ai')}</span>
+              <span className="text-s font-medium">{t('cases:overview.panel.ai_config.kyc_enrichment')}</span>
               <form.Field name="kycEnrichmentSetting.enabled">
                 {(field) => (
                   <div className="flex gap-2 text-pretty">
@@ -128,13 +172,11 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                       disabled={readOnly}
                     />
                     <div className="flex flex-col gap-v2-xs">
-                      <span className="text-s font-medium">
-                        {t('settings:ai_assist.case_manager.kyc_enrichment.title')}
-                      </span>
                       <div className="text-s text-grey-50">
                         <Trans
                           t={t}
-                          i18nKey="ai_assist.case_manager.kyc_enrichment.enabled.field.label"
+                          i18nKey="settings:ai_assist.case_manager.kyc_enrichment.enabled.field.label"
+                          ns="settings"
                           components={{
                             bold: <span className="font-semibold" />,
                           }}
@@ -148,8 +190,25 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
               <form.Field name="kycEnrichmentSetting.customInstructions">
                 {(field) => (
                   <div className="flex flex-col gap-v2-xs">
-                    <FormLabel name={field.name} className="text-xs">
+                    <FormLabel name={field.name} className="text-xs flex items-center gap-2">
                       {t('settings:ai_assist.case_manager.kyc_enrichment.custom_instructions.field.label')}
+                      <Tooltip.Default
+                        delayDuration={300}
+                        className="max-w-96"
+                        content={
+                          <span className="font-normal">
+                            <Trans
+                              t={t}
+                              i18nKey="settings:ai_assist.case_manager.kyc_enrichment.custom_instructions.field.tooltip"
+                              components={{
+                                DocLink: <ExternalLink href="https://www.markdownguide.org/basic-syntax/" />,
+                              }}
+                            />
+                          </span>
+                        }
+                      >
+                        <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
+                      </Tooltip.Default>
                     </FormLabel>
                     <FormTextArea
                       name={field.name}

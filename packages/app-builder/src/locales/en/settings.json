@@ -10,7 +10,7 @@
   "ai_assist.case_manager.general.structure.field.label": "Case review output structure",
   "ai_assist.case_manager.general.structure.field.placeholder": "The review should contain the following sections: ...",
   "ai_assist.case_manager.general.structure.field.tooltip": "Desired output structure for AI case reviews, in <DocLink>Markdown format</DocLink>. This should only be used for basic formatting purposes, it is applied together with translation after the raw case review has been generated and validated.",
-  "ai_assist.case_manager.general.title": "General",
+  "ai_assist.case_manager.general.title": "AI case review rules",
   "ai_assist.case_manager.kyc_enrichment_callout": "Configure up to 10 domains to help enrich customer data. The agent can use these domains to search online and find relevant information about your customer.",
   "ai_assist.case_manager.kyc_enrichment.add_new.button": "Add a new domain",
   "ai_assist.case_manager.kyc_enrichment.custom_instructions.field.label": "Custom instructions (optional)",

@@ -88,6 +88,9 @@ export const CaseByInboxGraph = () => {
                     layout="vertical"
                     onMouseEnter={(d) => setHovering(d.indexValue as string)}
                     onMouseLeave={() => setHovering(null)}
+                    legendLabel={(datum) =>
+                      t(`cases:case.status.${datum.id as 'snoozed' | 'pending' | 'investigating' | 'closed'}`)
+                    }
                     legends={[
                       {
                         dataFrom: 'keys',

@@ -39,7 +39,7 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
   useEffect(() => {
     if (inboxesQuery.isSuccess) {
       const initialState = new Map<string, WorkflowSettings>();
-      for (const inbox of inboxesQuery.data.inboxes) {
+      for (const inbox of inboxesQuery.data?.inboxes ?? []) {
         initialState.set(inbox.id, {
           caseReviewManual: inbox.caseReviewManual,
           caseReviewOnCaseCreated: inbox.caseReviewOnCaseCreated,
@@ -109,7 +109,6 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
       <PanelContainer size="xxl">
         <PanelHeader>
           <div className="flex items-center gap-v2-sm">
-            <Icon icon="left-panel-open" className="size-4" />
             <span>{t('cases:overview.panel.workflow.title')}</span>
           </div>
         </PanelHeader>
@@ -136,6 +135,7 @@ export const WorkflowConfigPanelContent = ({ readOnly }: WorkflowConfigPanelCont
                       settings={settings}
                       onToggle={(field, value) => handleToggle(inbox.id, field, value)}
                       disabled={readOnly}
+                      defaultOpen={inboxes.length < 6}
                     />
                   );
                 })}

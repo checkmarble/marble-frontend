@@ -1,6 +1,7 @@
 import { PanelContainer, PanelContent, PanelFooter, PanelOverlay, usePanel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { type InboxMetadata } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
 import { useUpdateInboxEscalationMutation } from '@app-builder/queries/cases/update-inbox-escalation';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
@@ -13,13 +14,17 @@ import { type EscalationCondition, EscalationConditionRow } from './EscalationCo
 
 interface EscalationConditionsPanelContentProps {
   readOnly?: boolean;
+  allInboxesMetadata: InboxMetadata[];
 }
 
 interface ConditionWithId extends EscalationCondition {
   id: string;
 }
 
-export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditionsPanelContentProps) => {
+export const EscalationConditionsPanelContent = ({
+  readOnly,
+  allInboxesMetadata,
+}: EscalationConditionsPanelContentProps) => {
   const { t } = useTranslation(['cases']);
   const inboxesQuery = useGetInboxesQuery();
   const { closePanel } = usePanel();
@@ -35,7 +40,7 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
   // Sync conditions when query data updates
   useEffect(() => {
     if (inboxesQuery.isSuccess) {
-      const existingConditions = inboxesQuery.data.inboxes
+      const existingConditions = (inboxesQuery.data?.inboxes ?? [])
         .filter((inbox) => inbox.escalationInboxId)
         .map((inbox, idx) => ({
           id: `existing-${inbox.id}-${idx}`,
@@ -105,7 +110,6 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
     <PanelOverlay>
       <PanelContainer size="xxl">
         <div className="flex items-center gap-v2-sm pb-4">
-          <Icon icon="left-panel-open" className="size-4" />
           <h2 className="text-l font-semibold">{t('cases:overview.panel.escalation.title')}</h2>
         </div>
         <PanelContent>
@@ -128,7 +132,7 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
                       <EscalationConditionRow
                         key={condition.id}
                         condition={condition}
-                        inboxes={inboxes}
+                        allInboxesMetadata={allInboxesMetadata}
                         usedSourceIds={conditions.filter((c) => c.id !== condition.id).map((c) => c.sourceInboxId)}
                         onUpdate={(field, value) => handleUpdateCondition(condition.id, field, value)}
                         onRemove={() => handleRemoveCondition(condition.id)}
@@ -136,7 +140,7 @@ export const EscalationConditionsPanelContent = ({ readOnly }: EscalationConditi
                       />
                     ))}
 
-                    {readOnly ? null : (
+                    {readOnly || conditions.length === inboxes.length ? null : (
                       <div>
                         <ButtonV2 variant="primary" appearance="stroked" onClick={handleAddCondition}>
                           {t('cases:overview.panel.escalation.add_condition')}

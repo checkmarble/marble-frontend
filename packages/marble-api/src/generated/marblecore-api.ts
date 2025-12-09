@@ -1444,6 +1444,7 @@ export type RuleHitTableResponseDto = {
     hit_ratio: number;
     distinct_pivots: number;
     repeat_ratio: number;
+    false_positive_ratio: number;
 };
 export type ScreeningHitTableResponseDto = {
     config_id: string;
