@@ -64,6 +64,8 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
           </div>
         ))
         .with({ isSuccess: true }, ({ data }) => {
+          if (!data?.settings) return null;
+
           const settings = data.settings;
           const isGeneralConfigured = settings.caseReviewSetting.orgDescription || settings.caseReviewSetting.structure;
           const isKycEnabled = settings.kycEnrichmentSetting.enabled;
