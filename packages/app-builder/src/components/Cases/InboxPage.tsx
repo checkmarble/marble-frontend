@@ -2,6 +2,7 @@ import { Page } from '@app-builder/components';
 import { BreadCrumbs } from '@app-builder/components/Breadcrumbs';
 import { CaseRightPanel } from '@app-builder/components/Cases';
 import { CasesList } from '@app-builder/components/Cases/Inbox/CasesList';
+import { FavoriteInboxButton } from '@app-builder/components/Cases/Inbox/FavoriteInboxButton';
 import { InboxFilterBar } from '@app-builder/components/Cases/Inbox/FilterBar/FilterBar';
 import { MultiSelect } from '@app-builder/components/MultiSelect';
 import { MY_INBOX_ID } from '@app-builder/constants/inboxes';
@@ -40,6 +41,7 @@ type InboxPageProps = {
   order: 'ASC' | 'DESC';
   updatePage: (newQuery: string, newLimit: number, newOrder: 'ASC' | 'DESC') => void;
   onInboxSelect: (inboxId: string) => void;
+  favoriteInboxId?: string;
 };
 
 export const InboxPage = ({
@@ -52,9 +54,11 @@ export const InboxPage = ({
   order,
   updatePage,
   onInboxSelect,
+  favoriteInboxId: initialFavoriteInboxId,
 }: InboxPageProps) => {
   const { t } = useTranslation(['common', 'cases']);
   const [searchValue, setSearchValue] = useState('');
+  const [favoriteInboxId, setFavoriteInboxId] = useState(initialFavoriteInboxId);
   const { orgUsers } = useOrganizationUsers();
   const navigate = useAgnosticNavigation();
 
@@ -165,7 +169,12 @@ export const InboxPage = ({
                       onInboxSelect={onInboxSelect}
                     />
                   </div>
-                  <div className="flex gap-v2-sm">
+                  <div className="flex gap-v2-sm items-center">
+                    <FavoriteInboxButton
+                      inboxId={inboxId}
+                      isFavorite={favoriteInboxId === (inboxId === MY_INBOX_ID ? inboxId : fromUUIDtoSUUID(inboxId))}
+                      onToggle={setFavoriteInboxId}
+                    />
                     <SelectCaseById onNavigate={handleNavigate} />
                     <Input
                       endAdornment="search"

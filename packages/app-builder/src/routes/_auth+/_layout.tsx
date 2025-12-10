@@ -1,7 +1,9 @@
 import { authI18n } from '@app-builder/components/Auth/auth-i18n';
 import { LanguagePicker } from '@app-builder/components/LanguagePicker';
 import { Outlet, useMatches } from '@remix-run/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { cva } from 'class-variance-authority';
+import { useEffect } from 'react';
 import { Logo } from 'ui-icons';
 
 export type AuthPageHandle = {
@@ -27,6 +29,11 @@ const layoutClassName = cva('flex size-full bg-[#080525]', {
 export default function AuthLayout() {
   const matches = useMatches();
   const { alignment } = matches[matches.length - 1]?.handle as AuthPageHandle;
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    queryClient.resetQueries();
+  }, []);
 
   return (
     <div className={layoutClassName({ alignment })}>
