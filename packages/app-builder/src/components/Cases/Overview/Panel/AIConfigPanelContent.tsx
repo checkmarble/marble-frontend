@@ -6,7 +6,7 @@ import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea
 import { PanelContainer, PanelContent, PanelFooter, PanelHeader } from '@app-builder/components/Panel';
 import { PanelOverlay } from '@app-builder/components/Panel/PanelOverlay';
 import { type AiSettingSchema, aiSettingSchema } from '@app-builder/models/ai-settings';
-import { useUpdateAiSettings } from '@app-builder/queries/settings/ai/update';
+import { useUpdateAiSettings } from '@app-builder/queries/cases/update-ai-settings';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';

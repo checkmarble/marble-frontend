@@ -481,6 +481,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/add-to-case.tsx"
       },
       {
+        "id": "routes/ressources+/cases+/ai-review",
+        "path": "ressources/cases/ai-review",
+        "file": "routes/ressources+/cases+/ai-review.tsx"
+      },
+      {
         "id": "routes/ressources+/cases+/close-case",
         "path": "ressources/cases/close-case",
         "file": "routes/ressources+/cases+/close-case.tsx"
@@ -830,12 +835,6 @@ export const routes = [
         "id": "routes/ressources+/screenings+/upload.$screeningId",
         "path": "ressources/screenings/upload/:screeningId",
         "file": "routes/ressources+/screenings+/upload.$screeningId.tsx"
-      },
-      {
-        "id": "routes/ressources+/settings+/ai-review+/_index",
-        "index": true,
-        "path": "ressources/settings/ai-review",
-        "file": "routes/ressources+/settings+/ai-review+/_index.tsx"
       },
       {
         "id": "routes/ressources+/settings+/api-keys+/create",
