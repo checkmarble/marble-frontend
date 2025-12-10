@@ -6,7 +6,7 @@ import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea
 import { PanelContainer, PanelContent, PanelFooter, PanelHeader } from '@app-builder/components/Panel';
 import { PanelOverlay } from '@app-builder/components/Panel/PanelOverlay';
 import { type AiSettingSchema, aiSettingSchema } from '@app-builder/models/ai-settings';
-import { useUpdateAiSettings } from '@app-builder/queries/settings/ai/update';
+import { useUpdateAiSettings } from '@app-builder/queries/cases/update-ai-settings';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -22,7 +22,7 @@ interface AIConfigPanelContentProps {
 }
 
 export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfigPanelContentProps) {
-  const { t } = useTranslation(['cases', 'settings', 'common']);
+  const { t } = useTranslation(['cases', 'common']);
   const updateMutation = useUpdateAiSettings();
 
   const form = useForm({
@@ -61,18 +61,18 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
           <form id="ai-config-panel-form" className="flex flex-col gap-v2-sm" onSubmit={handleSubmit(form)}>
             {/* Section: Informations générales */}
             <div className="bg-grey-background-light border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
-              <span className="text-s font-medium">{t('settings:ai_assist.case_manager.general.title')}</span>
+              <span className="text-s font-medium">{t('cases:ai_settings.general.title')}</span>
               <form.Field name="caseReviewSetting.orgDescription">
                 {(field) => (
                   <div className="flex flex-col gap-v2-xs">
                     <FormLabel name={field.name} className="text-xs flex items-center gap-2">
-                      {t('settings:ai_assist.case_manager.general.org_description.field.label')}
+                      {t('cases:ai_settings.general.org_description.field.label')}
                       <Tooltip.Default
                         delayDuration={300}
                         className="max-w-96"
                         content={
                           <span className="font-normal text-pretty">
-                            {t('settings:ai_assist.case_manager.general.org_description.field.tooltip')}
+                            {t('cases:ai_settings.general.org_description.field.tooltip')}
                           </span>
                         }
                       >
@@ -87,7 +87,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                       valid={field.state.meta.errors.length === 0}
                       resize="vertical"
                       className="min-h-[140px] disabled:cursor-not-allowed"
-                      placeholder={t('settings:ai_assist.case_manager.general.org_description.field.placeholder')}
+                      placeholder={t('cases:ai_settings.general.org_description.field.placeholder')}
                       disabled={readOnly}
                     />
                   </div>
@@ -98,7 +98,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                 {(field) => (
                   <div className="flex flex-col gap-v2-xs">
                     <FormLabel name={field.name} className="text-xs flex items-center gap-2">
-                      {t('settings:ai_assist.case_manager.general.structure.field.label')}
+                      {t('cases:ai_settings.general.structure.field.label')}
                       <Tooltip.Default
                         delayDuration={300}
                         className="max-w-96"
@@ -106,7 +106,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                           <span className="font-normal">
                             <Trans
                               t={t}
-                              i18nKey="settings:ai_assist.case_manager.general.structure.field.tooltip"
+                              i18nKey="cases:ai_settings.general.structure.field.tooltip"
                               components={{
                                 DocLink: <ExternalLink href="https://www.markdownguide.org/basic-syntax/" />,
                               }}
@@ -125,7 +125,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                       valid={field.state.meta.errors.length === 0}
                       resize="vertical"
                       className="min-h-[140px] disabled:cursor-not-allowed"
-                      placeholder={t('settings:ai_assist.case_manager.general.structure.field.placeholder')}
+                      placeholder={t('cases:ai_settings.general.structure.field.placeholder')}
                       disabled={readOnly}
                     />
                   </div>
@@ -136,14 +136,12 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                 {(field) => (
                   <div className="flex flex-col gap-v2-xs">
                     <FormLabel name={field.name} className="text-xs flex items-center gap-2">
-                      {t('settings:ai_assist.case_manager.general.language.field.label')}
+                      {t('cases:ai_settings.general.language.field.label')}
                       <Tooltip.Default
                         delayDuration={300}
                         className="max-w-96"
                         content={
-                          <span className="font-normal">
-                            {t('settings:ai_assist.case_manager.general.language.field.tooltip')}
-                          </span>
+                          <span className="font-normal">{t('cases:ai_settings.general.language.field.tooltip')}</span>
                         }
                       >
                         <Icon icon="tip" className="size-4 shrink-0 cursor-pointer text-purple-65" />
@@ -175,8 +173,8 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                       <div className="text-s text-grey-50">
                         <Trans
                           t={t}
-                          i18nKey="settings:ai_assist.case_manager.kyc_enrichment.enabled.field.label"
-                          ns="settings"
+                          i18nKey="cases:ai_settings.kyc_enrichment.enabled.field.label"
+                          ns="cases"
                           components={{
                             bold: <span className="font-semibold" />,
                           }}
@@ -191,7 +189,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                 {(field) => (
                   <div className="flex flex-col gap-v2-xs">
                     <FormLabel name={field.name} className="text-xs flex items-center gap-2">
-                      {t('settings:ai_assist.case_manager.kyc_enrichment.custom_instructions.field.label')}
+                      {t('cases:ai_settings.kyc_enrichment.custom_instructions.field.label')}
                       <Tooltip.Default
                         delayDuration={300}
                         className="max-w-96"
@@ -199,7 +197,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                           <span className="font-normal">
                             <Trans
                               t={t}
-                              i18nKey="settings:ai_assist.case_manager.kyc_enrichment.custom_instructions.field.tooltip"
+                              i18nKey="cases:ai_settings.kyc_enrichment.custom_instructions.field.tooltip"
                               components={{
                                 DocLink: <ExternalLink href="https://www.markdownguide.org/basic-syntax/" />,
                               }}
@@ -218,16 +216,14 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                       valid={field.state.meta.errors.length === 0}
                       resize="vertical"
                       className="min-h-[140px] disabled:cursor-not-allowed"
-                      placeholder={t(
-                        'settings:ai_assist.case_manager.kyc_enrichment.custom_instructions.field.placeholder',
-                      )}
+                      placeholder={t('cases:ai_settings.kyc_enrichment.custom_instructions.field.placeholder')}
                       disabled={readOnly}
                     />
                   </div>
                 )}
               </form.Field>
 
-              <CalloutV2>{t('settings:ai_assist.case_manager.kyc_enrichment_callout')}</CalloutV2>
+              <CalloutV2>{t('cases:ai_settings.kyc_enrichment_callout')}</CalloutV2>
 
               <form.Field name="kycEnrichmentSetting.domainsFilter" mode="array">
                 {(domainsField) => (
@@ -244,7 +240,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                                   field.handleChange(e.target.value);
                                   domainsField.validate('change');
                                 }}
-                                placeholder={t('settings:ai_assist.case_manager.domains_filter.placeholder')}
+                                placeholder={t('cases:ai_settings.domains_filter.placeholder')}
                                 disabled={readOnly}
                               />
                               {!readOnly && (
@@ -273,7 +269,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
                         onClick={() => domainsField.pushValue('')}
                         className="w-fit"
                       >
-                        {t('settings:ai_assist.case_manager.kyc_enrichment.add_new.button')}
+                        {t('cases:ai_settings.kyc_enrichment.add_new.button')}
                       </ButtonV2>
                     )}
                   </div>

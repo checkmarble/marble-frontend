@@ -16,7 +16,7 @@ interface AIConfigSectionProps {
 }
 
 export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps) {
-  const { t } = useTranslation(['cases', 'settings']);
+  const { t } = useTranslation(['cases']);
   const { openPanel, closePanel } = usePanel();
   const aiSettingsQuery = useGetAiSettingsQuery();
   const revalidate = useLoaderRevalidator();
@@ -95,7 +95,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
               <ConfigRow
                 isRestricted={restricted}
                 canEdit={canEdit}
-                label={t('settings:ai_assist.case_manager.kyc_enrichment.title')}
+                label={t('cases:ai_settings.kyc_enrichment.title')}
                 showWand
                 statusTag={
                   <>
