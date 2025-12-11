@@ -999,20 +999,6 @@ export type CreateContinuousScreeningConfigDto = {
     name: string;
     description?: string;
     inbox_id: string;
-    /** Name of the inbox to create */
-    inbox_name?: string;
-    algorithm?: string;
-    datasets: string[];
-    match_threshold: number;
-    match_limit: number;
-    object_types: string[];
-    mapping_configs?: ContinuousScreeningMappingConfigDto[];
-} | {
-    name: string;
-    description?: string;
-    inbox_id?: string;
-    /** Name of the inbox to create */
-    inbox_name: string;
     algorithm?: string;
     datasets: string[];
     match_threshold: number;
@@ -1024,8 +1010,6 @@ export type UpdateContinuousScreeningConfigDto = {
     name?: string;
     description?: string;
     inbox_id?: string;
-    /** Name of the inbox to create and linked to the config */
-    inbox_name?: string;
     algorithm?: string;
     datasets?: string[];
     match_threshold?: number;
