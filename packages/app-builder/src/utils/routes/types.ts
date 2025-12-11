@@ -52,6 +52,7 @@ export type RoutePath =
   | '/settings/users'
   | '/settings/webhooks'
   | '/settings/webhooks/:webhookId'
+  | '/settings/activity-follow-up'
   | '/upload/:objectType'
   | '/app-router'
   | '/healthcheck'
