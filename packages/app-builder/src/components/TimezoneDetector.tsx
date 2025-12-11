@@ -29,8 +29,7 @@ export function TimezoneDetector() {
   useEffect(() => {
     const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const storedTimezone = getStoredTimezone();
-    console.log('detectedTimezone', detectedTimezone);
-    console.log('storedTimezone', storedTimezone);
+
     if (detectedTimezone && detectedTimezone !== storedTimezone) {
       setPreferencesCookie('timezone', detectedTimezone);
 
