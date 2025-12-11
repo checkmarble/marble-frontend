@@ -340,6 +340,7 @@ components:
       type: object
       required:
         - name
+        - inbox_id
         - datasets
         - match_threshold
         - match_limit
@@ -352,9 +353,6 @@ components:
         inbox_id:
           type: string
           format: uuid
-        inbox_name:
-          type: string
-          description: Name of the inbox to create
         algorithm:
           type: string
         datasets:
@@ -378,11 +376,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ContinuousScreeningMappingConfigDto'
-      oneOf:
-        - required:
-            - inbox_id
-        - required:
-            - inbox_name
 
     UpdateContinuousScreeningConfigDto:
       type: object
@@ -394,9 +387,6 @@ components:
         inbox_id:
           type: string
           format: uuid
-        inbox_name:
-          type: string
-          description: Name of the inbox to create and linked to the config
         algorithm:
           type: string
         datasets:
