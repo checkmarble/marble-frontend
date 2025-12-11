@@ -1,36 +1,31 @@
-import { Callout, decisionsI18n, OutcomeBadge, scenarioI18n } from '@app-builder/components';
+import { Callout, OutcomeBadge } from '@app-builder/components';
 import { ScoreOutcomeThresholds } from '@app-builder/components/Decisions/ScoreOutcomeThresholds';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormInput } from '@app-builder/components/Form/Tanstack/FormInput';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
-import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import {
+  buildEditScoreThresholdsPayloadSchema,
+  useEditScoreThresholdsMutation,
+} from '@app-builder/queries/scenarios/edit-score-thresholds';
 import { scenarioDecisionDocHref } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { initServerServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
-import { getFieldErrors } from '@app-builder/utils/form';
-import { getRoute } from '@app-builder/utils/routes';
-import { fromParams } from '@app-builder/utils/short-uuid';
-import { type ActionFunctionArgs } from '@remix-run/node';
-import { useFetcher } from '@remix-run/react';
+import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm, useStore } from '@tanstack/react-form';
-import { type Namespace, type TFunction } from 'i18next';
+import { type Namespace } from 'i18next';
 import { type ScenarioValidationErrorCodeDto } from 'marble-api';
 import * as React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Collapsible } from 'ui-design-system';
-import * as z from 'zod/v4';
-
 import { useCurrentScenarioIteration, useCurrentScenarioValidation } from '../_layout';
 
 export const handle = {
-  i18n: [...decisionsI18n, ...scenarioI18n, 'common'] satisfies Namespace,
+  i18n: ['common', 'scenarios', 'decisions'] as const satisfies Namespace,
 };
-
-const MAX_THRESHOLD = 10000;
 
 /**
  * This is a list of validation errors comming from the backend that are handled by the form schema.
@@ -40,135 +35,6 @@ const conflictingWithSchemaValidationErrors: string[] = [
   'SCORE_THRESHOLDS_MISMATCH',
   'SCORE_THRESHOLD_MISSING',
 ] satisfies ScenarioValidationErrorCodeDto[];
-function getFormSchema(t: TFunction<typeof handle.i18n>) {
-  return z
-    .object({
-      scoreReviewThreshold: z.coerce
-        .number({
-          message: t('scenarios:validation.decision.score_threshold_missing'),
-        })
-        .max(MAX_THRESHOLD, {
-          message: t('scenarios:validation.decision.score_threshold_max', {
-            replace: { max: MAX_THRESHOLD },
-          }),
-        })
-        .min(-MAX_THRESHOLD, {
-          message: t('scenarios:validation.decision.score_threshold_min', {
-            replace: { min: -MAX_THRESHOLD },
-          }),
-        })
-        .int(),
-      scoreBlockAndReviewThreshold: z.coerce
-        .number({
-          message: t('scenarios:validation.decision.score_threshold_missing'),
-        })
-        .max(MAX_THRESHOLD, {
-          message: t('scenarios:validation.decision.score_threshold_max', {
-            replace: { max: MAX_THRESHOLD },
-          }),
-        })
-        .min(-MAX_THRESHOLD, {
-          message: t('scenarios:validation.decision.score_threshold_min', {
-            replace: { min: -MAX_THRESHOLD },
-          }),
-        })
-        .int(),
-      scoreDeclineThreshold: z.coerce
-        .number({
-          message: t('scenarios:validation.decision.score_threshold_missing'),
-        })
-        .max(MAX_THRESHOLD, {
-          message: t('scenarios:validation.decision.score_threshold_max', {
-            replace: { max: MAX_THRESHOLD },
-          }),
-        })
-        .min(-MAX_THRESHOLD, {
-          message: t('scenarios:validation.decision.score_threshold_min', {
-            replace: { min: -MAX_THRESHOLD },
-          }),
-        })
-        .int(),
-    })
-    .superRefine(({ scoreReviewThreshold, scoreBlockAndReviewThreshold, scoreDeclineThreshold }, ctx) => {
-      if (scoreBlockAndReviewThreshold < scoreReviewThreshold) {
-        ctx.issues.push({
-          code: 'custom',
-          path: ['scoreBlockAndReviewThreshold'],
-          message: t('scenarios:validation.decision.score_threshold_min', {
-            replace: { min: scoreReviewThreshold },
-          }),
-          input: '',
-        });
-      }
-      if (scoreDeclineThreshold < scoreBlockAndReviewThreshold) {
-        ctx.issues.push({
-          code: 'custom',
-          path: ['scoreDeclineThreshold'],
-          message: t('scenarios:validation.decision.score_threshold_min', {
-            replace: { min: scoreBlockAndReviewThreshold },
-          }),
-          input: '',
-        });
-      }
-    });
-}
-
-export async function action({ request, params }: ActionFunctionArgs) {
-  const {
-    authService,
-    i18nextService: { getFixedT },
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
-
-  const [session, data, t, { scenario }] = await Promise.all([
-    getSession(request),
-    request.json(),
-    getFixedT(request, ['common', 'scenarios']),
-    authService.isAuthenticated(request, {
-      failureRedirect: getRoute('/sign-in'),
-    }),
-  ]);
-
-  const result = getFormSchema(t).safeParse(data);
-
-  if (!result.success) {
-    return Response.json(
-      { status: 'error', errors: z.treeifyError(result.error) },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  }
-
-  try {
-    const iterationId = fromParams(params, 'iterationId');
-    await scenario.updateScenarioIteration(iterationId, data);
-
-    setToastMessage(session, {
-      type: 'success',
-      message: t('common:success.save'),
-    });
-
-    return Response.json(
-      { status: 'success', errors: [] },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  } catch (_error) {
-    setToastMessage(session, {
-      type: 'error',
-      message: t('common:errors.unknown'),
-    });
-
-    return Response.json(
-      { status: 'error', errors: [] },
-      {
-        headers: { 'Set-Cookie': await commitSession(session) },
-      },
-    );
-  }
-}
 
 export default function Decision() {
   const { t } = useTranslation(handle.i18n);
@@ -209,73 +75,32 @@ function ViewScoreThresholds() {
 }
 
 function EditScoreThresholds() {
+  const { t: tErrors } = useTranslation(['common', 'scenarios']);
   const { t } = useTranslation(handle.i18n);
   const iteration = useCurrentScenarioIteration();
+  const revalidate = useLoaderRevalidator();
 
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
 
-  const fetcher = useFetcher<typeof action>();
   const editorMode = useEditorMode();
-
-  const schema = React.useMemo(() => getFormSchema(t), [t]);
-  const fieldValidators = React.useMemo(() => {
-    return {
-      scoreReviewThreshold: z
-        .number({ message: t('scenarios:validation.decision.score_threshold_missing') })
-        .max(MAX_THRESHOLD, {
-          message: t('scenarios:validation.decision.score_threshold_max', {
-            replace: { max: MAX_THRESHOLD },
-          }),
-        })
-        .min(-MAX_THRESHOLD, {
-          message: t('scenarios:validation.decision.score_threshold_min', {
-            replace: { min: -MAX_THRESHOLD },
-          }),
-        })
-        .int(),
-      scoreBlockAndReviewThreshold: z
-        .number({ message: t('scenarios:validation.decision.score_threshold_missing') })
-        .max(MAX_THRESHOLD, {
-          message: t('scenarios:validation.decision.score_threshold_max', {
-            replace: { max: MAX_THRESHOLD },
-          }),
-        })
-        .min(-MAX_THRESHOLD, {
-          message: t('scenarios:validation.decision.score_threshold_min', {
-            replace: { min: -MAX_THRESHOLD },
-          }),
-        })
-        .int(),
-      scoreDeclineThreshold: z
-        .number({ message: t('scenarios:validation.decision.score_threshold_missing') })
-        .max(MAX_THRESHOLD, {
-          message: t('scenarios:validation.decision.score_threshold_max', {
-            replace: { max: MAX_THRESHOLD },
-          }),
-        })
-        .min(-MAX_THRESHOLD, {
-          message: t('scenarios:validation.decision.score_threshold_min', {
-            replace: { min: -MAX_THRESHOLD },
-          }),
-        })
-        .int(),
-    } as const;
-  }, [t]);
+  const schema = React.useMemo(() => buildEditScoreThresholdsPayloadSchema(tErrors), [tErrors]);
+  const editScoreThresholdsMutation = useEditScoreThresholdsMutation(iteration.id);
 
   const form = useForm({
     defaultValues: {
       scoreReviewThreshold: iteration.scoreReviewThreshold ?? 0,
       scoreBlockAndReviewThreshold: iteration.scoreBlockAndReviewThreshold ?? 0,
       scoreDeclineThreshold: iteration.scoreDeclineThreshold ?? 0,
-    } as z.infer<typeof schema>,
+    },
     validators: {
-      // Cast to loosen overly strict generic expectation from TanStack on StandardSchemaV1
-      onSubmit: schema as unknown as any,
+      onSubmit: schema,
     },
     onSubmit: ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        fetcher.submit(value, { method: 'POST', encType: 'application/json' });
+        editScoreThresholdsMutation.mutateAsync(value).then((_res) => {
+          revalidate();
+        });
       }
     },
   });
@@ -291,21 +116,14 @@ function EditScoreThresholds() {
   );
 
   return (
-    <form
-      className="flex flex-col gap-2"
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        form.handleSubmit();
-      }}
-    >
+    <form className="flex flex-col gap-2" onSubmit={handleSubmit(form)}>
       <div className="grid grid-cols-[max-content_auto] items-center gap-x-1 gap-y-2 lg:gap-x-2 lg:gap-y-4">
         <OutcomeBadge size="md" outcome="approve" className="w-full justify-center" />
         <form.Field
           name="scoreReviewThreshold"
           validators={{
-            onChange: fieldValidators.scoreReviewThreshold,
-            onBlur: fieldValidators.scoreReviewThreshold,
+            onChange: schema.shape.scoreReviewThreshold,
+            onBlur: schema.shape.scoreReviewThreshold,
           }}
         >
           {(field) => (
@@ -343,8 +161,8 @@ function EditScoreThresholds() {
         <form.Field
           name="scoreBlockAndReviewThreshold"
           validators={{
-            onChange: fieldValidators.scoreBlockAndReviewThreshold,
-            onBlur: fieldValidators.scoreBlockAndReviewThreshold,
+            onChange: schema.shape.scoreBlockAndReviewThreshold,
+            onBlur: schema.shape.scoreBlockAndReviewThreshold,
           }}
         >
           {(field) => (
@@ -386,8 +204,8 @@ function EditScoreThresholds() {
         <form.Field
           name="scoreDeclineThreshold"
           validators={{
-            onChange: fieldValidators.scoreDeclineThreshold,
-            onBlur: fieldValidators.scoreDeclineThreshold,
+            onChange: schema.shape.scoreDeclineThreshold,
+            onBlur: schema.shape.scoreDeclineThreshold,
           }}
         >
           {(field) => (

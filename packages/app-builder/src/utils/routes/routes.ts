@@ -602,6 +602,11 @@ export const routes = [
         "file": "routes/ressources+/data+/$tableId.createNavigationOption.tsx"
       },
       {
+        "id": "routes/ressources+/data+/$tableName.$objectId.get",
+        "path": "ressources/data/:tableName/:objectId/get",
+        "file": "routes/ressources+/data+/$tableName.$objectId.get.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/$tableName.list-objects",
         "path": "ressources/data/:tableName/list-objects",
         "file": "routes/ressources+/data+/$tableName.list-objects.tsx"
@@ -650,6 +655,11 @@ export const routes = [
         "id": "routes/ressources+/data+/editTable",
         "path": "ressources/data/editTable",
         "file": "routes/ressources+/data+/editTable.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/update.data-display",
+        "path": "ressources/data/update/data-display",
+        "file": "routes/ressources+/data+/update.data-display.tsx"
       },
       {
         "id": "routes/ressources+/decisions+/$decisionId",
@@ -710,11 +720,6 @@ export const routes = [
         "id": "routes/ressources+/opensanctions+/dataset-freshness",
         "path": "ressources/opensanctions/dataset-freshness",
         "file": "routes/ressources+/opensanctions+/dataset-freshness.tsx"
-      },
-      {
-        "id": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId",
-        "path": "ressources/rule-snoozes/read/:ruleSnoozeId",
-        "file": "routes/ressources+/rule-snoozes+/read.$ruleSnoozeId.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/$scenarioId+/$iterationId+/activate",
@@ -795,6 +800,21 @@ export const routes = [
         "id": "routes/ressources+/scenarios+/create",
         "path": "ressources/scenarios/create",
         "file": "routes/ressources+/scenarios+/create.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/edit-rule.$ruleId",
+        "path": "ressources/scenarios/edit-rule/:ruleId",
+        "file": "routes/ressources+/scenarios+/edit-rule.$ruleId.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/iteration+/$iterationId.edit-score-thresholds",
+        "path": "ressources/scenarios/iteration/:iterationId/edit-score-thresholds",
+        "file": "routes/ressources+/scenarios+/iteration+/$iterationId.edit-score-thresholds.tsx"
+      },
+      {
+        "id": "routes/ressources+/scenarios+/iteration+/$iterationId.edit-trigger",
+        "path": "ressources/scenarios/iteration/:iterationId/edit-trigger",
+        "file": "routes/ressources+/scenarios+/iteration+/$iterationId.edit-trigger.tsx"
       },
       {
         "id": "routes/ressources+/scenarios+/iteration+/$iterationId.get-rules",

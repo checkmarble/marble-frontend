@@ -2,108 +2,53 @@ import { Callout, scenarioI18n } from '@app-builder/components';
 import { AstBuilder } from '@app-builder/components/AstBuilder';
 import { type AstBuilderNodeStore } from '@app-builder/components/AstBuilder/edition/node-store';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
-import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
-import { type AstNode, isUndefinedAstNode, NewEmptyTriggerAstNode, NewUndefinedAstNode } from '@app-builder/models';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
+import { isUndefinedAstNode, NewEmptyTriggerAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { type ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
+import { useEditTriggerMutation } from '@app-builder/queries/scenarios/edit-trigger';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { createDecisionDocHref, executeAScenarioDocHref } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
-import { initServerServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
-import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
-import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
-import { useFetcher, useLoaderData } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button, Collapsible } from 'ui-design-system';
-
 import { useCurrentScenarioIteration, useCurrentScenarioValidation } from '../_layout';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
 };
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository, scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn(
+  [authMiddleware],
+  async function scenarioIterationTriggerLoader({ context, params }) {
+    const { customListsRepository, editor, dataModelRepository, scenario } = context.authInfo;
 
-  const scenarioId = fromParams(params, 'scenarioId');
-  const [currentScenario, customLists, dataModel, accessors] = await Promise.all([
-    scenario.getScenario({ scenarioId }),
-    customListsRepository.listCustomLists(),
-    dataModelRepository.getDataModel(),
-    editor.listAccessors({ scenarioId }),
-  ]);
+    const scenarioId = fromParams(params, 'scenarioId');
+    const [currentScenario, customLists, dataModel, accessors] = await Promise.all([
+      scenario.getScenario({ scenarioId }),
+      customListsRepository.listCustomLists(),
+      dataModelRepository.getDataModel(),
+      editor.listAccessors({ scenarioId }),
+    ]);
 
-  return json({
-    databaseAccessors: accessors.databaseAccessors,
-    payloadAccessors: accessors.payloadAccessors,
-    dataModel,
-    customLists,
-    triggerObjectType: currentScenario.triggerObjectType,
-  });
-}
-
-export async function action({ request, params }: ActionFunctionArgs) {
-  const {
-    authService,
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
-  const session = await getSession(request);
-  const { scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-
-  try {
-    const iterationId = fromParams(params, 'iterationId');
-
-    const { action, ...payload } = (await request.json()) as { action: string };
-
-    if (action === 'save') {
-      const { astNode: triggerConditionAstExpression, schedule } = payload as {
-        astNode: AstNode;
-        schedule: string;
-      };
-      await scenario.updateScenarioIteration(iterationId, {
-        triggerConditionAstExpression,
-        schedule,
-      });
-
-      setToastMessage(session, {
-        type: 'success',
-        messageKey: 'common:success.save',
-      });
-
-      return json(
-        {
-          success: true as const,
-          error: null,
-        },
-        { headers: { 'Set-Cookie': await commitSession(session) } },
-      );
-    }
-  } catch (_error) {
-    setToastMessage(session, {
-      type: 'error',
-      messageKey: 'common:errors.unknown',
-    });
-
-    return json(
-      {
-        success: false as const,
-        error: null,
-      },
-      { headers: { 'Set-Cookie': await commitSession(session) } },
-    );
-  }
-}
+    return {
+      databaseAccessors: accessors.databaseAccessors,
+      payloadAccessors: accessors.payloadAccessors,
+      dataModel,
+      customLists,
+      triggerObjectType: currentScenario.triggerObjectType,
+    };
+  },
+);
 
 export default function Trigger() {
   const { t } = useTranslation(handle.i18n);
@@ -114,10 +59,10 @@ export default function Trigger() {
   );
 
   const builderOptions = useLoaderData<typeof loader>();
+  const editTriggerMutation = useEditTriggerMutation(scenarioIteration.id);
+  const revalidate = useLoaderRevalidator();
 
-  const fetcher = useFetcher<typeof action>();
   const editorMode = useEditorMode();
-
   const [schedule, setSchedule] = useState(scenarioIteration.schedule ?? '');
 
   const scenario = useCurrentScenario();
@@ -130,17 +75,14 @@ export default function Trigger() {
   const handleSave = () => {
     const node = nodeStoreRef.current ? nodeStoreRef.current.select((s) => s.$node).peek() : NewUndefinedAstNode();
 
-    fetcher.submit(
-      {
-        action: 'save',
+    editTriggerMutation
+      .mutateAsync({
         astNode: node,
         schedule,
-      },
-      {
-        method: 'PATCH',
-        encType: 'application/json',
-      },
-    );
+      })
+      .then(() => {
+        revalidate();
+      });
   };
 
   const handleAddTrigger = () => {

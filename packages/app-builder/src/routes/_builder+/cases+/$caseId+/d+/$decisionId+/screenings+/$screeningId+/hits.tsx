@@ -40,6 +40,7 @@ export default function CaseSanctionsHitsPage() {
                 decisionId: fromUUIDtoSUUID(decision.id),
                 screeningId: fromUUIDtoSUUID(screeningId),
               }),
+              { replace: true },
             );
           }}
         />
