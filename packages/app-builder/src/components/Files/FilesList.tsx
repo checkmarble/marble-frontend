@@ -1,5 +1,5 @@
 import { AlreadyDownloadingError, AuthRequestError, useDownloadFile } from '@app-builder/services/DownloadFilesService';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
@@ -47,7 +47,7 @@ export function FilesList({ files, downloadEndpoint, uploadEndpoint }: FilesList
 
 export function FilesListTable({ files, downloadEndpoint }: Omit<FilesListProps, 'uploadEndpoint'>) {
   const { t } = useTranslation(['cases']);
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
 
   const columns = useMemo(() => {
     const columns = [
@@ -70,9 +70,7 @@ export function FilesListTable({ files, downloadEndpoint }: Omit<FilesListProps,
         size: 40,
         cell: ({ getValue }) => {
           const dateTime = getValue();
-          return (
-            <time dateTime={dateTime}>{formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}</time>
-          );
+          return <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short' })}</time>;
         },
       }),
       columnHelper.accessor((row) => row.id, {
@@ -85,7 +83,7 @@ export function FilesListTable({ files, downloadEndpoint }: Omit<FilesListProps,
       }),
     ];
     return columns;
-  }, [language, t, downloadEndpoint]);
+  }, [formatDateTime, t, downloadEndpoint]);
 
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: files,

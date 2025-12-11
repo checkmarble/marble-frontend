@@ -35,7 +35,6 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
   const form = useForm({
     onSubmit: ({ value }) => {
       editSuspicionMutation.mutateAsync(value).then((res) => {
-        console.log(res);
         if (res.success) {
           setOpenReportModal(false);
           form.setFieldValue('reportId', res.data?.id);

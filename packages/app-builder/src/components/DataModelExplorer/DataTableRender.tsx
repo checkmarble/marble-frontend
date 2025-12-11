@@ -8,7 +8,6 @@ import {
   type TableModelWithOptions,
 } from '@app-builder/models';
 import { useClientObjectListQuery } from '@app-builder/queries/client-object-list';
-import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import clsx from 'clsx';
@@ -179,7 +178,6 @@ type DataTableProps = {
 
 function DataTable({ caseId, pivotObject, table, list, metadata, pagination, navigateTo }: DataTableProps) {
   const { t } = useTranslation(['common', 'cases']);
-  const language = useFormatLanguage();
 
   const columnHelper = createColumnHelper<Record<string, unknown>>();
   const [columnList, setColumnList] = useState(() => {
@@ -217,13 +215,13 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                 'text-right': parsedData.type === 'number' || parsedData.value === null,
               })}
             >
-              <FormatData data={parsedData} language={language} />
+              <FormatData data={parsedData} />
             </span>
           );
         },
       });
     });
-  }, [columnHelper, columnList, language]);
+  }, [columnHelper, columnList]);
 
   const reactTable = useReactTable({
     state: {

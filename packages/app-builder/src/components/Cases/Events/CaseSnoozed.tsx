@@ -3,7 +3,7 @@ import { EventTime } from '@app-builder/components/Cases/Events/Time';
 import { type CaseSnoozedEvent } from '@app-builder/models/cases';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getFullName } from '@app-builder/services/user';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
@@ -11,7 +11,7 @@ import { Icon } from 'ui-icons';
 export const CaseSnoozedDetail = ({ event }: { event: CaseSnoozedEvent }) => {
   const { getOrgUserById } = useOrganizationUsers();
   const { t } = useTranslation(casesI18n);
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
   const user = useMemo(() => (event.userId ? getOrgUserById(event.userId) : undefined), [event.userId, getOrgUserById]);
 
   return (
@@ -26,11 +26,7 @@ export const CaseSnoozedDetail = ({ event }: { event: CaseSnoozedEvent }) => {
           components={{ Style: <span className="font-bold capitalize" /> }}
           values={{
             actor: user ? getFullName(user) : 'Marble',
-            date: formatDateTimeWithoutPresets(event.snoozeUntil, {
-              language,
-              dateStyle: 'short',
-              timeStyle: 'short',
-            }),
+            date: formatDateTime(event.snoozeUntil, { dateStyle: 'short', timeStyle: 'short' }),
           }}
         />
       </span>

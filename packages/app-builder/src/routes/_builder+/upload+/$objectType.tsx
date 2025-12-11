@@ -5,7 +5,7 @@ import { useUploadIngestionData } from '@app-builder/queries/upload-ingestion-da
 import { ingestingDataByCsvDocHref } from '@app-builder/services/documentation-href';
 import { isIngestDataAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
-import { formatDateTimeWithoutPresets, formatNumber, useFormatLanguage } from '@app-builder/utils/format';
+import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { REQUEST_TIMEOUT } from '@app-builder/utils/http/http-status-codes';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
@@ -258,6 +258,7 @@ const columnHelper = createColumnHelper<UploadLog>();
 const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
   const { t } = useTranslation(handle.i18n);
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
 
   const columns = useMemo(
     () => [
@@ -268,13 +269,7 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
         cell: ({ getValue }) => {
           const dateTime = getValue();
           return (
-            <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, {
-                language,
-                dateStyle: 'short',
-                timeStyle: 'short',
-              })}
-            </time>
+            <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short', timeStyle: 'short' })}</time>
           );
         },
       }),
@@ -286,13 +281,7 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
           const dateTime = getValue();
           if (!dateTime) return '';
           return (
-            <time dateTime={dateTime}>
-              {formatDateTimeWithoutPresets(dateTime, {
-                language,
-                dateStyle: 'short',
-                timeStyle: 'short',
-              })}
-            </time>
+            <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short', timeStyle: 'short' })}</time>
           );
         },
       }),
@@ -320,7 +309,7 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
         size: 200,
       }),
     ],
-    [language, t],
+    [formatDateTime, language, t],
   );
 
   const { getBodyProps, getContainerProps, table, rows } = useVirtualTable({

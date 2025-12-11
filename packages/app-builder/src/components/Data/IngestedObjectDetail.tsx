@@ -1,5 +1,5 @@
 import { type DataModelObject, type TableModel } from '@app-builder/models';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
@@ -42,7 +42,7 @@ export const IngestedObjectDetail = ({
 }: IngestedObjectDetailProps) => {
   const { t } = useTranslation(['data']);
   const parsedTriggerObject = useParsedTriggerObject(object.data) ?? [];
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
 
   const dataModelTable = dataModel.find((table) => table.name === tableName);
   const links = R.pipe(
@@ -63,8 +63,7 @@ export const IngestedObjectDetail = ({
         <span className="bg-grey-100 border-blue-58 text-blue-58 rounded-sm border px-2 py-1">ID: {objectId}</span>
         <span className="bg-grey-100 border-grey-50 text-grey-50 rounded-sm border px-2 py-1">
           {t('data:last_ingestion_at', {
-            date: formatDateTimeWithoutPresets(object.metadata.validFrom, {
-              language,
+            date: formatDateTime(object.metadata.validFrom, {
               dateStyle: 'short',
               timeStyle: 'short',
             }),
@@ -84,14 +83,14 @@ export const IngestedObjectDetail = ({
                     objectId: data.value as string,
                   })}
                 >
-                  <FormatData data={data} language={language} />
+                  <FormatData data={data} />
                   <Icon
                     icon="visibility"
                     className="invisible size-4 opacity-0 transition-opacity group-hover:visible group-hover:opacity-100"
                   />
                 </Link>
               ) : (
-                <FormatData data={data} language={language} />
+                <FormatData data={data} />
               )}
             </div>
           </Fragment>

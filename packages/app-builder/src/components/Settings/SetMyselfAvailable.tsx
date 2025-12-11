@@ -1,13 +1,13 @@
 import { Callout } from '@app-builder/components/Callout';
 import { useUnavailabilitySettings } from '@app-builder/queries/personal-settings';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export function SetMyselfAvailable() {
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
   const { t } = useTranslation(['common', 'settings']);
 
   const { query: unavailabilityQuery, deleteUnavailability } = useUnavailabilitySettings();
@@ -28,11 +28,7 @@ export function SetMyselfAvailable() {
         <Modal.Title>
           {t('settings:set_myself_available.title', {
             date: unavailabilityQuery.data?.until
-              ? formatDateTimeWithoutPresets(unavailabilityQuery.data.until, {
-                  language,
-                  dateStyle: 'medium',
-                  timeStyle: undefined,
-                })
+              ? formatDateTime(unavailabilityQuery.data.until, { dateStyle: 'medium' })
               : null,
           })}
         </Modal.Title>

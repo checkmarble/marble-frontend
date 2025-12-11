@@ -5,7 +5,7 @@ import {
   snoozeCasePayloadSchema,
   useSnoozeCaseMutation,
 } from '@app-builder/queries/cases/snooze-case';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { useForm, useStore } from '@tanstack/react-form';
 import {
   addDays,
@@ -56,13 +56,12 @@ const getDurations = () => {
 
 export function SnoozeCase({ caseId, snoozeUntil }: Pick<SnoozeCasePayload, 'caseId'> & { snoozeUntil?: string }) {
   const { t } = useTranslation(casesI18n);
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
   const snoozeCaseMutation = useSnoozeCaseMutation();
   const revalidate = useLoaderRevalidator();
   const [isOpen, setIsOpen] = useState(false);
 
-  const formatDate = (date: Date) =>
-    formatDateTimeWithoutPresets(date, { language, dateStyle: 'medium', timeStyle: 'short' });
+  const formatDate = (date: Date) => formatDateTime(date, { dateStyle: 'medium', timeStyle: 'short' });
 
   const form = useForm({
     onSubmit: ({ value }) => {

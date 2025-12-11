@@ -27,8 +27,10 @@ import { Tooltip } from 'ui-design-system';
 import { iconsSVGSpriteHref, Logo, logosSVGSpriteHref } from 'ui-icons';
 import { ErrorComponent } from './components/ErrorComponent';
 import { getToastMessage, MarbleToaster } from './components/MarbleToaster';
+import { TimezoneDetector } from './components/TimezoneDetector';
 import { AgnosticNavigationContext } from './contexts/AgnosticNavigationContext';
 import { AppConfigContext } from './contexts/AppConfigContext';
+import { FormatContext } from './contexts/FormatContext';
 import { LoaderRevalidatorContext } from './contexts/LoaderRevalidatorContext';
 import { HeaderEntry } from './core/middleware-types';
 import { createServerFn, data } from './core/requests';
@@ -38,6 +40,7 @@ import { getSegmentScript } from './services/segment/segment.server';
 import tailwindStyles from './tailwind.css?url';
 import { getClientEnvVars, getServerEnv } from './utils/environment';
 import { useNonce } from './utils/nonce';
+import { getPreferencesCookie } from './utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from './utils/routes';
 
 export const links: LinksFunction = () => [
@@ -75,6 +78,8 @@ export const loader = createServerFn([], async function loader({ request, contex
     csrfService.commitToken(request),
   ]);
 
+  const timezone = getPreferencesCookie(request, 'timezone') ?? 'UTC';
+
   const toastMessage = getToastMessage(toastSession);
 
   const ENV = getClientEnvVars();
@@ -90,7 +95,7 @@ export const loader = createServerFn([], async function loader({ request, contex
 
   const segmentScript = !disableSegment && segmentApiKey ? getSegmentScript(segmentApiKey) : undefined;
 
-  return data({ ENV, locale, csrf: csrfToken, toastMessage, segmentScript, appConfig }, headers);
+  return data({ ENV, locale, timezone, csrf: csrfToken, toastMessage, segmentScript, appConfig }, headers);
 });
 
 export const handle = {
@@ -133,7 +138,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <LoaderRevalidatorContext.Provider value={revalidator.revalidate}>
           <AgnosticNavigationContext.Provider value={navigate}>
             <AuthenticityTokenProvider token={loaderData?.['csrf'] ?? ''}>
-              <Tooltip.Provider>{children}</Tooltip.Provider>
+              <FormatContext.Provider
+                value={{ locale: loaderData?.locale ?? 'en', timezone: loaderData?.timezone ?? 'UTC' }}
+              >
+                <Tooltip.Provider>{children}</Tooltip.Provider>
+              </FormatContext.Provider>
             </AuthenticityTokenProvider>
             <script
               nonce={nonce}
@@ -143,7 +152,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
             />
             <ScrollRestoration nonce={nonce} />
             <Scripts nonce={nonce} />
-            <ClientOnly>{() => <MarbleToaster toastMessage={loaderData?.toastMessage} />}</ClientOnly>
+            <ClientOnly>
+              {() => (
+                <>
+                  <TimezoneDetector />
+                  <MarbleToaster toastMessage={loaderData?.toastMessage} />
+                </>
+              )}
+            </ClientOnly>
           </AgnosticNavigationContext.Provider>
         </LoaderRevalidatorContext.Provider>
       </body>

@@ -1,5 +1,4 @@
 import { type ClientObjectDetail, type TableModelWithOptions } from '@app-builder/models';
-import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +22,6 @@ export function ClientObjectDataList({
   className,
 }: ClientObjectDataListProps) {
   const { t } = useTranslation(['common', 'cases']);
-  const language = useFormatLanguage();
   const parsedData = R.pipe(data, R.mapValues(parseUnknownData));
   const [isExpanded, setIsExpanded] = useState(false);
   const shouldShowButton = tableModel.fields.some((f) => !f.displayed);
@@ -40,7 +38,7 @@ export function ClientObjectDataList({
         return data && ((field.displayed && !hasNoValue) || isExpanded) ? (
           <Fragment key={field.id}>
             <div className="text-grey-50 truncate">{field.name}</div>
-            <FormatData data={data} language={language} className="truncate" />
+            <FormatData data={data} className="truncate" />
           </Fragment>
         ) : null;
       })}

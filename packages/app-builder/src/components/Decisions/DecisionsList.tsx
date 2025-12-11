@@ -3,7 +3,7 @@ import { SelectionProps } from '@app-builder/hooks/useTanstackTableListSelection
 import { type CaseStatus as TCaseStatus } from '@app-builder/models/cases';
 import { type ReviewStatus } from '@app-builder/models/decision';
 import { type Outcome } from '@app-builder/models/outcome';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { getTableSelectColumn } from '@app-builder/utils/table-selection';
@@ -74,7 +74,7 @@ export function DecisionsList({
   tableProps,
 }: DecisionsListProps) {
   const { t } = useTranslation(decisionsI18n);
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
 
   const columns = useMemo(
     () => [
@@ -87,9 +87,7 @@ export function DecisionsList({
         minSize: 80,
         cell: ({ getValue }) => {
           const dateTime = getValue();
-          return (
-            <time dateTime={dateTime}>{formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}</time>
-          );
+          return <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short' })}</time>;
         },
       }),
       columnHelper.accessor((row) => row.scenario.name, {
@@ -173,7 +171,7 @@ export function DecisionsList({
         },
       }),
     ],
-    [t, selectable, language],
+    [t, selectable, formatDateTime],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
