@@ -9,6 +9,8 @@
   "activity_follow_up.filter.add_filter": "Ajouter un filtre",
   "activity_follow_up.filter.date_range": "Période",
   "activity_follow_up.filter.presets": "Sélection rapide",
+  "activity_follow_up.filter.search_table": "Chercher une table",
+  "activity_follow_up.filter.user": "Utilisateur",
   "activity_follow_up.operation.delete": "Suppression",
   "activity_follow_up.operation.insert": "Insertion",
   "activity_follow_up.operation.update": "Mise à jour",

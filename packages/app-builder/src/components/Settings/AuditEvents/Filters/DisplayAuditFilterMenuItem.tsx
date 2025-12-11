@@ -7,6 +7,9 @@ import { match } from 'ts-pattern';
 import { ButtonV2, Input, MenuCommand, Separator } from 'ui-design-system';
 
 import { AuditEventsFilterLabel } from './AuditEventsFilterLabel';
+// TODO: Import TableFilterMenu when we have an endpoint to list available tables
+// import { TableFilterMenu } from './TableFilter';
+import { UserFilterMenu } from './UserFilter';
 
 type DisplayAuditFilterMenuItemProps = {
   filterName: AuditEventsFilterName;
@@ -14,48 +17,56 @@ type DisplayAuditFilterMenuItemProps = {
 };
 
 export const DisplayAuditFilterMenuItem = ({ filterName, onSelect }: DisplayAuditFilterMenuItemProps) => {
-  return match(filterName)
-    .with('dateRange', () => (
-      <MenuCommand.SubMenu
-        arrow={false}
-        hover={false}
-        trigger={
-          <span>
-            <AuditEventsFilterLabel name={filterName} />
-          </span>
-        }
-        className="max-h-[600px]"
-      >
-        <DateRangeFilterMenu onSelect={(value) => onSelect({ [filterName]: value })} />
-      </MenuCommand.SubMenu>
-    ))
-    .with('table', () => (
-      <MenuCommand.SubMenu
-        arrow={false}
-        hover={false}
-        trigger={
-          <span>
-            <AuditEventsFilterLabel name={filterName} />
-          </span>
-        }
-      >
-        <TextInputFilterMenu placeholder="decisions" onSelect={(value) => onSelect({ [filterName]: value })} />
-      </MenuCommand.SubMenu>
-    ))
-    .with('entityId', () => (
-      <MenuCommand.SubMenu
-        arrow={false}
-        hover={false}
-        trigger={
-          <span>
-            <AuditEventsFilterLabel name={filterName} />
-          </span>
-        }
-      >
-        <TextInputFilterMenu placeholder="abc123..." onSelect={(value) => onSelect({ [filterName]: value })} />
-      </MenuCommand.SubMenu>
-    ))
-    .exhaustive();
+  return (
+    match(filterName)
+      .with('dateRange', () => (
+        <MenuCommand.SubMenu
+          arrow={false}
+          hover={false}
+          trigger={
+            <span>
+              <AuditEventsFilterLabel name={filterName} />
+            </span>
+          }
+          className="max-h-[600px]"
+        >
+          <DateRangeFilterMenu onSelect={(value) => onSelect({ [filterName]: value })} />
+        </MenuCommand.SubMenu>
+      ))
+      .with('userId', () => (
+        <MenuCommand.SubMenu
+          arrow={false}
+          hover={false}
+          trigger={
+            <span>
+              <AuditEventsFilterLabel name={filterName} />
+            </span>
+          }
+        >
+          <UserFilterMenu onSelect={(value) => onSelect({ [filterName]: value })} />
+        </MenuCommand.SubMenu>
+      ))
+      // TODO: Add 'table' filter when we have an endpoint to list available tables
+      // .with('table', () => (
+      //   <MenuCommand.SubMenu arrow={false} hover={false} trigger={<span><AuditEventsFilterLabel name={filterName} /></span>}>
+      //     <TableFilterMenu onSelect={(value) => onSelect({ [filterName]: value })} />
+      //   </MenuCommand.SubMenu>
+      // ))
+      .with('entityId', () => (
+        <MenuCommand.SubMenu
+          arrow={false}
+          hover={false}
+          trigger={
+            <span>
+              <AuditEventsFilterLabel name={filterName} />
+            </span>
+          }
+        >
+          <TextInputFilterMenu placeholder="abc123..." onSelect={(value) => onSelect({ [filterName]: value })} />
+        </MenuCommand.SubMenu>
+      ))
+      .exhaustive()
+  );
 };
 
 type DateRangeFilterMenuProps = {

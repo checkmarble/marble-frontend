@@ -15,6 +15,7 @@ import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { AuditEventsTable } from './AuditEventsTable';
+import { type FilterEntry } from './Filters/ActivatedAuditFilterItem';
 import { AuditEventsFiltersBar } from './Filters/AuditEventsFiltersBar';
 import { PaginationRow } from './PaginationRow';
 
@@ -44,6 +45,11 @@ export function ActivityFollowUpPage({ query, limit, updatePage }: ActivityFollo
   const availableFilters = useMemo(() => {
     return [...auditEventsFilterNames];
   }, []);
+
+  // TODO: Remove this filter when 'table' filter is enabled
+  const activeFilters = useMemo(() => {
+    return parsedQuery.asArray.filter(([name]) => name !== 'table') as FilterEntry[];
+  }, [parsedQuery.asArray]);
 
   const handleExportCsv = useCallback(async () => {
     if (auditEvents.length === 0) return;
@@ -94,7 +100,7 @@ export function ActivityFollowUpPage({ query, limit, updatePage }: ActivityFollo
             {/* Filters Row */}
             <div className="flex items-center gap-v2-sm">
               <AuditEventsFiltersBar
-                filters={parsedQuery.asArray}
+                filters={activeFilters}
                 availableFilters={availableFilters}
                 updateFilters={parsedQuery.update}
               />

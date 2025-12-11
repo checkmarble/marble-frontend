@@ -9,6 +9,8 @@
   "activity_follow_up.filter.add_filter": "Add filter",
   "activity_follow_up.filter.date_range": "Date range",
   "activity_follow_up.filter.presets": "Quick select",
+  "activity_follow_up.filter.search_table": "Search a table",
+  "activity_follow_up.filter.user": "User",
   "activity_follow_up.operation.delete": "Delete",
   "activity_follow_up.operation.insert": "Insert",
   "activity_follow_up.operation.update": "Update",

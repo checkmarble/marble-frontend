@@ -9,6 +9,8 @@
   "activity_follow_up.filter.add_filter": "إضافة فلتر",
   "activity_follow_up.filter.date_range": "نطاق التاريخ",
   "activity_follow_up.filter.presets": "اختيار سريع",
+  "activity_follow_up.filter.search_table": "البحث عن جدول",
+  "activity_follow_up.filter.user": "المستخدم",
   "activity_follow_up.operation.delete": "حذف",
   "activity_follow_up.operation.insert": "إدراج",
   "activity_follow_up.operation.update": "تحديث",

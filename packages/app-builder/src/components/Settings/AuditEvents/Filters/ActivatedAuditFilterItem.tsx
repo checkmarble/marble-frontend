@@ -1,5 +1,6 @@
 import { DateRangeFilter } from '@app-builder/components/Filters';
 import type { AuditEventsFilterName, AuditEventsFilters } from '@app-builder/queries/audit-events/get-audit-events';
+import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { useCallbackRef } from '@marble/shared';
 import { differenceInDays } from 'date-fns';
@@ -10,9 +11,10 @@ import { ButtonV2, MenuCommand, Separator } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AuditEventsFilterLabel } from './AuditEventsFilterLabel';
 
+// TODO: Add ['table', string] when we have an endpoint to list available tables
 export type FilterEntry =
   | ['dateRange', NonNullable<AuditEventsFilters['dateRange']>]
-  | ['table', string]
+  | ['userId', string]
   | ['entityId', string];
 
 const EDITABLE_FILTERS: readonly AuditEventsFilterName[] = ['dateRange'];
@@ -74,6 +76,7 @@ const DisplayFilterValue = ({ filter }: DisplayFilterValueProps): ReactNode => {
     t,
     i18n: { language },
   } = useTranslation(['filters', 'settings']);
+  const { getOrgUserById } = useOrganizationUsers();
 
   const [filterName, filterValue] = filter;
 
@@ -101,12 +104,16 @@ const DisplayFilterValue = ({ filter }: DisplayFilterValueProps): ReactNode => {
         );
       }
     }
-    case 'table':
+    case 'userId': {
+      const user = getOrgUserById(filterValue);
+      const displayValue = user?.email ?? filterValue;
       return (
         <span>
-          <AuditEventsFilterLabel name={filterName} />: {filterValue}
+          <AuditEventsFilterLabel name={filterName} />: {displayValue}
         </span>
       );
+    }
+    // TODO: Add 'table' case when we have an endpoint to list available tables
     case 'entityId':
       return (
         <span>
@@ -135,7 +142,8 @@ const EditFilterContent = ({ filter, onUpdate, onClose }: EditFilterContentProps
           }}
         />
       );
-    case 'table':
+    // TODO: Add 'table' case when we have an endpoint to list available tables
+    case 'userId':
     case 'entityId':
       return null;
   }

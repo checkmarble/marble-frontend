@@ -26,13 +26,15 @@ const dateRangeSchema = z.discriminatedUnion('type', [
 
 export const auditEventsFiltersSchema = z.object({
   dateRange: dateRangeSchema.optional(),
+  userId: z.string().optional(),
   table: z.string().optional(),
   entityId: z.string().optional(),
 });
 
 export type AuditEventsFilters = z.infer<typeof auditEventsFiltersSchema>;
 
-export const auditEventsFilterNames = ['dateRange', 'table', 'entityId'] as const;
+// TODO: Add 'table' filter when we have an endpoint to list available tables
+export const auditEventsFilterNames = ['dateRange', 'userId', 'entityId'] as const;
 export type AuditEventsFilterName = (typeof auditEventsFilterNames)[number];
 
 type AuditEventsResponse = {

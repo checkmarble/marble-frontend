@@ -1,6 +1,7 @@
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
 import { usePanel } from '@app-builder/components/Panel';
 import { type AuditEvent } from '@app-builder/models/audit-event';
+import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { useCallback, useMemo } from 'react';
@@ -20,6 +21,7 @@ export function AuditEventsTable({ auditEvents }: AuditEventsTableProps) {
   const { t } = useTranslation(['settings']);
   const language = useFormatLanguage();
   const { openPanel } = usePanel();
+  const { getOrgUserById } = useOrganizationUsers();
 
   const columns = useMemo(
     () => [
@@ -49,10 +51,12 @@ export function AuditEventsTable({ auditEvents }: AuditEventsTableProps) {
         cell: ({ getValue }) => {
           const actor = getValue();
           if (!actor) return <span className="text-grey-50">-</span>;
+          const user = actor.type === 'user' ? getOrgUserById(actor.id) : null;
+          const secondaryText = user?.email ?? actor.name;
           return (
             <div className="flex flex-col">
               <span className="text-grey-00 text-sm">{actor.name}</span>
-              <span className="text-grey-50 text-xs capitalize">{actor.type.replace('_', ' ')}</span>
+              <span className="text-grey-50 text-xs">{secondaryText}</span>
             </div>
           );
         },
@@ -93,7 +97,7 @@ export function AuditEventsTable({ auditEvents }: AuditEventsTableProps) {
         },
       }),
     ],
-    [language, t],
+    [getOrgUserById, language, t],
   );
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({

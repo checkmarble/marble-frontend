@@ -8,9 +8,10 @@ type AuditEventsFilterLabelProps = { name: AuditEventsFilterName };
 export const AuditEventsFilterLabel = ({ name }: AuditEventsFilterLabelProps): ReactNode => {
   const { t } = useTranslation(['settings']);
 
+  // TODO: Add 'table' case when we have an endpoint to list available tables
   return match(name)
     .with('dateRange', () => t('settings:activity_follow_up.filter.date_range'))
-    .with('table', () => t('settings:activity_follow_up.table.table'))
+    .with('userId', () => t('settings:activity_follow_up.filter.user'))
     .with('entityId', () => t('settings:activity_follow_up.table.entity_id'))
     .exhaustive();
 };
