@@ -4245,16 +4245,20 @@ export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts)
 /**
  * List audit events
  */
-export function listAuditEvents($from: string, to: string, { userId, apiKeyId, table, entityId, after }: {
+export function listAuditEvents($from: string, to: string, { userId, apiKeyId, table, entityId, limit, after }: {
     userId?: string;
     apiKeyId?: string;
     table?: string;
     entityId?: string;
+    limit?: number;
     after?: string;
 } = {}, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
-        data: AuditEventDto[];
+        data: {
+            has_next_page: boolean;
+            events: AuditEventDto[];
+        };
     } | {
         status: 401;
         data: string;
@@ -4268,6 +4272,7 @@ export function listAuditEvents($from: string, to: string, { userId, apiKeyId, t
         api_key_id: apiKeyId,
         table,
         entity_id: entityId,
+        limit,
         after
     }))}`, {
         ...opts

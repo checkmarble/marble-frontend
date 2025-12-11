@@ -527,6 +527,13 @@
         schema:
           type: string
           format: uuid
+      - name: limit
+        description: Number of item to return
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
       - name: after
         description: The ID after which to continue paginating
         in: query
@@ -539,9 +546,15 @@
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/AuditEventDto'
+              type: object
+              required: [has_next_page, events]
+              properties:
+                has_next_page:
+                  type: boolean
+                events:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/AuditEventDto'
       '401':
         $ref: 'components.yml#/responses/401'
       '403':
