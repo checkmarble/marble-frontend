@@ -1,11 +1,10 @@
+import type { AuditEventsFilterName, AuditEventsFilters } from '@app-builder/queries/audit-events/get-audit-events';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { ActivatedAuditFilterItem, type FilterEntry } from './ActivatedAuditFilterItem';
 import { DisplayAuditFilterMenuItem } from './DisplayAuditFilterMenuItem';
-import type { AuditEventsFilterName, AuditEventsFilters } from './filters';
 
 export type AuditEventsFiltersBarProps = {
   filters: FilterEntry[];

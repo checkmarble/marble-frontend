@@ -2,7 +2,11 @@ import { Page } from '@app-builder/components';
 import { PanelProvider } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useBase64Query } from '@app-builder/hooks/useBase64Query';
-import { auditEventsFiltersSchema, useGetAuditEventsQuery } from '@app-builder/queries/audit-events/get-audit-events';
+import {
+  auditEventsFilterNames,
+  auditEventsFiltersSchema,
+  useGetAuditEventsQuery,
+} from '@app-builder/queries/audit-events/get-audit-events';
 import { downloadFile } from '@app-builder/utils/download-file';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +15,7 @@ import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { AuditEventsTable } from './AuditEventsTable';
-import { AuditEventsFiltersBar, auditEventsFilterNames } from './Filters';
+import { AuditEventsFiltersBar } from './Filters/AuditEventsFiltersBar';
 import { PaginationRow } from './PaginationRow';
 
 interface ActivityFollowUpPageProps {

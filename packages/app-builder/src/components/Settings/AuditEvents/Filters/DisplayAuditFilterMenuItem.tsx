@@ -1,4 +1,5 @@
 import { DateRangeFilter } from '@app-builder/components/Filters';
+import type { AuditEventsFilterName, AuditEventsFilters } from '@app-builder/queries/audit-events/get-audit-events';
 import { DateRangeFilterType } from 'packages/ui-design-system/src/FiltersBar/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +7,6 @@ import { match } from 'ts-pattern';
 import { ButtonV2, Input, MenuCommand, Separator } from 'ui-design-system';
 
 import { AuditEventsFilterLabel } from './AuditEventsFilterLabel';
-import type { AuditEventsFilterName, AuditEventsFilters } from './filters';
 
 type DisplayAuditFilterMenuItemProps = {
   filterName: AuditEventsFilterName;

@@ -1,8 +1,7 @@
+import type { AuditEventsFilterName } from '@app-builder/queries/audit-events/get-audit-events';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-
-import type { AuditEventsFilterName } from './filters';
 
 type AuditEventsFilterLabelProps = { name: AuditEventsFilterName };
 

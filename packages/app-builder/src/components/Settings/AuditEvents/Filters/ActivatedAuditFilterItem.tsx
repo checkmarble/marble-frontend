@@ -1,4 +1,5 @@
 import { DateRangeFilter } from '@app-builder/components/Filters';
+import type { AuditEventsFilterName, AuditEventsFilters } from '@app-builder/queries/audit-events/get-audit-events';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { useCallbackRef } from '@marble/shared';
 import { differenceInDays } from 'date-fns';
@@ -7,9 +8,7 @@ import { type MouseEvent, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2, MenuCommand, Separator } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { AuditEventsFilterLabel } from './AuditEventsFilterLabel';
-import type { AuditEventsFilterName, AuditEventsFilters } from './filters';
 
 export type FilterEntry =
   | ['dateRange', NonNullable<AuditEventsFilters['dateRange']>]
