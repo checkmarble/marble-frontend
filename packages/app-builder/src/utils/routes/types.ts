@@ -149,6 +149,7 @@ export type RoutePath =
   | '/ressources/screenings/upload/:screeningId'
   | '/ressources/settings/api-keys/create'
   | '/ressources/settings/api-keys/delete'
+  | '/ressources/settings/audit-events'
   | '/ressources/settings/data-model/tables/:tableId/exported-fields/delete'
   | '/ressources/settings/data-model/tables/:tableId/exported-fields/update'
   | '/ressources/settings/inboxes/create'
