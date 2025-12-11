@@ -20,19 +20,23 @@ export function setPreferencesCookie<K extends keyof PreferencesCookie>(key: K, 
     throw new Error('Invalid preferences cookie value');
   }
 
-  switch (typeof value) {
-    case 'boolean':
-      current[key] = value ? 1 : 0;
-      break;
-    case 'string':
-      current[key] = value;
-      break;
-    case 'number':
-      current[key] = (value as number).toString();
-      break;
-    default:
-      current[key] = JSON.stringify(value);
-      break;
+  if (value === undefined) {
+    delete current[key];
+  } else {
+    switch (typeof value) {
+      case 'boolean':
+        current[key] = value ? 1 : 0;
+        break;
+      case 'string':
+        current[key] = value;
+        break;
+      case 'number':
+        current[key] = (value as number).toString();
+        break;
+      default:
+        current[key] = JSON.stringify(value);
+        break;
+    }
   }
 
   Cookie.set(COOKIE_NAME, JSON.stringify(current), {

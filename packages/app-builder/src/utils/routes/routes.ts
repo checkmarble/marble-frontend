@@ -14,6 +14,11 @@ export const routes = [
         "file": "routes/_auth+/_layout.tsx",
         "children": [
           {
+            "id": "routes/_auth+/auth-redirect",
+            "path": "auth-redirect",
+            "file": "routes/_auth+/auth-redirect.tsx"
+          },
+          {
             "id": "routes/_auth+/create-password",
             "path": "create-password",
             "file": "routes/_auth+/create-password.tsx"
@@ -295,11 +300,6 @@ export const routes = [
                 "file": "routes/_builder+/settings+/_index.tsx"
               },
               {
-                "id": "routes/_builder+/settings+/ai-case-review",
-                "path": "ai-case-review",
-                "file": "routes/_builder+/settings+/ai-case-review.tsx"
-              },
-              {
                 "id": "routes/_builder+/settings+/analytics+/filters",
                 "path": "analytics/filters",
                 "file": "routes/_builder+/settings+/analytics+/filters.tsx"
@@ -479,6 +479,11 @@ export const routes = [
         "id": "routes/ressources+/cases+/add-to-case",
         "path": "ressources/cases/add-to-case",
         "file": "routes/ressources+/cases+/add-to-case.tsx"
+      },
+      {
+        "id": "routes/ressources+/cases+/ai-review",
+        "path": "ressources/cases/ai-review",
+        "file": "routes/ressources+/cases+/ai-review.tsx"
       },
       {
         "id": "routes/ressources+/cases+/close-case",
@@ -832,12 +837,6 @@ export const routes = [
         "file": "routes/ressources+/screenings+/upload.$screeningId.tsx"
       },
       {
-        "id": "routes/ressources+/settings+/ai-review+/_index",
-        "index": true,
-        "path": "ressources/settings/ai-review",
-        "file": "routes/ressources+/settings+/ai-review+/_index.tsx"
-      },
-      {
         "id": "routes/ressources+/settings+/api-keys+/create",
         "path": "ressources/settings/api-keys/create",
         "file": "routes/ressources+/settings+/api-keys+/create.tsx"
@@ -957,6 +956,11 @@ export const routes = [
         "id": "routes/ressources+/user+/language",
         "path": "ressources/user/language",
         "file": "routes/ressources+/user+/language.tsx"
+      },
+      {
+        "id": "routes/ressources+/version+/check-update",
+        "path": "ressources/version/check-update",
+        "file": "routes/ressources+/version+/check-update.tsx"
       },
       {
         "id": "routes/ressources+/workflows+/$scenarioId+/_index",

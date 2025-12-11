@@ -113,7 +113,6 @@ export const AutoAssignmentPanelContent = ({
       <PanelContainer size="xxl">
         <PanelHeader>
           <div className="flex items-center gap-v2-sm">
-            <Icon icon="left-panel-open" className="size-4" />
             <span>{t('cases:overview.panel.auto_assignment.title')}</span>
           </div>
         </PanelHeader>

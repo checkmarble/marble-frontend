@@ -11,6 +11,7 @@ export interface FeatureAccesses {
   nameRecognition: FeatureAccessLevelDto;
   AiAssist: FeatureAccessLevelDto;
   autoAssignment: FeatureAccessLevelDto;
+  caseAiAssist: FeatureAccessLevelDto;
 }
 
 export function emptyFeatureAccesses(): FeatureAccesses {
@@ -25,6 +26,7 @@ export function emptyFeatureAccesses(): FeatureAccesses {
     nameRecognition: 'restricted',
     AiAssist: 'restricted',
     autoAssignment: 'restricted',
+    caseAiAssist: 'restricted',
   };
 }
 
@@ -39,6 +41,7 @@ export function adaptFeatureAccesses(dto: FeatureAccessDto): FeatureAccesses {
     sanctions: dto.sanctions,
     nameRecognition: dto.name_recognition,
     AiAssist: dto.ai_assist,
-    autoAssignment: dto.auto_assignment,
+    autoAssignment: dto.case_auto_assign,
+    caseAiAssist: dto.case_ai_assist,
   };
 }

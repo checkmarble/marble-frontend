@@ -7,6 +7,7 @@ import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { isAdmin } from '@app-builder/models';
 import { DEFAULT_CASE_PAGINATION_SIZE } from '@app-builder/repositories/CaseRepository';
 import { isInboxAdmin } from '@app-builder/services/feature-access';
+import { getPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookie-read.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromSUUIDtoUUID, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { useLoaderData } from '@remix-run/react';
@@ -69,6 +70,8 @@ export const loader = createServerFn([authMiddleware], async function casesInbox
   const searchParams = new URLSearchParams(url.search);
   const parsedSearchParams = pageQueryStringSchema.parse(Object.fromEntries(searchParams));
 
+  const favoriteInboxId = getPreferencesCookie(request, 'favInbox') || undefined;
+
   return {
     inboxId,
     currentInbox,
@@ -78,12 +81,13 @@ export const loader = createServerFn([authMiddleware], async function casesInbox
     query: parsedSearchParams.q,
     limit: parsedSearchParams.limit,
     order: parsedSearchParams.order,
+    favoriteInboxId,
   };
 });
 
 export default function CasesInboxesPage() {
   const navigate = useAgnosticNavigation();
-  const { inboxId, inboxes, inboxUsersIds, canViewNavigationTabs, query, limit, order } =
+  const { inboxId, inboxes, inboxUsersIds, canViewNavigationTabs, query, limit, order, favoriteInboxId } =
     useLoaderData<typeof loader>();
   const updatePage = (newQuery: string, newLimit: number, newOrder: 'ASC' | 'DESC') => {
     const qs = QueryString.stringify(
@@ -113,6 +117,7 @@ export default function CasesInboxesPage() {
       order={order}
       updatePage={updatePage}
       onInboxSelect={onInboxSelect}
+      favoriteInboxId={favoriteInboxId}
     />
   );
 }

@@ -1131,6 +1131,12 @@ export type LegacyAnalyticsDto = {
 };
 export type AppConfigDto = {
     version: string;
+    outdated: {
+        outdated: boolean;
+        latest_version?: string;
+        latest_url?: string;
+        release_notes?: string[];
+    };
     status: {
         migrations: boolean;
         has_org: boolean;
@@ -1458,6 +1464,7 @@ export type RuleHitTableResponseDto = {
     hit_ratio: number;
     distinct_pivots: number;
     repeat_ratio: number;
+    false_positive_ratio: number;
 };
 export type ScreeningHitTableResponseDto = {
     config_id: string;

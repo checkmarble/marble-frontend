@@ -1,5 +1,6 @@
 import { usePanel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGetAiSettingsQuery } from '@app-builder/queries/cases/get-ai-settings';
 import { isAccessible, isRestricted } from '@app-builder/services/feature-access';
 import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
@@ -15,9 +16,10 @@ interface AIConfigSectionProps {
 }
 
 export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps) {
-  const { t } = useTranslation(['cases', 'settings']);
+  const { t } = useTranslation(['cases']);
   const { openPanel, closePanel } = usePanel();
   const aiSettingsQuery = useGetAiSettingsQuery();
+  const revalidate = useLoaderRevalidator();
 
   const restricted = isRestricted(access);
   const hasAccess = isAccessible(access);
@@ -31,6 +33,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
         settings={aiSettingsQuery.data.settings}
         readOnly={!canEdit}
         onSuccess={() => {
+          revalidate();
           closePanel();
           aiSettingsQuery.refetch();
         }}
@@ -52,7 +55,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
       {match(aiSettingsQuery)
         .with({ isPending: true }, () => (
           <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex items-center justify-center min-h-[100px]">
-            <Spinner />
+            <Spinner className="size-6" />
           </div>
         ))
         .with({ isError: true }, () => (
@@ -61,6 +64,8 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
           </div>
         ))
         .with({ isSuccess: true }, ({ data }) => {
+          if (!data?.settings) return null;
+
           const settings = data.settings;
           const isGeneralConfigured = settings.caseReviewSetting.orgDescription || settings.caseReviewSetting.structure;
           const isKycEnabled = settings.kycEnrichmentSetting.enabled;
@@ -74,7 +79,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
               <ConfigRow
                 isRestricted={restricted}
                 canEdit={canEdit}
-                label={t('cases:overview.config.general')}
+                label={t('cases:overview.config.ai_review')}
                 statusTag={
                   <Tag color={isGeneralConfigured ? 'green' : 'orange'} size="small" border="rounded-sm">
                     {isGeneralConfigured
@@ -90,7 +95,7 @@ export function AIConfigSection({ isGlobalAdmin, access }: AIConfigSectionProps)
               <ConfigRow
                 isRestricted={restricted}
                 canEdit={canEdit}
-                label={t('settings:ai_assist.case_manager.kyc_enrichment.title')}
+                label={t('cases:ai_settings.kyc_enrichment.title')}
                 showWand
                 statusTag={
                   <>
