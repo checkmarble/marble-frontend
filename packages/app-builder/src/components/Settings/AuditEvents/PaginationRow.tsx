@@ -3,28 +3,25 @@ import { ButtonV2, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type PaginationRowProps = {
-  totalItems: number;
-  currentPage: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
   currentLimit: number;
-  totalPages: number;
-  setCurrentPage: (page: number) => void;
+  onNextPage: () => void;
+  onPreviousPage: () => void;
   setLimit: (limit: number) => void;
   className?: string;
 };
 
 export const PaginationRow = ({
-  totalItems,
-  currentPage,
+  hasNextPage,
+  hasPreviousPage,
   currentLimit,
-  totalPages,
-  setCurrentPage,
+  onNextPage,
+  onPreviousPage,
   setLimit,
   className,
 }: PaginationRowProps) => {
   const { t } = useTranslation(['settings']);
-
-  const startIndex = totalItems > 0 ? currentPage * currentLimit + 1 : 0;
-  const endIndex = Math.min((currentPage + 1) * currentLimit, totalItems);
 
   return (
     <div
@@ -57,18 +54,13 @@ export const PaginationRow = ({
         })}
       </div>
       <div className="flex items-center gap-v2-xs">
-        {totalItems > 0 && (
-          <span>
-            From {startIndex} to {endIndex}
-          </span>
-        )}
         <ButtonV2
           mode="icon"
           size="default"
           variant="secondary"
           appearance="stroked"
-          disabled={currentPage === 0}
-          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={!hasPreviousPage}
+          onClick={onPreviousPage}
         >
           <Icon icon="arrow-left" className="size-5" />
         </ButtonV2>
@@ -77,8 +69,8 @@ export const PaginationRow = ({
           size="default"
           variant="secondary"
           appearance="stroked"
-          disabled={currentPage >= totalPages - 1 || totalItems === 0}
-          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={!hasNextPage}
+          onClick={onNextPage}
         >
           <Icon icon="arrow-right" className="size-5" />
         </ButtonV2>

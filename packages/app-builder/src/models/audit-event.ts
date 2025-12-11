@@ -45,5 +45,11 @@ export interface ListAuditEventsFilters {
   apiKeyId?: string;
   table?: string;
   entityId?: string;
+  limit?: number;
   after?: string;
+}
+
+export interface ListAuditEventsResponse {
+  events: AuditEvent[];
+  hasNextPage: boolean;
 }

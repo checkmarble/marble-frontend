@@ -84,9 +84,11 @@ export function AuditEventsTable({ auditEvents }: AuditEventsTableProps) {
           const value = getValue();
           if (!value) return <span className="text-grey-50">-</span>;
           return (
-            <CopyToClipboardButton toCopy={value} size="sm">
-              <span className="text-grey-00 max-w-[200px] truncate font-mono text-xs">{value}</span>
-            </CopyToClipboardButton>
+            <div onClick={(e) => e.stopPropagation()}>
+              <CopyToClipboardButton toCopy={value} size="sm">
+                <span className="text-grey-00 max-w-[200px] truncate font-mono text-xs">{value}</span>
+              </CopyToClipboardButton>
+            </div>
           );
         },
       }),

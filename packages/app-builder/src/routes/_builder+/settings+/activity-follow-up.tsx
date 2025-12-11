@@ -48,6 +48,7 @@ function decodeBase64Query(query: string) {
 const pageQueryStringSchema = z.object({
   q: z.string().optional().default(''),
   limit: z.coerce.number().optional().default(DEFAULT_LIMIT),
+  after: z.string().optional(),
 });
 
 export const loader = createServerFn([authMiddleware], async function activityFollowUpLoader({ context, request }) {
@@ -92,34 +93,48 @@ export const loader = createServerFn([authMiddleware], async function activityFo
     entityId = filters.data.entityId;
   }
 
-  const events = await auditEvents.listAuditEvents({
+  const response = await auditEvents.listAuditEvents({
     from,
     to,
     table,
     entityId,
+    limit: parsedSearchParams.limit,
+    after: parsedSearchParams.after,
   });
 
   return {
-    auditEvents: events,
+    auditEvents: response.events,
+    hasNextPage: response.hasNextPage,
     query: parsedSearchParams.q,
     limit: parsedSearchParams.limit,
+    after: parsedSearchParams.after,
   };
 });
 
 export default function ActivityFollowUp() {
   const navigate = useAgnosticNavigation();
-  const { auditEvents, query, limit } = useLoaderData<typeof loader>();
+  const { auditEvents, hasNextPage, query, limit, after } = useLoaderData<typeof loader>();
 
-  const updatePage = (newQuery: string, newLimit: number) => {
+  const updatePage = (newQuery: string, newLimit: number, newAfter?: string) => {
     const qs = QueryString.stringify(
       {
         q: newQuery !== '' ? newQuery : undefined,
         limit: newLimit !== DEFAULT_LIMIT ? newLimit : undefined,
+        after: newAfter,
       },
       { addQueryPrefix: true, skipNulls: true },
     );
     navigate({ search: qs }, { replace: true });
   };
 
-  return <ActivityFollowUpPage auditEvents={auditEvents} query={query} limit={limit} updatePage={updatePage} />;
+  return (
+    <ActivityFollowUpPage
+      auditEvents={auditEvents}
+      hasNextPage={hasNextPage}
+      query={query}
+      limit={limit}
+      after={after}
+      updatePage={updatePage}
+    />
+  );
 }

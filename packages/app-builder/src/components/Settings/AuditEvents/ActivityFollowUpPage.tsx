@@ -3,7 +3,7 @@ import { PanelProvider } from '@app-builder/components/Panel';
 import { useBase64Query } from '@app-builder/hooks/useBase64Query';
 import { type AuditEvent } from '@app-builder/models/audit-event';
 import { downloadFile } from '@app-builder/utils/download-file';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -14,19 +14,27 @@ import { PaginationRow } from './PaginationRow';
 
 interface ActivityFollowUpPageProps {
   auditEvents: AuditEvent[];
+  hasNextPage: boolean;
   query: string;
   limit: number;
-  updatePage: (newQuery: string, newLimit: number) => void;
+  after?: string;
+  updatePage: (newQuery: string, newLimit: number, newAfter?: string) => void;
 }
 
-export function ActivityFollowUpPage({ auditEvents, query, limit, updatePage }: ActivityFollowUpPageProps) {
+export function ActivityFollowUpPage({
+  auditEvents,
+  hasNextPage,
+  query,
+  limit,
+  after,
+  updatePage,
+}: ActivityFollowUpPageProps) {
   const { t } = useTranslation(['settings', 'filters']);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [isExporting, setIsExporting] = useState(false);
 
   const parsedQuery = useBase64Query(auditEventsFiltersSchema, query, {
     onUpdate(newQuery) {
-      updatePage(newQuery, limit);
+      // Reset pagination when filters change
+      updatePage(newQuery, limit, undefined);
     },
   });
 
@@ -37,33 +45,45 @@ export function ActivityFollowUpPage({ auditEvents, query, limit, updatePage }: 
 
   const handleExportCsv = useCallback(async () => {
     if (auditEvents.length === 0) return;
-    setIsExporting(true);
 
-    try {
-      const headers = ['Timestamp', 'Actor Type', 'Actor Name', 'Operation', 'Table', 'Entity ID'];
-      const rows = auditEvents.map((event) => [
-        event.createdAt ?? '',
-        event.actor?.type ?? '',
-        event.actor?.name ?? '',
-        event.operation ?? '',
-        event.table ?? '',
-        event.entityId ?? '',
-      ]);
+    const headers = ['Timestamp', 'Actor Type', 'Actor Name', 'Operation', 'Table', 'Entity ID'];
+    const rows = auditEvents.map((event) => [
+      event.createdAt ?? '',
+      event.actor?.type ?? '',
+      event.actor?.name ?? '',
+      event.operation ?? '',
+      event.table ?? '',
+      event.entityId ?? '',
+    ]);
 
-      const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(','))].join('\n');
+    const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(','))].join('\n');
 
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      await downloadFile(url, `audit-events-${new Date().toISOString().split('T')[0]}.csv`);
-    } finally {
-      setIsExporting(false);
-    }
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    await downloadFile(url, `audit-events-${new Date().toISOString().split('T')[0]}.csv`);
   }, [auditEvents]);
 
-  // Pagination calculations
-  const totalItems = auditEvents.length;
-  const totalPages = Math.ceil(totalItems / limit);
-  const paginatedEvents = auditEvents.slice(currentPage * limit, (currentPage + 1) * limit);
+  // Get the last event's ID for cursor-based pagination
+  const lastEventId = auditEvents.length > 0 ? auditEvents[auditEvents.length - 1]?.id : undefined;
+
+  const handleNextPage = useCallback(() => {
+    if (lastEventId) {
+      updatePage(query, limit, lastEventId);
+    }
+  }, [query, limit, lastEventId, updatePage]);
+
+  const handlePreviousPage = useCallback(() => {
+    // Go back to first page (reset cursor)
+    updatePage(query, limit, undefined);
+  }, [query, limit, updatePage]);
+
+  const handleSetLimit = useCallback(
+    (newLimit: number) => {
+      // Reset pagination when limit changes
+      updatePage(query, newLimit, undefined);
+    },
+    [query, updatePage],
+  );
 
   return (
     <PanelProvider>
@@ -84,7 +104,7 @@ export function ActivityFollowUpPage({ auditEvents, query, limit, updatePage }: 
                   variant="secondary"
                   appearance="stroked"
                   onClick={handleExportCsv}
-                  disabled={isExporting || auditEvents.length === 0}
+                  disabled={auditEvents.length === 0}
                 >
                   <Icon icon="download" className="size-4" />
                   {t('settings:activity_follow_up.export_csv')}
@@ -93,19 +113,16 @@ export function ActivityFollowUpPage({ auditEvents, query, limit, updatePage }: 
             </div>
 
             {/* Table */}
-            <AuditEventsTable auditEvents={paginatedEvents} />
+            <AuditEventsTable auditEvents={auditEvents} />
 
             {/* Pagination */}
             <PaginationRow
-              totalItems={totalItems}
-              currentPage={currentPage}
+              hasNextPage={hasNextPage}
+              hasPreviousPage={!!after}
               currentLimit={limit}
-              totalPages={totalPages}
-              setCurrentPage={setCurrentPage}
-              setLimit={(newLimit) => {
-                updatePage(query, newLimit);
-                setCurrentPage(0);
-              }}
+              onNextPage={handleNextPage}
+              onPreviousPage={handlePreviousPage}
+              setLimit={handleSetLimit}
             />
           </div>
         </Page.ContentV2>
