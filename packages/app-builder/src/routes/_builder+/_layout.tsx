@@ -138,6 +138,13 @@ export default function Builder() {
                             />
                           </li>
                           <li>
+                            <SidebarLink
+                              labelTKey="navigation:continuous_screening"
+                              to={getRoute('/continuous-screening')}
+                              Icon={(props) => <Icon icon="scan-eye" {...props} />}
+                            />
+                          </li>
+                          <li>
                             {match(featuresAccess.analytics)
                               .with('allowed', () =>
                                 featuresAccess.isAnalyticsAvailable ? (

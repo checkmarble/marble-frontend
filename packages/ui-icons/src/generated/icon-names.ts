@@ -100,6 +100,7 @@ export const iconNames = [
   'rule-settings',
   'rules',
   'save',
+  'scan-eye',
   'scenarios',
   'schedule',
   'scheduled-execution',

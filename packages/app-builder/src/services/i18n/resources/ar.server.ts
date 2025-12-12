@@ -3,6 +3,7 @@ import api from '@app-builder/locales/ar/api.json';
 import auth from '@app-builder/locales/ar/auth.json';
 import cases from '@app-builder/locales/ar/cases.json';
 import common from '@app-builder/locales/ar/common.json';
+import continuousScreening from '@app-builder/locales/ar/continuous-screening.json';
 import data from '@app-builder/locales/ar/data.json';
 import decisions from '@app-builder/locales/ar/decisions.json';
 import filters from '@app-builder/locales/ar/filters.json';
@@ -20,6 +21,7 @@ export const ar = {
   api,
   cases,
   common,
+  continuousScreening,
   data,
   decisions,
   filters,
