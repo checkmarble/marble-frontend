@@ -1,7 +1,7 @@
 import { DetailedCaseDecision } from '@app-builder/models/cases';
 import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
 import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { useLoaderData } from '@remix-run/react';
 import { useState } from 'react';
@@ -27,7 +27,7 @@ export const CaseAlerts = ({
 }) => {
   const { t } = useTranslation(casesI18n);
   const { case: caseDetail, dataModelWithTableOptions } = useLoaderData<typeof loader>();
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
   const [selectedDecision, setSelectedDecision] = useState<string | null>(null);
   const caseDecisionsQuery = useCaseDecisionsQuery(caseDetail.id);
 
@@ -67,10 +67,7 @@ export const CaseAlerts = ({
             >
               <div className="flex min-h-full flex-col items-center p-2">
                 <span className="text-grey-50 text-xs font-normal">
-                  {formatDateTimeWithoutPresets(decision.createdAt, {
-                    language,
-                    dateStyle: 'short',
-                  })}
+                  {formatDateTime(decision.createdAt, { dateStyle: 'short' })}
                 </span>
               </div>
               <div className="border-grey-90 flex min-h-full flex-col gap-2 border-x p-2">
@@ -116,7 +113,7 @@ export const CaseAlerts = ({
                         className="border-grey-90 flex w-fit gap-1 truncate rounded-xs border px-1.5 py-0.5 text-xs"
                       >
                         <span>{property}:</span>
-                        <FormatData data={parseUnknownData(decision.triggerObject[property])} language={language} />
+                        <FormatData data={parseUnknownData(decision.triggerObject[property])} />
                       </span>
                     ) : null;
                   }),

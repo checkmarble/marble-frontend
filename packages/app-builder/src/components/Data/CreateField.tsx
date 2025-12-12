@@ -278,7 +278,7 @@ function CreateFieldContent({ tableId, closeModal }: { tableId: string; closeMod
         </div>
         <div className="flex flex-1 flex-row gap-2">
           <Modal.Close asChild>
-            <Button className="flex-1" variant="secondary" type="button" onClick={() => console.log(form.state)}>
+            <Button className="flex-1" variant="secondary" type="button">
               {t('common:cancel')}
             </Button>
           </Modal.Close>

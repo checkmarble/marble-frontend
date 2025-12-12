@@ -3,7 +3,7 @@ import { QueryEntry } from '@app-builder/hooks/useBase64Query';
 import type { Filters, filtersSchema } from '@app-builder/queries/cases/get-cases';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
-import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
+import { formatDuration, useFormatDateTime } from '@app-builder/utils/format';
 import { useCallbackRef } from '@marble/shared';
 import { differenceInDays } from 'date-fns';
 import { MouseEvent, useState } from 'react';
@@ -72,10 +72,8 @@ export const ActivatedFilterItem = ({ filter, onUpdate, onClear }: ActivatedFilt
 type DisplayFilterValueProps = { filter: QueryEntry<typeof filtersSchema> };
 
 const DisplayFilterValue = ({ filter }: DisplayFilterValueProps) => {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(['filters', 'cases']);
+  const { t, i18n } = useTranslation(['filters', 'cases']);
+  const formatDateTime = useFormatDateTime();
 
   return match(filter)
     .with(['name', P.string], ([name, value]) => (
@@ -104,8 +102,8 @@ const DisplayFilterValue = ({ filter }: DisplayFilterValueProps) => {
       </span>
     ))
     .with(['dateRange', P.shape({ type: 'static' })], ([name, value]) => {
-      const startDate = formatDateTimeWithoutPresets(value.startDate, { language });
-      const endDate = formatDateTimeWithoutPresets(value.endDate, { language });
+      const startDate = formatDateTime(value.startDate);
+      const endDate = formatDateTime(value.endDate);
       const diff = differenceInDays(new Date(value.endDate), new Date(value.startDate));
       const dateDisplay = diff <= 1 ? startDate : t('filters:date_range.range_value', { startDate, endDate });
 
@@ -116,7 +114,7 @@ const DisplayFilterValue = ({ filter }: DisplayFilterValueProps) => {
       );
     })
     .with(['dateRange', P.shape({ type: 'dynamic' })], ([name, value]) => {
-      const duration = formatDuration(value.fromNow, language);
+      const duration = formatDuration(value.fromNow, i18n.language);
       const dateDisplay = t('filters:date_range.duration', { duration });
 
       return (

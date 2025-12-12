@@ -1,7 +1,7 @@
 import { MultiSelect } from '@app-builder/components/MultiSelect';
 import { TagPreview } from '@app-builder/components/Tags/TagPreview';
 import { useOrganizationTags } from '@app-builder/services/organization/organization-tags';
-import { formatDateRelative, formatDateTimeWithoutPresets } from '@app-builder/utils/format';
+import { formatDateRelative, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
@@ -41,10 +41,9 @@ export function CasesList({
   currentPage,
   setCurrentPage,
 }: CasesListProps) {
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation(['cases']);
+  const { t } = useTranslation(['cases']);
+  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
   const lastPageRef = useRef<number>(0);
   const cases = casesQuery.data?.pages[currentPage]?.items ?? casesQuery.data?.pages[lastPageRef.current]?.items ?? [];
   const { orgTags } = useOrganizationTags();
@@ -118,8 +117,7 @@ export function CasesList({
             </div>
             <div className="p-v2-md">
               <Tooltip.Default
-                content={formatDateTimeWithoutPresets(caseItem.createdAt, {
-                  language,
+                content={formatDateTime(caseItem.createdAt, {
                   dateStyle: 'long',
                   timeStyle: 'short',
                 })}

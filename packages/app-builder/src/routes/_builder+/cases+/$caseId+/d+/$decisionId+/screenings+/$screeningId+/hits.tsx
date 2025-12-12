@@ -8,7 +8,6 @@ import { screeningsI18n } from '@app-builder/components/Screenings/screenings-i1
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { usePivotValues } from '@app-builder/hooks/decisions/usePivotValues';
 import { type Screening, ScreeningQuery } from '@app-builder/models/screening';
-import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -87,7 +86,6 @@ export default function CaseSanctionsHitsPage() {
 }
 
 const QueryObjectDetail = ({ query }: { query: ScreeningQuery }) => {
-  const language = useFormatLanguage();
   const { t } = useTranslation(scenarioI18n);
   const parsed = useMemo(
     () => Object.entries(query.properties).map(([k, v]) => [k, parseUnknownData(v)] as const),
@@ -108,7 +106,7 @@ const QueryObjectDetail = ({ query }: { query: ScreeningQuery }) => {
       {parsed.map(([property, data]) => (
         <Fragment key={property}>
           <span className="font-semibold">{property}</span>
-          <FormatData data={data} language={language} />
+          <FormatData data={data} />
         </Fragment>
       ))}
     </div>

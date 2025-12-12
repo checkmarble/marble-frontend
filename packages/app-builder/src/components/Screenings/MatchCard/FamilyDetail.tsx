@@ -1,12 +1,12 @@
 import { FamilyPersonEntity } from '@app-builder/models/screening';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Collapsible } from 'ui-design-system';
 import { TopicTag } from '../TopicTag';
 
 export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEntity[] }) => {
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
 
   const { t } = useTranslation(['screenings']);
 
@@ -52,18 +52,11 @@ export const FamilyDetail = ({ familyMembers }: { familyMembers: FamilyPersonEnt
                           {member.properties.startDate?.[0] && (
                             <span>
                               {' '}
-                              (
-                              {formatDateTimeWithoutPresets(member.properties.startDate[0], {
-                                language,
-                                dateStyle: 'medium',
-                              })}
+                              ({formatDateTime(member.properties.startDate[0], { dateStyle: 'medium' })}
                               {member.properties.endDate?.[0] && (
                                 <>
                                   {' - '}
-                                  {formatDateTimeWithoutPresets(member.properties.endDate[0], {
-                                    language,
-                                    dateStyle: 'medium',
-                                  })}
+                                  {formatDateTime(member.properties.endDate[0], { dateStyle: 'medium' })}
                                 </>
                               )}
                               )

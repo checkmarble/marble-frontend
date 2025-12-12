@@ -52,7 +52,6 @@ export function InnerEditFuzzyMatchModal(props: InnerEditFuzzyMatchModalProps) {
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const evaluation = nodeSharp.select((s) => s.validation);
 
-  console.log(props.threshold); //RM
   return (
     <>
       <Callout variant="outlined">

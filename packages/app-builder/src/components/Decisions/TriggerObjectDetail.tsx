@@ -1,5 +1,4 @@
 import { type TableModel } from '@app-builder/models';
-import { useFormatLanguage } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import clsx from 'clsx';
 import * as React from 'react';
@@ -16,8 +15,6 @@ function useParsedTriggerObject(triggerObject: Record<string, unknown>) {
 
 export function DecisionDetailTriggerObject({ triggerObject }: { triggerObject: Record<string, unknown> }) {
   const { t } = useTranslation(decisionsI18n);
-  const language = useFormatLanguage();
-
   const parsedTriggerObject = useParsedTriggerObject(triggerObject);
 
   return (
@@ -28,7 +25,7 @@ export function DecisionDetailTriggerObject({ triggerObject }: { triggerObject: 
           {parsedTriggerObject.map(([property, data]) => (
             <React.Fragment key={property}>
               <span className="font-semibold">{property}</span>
-              <FormatData data={data} language={language} />
+              <FormatData data={data} />
             </React.Fragment>
           ))}
         </div>
@@ -50,7 +47,6 @@ export function CaseDetailTriggerObject({
   className?: string;
   onLinkClicked: (tableName: string, objectId: string) => void;
 }) {
-  const language = useFormatLanguage();
   const parsedTriggerObject = useParsedTriggerObject(triggerObject);
   const dataModelTable = dataModel.find((table) => table.name === triggerObjectType);
   const links = R.pipe(
@@ -76,10 +72,10 @@ export function CaseDetailTriggerObject({
                 className="text-purple-65 group flex items-center gap-1 text-left"
                 onClick={() => onLinkClicked(links[property] as string, data.value as string)}
               >
-                <FormatData data={data} language={language} />
+                <FormatData data={data} />
               </button>
             ) : (
-              <FormatData data={data} language={language} />
+              <FormatData data={data} />
             )}
           </div>
         </React.Fragment>
