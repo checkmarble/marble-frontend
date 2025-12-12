@@ -480,6 +480,86 @@
       '404':
         $ref: 'components.yml#/responses/404'
 
+/admin/audit-events:
+  get:
+    tags:
+      - Admin
+    summary: List audit events
+    operationId: listAuditEvents
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: from
+        description: Date range start
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: to
+        description: Date range end
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: user_id
+        description: ID of a user to display audit events for
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: api_key_id
+        description: ID of an API key to display audit events for
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: table
+        description: Object type to display audit events for
+        in: query
+        schema:
+          type: string
+          format: date-time
+      - name: entity_id
+        description: Object ID to display audit events for
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        description: Number of item to return
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: after
+        description: The ID after which to continue paginating
+        in: query
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: List of audit events matching the filters
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [has_next_page, events]
+              properties:
+                has_next_page:
+                  type: boolean
+                events:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/AuditEventDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+
 components:
   schemas:
     OrganizationDto:
@@ -643,3 +723,39 @@ components:
           properties:
             key:
               type: string
+    AuditEventDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        actor:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [user, api_key]
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+        operation:
+          type: string
+          enum: [INSERT, UPDATE, DELETE]
+        table:
+          type: string
+        entity_id:
+          type: string
+          format: uuid
+        old_data:
+          description: Arbitrary JSON representing the old entity
+          type: object
+          additionalProperties: true
+        new_data:
+          description: Arbitrary JSON representing the new entity
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time

@@ -4,6 +4,7 @@ import { makeGetAiAssistSettingsRepository } from './AiAssistRepository';
 import { makeGetAnalyticsRepository } from './AnalyticsRepository';
 import { makeGetApiKeyRepository } from './ApiKeyRepository';
 import { makeGetAppConfigRepository } from './AppConfigRepository';
+import { makeGetAuditEventsRepository } from './AuditEventsRepository';
 import { makeGetCaseRepository } from './CaseRepository';
 import { makeGetCustomListRepository } from './CustomListRepository';
 import { makeGetDataModelRepository } from './DataModelRepository';
@@ -72,6 +73,7 @@ export function makeServerRepositories({
     getFeatureAccessRepository: makeGetFeatureAccessRepository(),
     getPersonalSettingsRepository: makeGetPersonalSettingsRepository(),
     getAiAssistSettingsRepository: makeGetAiAssistSettingsRepository(),
+    getAuditEventsRepository: makeGetAuditEventsRepository(),
   };
 }
 

@@ -375,6 +375,8 @@ CreateApiKeyBody:
   $ref: admin.yml#/components/schemas/CreateApiKeyBody
 CreatedApiKeyDto:
   $ref: admin.yml#/components/schemas/CreatedApiKeyDto
+AuditEventDto:
+  $ref: admin.yml#/components/schemas/AuditEventDto
 
 # INBOXES
 
