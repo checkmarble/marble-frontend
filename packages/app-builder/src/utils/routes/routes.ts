@@ -122,6 +122,23 @@ export const routes = [
             "file": "routes/_builder+/cases+/overview.tsx"
           },
           {
+            "id": "routes/_builder+/continuous-screening+/_index",
+            "index": true,
+            "path": "continuous-screening",
+            "file": "routes/_builder+/continuous-screening+/_index.tsx"
+          },
+          {
+            "id": "routes/_builder+/continuous-screening+/configurations",
+            "path": "continuous-screening/configurations",
+            "file": "routes/_builder+/continuous-screening+/configurations.tsx"
+          },
+          {
+            "id": "routes/_builder+/continuous-screening+/create+/_index",
+            "index": true,
+            "path": "continuous-screening/create",
+            "file": "routes/_builder+/continuous-screening+/create+/_index.tsx"
+          },
+          {
             "id": "routes/_builder+/data+/_layout",
             "path": "data",
             "file": "routes/_builder+/data+/_layout.tsx",
@@ -597,6 +614,16 @@ export const routes = [
         "file": "routes/ressources+/cases+/update-inbox-workflow.tsx"
       },
       {
+        "id": "routes/ressources+/continuous-screening+/configurations",
+        "path": "ressources/continuous-screening/configurations",
+        "file": "routes/ressources+/continuous-screening+/configurations.tsx"
+      },
+      {
+        "id": "routes/ressources+/continuous-screening+/create-configuration",
+        "path": "ressources/continuous-screening/create-configuration",
+        "file": "routes/ressources+/continuous-screening+/create-configuration.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/$tableId.createNavigationOption",
         "path": "ressources/data/:tableId/createNavigationOption",
         "file": "routes/ressources+/data+/$tableId.createNavigationOption.tsx"
@@ -820,6 +847,11 @@ export const routes = [
         "id": "routes/ressources+/screenings+/enrich-match.$matchId",
         "path": "ressources/screenings/enrich-match/:matchId",
         "file": "routes/ressources+/screenings+/enrich-match.$matchId.tsx"
+      },
+      {
+        "id": "routes/ressources+/screenings+/get-datasets",
+        "path": "ressources/screenings/get-datasets",
+        "file": "routes/ressources+/screenings+/get-datasets.tsx"
       },
       {
         "id": "routes/ressources+/screenings+/refine",
