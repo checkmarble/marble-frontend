@@ -24,6 +24,7 @@ import {
 import * as R from 'remeda';
 import { match } from 'ts-pattern';
 import { type IconName } from 'ui-icons';
+import { z } from 'zod/v4';
 
 type PrimitiveTypes = 'Bool' | 'Int' | 'Float' | 'String' | 'Timestamp';
 export type DataType = PrimitiveTypes | `${PrimitiveTypes}[]` | 'unknown';
@@ -650,3 +651,22 @@ export const adaptExportedFieldsDto = (model: ExportedFields): ExportedFieldsDto
     Name: field.name,
   })),
 });
+
+export function createTableOptionSchema(dataModel: DataModel) {
+  return z.object(
+    R.pipe(
+      dataModel,
+      R.map(
+        (table) =>
+          [
+            table.id,
+            z.object({
+              displayedFields: z.array(z.string()).default([]),
+              fieldOrder: z.array(z.string()),
+            }),
+          ] as const,
+      ),
+      R.fromEntries(),
+    ),
+  );
+}

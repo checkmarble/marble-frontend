@@ -1,48 +1,28 @@
 import { CollapsiblePaper, Page } from '@app-builder/components';
-import { setToastMessage } from '@app-builder/components/MarbleToaster';
+import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import {
-  type DataModel,
+  createTableOptionSchema,
   type DataModelWithTableOptions,
   mergeDataModelWithTableOptions,
   type SetDataModelTableOptionsBody,
   type TableModel,
   type TableModelWithOptions,
 } from '@app-builder/models';
+import { useUpdateDisplayDataMutation } from '@app-builder/queries/data/update-display-data';
 import { initServerServices } from '@app-builder/services/init.server';
 import { handleSubmit } from '@app-builder/utils/form';
 import { reorder } from '@app-builder/utils/list';
 import { getRoute } from '@app-builder/utils/routes';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useCallbackRef } from '@marble/shared';
-import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
-import { useFetcher, useLoaderData } from '@remix-run/react';
-import { Dict } from '@swan-io/boxed';
+import { type LoaderFunctionArgs } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
 import { useForm } from '@tanstack/react-form';
 import { cva } from 'class-variance-authority';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
 import { Button, Switch } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { z } from 'zod/v4';
-
-function createTableOptionSchema(dataModel: DataModel) {
-  return z.object(
-    R.pipe(
-      dataModel,
-      R.map(
-        (table) =>
-          [
-            table.id,
-            z.object({
-              displayedFields: z.array(z.string()).default([]),
-              fieldOrder: z.array(z.string()),
-            }),
-          ] as const,
-      ),
-      R.fromEntries(),
-    ),
-  );
-}
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
@@ -62,59 +42,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return { dataModelWithTableOptions };
 }
 
-export async function action({ request }: ActionFunctionArgs) {
-  const {
-    authService,
-    toastSessionService: { getSession, commitSession },
-  } = initServerServices(request);
-  const { dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
-
-  const dataModel = await dataModelRepository.getDataModel();
-
-  const schema = createTableOptionSchema(dataModel);
-  const data = await request.json();
-  const submission = schema.safeParse(data);
-
-  const session = await getSession(request);
-
-  if (!submission.success) {
-    return { success: false, errors: z.treeifyError(submission.error) };
-  }
-
-  try {
-    const payloadEntries = Dict.entries(submission.data);
-
-    await Promise.all(
-      payloadEntries.map(([tableId, body]) =>
-        dataModelRepository.setDataModelTableOptions(tableId, {
-          ...body,
-          displayedFields: body.displayedFields ?? [],
-        }),
-      ),
-    );
-
-    setToastMessage(session, {
-      type: 'success',
-      messageKey: 'common:success.save',
-    });
-
-    return Response.json({ success: true }, { headers: { 'Set-Cookie': await commitSession(session) } });
-  } catch (_err) {
-    setToastMessage(session, {
-      type: 'error',
-      messageKey: 'common:errors.unknown',
-    });
-
-    return Response.json({ status: 'error', errors: [] }, { headers: { 'Set-Cookie': await commitSession(session) } });
-  }
-}
-
 export default function DataDisplaySettings() {
   const { t } = useTranslation(['common', 'settings']);
   const { dataModelWithTableOptions } = useLoaderData<typeof loader>();
-  const fetcher = useFetcher();
+  const revalidate = useLoaderRevalidator();
+  const updateDataDisplayMutation = useUpdateDisplayDataMutation();
+
   const form = useForm({
     defaultValues: R.pipe(
       dataModelWithTableOptions,
@@ -139,10 +72,8 @@ export default function DataDisplaySettings() {
     },
     onSubmit: async ({ value, formApi }) => {
       if (formApi.state.isValid) {
-        fetcher.submit(value, {
-          action: getRoute('/settings/data-display'),
-          method: 'POST',
-          encType: 'application/json',
+        return updateDataDisplayMutation.mutateAsync(value).then((_) => {
+          revalidate();
         });
       }
     },
@@ -154,7 +85,13 @@ export default function DataDisplaySettings() {
         <form onSubmit={handleSubmit(form)} className="contents">
           <div className="flex items-center justify-between p-2">
             <div>{t('settings:data_display.global_explanation')}</div>
-            <Button type="submit">{t('common:save')}</Button>
+            <form.Subscribe selector={(state) => [state.isSubmitting]}>
+              {([isSubmitting]) => (
+                <Button type="submit" disabled={isSubmitting}>
+                  {t('common:save')}
+                </Button>
+              )}
+            </form.Subscribe>
           </div>
           {dataModelWithTableOptions.map((tableModelWithOptions) => (
             <form.Field
