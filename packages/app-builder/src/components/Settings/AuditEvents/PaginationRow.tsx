@@ -1,3 +1,4 @@
+import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -12,7 +13,7 @@ type PaginationRowProps = {
   className?: string;
 };
 
-export const PaginationRow = ({
+export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
   hasNextPage,
   hasPreviousPage,
   currentLimit,
@@ -20,7 +21,7 @@ export const PaginationRow = ({
   onPreviousPage,
   setLimit,
   className,
-}: PaginationRowProps) => {
+}) => {
   const { t } = useTranslation(['settings']);
 
   return (

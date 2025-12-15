@@ -1,16 +1,16 @@
-import { DateRangeFilter } from '@app-builder/components/Filters';
 import { type ApiKey } from '@app-builder/models/api-keys';
 import type { AuditEventsFilterName, AuditEventsFilters } from '@app-builder/queries/audit-events/get-audit-events';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { useCallbackRef } from '@marble/shared';
 import { differenceInDays } from 'date-fns';
-import { DateRangeFilterType } from 'packages/ui-design-system/src/FiltersBar/types';
 import { type MouseEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonV2, MenuCommand, Separator } from 'ui-design-system';
+import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
+
 import { AuditEventsFilterLabel } from './AuditEventsFilterLabel';
+import { DateRangeFilterMenu } from './DateRangeFilterMenu';
 
 // TODO: Add ['table', string] when we have an endpoint to list available tables
 export type FilterEntry =
@@ -168,40 +168,4 @@ const EditFilterContent = ({ filter, onUpdate, onClose }: EditFilterContentProps
     case 'entityId':
       return null;
   }
-};
-
-type DateRangeFilterMenuProps = {
-  onSelect: (value: NonNullable<DateRangeFilterType>) => void;
-};
-
-const DateRangeFilterMenu = ({ onSelect }: DateRangeFilterMenuProps) => {
-  const { t } = useTranslation(['common', 'settings']);
-  const [value, setValue] = useState<DateRangeFilterType | null>(null);
-
-  return (
-    <>
-      <MenuCommand.List>
-        <DateRangeFilter.Root dateRangeFilter={value} setDateRangeFilter={setValue} className="grid">
-          <DateRangeFilter.FromNowPicker title={t('settings:activity_follow_up.filter.presets')} />
-          <Separator className="bg-grey-90" decorative orientation="vertical" />
-          <DateRangeFilter.Calendar />
-          <Separator className="bg-grey-90 col-span-3" decorative orientation="horizontal" />
-          <DateRangeFilter.Summary className="col-span-3 row-span-1" />
-        </DateRangeFilter.Root>
-      </MenuCommand.List>
-      <div className="border-grey-90 flex justify-center gap-2 overflow-x-auto border-t p-2">
-        <MenuCommand.HeadlessItem
-          onSelect={() => {
-            if (value) {
-              onSelect(value);
-            }
-          }}
-        >
-          <ButtonV2 disabled={!value} size="default">
-            {t('common:save')}
-          </ButtonV2>
-        </MenuCommand.HeadlessItem>
-      </div>
-    </>
-  );
 };

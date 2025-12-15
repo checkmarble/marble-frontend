@@ -1,5 +1,6 @@
 import { type AuditEventOperation } from '@app-builder/models/audit-event';
 import clsx from 'clsx';
+import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface OperationBadgeProps {
@@ -12,7 +13,7 @@ const operationToTranslationKey = {
   DELETE: 'settings:activity_follow_up.operation.delete',
 } as const;
 
-export function OperationBadge({ operation }: OperationBadgeProps) {
+export const OperationBadge: FunctionComponent<OperationBadgeProps> = ({ operation }) => {
   const { t } = useTranslation(['settings']);
 
   if (!operation) return <span className="text-grey-50">-</span>;
@@ -28,4 +29,4 @@ export function OperationBadge({ operation }: OperationBadgeProps) {
       {t(operationToTranslationKey[operation])}
     </span>
   );
-}
+};

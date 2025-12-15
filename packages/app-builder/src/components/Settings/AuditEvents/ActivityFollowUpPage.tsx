@@ -10,7 +10,7 @@ import {
   useGetAuditEventsQuery,
 } from '@app-builder/queries/audit-events/get-audit-events';
 import { downloadFile } from '@app-builder/utils/download-file';
-import { useCallback, useMemo } from 'react';
+import { type FunctionComponent, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from 'ui-design-system';
@@ -28,7 +28,12 @@ interface ActivityFollowUpPageProps {
   apiKeys: ApiKey[];
 }
 
-export function ActivityFollowUpPage({ query, limit, updatePage, apiKeys }: ActivityFollowUpPageProps) {
+export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> = ({
+  query,
+  limit,
+  updatePage,
+  apiKeys,
+}) => {
   const { t } = useTranslation(['settings', 'filters', 'common']);
 
   const parsedQuery = useBase64Query(auditEventsFiltersSchema, query, {
@@ -154,4 +159,4 @@ export function ActivityFollowUpPage({ query, limit, updatePage, apiKeys }: Acti
       </Page.Container>
     </PanelProvider>
   );
-}
+};

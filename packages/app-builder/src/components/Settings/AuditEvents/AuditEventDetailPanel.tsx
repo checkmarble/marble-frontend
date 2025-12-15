@@ -2,6 +2,7 @@ import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardBu
 import { PanelContainer, PanelContent, PanelHeader, PanelOverlay } from '@app-builder/components/Panel';
 import { type AuditEvent } from '@app-builder/models/audit-event';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { type FunctionComponent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { JsonDiff } from './JsonDiff';
@@ -11,7 +12,7 @@ interface AuditEventDetailPanelProps {
   event: AuditEvent;
 }
 
-export function AuditEventDetailPanel({ event }: AuditEventDetailPanelProps) {
+export const AuditEventDetailPanel: FunctionComponent<AuditEventDetailPanelProps> = ({ event }) => {
   const { t } = useTranslation(['settings']);
   const language = useFormatLanguage();
 
@@ -73,4 +74,4 @@ export function AuditEventDetailPanel({ event }: AuditEventDetailPanelProps) {
       </PanelContainer>
     </PanelOverlay>
   );
-}
+};

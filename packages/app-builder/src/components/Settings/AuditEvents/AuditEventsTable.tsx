@@ -4,7 +4,7 @@ import { type AuditEvent } from '@app-builder/models/audit-event';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
-import { useCallback, useMemo } from 'react';
+import { type FunctionComponent, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
 
@@ -17,7 +17,7 @@ interface AuditEventsTableProps {
   auditEvents: AuditEvent[];
 }
 
-export function AuditEventsTable({ auditEvents }: AuditEventsTableProps) {
+export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ auditEvents }) => {
   const { t } = useTranslation(['settings']);
   const language = useFormatLanguage();
   const { openPanel } = usePanel();
@@ -130,4 +130,4 @@ export function AuditEventsTable({ auditEvents }: AuditEventsTableProps) {
       </Table.Body>
     </Table.Container>
   );
-}
+};

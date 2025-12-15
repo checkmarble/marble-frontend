@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
+import { type FunctionComponent, useMemo } from 'react';
 
 interface JsonDiffProps {
   oldData: Record<string, unknown> | null;
   newData: Record<string, unknown> | null;
 }
 
-export function JsonDiff({ oldData, newData }: JsonDiffProps) {
+export const JsonDiff: FunctionComponent<JsonDiffProps> = ({ oldData, newData }) => {
   const allKeys = useMemo(() => {
     const keys = new Set<string>();
     if (oldData) Object.keys(oldData).forEach((k) => keys.add(k));
@@ -62,4 +62,4 @@ export function JsonDiff({ oldData, newData }: JsonDiffProps) {
       })}
     </div>
   );
-}
+};
