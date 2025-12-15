@@ -3,6 +3,7 @@ import api from '@app-builder/locales/en/api.json';
 import auth from '@app-builder/locales/en/auth.json';
 import cases from '@app-builder/locales/en/cases.json';
 import common from '@app-builder/locales/en/common.json';
+import continuousScreening from '@app-builder/locales/en/continuous-screening.json';
 import data from '@app-builder/locales/en/data.json';
 import decisions from '@app-builder/locales/en/decisions.json';
 import filters from '@app-builder/locales/en/filters.json';
@@ -20,6 +21,7 @@ export const en = {
   api,
   cases,
   common,
+  continuousScreening,
   data,
   decisions,
   filters,

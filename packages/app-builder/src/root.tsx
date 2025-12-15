@@ -213,7 +213,7 @@ function App() {
       <AppConfigContext.Provider value={appConfig}>
         <Outlet />
       </AppConfigContext.Provider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
     </QueryClientProvider>
   );
 }

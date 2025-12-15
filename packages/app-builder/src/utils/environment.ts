@@ -36,6 +36,11 @@ const PublicEnvVarsSchema = z.object({
     .string()
     .transform((val) => val === 'true')
     .optional(),
+
+  CONTINUOUS_SCREENING_ENABLED: z
+    .string()
+    .transform((val) => val === 'true')
+    .optional(),
 });
 type PublicEnvVars = z.infer<typeof PublicEnvVarsSchema>;
 
@@ -87,6 +92,7 @@ interface ServerEnvVars {
   SEGMENT_WRITE_KEY?: string;
   DISABLE_SEGMENT?: boolean;
   SESSION_SECRET: string;
+  CONTINUOUS_SCREENING_ENABLED?: boolean;
 }
 
 /**

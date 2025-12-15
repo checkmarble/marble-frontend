@@ -117,6 +117,9 @@
   --shadow-sticky-bottom: 0 -8px 24px rgba(8, 5, 37, 0.06);
   --shadow-sticky-top: 0 8px 24px rgba(8, 5, 37, 0.06);
   --shadow-sticky-left: 8px 0 12px rgba(8, 5, 37, 0.06);
+
+  --animate-slide-down: slideDown 200ms cubic-bezier(0.87, 0, 0.13, 1);
+  --animate-slide-up: slideUp 200ms cubic-bezier(0.87, 0, 0.13, 1);
 }
 
 /* Custom keyframes */
