@@ -1346,6 +1346,26 @@ export type OrganizationSubnetsDto = {
     /** List of CIDR subnets (x.x.x.x/yy) */
     subnets?: string[];
 };
+export type AuditEventDto = {
+    id?: string;
+    actor?: {
+        "type"?: "user" | "api_key";
+        id?: string;
+        name?: string;
+    };
+    operation?: "INSERT" | "UPDATE" | "DELETE";
+    table?: string;
+    entity_id?: string;
+    /** Arbitrary JSON representing the old entity */
+    old_data?: {
+        [key: string]: any;
+    };
+    /** Arbitrary JSON representing the new entity */
+    new_data?: {
+        [key: string]: any;
+    };
+    created_at?: string;
+};
 export type InboxUserDto = {
     id: string;
     inbox_id: string;
@@ -4486,6 +4506,42 @@ export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts)
         status: 403;
         data: string;
     }>(`/editor/${encodeURIComponent(scenarioId)}/identifiers`, {
+        ...opts
+    }));
+}
+/**
+ * List audit events
+ */
+export function listAuditEvents($from: string, to: string, { userId, apiKeyId, table, entityId, limit, after }: {
+    userId?: string;
+    apiKeyId?: string;
+    table?: string;
+    entityId?: string;
+    limit?: number;
+    after?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            has_next_page: boolean;
+            events: AuditEventDto[];
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    }>(`/admin/audit-events${QS.query(QS.explode({
+        "from": $from,
+        to,
+        user_id: userId,
+        api_key_id: apiKeyId,
+        table,
+        entity_id: entityId,
+        limit,
+        after
+    }))}`, {
         ...opts
     }));
 }

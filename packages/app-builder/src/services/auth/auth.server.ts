@@ -9,6 +9,7 @@ import { type AiAssistRepository } from '@app-builder/repositories/AiAssistRepos
 import { type AnalyticsRepository } from '@app-builder/repositories/AnalyticsRepository';
 import { type ApiKeyRepository } from '@app-builder/repositories/ApiKeyRepository';
 import { AppConfigRepository } from '@app-builder/repositories/AppConfigRepository';
+import { type AuditEventsRepository } from '@app-builder/repositories/AuditEventsRepository';
 import { type CaseRepository } from '@app-builder/repositories/CaseRepository';
 import { ContinuousScreeningRepository } from '@app-builder/repositories/ContinuousScreeningRepository';
 import { type CustomListsRepository } from '@app-builder/repositories/CustomListRepository';
@@ -67,6 +68,7 @@ interface AuthenticatedInfo {
   inbox: InboxRepository;
   personalSettings: PersonalSettingsRepository;
   aiAssistSettings: AiAssistRepository;
+  auditEvents: AuditEventsRepository;
 }
 
 export interface AuthenticationServerService {
@@ -130,6 +132,7 @@ interface MakeAuthenticationServerServiceArgs {
   getFeatureAccessRepository: ReturnType<typeof makeGetFeatureAccessRepository>;
   getPersonalSettingsRepository: (marbleCoreApiClient: MarbleCoreApi) => PersonalSettingsRepository;
   getAiAssistSettingsRepository: (marbleCoreApiClient: MarbleCoreApi) => AiAssistRepository;
+  getAuditEventsRepository: (marbleCoreApiClient: MarbleCoreApi) => AuditEventsRepository;
   authSessionService: SessionService<AuthData, AuthFlashData>;
   toastSessionService: SessionService<void, ToastFlashData>;
   csrfService: CSRF;
@@ -168,6 +171,7 @@ export function makeAuthenticationServerService({
   toastSessionService,
   csrfService,
   getAiAssistSettingsRepository,
+  getAuditEventsRepository,
   makeOidcService,
 }: MakeAuthenticationServerServiceArgs) {
   function getTokenService(marbleAccessToken: string, request: Request | undefined = undefined): TokenService<string> {
@@ -449,6 +453,7 @@ export function makeAuthenticationServerService({
       inbox: getInboxRepository(marbleCoreApiClient),
       personalSettings: getPersonalSettingsRepository(marbleCoreApiClient),
       aiAssistSettings: getAiAssistSettingsRepository(marbleCoreApiClient),
+      auditEvents: getAuditEventsRepository(marbleCoreApiClient),
     };
   }
 

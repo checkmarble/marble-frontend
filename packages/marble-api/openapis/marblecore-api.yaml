@@ -308,6 +308,8 @@ paths:
     $ref: ./marblecore-api/admin.yml#/~1organizations~1{organizationId}~1users
   /editor/{scenarioId}/identifiers:
     $ref: ./marblecore-api/misc.yml#/~1editor~1{scenarioId}~1identifiers
+  /admin/audit-events:
+    $ref: ./marblecore-api/admin.yml#/~1admin~1audit-events
 
   # INBOXES
 
