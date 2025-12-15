@@ -38,7 +38,6 @@ export const ReviewScreeningMatch = ({
     } as ReviewScreeningMatchPayload,
     onSubmit: async ({ value }) => {
       reviewScreeningMatchMutation.mutateAsync(value).then((res) => {
-        console.log(res);
         if (res.success) {
           onClose();
         }

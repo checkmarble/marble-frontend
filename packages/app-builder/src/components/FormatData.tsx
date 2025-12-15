@@ -1,4 +1,4 @@
-import { formatDateTimeWithoutPresets, formatNumber } from '@app-builder/utils/format';
+import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 
 import { ExternalLink } from './ExternalLink';
 
@@ -16,7 +16,10 @@ type Data =
       value: unknown;
     };
 
-export function FormatData({ data, language, className }: { data?: Data; language: string; className?: string }) {
+export function FormatData({ data, className }: { data?: Data; className?: string }) {
+  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
+
   if (!data) {
     return <span className={className}>-</span>;
   }
@@ -31,8 +34,7 @@ export function FormatData({ data, language, className }: { data?: Data; languag
     case 'datetime':
       return (
         <time dateTime={data.value} className={className}>
-          {formatDateTimeWithoutPresets(data.value, {
-            language,
+          {formatDateTime(data.value, {
             dateStyle: 'short',
             timeStyle: 'short',
           })}

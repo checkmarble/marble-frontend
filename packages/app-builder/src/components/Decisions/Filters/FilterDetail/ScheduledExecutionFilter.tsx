@@ -1,6 +1,6 @@
 import { Highlight } from '@app-builder/components/Highlight';
 import { type ScheduledExecutionsLoader } from '@app-builder/routes/ressources+/decisions+/list-scheduled-execution';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { useFetcher } from '@remix-run/react';
 import { matchSorter } from 'match-sorter';
@@ -14,7 +14,7 @@ import { useScheduledExecutionFilter } from '../DecisionFiltersContext';
 
 export function ScheduledExecutionFilter() {
   const { t } = useTranslation(decisionsI18n);
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
 
   const loadFetcher = useFetcher<ScheduledExecutionsLoader>();
   React.useEffect(() => {
@@ -31,14 +31,13 @@ export function ScheduledExecutionFilter() {
           scenarioName: scheduledExecution.scenarioName,
           startedAt: {
             dateTime: scheduledExecution.startedAt,
-            formattedDateTime: formatDateTimeWithoutPresets(scheduledExecution.startedAt, {
-              language,
+            formattedDateTime: formatDateTime(scheduledExecution.startedAt, {
               dateStyle: 'short',
               timeStyle: 'short',
             }),
           },
         })),
-    [language, loadFetcher.data],
+    [formatDateTime, loadFetcher.data],
   );
 
   const isLoading = loadFetcher.state === 'loading' || successfullScheduledExecutions === undefined;

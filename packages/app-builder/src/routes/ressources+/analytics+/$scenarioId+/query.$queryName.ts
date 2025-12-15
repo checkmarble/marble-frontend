@@ -16,7 +16,6 @@ export const action = createServerFn(
     try {
       const urlParams = urlParamsSchema.parse(params);
       invariant(urlParams.queryName, 'queryName is required');
-      console.log('urlParams', urlParams);
 
       const body = await request.json();
 

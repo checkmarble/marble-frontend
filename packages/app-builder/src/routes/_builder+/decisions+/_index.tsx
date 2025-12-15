@@ -227,7 +227,6 @@ function AddToCase({
     }
   };
 
-  console.log(hasSelection);
   return (
     <DecisionRightPanel.Trigger asChild onClick={getDecisionIds}>
       <Button disabled={!hasSelection}>

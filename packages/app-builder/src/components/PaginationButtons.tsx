@@ -1,5 +1,5 @@
 import { defaultPaginationSize, type PaginatedResponse, type PaginationParams } from '@app-builder/models/pagination';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { Trans, useTranslation } from 'react-i18next';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -27,16 +27,10 @@ type CursorPaginationsButtonsProps = PaginatedResponse<ItemWithId> & {
   itemsPerPage?: number;
 };
 
-function FormattedDatesRange({
-  startTs,
-  endTs,
-  language,
-}: {
-  startTs: string | undefined;
-  endTs: string | undefined;
-  language: string;
-}) {
+function FormattedDatesRange({ startTs, endTs }: { startTs: string | undefined; endTs: string | undefined }) {
   const { t } = useTranslation(['common']);
+  const formatDateTime = useFormatDateTime();
+
   if (!startTs || !endTs) {
     return null;
   }
@@ -58,14 +52,12 @@ function FormattedDatesRange({
         i18nKey="common:items_displayed_same_datetime"
         components={{ emph: <span className="font-bold" /> }}
         values={{
-          date: formatDateTimeWithoutPresets(start, {
-            language,
+          date: formatDateTime(start, {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
           }),
-          time: formatDateTimeWithoutPresets(start, {
-            language,
+          time: formatDateTime(start, {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
@@ -94,18 +86,9 @@ function FormattedDatesRange({
         i18nKey={'common:items_displayed_same_date'}
         components={{ emph: <span className="font-bold" /> }}
         values={{
-          date: formatDateTimeWithoutPresets(start, {
-            language,
-            ...dateFormatOpts,
-          }),
-          start: formatDateTimeWithoutPresets(start, {
-            language,
-            ...timeFormatOpts,
-          }),
-          end: formatDateTimeWithoutPresets(end, {
-            language,
-            ...timeFormatOpts,
-          }),
+          date: formatDateTime(start, dateFormatOpts),
+          start: formatDateTime(start, timeFormatOpts),
+          end: formatDateTime(end, timeFormatOpts),
         }}
       />
     );
@@ -124,14 +107,8 @@ function FormattedDatesRange({
       i18nKey={'common:items_displayed_dates'}
       components={{ emph: <span className="font-bold" /> }}
       values={{
-        start: formatDateTimeWithoutPresets(start, {
-          language,
-          ...dtFormatOpts,
-        }),
-        end: formatDateTimeWithoutPresets(end, {
-          language,
-          ...dtFormatOpts,
-        }),
+        start: formatDateTime(start, dtFormatOpts),
+        end: formatDateTime(end, dtFormatOpts),
       }}
     />
   );
@@ -174,8 +151,6 @@ export function CursorPaginationButtons({
   pageNb,
   itemsPerPage = defaultPaginationSize,
 }: CursorPaginationsButtonsProps) {
-  const language = useFormatLanguage();
-
   const startTs = items[0]?.createdAt;
   const endTs = items[items.length - 1]?.createdAt;
 
@@ -203,7 +178,7 @@ export function CursorPaginationButtons({
       {boundariesDisplay === 'ranks' ? (
         <RankNumberRange pageNumber={pageNb} currentPageItemCount={items.length} itemsPerPage={itemsPerPage} />
       ) : (
-        <FormattedDatesRange {...{ startTs, endTs, language }} />
+        <FormattedDatesRange startTs={startTs} endTs={endTs} />
       )}
       <Button onClick={fetchPrevious} variant="secondary" disabled={previousDisabled}>
         <Icon icon="arrow-left" className="size-4" />

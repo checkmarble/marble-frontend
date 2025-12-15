@@ -1,11 +1,11 @@
 import { useOpenSanctionsDatasetFreshnessInfo } from '@app-builder/queries/opensanctions-dataset-freshness-info';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { Trans, useTranslation } from 'react-i18next';
 import { Icon } from 'ui-icons';
 
 export function DatasetFreshnessBanner() {
   const { t } = useTranslation(['common']);
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
   const datasetFreshnessQuery = useOpenSanctionsDatasetFreshnessInfo();
 
   if (!datasetFreshnessQuery.isSuccess || !datasetFreshnessQuery.data.datasetFreshnessInfo) {
@@ -20,8 +20,7 @@ export function DatasetFreshnessBanner() {
           t={t}
           i18nKey="common:dataset_freshness_banner"
           values={{
-            lastExport: formatDateTimeWithoutPresets(datasetFreshnessQuery.data.datasetFreshnessInfo.lastExport, {
-              language,
+            lastExport: formatDateTime(datasetFreshnessQuery.data.datasetFreshnessInfo.lastExport, {
               dateStyle: 'short',
             }),
           }}

@@ -1,5 +1,5 @@
 import { type ScheduledExecution } from '@app-builder/models/decision';
-import { formatDateTimeWithoutPresets, formatNumber, useFormatLanguage } from '@app-builder/utils/format';
+import { formatNumber, useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { Link } from '@remix-run/react';
 import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
@@ -18,6 +18,7 @@ const columnHelper = createColumnHelper<ScheduledExecution>();
 export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExecutions: ScheduledExecution[] }) {
   const { t } = useTranslation(scenarioI18n);
   const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
 
   const columns = useMemo(
     () => [
@@ -91,24 +92,16 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
         header: t('scenarios:scheduled_execution.status'),
         size: 100,
       }),
-      columnHelper.accessor(
-        (s) =>
-          formatDateTimeWithoutPresets(s.startedAt, {
-            language,
-            dateStyle: 'short',
-            timeStyle: 'short',
-          }),
-        {
-          id: 'created_at',
-          header: t('scenarios:scheduled_execution.created_at'),
-          size: 100,
-          cell: ({ getValue, cell }) => {
-            return <time dateTime={cell.row.original.startedAt}>{getValue()}</time>;
-          },
+      columnHelper.accessor((s) => formatDateTime(s.startedAt, { dateStyle: 'short', timeStyle: 'short' }), {
+        id: 'created_at',
+        header: t('scenarios:scheduled_execution.created_at'),
+        size: 100,
+        cell: ({ getValue, cell }) => {
+          return <time dateTime={cell.row.original.startedAt}>{getValue()}</time>;
         },
-      ),
+      }),
     ],
-    [language, t],
+    [formatDateTime, language, t],
   );
   const { table, getBodyProps, rows, getContainerProps } = useVirtualTable({
     data: scheduledExecutions,

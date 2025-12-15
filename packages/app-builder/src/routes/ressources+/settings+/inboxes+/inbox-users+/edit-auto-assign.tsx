@@ -17,7 +17,6 @@ export async function action({ request }: ActionFunctionArgs) {
   const payload = editInboxUserAutoAssignPayloadSchema.safeParse(rawData);
 
   if (!payload.success) {
-    console.log('PAYLOAD', payload);
     return Response.json({ success: false, errors: z.treeifyError(payload.error) });
   }
 

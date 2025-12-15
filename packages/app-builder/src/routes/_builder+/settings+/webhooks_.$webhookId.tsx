@@ -10,7 +10,7 @@ import {
   isReadWebhookAvailable,
 } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { json, type LoaderFunctionArgs, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
@@ -127,7 +127,7 @@ const columnHelper = createColumnHelper<WebhookSecret>();
 
 function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
   const { t } = useTranslation(['settings']);
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
 
   const columns = React.useMemo(() => {
     return [
@@ -147,9 +147,7 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
         size: 100,
         cell: ({ getValue }) => {
           const dateTime = getValue();
-          return (
-            <time dateTime={dateTime}>{formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}</time>
-          );
+          return <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short' })}</time>;
         },
       }),
       columnHelper.accessor((row) => row.expiresAt, {
@@ -161,9 +159,7 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
           if (!dateTime) {
             return '-';
           }
-          return (
-            <time dateTime={dateTime}>{formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}</time>
-          );
+          return <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short' })}</time>;
         },
       }),
       columnHelper.accessor((row) => row.deletedAt, {
@@ -175,13 +171,11 @@ function WebhookSecrets({ secrets }: { secrets: WebhookSecret[] }) {
           if (!dateTime) {
             return '-';
           }
-          return (
-            <time dateTime={dateTime}>{formatDateTimeWithoutPresets(dateTime, { language, dateStyle: 'short' })}</time>
-          );
+          return <time dateTime={dateTime}>{formatDateTime(dateTime, { dateStyle: 'short' })}</time>;
         },
       }),
     ];
-  }, [language, t]);
+  }, [formatDateTime, t]);
 
   const { table, getBodyProps, rows, getContainerProps } = useTable({
     data: secrets,

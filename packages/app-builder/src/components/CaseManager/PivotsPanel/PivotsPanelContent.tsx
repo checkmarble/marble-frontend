@@ -10,7 +10,7 @@ import {
 } from '@app-builder/models';
 import { type CaseDetail, type PivotObject } from '@app-builder/models/cases';
 import { usePivotRelatedCasesQuery } from '@app-builder/queries/pivot-related-cases';
-import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
 import { Link } from '@remix-run/react';
@@ -236,7 +236,7 @@ const cellVariants = cva('border-grey-90 border-t p-2', {
 function RelatedCases({ currentCase, pivotValue }: { currentCase: CaseDetail; pivotValue: string }) {
   const { t } = useTranslation(['common', 'cases']);
   const casesQuery = usePivotRelatedCasesQuery(pivotValue);
-  const language = useFormatLanguage();
+  const formatDateTime = useFormatDateTime();
 
   return match(casesQuery)
     .with({ isError: true }, () => {
@@ -272,10 +272,7 @@ function RelatedCases({ currentCase, pivotValue }: { currentCase: CaseDetail; pi
                       className: 'shrink border-r leading-[28px]',
                     })}
                   >
-                    {formatDateTimeWithoutPresets(caseObj.createdAt, {
-                      language,
-                      dateStyle: 'short',
-                    })}
+                    {formatDateTime(caseObj.createdAt, { dateStyle: 'short' })}
                   </div>
                   <div
                     className={cellVariants({

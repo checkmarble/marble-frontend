@@ -1,3 +1,4 @@
+import { FormatContext } from '@app-builder/contexts/FormatContext';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import cronstrue from 'cronstrue';
 import { type Options as ConstrueOptions } from 'cronstrue/dist/options';
@@ -5,19 +6,52 @@ import { add } from 'date-fns/add';
 import { formatDistanceStrict } from 'date-fns/formatDistanceStrict';
 import { formatRelative } from 'date-fns/formatRelative';
 import { type Currency, dinero, toDecimal } from 'dinero.js';
-import { useTranslation } from 'react-i18next';
+import { useCallback } from 'react';
 import { Temporal } from 'temporal-polyfill';
 
 /**
  * Get the user's selected language for formatting dates, numbers, and currencies.
  *
- * Returns the current i18next language, ensuring formatting matches the user's
- * selected translation language. Works correctly during both SSR and client-side
- * rendering.
+ * Returns the locale from FormatContext, which is set from the root loader data.
+ * This ensures the locale is available synchronously during both SSR and client-side
+ * hydration, avoiding hydration mismatches.
  */
 export function useFormatLanguage() {
-  const { i18n } = useTranslation();
-  return i18n.language;
+  return FormatContext.useValue().locale;
+}
+
+/**
+ * Get the user's timezone for formatting dates.
+ *
+ * Returns the timezone from FormatContext, which is detected client-side and
+ * stored in a cookie for server-side access.
+ */
+export function useFormatTimezone() {
+  return FormatContext.useValue().timezone;
+}
+
+/**
+ * Hook that returns a pre-configured date/time formatting function.
+ *
+ * The returned function automatically uses the user's locale and timezone
+ * from the FormatContext, ensuring consistent formatting between server and client.
+ *
+ * @example
+ * const formatDateTime = useFormatDateTime();
+ * formatDateTime(date, { dateStyle: 'short' });
+ * formatDateTime(date, { dateStyle: 'long', timeStyle: 'short' });
+ */
+export function useFormatDateTime() {
+  const { locale, timezone } = FormatContext.useValue();
+
+  return useCallback(
+    (timestamp: string | Date, options?: Omit<Intl.DateTimeFormatOptions, 'timeZone'>) => {
+      return Intl.DateTimeFormat(locale, { timeZone: timezone, ...options }).format(
+        typeof timestamp === 'string' ? new Date(timestamp) : timestamp,
+      );
+    },
+    [locale, timezone],
+  );
 }
 
 export function formatDateTimeWithoutPresets(
