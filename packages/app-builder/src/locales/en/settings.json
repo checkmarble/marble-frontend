@@ -7,6 +7,7 @@
   "activity_follow_up.detail.user_email": "User email",
   "activity_follow_up.export_csv": "Export to .csv",
   "activity_follow_up.filter.add_filter": "Add filter",
+  "activity_follow_up.filter.api_key": "API Key",
   "activity_follow_up.filter.date_range": "Date range",
   "activity_follow_up.filter.presets": "Quick select",
   "activity_follow_up.filter.search_table": "Search a table",

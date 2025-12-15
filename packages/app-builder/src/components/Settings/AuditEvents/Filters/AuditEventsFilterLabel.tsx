@@ -12,6 +12,7 @@ export const AuditEventsFilterLabel = ({ name }: AuditEventsFilterLabelProps): R
   return match(name)
     .with('dateRange', () => t('settings:activity_follow_up.filter.date_range'))
     .with('userId', () => t('settings:activity_follow_up.filter.user'))
+    .with('apiKeyId', () => t('settings:activity_follow_up.filter.api_key'))
     .with('entityId', () => t('settings:activity_follow_up.table.entity_id'))
     .exhaustive();
 };

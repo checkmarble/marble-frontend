@@ -2,7 +2,9 @@ import { Page } from '@app-builder/components';
 import { PanelProvider } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useBase64Query } from '@app-builder/hooks/useBase64Query';
+import { type ApiKey } from '@app-builder/models/api-keys';
 import {
+  type AuditEventsFilterName,
   auditEventsFilterNames,
   auditEventsFiltersSchema,
   useGetAuditEventsQuery,
@@ -23,9 +25,10 @@ interface ActivityFollowUpPageProps {
   query: string;
   limit: number;
   updatePage: (newQuery: string, newLimit: number) => void;
+  apiKeys: ApiKey[];
 }
 
-export function ActivityFollowUpPage({ query, limit, updatePage }: ActivityFollowUpPageProps) {
+export function ActivityFollowUpPage({ query, limit, updatePage, apiKeys }: ActivityFollowUpPageProps) {
   const { t } = useTranslation(['settings', 'filters', 'common']);
 
   const parsedQuery = useBase64Query(auditEventsFiltersSchema, query, {
@@ -41,10 +44,19 @@ export function ActivityFollowUpPage({ query, limit, updatePage }: ActivityFollo
     return auditEventsQuery.data?.pages.flatMap((page) => page.events) ?? [];
   }, [auditEventsQuery.data?.pages]);
 
-  // Available filters
+  // Available filters - userId and apiKeyId are mutually exclusive
   const availableFilters = useMemo(() => {
-    return [...auditEventsFilterNames];
-  }, []);
+    const hasUserId = parsedQuery.data?.userId !== undefined;
+    const hasApiKeyId = parsedQuery.data?.apiKeyId !== undefined;
+
+    return auditEventsFilterNames.filter((name): name is AuditEventsFilterName => {
+      // Hide apiKeyId if userId is selected
+      if (name === 'apiKeyId' && hasUserId) return false;
+      // Hide userId if apiKeyId is selected
+      if (name === 'userId' && hasApiKeyId) return false;
+      return true;
+    });
+  }, [parsedQuery.data?.userId, parsedQuery.data?.apiKeyId]);
 
   // TODO: Remove this filter when 'table' filter is enabled
   const activeFilters = useMemo(() => {
@@ -103,6 +115,7 @@ export function ActivityFollowUpPage({ query, limit, updatePage }: ActivityFollo
                 filters={activeFilters}
                 availableFilters={availableFilters}
                 updateFilters={parsedQuery.update}
+                apiKeys={apiKeys}
               />
             </div>
 

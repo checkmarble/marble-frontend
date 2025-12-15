@@ -7,6 +7,7 @@
   "activity_follow_up.detail.user_email": "البريد الإلكتروني للمستخدم",
   "activity_follow_up.export_csv": "تصدير إلى .csv",
   "activity_follow_up.filter.add_filter": "إضافة فلتر",
+  "activity_follow_up.filter.api_key": "مفتاح API",
   "activity_follow_up.filter.date_range": "نطاق التاريخ",
   "activity_follow_up.filter.presets": "اختيار سريع",
   "activity_follow_up.filter.search_table": "البحث عن جدول",

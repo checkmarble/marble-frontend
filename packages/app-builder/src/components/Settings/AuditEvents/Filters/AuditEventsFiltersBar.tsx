@@ -1,3 +1,4 @@
+import { type ApiKey } from '@app-builder/models/api-keys';
 import type { AuditEventsFilterName, AuditEventsFilters } from '@app-builder/queries/audit-events/get-audit-events';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,9 +11,15 @@ export type AuditEventsFiltersBarProps = {
   filters: FilterEntry[];
   availableFilters: AuditEventsFilterName[];
   updateFilters: (filters: Partial<AuditEventsFilters>) => void;
+  apiKeys: ApiKey[];
 };
 
-export const AuditEventsFiltersBar = ({ filters, availableFilters, updateFilters }: AuditEventsFiltersBarProps) => {
+export const AuditEventsFiltersBar = ({
+  filters,
+  availableFilters,
+  updateFilters,
+  apiKeys,
+}: AuditEventsFiltersBarProps) => {
   const { t } = useTranslation(['filters']);
   const [open, setOpen] = useState(false);
 
@@ -27,7 +34,13 @@ export const AuditEventsFiltersBar = ({ filters, availableFilters, updateFilters
         const handleClear = () => updateFilters({ [filterName]: undefined });
 
         return (
-          <ActivatedAuditFilterItem key={filterName} filter={filter} onUpdate={updateFilters} onClear={handleClear} />
+          <ActivatedAuditFilterItem
+            key={filterName}
+            filter={filter}
+            onUpdate={updateFilters}
+            onClear={handleClear}
+            apiKeys={apiKeys}
+          />
         );
       })}
 
@@ -49,6 +62,7 @@ export const AuditEventsFiltersBar = ({ filters, availableFilters, updateFilters
                     updateFilters(filterValue);
                     setOpen(false);
                   }}
+                  apiKeys={apiKeys}
                 />
               ))}
             </MenuCommand.List>

@@ -21,6 +21,7 @@ const dateRangeSchema = z.discriminatedUnion('type', [
 const filtersSchema = z.object({
   dateRange: dateRangeSchema.optional(),
   userId: z.string().optional(),
+  apiKeyId: z.string().optional(),
   table: z.string().optional(),
   entityId: z.string().optional(),
 });
@@ -76,6 +77,7 @@ export const loader = createServerFn([authMiddleware], async function resourcesA
     from,
     to,
     userId: parsedFilters.data.userId,
+    apiKeyId: parsedFilters.data.apiKeyId,
     table: parsedFilters.data.table,
     entityId: parsedFilters.data.entityId,
     limit: parsedPagination.data.limit,

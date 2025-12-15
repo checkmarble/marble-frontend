@@ -1,4 +1,5 @@
 import { DateRangeFilter } from '@app-builder/components/Filters';
+import { type ApiKey } from '@app-builder/models/api-keys';
 import type { AuditEventsFilterName, AuditEventsFilters } from '@app-builder/queries/audit-events/get-audit-events';
 import { DateRangeFilterType } from 'packages/ui-design-system/src/FiltersBar/types';
 import { useState } from 'react';
@@ -6,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2, Input, MenuCommand, Separator } from 'ui-design-system';
 
+import { ApiKeyFilterMenu } from './ApiKeyFilter';
 import { AuditEventsFilterLabel } from './AuditEventsFilterLabel';
 // TODO: Import TableFilterMenu when we have an endpoint to list available tables
 // import { TableFilterMenu } from './TableFilter';
@@ -14,9 +16,10 @@ import { UserFilterMenu } from './UserFilter';
 type DisplayAuditFilterMenuItemProps = {
   filterName: AuditEventsFilterName;
   onSelect: (filters: Partial<AuditEventsFilters>) => void;
+  apiKeys: ApiKey[];
 };
 
-export const DisplayAuditFilterMenuItem = ({ filterName, onSelect }: DisplayAuditFilterMenuItemProps) => {
+export const DisplayAuditFilterMenuItem = ({ filterName, onSelect, apiKeys }: DisplayAuditFilterMenuItemProps) => {
   return (
     match(filterName)
       .with('dateRange', () => (
@@ -44,6 +47,19 @@ export const DisplayAuditFilterMenuItem = ({ filterName, onSelect }: DisplayAudi
           }
         >
           <UserFilterMenu onSelect={(value) => onSelect({ [filterName]: value })} />
+        </MenuCommand.SubMenu>
+      ))
+      .with('apiKeyId', () => (
+        <MenuCommand.SubMenu
+          arrow={false}
+          hover={false}
+          trigger={
+            <span>
+              <AuditEventsFilterLabel name={filterName} />
+            </span>
+          }
+        >
+          <ApiKeyFilterMenu apiKeys={apiKeys} onSelect={(value) => onSelect({ [filterName]: value })} />
         </MenuCommand.SubMenu>
       ))
       // TODO: Add 'table' filter when we have an endpoint to list available tables

@@ -1,11 +1,12 @@
 import { DateRangeFilter } from '@app-builder/components/Filters';
+import { type ApiKey } from '@app-builder/models/api-keys';
 import type { AuditEventsFilterName, AuditEventsFilters } from '@app-builder/queries/audit-events/get-audit-events';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, formatDuration } from '@app-builder/utils/format';
 import { useCallbackRef } from '@marble/shared';
 import { differenceInDays } from 'date-fns';
 import { DateRangeFilterType } from 'packages/ui-design-system/src/FiltersBar/types';
-import { type MouseEvent, type ReactNode, useState } from 'react';
+import { type MouseEvent, type ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonV2, MenuCommand, Separator } from 'ui-design-system';
 import { Icon } from 'ui-icons';
@@ -15,6 +16,7 @@ import { AuditEventsFilterLabel } from './AuditEventsFilterLabel';
 export type FilterEntry =
   | ['dateRange', NonNullable<AuditEventsFilters['dateRange']>]
   | ['userId', string]
+  | ['apiKeyId', string]
   | ['entityId', string];
 
 const EDITABLE_FILTERS: readonly AuditEventsFilterName[] = ['dateRange'];
@@ -23,9 +25,10 @@ type ActivatedAuditFilterItemProps = {
   filter: FilterEntry;
   onUpdate: (filters: Partial<AuditEventsFilters>) => void;
   onClear: () => void;
+  apiKeys: ApiKey[];
 };
 
-export const ActivatedAuditFilterItem = ({ filter, onUpdate, onClear }: ActivatedAuditFilterItemProps) => {
+export const ActivatedAuditFilterItem = ({ filter, onUpdate, onClear, apiKeys }: ActivatedAuditFilterItemProps) => {
   const [open, setOpen] = useState(false);
   const isEditable = EDITABLE_FILTERS.includes(filter[0]);
   const handleClearClick = useCallbackRef((e: MouseEvent) => {
@@ -33,10 +36,15 @@ export const ActivatedAuditFilterItem = ({ filter, onUpdate, onClear }: Activate
     onClear();
   });
 
+  const getApiKeyById = useMemo(() => {
+    const apiKeyMap = new Map(apiKeys.map((key) => [key.id, key]));
+    return (id: string) => apiKeyMap.get(id);
+  }, [apiKeys]);
+
   const button = (
     <span className="flex h-10 items-center gap-v2-xs rounded-v2-md border border-purple-96 bg-purple-98 p-v2-sm text-default">
       <span>
-        <DisplayFilterValue filter={filter} />
+        <DisplayFilterValue filter={filter} getApiKeyById={getApiKeyById} />
       </span>
       <button type="button" onClick={handleClearClick} className="cursor-pointer">
         <Icon icon="cross" className="size-4" />
@@ -60,7 +68,7 @@ export const ActivatedAuditFilterItem = ({ filter, onUpdate, onClear }: Activate
   return (
     <span className="flex h-10 items-center gap-v2-xs rounded-v2-md border border-purple-96 bg-purple-98 p-v2-sm text-default">
       <span>
-        <DisplayFilterValue filter={filter} />
+        <DisplayFilterValue filter={filter} getApiKeyById={getApiKeyById} />
       </span>
       <button type="button" onClick={onClear} className="cursor-pointer">
         <Icon icon="cross" className="size-4" />
@@ -69,9 +77,12 @@ export const ActivatedAuditFilterItem = ({ filter, onUpdate, onClear }: Activate
   );
 };
 
-type DisplayFilterValueProps = { filter: FilterEntry };
+type DisplayFilterValueProps = {
+  filter: FilterEntry;
+  getApiKeyById: (id: string) => ApiKey | undefined;
+};
 
-const DisplayFilterValue = ({ filter }: DisplayFilterValueProps): ReactNode => {
+const DisplayFilterValue = ({ filter, getApiKeyById }: DisplayFilterValueProps): ReactNode => {
   const {
     t,
     i18n: { language },
@@ -113,6 +124,15 @@ const DisplayFilterValue = ({ filter }: DisplayFilterValueProps): ReactNode => {
         </span>
       );
     }
+    case 'apiKeyId': {
+      const apiKey = getApiKeyById(filterValue);
+      const displayValue = apiKey?.description ?? filterValue;
+      return (
+        <span>
+          <AuditEventsFilterLabel name={filterName} />: {displayValue}
+        </span>
+      );
+    }
     // TODO: Add 'table' case when we have an endpoint to list available tables
     case 'entityId':
       return (
@@ -144,6 +164,7 @@ const EditFilterContent = ({ filter, onUpdate, onClose }: EditFilterContentProps
       );
     // TODO: Add 'table' case when we have an endpoint to list available tables
     case 'userId':
+    case 'apiKeyId':
     case 'entityId':
       return null;
   }

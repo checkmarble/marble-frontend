@@ -26,7 +26,7 @@ const pageQueryStringSchema = z.object({
 });
 
 export const loader = createServerFn([authMiddleware], async function activityFollowUpLoader({ context, request }) {
-  const { user } = context.authInfo;
+  const { user, apiKey } = context.authInfo;
 
   if (!isAdmin(user)) {
     return redirect(getRoute('/'));
@@ -36,15 +36,18 @@ export const loader = createServerFn([authMiddleware], async function activityFo
   const searchParams = new URLSearchParams(url.search);
   const parsedSearchParams = pageQueryStringSchema.parse(Object.fromEntries(searchParams));
 
+  const apiKeys = await apiKey.listApiKeys();
+
   return {
     query: parsedSearchParams.q,
     limit: parsedSearchParams.limit,
+    apiKeys,
   };
 });
 
 export default function ActivityFollowUp() {
   const navigate = useAgnosticNavigation();
-  const { query, limit } = useLoaderData<typeof loader>();
+  const { query, limit, apiKeys } = useLoaderData<typeof loader>();
 
   const updatePage = (newQuery: string, newLimit: number) => {
     const qs = QueryString.stringify(
@@ -57,5 +60,5 @@ export default function ActivityFollowUp() {
     navigate({ search: qs }, { replace: true });
   };
 
-  return <ActivityFollowUpPage query={query} limit={limit} updatePage={updatePage} />;
+  return <ActivityFollowUpPage query={query} limit={limit} updatePage={updatePage} apiKeys={apiKeys} />;
 }
