@@ -10,7 +10,7 @@ import { useCallbackRef } from '@marble/shared';
 import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand, Modal } from 'ui-design-system';
+import { Button, ButtonV2, MenuCommand, Modal } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export type CreateNavigationOptionModalProps = {
@@ -61,10 +61,10 @@ export function CreateNavigationOptionModal({ label, dataModel, link }: CreateNa
   return (
     <Modal.Root onOpenChange={handleOpenChange}>
       <Modal.Trigger asChild>
-        <Button size="small" variant="secondary">
+        <ButtonV2 size="small" variant="secondary">
           {label}
           <Icon icon="plus" className="size-4" />
-        </Button>
+        </ButtonV2>
       </Modal.Trigger>
       <Modal.Content size="medium">
         <Modal.Title>{t('data:create_navigation_option.title')}</Modal.Title>
