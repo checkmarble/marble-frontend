@@ -52,7 +52,7 @@ async function globalSetup() {
       MARBLE_APP_URL: 'http://localhost:3000',
       FIREBASE_AUTH_EMULATOR_HOST: `firebase:9099`,
       FIREBASE_API_KEY: 'dummy',
-      GOOGLE_CLOUD_PROJECT: 'test-project',
+      FIREBASE_PROJECT_ID: 'test-project',
       CREATE_GLOBAL_ADMIN_EMAIL: 'admin@checkmarble.com',
       CREATE_ORG_NAME: 'Zorg',
       CREATE_ORG_ADMIN_EMAIL: 'jbe@zorg.com',
