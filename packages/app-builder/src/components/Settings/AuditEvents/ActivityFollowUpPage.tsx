@@ -9,12 +9,10 @@ import {
   auditEventsFiltersSchema,
   useGetAuditEventsQuery,
 } from '@app-builder/queries/audit-events/get-audit-events';
-import { downloadFile } from '@app-builder/utils/download-file';
 import { type FunctionComponent, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
 import { ButtonV2 } from 'ui-design-system';
-import { Icon } from 'ui-icons';
 
 import { AuditEventsTable } from './AuditEventsTable';
 import { type FilterEntry } from './Filters/ActivatedAuditFilterItem';
@@ -68,26 +66,6 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
     return parsedQuery.asArray.filter(([name]) => name !== 'table') as FilterEntry[];
   }, [parsedQuery.asArray]);
 
-  const handleExportCsv = useCallback(async () => {
-    if (auditEvents.length === 0) return;
-
-    const headers = ['Timestamp', 'Actor Type', 'Actor Name', 'Operation', 'Table', 'Entity ID'];
-    const rows = auditEvents.map((event) => [
-      event.createdAt ?? '',
-      event.actor?.type ?? '',
-      event.actor?.name ?? '',
-      event.operation ?? '',
-      event.table ?? '',
-      event.entityId ?? '',
-    ]);
-
-    const csvContent = [headers.join(','), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(','))].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    await downloadFile(url, `audit-events-${new Date().toISOString().split('T')[0]}.csv`);
-  }, [auditEvents]);
-
   const handleSetLimit = useCallback(
     (newLimit: number) => {
       updatePage(query, newLimit);
@@ -103,15 +81,6 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
             {/* Title Row */}
             <div className="flex justify-between items-center">
               <h1 className="text-l font-semibold text-grey-00">{t('settings:activity_follow_up.title')}</h1>
-              <ButtonV2
-                variant="secondary"
-                appearance="stroked"
-                onClick={handleExportCsv}
-                disabled={auditEvents.length === 0}
-              >
-                <Icon icon="download" className="size-4" />
-                {t('settings:activity_follow_up.export_csv')}
-              </ButtonV2>
             </div>
 
             {/* Filters Row */}
