@@ -13,8 +13,10 @@ import {
 } from '@app-builder/models/astNode/aggregation';
 import { type CustomListAccessAstNode, isCustomListAccess } from '@app-builder/models/astNode/custom-list';
 import { type DataAccessorAstNode, isDataAccessorAstNode } from '@app-builder/models/astNode/data-accessor';
+import { type FuzzyMatchComparatorAstNode, isFuzzyMatchComparator } from '@app-builder/models/astNode/strings';
 import { isTimeAdd } from '@app-builder/models/astNode/time';
 import { type CustomList } from '@app-builder/models/custom-list';
+import { ComparatorFuzzyMatchConfig } from '@app-builder/models/fuzzy-match/comparatorFuzzyMatchConfig';
 import { getOperandTypeIcon, getOperandTypeTKey, type OperandType } from '@app-builder/models/operand-type';
 import { getDataAccessorAstNodeField } from '@app-builder/services/ast-node/getDataAccessorAstNodeField';
 import { HoverCard, HoverCardContent, HoverCardPortal, HoverCardTrigger } from '@radix-ui/react-hover-card';
@@ -105,6 +107,9 @@ function OperandDescription({ node }: OperandDescriptionProps) {
   if (isAggregation(node)) {
     return <AggregatorDescription node={node} />;
   }
+  if (isFuzzyMatchComparator(node)) {
+    return <FuzzyMatchComparatorDescription node={node} />;
+  }
   if (isCustomListAccess(node)) {
     return <CustomListAccessDescription node={node} customLists={data.customLists} />;
   }
@@ -132,15 +137,23 @@ type AggregatorDescriptionProps = {
   node: IdLessAstNode<AggregationAstNode>;
 };
 function AggregatorDescription({ node }: AggregatorDescriptionProps) {
-  const { aggregator, tableName, fieldName, filters } = node.namedChildren;
+  const { t } = useTranslation(['scenarios']);
+  const { aggregator, tableName, fieldName, filters, percentile } = node.namedChildren;
   if (!tableName.constant && !fieldName.constant && filters.children.length === 0) return null;
 
   const aggregatedFieldName = `${tableName.constant}.${fieldName.constant}`;
+  const percentileValue = percentile?.constant ? parseFloat(percentile.constant) : null;
 
   return (
     <div className="grid grid-cols-[min-content_1fr] items-center gap-2">
       <span className="text-purple-primary text-center font-bold">{aggregator.constant}</span>
       <span className="font-bold">{aggregatedFieldName}</span>
+      {percentileValue !== null ? (
+        <>
+          <span className="text-grey-50 text-xs">{t('scenarios:edit_aggregation.percentile_value')}</span>
+          <span className="text-grey-00 text-xs font-medium">{percentileValue}%</span>
+        </>
+      ) : null}
       {filters.children.map((filter, index) => {
         const { operator, fieldName } = filter.namedChildren;
         return (
@@ -164,6 +177,26 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
           </Fragment>
         );
       })}
+    </div>
+  );
+}
+
+type FuzzyMatchComparatorDescriptionProps = {
+  node: IdLessAstNode<FuzzyMatchComparatorAstNode>;
+};
+function FuzzyMatchComparatorDescription({ node }: FuzzyMatchComparatorDescriptionProps) {
+  const { t } = useTranslation(['scenarios']);
+  const threshold = node.children[1]?.constant;
+  const level = threshold !== undefined ? ComparatorFuzzyMatchConfig.adaptLevel(threshold) : undefined;
+
+  if (!level) return null;
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-grey-50 text-xs">{t('scenarios:edit_fuzzy_match.level.label')}</span>
+      <span className="text-grey-00 text-xs font-medium uppercase">
+        {t(`scenarios:edit_fuzzy_match.level.${level}`)}
+      </span>
     </div>
   );
 }
