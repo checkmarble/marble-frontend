@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from 'ui-design-system';
-import { Icon } from 'ui-icons';
+import { Icon, type IconName } from 'ui-icons';
 
 export const variants = ['info', 'error'] as const;
 
@@ -25,7 +25,9 @@ const callout = cva('text-s text-grey-primary flex flex-row items-center gap-2 r
   },
 });
 
-interface CalloutProps extends VariantProps<typeof callout>, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {}
+interface CalloutProps extends VariantProps<typeof callout>, Omit<React.ComponentPropsWithoutRef<'div'>, 'color'> {
+  icon?: IconName;
+}
 
 export function Callout({
   children,
@@ -33,13 +35,14 @@ export function Callout({
   color = 'purple',
   variant = 'soft',
   bordered,
+  icon = 'lightbulb',
   ...otherProps
 }: CalloutProps) {
   if (!children) return null;
 
   return (
     <div className={callout({ color, variant, className, bordered })} {...otherProps}>
-      <Icon icon="lightbulb" className="size-4 shrink-0" />
+      <Icon icon={icon} className="size-4 shrink-0" />
       {children}
     </div>
   );

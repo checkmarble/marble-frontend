@@ -52,6 +52,8 @@ export function OperatorSelect<Op extends string>({
 
   const _value = operator !== undefinedAstNodeName && operator !== null ? operator : null;
   const isRestricted = featureAccess && featureAccess !== 'allowed';
+  const isCurrentRestricted = _value ? (isOperatorRestricted?.(_value) ?? false) : false;
+  const showTriggerNudge = isCurrentRestricted && isRestricted && featureAccess;
 
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
@@ -60,7 +62,8 @@ export function OperatorSelect<Op extends string>({
           <span className="text-s text-grey-primary w-full text-center font-medium">
             {_value ? getOperatorName(t, _value, isFilter) : '...'}
           </span>
-          {hideArrow ? null : <MenuCommand.Arrow />}
+          {showTriggerNudge ? <Nudge kind={featureAccess} content={t('common:premium')} className="size-5" /> : null}
+          {!showTriggerNudge && !hideArrow ? <MenuCommand.Arrow /> : null}
         </button>
       </MenuCommand.Trigger>
       <MenuCommand.Content sameWidth sideOffset={4} align="start" className="min-w-24">
@@ -68,7 +71,6 @@ export function OperatorSelect<Op extends string>({
         <MenuCommand.List>
           {mappedOptions.map((op) => {
             const isOpRestricted = isOperatorRestricted?.(op.value) ?? false;
-            const isDisabled = isRestricted && isOpRestricted;
             const showNudge = isOpRestricted && isRestricted && featureAccess;
 
             return (
@@ -77,7 +79,6 @@ export function OperatorSelect<Op extends string>({
                 selected={operator === op.value}
                 key={op.value}
                 onSelect={() => onOperatorChange(op.value)}
-                disabled={isDisabled}
               >
                 <div className="flex w-full items-center justify-between gap-2">
                   <span className="font-semibold">{getOperatorName(t, op.value, isFilter)}</span>

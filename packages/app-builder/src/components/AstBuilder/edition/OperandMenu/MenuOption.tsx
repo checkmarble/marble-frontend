@@ -28,16 +28,10 @@ export function MenuOption({ option, value, onSelect, rightElement, highlightSea
   const isRestrictedOption =
     isAggregation(option.astNode) && isRestrictedAggregator(option.astNode.namedChildren.aggregator.constant);
   const isRestricted = workflowsAccess !== undefined && workflowsAccess !== 'allowed';
-  const isDisabled = isRestrictedOption && isRestricted;
   const showNudge = isRestrictedOption && isRestricted;
 
   return (
-    <MenuCommand.Item
-      className="group"
-      value={value}
-      onSelect={() => onSelect(injectIdToNode(option.astNode))}
-      disabled={isDisabled}
-    >
+    <MenuCommand.Item className="group" value={value} onSelect={() => onSelect(injectIdToNode(option.astNode))}>
       <div className="grid w-full grid-cols-[20px_1fr] gap-1">
         {leftIcon ? <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon={leftIcon} /> : null}
         <div className="col-start-2 flex flex-row gap-1 overflow-hidden">

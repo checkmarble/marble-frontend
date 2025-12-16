@@ -52,6 +52,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   return (
     <OperandEditModalContainer
       {...props}
+      saveDisabled={isCurrentRestricted && isRestricted}
       title={
         <div className="flex flex-row items-center justify-center gap-3">
           {t('scenarios:edit_aggregation.title')}
@@ -76,16 +77,6 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
             />
           </Modal.Description>
         </Callout>
-        {isCurrentRestricted && isRestricted ? (
-          <Callout variant="outlined" color="purple">
-            {t('scenarios:edit_aggregation.premium_callout')}
-          </Callout>
-        ) : null}
-        {isCurrentHeavy && hasLicense ? (
-          <Callout variant="outlined" color="red">
-            {t('scenarios:edit_aggregation.performance_warning')}
-          </Callout>
-        ) : null}
         <div className="flex flex-col gap-2">
           <label htmlFor="aggregation.label">{t('scenarios:edit_aggregation.label_title')}</label>
           <Input
@@ -164,6 +155,16 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
             <EditionEvaluationErrors direct id={node.namedChildren.fieldName.id} />
           </div>
         </div>
+        {isCurrentRestricted && isRestricted ? (
+          <Callout icon="lock" variant="outlined" color="red">
+            {t('scenarios:edit_aggregation.premium_callout')}
+          </Callout>
+        ) : null}
+        {isCurrentHeavy && hasLicense ? (
+          <Callout variant="outlined" color="red">
+            {t('scenarios:edit_aggregation.performance_warning')}
+          </Callout>
+        ) : null}
       </div>
       <EditFilters aggregatedField={aggregatedField.value} dataModel={dataModel} />
     </OperandEditModalContainer>
