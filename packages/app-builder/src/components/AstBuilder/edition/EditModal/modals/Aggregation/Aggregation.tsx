@@ -125,16 +125,14 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
             <Input
               type="text"
               id="aggregation.percentile_value"
-              value={node.namedChildren.percentile?.constant ?? '50'}
-              onChange={(e) => {
-                node.namedChildren.percentile = NewConstantAstNode({ constant: e.target.value });
-              }}
+              defaultValue={String(node.namedChildren.percentile?.constant ?? 50)}
               onBlur={(e) => {
                 const normalizedValue = e.target.value.replace(',', '.');
                 const value = parseFloat(normalizedValue);
                 if (!isNaN(value)) {
                   const clamped = Math.max(0, Math.min(100, value));
-                  node.namedChildren.percentile = NewConstantAstNode({ constant: String(clamped) });
+                  node.namedChildren.percentile = NewConstantAstNode({ constant: clamped });
+                  e.target.value = String(clamped);
                 }
               }}
             />

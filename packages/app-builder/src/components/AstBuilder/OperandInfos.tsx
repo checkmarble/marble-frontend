@@ -142,7 +142,7 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
   if (!tableName.constant && !fieldName.constant && filters.children.length === 0) return null;
 
   const aggregatedFieldName = `${tableName.constant}.${fieldName.constant}`;
-  const percentileValue = percentile?.constant ? parseFloat(percentile.constant) : null;
+  const percentileValue = percentile?.constant ?? null;
 
   return (
     <div className="grid grid-cols-[min-content_1fr] items-center gap-2">

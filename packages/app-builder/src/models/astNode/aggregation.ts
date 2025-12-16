@@ -140,7 +140,7 @@ export interface AggregationAstNode {
       children: AggregationFilterAstNode[];
       namedChildren: Record<string, never>;
     };
-    percentile: ConstantAstNode<string>; // TODO: optional number
+    percentile: ConstantAstNode<number>; // Value between 0-100
   };
 }
 
@@ -162,7 +162,7 @@ export function NewAggregatorAstNode(aggregatorName: AggregatorOperator): Aggreg
         children: [],
         namedChildren: {},
       },
-      percentile: NewConstantAstNode({ constant: '50' }),
+      percentile: NewConstantAstNode({ constant: 50 }),
     },
   };
 }
