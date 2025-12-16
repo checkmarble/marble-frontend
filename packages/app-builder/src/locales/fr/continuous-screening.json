@@ -53,5 +53,22 @@
   "creation.stepper.datasetSelection": "",
   "creation.stepper.objectMapping": "",
   "creation.stepper.scoringConfiguration": "",
-  "creation.title": ""
+  "creation.title": "",
+  "review.callout.dataset_updated": "",
+  "review.callout.object_added": "",
+  "review.callout.object_updated": "",
+  "review.direct_subtitle.object_added": "",
+  "review.direct_subtitle.object_updated": "",
+  "review.dismiss_alert": "",
+  "review.dismiss_alert_modal.confirm_button": "",
+  "review.dismiss_alert_modal.confirmation_text": "",
+  "review.dismiss_alert_modal.warning_text": "",
+  "review.indirect_subtitle": "",
+  "review.information_title": "",
+  "review.matches.match_label": "",
+  "review.matches.status_label": "",
+  "review.request_detail_subtitle": "",
+  "review.search_parameters_subtitle": "",
+  "review.search_tag.object_added": "",
+  "review.search_tag.object_updated": ""
 }

@@ -3,20 +3,24 @@ import { parseUnknownData } from '@app-builder/utils/parse';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { ButtonV2, cn } from 'ui-design-system';
+import { ButtonV2 } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 import { FormatData } from '../FormatData';
+import { SquareTag } from '../SquareTag';
+import { DataListGrid } from './DataListGrid';
 
 type ClientObjectDataListProps = {
   tableModel: TableModelWithOptions;
   data: ClientObjectDetail['data'];
+  displayObjectType?: boolean;
   className?: string;
   isIncompleteObject?: boolean;
 };
 
 export function ClientObjectDataList({
   tableModel,
+  displayObjectType = false,
   isIncompleteObject = false,
   data,
   className,
@@ -27,7 +31,15 @@ export function ClientObjectDataList({
   const shouldShowButton = tableModel.fields.some((f) => !f.displayed);
 
   return (
-    <div className={cn('grid grid-cols-[116px_1fr] gap-x-3 gap-y-2', className)}>
+    <DataListGrid className={className}>
+      {displayObjectType ? (
+        <Fragment>
+          <div className="text-grey-placeholder truncate">Object type</div>
+          <div>
+            <SquareTag className="capitalize">{tableModel.name}</SquareTag>
+          </div>
+        </Fragment>
+      ) : null}
       {tableModel.options.fieldOrder.map((fieldId) => {
         const field = tableModel.fields.find((f) => f.id === fieldId);
         if (!field) return null;
@@ -49,6 +61,6 @@ export function ClientObjectDataList({
           <Icon icon={isExpanded ? 'minus' : 'plus'} className="size-3.5" />
         </ButtonV2>
       ) : null}
-    </div>
+    </DataListGrid>
   );
 }

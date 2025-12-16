@@ -12,7 +12,7 @@ import { useForm, useStore } from '@tanstack/react-form';
 import { capitalize } from 'radash';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Avatar, Button, MenuCommand } from 'ui-design-system';
+import { Avatar, ButtonV2, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 export const EditCaseAssignee = ({
@@ -73,9 +73,8 @@ export const EditCaseAssignee = ({
                 </span>
               </span>
             ) : !disabled ? (
-              <Button
+              <ButtonV2
                 variant="secondary"
-                size="xs"
                 onClick={() => {
                   field.handleChange(currentUser.actorIdentity.userId as string);
                   form.handleSubmit();
@@ -85,15 +84,15 @@ export const EditCaseAssignee = ({
                 <span className="text-grey-placeholder text-xs">
                   {t('cases:case_detail.assign_to_myself_button.label')}
                 </span>
-              </Button>
+              </ButtonV2>
             ) : null}
             {!disabled ? (
               <MenuCommand.Menu open={open} onOpenChange={setOpen}>
                 <MenuCommand.Trigger>
-                  <Button variant="secondary" size={assignee ? 'icon' : 'xs'}>
+                  <ButtonV2 variant="secondary" mode={assignee ? 'icon' : 'normal'}>
                     <Icon icon={assignee ? 'edit-square' : 'plus'} className="text-grey-placeholder size-4" />
                     {!assignee ? <span className="text-grey-placeholder text-xs">Add</span> : null}
-                  </Button>
+                  </ButtonV2>
                 </MenuCommand.Trigger>
                 <MenuCommand.Content sameWidth className="mt-2">
                   <MenuCommand.Combobox placeholder="Search..." />

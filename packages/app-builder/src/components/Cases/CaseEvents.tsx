@@ -23,7 +23,6 @@ import {
   DEFAULT_CASE_EVENT_CATEGORIES_FILTER,
 } from '@app-builder/constants/cases';
 import { type CaseEvent, CaseEventType } from '@app-builder/models/cases';
-import { type Inbox } from '@app-builder/models/inbox';
 import { debounce } from 'radash';
 import { Fragment, type RefObject, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,15 +34,7 @@ import { Icon } from 'ui-icons';
 const MAX_EVENTS_BEFORE_DEBOUNCE = 60;
 const EVENT_DELAY = 100;
 
-export function CaseEvents({
-  events,
-  inboxes,
-  root,
-}: {
-  events: CaseEvent[];
-  inboxes: Inbox[];
-  root: RefObject<HTMLDivElement>;
-}) {
+export function CaseEvents({ events, root }: { events: CaseEvent[]; root: RefObject<HTMLDivElement> }) {
   const { t } = useTranslation(['common', 'cases']);
   const containerRef = useRef<HTMLDivElement>(null);
   const [showAll, setShowAll] = useState(false);
@@ -153,7 +144,7 @@ export function CaseEvents({
               .with({ eventType: 'name_updated' }, (e) => <NameUpdatedDetail event={e} />)
               .with({ eventType: 'tags_updated' }, (e) => <TagsUpdatedDetail event={e} />)
               .with({ eventType: 'file_added' }, (e) => <FileAddedDetail event={e} />)
-              .with({ eventType: 'inbox_changed' }, (e) => <InboxChangedDetail event={e} inboxes={inboxes} />)
+              .with({ eventType: 'inbox_changed' }, (e) => <InboxChangedDetail event={e} />)
               .with({ eventType: 'rule_snooze_created' }, (e) => <RuleSnoozeCreatedDetail event={e} />)
               .with({ eventType: 'decision_reviewed' }, (e) => <DecisionReviewedDetail event={e} />)
               .with({ eventType: 'case_snoozed' }, (e) => <CaseSnoozedDetail event={e} />)

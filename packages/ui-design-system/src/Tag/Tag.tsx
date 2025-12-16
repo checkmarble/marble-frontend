@@ -17,7 +17,7 @@ export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
     <span
       ref={ref}
       className={clsx(
-        'inline-flex items-center justify-center border border-transparent dark:bg-transparent',
+        'inline-flex items-center justify-center border border-transparent dark:bg-transparent text-nowrap',
         {
           'bg-purple-background text-purple-primary dark:border-purple-primary dark:text-purple-primary':
             color === 'purple',

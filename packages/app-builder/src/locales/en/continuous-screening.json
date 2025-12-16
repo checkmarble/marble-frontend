@@ -53,5 +53,22 @@
   "creation.stepper.datasetSelection": "Dataset Selection",
   "creation.stepper.objectMapping": "Object Mapping",
   "creation.stepper.scoringConfiguration": "Scoring Configuration",
-  "creation.title": "New: {{name}}"
+  "creation.title": "New: {{name}}",
+  "review.callout.dataset_updated": "A dataset under monitoring for a <EntityType/> has been updated and new matches have been found in your data.",
+  "review.callout.object_added": "A new <EntityType/> has been added to the monitoring and new matches have been found in the monitored datasets.",
+  "review.callout.object_updated": "An existing <EntityType/> has been updated and new matches have been found in the monitored datasets.",
+  "review.direct_subtitle.object_added": "Initial screening for {{entityType}}: {{name}}",
+  "review.direct_subtitle.object_updated": "Continuated screening for {{entityType}}: {{name}}",
+  "review.dismiss_alert": "Dismiss alert",
+  "review.dismiss_alert_modal.confirm_button": "Dismiss",
+  "review.dismiss_alert_modal.confirmation_text": "Are you sure you want to dismiss the alert?",
+  "review.dismiss_alert_modal.warning_text": "Dismissing the alert will change all the matches to skipped and set the screening status to no hit.",
+  "review.indirect_subtitle": "New entity under {{category}}",
+  "review.information_title": "Information",
+  "review.matches.match_label": "Match",
+  "review.matches.status_label": "Status",
+  "review.request_detail_subtitle": "Detail of query sent to search engine",
+  "review.search_parameters_subtitle": "Search parameters",
+  "review.search_tag.object_added": "Initial search",
+  "review.search_tag.object_updated": "Search on update"
 }

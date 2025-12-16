@@ -114,6 +114,7 @@ export const iconNames = [
   'settings',
   'smallarrow-up',
   'snooze-on',
+  'snooze-stroke',
   'snooze',
   'speakerphone',
   'spinner',

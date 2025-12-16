@@ -75,7 +75,7 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
 
   return (
     <Modal.Root open={open} onOpenChange={setOpen}>
-      <Modal.Trigger>
+      <Modal.Trigger asChild>
         <ButtonV2 variant="secondary" className="align-baseline" onClick={() => handleOpen()}>
           <Icon icon="ai-review" className="size-5" /> {t('cases:kyc_enrichment.title')}
         </ButtonV2>

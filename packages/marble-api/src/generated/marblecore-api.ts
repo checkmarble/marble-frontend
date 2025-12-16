@@ -157,7 +157,7 @@ export type CaseDecisionDto = {
     error?: Error;
 };
 export type ScreeningEntityDto = "Thing" | "Address" | "Airplane" | "Asset" | "Associate" | "Company" | "CryptoWallet" | "Debt" | "Directorship" | "Employment" | "Family" | "Identification" | "LegalEntity" | "Membership" | "Occupancy" | "Organization" | "Ownership" | "Passport" | "Payment" | "Person" | "Position" | "PublicBody" | "Representation" | "Sanction" | "Security" | "Succession" | "UnknownLink" | "Vessel" | "Vehicle";
-export type Items = {
+export type ScreeningQueryDto = {
     schema: ScreeningEntityDto;
     properties: {
         [key: string]: string[];
@@ -166,7 +166,7 @@ export type Items = {
 export type ContinuousScreeningRequestDto = {
     search_input: {
         queries: {
-            [key: string]: Items;
+            [key: string]: ScreeningQueryDto;
         };
     };
 };
@@ -176,7 +176,7 @@ export type ContinuousScreeningDtoBase = {
     continuous_screening_config_id: string;
     continuous_screening_config_stable_id: string;
     case_id?: string;
-    status: "in_review" | "error" | "confirmed_hit" | "no_hit";
+    status: "in_review" | "confirmed_hit" | "no_hit";
     trigger_type: string;
     request: ContinuousScreeningRequestDto;
     partial: boolean;
@@ -184,11 +184,34 @@ export type ContinuousScreeningDtoBase = {
     created_at: string;
     updated_at: string;
 };
+export type ScreeningSanctionEntityDto = {
+    id: string;
+    schema: "Sanction";
+    properties: {
+        [key: string]: string[];
+    };
+};
+export type ScreeningMatchPayloadDto = {
+    id: string;
+    match: boolean;
+    score: number;
+    schema: ScreeningEntityDto;
+    caption: string;
+    properties: {
+        sanctions?: ScreeningSanctionEntityDto[];
+    } & {
+        [key: string]: string[];
+    };
+};
+export type ContinuousScreeningMatchPayloadDto = ScreeningMatchPayloadDto & {
+    datasets: string[];
+    target: boolean;
+};
 export type ContinuousScreeningMatchBaseDto = {
     id: string;
     continuous_screening_id: string;
     status: "pending" | "confirmed_hit" | "no_hit" | "skipped";
-    payload: object;
+    payload: ContinuousScreeningMatchPayloadDto;
     reviewed_by?: string;
     created_at: string;
     updated_at: string;
@@ -907,27 +930,8 @@ export type ScreeningRequestDto = {
     limit: number;
     search_input: {
         queries: {
-            [key: string]: Items;
+            [key: string]: ScreeningQueryDto;
         };
-    };
-};
-export type ScreeningSanctionEntityDto = {
-    id: string;
-    schema: "Sanction";
-    properties: {
-        [key: string]: string[];
-    };
-};
-export type ScreeningMatchPayloadDto = {
-    id: string;
-    match: boolean;
-    score: number;
-    schema: ScreeningEntityDto;
-    caption: string;
-    properties: {
-        sanctions?: ScreeningSanctionEntityDto[];
-    } & {
-        [key: string]: string[];
     };
 };
 export type ScreeningMatchDto = {
@@ -954,7 +958,7 @@ export type ScreeningSuccessDto = {
     decision_id: string;
     status: "in_review" | "confirmed_hit";
     request: ScreeningRequestDto;
-    initial_query?: Items[];
+    initial_query?: ScreeningQueryDto[];
     partial: boolean;
     is_manual: boolean;
     matches: ScreeningMatchDto[];
@@ -967,12 +971,7 @@ export type ScreeningErrorDto = {
     decision_id: string;
     status: "error";
     request?: ScreeningRequestDto;
-    initial_query?: {
-        schema: ScreeningEntityDto;
-        properties: {
-            [key: string]: string[];
-        };
-    }[];
+    initial_query?: ScreeningQueryDto[];
     partial: boolean;
     is_manual: boolean;
     matches: ScreeningMatchDto[];
@@ -986,7 +985,7 @@ export type ScreeningDto = ScreeningSuccessDto | {
     decision_id: string;
     status: "no_hit";
     request?: ScreeningRequestDto;
-    initial_query?: Items[];
+    initial_query?: ScreeningQueryDto[];
     partial: boolean;
     is_manual: boolean;
     matches: ScreeningMatchDto[];

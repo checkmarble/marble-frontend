@@ -4,7 +4,7 @@ import { type Tag } from 'marble-api';
 import { pick, toggle } from 'radash';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, MenuCommand } from 'ui-design-system';
+import { ButtonV2, MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type SimpleTag = Pick<Tag, 'color' | 'id' | 'name'>;
@@ -44,9 +44,9 @@ export function TagSelector({
 
   if (orgTags.length === 0) {
     return (
-      <Button variant="secondary" disabled>
+      <ButtonV2 variant="secondary" disabled>
         <span className="text-grey-placeholder text-xs">{t('workflows:action.tags.no_tags')}</span>
-      </Button>
+      </ButtonV2>
     );
   }
 
@@ -54,12 +54,12 @@ export function TagSelector({
     <div className="flex items-center gap-2">
       <MenuCommand.Menu persistOnSelect onOpenChange={onOpenChange}>
         <MenuCommand.Trigger>
-          <Button variant="secondary" size={selectedTagIds.length ? 'icon' : 'xs'}>
+          <ButtonV2 variant="secondary" mode={selectedTagIds.length ? 'icon' : 'normal'}>
             <Icon icon={selectedTagIds.length ? 'edit-square' : 'plus'} className="text-grey-placeholder size-4" />
             {!selectedTagIds.length ? <span className="text-grey-placeholder text-xs">{t('common:add')}</span> : null}
-          </Button>
+          </ButtonV2>
         </MenuCommand.Trigger>
-        <MenuCommand.Content className="mt-2 min-w-[200px]" side="bottom">
+        <MenuCommand.Content className="mt-2 min-w-[200px]" side="bottom" align="start">
           <MenuCommand.Combobox placeholder={t('workflows:action.tags.search_placeholder')} />
           <MenuCommand.List>
             {orgTags.map(({ id: tagId }) => (

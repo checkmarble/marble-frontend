@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/remix';
 import { useTranslation } from 'react-i18next';
 import { Tag } from 'ui-design-system';
 
-export const TopicTag = ({ topic }: { topic: string }) => {
+export const TopicTag = ({ topic, className }: { topic: string; className?: string }) => {
   const { t } = useTranslation(['screeningTopics']);
 
   const category = SCREENING_TOPICS_MAP.get(topic);

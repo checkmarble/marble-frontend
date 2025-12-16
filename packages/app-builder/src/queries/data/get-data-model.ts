@@ -4,13 +4,15 @@ import { useQuery } from '@tanstack/react-query';
 
 const endpoint = getRoute('/ressources/data/data-model');
 
-export const useDataModelQuery = () => {
-  return useQuery({
-    queryKey: ['data-model'],
-    queryFn: async () => {
-      const response = await fetch(endpoint);
+export const dataModelQueryOptions = {
+  queryKey: ['data-model'],
+  queryFn: async () => {
+    const response = await fetch(endpoint);
 
-      return response.json() as Promise<{ dataModel: DataModel }>;
-    },
-  });
+    return response.json() as Promise<{ dataModel: DataModel }>;
+  },
+};
+
+export const useDataModelQuery = () => {
+  return useQuery(dataModelQueryOptions);
 };
