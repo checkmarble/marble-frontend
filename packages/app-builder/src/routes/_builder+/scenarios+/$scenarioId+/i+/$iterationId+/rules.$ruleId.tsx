@@ -82,9 +82,12 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, appConfigRepository } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { customListsRepository, editor, dataModelRepository, entitlements } = await authService.isAuthenticated(
+    request,
+    {
+      failureRedirect: getRoute('/sign-in'),
+    },
+  );
 
   const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, appConfig] = await Promise.all([
     editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
@@ -99,6 +102,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     dataModel,
     customLists,
     isAiRuleDescriptionEnabled: appConfig.isManagedMarble,
+    workflowsAccess: entitlements.workflows,
   };
 }
 
@@ -170,7 +174,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function RuleDetail() {
-  const { databaseAccessors, payloadAccessors, dataModel, customLists, isAiRuleDescriptionEnabled } =
+  const { databaseAccessors, payloadAccessors, dataModel, customLists, isAiRuleDescriptionEnabled, workflowsAccess } =
     useLoaderData<typeof loader>();
 
   const { t } = useTranslation(handle.i18n);
@@ -243,6 +247,7 @@ export default function RuleDetail() {
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
+    workflowsAccess,
   };
 
   //TODO Add errors from the servers if they are present

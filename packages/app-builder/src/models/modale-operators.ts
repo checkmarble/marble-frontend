@@ -23,6 +23,18 @@ export function aggregatorHasParams(aggregator: AggregatorOperator): boolean {
   return (aggregatorsWithParams as ReadonlyArray<AggregatorOperator>).includes(aggregator);
 }
 
+export const restrictedAggregators = ['STDDEV', 'PCTILE', 'MEDIAN'] as const;
+
+export function isRestrictedAggregator(aggregator: AggregatorOperator): boolean {
+  return (restrictedAggregators as ReadonlyArray<AggregatorOperator>).includes(aggregator);
+}
+
+export const heavyAggregators = ['PCTILE', 'MEDIAN'] as const;
+
+export function isHeavyAggregator(aggregator: AggregatorOperator): boolean {
+  return (heavyAggregators as ReadonlyArray<AggregatorOperator>).includes(aggregator);
+}
+
 export const timeAddOperators = ['+', '-'] as const;
 export type TimeAddOperator = (typeof timeAddOperators)[number];
 

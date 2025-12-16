@@ -116,6 +116,8 @@
   "edit_aggregation.label_title": "Variable name",
   "edit_aggregation.object_field_title": "Object field",
   "edit_aggregation.percentile_value": "Percentile",
+  "edit_aggregation.performance_warning": "Percentiles and median are heavier to compute than other aggregation operators - please note that they may increase decision latency if used to filter large numbers of rows.",
+  "edit_aggregation.premium_callout": "Standard Deviation, Percentile, and Median are premium features. You can configure them, but they will only work with a valid license.",
   "edit_aggregation.select_a_field": "Select a field...",
   "edit_aggregation.subtitle": "From Marble database",
   "edit_aggregation.title": "Create a variable",
