@@ -1,6 +1,6 @@
 import { DetailedCaseDecision } from '@app-builder/models/cases';
 import { useCaseDecisionsQuery } from '@app-builder/queries/cases/list-decisions';
-import { type loader } from '@app-builder/routes/_builder+/cases+/$caseId+/_index';
+import { type loader } from '@app-builder/routes/_builder+/cases+/_detail+/s.$caseId';
 import { useFormatDateTime } from '@app-builder/utils/format';
 import { parseUnknownData } from '@app-builder/utils/parse';
 import { useLoaderData } from '@remix-run/react';

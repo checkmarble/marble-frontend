@@ -4,7 +4,7 @@ import { Icon } from 'ui-icons';
 
 import { usePanel } from './PanelProvider';
 
-export type PanelSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+export type PanelSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'xxxl';
 
 const sizeClasses: Record<PanelSize, string> = {
   sm: 'max-w-sm',
@@ -12,6 +12,7 @@ const sizeClasses: Record<PanelSize, string> = {
   lg: 'max-w-lg',
   xl: 'max-w-xl',
   xxl: 'max-w-2xl',
+  xxxl: 'max-w-3xl',
 };
 
 interface PanelContainerProps {

@@ -24,7 +24,7 @@ import {
   type UpdateCaseBodyDto,
 } from 'marble-api';
 import { match } from 'ts-pattern';
-
+import { adaptContinuousScreening, ContinuousScreening } from './continuous-screening';
 import { adaptClientObjectDetail, type ClientObjectDetail } from './data-model';
 import { adaptRuleExecutionDto, type ReviewStatus, RuleExecution } from './decision';
 import { type Outcome as DecisionOutcome } from './outcome';
@@ -73,6 +73,7 @@ export const finalOutcomes: UnionToArray<FinalOutcome> = ['false_positive', 'val
 
 export interface Case {
   id: string;
+  type: CaseDto['type'];
   createdAt: string;
   decisionsCount: number;
   name: string;
@@ -87,6 +88,7 @@ export interface Case {
 
 export const adaptCase = (dto: CaseDto): Case => ({
   id: dto.id,
+  type: dto.type,
   createdAt: dto.created_at,
   decisionsCount: dto.decisions_count,
   name: dto.name,
@@ -426,6 +428,7 @@ export interface CaseDetail extends Case {
     score: number;
     error?: Error;
   }[];
+  continuousScreenings: ContinuousScreening[];
   events: CaseEvent[];
   files: CaseFile[];
 }
@@ -452,6 +455,7 @@ export async function adaptCaseDetail(dto: CaseDetailDto, marbleCoreApiClient: M
       },
       score: decisionDto.score,
     })),
+    continuousScreenings: dto.continuous_screenings.map(adaptContinuousScreening),
     events: await Promise.all(
       dto.events
         .filter((e) => caseEventTypes.includes(e.event_type))

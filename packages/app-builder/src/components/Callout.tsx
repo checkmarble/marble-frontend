@@ -17,6 +17,7 @@ const callout = cva('text-s text-grey-00 flex flex-row items-center gap-2 rounde
     color: {
       purple: 'border-s-2 border-s-purple-65',
       red: 'border-s-2 border-s-red-47',
+      orange: 'border-s-2 border-s-orange-50',
     },
     bordered: {
       true: 'border border-grey-90',

@@ -7,6 +7,8 @@ export const authMiddleware = createMiddlewareWithGlobalContext(
     const { authSessionService } = context.services;
     const authSession = await authSessionService.getSession(request);
 
+    console.log('AUTH MIDDLEWARE', request.url);
+
     const authInfo = await context.services.authService.isAuthenticated(request, {
       failureRedirect: getRoute('/sign-in'),
     });

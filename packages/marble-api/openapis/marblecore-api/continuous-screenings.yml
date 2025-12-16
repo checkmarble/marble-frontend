@@ -334,7 +334,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ContinuousScreeningMappingFieldDto'
-        
+
 
     CreateContinuousScreeningConfigDto:
       type: object
@@ -405,7 +405,7 @@ components:
           type: boolean
         mapping_configs:
           type: array
-          items: 
+          items:
             $ref: '#/components/schemas/ContinuousScreeningMappingConfigDto'
 
     ContinuousScreeningObjectDto:
@@ -466,7 +466,7 @@ components:
         config_stable_id:
           type: string
           format: uuid
-    
+
     ContinuousScreeningRequestDto:
       type: object
       required:
@@ -525,14 +525,14 @@ components:
           format: uuid
         status:
           type: string
-          enum: 
+          enum:
             - in_review
             - error
             - confirmed_hit
             - no_hit
         trigger_type:
           type: string
-          enum: 
+          enum:
             - object_added
             - object_updated
             - dataset_updated
@@ -574,13 +574,13 @@ components:
           type: string
         status:
           type: string
-          enum: 
+          enum:
             - pending
             - confirmed_hit
             - no_hit
             - skipped
         payload:
-          type: object
+          $ref: '#/components/schemas/ContinuousScreeningMatchPayloadDto'
         reviewed_by:
           type: string
           format: uuid
@@ -590,3 +590,19 @@ components:
         updated_at:
           type: string
           format: date-time
+
+    ContinuousScreeningMatchPayloadDto:
+      type: object
+      allOf:
+        - $ref: 'screenings.yml#/components/schemas/ScreeningMatchPayloadDto'
+        - type: object
+          required:
+            - datasets
+            - target
+          properties:
+            datasets:
+              type: array
+              items:
+                type: string
+            target:
+              type: boolean

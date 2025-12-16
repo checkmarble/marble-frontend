@@ -55,8 +55,8 @@ export function CasesList({
   }, [casesQuery.data?.pages[currentPage]?.items]);
 
   return (
-    <div className="flex flex-col">
-      <div className="w-full grid grid-cols-[0px_auto_1fr_auto_auto_auto_auto] border border-grey-border rounded-v2-md">
+    <div className="flex flex-col text-small">
+      <div className="w-full grid grid-cols-[0px_auto_1fr_repeat(5,_auto)] border border-grey-border rounded-v2-md">
         <div className="grid grid-cols-subgrid col-span-full items-center group/table-row not-last:border-b border-grey-border">
           <HeaderCell className="ps-v2-xl relative col-span-2">
             <MultiSelect.Global>
@@ -65,6 +65,7 @@ export function CasesList({
             {t('cases:inbox.heading.status')}
           </HeaderCell>
           <HeaderCell>{t('cases:inbox.heading.name')}</HeaderCell>
+          <HeaderCell>{t('cases:inbox.heading.type')}</HeaderCell>
           <HeaderCell>{t('cases:inbox.heading.review_status')}</HeaderCell>
           <HeaderCell className="flex items-center gap-v2-sm justify-between">
             {t('cases:inbox.heading.date')}
@@ -99,6 +100,17 @@ export function CasesList({
             </div>
             <div className="p-v2-md group-hover/table-row:text-purple-65 group-hover/table-row:underline">
               {caseItem.name}
+            </div>
+            <div className="p-v2-md justify-self-center">
+              <Tooltip.Default content={t(`cases:inbox.tooltip.${caseItem.type}`)}>
+                <Icon
+                  icon={caseItem.type === 'continuous_screening' ? 'scan-eye' : 'case-manager'}
+                  className={cn('size-5', {
+                    'text-blue-58': caseItem.type === 'continuous_screening',
+                    'text-grey-50': caseItem.type === 'decision',
+                  })}
+                />
+              </Tooltip.Default>
             </div>
             <div className="p-v2-md">
               {caseItem.outcome && caseItem.outcome !== 'unset' ? (

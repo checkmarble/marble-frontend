@@ -1,16 +1,21 @@
 import {
   ContinuousScreeningConfigDto,
+  ContinuousScreeningDto,
   ContinuousScreeningMappingConfigDto,
+  ContinuousScreeningMatchDto,
+  ContinuousScreeningRequestDto,
   CreateContinuousScreeningConfigDto,
   FtmEntity,
+  ScreeningQueryDto,
 } from 'marble-api';
 import * as R from 'remeda';
+import { adaptScreeningMatchPayload, ScreeningMatchPayload } from './screening';
 
 export type ContinuousScreeningConfig = {
   id: string;
   stableId: string;
   name: string;
-  description: string | undefined;
+  description?: string;
   inboxId: string;
   objectTypes: string[];
   algorithm: string;
@@ -92,5 +97,84 @@ export function adaptCreateContinuousScreeningConfigDto(
         ),
       };
     }),
+  };
+}
+
+export type ContinuousScreening = {
+  id: string;
+  organizationId: string;
+  continuousScreeningConfigId: string;
+  continuousScreeningConfigStableId: string;
+  caseId?: string;
+  objectType: string;
+  objectId: string;
+  objectInternalId: string;
+  status: string;
+  triggerType: string;
+  request: ContinuousScreeningRequest;
+  partial: boolean;
+  numberOfMatches: number;
+  matches: ContinuousScreeningMatch[];
+};
+
+export type ContinuousScreeningRequest = {
+  searchInput: {
+    queries: {
+      [key: string]: ScreeningQueryDto;
+    };
+  };
+};
+
+export type ContinuousScreeningMatch = {
+  id: string;
+  continuousScreeningId: string;
+  opensanctionEntityId: string;
+  status: ContinuousScreeningMatchDto['status'];
+  payload: ContinuousScreeningMatchPayload;
+};
+
+export type ContinuousScreeningMatchPayload = ScreeningMatchPayload & {
+  datasets: string[];
+  target: boolean;
+};
+
+export function adaptContinuousScreening(dto: ContinuousScreeningDto): ContinuousScreening {
+  return {
+    id: dto.id,
+    organizationId: dto.org_id,
+    continuousScreeningConfigId: dto.continuous_screening_config_id,
+    continuousScreeningConfigStableId: dto.continuous_screening_config_stable_id,
+    caseId: dto.case_id,
+    objectType: dto.object_type,
+    objectId: dto.object_id,
+    objectInternalId: dto.object_internal_id,
+    status: dto.status,
+    triggerType: dto.trigger_type,
+    request: adaptContinuousScreeningRequest(dto.request),
+    partial: dto.partial,
+    numberOfMatches: dto.number_of_matches,
+    matches: dto.matches.map(adaptContinuousScreeningMatch),
+  };
+}
+
+export function adaptContinuousScreeningRequest(dto: ContinuousScreeningRequestDto): ContinuousScreeningRequest {
+  return {
+    searchInput: {
+      queries: dto.search_input.queries,
+    },
+  };
+}
+
+export function adaptContinuousScreeningMatch(dto: ContinuousScreeningMatchDto): ContinuousScreeningMatch {
+  return {
+    id: dto.id,
+    continuousScreeningId: dto.continuous_screening_id,
+    opensanctionEntityId: dto.opensanction_entity_id,
+    status: dto.status,
+    payload: {
+      ...adaptScreeningMatchPayload(dto.payload),
+      target: dto.payload.target,
+      datasets: dto.payload.datasets,
+    },
   };
 }
