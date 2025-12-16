@@ -162,7 +162,7 @@ export function NewAggregatorAstNode(aggregatorName: AggregatorOperator): Aggreg
         children: [],
         namedChildren: {},
       },
-      percentile: NewConstantAstNode({ constant: '0.5' }),
+      percentile: NewConstantAstNode({ constant: '50' }),
     },
   };
 }
