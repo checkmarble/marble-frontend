@@ -17,6 +17,12 @@ export function isAggregatorOperator(value: string): value is AggregatorOperator
   return (aggregatorOperators as ReadonlyArray<string>).includes(value);
 }
 
+export const aggregatorsWithParams = ['PCTILE'] as const;
+
+export function aggregatorHasParams(aggregator: AggregatorOperator): boolean {
+  return (aggregatorsWithParams as ReadonlyArray<AggregatorOperator>).includes(aggregator);
+}
+
 export const timeAddOperators = ['+', '-'] as const;
 export type TimeAddOperator = (typeof timeAddOperators)[number];
 
