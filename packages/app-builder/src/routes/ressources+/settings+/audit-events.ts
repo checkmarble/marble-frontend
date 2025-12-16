@@ -31,15 +31,6 @@ const paginationSchema = z.object({
   after: z.string().optional(),
 });
 
-const defaultFromNow = Temporal.Duration.from({ days: -7 }).toString();
-
-function getDefaultDateRange() {
-  const now = Temporal.Now.zonedDateTimeISO();
-  const from = now.add(defaultFromNow).toInstant().toString();
-  const to = now.toInstant().toString();
-  return { from, to };
-}
-
 export const loader = createServerFn([authMiddleware], async function resourcesAuditEventsLoader({ request, context }) {
   const { user, auditEvents } = context.authInfo;
 
@@ -55,8 +46,8 @@ export const loader = createServerFn([authMiddleware], async function resourcesA
   }
 
   // Build API parameters from filters
-  let from: string;
-  let to: string;
+  let from: string | undefined;
+  let to: string | undefined;
 
   if (parsedFilters.data.dateRange) {
     if (parsedFilters.data.dateRange.type === 'dynamic') {
@@ -67,10 +58,6 @@ export const loader = createServerFn([authMiddleware], async function resourcesA
       from = parsedFilters.data.dateRange.startDate;
       to = parsedFilters.data.dateRange.endDate;
     }
-  } else {
-    const defaultRange = getDefaultDateRange();
-    from = defaultRange.from;
-    to = defaultRange.to;
   }
 
   const response = await auditEvents.listAuditEvents({
