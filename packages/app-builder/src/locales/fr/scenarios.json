@@ -116,6 +116,8 @@
   "edit_aggregation.label_title": "Nom de la variable",
   "edit_aggregation.object_field_title": "Champ",
   "edit_aggregation.percentile_value": "Percentile",
+  "edit_aggregation.performance_warning": "Les percentiles et la médiane sont plus lourds à calculer que les autres opérateurs d'agrégation - veuillez noter qu'ils peuvent augmenter la latence des décisions s'ils sont utilisés pour filtrer un grand nombre de lignes.",
+  "edit_aggregation.premium_callout": "L'écart-type, le percentile et la médiane sont des fonctionnalités premium. Vous pouvez les configurer, mais elles ne fonctionneront qu'avec une licence valide.",
   "edit_aggregation.select_a_field": "Sélectionner un champ...",
   "edit_aggregation.subtitle": "Depuis la base de données Marble",
   "edit_aggregation.title": "Créer une variable",

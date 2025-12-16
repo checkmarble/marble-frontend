@@ -3,7 +3,12 @@ import { Callout } from '@app-builder/components/Callout';
 import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { type AggregationAstNode } from '@app-builder/models/astNode/aggregation';
 import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
-import { aggregatorHasParams, aggregatorOperators } from '@app-builder/models/modale-operators';
+import {
+  aggregatorHasParams,
+  aggregatorOperators,
+  isHeavyAggregator,
+  isRestrictedAggregator,
+} from '@app-builder/models/modale-operators';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
 import { computed } from '@preact/signals-react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -20,8 +25,16 @@ import { EditFilters } from './EditFilters';
 export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   const { t } = useTranslation(['scenarios']);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
+  const workflowsAccess = AstBuilderDataSharpFactory.select((s) => s.data.workflowsAccess);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const node = nodeSharp.select((s) => s.node as AggregationAstNode);
+
+  const currentAggregator = node.namedChildren.aggregator.constant;
+  const isCurrentRestricted = isRestrictedAggregator(currentAggregator);
+  const isCurrentHeavy = isHeavyAggregator(currentAggregator);
+  const isRestricted = workflowsAccess !== undefined && workflowsAccess !== 'allowed';
+  const hasLicense = workflowsAccess === 'allowed';
+
   const aggregatedField = computed(() => {
     const tableName = node.namedChildren.tableName.constant;
     const fieldName = node.namedChildren.fieldName.constant;
@@ -63,6 +76,16 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
             />
           </Modal.Description>
         </Callout>
+        {isCurrentRestricted && isRestricted ? (
+          <Callout variant="outlined" color="purple">
+            {t('scenarios:edit_aggregation.premium_callout')}
+          </Callout>
+        ) : null}
+        {isCurrentHeavy && hasLicense ? (
+          <Callout variant="outlined" color="red">
+            {t('scenarios:edit_aggregation.performance_warning')}
+          </Callout>
+        ) : null}
         <div className="flex flex-col gap-2">
           <label htmlFor="aggregation.label">{t('scenarios:edit_aggregation.label_title')}</label>
           <Input
@@ -82,10 +105,10 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
           /> */}
         </div>
         <div
-          className={`grid ${aggregatorHasParams(node.namedChildren.aggregator.constant) ? 'grid-cols-[240px_120px_1fr]' : 'grid-cols-[240px_1fr]'} gap-2`}
+          className={`grid ${aggregatorHasParams(currentAggregator) ? 'grid-cols-[240px_120px_1fr]' : 'grid-cols-[240px_1fr]'} gap-2`}
         >
           <div>{t('scenarios:edit_aggregation.function_title')}</div>
-          {aggregatorHasParams(node.namedChildren.aggregator.constant) ? (
+          {aggregatorHasParams(currentAggregator) ? (
             <div>{t('scenarios:edit_aggregation.percentile_value')}</div>
           ) : null}
           <div>{t('scenarios:edit_aggregation.object_field_title')}</div>
@@ -97,6 +120,8 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
                 node.namedChildren.aggregator.constant = aggregator;
                 nodeSharp.actions.validate();
               }}
+              featureAccess={workflowsAccess}
+              isOperatorRestricted={isRestrictedAggregator}
               // validationStatus={aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'}
             />
             {/* <EvaluationErrors
@@ -105,13 +130,20 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
               )}
             /> */}
           </div>
-          {aggregatorHasParams(node.namedChildren.aggregator.constant) ? (
+          {aggregatorHasParams(currentAggregator) ? (
             <Input
               type="text"
               id="aggregation.percentile_value"
               value={node.namedChildren.percentile?.constant ?? '0.5'}
               onChange={(e) => {
                 node.namedChildren.percentile = NewConstantAstNode({ constant: e.target.value });
+              }}
+              onBlur={(e) => {
+                const value = parseFloat(e.target.value);
+                if (!isNaN(value)) {
+                  const clamped = Math.max(0, Math.min(1, value));
+                  node.namedChildren.percentile = NewConstantAstNode({ constant: String(clamped) });
+                }
               }}
             />
           ) : null}

@@ -30,9 +30,10 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository, scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { customListsRepository, editor, dataModelRepository, scenario, entitlements } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   const scenarioId = fromParams(params, 'scenarioId');
   const [currentScenario, customLists, dataModel, accessors] = await Promise.all([
@@ -48,6 +49,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     dataModel,
     customLists,
     triggerObjectType: currentScenario.triggerObjectType,
+    workflowsAccess: entitlements.workflows,
   });
 }
 

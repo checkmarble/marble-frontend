@@ -5,6 +5,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs } from '@remix-run/node';
+import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 
 export type BuilderOptionsResource = {
   customLists: CustomList[];
@@ -12,13 +13,15 @@ export type BuilderOptionsResource = {
   dataModel: DataModel;
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
+  workflowsAccess?: FeatureAccessLevelDto;
 };
 
 export async function loader({ request, params }: ActionFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { editor, scenario, dataModelRepository, customListsRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { editor, scenario, dataModelRepository, customListsRepository, entitlements } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
   const scenarioId = fromParams(params, 'scenarioId');
   const [currentScenario, customLists, dataModel, accessors] = await Promise.all([
@@ -35,5 +38,6 @@ export async function loader({ request, params }: ActionFunctionArgs) {
     dataModel,
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
+    workflowsAccess: entitlements.workflows,
   });
 }
