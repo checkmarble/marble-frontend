@@ -8,6 +8,8 @@ import { fromParams } from '@app-builder/utils/short-uuid';
 import { ActionFunctionArgs } from '@remix-run/node';
 import { z } from 'zod/v4';
 
+const MAX_ALLOWED_NETWORKS = 100;
+
 export async function action({ request, params }: ActionFunctionArgs) {
   const { authService, toastSessionService, i18nextService } = initServerServices(request);
   const { organization } = await authService.isAuthenticated(request, {
@@ -20,6 +22,23 @@ export async function action({ request, params }: ActionFunctionArgs) {
     toastSessionService.getSession(request),
     i18nextService.getFixedT(request, ['common', 'settings']),
   ]);
+
+  if (
+    rawData &&
+    'allowedNetworks' in rawData &&
+    Array.isArray(rawData.allowedNetworks) &&
+    rawData.allowedNetworks.length > MAX_ALLOWED_NETWORKS
+  ) {
+    setToastMessage(toastSession, {
+      type: 'error',
+      message: t('settings:ip_whitelisting.errors.max_allowed_networks', { max: MAX_ALLOWED_NETWORKS }),
+    });
+
+    return Response.json(
+      { success: false, errors: ['ip_whitelisting.errors.max_allowed_networks'] },
+      { headers: { 'Set-Cookie': await toastSessionService.commitSession(toastSession) } },
+    );
+  }
 
   const payload = updateAllowedNetworksPayloadSchema.safeParse(rawData);
 

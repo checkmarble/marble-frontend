@@ -91,6 +91,7 @@
   "ip_whitelisting.add_new.error": "Please enter a network address with its mask, e.g. 192.168.0.0/24",
   "ip_whitelisting.delete": "Delete network",
   "ip_whitelisting.errors.ip_not_in_range": "Your IP address is not in the range of the allowed networks.",
+  "ip_whitelisting.errors.max_allowed_networks": "You can only add up to {{max}} networks.",
   "ip_whitelisting.network": "Network",
   "ip_whitelisting.placeholder": "Enter a network mask, e.g. 192.168.0.0/24",
   "ip_whitelisting.reset": "Reset changes",

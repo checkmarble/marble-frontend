@@ -91,6 +91,7 @@
   "ip_whitelisting.add_new.error": "يرجى إدخال عنوان الشبكة مع قناعها، مثل 192.168.0.0/24",
   "ip_whitelisting.delete": "حذف الشبكة",
   "ip_whitelisting.errors.ip_not_in_range": "عنوان IP الخاص بك ليس ضمن نطاق الشبكات المسموح بها.",
+  "ip_whitelisting.errors.max_allowed_networks": "يمكنك إضافة حتى {{max}} شبكة.",
   "ip_whitelisting.network": "الشبكة",
   "ip_whitelisting.placeholder": "أدخل قناع الشبكة، مثل 192.168.0.0/24",
   "ip_whitelisting.reset": "إعادة تعيين التغييرات",
