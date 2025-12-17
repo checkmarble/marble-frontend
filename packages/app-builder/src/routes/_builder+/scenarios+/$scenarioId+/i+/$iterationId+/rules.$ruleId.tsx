@@ -13,6 +13,7 @@ import { AstNode, NewEmptyRuleAstNode } from '@app-builder/models';
 import { useRuleDescriptionMutation } from '@app-builder/queries/scenarios/rule-description';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
+import { hasAnyEntitlement } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getFieldErrors } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
@@ -102,7 +103,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     dataModel,
     customLists,
     isAiRuleDescriptionEnabled: appConfig.isManagedMarble,
-    workflowsAccess: entitlements.workflows,
+    hasAccess: hasAnyEntitlement(entitlements),
   };
 }
 
@@ -174,7 +175,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function RuleDetail() {
-  const { databaseAccessors, payloadAccessors, dataModel, customLists, isAiRuleDescriptionEnabled, workflowsAccess } =
+  const { databaseAccessors, payloadAccessors, dataModel, customLists, isAiRuleDescriptionEnabled, hasAccess } =
     useLoaderData<typeof loader>();
 
   const { t } = useTranslation(handle.i18n);
@@ -247,7 +248,7 @@ export default function RuleDetail() {
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
-    workflowsAccess,
+    hasAccess,
   };
 
   //TODO Add errors from the servers if they are present

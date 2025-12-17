@@ -1,11 +1,11 @@
 import { type DataModel } from '@app-builder/models';
 import { type DatabaseAccessAstNode, type PayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
+import { hasAnyEntitlement } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs } from '@remix-run/node';
-import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-api';
 
 export type BuilderOptionsResource = {
   customLists: CustomList[];
@@ -13,7 +13,7 @@ export type BuilderOptionsResource = {
   dataModel: DataModel;
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
-  workflowsAccess?: FeatureAccessLevelDto;
+  hasAccess?: boolean;
 };
 
 export async function loader({ request, params }: ActionFunctionArgs) {
@@ -38,6 +38,6 @@ export async function loader({ request, params }: ActionFunctionArgs) {
     dataModel,
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
-    workflowsAccess: entitlements.workflows,
+    hasAccess: hasAnyEntitlement(entitlements),
   });
 }

@@ -22,13 +22,12 @@ export function MenuOption({ option, value, onSelect, rightElement, highlightSea
   const { t } = useTranslation(['common']);
   const searchValue = MenuCommand.State.useSharp().value.search;
   const leftIcon = option.icon ?? getDataTypeIcon(option.dataType);
-  const workflowsAccess = AstBuilderDataSharpFactory.select((s) => s.data.workflowsAccess);
+  const hasAccess = AstBuilderDataSharpFactory.select((s) => s.data.hasAccess);
 
   // Check if this is a restricted aggregator option
   const isRestrictedOption =
     isAggregation(option.astNode) && isRestrictedAggregator(option.astNode.namedChildren.aggregator.constant);
-  const isRestricted = workflowsAccess !== undefined && workflowsAccess !== 'allowed';
-  const showNudge = isRestrictedOption && isRestricted;
+  const showNudge = isRestrictedOption && !hasAccess;
 
   return (
     <MenuCommand.Item className="group" value={value} onSelect={() => onSelect(injectIdToNode(option.astNode))}>
@@ -51,9 +50,7 @@ export function MenuOption({ option, value, onSelect, rightElement, highlightSea
                 displayName={option.displayName}
               />
             )}
-            {showNudge && workflowsAccess ? (
-              <Nudge kind={workflowsAccess} content={t('common:premium')} className="size-5" />
-            ) : null}
+            {showNudge ? <Nudge kind="restricted" content={t('common:premium')} className="size-5" /> : null}
           </div>
         </div>
       </div>
