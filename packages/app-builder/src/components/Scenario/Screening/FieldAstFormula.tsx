@@ -47,11 +47,11 @@ export const FieldAstFormula = ({
   const [validationErrors, setValidationErrors] = useState<FlatAstValidation['errors']>([]);
 
   const handleAddTrigger = () => {
-    nodeStoreRef.current?.actions.setNodeAtPath('root', NewEmptyTriggerAstNode());
+    onChange?.(NewEmptyTriggerAstNode());
   };
 
   const handleDeleteTrigger = () => {
-    nodeStoreRef.current?.actions.setNodeAtPath('root', defaultValue);
+    onChange?.(undefined);
   };
 
   return (
