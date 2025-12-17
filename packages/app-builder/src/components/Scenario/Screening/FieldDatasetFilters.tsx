@@ -1,5 +1,6 @@
 import { DatasetTag } from '@app-builder/components/Screenings/DatasetTag';
 import { type ScreeningCategory } from '@app-builder/models/screening';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { type OpenSanctionsCatalogSection } from 'marble-api';
 import { toggle } from 'radash';
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from 'react';
@@ -10,7 +11,7 @@ import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 
 export const datasetFiltersSchema = z.object({
-  tags: z.array(z.string()),
+  tags: protectArray(z.array(z.string())),
   search: z.string().optional().prefault(''),
 });
 

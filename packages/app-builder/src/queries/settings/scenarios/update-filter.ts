@@ -1,11 +1,12 @@
 import { getRoute } from '@app-builder/utils/routes';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { useMutation } from '@tanstack/react-query';
 import z from 'zod';
 import { ingestedDataFieldSchema } from './schema';
 
 export const exportedFieldsSchema = z.object({
-  triggerObjectFields: z.array(z.string()),
-  ingestedDataFields: z.array(ingestedDataFieldSchema),
+  triggerObjectFields: protectArray(z.array(z.string())),
+  ingestedDataFields: protectArray(z.array(ingestedDataFieldSchema)),
 });
 
 export const createExportedFieldSchema = z.union([

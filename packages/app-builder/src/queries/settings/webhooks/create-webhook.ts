@@ -1,12 +1,13 @@
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { eventTypes } from '@app-builder/models/webhook';
 import { getRoute } from '@app-builder/utils/routes';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
 export const createWebhookPayloadSchema = z.object({
   url: z.url(),
-  eventTypes: z.array(z.enum(eventTypes)),
+  eventTypes: protectArray(z.array(z.enum(eventTypes))),
   httpTimeout: z.int().positive().optional(),
 });
 

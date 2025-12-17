@@ -1,5 +1,6 @@
 import { CreateContinuousScreeningConfig, CreateMappingConfig } from '@app-builder/models/continuous-screening';
 import { buildStepper } from '@app-builder/utils/build-stepper';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { FtmEntity } from 'marble-api';
 import { z } from 'zod/v4';
 
@@ -14,12 +15,14 @@ export type PartialCreateContinuousScreeningConfig = Omit<
 
 const objectMappingStepSchema = z
   .object({
-    mappingConfigs: z.array(
-      z.object({
-        objectType: z.string(),
-        ftmEntity: z.enum(['Person', 'Company', 'Vessel']),
-        fieldMapping: z.record(z.string(), z.string().nullable()),
-      }),
+    mappingConfigs: protectArray(
+      z.array(
+        z.object({
+          objectType: z.string(),
+          ftmEntity: z.enum(['Person', 'Company', 'Vessel']),
+          fieldMapping: z.record(z.string(), z.string().nullable()),
+        }),
+      ),
     ),
   })
   .refine(

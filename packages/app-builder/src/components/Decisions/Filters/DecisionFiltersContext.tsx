@@ -5,6 +5,7 @@ import { type Scenario } from '@app-builder/models/scenario';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
 import { type DateRangeFilterForm, dateRangeSchema } from '@app-builder/utils/schema/filterSchema';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import * as React from 'react';
 import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
@@ -25,10 +26,10 @@ export const decisionFiltersSchema = z.object({
     })
     .optional(),
   pivotValue: z.string().optional(),
-  scenarioId: z.array(z.string()).optional(),
-  scheduledExecutionId: z.array(z.string().uuid()).optional(),
-  caseInboxId: z.array(z.string()).optional(),
-  triggerObject: z.array(z.string()).optional(),
+  scenarioId: protectArray(z.array(z.string())).optional(),
+  scheduledExecutionId: protectArray(z.array(z.string().uuid())).optional(),
+  caseInboxId: protectArray(z.array(z.string())).optional(),
+  triggerObject: protectArray(z.array(z.string())).optional(),
 });
 
 export type DecisionFilters = z.infer<typeof decisionFiltersSchema>;
