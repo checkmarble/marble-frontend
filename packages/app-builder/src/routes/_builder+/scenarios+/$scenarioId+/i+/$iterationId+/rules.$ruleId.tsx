@@ -247,7 +247,7 @@ export default function RuleDetail() {
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
-    workflowsAccess,
+    hasAccess,
   };
 
   //TODO Add errors from the servers if they are present

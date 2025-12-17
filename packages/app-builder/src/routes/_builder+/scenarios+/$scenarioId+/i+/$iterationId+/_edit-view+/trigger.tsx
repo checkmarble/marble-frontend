@@ -10,6 +10,7 @@ import { type ScenarioValidationErrorCode } from '@app-builder/models/ast-valida
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { createDecisionDocHref, executeAScenarioDocHref } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
+import { hasAnyEntitlement } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
@@ -49,7 +50,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     dataModel,
     customLists,
     triggerObjectType: currentScenario.triggerObjectType,
-    workflowsAccess: entitlements.workflows,
+    hasAccess: hasAnyEntitlement(entitlements),
   });
 }
 

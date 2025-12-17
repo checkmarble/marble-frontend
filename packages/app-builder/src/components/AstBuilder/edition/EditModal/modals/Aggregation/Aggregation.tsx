@@ -25,15 +25,13 @@ import { EditFilters } from './EditFilters';
 export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   const { t } = useTranslation(['scenarios']);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
-  const workflowsAccess = AstBuilderDataSharpFactory.select((s) => s.data.workflowsAccess);
+  const hasAccess = AstBuilderDataSharpFactory.select((s) => s.data.hasAccess);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const node = nodeSharp.select((s) => s.node as AggregationAstNode);
 
   const currentAggregator = node.namedChildren.aggregator.constant;
   const isCurrentRestricted = isRestrictedAggregator(currentAggregator);
   const isCurrentHeavy = isHeavyAggregator(currentAggregator);
-  const isRestricted = workflowsAccess !== undefined && workflowsAccess !== 'allowed';
-  const hasLicense = workflowsAccess === 'allowed';
 
   const aggregatedField = computed(() => {
     const tableName = node.namedChildren.tableName.constant;
@@ -52,7 +50,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   return (
     <OperandEditModalContainer
       {...props}
-      saveDisabled={isCurrentRestricted && isRestricted}
+      saveDisabled={isCurrentRestricted && !hasAccess}
       title={
         <div className="flex flex-row items-center justify-center gap-3">
           {t('scenarios:edit_aggregation.title')}
@@ -111,7 +109,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
                 node.namedChildren.aggregator.constant = aggregator;
                 nodeSharp.actions.validate();
               }}
-              featureAccess={workflowsAccess}
+              featureAccess={hasAccess ? undefined : 'restricted'}
               isOperatorRestricted={isRestrictedAggregator}
               // validationStatus={aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'}
             />
@@ -153,13 +151,13 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
             <EditionEvaluationErrors direct id={node.namedChildren.fieldName.id} />
           </div>
         </div>
-        {isCurrentRestricted && isRestricted ? (
+        {isCurrentRestricted && !hasAccess ? (
           <Callout icon="lock" variant="outlined" color="red">
             {t('scenarios:edit_aggregation.premium_callout')}
           </Callout>
         ) : null}
-        {isCurrentHeavy && hasLicense ? (
-          <Callout variant="outlined" color="red">
+        {isCurrentHeavy && hasAccess ? (
+          <Callout icon="warning" variant="outlined" color="yellow">
             {t('scenarios:edit_aggregation.performance_warning')}
           </Callout>
         ) : null}
