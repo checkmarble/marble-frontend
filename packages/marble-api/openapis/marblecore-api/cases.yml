@@ -928,6 +928,7 @@ components:
         - inbox_id
         - contributors
         - tags
+        - type
       properties:
         id:
           type: string
@@ -960,12 +961,16 @@ components:
         assigned_to:
           type: string
           format: uuid
+        type:
+          type: string
+          enum: ["decision", "continuous_screening"]
     CaseDetailDto:
       allOf:
         - $ref: "#/components/schemas/CaseDto"
         - type: object
           required:
             - decisions
+            - continuous_screenings
             - events
             - files
           properties:
@@ -973,6 +978,10 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/CaseDecisionDto"
+            continuous_screenings:
+              type: array
+              items:
+                $ref: "continuous-screenings.yml#/components/schemas/ContinuousScreeningDto"
             events:
               type: array
               items:
