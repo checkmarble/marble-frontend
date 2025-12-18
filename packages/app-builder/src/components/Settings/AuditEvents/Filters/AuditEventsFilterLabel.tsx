@@ -10,9 +10,9 @@ export const AuditEventsFilterLabel = ({ name }: AuditEventsFilterLabelProps): R
 
   // TODO: Add 'table' case when we have an endpoint to list available tables
   return match(name)
-    .with('dateRange', () => t('settings:activity_follow_up.filter.date_range'))
-    .with('userId', () => t('settings:activity_follow_up.filter.user'))
-    .with('apiKeyId', () => t('settings:activity_follow_up.filter.api_key'))
-    .with('entityId', () => t('settings:activity_follow_up.table.entity_id'))
+    .with('dateRange', () => t('settings:audit.filter.date_range'))
+    .with('userId', () => t('settings:audit.filter.user'))
+    .with('apiKeyId', () => t('settings:audit.filter.api_key'))
+    .with('entityId', () => t('settings:audit.table.entity_id'))
     .exhaustive();
 };

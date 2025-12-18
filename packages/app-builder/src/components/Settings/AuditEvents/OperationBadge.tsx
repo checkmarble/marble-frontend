@@ -8,9 +8,9 @@ interface OperationBadgeProps {
 }
 
 const operationToTranslationKey = {
-  INSERT: 'settings:activity_follow_up.operation.insert',
-  UPDATE: 'settings:activity_follow_up.operation.update',
-  DELETE: 'settings:activity_follow_up.operation.delete',
+  INSERT: 'settings:audit.operation.insert',
+  UPDATE: 'settings:audit.operation.update',
+  DELETE: 'settings:audit.operation.delete',
 } as const;
 
 export const OperationBadge: FunctionComponent<OperationBadgeProps> = ({ operation }) => {

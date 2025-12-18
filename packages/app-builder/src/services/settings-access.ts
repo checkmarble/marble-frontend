@@ -25,7 +25,7 @@ export type Sections = {
   scenarios: Section;
   case_manager: Section;
   api: Section;
-  follow_up: Section;
+  audit: Section;
   ip_whitelisting: Section;
 };
 
@@ -58,10 +58,10 @@ export function getSettingsAccess(user: CurrentUser, appConfig: AppConfig, inbox
         ...(user.permissions.canManageWebhooks ? [{ title: 'webhooks', to: getRoute('/settings/webhooks') }] : []),
       ],
     },
-    follow_up: {
+    audit: {
       icon: 'history',
       settings: [
-        ...(isAdmin(user) ? [{ title: 'activity_follow_up', to: getRoute('/settings/activity-follow-up') }] : []),
+        ...(isAdmin(user) ? [{ title: 'audit.audit_logs_section', to: getRoute('/settings/audit-logs') }] : []),
       ],
     },
     ip_whitelisting: {
