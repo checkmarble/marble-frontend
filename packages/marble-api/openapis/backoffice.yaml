@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: "Backoffice API"
+  description: "API endpoints dedidacted to the backoffice"
+servers:
+  - url: "http://localhost:8080"
+    description: Local development server
+
+paths:
+  /organizations/{organizationId}/feature_access:
+    get:
+      summary: Retrieve organization features
+      description: Returns the features an organization has access
+      operationId: getOrganizationFeatures
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organizationId
+          description: The organization id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Feature access response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  feature_access:
+                    $ref: "#/components/schemas/FeatureAccessDto"
+                required:
+                  - feature_access
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+    patch:
+      summary: Update organization features
+      description: Update the features an organization has access
+      operationId: patchOrganizationFeatures
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organizationId
+          description: The organization id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The features to update
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+                enum: ['allowed', 'test', 'restricted']
+      responses:
+        "204":
+          description: The features have been updated successfully
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+  /org-import:
+    post:
+      summary: Import org from JSON
+      operationId: importOrganization
+      requestBody:
+        description: The spec
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "204":
+          description: The org has been created successfully
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+
+components:
+  schemas:
+    FeatureAccessDto:
+      $ref: "feature-access-api.yaml#/components/schemas/FeatureAccessDto"
+
+  responses:
+    "401":
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: string
+            example: Unauthorized
+    "403":
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: string
+            example: Forbidden

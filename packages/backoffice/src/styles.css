@@ -1,0 +1,24 @@
+@import "tailwindcss";
+@import "../../tailwind-preset/src/tailwind.css";
+
+@config "../tailwind.config.ts";
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility scrollbar-stable {
+  scrollbar-gutter: stable;
+}
+
+@custom-variant stickied {
+  &:where([data-sticky='true'] *) {
+    @slot;
+  }
+}

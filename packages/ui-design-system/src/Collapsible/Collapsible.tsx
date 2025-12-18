@@ -12,13 +12,30 @@ import clsx from 'clsx';
 import * as React from 'react';
 import { forwardRef } from 'react';
 import { Icon } from 'ui-icons';
+import { cn } from '../utils';
+
+const HeadlessCollapsibleRoot = Root;
+const HeadlessCollapsibleTrigger = Trigger;
+const HeadlessCollapsibleContent = ({ children }: { children?: React.ReactNode }) => {
+  return (
+    <Content className="radix-state-open:animate-slide-down radix-state-closed:animate-slide-up overflow-hidden">
+      {children}
+    </Content>
+  );
+};
+
+export const HeadlessCollapsible = {
+  Root: HeadlessCollapsibleRoot,
+  Trigger: HeadlessCollapsibleTrigger,
+  Content: HeadlessCollapsibleContent,
+};
 
 const CollapsibleContainer = forwardRef<HTMLDivElement, CollapsibleProps>(function CollapsibleContainer(
   { className, ...props },
   ref,
 ) {
   return (
-    <Root
+    <HeadlessCollapsibleRoot
       defaultOpen={true}
       ref={ref}
       className={clsx('border-grey-border flex w-full flex-col overflow-hidden rounded-lg border', className)}
@@ -46,7 +63,7 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
   ref,
 ) {
   return (
-    <Trigger ref={ref} className={collapsibleTitle({ size, className })} asChild {...props}>
+    <HeadlessCollapsibleTrigger ref={ref} className={collapsibleTitle({ size, className })} asChild {...props}>
       <div>
         {children}
         <Icon
@@ -55,7 +72,7 @@ const CollapsibleTitle = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
           className="border-grey-border group-radix-state-open:rotate-180 size-6 rounded-sm border transition-transform duration-200"
         />
       </div>
-    </Trigger>
+    </HeadlessCollapsibleTrigger>
   );
 });
 
@@ -67,8 +84,8 @@ const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(f
   ref,
 ) {
   return (
-    <Content className={clsx(content, className)} {...props} ref={ref}>
-      <div className="text-s p-4 lg:p-6">{children}</div>
+    <Content className={content} {...props} ref={ref}>
+      <div className={cn('text-s p-4 lg:p-6', className)}>{children}</div>
     </Content>
   );
 });

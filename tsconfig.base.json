@@ -26,6 +26,7 @@
       "ui-design-system": ["packages/ui-design-system/src/index.ts"],
       "@app-builder/*": ["packages/app-builder/src/*"],
       "@ast-builder/*": ["packages/app-builder/src/components/AstBuilder/*"],
+      "@bo/*": ["packages/backoffice/src/*"],
       "@marble/shared": ["packages/shared/src/index.ts"]
     },
     "pretty": true
