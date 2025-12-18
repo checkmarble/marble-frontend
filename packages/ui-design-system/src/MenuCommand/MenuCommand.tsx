@@ -225,7 +225,7 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
         clsx([
           'flex h-10 min-w-[40px] items-center justify-between gap-2 rounded-sm border px-2 outline-hidden',
           'bg-surface-card disabled:border-transparent disabled:bg-grey-background-light',
-          'border-grey-border focus:border-purple-primary',
+          'border-grey-border focus:border-purple-primary data-[state=open]:border-purple-primary',
         ]),
         { 'border-red-primary': hasError },
         className,
