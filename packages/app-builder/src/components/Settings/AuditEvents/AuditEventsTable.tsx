@@ -1,5 +1,6 @@
 import { CopyToClipboardButton } from '@app-builder/components/CopyToClipboardButton';
 import { usePanel } from '@app-builder/components/Panel';
+import { ApiKey } from '@app-builder/models/api-keys';
 import { type AuditEvent } from '@app-builder/models/audit-event';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { formatDateTimeWithoutPresets, useFormatLanguage } from '@app-builder/utils/format';
@@ -7,7 +8,6 @@ import { createColumnHelper, getCoreRowModel } from '@tanstack/react-table';
 import { type FunctionComponent, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Table, useTable } from 'ui-design-system';
-
 import { AuditEventDetailPanel } from './AuditEventDetailPanel';
 import { OperationBadge } from './OperationBadge';
 
@@ -15,9 +15,10 @@ const columnHelper = createColumnHelper<AuditEvent>();
 
 interface AuditEventsTableProps {
   auditEvents: AuditEvent[];
+  apiKeys: ApiKey[];
 }
 
-export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ auditEvents }) => {
+export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ auditEvents, apiKeys }) => {
   const { t } = useTranslation(['settings']);
   const language = useFormatLanguage();
   const { openPanel } = usePanel();
@@ -27,7 +28,7 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
     () => [
       columnHelper.accessor('createdAt', {
         id: 'timestamp',
-        header: t('settings:activity_follow_up.table.timestamp'),
+        header: t('settings:audit.table.timestamp'),
         size: 180,
         cell: ({ getValue }) => {
           const value = getValue();
@@ -46,16 +47,30 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
       }),
       columnHelper.accessor('actor', {
         id: 'object_id',
-        header: t('settings:activity_follow_up.table.object_id'),
+        header: t('settings:audit.table.actor'),
         size: 200,
         cell: ({ getValue }) => {
           const actor = getValue();
           if (!actor) return <span className="text-grey-50">-</span>;
-          const user = actor.type === 'user' ? getOrgUserById(actor.id) : null;
-          const secondaryText = user?.email ?? actor.name;
+
+          let displayName: string;
+          let secondaryText: string;
+
+          if (actor.type === 'api_key') {
+            const key = apiKeys.find((key) => key.id === actor.id);
+            displayName = key
+              ? `${t('settings:audit.filter.api_key')}: ${key.description}`
+              : t('settings:audit.detail.api_key');
+            secondaryText = `${key?.prefix ?? ''}***********`;
+          } else {
+            displayName = actor.name;
+            const user = getOrgUserById(actor.id);
+            secondaryText = user?.email ?? actor.name;
+          }
+
           return (
             <div className="flex flex-col">
-              <span className="text-grey-00 text-sm">{actor.name}</span>
+              <span className="text-grey-00 text-sm">{displayName}</span>
               <span className="text-grey-50 text-xs">{secondaryText}</span>
             </div>
           );
@@ -63,13 +78,13 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
       }),
       columnHelper.accessor('operation', {
         id: 'operation',
-        header: t('settings:activity_follow_up.table.operation'),
+        header: t('settings:audit.table.operation'),
         size: 100,
         cell: ({ getValue }) => <OperationBadge operation={getValue()} />,
       }),
       columnHelper.accessor('table', {
         id: 'table',
-        header: t('settings:activity_follow_up.table.table'),
+        header: t('settings:audit.table.table'),
         size: 150,
         cell: ({ getValue }) => {
           const value = getValue();
@@ -82,7 +97,7 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
       }),
       columnHelper.accessor('entityId', {
         id: 'entity_id',
-        header: t('settings:activity_follow_up.table.entity_id'),
+        header: t('settings:audit.table.entity_id'),
         size: 250,
         cell: ({ getValue }) => {
           const value = getValue();

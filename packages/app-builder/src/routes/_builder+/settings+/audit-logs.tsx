@@ -1,4 +1,4 @@
-import { ActivityFollowUpPage } from '@app-builder/components/Settings/AuditEvents/ActivityFollowUpPage';
+import { ActivityFollowUpPage } from '@app-builder/components/Settings/AuditEvents/AuditLogsPage';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
@@ -14,7 +14,7 @@ export const handle = {
   i18n: ['settings', 'common', 'filters'] satisfies Namespace,
   BreadCrumb: function AuditEventsBreadcrumb() {
     const { t } = useTranslation(['settings']);
-    return <span>{t('settings:activity_follow_up')}</span>;
+    return <span>{t('settings:audit')}</span>;
   },
 };
 

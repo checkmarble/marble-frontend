@@ -32,7 +32,7 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
       )}
     >
       <div className="flex items-center gap-v2-xs">
-        <span>{t('settings:activity_follow_up.pagination.per_page')}</span>
+        <span>{t('settings:audit.pagination.per_page')}</span>
         {[25, 50, 100].map((limit) => {
           const isActive = limit === currentLimit;
 
