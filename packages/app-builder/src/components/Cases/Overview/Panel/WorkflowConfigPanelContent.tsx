@@ -1,4 +1,3 @@
-import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
@@ -7,6 +6,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
+import { Panel, PanelSharpFactory } from 'ui-design-system';
 import { WorkflowInboxCard, type WorkflowSettings } from './WorkflowInboxCard';
 
 type InboxWorkflowState = Map<string, WorkflowSettings>;

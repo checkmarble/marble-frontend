@@ -1,4 +1,3 @@
-import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type InboxWithCasesCount } from '@app-builder/models/inbox';
@@ -8,6 +7,7 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
+import { Panel, PanelSharpFactory } from 'ui-design-system';
 import { InboxCard } from './InboxCard';
 
 interface AutoAssignmentChanges {

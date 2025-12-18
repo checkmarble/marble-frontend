@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 # Copy only workspace manifests to maximize install cache hits
 COPY package.json bun.lock ./
 COPY packages/app-builder/package.json ./packages/app-builder/
+COPY packages/backoffice/package.json ./packages/backoffice/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/marble-api/package.json ./packages/marble-api/
 COPY packages/typescript-utils/package.json ./packages/typescript-utils/
@@ -68,9 +69,13 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN \
     if [ -f /run/secrets/SENTRY_AUTH_TOKEN ]; then export SENTRY_AUTH_TOKEN=$(cat /run/secrets/SENTRY_AUTH_TOKEN); fi; \
     bun run -F app-builder build
 
+RUN bun run -F backoffice build
+
 # Collect build artifacts and dependencies for runtime
 RUN mkdir -p /prod/app-builder && \
-    cp -R packages/app-builder/.output /prod/app-builder/.output
+    cp -R packages/app-builder/.output /prod/app-builder/.output && \
+    mkdir -p /prod/backoffice && \
+    cp -R packages/backoffice/.output /prod/backoffice/.output
 
 # ---- Production Dependencies stage ----
 FROM ${BUN_IMAGE} AS deps-prod
@@ -79,6 +84,7 @@ WORKDIR /usr/src/app
 # Copy only workspace manifests to maximize install cache hits
 COPY package.json bun.lock ./
 COPY packages/app-builder/package.json ./packages/app-builder/
+COPY packages/backoffice/package.json ./packages/backoffice/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/marble-api/package.json ./packages/marble-api/
 COPY packages/typescript-utils/package.json ./packages/typescript-utils/
@@ -119,3 +125,23 @@ COPY --from=deps-prod /usr/src/app/node_modules ./node_modules
 
 EXPOSE $PORT
 CMD [".output/server/index.mjs"]
+
+# ---- Runtime stage (backoffice) ----
+FROM ${BUN_IMAGE} AS backoffice
+WORKDIR /prod/backoffice
+
+ENV NODE_ENV=production
+ARG PORT=8080
+ENV PORT=${PORT:-8080}
+
+ARG APP_VERSION
+ENV APP_VERSION=$APP_VERSION
+
+# Copy build output
+COPY --from=build /prod/backoffice/.output ./.output
+
+# Copy ONLY production dependencies
+COPY --from=deps-prod /usr/src/app/node_modules ./node_modules
+
+EXPOSE $PORT
+CMD ["bun", ".output/server/index.mjs"]

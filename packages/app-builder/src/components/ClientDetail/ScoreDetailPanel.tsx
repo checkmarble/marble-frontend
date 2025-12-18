@@ -1,5 +1,4 @@
 import { formatReturnValue } from '@app-builder/components/AstBuilder/viewing/helpers';
-import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { SwitchNodeView } from '@app-builder/components/UserScoring/SwitchNode/SwitchNodeView';
 import { type CustomList } from '@app-builder/models/custom-list';
@@ -23,7 +22,7 @@ import { useFormatDateTime } from '@app-builder/utils/format';
 import { type ScoringScore } from 'marble-api';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
-import { Tag, Typo } from 'ui-design-system';
+import { Panel, Tag, Typo } from 'ui-design-system';
 
 interface ScoreDetailPanelProps {
   open: boolean;

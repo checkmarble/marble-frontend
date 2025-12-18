@@ -9,14 +9,13 @@ import { toggle } from 'radash';
 import { type MouseEvent, type SyntheticEvent, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Card, cn, MenuCommand, Switch, Tag, TagProps, Typo } from 'ui-design-system';
+import { Button, Card, cn, MenuCommand, Panel, Switch, Tag, TagProps, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import {
   DownloadCsvTemplate,
   UploadForm,
   type UploadFormIntermediateStepProps,
 } from '../Data/SemanticTables/UploadData/UploadIngestionComponents';
-import { Panel } from '../Panel';
 
 export function PanelAddCsv({
   configuration,

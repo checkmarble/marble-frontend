@@ -10,10 +10,20 @@ import { Link, Outlet, useMatches, useNavigate, useParams, useRouter } from '@ta
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, NumberInput, type SelectOption, SelectV2, Tabs, Tooltip, Typo, tabClassName } from 'ui-design-system';
+import {
+  Button,
+  NumberInput,
+  Panel,
+  PanelSharpFactory,
+  type SelectOption,
+  SelectV2,
+  Tabs,
+  Tooltip,
+  Typo,
+  tabClassName,
+} from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Page } from '../Page';
-import { Panel, PanelSharpFactory } from '../Panel';
 import { Spinner } from '../Spinner';
 import { ScoringLevelThresholds } from './ScoringLevelThresholds';
 

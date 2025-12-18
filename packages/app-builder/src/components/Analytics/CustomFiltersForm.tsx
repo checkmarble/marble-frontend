@@ -1,4 +1,3 @@
-import { Panel } from '@app-builder/components/Panel';
 import type { DateRangeFilter } from '@app-builder/models/analytics';
 import { useGetCustomFiltersConfigQuery } from '@app-builder/queries/analytics/get-custom-filters-config';
 import { useDeleteFilterMutation } from '@app-builder/queries/settings/scenarios/delete-filter';
@@ -23,7 +22,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, cn, MenuCommand, Modal, Typo } from 'ui-design-system';
+import { Button, cn, MenuCommand, Modal, Panel, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 interface CustomFiltersFormProps {

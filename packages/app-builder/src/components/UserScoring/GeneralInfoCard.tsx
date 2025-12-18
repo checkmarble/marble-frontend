@@ -1,4 +1,3 @@
-import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import { type ScenarioPublicationStatus } from '@app-builder/models/scenario/publication';
 import {
@@ -23,7 +22,7 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import { Fragment, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, NumberInput, type SelectOption, SelectV2, Tooltip } from 'ui-design-system';
+import { Button, NumberInput, Panel, PanelSharpFactory, type SelectOption, SelectV2, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ScoringLevelThresholds } from './ScoringLevelThresholds';
 

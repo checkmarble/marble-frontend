@@ -1,4 +1,3 @@
-import { Panel } from '@app-builder/components/Panel';
 import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationContext';
 import {
   ContinuousScreeningConfig,
@@ -10,7 +9,7 @@ import QueryString from 'qs';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match, P } from 'ts-pattern';
-import { Button, ExpandableGroupTagLine, Tag } from 'ui-design-system';
+import { Button, ExpandableGroupTagLine, Panel, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { CopyToClipboardButton } from '../CopyToClipboardButton';
 import GridTable from '../GridTable';

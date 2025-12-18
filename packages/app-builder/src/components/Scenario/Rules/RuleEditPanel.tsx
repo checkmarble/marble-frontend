@@ -1,6 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { AstNode, NewEmptyRuleAstNode, ScenarioValidation } from '@app-builder/models';
 import { Scenario } from '@app-builder/models/scenario';
@@ -22,7 +21,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Card, cn, NumberInput } from 'ui-design-system';
+import { Button, Card, cn, NumberInput, Panel, PanelSharpFactory } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 import { FieldAstFormula } from '../Screening/FieldAstFormula';

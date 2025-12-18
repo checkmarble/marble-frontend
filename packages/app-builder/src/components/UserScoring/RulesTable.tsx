@@ -1,4 +1,3 @@
-import { Panel } from '@app-builder/components/Panel';
 import { NewAstNode } from '@app-builder/models';
 import { NewAggregatorAstNode } from '@app-builder/models/astNode/aggregation';
 import { NewSwitchAstNode } from '@app-builder/models/astNode/control-flow';
@@ -18,7 +17,7 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, cn, MenuCommand, Tag } from 'ui-design-system';
+import { Button, cn, MenuCommand, Panel, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { v7 as uuidv7 } from 'uuid';
 import { Spinner } from '../Spinner';

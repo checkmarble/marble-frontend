@@ -1,4 +1,3 @@
-import { Panel } from '@app-builder/components/Panel';
 import { type DetailedCaseDecision } from '@app-builder/models/cases';
 import { DataModel, getTriggerObjectFields } from '@app-builder/models/data-model';
 import { type ReviewStatus } from '@app-builder/models/decision';
@@ -12,7 +11,7 @@ import { MouseEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { map, pipe, take } from 'remeda';
 import { match } from 'ts-pattern';
-import { Button, cn, ExpandableGroupTagLine, Tooltip } from 'ui-design-system';
+import { Button, cn, ExpandableGroupTagLine, Panel, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ReviewStatusTag } from '../Decisions/ReviewStatusTag';
 import { FormatData } from '../FormatData';

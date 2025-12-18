@@ -3,14 +3,13 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { FormTextArea } from '@app-builder/components/Form/Tanstack/FormTextArea';
-import { Panel } from '@app-builder/components/Panel';
 import { type AiSettingSchema, aiSettingSchema } from '@app-builder/models/ai-settings';
 import { useUpdateAiSettings } from '@app-builder/queries/cases/update-ai-settings';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Input, Switch, Tooltip } from 'ui-design-system';
+import { Button, Input, Panel, Switch, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { LanguageDropdown } from './LanguageDropdown';
 

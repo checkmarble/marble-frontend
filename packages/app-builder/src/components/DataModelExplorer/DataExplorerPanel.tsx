@@ -1,7 +1,7 @@
-import { Panel } from '@app-builder/components/Panel';
 import { DataModel } from '@app-builder/models';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Panel } from 'ui-design-system';
 import { DataModelExplorer } from '../DataModelExplorer/DataModelExplorer';
 import { DataModelExplorerContext } from '../DataModelExplorer/Provider';
 

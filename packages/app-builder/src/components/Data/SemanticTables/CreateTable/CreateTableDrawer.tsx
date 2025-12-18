@@ -1,11 +1,10 @@
 import { Callout } from '@app-builder/components/Callout';
-import { Panel } from '@app-builder/components/Panel';
 import { useDataModel } from '@app-builder/services/data/data-model';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useStore } from '@tanstack/react-form';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Stepper, type StepperStep, Typo } from 'ui-design-system';
+import { Panel, Stepper, type StepperStep, Typo } from 'ui-design-system';
 import { UnsavedChangesDialog } from '../Shared/UnsavedChangesDialog';
 import { CreateTableFormContext, useCreateTableForm } from './CreateTableContext';
 import { CreateTableEntityStep } from './CreateTableEntityStep';

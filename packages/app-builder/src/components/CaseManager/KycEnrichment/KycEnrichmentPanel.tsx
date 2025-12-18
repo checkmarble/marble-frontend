@@ -1,4 +1,3 @@
-import { Panel } from '@app-builder/components/Panel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useAddCommentMutation } from '@app-builder/queries/cases/add-comment';
 import { useCreateKycEnrichmentQuery } from '@app-builder/queries/cases/create-kyc-enrichment';
@@ -6,7 +5,7 @@ import * as Sentry from '@sentry/tanstackstart-react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Markdown, Typo } from 'ui-design-system';
+import { Markdown, Panel, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { Callout } from '../../Callout';
 import { Spinner } from '../../Spinner';

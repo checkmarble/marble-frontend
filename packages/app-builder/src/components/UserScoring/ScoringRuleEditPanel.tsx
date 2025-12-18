@@ -1,5 +1,4 @@
 import { AstBuilder } from '@app-builder/components/AstBuilder';
-import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { type DataModel } from '@app-builder/models';
 import { type CustomList } from '@app-builder/models/custom-list';
 import {
@@ -18,7 +17,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { cn, type SelectOption, SelectV2, Tag } from 'ui-design-system';
+import { cn, Panel, PanelSharpFactory, type SelectOption, SelectV2, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { SwitchNode } from './SwitchNode';
 

@@ -1,5 +1,4 @@
 import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/FormErrorOrDescription';
-import { Panel, PanelSharpFactory } from '@app-builder/components/Panel';
 import { CaseDetail } from '@app-builder/models/cases';
 import { existingCaseSchema, newCaseSchema, useAddToCaseMutation } from '@app-builder/queries/cases/add-to-case';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
@@ -9,7 +8,7 @@ import { useForm } from '@tanstack/react-form';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, SelectV2, Switch } from 'ui-design-system';
+import { Input, Panel, PanelSharpFactory, SelectV2, Switch } from 'ui-design-system';
 import { decisionsI18n } from './decisions-i18n';
 
 interface DecisionRightPanelProps {

@@ -1,5 +1,4 @@
 import { CaseEventDetail } from '@app-builder/components/Cases/Events/CaseEventDetail';
-import { Panel } from '@app-builder/components/Panel';
 import { type CaseEvent, type CaseEventType, type CaseStatus } from '@app-builder/models/cases';
 import {
   type CalendarDayDistance,
@@ -11,7 +10,7 @@ import { useFormatTimezone } from '@app-builder/utils/format';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, cn, Typo } from 'ui-design-system';
+import { Button, cn, Panel, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 type CaseEventsProps = {

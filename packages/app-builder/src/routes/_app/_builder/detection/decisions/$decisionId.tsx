@@ -14,7 +14,6 @@ import { ScorePanel } from '@app-builder/components/Decisions/Score';
 import { ScreeningDetail } from '@app-builder/components/Decisions/ScreeningDetail';
 import { DecisionDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
 import { pageLayoutGutter } from '@app-builder/components/Page/page-layout';
-import { Panel } from '@app-builder/components/Panel';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { DataModel, isNotFoundHttpError } from '@app-builder/models';
 import { Screening } from '@app-builder/models/screening';
@@ -29,7 +28,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { getRequest } from '@tanstack/react-start/server';
 import { useTranslation } from 'react-i18next';
 import * as R from 'remeda';
-import { Button, cn } from 'ui-design-system';
+import { Button, cn, Panel } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import * as z from 'zod/v4';
 
