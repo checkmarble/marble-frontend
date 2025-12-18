@@ -55,8 +55,10 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
           const secondaryText = user?.email ?? actor.name;
           return (
             <div className="flex flex-col">
-              <span className="text-grey-00 text-sm">{actor.name}</span>
-              <span className="text-grey-50 text-xs">{secondaryText}</span>
+              <span className="text-grey-00 text-sm">
+                {actor.type == 'api_key' ? t('activity_follow_up.filter.api_key') : actor.name}
+              </span>
+              <span className="text-grey-50 text-xs">{actor.type == 'api_key' ? `${actor.name}*` : secondaryText}</span>
             </div>
           );
         },
