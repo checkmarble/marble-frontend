@@ -66,5 +66,6 @@ export const useGetAuditEventsQuery = (filters: AuditEventsFilters | undefined, 
       return page?.hasNextPage ? page.events[page.events.length - 1]?.id : null;
     },
     placeholderData: keepPreviousData,
+    staleTime: 0,
   });
 };
