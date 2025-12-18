@@ -1,0 +1,1 @@
+import{fN as c}from"./index-dJGGVLOE.js";function o(n,t){let e;return((...u)=>{clearTimeout(e),e=setTimeout(()=>n(...u),t)})}function s(n,t){const e=c.useRef();e.current=n;const u=c.useRef();return c.useEffect(()=>{u.current=o(((...r)=>e.current?.(...r)),t)},[t]),c.useMemo(()=>((...r)=>u.current?.(...r)),[])}export{s as u};

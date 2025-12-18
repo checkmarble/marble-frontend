@@ -1,0 +1,1 @@
+import{r as s,j as i,a5 as u}from"./index-dJGGVLOE.js";const e=u("OrganizationTags");function x({orgTags:a,children:n}){const r=s.useMemo(()=>{const o=new Map(a.map(t=>[t.id,t]));return{orgTags:a,getTagById:t=>o.get(t)}},[a]);return i.jsx(e.Provider,{value:r,children:n})}const c=()=>e.useValue();export{x as O,c as u};

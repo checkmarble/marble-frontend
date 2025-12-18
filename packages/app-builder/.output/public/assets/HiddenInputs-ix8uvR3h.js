@@ -1,0 +1,1 @@
+import{j as e}from"./index-dJGGVLOE.js";function d(i){return e.jsx(e.Fragment,{children:Object.entries(i).filter(([t,r])=>r!==void 0).map(([t,r])=>e.jsx("input",{hidden:!0,readOnly:!0,id:t,name:t,value:r},t))})}export{d as H};

@@ -1,0 +1,1 @@
+import{r as o,j as i,a5 as u}from"./index-dJGGVLOE.js";const r=u("OrganizationUsers");function x({orgUsers:t,children:s}){const a=o.useMemo(()=>{const n=new Map(t.map(e=>[e.userId,e]));return{orgUsers:t,getOrgUserById:e=>n.get(e)}},[t]);return i.jsx(r.Provider,{value:a,children:s})}const c=()=>r.useValue();export{x as O,c as u};

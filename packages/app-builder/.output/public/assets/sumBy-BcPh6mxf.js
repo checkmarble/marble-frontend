@@ -1,0 +1,1 @@
+import{b8 as a}from"./index-dJGGVLOE.js";function d(...n){return a(s,n)}const s=(n,r)=>{let e=n.entries(),t=e.next();if("done"in t&&t.done)return 0;let{value:[,i]}=t,o=r(i,0,n);for(let[f,l]of e){let u=r(l,f,n);o+=u}return o};export{d as t};

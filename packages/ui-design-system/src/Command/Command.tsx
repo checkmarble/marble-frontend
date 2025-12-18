@@ -1,6 +1,6 @@
-import clsx from 'clsx';
 import { Command as CommandPrimitive } from 'cmdk';
 import * as React from 'react';
+import { cn } from '../utils';
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -8,10 +8,7 @@ const Command = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive
     ref={ref}
-    className={clsx(
-      'bg-surface-card border-grey-border flex flex-col overflow-hidden rounded-sm border p-sm',
-      className,
-    )}
+    className={cn('bg-surface-card border-grey-border flex flex-col overflow-hidden rounded-sm border p-sm', className)}
     {...props}
   />
 ));
@@ -24,7 +21,7 @@ const CommandInput = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Input
     ref={ref}
-    className={clsx(
+    className={cn(
       'placeholder:text-grey-secondary text-s bg-transparent outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
       className,
     )}
@@ -40,7 +37,7 @@ const CommandList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.List
     ref={ref}
-    className={clsx('max-h-[300px] overflow-y-auto overflow-x-hidden', className)}
+    className={cn('max-h-[300px] overflow-y-auto overflow-x-hidden', className)}
     {...props}
   />
 ));
@@ -66,7 +63,7 @@ const CommandGroup = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Group
     ref={ref}
-    className={clsx(
+    className={cn(
       'text-grey-secondary [&_[cmdk-group-heading]]:text-grey-secondary overflow-hidden p-xs [&_[cmdk-group-heading]]:px-xs [&_[cmdk-group-heading]]:py-xs [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
       className,
     )}
@@ -80,7 +77,7 @@ const CommandSeparator = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator>
 >(({ className, ...props }, ref) => (
-  <CommandPrimitive.Separator ref={ref} className={clsx('bg-grey-border h-px', className)} {...props} />
+  <CommandPrimitive.Separator ref={ref} className={cn('bg-grey-border h-px', className)} {...props} />
 ));
 
 CommandSeparator.displayName = CommandPrimitive.Separator.displayName;
@@ -91,7 +88,7 @@ const CommandItem = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Item
     ref={ref}
-    className={clsx(
+    className={cn(
       'text-s relative flex cursor-pointer select-none items-center gap-sm rounded-xs px-xs py-xs outline-hidden data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50',
       className,
     )}
@@ -102,7 +99,7 @@ const CommandItem = React.forwardRef<
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 
 const CommandShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
-  <span className={clsx('text-grey-disabled ms-auto text-xs tracking-widest', className)} {...props} />
+  <span className={cn('text-grey-disabled ms-auto text-xs tracking-widest', className)} {...props} />
 );
 
 CommandShortcut.displayName = 'CommandShortcut';

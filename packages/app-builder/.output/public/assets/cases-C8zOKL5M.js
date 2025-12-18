@@ -1,0 +1,1 @@
+import{aV as o,j as a,aU as s,O as r}from"./index-dJGGVLOE.js";function d(){const{dataModel:t,dataModelFeatureAccess:e}=o.useLoaderData();return a.jsx(s,{dataModel:t,dataModelFeatureAccess:e,children:a.jsx(r,{})})}export{d as component};

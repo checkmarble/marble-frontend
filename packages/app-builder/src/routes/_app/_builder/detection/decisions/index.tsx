@@ -17,7 +17,6 @@ import {
 } from '@app-builder/components/Decisions/PaginationButtons';
 import { DetectionNavigationTabs } from '@app-builder/components/Detection';
 import { FiltersButton } from '@app-builder/components/Filters';
-import { Panel } from '@app-builder/components/Panel';
 import { useTanstackTableListSelection } from '@app-builder/hooks/useTanstackTableListSelection';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type PaginationParams } from '@app-builder/models/pagination';
@@ -31,7 +30,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { type MouseEvent, useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Button, SearchInput } from 'ui-design-system';
+import { Button, Panel, SearchInput } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
 

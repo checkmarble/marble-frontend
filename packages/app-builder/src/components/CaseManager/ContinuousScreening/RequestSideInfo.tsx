@@ -1,6 +1,5 @@
 import { Callout } from '@app-builder/components/Callout';
 import { DataListGrid } from '@app-builder/components/DataModelExplorer/DataListGrid';
-import { Panel } from '@app-builder/components/Panel';
 import { EntityProperties } from '@app-builder/components/Screenings/EntityProperties';
 import { EntityDatasetsList } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 import { TopicTag } from '@app-builder/components/Screenings/TopicTag';
@@ -17,7 +16,7 @@ import {
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Card, cn, Tag, Typo } from 'ui-design-system';
+import { Button, Card, cn, Panel, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { ObjectDetails } from './ObjectDetails';
 import { RequestDetail } from './RequestDetail';

@@ -83,6 +83,7 @@ export const iconNames = [
   'manually_accepted',
   'manually_denied',
   'map-pin',
+  'menu-burger',
   'minus',
   'modeling',
   'monitor',

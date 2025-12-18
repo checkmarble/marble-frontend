@@ -1,0 +1,1 @@
+import{s as r}from"./array-Bzq-BFtr.js";const n=t=>{t.key==="Enter"&&(t.ctrlKey||t.metaKey)&&(t.preventDefault(),t.currentTarget.closest("form")?.requestSubmit())};function a(t){return e=>{e.preventDefault(),e.stopPropagation(),t.handleSubmit()}}const o=t=>r(t,e=>e.message,e=>e!==void 0);export{o as g,a as h,n as s};

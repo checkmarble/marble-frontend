@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Input, type InputProps } from 'ui-design-system';
 
 interface FormInputProps extends Omit<InputProps, 'borderColor' | 'type'> {
-  enablePasswordManagers?: boolean;
   valid?: boolean;
   type:
     | 'color'

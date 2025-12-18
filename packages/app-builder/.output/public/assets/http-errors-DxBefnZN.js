@@ -1,0 +1,1 @@
+import{hM as r,o as s,e as o}from"./index-dJGGVLOE.js";function n(t){return t instanceof Error&&"status"in t}function a(t){return n(t)&&t.status===r}s({error_code:o().optional(),message:o()});export{a as i};

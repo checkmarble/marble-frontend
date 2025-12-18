@@ -1,10 +1,9 @@
 import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataFields';
-import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useObjectDetailsQuery } from '@app-builder/queries/data/get-object-details';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Tag } from 'ui-design-system';
+import { Button, Input, Panel, Tag } from 'ui-design-system';
 
 interface TableRecordPreviewDrawerProps {
   open: boolean;

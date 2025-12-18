@@ -1,4 +1,3 @@
-import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { useGetAiSettingsQuery } from '@app-builder/queries/cases/get-ai-settings';
@@ -7,7 +6,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Tag } from 'ui-design-system';
+import { Panel, Tag } from 'ui-design-system';
 import { AIConfigPanelContent } from '../Panel/AIConfigPanelContent';
 import { ConfigRow } from './ConfigRow';
 

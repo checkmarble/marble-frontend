@@ -1,0 +1,1 @@
+import{aW as t,j as s,aA as e,aX as r}from"./index-dJGGVLOE.js";function n(){const{globalDashbord:a}=t.useLoaderData();return s.jsxs(e.Main,{children:[s.jsx(e.Header,{className:"justify-between",children:s.jsx(r,{})}),s.jsx("iframe",{src:a.src,title:a.title,className:"size-full"})]})}export{n as component};

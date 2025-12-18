@@ -1,0 +1,1 @@
+import{j as o,b3 as r,I as e,a0 as l}from"./index-dJGGVLOE.js";const p=({ruleGroup:a,onClear:s,className:c})=>o.jsxs(r,{color:"purple",size:"small",className:l("gap-sm",c),children:[a,s?o.jsx(e,{onClick:s,icon:"cross",className:"size-4 cursor-pointer hover:opacity-70"}):null]});export{p as R};

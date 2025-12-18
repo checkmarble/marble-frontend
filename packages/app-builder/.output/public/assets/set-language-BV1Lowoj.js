@@ -1,0 +1,1 @@
+import{c as t,s,a as n,o as r,_ as u,m as c,x as o,y as d}from"./index-dJGGVLOE.js";r({preferredLanguage:u(c)});const g=t({method:"POST"}).middleware([s]).handler(n("56f0cc55efe9f42480c18332b978130eb1b8c834d27c7b8d818d11fbe9a9fefe")),f=()=>{const e=o(g);return d({mutationKey:["settings","set-language"],mutationFn:async a=>e({data:a})})};export{f as u};

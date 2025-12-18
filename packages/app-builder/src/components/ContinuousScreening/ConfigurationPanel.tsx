@@ -5,8 +5,7 @@ import {
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button } from 'ui-design-system';
-import { Panel } from '../Panel';
+import { Button, Panel } from 'ui-design-system';
 import {
   ContinuousScreeningConfigurationStepper,
   PartialCreateContinuousScreeningConfig,

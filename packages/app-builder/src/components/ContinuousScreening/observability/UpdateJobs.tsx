@@ -1,13 +1,12 @@
 import { Callout } from '@app-builder/components/Callout';
 import GridTable from '@app-builder/components/GridTable';
-import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { ContinuousScreeningUpdateJobSummary } from '@app-builder/models/continuous-screening';
 import { useContinuousScreeningUpdateJobsInfiniteQuery } from '@app-builder/queries/continuous-screening/update-jobs';
 import { formatOptionalDuration } from '@app-builder/utils/datetime';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Tooltip, Typo, useFormatLanguage } from 'ui-design-system';
+import { Panel, Tooltip, Typo, useFormatLanguage } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { GridStatus, getProgressValue, LIMIT_FOR_PANELS, useDateAtFormat } from './utils';
 

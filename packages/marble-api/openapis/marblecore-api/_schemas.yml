@@ -424,6 +424,8 @@ UserDto:
   $ref: admin.yml#/components/schemas/UserDto
 CreateUser:
   $ref: admin.yml#/components/schemas/CreateUser
+CreateNewOrgAdmin:
+  $ref: admin.yml#/components/schemas/CreateNewOrgAdmin
 UpdateUser:
   $ref: admin.yml#/components/schemas/UpdateUser
 ApiKeyDto:

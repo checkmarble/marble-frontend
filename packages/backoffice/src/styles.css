@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@import "../../tailwind-preset/src/tailwind.css";
+
+@config "../tailwind.config.ts";
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility scrollbar-stable {
+  scrollbar-gutter: stable;
+}
+
+@custom-variant stickied {
+  &:where([data-sticky='true'] *) {
+    @slot;
+  }
+}
+
+/* Launchpad entrance — one authored moment: rise + de-blur, exponential ease-out */
+@keyframes launchpad-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(8px);
+  }
+}
+
+.animate-launchpad-rise {
+  animation: launchpad-rise 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-launchpad-rise {
+    animation: none;
+  }
+}

@@ -1,5 +1,4 @@
 import { ExternalLink } from '@app-builder/components/ExternalLink';
-import { Panel } from '@app-builder/components/Panel';
 import { LoadingIcon } from '@app-builder/components/Spinner';
 import { type TableModel } from '@app-builder/models';
 import { useUploadTableQuery } from '@app-builder/queries/data/upload-table';
@@ -8,7 +7,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { type UploadLog } from 'marble-api';
 import toast from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
-import { Button, Tag, Typo } from 'ui-design-system';
+import { Button, Panel, Tag, Typo } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { DownloadCsvTemplate, PastUploads, UploadForm } from './UploadIngestionComponents';
 

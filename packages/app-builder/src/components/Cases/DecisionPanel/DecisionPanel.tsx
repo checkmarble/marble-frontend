@@ -12,7 +12,6 @@ import {
   RulesExecutionsContainer,
 } from '@app-builder/components/Decisions/RulesExecutions/RulesExecutions';
 import { CaseDetailTriggerObject } from '@app-builder/components/Decisions/TriggerObjectDetail';
-import { Panel } from '@app-builder/components/Panel';
 import { ScoreModifier } from '@app-builder/components/Scenario/Rules/ScoreModifier';
 import { Spinner } from '@app-builder/components/Spinner';
 import { DataModel } from '@app-builder/models';
@@ -22,7 +21,7 @@ import { useScenarioIterationRules } from '@app-builder/queries/scenarios/scenar
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, Switch } from 'ui-design-system';
+import { Button, Panel, Switch } from 'ui-design-system';
 
 type DecisionPanelProps = {
   decision: DetailedCaseDecision;

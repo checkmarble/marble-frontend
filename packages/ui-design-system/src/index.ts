@@ -23,6 +23,7 @@ export * from './Markdown/ReleaseMarkdown';
 export * from './Menu/Menu';
 export * from './MenuCommand/MenuCommand';
 export * from './Modal/Modal';
+export * from './Panel';
 export * from './Popover/Popover';
 export * from './Radio/Radio';
 export * from './RadioGroup/RadioGroup';

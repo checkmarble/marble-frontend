@@ -1,0 +1,1 @@
+import"./scenarios-CqM8oNZ-.js";import{x as e,g9 as n,y as o}from"./index-dJGGVLOE.js";const u=()=>{const t=e(n);return o({mutationKey:["scenarios","update"],mutationFn:async a=>t({data:a})})};export{u};

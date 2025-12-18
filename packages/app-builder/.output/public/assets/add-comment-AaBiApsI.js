@@ -1,0 +1,1 @@
+import"./cases-D8Xa6X_u.js";import{v as a}from"./cases-BIhjXtJv.js";import{x as n,aa as o,y as r}from"./index-dJGGVLOE.js";import{s as i}from"./Time-PgMHueXV.js";const y=()=>{const e=n(a),t=o();return r({mutationKey:["cases","add-comment"],mutationFn:async s=>e({data:i.serialize(s,{indices:!0})}),onSuccess:()=>{t.invalidateQueries({queryKey:["cases"]})}})};export{y as u};

@@ -4,7 +4,6 @@ import { DataFields } from '@app-builder/components/Data/DataVisualisation/DataF
 import { DataExplorerPanel } from '@app-builder/components/DataModelExplorer/DataExplorerPanel';
 import { DataModelExplorerProvider } from '@app-builder/components/DataModelExplorer/Provider';
 import { Page } from '@app-builder/components/Page';
-import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { DataModelObject, isAnalyst } from '@app-builder/models';
 import { SCORING_LEVELS_COLORS, SCORING_LEVELS_LABEL_KEYS, type ScoringSettings } from '@app-builder/models/scoring';
@@ -23,7 +22,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Button, cn, Popover, Tag } from 'ui-design-system';
+import { Button, cn, Panel, Popover, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { AlertHitsList } from './AlertHitsList';
 import { ClientComments } from './ClientComments';

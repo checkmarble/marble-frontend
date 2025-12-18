@@ -1,0 +1,1 @@
+import{c as e,s as a,a as d}from"./index-dJGGVLOE.js";const c=e({method:"GET"}).middleware([a]).handler(d("9675e53932d479c3dca797a1ff9bfad4f8a7229c662af881bd200287d2a19dbe"));export{c as getAppConfigFn};

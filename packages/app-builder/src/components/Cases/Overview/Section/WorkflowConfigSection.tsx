@@ -1,4 +1,3 @@
-import { Panel } from '@app-builder/components/Panel';
 import { Spinner } from '@app-builder/components/Spinner';
 import { type InboxMetadata } from '@app-builder/models/inbox';
 import { useGetInboxesQuery } from '@app-builder/queries/cases/get-inboxes';
@@ -7,7 +6,7 @@ import { type FeatureAccessLevelDto } from 'marble-api/generated/feature-access-
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { match } from 'ts-pattern';
-import { Tag } from 'ui-design-system';
+import { Panel, Tag } from 'ui-design-system';
 import { EscalationConditionsPanelContent } from '../Panel/EscalationConditionsPanelContent';
 import { WorkflowConfigPanelContent } from '../Panel/WorkflowConfigPanelContent';
 import { ConfigRow } from './ConfigRow';

@@ -1,0 +1,1 @@
+import{K as n}from"./cases-BIhjXtJv.js";import{x as s,U as t}from"./index-dJGGVLOE.js";const y=e=>{const r=s(n);return t({queryKey:["cases","create-kyc-enrichment",e],queryFn:async()=>r({data:{caseId:e}}),enabled:!1,staleTime:1/0})};export{y as u};

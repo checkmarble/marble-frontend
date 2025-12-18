@@ -1,0 +1,1 @@
+import{r as a,j as e,aO as n}from"./index-dJGGVLOE.js";const f=a.forwardRef(function({valid:o,...r},t){return e.jsx(n,{ref:t,id:r.name,borderColor:o?"greyfigma-90":"redfigma-47",...r})});export{f as F};

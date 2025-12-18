@@ -1,0 +1,1 @@
+import{ck as o,cl as f,cm as s}from"./index-dJGGVLOE.js";function i(...e){return o(u,e)}function u(e){if(e.length===0)return f;let r=new Map;for(let t of e)r.set(t,(r.get(t)??0)+1);return t=>{let n=r.get(t);return n===void 0||n===0?{done:!1,hasNext:!0,next:t}:(r.set(t,n-1),s)}}export{i as r};

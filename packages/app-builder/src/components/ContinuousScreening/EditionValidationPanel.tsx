@@ -8,8 +8,8 @@ import { ScreeningAvailableFiltersAdapted } from '@app-builder/models/screening'
 import { useUpdateContinuousScreeningConfigurationMutation } from '@app-builder/queries/continuous-screening/update-configuration';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { Panel, PanelSharpFactory } from 'ui-design-system';
 import { Callout } from '../Callout';
-import { Panel, PanelSharpFactory } from '../Panel';
 import { DatasetSelectionSection } from './validation/DatasetSelectionSection';
 import { GeneralInfoSection } from './validation/GeneralInfoSection';
 import { ObjectMappingSection } from './validation/ObjectMappingSection';

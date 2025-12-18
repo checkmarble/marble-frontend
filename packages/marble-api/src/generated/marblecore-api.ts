@@ -1676,19 +1676,17 @@ export type ArchetypeDto = {
     label?: string;
     description?: string;
 };
-export type CreateUser = {
+export type CreateNewOrgAdmin = {
     email: string;
-    role: string;
-    organization_id: string;
-    first_name: string;
-    last_name: string;
+    first_name?: string;
+    last_name?: string;
 };
 export type ArchetypeApplyDto = {
     name: string;
 } | {
     name: string;
     org_name: string;
-    admins: CreateUser[];
+    admins: CreateNewOrgAdmin[];
 };
 export type ApiKeyDto = {
     id: string;
@@ -1714,6 +1712,13 @@ export type UserDto = {
     organization_id: string;
     /** Whether the user has at least one MFA factor enrolled. Only present when requested with `with_tfa=true`. */
     tfa_enabled?: boolean;
+};
+export type CreateUser = {
+    email: string;
+    role: string;
+    organization_id: string;
+    first_name: string;
+    last_name: string;
 };
 export type UpdateUser = {
     email: string;

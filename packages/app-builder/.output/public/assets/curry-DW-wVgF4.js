@@ -1,0 +1,1 @@
+const n=({delay:l},o)=>{let e,d=!0;const t=(...i)=>{d?(clearTimeout(e),e=setTimeout(()=>{d&&o(...i),e=void 0},l)):o(...i)};return t.isPending=()=>e!==void 0,t.cancel=()=>{d=!1},t.flush=(...i)=>o(...i),t};export{n as d};

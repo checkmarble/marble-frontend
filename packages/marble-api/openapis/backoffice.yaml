@@ -1,0 +1,313 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: "Backoffice API"
+  description: "API endpoints dedidacted to the backoffice"
+servers:
+  - url: "http://localhost:8080"
+    description: Local development server
+
+paths:
+  /organizations/{organizationId}/feature_access:
+    get:
+      summary: Retrieve organization features
+      description: Returns the features an organization has access
+      operationId: getOrganizationFeatures
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organizationId
+          description: The organization id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Feature access response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  feature_access:
+                    $ref: "#/components/schemas/FeatureAccessDto"
+                required:
+                  - feature_access
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+    patch:
+      summary: Update organization features
+      description: Update the features an organization has access
+      operationId: patchOrganizationFeatures
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: organizationId
+          description: The organization id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The features to update
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+                enum: ["allowed", "test", "restricted"]
+      responses:
+        "204":
+          description: The features have been updated successfully
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+
+  /org-import:
+    post:
+      summary: Import org from JSON
+      operationId: importOrganization
+      requestBody:
+        description: The spec
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "204":
+          description: The org has been created successfully
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+
+  /licenses:
+    get:
+      summary: Retrieve licenses
+      description: Returns the list of licenses
+      operationId: getLicenses
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Licenses response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  licenses:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/LicenseDto"
+                required:
+                  - licenses
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+    post:
+      summary: Create a license
+      description: Creates a new license
+      operationId: createLicense
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: The license to create
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expiration_date:
+                  type: string
+                  format: date-time
+                organization_name:
+                  type: string
+                description:
+                  type: string
+                license_entitlements:
+                  $ref: "#/components/schemas/LicenseEntitlementsDto"
+              required:
+                - expiration_date
+                - organization_name
+                - description
+                - license_entitlements
+      responses:
+        "200":
+          description: License created response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  license:
+                    $ref: "#/components/schemas/LicenseDto"
+                required:
+                  - license
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+
+  /licenses/{licenseId}:
+    patch:
+      summary: Update a license
+      description: Updates an existing license
+      operationId: updateLicense
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: licenseId
+          description: The license id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The license fields to update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expiration_date:
+                  type: string
+                  format: date-time
+                organization_name:
+                  type: string
+                description:
+                  type: string
+                license_entitlements:
+                  $ref: "#/components/schemas/LicenseEntitlementsDto"
+                suspend:
+                  type: boolean
+              required:
+                - expiration_date
+                - organization_name
+                - description
+                - license_entitlements
+      responses:
+        "200":
+          description: License updated response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  license:
+                    $ref: "#/components/schemas/LicenseDto"
+                required:
+                  - license
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+
+components:
+  schemas:
+    FeatureAccessDto:
+      $ref: "feature-access-api.yaml#/components/schemas/FeatureAccessDto"
+    LicenseEntitlementsDto:
+      type: object
+      properties:
+        sso:
+          type: boolean
+        workflows:
+          type: boolean
+        analytics:
+          type: boolean
+        data_enrichment:
+          type: boolean
+        user_roles:
+          type: boolean
+        webhooks:
+          type: boolean
+        rule_snoozes:
+          type: boolean
+        test_run:
+          type: boolean
+        sanctions:
+          type: boolean
+        auto_assignment:
+          type: boolean
+        case_ai_assist:
+          type: boolean
+        continuous_screening:
+          type: boolean
+        user_scoring:
+          type: boolean
+        lexisnexis:
+          type: boolean
+      required:
+        - sso
+        - workflows
+        - analytics
+        - data_enrichment
+        - user_roles
+        - webhooks
+        - rule_snoozes
+        - test_run
+        - sanctions
+        - auto_assignment
+        - case_ai_assist
+        - continuous_screening
+        - user_scoring
+        - lexisnexis
+    LicenseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        key:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        suspended_at:
+          type: string
+          format: date-time
+          nullable: true
+        expiration_date:
+          type: string
+          format: date-time
+        organization_name:
+          type: string
+        description:
+          type: string
+        license_entitlements:
+          $ref: "#/components/schemas/LicenseEntitlementsDto"
+      required:
+        - id
+        - key
+        - created_at
+        - suspended_at
+        - expiration_date
+        - organization_name
+        - description
+        - license_entitlements
+
+  responses:
+    "401":
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: string
+            example: Unauthorized
+    "403":
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: string
+            example: Forbidden

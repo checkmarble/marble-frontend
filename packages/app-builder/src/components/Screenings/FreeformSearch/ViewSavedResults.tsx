@@ -1,6 +1,5 @@
 import { CursorPaginationButtons, usePaginationsButton } from '@app-builder/components/Decisions/PaginationButtons';
 import { DateRangeFilter } from '@app-builder/components/Filters';
-import { Panel } from '@app-builder/components/Panel';
 import { IconDot } from '@app-builder/components/Screenings/MatchCard/match-card-entity-components';
 import { SEARCH_ENTITIES, SearchableSchema } from '@app-builder/constants/screening-entity';
 import { User } from '@app-builder/models';
@@ -18,7 +17,7 @@ import { ScreeningConfigBodySectionDto } from 'marble-api';
 import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Temporal } from 'temporal-polyfill';
-import { Avatar, Button, Collapsible, cn, MenuCommand, Separator, Switch, Tag } from 'ui-design-system';
+import { Avatar, Button, Collapsible, cn, MenuCommand, Panel, Separator, Switch, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import FreeformMatchCard from './FreeformMatchCard';
 

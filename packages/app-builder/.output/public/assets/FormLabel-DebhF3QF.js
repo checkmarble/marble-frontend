@@ -1,0 +1,1 @@
+import{r as e,j as m,a0 as n}from"./index-dJGGVLOE.js";import{R as p}from"./index-BWrGqmbp.js";const i=e.forwardRef(function({className:o,valid:r,name:t,...a},s){return m.jsx(p,{ref:s,htmlFor:t,className:n(o,{"text-red-primary":r!==void 0&&!r}),...a})});export{i as F};
