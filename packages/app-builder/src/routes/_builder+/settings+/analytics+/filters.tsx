@@ -230,7 +230,7 @@ export default function Filters() {
               linkedFieldItems={linkedFieldItems}
             />
           </CollapsiblePaper.Title>
-          <CollapsiblePaper.Content className="flex flex-col h-full">
+          <CollapsiblePaper.Content>
             <div className="flex flex-col gap-4 flex-1 min-h-0">
               <Table.Container {...getContainerProps()} className="flex-1 min-h-0">
                 <Table.Header headerGroups={table.getHeaderGroups()} />

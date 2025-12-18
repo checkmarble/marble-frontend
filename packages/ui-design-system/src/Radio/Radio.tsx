@@ -96,7 +96,7 @@ export const RadioItem = forwardRef<HTMLInputElement, RadioItemProps>(function R
       className={cn(
         'relative flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full border transition-colors',
         'border-purple-primary bg-white dark:bg-transparent',
-        isChecked && 'border-[4px]',
+        isChecked && 'border-[2px]',
         className,
       )}
     >

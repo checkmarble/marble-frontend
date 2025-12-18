@@ -33,3 +33,15 @@ export const featureAccessApiConfig: Config = {
     mergeReadWriteOnly: true,
   },
 };
+
+export const backofficeApiConfig: Config = {
+  apiName: 'Backoffice API',
+  apiSpec: join('openapis', 'backoffice.yaml'),
+  generatedApi: join(GENERATED_FOLDER, 'backoffice-api.ts'),
+  apiOptions: {
+    optimistic: true,
+    useEnumType: false,
+    unionUndefined: false,
+    mergeReadWriteOnly: true,
+  },
+};
