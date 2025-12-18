@@ -82,7 +82,7 @@ export const analyticsFiltersQuery = z.object({
 export type AnalyticsFiltersQuery = z.infer<typeof analyticsFiltersQuery>;
 
 export const analyticsQuery = analyticsFiltersQuery.extend({
-  scenarioId: z.uuidv4(),
+  scenarioId: z.uuid(),
 });
 
 export const transformTriggersFiltersToFieldsFilters = (filters: AnalyticsFiltersQuery['trigger']): FieldFilterDto[] =>
