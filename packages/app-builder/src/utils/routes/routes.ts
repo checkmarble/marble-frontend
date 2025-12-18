@@ -122,21 +122,27 @@ export const routes = [
             "file": "routes/_builder+/cases+/overview.tsx"
           },
           {
-            "id": "routes/_builder+/continuous-screening+/_index",
-            "index": true,
+            "id": "routes/_builder+/continuous-screening+/_layout",
             "path": "continuous-screening",
-            "file": "routes/_builder+/continuous-screening+/_index.tsx"
-          },
-          {
-            "id": "routes/_builder+/continuous-screening+/configurations",
-            "path": "continuous-screening/configurations",
-            "file": "routes/_builder+/continuous-screening+/configurations.tsx"
-          },
-          {
-            "id": "routes/_builder+/continuous-screening+/create+/_index",
-            "index": true,
-            "path": "continuous-screening/create",
-            "file": "routes/_builder+/continuous-screening+/create+/_index.tsx"
+            "file": "routes/_builder+/continuous-screening+/_layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/continuous-screening+/_index",
+                "index": true,
+                "file": "routes/_builder+/continuous-screening+/_index.tsx"
+              },
+              {
+                "id": "routes/_builder+/continuous-screening+/configurations",
+                "path": "configurations",
+                "file": "routes/_builder+/continuous-screening+/configurations.tsx"
+              },
+              {
+                "id": "routes/_builder+/continuous-screening+/create+/_index",
+                "index": true,
+                "path": "create",
+                "file": "routes/_builder+/continuous-screening+/create+/_index.tsx"
+              }
+            ]
           },
           {
             "id": "routes/_builder+/data+/_layout",
@@ -325,6 +331,11 @@ export const routes = [
                 "id": "routes/_builder+/settings+/api-keys",
                 "path": "api-keys",
                 "file": "routes/_builder+/settings+/api-keys.tsx"
+              },
+              {
+                "id": "routes/_builder+/settings+/audit-logs",
+                "path": "audit-logs",
+                "file": "routes/_builder+/settings+/audit-logs.tsx"
               },
               {
                 "id": "routes/_builder+/settings+/data-display",
@@ -877,6 +888,11 @@ export const routes = [
         "id": "routes/ressources+/settings+/api-keys+/delete",
         "path": "ressources/settings/api-keys/delete",
         "file": "routes/ressources+/settings+/api-keys+/delete.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/audit-events",
+        "path": "ressources/settings/audit-events",
+        "file": "routes/ressources+/settings+/audit-events.ts"
       },
       {
         "id": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields+/delete",

@@ -38,10 +38,7 @@ export const TableFilterMenu = ({ onSelect }: TableFilterMenuProps) => {
 
   return (
     <div className="flex flex-col gap-2 p-2">
-      <MenuCommand.Combobox
-        placeholder={t('settings:activity_follow_up.filter.search_table')}
-        onValueChange={setSearchValue}
-      />
+      <MenuCommand.Combobox placeholder={t('settings:audit.filter.search_table')} onValueChange={setSearchValue} />
       <MenuCommand.List className="max-h-40">
         {matches.map((table) => (
           <MenuCommand.Item key={table.id} value={table.name} onSelect={() => onSelect(table.id)}>

@@ -19,13 +19,13 @@ export const AuditEventDetailPanel: FunctionComponent<AuditEventDetailPanelProps
   return (
     <PanelOverlay>
       <PanelContainer size="xl">
-        <PanelHeader>{t('settings:activity_follow_up.detail.title')}</PanelHeader>
+        <PanelHeader>{t('settings:audit.detail.title')}</PanelHeader>
         <PanelContent>
           <div className="flex flex-col gap-6">
             {/* Event metadata */}
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
-                <span className="text-grey-50 text-xs">{t('settings:activity_follow_up.table.timestamp')}</span>
+                <span className="text-grey-50 text-xs">{t('settings:audit.table.timestamp')}</span>
                 <span className="text-grey-00 text-sm">
                   {event.createdAt
                     ? formatDateTimeWithoutPresets(event.createdAt, {
@@ -37,23 +37,25 @@ export const AuditEventDetailPanel: FunctionComponent<AuditEventDetailPanelProps
                 </span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-grey-50 text-xs">{t('settings:activity_follow_up.table.operation')}</span>
+                <span className="text-grey-50 text-xs">{t('settings:audit.table.operation')}</span>
                 <OperationBadge operation={event.operation} />
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-grey-50 text-xs">
                   {event.actor?.type === 'api_key'
-                    ? t('settings:activity_follow_up.detail.api_key_name')
-                    : t('settings:activity_follow_up.detail.user_email')}
+                    ? t('settings:audit.detail.api_key')
+                    : t('settings:audit.detail.user_email')}
                 </span>
-                <span className="text-grey-00 text-sm">{event.actor?.name ?? '-'}</span>
+                <span className="text-grey-00 text-sm">
+                  {event.actor?.type === 'api_key' ? `${event.actor.name}***********` : (event.actor?.name ?? '-')}
+                </span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-grey-50 text-xs">{t('settings:activity_follow_up.table.table')}</span>
+                <span className="text-grey-50 text-xs">{t('settings:audit.table.table')}</span>
                 <span className="text-grey-00 text-sm">{event.table ?? '-'}</span>
               </div>
               <div className="col-span-2 flex flex-col gap-1">
-                <span className="text-grey-50 text-xs">{t('settings:activity_follow_up.table.entity_id')}</span>
+                <span className="text-grey-50 text-xs">{t('settings:audit.table.entity_id')}</span>
                 {event.entityId ? (
                   <CopyToClipboardButton toCopy={event.entityId} size="sm">
                     <span className="text-grey-00 font-mono text-sm">{event.entityId}</span>
@@ -66,7 +68,7 @@ export const AuditEventDetailPanel: FunctionComponent<AuditEventDetailPanelProps
 
             {/* JSON diff */}
             <div className="flex flex-col gap-2">
-              <span className="text-grey-00 text-sm font-semibold">{t('settings:activity_follow_up.detail.data')}</span>
+              <span className="text-grey-00 text-sm font-semibold">{t('settings:audit.detail.data')}</span>
               <JsonDiff oldData={event.oldData} newData={event.newData} />
             </div>
           </div>

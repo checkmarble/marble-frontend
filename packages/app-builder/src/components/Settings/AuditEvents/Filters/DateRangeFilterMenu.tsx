@@ -16,7 +16,7 @@ export const DateRangeFilterMenu: FunctionComponent<DateRangeFilterMenuProps> = 
     <>
       <MenuCommand.List>
         <DateRangeFilter.Root dateRangeFilter={value} setDateRangeFilter={setValue} className="grid">
-          <DateRangeFilter.FromNowPicker title={t('settings:activity_follow_up.filter.presets')} />
+          <DateRangeFilter.FromNowPicker title={t('settings:audit.filter.presets')} />
           <Separator className="bg-grey-90" decorative orientation="vertical" />
           <DateRangeFilter.Calendar />
           <Separator className="bg-grey-90 col-span-3" decorative orientation="horizontal" />
