@@ -10,34 +10,57 @@
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  /* Grey scale */
-  --color-grey-00: oklch(0% 0 0);
-  --color-grey-50: oklch(61.29% 0.024 288.54);
-  --color-grey-80: oklch(81.1% 0.0112 291.9);
-  --color-grey-90: oklch(92.58% 0.004 286.32);
-  --color-grey-95: oklch(96.44% 0.0013 286.38);
-  --color-grey-98: oklch(98.54% 0.0013 286.38);
-  --color-grey-100: oklch(100% 0 0);
-  --color-black: var(--color-grey-00);
-  --color-white: var(--color-grey-100);
+  /* ========================================
+   * GREY - Semantic naming from Figma
+   * ======================================== */
+  --color-grey-primary: oklch(0 0 0);                     /* #000000 - Primary text */
+  --color-grey-hover: oklch(0.2895 0.0018 286.29);        /* #2B2B2C - Hover state */
+  --color-grey-secondary: oklch(0.4823 0.0175 285.73);    /* #5D5D68 - Secondary text */
+  --color-grey-placeholder: oklch(0.6129 0.024 288.54);   /* #838292 - Placeholder text */
+  --color-grey-disabled: oklch(0.811 0.0112 291.9);       /* #C1C0C8 - Disabled state */
+  --color-grey-border: oklch(0.9258 0.004 286.32);        /* #E6E6E9 - Borders */
+  --color-grey-background: oklch(0.9644 0.0013 286.37);   /* #F3F3F4 - Background */
+  --color-grey-background-light: oklch(0.9854 0.0013 286.38); /* #FAFAFB - Light background */
+  --color-grey-white: oklch(1 0 0);                       /* #FFFFFF - White/Surface */
 
-  --color-grey-border: var(--color-grey-90);
-  --color-grey-background: var(--color-grey-95);
-  --color-grey-background-light: var(--color-grey-98);
+  /* Grey - Backward compatibility aliases */
+  --color-grey-00: var(--color-grey-primary);
+  --color-grey-50: var(--color-grey-placeholder);
+  --color-grey-80: var(--color-grey-disabled);
+  --color-grey-90: var(--color-grey-border);
+  --color-grey-95: var(--color-grey-background);
+  --color-grey-98: var(--color-grey-background-light);
+  --color-grey-100: var(--color-grey-white);
+  --color-black: var(--color-grey-primary);
+  --color-white: var(--color-grey-white);
 
+  /* ========================================
+   * PURPLE - Semantic naming from Figma
+   * ======================================== */
+  --color-purple-primary: oklch(0.5515 0.2424 277.49);    /* #5A50FA - Primary (filled) */
+  --color-purple-primary-outline: oklch(0.5515 0.2424 277.49); /* #5A50FA - Primary outline (same in light) */
+  --color-purple-hover: oklch(0.478 0.2462 274.58);       /* #4136E3 - Hover state */
+  --color-purple-disabled: oklch(0.6377 0.1865 282.89);   /* #7F76F7 - Disabled state */
+  --color-purple-secondary: oklch(0.7665 0.1218 286.34);  /* #ADA7FD - Secondary */
+  --color-purple-border: oklch(0.8537 0.0761 287.17);     /* #CBC8FF - Border */
+  --color-purple-border-light: oklch(0.9251 0.0378 287.27); /* #E4E3FF - Light border */
+  --color-purple-background: oklch(0.9519 0.0227 288.66); /* #EEEDFE - Background */
+  --color-purple-background-light: oklch(0.9765 0.011965 291.2928); /* #F7F6FF - Light background */
+
+  /* Purple - Backward compatibility aliases */
+  --color-purple-60: var(--color-purple-hover);
+  --color-purple-65: var(--color-purple-primary);
+  --color-purple-82: var(--color-purple-disabled);
+  --color-purple-85: var(--color-purple-secondary);
+  --color-purple-96: var(--color-purple-background);
+  --color-purple-98: var(--color-purple-background-light);
+  --color-purple-99: oklch(99.19% 0.003955633727212019 286.3274403025669);
+  --color-purple-restricted-border: var(--color-purple-secondary);
+  --color-purple-restricted-background: var(--color-purple-background-light);
+
+  /* Semantic aliases */
   --color-red-base: var(--color-red-47);
   --color-red-background: var(--color-red-95);
-
-  /* Purple scale */
-  --color-purple-60: oklch(51.34% 0.2286 277.47);
-  --color-purple-65: oklch(55.15% 0.2424 277.49);
-  --color-purple-82: oklch(76.65% 0.1218 286.34);
-  --color-purple-85: oklch(78.5% 0.1 285); /* #ada7fd - restricted border */
-  --color-purple-96: oklch(95.19% 0.0227 288.67);
-  --color-purple-98: oklch(97.65% 0.011964760849213694 291.2928951486998);
-  --color-purple-99: oklch(99.19% 0.003955633727212019 286.3274403025669);
-  --color-purple-restricted-border: var(--color-purple-85);
-  --color-purple-restricted-background: oklch(98.8% 0.008 285); /* #f7f6ff */
 
   /* Green scale */
   --color-green-34: oklch(60.19% 0.1439 155.06);
@@ -120,6 +143,39 @@
 
   --animate-slide-down: slideDown 200ms cubic-bezier(0.87, 0, 0.13, 1);
   --animate-slide-up: slideUp 200ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+/* ========================================
+ * DARK MODE - Manual toggle via .dark class
+ * https://tailwindcss.com/docs/dark-mode#toggling-dark-mode-manually
+ * ======================================== */
+@variant dark (&:where(.dark, .dark *));
+
+.dark {
+  /* Grey - Dark mode overrides */
+  --color-grey-primary: oklch(0.9258 0.004 286.32);       /* #E6E6E9 - Light text on dark */
+  --color-grey-hover: oklch(0.9854 0.0013 286.38);        /* #FAFAFB - Hover state */
+  --color-grey-secondary: oklch(0.811 0.0112 291.9);      /* #C1C0C8 - Secondary text */
+  --color-grey-placeholder: oklch(0.6129 0.024 288.54);   /* #838292 - Placeholder (same) */
+  --color-grey-disabled: oklch(0.3703 0.0119 285.81);     /* #3F3F46 - Disabled state */
+  --color-grey-border: oklch(0.2895 0.0018 286.29);       /* #2B2B2C - Borders */
+  --color-grey-background-light: oklch(0.2465 0.0284 284.13); /* #1F1F2E - Light background */
+  --color-grey-background: oklch(0.1901 0.0141 284.98);   /* #13131A - Background */
+  --color-grey-background-dark: oklch(0.1473 0.0107 285.01); /* #0A0A0F - Dark background */
+  --color-grey-white: oklch(0.1473 0.0107 285.01);        /* Same as bg-dark for surfaces */
+
+  /* Purple - Dark mode overrides */
+  --color-purple-primary: oklch(0.6377 0.1865 282.89);    /* #7F76F7 - Primary (filled) */
+  --color-purple-primary-outline: oklch(0.7665 0.1218 286.34); /* #ADA7FD - Primary outline */
+  --color-purple-hover: oklch(0.8537 0.0761 287.17);      /* #CBC8FF - Hover state */
+  --color-purple-secondary: oklch(0.6377 0.1865 282.89);  /* #ADA7FD - Secondary */
+  --color-purple-disabled: oklch(0.4532 0.1146 283.34);   /* #4F4B93 - Disabled state */
+  --color-purple-border: oklch(0.9251 0.0378 287.27);     /* #E4E3FF - Border */
+  --color-purple-border-light: oklch(0.9519 0.0227 288.66); /* #EEEDFE - Border light */
+  --color-purple-background: oklch(0.9765 0.011965 291.2928); /* #F7F6FF - Background */
+
+  /* Scrollbar - Dark mode */
+  --scrollbar-color-thumb: rgb(100, 100, 110);
 }
 
 /* Custom keyframes */
