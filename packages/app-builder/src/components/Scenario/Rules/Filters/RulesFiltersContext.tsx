@@ -1,5 +1,6 @@
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { useCallback, useMemo } from 'react';
 import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
@@ -8,7 +9,7 @@ import * as z from 'zod/v4';
 import { type RulesFilterName, rulesFilterNames } from './filters';
 
 export const rulesFiltersSchema = z.object({
-  ruleGroup: z.array(z.string()).optional(),
+  ruleGroup: protectArray(z.array(z.string())).optional(),
 });
 
 export type RulesFilters = z.infer<typeof rulesFiltersSchema>;

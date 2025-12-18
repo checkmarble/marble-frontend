@@ -1,3 +1,4 @@
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { subDays, subMonths } from 'date-fns';
 import { AnalyticsQueryDto, FieldFilterDto } from 'marble-api';
 import z from 'zod';
@@ -75,7 +76,7 @@ export const analyticsFiltersQuery = z.object({
   range: dateRangeFilterSchema,
   compareRange: dateRangeFilterSchema.optional(),
   scenarioVersion: z.number().optional(),
-  trigger: z.array(triggerFilter).optional(),
+  trigger: protectArray(z.array(triggerFilter)).optional(),
 });
 
 export type AnalyticsFiltersQuery = z.infer<typeof analyticsFiltersQuery>;

@@ -2,6 +2,7 @@ import { createServerFn } from '@app-builder/core/requests';
 import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { handleRedirectMiddleware } from '@app-builder/middlewares/handle-redirect-middleware';
 import { dateRangeFilterSchema } from '@app-builder/models/analytics';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { z } from 'zod/v4';
 
 const urlParamsSchema = z.object({
@@ -9,7 +10,7 @@ const urlParamsSchema = z.object({
 });
 
 const queryParamsSchema = z.object({
-  ranges: z.array(dateRangeFilterSchema).min(1),
+  ranges: protectArray(z.array(dateRangeFilterSchema).min(1)),
 });
 
 export const action = createServerFn(

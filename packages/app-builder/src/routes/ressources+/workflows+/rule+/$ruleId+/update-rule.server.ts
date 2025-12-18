@@ -1,5 +1,6 @@
 import { Rule, WorkflowAction, WorkflowCondition } from '@app-builder/models/scenario/workflow';
 import { type ScenarioRepository } from '@app-builder/repositories/ScenarioRepository';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import * as R from 'remeda';
 import { z } from 'zod/v4';
 
@@ -10,7 +11,7 @@ const astNodeSchema: z.ZodTypeAny = z.object({
   id: z.string().optional(),
   name: z.string().nullish(),
   constant: z.any().optional(),
-  children: z.array(z.lazy(() => astNodeSchema)).optional(),
+  children: protectArray(z.array(z.lazy(() => astNodeSchema))).optional(),
   namedChildren: z
     .record(
       z.string(),
@@ -33,12 +34,12 @@ const workflowConditionSchema = z
       }),
       z.object({
         function: z.literal('outcome_in'),
-        params: z.array(z.enum(['approve', 'review', 'decline', 'block_and_review', 'unknown'])),
+        params: protectArray(z.array(z.enum(['approve', 'review', 'decline', 'block_and_review', 'unknown']))),
       }),
       z.object({
         function: z.literal('rule_hit'),
         params: z.object({
-          ruleIds: z.array(z.string()),
+          ruleIds: protectArray(z.array(z.string())),
         }),
       }),
       z.object({
@@ -65,7 +66,7 @@ const workflowActionSchema = z
           inboxId: z.string(),
           anyInbox: z.boolean().optional(),
           titleTemplate: astNodeSchema.optional(),
-          tagIds: z.array(z.string()).optional(),
+          tagIds: protectArray(z.array(z.string())).optional(),
         }),
       }),
     ]),
@@ -75,8 +76,8 @@ export const ruleSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Rule name is required'),
   fallthrough: z.boolean(),
-  conditions: z.array(workflowConditionSchema),
-  actions: z.array(workflowActionSchema).length(1, 'Exactly one action is required'),
+  conditions: protectArray(z.array(workflowConditionSchema)),
+  actions: protectArray(z.array(workflowActionSchema).length(1, 'Exactly one action is required')),
 });
 export function validateUpdateWorkflowRuleRequest(data: unknown): Rule {
   return ruleSchema.parse(data) as Rule;

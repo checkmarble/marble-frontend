@@ -1,6 +1,7 @@
 import { CASE_EVENT_CATEGORIES, DEFAULT_CASE_EVENT_CATEGORIES_FILTER } from '@app-builder/constants/cases';
 import { getDateFnsLocale } from '@app-builder/services/i18n/i18n-config';
 import { useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { endOfDay, startOfDay } from 'date-fns';
 import { diff, toggle } from 'radash';
 import { type ComponentProps, type Dispatch, type SetStateAction, useMemo } from 'react';
@@ -12,7 +13,7 @@ import { z } from 'zod/v4';
 import { casesI18n } from '../../cases-i18n';
 
 export const caseEventsFilterSchema = z.object({
-  types: z.array(z.enum(CASE_EVENT_CATEGORIES)),
+  types: protectArray(z.array(z.enum(CASE_EVENT_CATEGORIES))),
   startDate: z.iso.datetime().optional(),
   endDate: z.iso.datetime().optional(),
 });

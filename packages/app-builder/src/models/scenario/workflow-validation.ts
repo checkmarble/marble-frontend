@@ -1,3 +1,4 @@
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { type OutcomeDto } from 'marble-api';
 import { z } from 'zod/v4';
 import { undefinedAstNodeName } from '../astNode/ast-node';
@@ -13,13 +14,13 @@ const baseNodeSchema = z.object({
   id: z.string(),
   name: z.string().nullable(),
   constant: z.unknown().optional(),
-  children: z.array(z.unknown()).optional(),
+  children: protectArray(z.array(z.unknown())).optional(),
   namedChildren: z.record(z.string(), z.unknown()).optional(),
 });
 
 // Create a recursive schema for complete AST node validation
 const nodeSchema: z.ZodType<any> = baseNodeSchema.extend({
-  children: z.lazy(() => z.array(nodeSchema)).optional(),
+  children: z.lazy(() => protectArray(z.array(nodeSchema))).optional(),
   namedChildren: z.lazy(() => z.record(z.string(), nodeSchema)).optional(),
 });
 
@@ -32,19 +33,21 @@ const binaryExpressionSchema = z.object({
       error: 'A valid operator must be selected',
     }),
   constant: z.undefined(),
-  children: z
-    .array(
-      z.looseObject({
-        id: z.string(),
-        name: z
-          .string()
-          .nullable()
-          .refine((name) => name !== undefinedAstNodeName, {
-            error: 'Operand cannot be empty',
-          }),
-      }),
-    )
-    .length(2, 'Binary expression must have exactly 2 operands'),
+  children: protectArray(
+    z
+      .array(
+        z.looseObject({
+          id: z.string(),
+          name: z
+            .string()
+            .nullable()
+            .refine((name) => name !== undefinedAstNodeName, {
+              error: 'Operand cannot be empty',
+            }),
+        }),
+      )
+      .length(2, 'Binary expression must have exactly 2 operands'),
+  ),
   namedChildren: z.record(z.string(), z.unknown()).optional(),
 });
 
@@ -59,13 +62,13 @@ const neverConditionSchema = z.object({
 
 const outcomeInConditionSchema = z.object({
   function: z.literal('outcome_in'),
-  params: z.array(outcomeSchema).min(1, 'At least one outcome must be selected'),
+  params: protectArray(z.array(outcomeSchema).min(1, 'At least one outcome must be selected')),
 });
 
 const ruleHitConditionSchema = z.object({
   function: z.literal('rule_hit'),
   params: z.object({
-    ruleIds: z.array(z.string()).min(1, 'At least one rule must be selected'),
+    ruleIds: protectArray(z.array(z.string()).min(1, 'At least one rule must be selected')),
   }),
 });
 
@@ -90,21 +93,25 @@ export const ruleValidationSchema = z.looseObject({
   id: z.string(),
   name: z.string().min(1, ''),
   fallthrough: z.boolean(),
-  conditions: z.array(
-    z.looseObject({
-      id: z.string(),
-      function: z.string(),
-    }),
-  ),
-  // .min(1, t('workflows:condition.error.atLeastOneCondition')),
-  actions: z
-    .array(
+  conditions: protectArray(
+    z.array(
       z.looseObject({
         id: z.string(),
-        action: z.string(),
+        function: z.string(),
       }),
-    )
-    .length(1, 'An action is required'),
+    ),
+  ),
+  // .min(1, t('workflows:condition.error.atLeastOneCondition')),
+  actions: protectArray(
+    z
+      .array(
+        z.looseObject({
+          id: z.string(),
+          action: z.string(),
+        }),
+      )
+      .length(1, 'An action is required'),
+  ),
 }); // Allow additional fields that might exist in the actual data
 
 // Helper function to validate payload_evaluates conditions

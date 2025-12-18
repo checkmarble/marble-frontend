@@ -1,4 +1,5 @@
 import { getRoute } from '@app-builder/utils/routes';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { serialize } from 'object-to-formdata';
 import z from 'zod/v4';
@@ -7,7 +8,7 @@ export const addCommentPayloadSchema = z
   .object({
     caseId: z.uuid().nonempty(),
     comment: z.string(),
-    files: z.array(z.instanceof(File)),
+    files: protectArray(z.array(z.instanceof(File))),
   })
   .refine((data) => data.comment.trim() !== '' || data.files.length > 0);
 

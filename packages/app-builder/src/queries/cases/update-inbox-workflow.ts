@@ -1,15 +1,18 @@
 import { getRoute } from '@app-builder/utils/routes';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
 export const updateInboxWorkflowPayloadSchema = z.object({
-  updates: z.array(
-    z.object({
-      inboxId: z.uuid(),
-      caseReviewManual: z.boolean(),
-      caseReviewOnCaseCreated: z.boolean(),
-      caseReviewOnEscalate: z.boolean(),
-    }),
+  updates: protectArray(
+    z.array(
+      z.object({
+        inboxId: z.uuid(),
+        caseReviewManual: z.boolean(),
+        caseReviewOnCaseCreated: z.boolean(),
+        caseReviewOnEscalate: z.boolean(),
+      }),
+    ),
   ),
 });
 

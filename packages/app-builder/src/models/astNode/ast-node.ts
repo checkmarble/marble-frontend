@@ -1,3 +1,4 @@
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { type NodeDto } from 'marble-api';
 import * as R from 'remeda';
 import { v7 as uuidv7 } from 'uuid';
@@ -13,7 +14,10 @@ export type ConstantType =
   | { [key: string]: ConstantType };
 
 export const constantTypeSchema: z.ZodType<ConstantType> = baseConstantTypeSchema.or(
-  z.union([z.lazy(() => z.array(constantTypeSchema)), z.lazy(() => z.record(z.string(), constantTypeSchema))]),
+  z.union([
+    z.lazy(() => protectArray(z.array(constantTypeSchema))),
+    z.lazy(() => z.record(z.string(), constantTypeSchema)),
+  ]),
 );
 
 const baseAstNodeSchema = z.object({
@@ -50,7 +54,7 @@ export type CheckNodeId<T extends AstNode, N> = N extends AstNode
     : never;
 
 export const astNodeSchema: z.ZodType<AstNode> = baseAstNodeSchema.extend({
-  children: z.lazy(() => z.array(astNodeSchema)),
+  children: z.lazy(() => protectArray(z.array(astNodeSchema))),
   namedChildren: z.lazy(() => z.record(z.string(), astNodeSchema)),
 });
 

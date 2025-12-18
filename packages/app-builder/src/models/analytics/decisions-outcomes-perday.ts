@@ -1,3 +1,4 @@
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import {
   addDays,
   addMonths,
@@ -74,7 +75,7 @@ export interface DecisionOutcomesPerPeriod {
 export const triggerFilter = z.object({
   name: z.string(),
   op: z.enum(['=', '!=', '>', '>=', '<', '<=', 'in']),
-  value: z.array(z.union([z.string(), z.number(), z.boolean()])),
+  value: protectArray(z.array(z.union([z.string(), z.number(), z.boolean()]))),
   unavailable: z.boolean(),
 });
 
