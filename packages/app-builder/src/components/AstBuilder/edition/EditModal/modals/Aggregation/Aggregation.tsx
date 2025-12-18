@@ -6,7 +6,7 @@ import { NewConstantAstNode } from '@app-builder/models/astNode/constant';
 import {
   aggregatorHasParams,
   aggregatorOperators,
-  isHeavyAggregator,
+  isPerformanceHeavyAggregator,
   isRestrictedAggregator,
 } from '@app-builder/models/modale-operators';
 import { aggregationDocHref } from '@app-builder/services/documentation-href';
@@ -25,13 +25,13 @@ import { EditFilters } from './EditFilters';
 export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   const { t } = useTranslation(['scenarios']);
   const dataModel = AstBuilderDataSharpFactory.select((s) => s.data.dataModel);
-  const hasAccess = AstBuilderDataSharpFactory.select((s) => s.data.hasAccess);
+  const hasValidLicense = AstBuilderDataSharpFactory.select((s) => s.data.hasValidLicense);
   const nodeSharp = AstBuilderNodeSharpFactory.useSharp();
   const node = nodeSharp.select((s) => s.node as AggregationAstNode);
 
   const currentAggregator = node.namedChildren.aggregator.constant;
   const isCurrentRestricted = isRestrictedAggregator(currentAggregator);
-  const isCurrentHeavy = isHeavyAggregator(currentAggregator);
+  const isCurrentPerformanceHeavy = isPerformanceHeavyAggregator(currentAggregator);
 
   const aggregatedField = computed(() => {
     const tableName = node.namedChildren.tableName.constant;
@@ -50,7 +50,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
   return (
     <OperandEditModalContainer
       {...props}
-      saveDisabled={isCurrentRestricted && !hasAccess}
+      saveDisabled={isCurrentRestricted && !hasValidLicense}
       title={
         <div className="flex flex-row items-center justify-center gap-3">
           {t('scenarios:edit_aggregation.title')}
@@ -109,7 +109,7 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
                 node.namedChildren.aggregator.constant = aggregator;
                 nodeSharp.actions.validate();
               }}
-              featureAccess={hasAccess ? undefined : 'restricted'}
+              featureAccess={hasValidLicense ? undefined : 'restricted'}
               isOperatorRestricted={isRestrictedAggregator}
               // validationStatus={aggregation.errors.aggregator.length > 0 ? 'error' : 'valid'}
             />
@@ -151,12 +151,12 @@ export function EditAggregation(props: Omit<OperandEditModalProps, 'node'>) {
             <EditionEvaluationErrors direct id={node.namedChildren.fieldName.id} />
           </div>
         </div>
-        {isCurrentRestricted && !hasAccess ? (
+        {isCurrentRestricted && !hasValidLicense ? (
           <Callout icon="lock" variant="outlined" color="red">
             {t('scenarios:edit_aggregation.premium_callout')}
           </Callout>
         ) : null}
-        {isCurrentHeavy && hasAccess ? (
+        {isCurrentPerformanceHeavy && hasValidLicense ? (
           <Callout icon="warning" variant="outlined" color="yellow">
             {t('scenarios:edit_aggregation.performance_warning')}
           </Callout>

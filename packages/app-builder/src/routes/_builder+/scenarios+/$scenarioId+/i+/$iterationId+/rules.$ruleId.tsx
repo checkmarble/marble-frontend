@@ -103,7 +103,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     dataModel,
     customLists,
     isAiRuleDescriptionEnabled: appConfig.isManagedMarble,
-    hasAccess: hasAnyEntitlement(entitlements),
+    hasValidLicense: hasAnyEntitlement(entitlements),
   };
 }
 
@@ -175,7 +175,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function RuleDetail() {
-  const { databaseAccessors, payloadAccessors, dataModel, customLists, isAiRuleDescriptionEnabled, hasAccess } =
+  const { databaseAccessors, payloadAccessors, dataModel, customLists, isAiRuleDescriptionEnabled, hasValidLicense } =
     useLoaderData<typeof loader>();
 
   const { t } = useTranslation(handle.i18n);
@@ -248,7 +248,7 @@ export default function RuleDetail() {
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
-    hasAccess,
+    hasValidLicense,
   };
 
   //TODO Add errors from the servers if they are present

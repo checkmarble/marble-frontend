@@ -22,12 +22,12 @@ export function MenuOption({ option, value, onSelect, rightElement, highlightSea
   const { t } = useTranslation(['common']);
   const searchValue = MenuCommand.State.useSharp().value.search;
   const leftIcon = option.icon ?? getDataTypeIcon(option.dataType);
-  const hasAccess = AstBuilderDataSharpFactory.select((s) => s.data.hasAccess);
+  const hasValidLicense = AstBuilderDataSharpFactory.select((s) => s.data.hasValidLicense);
 
   // Check if this is a restricted aggregator option
   const isRestrictedOption =
     isAggregation(option.astNode) && isRestrictedAggregator(option.astNode.namedChildren.aggregator.constant);
-  const showNudge = isRestrictedOption && !hasAccess;
+  const showNudge = isRestrictedOption && !hasValidLicense;
 
   return (
     <MenuCommand.Item className="group" value={value} onSelect={() => onSelect(injectIdToNode(option.astNode))}>
