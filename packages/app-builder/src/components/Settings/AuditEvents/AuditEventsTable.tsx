@@ -116,7 +116,7 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
   );
 
   return (
-    <Table.Container {...getContainerProps()} className="max-h-[600px]">
+    <Table.Container {...getContainerProps()}>
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => (
