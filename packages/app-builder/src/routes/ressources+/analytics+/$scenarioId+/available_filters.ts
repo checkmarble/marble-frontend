@@ -6,7 +6,7 @@ import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { z } from 'zod/v4';
 
 const urlParamsSchema = z.object({
-  scenarioId: z.uuidv4(),
+  scenarioId: z.uuid(),
 });
 
 const queryParamsSchema = z.object({

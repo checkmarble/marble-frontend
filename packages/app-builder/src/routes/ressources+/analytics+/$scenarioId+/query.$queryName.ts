@@ -6,7 +6,7 @@ import invariant from 'tiny-invariant';
 import { z } from 'zod';
 
 const urlParamsSchema = z.object({
-  scenarioId: z.uuidv4(),
+  scenarioId: z.uuid(),
   queryName: z.string(),
 });
 
