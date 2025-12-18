@@ -31,6 +31,7 @@ export interface InputProps extends React.ComponentPropsWithoutRef<'input'> {
   endAdornment?: IconName;
   adornmentClassName?: string;
   onAdornmentClick?: () => void;
+  enablePasswordManagers?: boolean;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
@@ -41,6 +42,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     borderColor = 'greyfigma-90',
     adornmentClassName,
     onAdornmentClick,
+    enablePasswordManagers,
     ...props
   },
   ref,
@@ -50,6 +52,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       <input
         ref={ref}
         className={clsx(input({ borderColor }), startAdornment && 'ps-10', endAdornment && 'pe-10')}
+        {...(!enablePasswordManagers && {
+          'data-1p-ignore': 'true', // 1password
+          'data-lpignore': 'true', // lastpass
+          'data-bwignore': 'true', // bitwarden
+          'data-form-type': 'other', // used by dashlane, tells it to ignore this field for password saving
+        })}
         {...props}
       />
       {/* Order matter, for peer to work */}
@@ -58,6 +66,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           className={clsx(
             'absolute flex items-center',
             'text-grey-secondary peer-focus:text-grey-primary dark:text-grey-secondary dark:peer-focus:text-grey-primary',
+            'placeholder:text-grey-placeholder',
             'inset-y-0 start-0 ps-2',
             { 'cursor-pointer': onAdornmentClick, 'pointer-events-none': !onAdornmentClick },
           )}

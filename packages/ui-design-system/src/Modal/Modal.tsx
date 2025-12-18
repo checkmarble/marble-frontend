@@ -44,10 +44,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
 
 function ModalTitle(props: Dialog.DialogTitleProps) {
   return (
-    <Dialog.Title
-      className="border-b-grey-border bg-surface-row text-m rounded-t-lg border-b p-6 text-center font-bold"
-      {...props}
-    />
+    <Dialog.Title className="mx-v2-md mt-v2-md h-8 text-h2 font-semibold flex gap-v2-sm items-center" {...props} />
   );
 }
 
