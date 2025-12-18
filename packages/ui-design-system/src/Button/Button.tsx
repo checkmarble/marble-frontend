@@ -110,7 +110,7 @@ export const CtaV2ClassName = cva(
         variant: 'primary',
         appearance: 'stroked',
         class:
-          'bg-white border-purple-65 text-purple-65 hover:bg-purple-96 hover:border-purple-60 disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-80',
+          'bg-transparent border-purple-65 dark:border-purple-[#ADA7FD] text-purple-65 dark:hover:bg-[#CBC8FF] dark:hover:text-white light:hover:bg-purple-96 hover:border-purple-60 disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-80',
       },
       // Link appearance
       {
