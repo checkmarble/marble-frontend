@@ -29,10 +29,10 @@ export function isRestrictedAggregator(aggregator: AggregatorOperator): boolean 
   return (restrictedAggregators as ReadonlyArray<AggregatorOperator>).includes(aggregator);
 }
 
-export const heavyAggregators = ['PCTILE', 'MEDIAN'] as const;
+export const performanceHeavyAggregators = ['PCTILE', 'MEDIAN'] as const;
 
-export function isHeavyAggregator(aggregator: AggregatorOperator): boolean {
-  return (heavyAggregators as ReadonlyArray<AggregatorOperator>).includes(aggregator);
+export function isPerformanceHeavyAggregator(aggregator: AggregatorOperator): boolean {
+  return (performanceHeavyAggregators as ReadonlyArray<AggregatorOperator>).includes(aggregator);
 }
 
 export const timeAddOperators = ['+', '-'] as const;

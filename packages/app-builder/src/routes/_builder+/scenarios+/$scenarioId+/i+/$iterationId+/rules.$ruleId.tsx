@@ -247,7 +247,7 @@ export default function RuleDetail() {
     dataModel,
     customLists,
     triggerObjectType: scenario.triggerObjectType,
-    hasAccess,
+    hasValidLicense,
   };
 
   //TODO Add errors from the servers if they are present
