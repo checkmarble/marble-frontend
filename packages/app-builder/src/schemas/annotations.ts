@@ -1,3 +1,4 @@
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { z } from 'zod/v4';
 
 export const baseCreateAnnotationSchema = z.object({
@@ -11,8 +12,8 @@ export const createTagAnnotationSchema = z.intersection(
   z.object({
     type: z.literal('tag'),
     payload: z.object({
-      addedTags: z.array(z.uuid()).optional(),
-      removedAnnotations: z.array(z.uuid()).optional(),
+      addedTags: protectArray(z.array(z.uuid())).optional(),
+      removedAnnotations: protectArray(z.array(z.uuid())).optional(),
     }),
   }),
 );
@@ -22,7 +23,7 @@ export const tagAnnotationFormSchema = z.intersection(
   z.object({
     type: z.literal('tag'),
     payload: z.object({
-      tags: z.array(z.string()),
+      tags: protectArray(z.array(z.string())),
     }),
   }),
 );
@@ -32,7 +33,7 @@ export const createFileAnnotationSchema = z.intersection(
   z.object({
     type: z.literal('file'),
     payload: z.object({
-      files: z.array(z.instanceof(File)).min(1),
+      files: protectArray(z.array(z.instanceof(File)).min(1)),
     }),
   }),
 );

@@ -1,7 +1,7 @@
 import { Spinner } from '@app-builder/components/Spinner';
 import { CaseStatusByDateResponse } from '@app-builder/models/analytics/cases-status-by-date';
 import { useCaseStatusByDate } from '@app-builder/queries/cases/case-status-by-date';
-import { useFormatLanguage } from '@app-builder/utils/format';
+import { useFormatDateTime, useFormatLanguage } from '@app-builder/utils/format';
 import { ResponsiveBar } from '@nivo/bar';
 import { Fragment, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import { getYAxisTicksValues, graphCaseStatuses, graphStatusesColors } from '../
 export const CaseByDateGraph = () => {
   const { t } = useTranslation(['cases', 'common']);
   const caseStatusByDateQuery = useCaseStatusByDate();
+  const formatDateTime = useFormatDateTime();
   const language = useFormatLanguage();
   const [hovering, setHovering] = useState<string | null>(null);
 
@@ -66,8 +67,7 @@ export const CaseByDateGraph = () => {
                         .filter((_, i, arr) => i === 0 || i === arr.length - 1 || i === Math.ceil(arr.length / 2))
                         .map((d) => d.date),
                       format: (value: string) => {
-                        const date = new Date(value);
-                        return date.toLocaleDateString(language, {
+                        return formatDateTime(value, {
                           month: 'short',
                           day: 'numeric',
                         });
@@ -108,9 +108,9 @@ export const CaseByDateGraph = () => {
                         translateY: 54,
                       },
                     ]}
-                    tooltip={({ id, value, data }) => (
+                    tooltip={({ data }) => (
                       <div className="flex flex-col gap-v2-sm w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
-                        <div className="text-s text-grey-60">{data.date}</div>
+                        <div className="text-s text-grey-60">{formatDateTime(data.date, { dateStyle: 'medium' })}</div>
                         <div className="grid grid-cols-[calc(var(--spacing)_*_10)_1fr] gap-v2-xs">
                           {graphCaseStatuses.map((caseStatus) => (
                             <Fragment key={caseStatus}>

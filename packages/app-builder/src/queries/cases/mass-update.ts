@@ -1,4 +1,5 @@
 import { getRoute } from '@app-builder/utils/routes';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
@@ -6,13 +7,13 @@ export const massUpdateCasesPayloadSchema = z.union([
   z
     .object({
       action: z.enum(['close', 'reopen']),
-      caseIds: z.array(z.string()),
+      caseIds: protectArray(z.array(z.string())),
     })
     .transform((data) => ({ case_ids: data.caseIds, action: data.action })),
   z
     .object({
       action: z.enum(['assign']),
-      caseIds: z.array(z.string()),
+      caseIds: protectArray(z.array(z.string())),
       assigneeId: z.string(),
     })
     .transform((data) => ({
@@ -23,7 +24,7 @@ export const massUpdateCasesPayloadSchema = z.union([
   z
     .object({
       action: z.enum(['move_to_inbox']),
-      caseIds: z.array(z.string()),
+      caseIds: protectArray(z.array(z.string())),
       inboxId: z.string(),
     })
     .transform((data) => ({

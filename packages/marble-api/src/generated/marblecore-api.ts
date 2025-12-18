@@ -4512,7 +4512,9 @@ export function listIdentifiers(scenarioId: string, opts?: Oazapfts.RequestOpts)
 /**
  * List audit events
  */
-export function listAuditEvents($from: string, to: string, { userId, apiKeyId, table, entityId, limit, after }: {
+export function listAuditEvents({ $from, to, userId, apiKeyId, table, entityId, limit, after }: {
+    $from?: string;
+    to?: string;
     userId?: string;
     apiKeyId?: string;
     table?: string;

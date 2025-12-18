@@ -12,6 +12,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { handleSubmit } from '@app-builder/utils/form';
 import { reorder } from '@app-builder/utils/list';
 import { getRoute } from '@app-builder/utils/routes';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { DragDropContext, Draggable, Droppable, type DropResult } from '@hello-pangea/dnd';
 import { useCallbackRef } from '@marble/shared';
 import { type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
@@ -34,8 +35,8 @@ function createTableOptionSchema(dataModel: DataModel) {
           [
             table.id,
             z.object({
-              displayedFields: z.array(z.string()).default([]),
-              fieldOrder: z.array(z.string()),
+              displayedFields: protectArray(z.array(z.string())).default([]),
+              fieldOrder: protectArray(z.array(z.string())),
             }),
           ] as const,
       ),

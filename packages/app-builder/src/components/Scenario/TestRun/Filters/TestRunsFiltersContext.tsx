@@ -1,6 +1,7 @@
 import { testRunStatuses } from '@app-builder/models/testrun';
 import { createSimpleContext } from '@app-builder/utils/create-context';
 import { useCallbackRef } from '@app-builder/utils/hooks';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { useCallback, useMemo } from 'react';
 import { FormProvider, useController, useForm, useFormContext } from 'react-hook-form';
 import * as R from 'remeda';
@@ -9,11 +10,11 @@ import * as z from 'zod/v4';
 import { type TestRunFilterName, testRunsFilterNames } from './filters';
 
 export const testRunsFiltersSchema = z.object({
-  statuses: z.array(z.enum(testRunStatuses)).optional(),
+  statuses: protectArray(z.array(z.enum(testRunStatuses))).optional(),
   startedAfter: z.date().optional(),
-  creators: z.array(z.string()).optional(),
-  ref_versions: z.array(z.string()).optional(),
-  test_versions: z.array(z.string()).optional(),
+  creators: protectArray(z.array(z.string())).optional(),
+  ref_versions: protectArray(z.array(z.string())).optional(),
+  test_versions: protectArray(z.array(z.string())).optional(),
 });
 
 export type TestRunsFilters = z.infer<typeof testRunsFiltersSchema>;

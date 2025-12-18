@@ -1,3 +1,4 @@
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { uniqueBy } from '@app-builder/utils/schema/helpers/unique-array';
 import { z } from 'zod';
 
@@ -70,13 +71,13 @@ export const caseReviewSettingSchema = z.object({
 export const kycEnrichmentSettingDtoSchema = z.object({
   enabled: z.boolean(),
   custom_instructions: z.string().optional().nullable(),
-  domain_filter: z.array(z.string()),
+  domain_filter: protectArray(z.array(z.string())),
 });
 
 export const kycEnrichmentSettingSchema = z.object({
   enabled: z.boolean(),
   customInstructions: z.string(),
-  domainsFilter: uniqueBy(z.array(httpUrlSchema), (s) => s).max(10),
+  domainsFilter: protectArray(uniqueBy(z.array(httpUrlSchema), (s) => s).max(10)),
 });
 
 export const aiSettingSchema = z.object({

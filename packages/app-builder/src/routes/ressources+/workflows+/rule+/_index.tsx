@@ -1,5 +1,6 @@
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute } from '@app-builder/utils/routes';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { ActionFunctionArgs } from '@remix-run/node';
 import { z } from 'zod/v4';
 
@@ -7,8 +8,8 @@ const schema = z.object({
   scenario_id: z.uuid(),
   name: z.string().min(1),
   fallthrough: z.boolean(),
-  conditions: z.array(z.any()),
-  actions: z.array(z.any()),
+  conditions: protectArray(z.array(z.any())),
+  actions: protectArray(z.array(z.any())),
 });
 
 export async function action({ request }: ActionFunctionArgs) {

@@ -2,6 +2,7 @@ import { useAgnosticNavigation } from '@app-builder/contexts/AgnosticNavigationC
 import { Case, caseStatuses } from '@app-builder/models/cases';
 import { PaginatedResponse } from '@app-builder/models/pagination';
 import { getRoute } from '@app-builder/utils/routes';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import QueryString from 'qs';
 import { Temporal } from 'temporal-polyfill';
@@ -30,7 +31,7 @@ const stringableBooleanSchema = z.union([z.boolean(), z.enum(['true', 'false']).
 
 export const filtersSchema = z.object({
   name: z.string().optional(),
-  statuses: z.array(z.enum(caseStatuses)).optional(),
+  statuses: protectArray(z.array(z.enum(caseStatuses))).optional(),
   includeSnoozed: stringableBooleanSchema.optional(),
   excludeAssigned: stringableBooleanSchema.optional(),
   assignee: z.string().optional(),

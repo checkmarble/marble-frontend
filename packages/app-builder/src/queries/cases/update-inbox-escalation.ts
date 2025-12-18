@@ -1,13 +1,16 @@
 import { getRoute } from '@app-builder/utils/routes';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
 export const updateInboxEscalationPayloadSchema = z.object({
-  updates: z.array(
-    z.object({
-      inboxId: z.uuid(),
-      escalationInboxId: z.union([z.uuid(), z.null()]),
-    }),
+  updates: protectArray(
+    z.array(
+      z.object({
+        inboxId: z.uuid(),
+        escalationInboxId: z.union([z.uuid(), z.null()]),
+      }),
+    ),
   ),
 });
 

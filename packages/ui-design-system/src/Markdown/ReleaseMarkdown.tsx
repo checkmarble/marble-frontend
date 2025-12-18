@@ -3,6 +3,23 @@ import { type Components } from 'react-markdown';
 import { Icon } from 'ui-icons';
 import { Markdown } from './Markdown';
 
+// GitHub callout to emoji mapping
+const GITHUB_CALLOUT_EMOJI: Record<string, string> = {
+  NOTE: 'ℹ️',
+  TIP: '💡',
+  IMPORTANT: '❗',
+  WARNING: '⚠️',
+  CAUTION: '🛑',
+};
+
+function preprocessGitHubCallouts(markdown: string): string {
+  // Match GitHub-style callouts: > [!TYPE] (with optional content after)
+  // and replace with emoji
+  return markdown.replace(/\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/gi, (_, type: string) => {
+    return GITHUB_CALLOUT_EMOJI[type.toUpperCase()] ?? '';
+  });
+}
+
 const releaseMarkdownComponents: Components = {
   a: ({ children, href, title }) => (
     <TooltipPrimitive.Root delayDuration={300}>
@@ -64,5 +81,6 @@ interface ReleaseMarkdownProps {
 }
 
 export function ReleaseMarkdown({ children }: ReleaseMarkdownProps) {
-  return <Markdown components={releaseMarkdownComponents}>{children}</Markdown>;
+  const processedMarkdown = preprocessGitHubCallouts(children);
+  return <Markdown components={releaseMarkdownComponents}>{processedMarkdown}</Markdown>;
 }

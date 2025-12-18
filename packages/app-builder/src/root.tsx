@@ -139,7 +139,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <AgnosticNavigationContext.Provider value={navigate}>
             <AuthenticityTokenProvider token={loaderData?.['csrf'] ?? ''}>
               <FormatContext.Provider
-                value={{ locale: loaderData?.locale ?? 'en', timezone: loaderData?.timezone ?? 'UTC' }}
+                value={{ locale: loaderData?.locale ?? 'en-GB', timezone: loaderData?.timezone ?? 'UTC' }}
               >
                 <Tooltip.Provider>{children}</Tooltip.Provider>
               </FormatContext.Provider>

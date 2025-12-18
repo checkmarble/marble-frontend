@@ -39,8 +39,8 @@ export function adaptAuditEvent(dto: AuditEventDto): AuditEvent {
 }
 
 export interface ListAuditEventsFilters {
-  from: string;
-  to: string;
+  from?: string;
+  to?: string;
   userId?: string;
   apiKeyId?: string;
   table?: string;

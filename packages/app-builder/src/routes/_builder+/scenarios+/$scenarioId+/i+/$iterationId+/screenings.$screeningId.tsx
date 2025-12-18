@@ -28,6 +28,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationDetails } from '@app-builder/services/organization/organization-detail';
 import { getFieldErrors, handleSubmit } from '@app-builder/utils/form';
 import { getRoute } from '@app-builder/utils/routes';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
@@ -124,7 +125,7 @@ const editScreeningFormSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().optional(),
   ruleGroup: z.string().optional(),
-  datasets: z.array(z.string()),
+  datasets: protectArray(z.array(z.string())),
   threshold: z.number().optional(),
   forcedOutcome: z.enum(['review', 'decline', 'block_and_review']),
   triggerRule: z.any(),

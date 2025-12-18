@@ -1,11 +1,12 @@
 import { eventTypes } from '@app-builder/models/webhook';
 import { getRoute } from '@app-builder/utils/routes';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { useMutation } from '@tanstack/react-query';
 import z from 'zod/v4';
 
 export const updateWebhookPayloadSchema = z.object({
   id: z.string().nonempty(),
-  eventTypes: z.array(z.enum(eventTypes)),
+  eventTypes: protectArray(z.array(z.enum(eventTypes))),
   httpTimeout: z.int().positive().optional(),
 });
 

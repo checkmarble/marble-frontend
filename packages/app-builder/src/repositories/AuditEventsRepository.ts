@@ -12,7 +12,9 @@ export interface AuditEventsRepository {
 export function makeGetAuditEventsRepository() {
   return (marbleCoreApiClient: MarbleCoreApi): AuditEventsRepository => ({
     listAuditEvents: async (filters: ListAuditEventsFilters) => {
-      const response = await marbleCoreApiClient.listAuditEvents(filters.from, filters.to, {
+      const response = await marbleCoreApiClient.listAuditEvents({
+        $from: filters.from,
+        to: filters.to,
         userId: filters.userId,
         apiKeyId: filters.apiKeyId,
         table: filters.table,

@@ -492,14 +492,12 @@
       - name: from
         description: Date range start
         in: query
-        required: true
         schema:
           type: string
           format: date-time
       - name: to
         description: Date range end
         in: query
-        required: true
         schema:
           type: string
           format: date-time

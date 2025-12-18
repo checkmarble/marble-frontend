@@ -1,10 +1,11 @@
 import { getRoute } from '@app-builder/utils/routes';
+import { protectArray } from '@app-builder/utils/schema/helpers/array';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { z } from 'zod/v4';
 
 export const editTagsPayloadSchema = z.object({
   caseId: z.string(),
-  tagIds: z.array(z.string()),
+  tagIds: protectArray(z.array(z.string())),
 });
 
 export type EditTagsPayload = z.infer<typeof editTagsPayloadSchema>;
