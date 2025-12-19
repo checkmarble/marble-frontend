@@ -3043,9 +3043,7 @@ export function generateAiDescriptionForAstExpression(scenarioId: string, body: 
 /**
  * List iterations with full body
  */
-export function listScenarioIterations({ scenarioId }: {
-    scenarioId?: string;
-} = {}, opts?: Oazapfts.RequestOpts) {
+export function listScenarioIterations(scenarioId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScenarioIterationWithBodyDto[];
