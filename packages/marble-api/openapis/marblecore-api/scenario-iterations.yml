@@ -2,8 +2,8 @@
   get:
     tags:
       - Scenario Iterations
-    summary: List iterations
-    description: List iterations corresponding to filters
+    summary: List iterations with full body
+    description: List iterations corresponding to filters with complete body data (rules, trigger, etc.)
     operationId: listScenarioIterations
     security:
       - bearerAuth: []
@@ -52,6 +52,38 @@
           application/json:
             schema:
               $ref: '#/components/schemas/ScenarioIterationWithBodyDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-iterations/metadata:
+  get:
+    tags:
+      - Scenario Iterations
+    summary: List iterations metadata
+    description: List iterations metadata without body data. Optimized endpoint for listing and navigation views.
+    operationId: listScenarioIterationsMetadata
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenario_id
+        description: ID of the scenario returned iterations should be linked to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Scenario iterations metadata (without body)
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScenarioIterationDto'
       '401':
         $ref: 'components.yml#/responses/401'
       '403':

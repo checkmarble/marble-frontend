@@ -11,7 +11,6 @@ import {
 import { testRunsFilterNames } from '@app-builder/components/Scenario/TestRun/Filters/filters';
 import { TestRunSelector } from '@app-builder/components/Scenario/TestRun/TestRunSelector';
 import { isForbiddenHttpError, isNotFoundHttpError, type User } from '@app-builder/models';
-import { adaptScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
@@ -25,7 +24,7 @@ import { allPass, filter, mapToObj, pick } from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { useCurrentScenario, useScenarioIterations } from '../_layout';
+import { useCurrentScenario, useScenarioIterationsSummary } from '../_layout';
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
@@ -50,17 +49,13 @@ export default function TestRuns() {
   const { t } = useTranslation(['scenarios']);
   const { runs } = useLoaderData<typeof loader>();
   const currentScenario = useCurrentScenario();
-  const scenarioIterations = useScenarioIterations();
+  const scenarioIterations = useScenarioIterationsSummary();
   const { orgUsers } = useOrganizationUsers();
   const [filters, setFilters] = useState<TestRunsFilters>({});
 
   const iterations = useMemo(
-    () =>
-      mapToObj(scenarioIterations, (i) => [
-        i.id,
-        pick(adaptScenarioIterationWithType(i, currentScenario.liveVersionId), ['version', 'type']),
-      ]),
-    [scenarioIterations, currentScenario],
+    () => mapToObj(scenarioIterations, (i) => [i.id, pick(i, ['version', 'type'])]),
+    [scenarioIterations],
   );
 
   const atLeastOneActiveTestRun = runs.some((run) => run.status === 'up');

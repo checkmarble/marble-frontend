@@ -35,10 +35,14 @@ export interface ScenarioIterationWithType extends ScenarioIteration {
   type: 'draft' | 'version' | 'live version';
 }
 
-export function adaptScenarioIterationWithType(
-  scenarioIteration: ScenarioIteration,
+export interface ScenarioIterationSummaryWithType extends ScenarioIterationSummary {
+  type: 'draft' | 'version' | 'live version';
+}
+
+export function adaptScenarioIterationSummaryWithType(
+  scenarioIteration: ScenarioIterationSummary,
   liveVersionId?: string,
-): ScenarioIterationWithType {
+): ScenarioIterationSummaryWithType {
   return {
     ...scenarioIteration,
     type: scenarioIteration.id === liveVersionId ? 'live version' : scenarioIteration.version ? 'version' : 'draft',
