@@ -6,7 +6,7 @@ import {
   useActivateIterationMutation,
 } from '@app-builder/queries/scenarios/activate-iteration';
 import { useRuleSnoozesQuery } from '@app-builder/queries/scenarios/rule-snoozes';
-import { useCurrentScenarioIteration } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
+import { useScenarioIterationRulesMetadata } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/i+/$iterationId+/_layout';
 import { handleSubmit } from '@app-builder/utils/form';
 import { useForm } from '@tanstack/react-form';
 import clsx from 'clsx';
@@ -156,7 +156,7 @@ function ActivateScenarioVersionContent({
 
 function RuleSnoozeDetail({ scenarioId, iterationId }: { scenarioId: string; iterationId: string }) {
   const { t } = useTranslation(['common', 'scenarios']);
-  const iteration = useCurrentScenarioIteration();
+  const rulesMetadata = useScenarioIterationRulesMetadata();
   const ruleSnoozesQuery = useRuleSnoozesQuery(scenarioId, iterationId);
 
   if (ruleSnoozesQuery.isPending) return <Spinner className="size-5 shrink-0" />;
@@ -191,7 +191,7 @@ function RuleSnoozeDetail({ scenarioId, iterationId }: { scenarioId: string; ite
       <CollapsibleV2.Content>
         <div className="max-h-40 overflow-y-auto p-1">
           <ul className="list-none">
-            {iteration.rules.map((rule) => {
+            {rulesMetadata.map((rule) => {
               const hasSnoozesActive = ruleSnoozes.find((snooze) => snooze.ruleId === rule.id)?.hasSnoozesActive;
               return (
                 <li key={rule.id} className="flex flex-row">

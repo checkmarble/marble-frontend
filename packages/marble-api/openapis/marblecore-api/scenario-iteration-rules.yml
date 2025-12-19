@@ -2,9 +2,41 @@
   get:
     tags:
       - Scenario Iteration Rules
-    summary: List rules
-    description: List rules using provided filters
+    summary: List rules with full data
+    description: List rules with complete formula AST expressions
     operationId: listScenarioIterationRules
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: scenarioIterationId
+        description: ID of the scenario iteration returned rules should be linked to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: uuid
+    responses:
+      '200':
+        description: Scenario iteration rules with full data
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScenarioIterationRuleDto'
+      '401':
+        $ref: 'components.yml#/responses/401'
+      '403':
+        $ref: 'components.yml#/responses/403'
+      '404':
+        $ref: 'components.yml#/responses/404'
+/scenario-iteration-rules/metadata:
+  get:
+    tags:
+      - Scenario Iteration Rules
+    summary: List rules metadata
+    description: List rules metadata without formula AST expressions. Optimized for list views.
+    operationId: listScenarioIterationRulesMetadata
     security:
       - bearerAuth: []
     parameters:
@@ -17,13 +49,13 @@
           format: uuid
     responses:
       '200':
-        description: Scenario iterations rules corresponding to filters
+        description: Scenario iteration rules metadata (without AST)
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/ScenarioIterationRuleDto'
+                $ref: '#/components/schemas/ScenarioIterationRuleMetadataDto'
       '401':
         $ref: 'components.yml#/responses/401'
       '403':
@@ -194,7 +226,7 @@
 
 components:
   schemas:
-    ScenarioIterationRuleDto:
+    ScenarioIterationRuleMetadataDto:
       type: object
       properties:
         id:
@@ -211,10 +243,6 @@ components:
           type: string
         rule_group:
           type: string
-        formula_ast_expression:
-          nullable: true
-          oneOf:
-            - $ref: 'ast.yml#/components/schemas/NodeDto'
         score_modifier:
           type: integer
         created_at:
@@ -227,9 +255,19 @@ components:
         - name
         - description
         - rule_group
-        - formula_ast_expression
         - score_modifier
         - created_at
+    ScenarioIterationRuleDto:
+      allOf:
+        - $ref: '#/components/schemas/ScenarioIterationRuleMetadataDto'
+        - type: object
+          properties:
+            formula_ast_expression:
+              nullable: true
+              oneOf:
+                - $ref: 'ast.yml#/components/schemas/NodeDto'
+          required:
+            - formula_ast_expression
     CreateScenarioIterationRuleBodyDto:
       type: object
       properties:
