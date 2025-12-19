@@ -130,9 +130,7 @@ export function makeGetScenarioRepository() {
       return adaptScenarioIteration(scenarioIteration);
     },
     listScenarioIterations: async ({ scenarioId }) => {
-      const dtos = await marbleCoreApiClient.listScenarioIterations({
-        scenarioId,
-      });
+      const dtos = await marbleCoreApiClient.listScenarioIterations(scenarioId);
       return dtos.map(adaptScenarioIteration);
     },
     listScenarioIterationsMetadata: async ({ scenarioId }) => {
