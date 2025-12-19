@@ -1,10 +1,14 @@
+import { AstBuilderDataSharpFactory } from '@app-builder/components/AstBuilder/Provider';
 import { Highlight } from '@app-builder/components/Highlight';
+import { Nudge } from '@app-builder/components/Nudge';
 import { type AstNode, getDataTypeIcon, injectIdToNode } from '@app-builder/models';
-import { OperandInfos } from '@ast-builder/OperandInfos';
+import { isAggregation } from '@app-builder/models/astNode/aggregation';
+import { isRestrictedAggregator } from '@app-builder/models/modale-operators';
 import { type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MenuCommand } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
+import { OperandInfos } from '../../OperandInfos';
 import { type EnrichedMenuOption } from '../helpers';
 
 type MenuOptionProps = {
@@ -15,8 +19,15 @@ type MenuOptionProps = {
   highlightSearch?: boolean;
 };
 export function MenuOption({ option, value, onSelect, rightElement, highlightSearch = true }: MenuOptionProps) {
+  const { t } = useTranslation(['common']);
   const searchValue = MenuCommand.State.useSharp().value.search;
   const leftIcon = option.icon ?? getDataTypeIcon(option.dataType);
+  const hasValidLicense = AstBuilderDataSharpFactory.select((s) => s.data.hasValidLicense);
+
+  // Check if this is a restricted aggregator option
+  const isRestrictedOption =
+    isAggregation(option.astNode) && isRestrictedAggregator(option.astNode.namedChildren.aggregator.constant);
+  const showNudge = isRestrictedOption && !hasValidLicense;
 
   return (
     <MenuCommand.Item className="group" value={value} onSelect={() => onSelect(injectIdToNode(option.astNode))}>
@@ -30,17 +41,16 @@ export function MenuOption({ option, value, onSelect, rightElement, highlightSea
               option.displayName
             )}
           </div>
-          <div className="ml-auto shrink-0">
+          <div className="ml-auto flex shrink-0 items-center gap-1">
             {rightElement ?? (
               <OperandInfos
-                // gutter={24}
-                // shift={-8}
                 node={option.astNode}
                 dataType={option.dataType}
                 operandType={option.operandType}
                 displayName={option.displayName}
               />
             )}
+            {showNudge ? <Nudge kind="restricted" content={t('common:premium')} className="size-5" /> : null}
           </div>
         </div>
       </div>

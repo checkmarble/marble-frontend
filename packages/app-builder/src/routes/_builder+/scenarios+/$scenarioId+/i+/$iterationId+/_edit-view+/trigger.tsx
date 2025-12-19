@@ -5,17 +5,20 @@ import { ExternalLink } from '@app-builder/components/ExternalLink';
 import { setToastMessage } from '@app-builder/components/MarbleToaster';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
 import { ScheduleOption } from '@app-builder/components/Scenario/Trigger';
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type AstNode, isUndefinedAstNode, NewEmptyTriggerAstNode, NewUndefinedAstNode } from '@app-builder/models';
 import { type ScenarioValidationErrorCode } from '@app-builder/models/ast-validation';
 import { useCurrentScenario } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { createDecisionDocHref, executeAScenarioDocHref } from '@app-builder/services/documentation-href';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
+import { hasAnyEntitlement } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { getRoute } from '@app-builder/utils/routes';
 import { fromParams } from '@app-builder/utils/short-uuid';
 import { useGetCopyToClipboard } from '@app-builder/utils/use-get-copy-to-clipboard';
-import { type ActionFunctionArgs, json, type LoaderFunctionArgs } from '@remix-run/node';
+import { type ActionFunctionArgs, json } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import { type Namespace } from 'i18next';
 import { useRef, useState } from 'react';
@@ -28,11 +31,8 @@ export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
 };
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository, scenario } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn([authMiddleware], async function triggerLoader({ params, context }) {
+  const { customListsRepository, editor, dataModelRepository, scenario, entitlements } = context.authInfo;
 
   const scenarioId = fromParams(params, 'scenarioId');
   const [currentScenario, customLists, dataModel, accessors] = await Promise.all([
@@ -42,14 +42,15 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     editor.listAccessors({ scenarioId }),
   ]);
 
-  return json({
+  return {
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
     dataModel,
     customLists,
     triggerObjectType: currentScenario.triggerObjectType,
-  });
-}
+    hasValidLicense: hasAnyEntitlement(entitlements),
+  };
+});
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const {

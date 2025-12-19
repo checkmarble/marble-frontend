@@ -1,10 +1,10 @@
+import { createServerFn } from '@app-builder/core/requests';
+import { authMiddleware } from '@app-builder/middlewares/auth-middleware';
 import { type DataModel } from '@app-builder/models';
 import { type DatabaseAccessAstNode, type PayloadAstNode } from '@app-builder/models/astNode/data-accessor';
 import { type CustomList } from '@app-builder/models/custom-list';
-import { initServerServices } from '@app-builder/services/init.server';
-import { getRoute } from '@app-builder/utils/routes';
+import { hasAnyEntitlement } from '@app-builder/services/feature-access';
 import { fromParams } from '@app-builder/utils/short-uuid';
-import { type ActionFunctionArgs } from '@remix-run/node';
 
 export type BuilderOptionsResource = {
   customLists: CustomList[];
@@ -12,13 +12,11 @@ export type BuilderOptionsResource = {
   dataModel: DataModel;
   databaseAccessors: DatabaseAccessAstNode[];
   payloadAccessors: PayloadAstNode[];
+  hasValidLicense?: boolean;
 };
 
-export async function loader({ request, params }: ActionFunctionArgs) {
-  const { authService } = initServerServices(request);
-  const { editor, scenario, dataModelRepository, customListsRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+export const loader = createServerFn([authMiddleware], async function builderOptionsLoader({ params, context }) {
+  const { editor, scenario, dataModelRepository, customListsRepository, entitlements } = context.authInfo;
 
   const scenarioId = fromParams(params, 'scenarioId');
   const [currentScenario, customLists, dataModel, accessors] = await Promise.all([
@@ -28,12 +26,13 @@ export async function loader({ request, params }: ActionFunctionArgs) {
     editor.listAccessors({ scenarioId }),
   ]);
 
-  return Response.json({
+  return {
     scenarioId,
     triggerObjectType: currentScenario.triggerObjectType,
     customLists,
     dataModel,
     databaseAccessors: accessors.databaseAccessors,
     payloadAccessors: accessors.payloadAccessors,
-  });
-}
+    hasValidLicense: hasAnyEntitlement(entitlements),
+  };
+});

@@ -12,6 +12,7 @@ export type OperandEditModalContainerProps = Omit<OperandEditModalProps, 'node'>
   children: ReactNode;
   size?: 'small' | 'medium' | 'large';
   className?: string;
+  saveDisabled?: boolean;
 };
 export function OperandEditModalContainer({ className, ...props }: OperandEditModalContainerProps) {
   const { t } = useTranslation(['common']);
@@ -40,6 +41,7 @@ export function OperandEditModalContainer({ className, ...props }: OperandEditMo
             <Button
               variant="primary"
               className="flex-1"
+              disabled={props.saveDisabled}
               onClick={() => {
                 props.onSave(nodeSharp.value.node as EditableAstNode);
               }}

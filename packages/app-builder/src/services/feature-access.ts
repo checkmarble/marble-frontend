@@ -115,3 +115,6 @@ export const isDeleteWebhookAvailable = ({ permissions }: CurrentUser) => permis
 
 export const isAutoAssignmentAvailable = (entitlements: FeatureAccesses): boolean =>
   isAccessible(entitlements.autoAssignment);
+
+export const hasAnyEntitlement = (entitlements: FeatureAccesses): boolean =>
+  Object.values(entitlements).some(isAccessible);
