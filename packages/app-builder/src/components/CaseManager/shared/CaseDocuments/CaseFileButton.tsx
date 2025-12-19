@@ -4,14 +4,13 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { type ButtonProps, ButtonV2, cn } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-import { casesI18n } from './cases-i18n';
 
 type CaseFileProps = {
   file: { id: string; fileName: string };
 } & ButtonProps;
 
-export const CaseFile = ({ file, className, size }: CaseFileProps) => {
-  const { t } = useTranslation(casesI18n);
+export const CaseFileButton = ({ file, className, size }: CaseFileProps) => {
+  const { t } = useTranslation(['cases']);
   const downloadEndpoint = getRoute('/ressources/cases/download-file/:fileId', { fileId: file.id });
 
   const { downloadCaseFile, downloadingCaseFile } = useDownloadFile(downloadEndpoint, {

@@ -100,6 +100,23 @@ export const routes = [
             ]
           },
           {
+            "id": "routes/_builder+/cases+/_detail+/_layout",
+            "path": "cases",
+            "file": "routes/_builder+/cases+/_detail+/_layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/cases+/_detail+/m.$caseId",
+                "path": "m/:caseId",
+                "file": "routes/_builder+/cases+/_detail+/m.$caseId.tsx"
+              },
+              {
+                "id": "routes/_builder+/cases+/_detail+/s.$caseId",
+                "path": "s/:caseId",
+                "file": "routes/_builder+/cases+/_detail+/s.$caseId.tsx"
+              }
+            ]
+          },
+          {
             "id": "routes/_builder+/cases+/_index",
             "index": true,
             "path": "cases",
@@ -122,21 +139,27 @@ export const routes = [
             "file": "routes/_builder+/cases+/overview.tsx"
           },
           {
-            "id": "routes/_builder+/continuous-screening+/_index",
-            "index": true,
+            "id": "routes/_builder+/continuous-screening+/_layout",
             "path": "continuous-screening",
-            "file": "routes/_builder+/continuous-screening+/_index.tsx"
-          },
-          {
-            "id": "routes/_builder+/continuous-screening+/configurations",
-            "path": "continuous-screening/configurations",
-            "file": "routes/_builder+/continuous-screening+/configurations.tsx"
-          },
-          {
-            "id": "routes/_builder+/continuous-screening+/create+/_index",
-            "index": true,
-            "path": "continuous-screening/create",
-            "file": "routes/_builder+/continuous-screening+/create+/_index.tsx"
+            "file": "routes/_builder+/continuous-screening+/_layout.tsx",
+            "children": [
+              {
+                "id": "routes/_builder+/continuous-screening+/_index",
+                "index": true,
+                "file": "routes/_builder+/continuous-screening+/_index.tsx"
+              },
+              {
+                "id": "routes/_builder+/continuous-screening+/configurations",
+                "path": "configurations",
+                "file": "routes/_builder+/continuous-screening+/configurations.tsx"
+              },
+              {
+                "id": "routes/_builder+/continuous-screening+/create+/_index",
+                "index": true,
+                "path": "create",
+                "file": "routes/_builder+/continuous-screening+/create+/_index.tsx"
+              }
+            ]
           },
           {
             "id": "routes/_builder+/data+/_layout",
@@ -315,6 +338,11 @@ export const routes = [
                 "id": "routes/_builder+/settings+/_index",
                 "index": true,
                 "file": "routes/_builder+/settings+/_index.tsx"
+              },
+              {
+                "id": "routes/_builder+/settings+/activity-follow-up",
+                "path": "activity-follow-up",
+                "file": "routes/_builder+/settings+/activity-follow-up.tsx"
               },
               {
                 "id": "routes/_builder+/settings+/analytics+/filters",
@@ -614,6 +642,11 @@ export const routes = [
         "file": "routes/ressources+/cases+/update-inbox-workflow.tsx"
       },
       {
+        "id": "routes/ressources+/continuous-screening+/configuration.$stableId",
+        "path": "ressources/continuous-screening/configuration/:stableId",
+        "file": "routes/ressources+/continuous-screening+/configuration.$stableId.tsx"
+      },
+      {
         "id": "routes/ressources+/continuous-screening+/configurations",
         "path": "ressources/continuous-screening/configurations",
         "file": "routes/ressources+/continuous-screening+/configurations.tsx"
@@ -659,6 +692,11 @@ export const routes = [
         "file": "routes/ressources+/data+/createTable.tsx"
       },
       {
+        "id": "routes/ressources+/data+/data-model-with-options",
+        "path": "ressources/data/data-model-with-options",
+        "file": "routes/ressources+/data+/data-model-with-options.tsx"
+      },
+      {
         "id": "routes/ressources+/data+/data-model",
         "path": "ressources/data/data-model",
         "file": "routes/ressources+/data+/data-model.tsx"
@@ -677,6 +715,11 @@ export const routes = [
         "id": "routes/ressources+/data+/editTable",
         "path": "ressources/data/editTable",
         "file": "routes/ressources+/data+/editTable.tsx"
+      },
+      {
+        "id": "routes/ressources+/data+/object.$objectType.$objectId",
+        "path": "ressources/data/object/:objectType/:objectId",
+        "file": "routes/ressources+/data+/object.$objectType.$objectId.tsx"
       },
       {
         "id": "routes/ressources+/decisions+/$decisionId",
@@ -877,6 +920,11 @@ export const routes = [
         "id": "routes/ressources+/settings+/api-keys+/delete",
         "path": "ressources/settings/api-keys/delete",
         "file": "routes/ressources+/settings+/api-keys+/delete.tsx"
+      },
+      {
+        "id": "routes/ressources+/settings+/audit-events",
+        "path": "ressources/settings/audit-events",
+        "file": "routes/ressources+/settings+/audit-events.ts"
       },
       {
         "id": "routes/ressources+/settings+/data-model+/tables+/$tableId+/exported-fields+/delete",

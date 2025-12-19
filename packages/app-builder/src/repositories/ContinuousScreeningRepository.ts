@@ -9,6 +9,7 @@ import {
 export interface ContinuousScreeningRepository {
   listConfigurations(): Promise<ContinuousScreeningConfig[]>;
   createConfiguration(configuration: CreateContinuousScreeningConfig): Promise<ContinuousScreeningConfig>;
+  getConfiguration(stableId: string): Promise<ContinuousScreeningConfig>;
 }
 
 export function makeGetContinuousScreeningRepository() {
@@ -21,6 +22,10 @@ export function makeGetContinuousScreeningRepository() {
       const result = await marbleCoreApiClient.createContinuousScreeningConfig(
         adaptCreateContinuousScreeningConfigDto(configuration),
       );
+      return adaptContinuousScreeningConfig(result);
+    },
+    getConfiguration: async (stableId) => {
+      const result = await marbleCoreApiClient.getContinuousScreeningConfig(stableId);
       return adaptContinuousScreeningConfig(result);
     },
   });
