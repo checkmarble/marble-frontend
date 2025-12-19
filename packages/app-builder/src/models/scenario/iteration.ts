@@ -16,7 +16,7 @@ export interface ScenarioIterationSummary {
   updatedAt: string;
 }
 
-export interface ScenarioIteration {
+export interface ScenarioIterationWithoutRules {
   id: string;
   scenarioId: string;
   version: number | null;
@@ -25,11 +25,14 @@ export interface ScenarioIteration {
   scoreReviewThreshold?: number;
   scoreBlockAndReviewThreshold?: number;
   scoreDeclineThreshold?: number;
-  rules: ScenarioIterationRule[];
   schedule?: string;
   trigger: AstNode | null;
   screeningConfigs: ScreeningConfig[];
 }
+
+export type ScenarioIteration = ScenarioIterationWithoutRules & {
+  rules: ScenarioIterationRule[];
+};
 
 export interface ScenarioIterationWithType extends ScenarioIteration {
   type: 'draft' | 'version' | 'live version';
@@ -85,6 +88,26 @@ export function adaptScenarioIteration(scenarioIterationWithBody: ScenarioIterat
     scoreBlockAndReviewThreshold: scenarioIterationWithBody.body.score_block_and_review_threshold,
     scoreDeclineThreshold: scenarioIterationWithBody.body.score_decline_threshold,
     rules: scenarioIterationWithBody.body.rules.map(adaptScenarioIterationRule),
+    schedule: scenarioIterationWithBody.body.schedule,
+    trigger: triggerDto ? adaptAstNode(triggerDto) : null,
+    screeningConfigs: configsDto?.map(adaptScreeningConfig) ?? [],
+  };
+}
+
+export function adaptScenarioIterationWithoutRules(
+  scenarioIterationWithBody: ScenarioIterationWithBodyDto,
+): ScenarioIterationWithoutRules {
+  const triggerDto = scenarioIterationWithBody.body.trigger_condition_ast_expression;
+  const configsDto = scenarioIterationWithBody.body.screening_configs;
+  return {
+    id: scenarioIterationWithBody.id,
+    scenarioId: scenarioIterationWithBody.scenario_id,
+    version: scenarioIterationWithBody.version,
+    createdAt: scenarioIterationWithBody.created_at,
+    updatedAt: scenarioIterationWithBody.updated_at,
+    scoreReviewThreshold: scenarioIterationWithBody.body.score_review_threshold,
+    scoreBlockAndReviewThreshold: scenarioIterationWithBody.body.score_block_and_review_threshold,
+    scoreDeclineThreshold: scenarioIterationWithBody.body.score_decline_threshold,
     schedule: scenarioIterationWithBody.body.schedule,
     trigger: triggerDto ? adaptAstNode(triggerDto) : null,
     screeningConfigs: configsDto?.map(adaptScreeningConfig) ?? [],

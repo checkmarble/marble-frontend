@@ -28,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, CtaClassName, cn, Tag } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
-import { useCurrentScenarioIterationRule, useRuleGroups } from './_layout';
+import { useRuleGroups } from './_layout';
 
 export const handle = {
   i18n: [...scenarioI18n, 'common'] satisfies Namespace,
@@ -52,7 +52,7 @@ export const handle = {
     },
     ({ isLast }: BreadCrumbProps) => {
       const { t } = useTranslation(['common']);
-      const rule = useCurrentScenarioIterationRule();
+      const { rule } = useLoaderData<typeof loader>();
       const scenarioId = useParam('scenarioId');
       const iterationId = useParam('iterationId');
       const editorMode = useEditorMode();
@@ -82,15 +82,19 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService, appConfigRepository } = initServerServices(request);
-  const { customListsRepository, editor, dataModelRepository } = await authService.isAuthenticated(request, {
-    failureRedirect: getRoute('/sign-in'),
-  });
+  const { customListsRepository, editor, dataModelRepository, scenarioIterationRuleRepository } =
+    await authService.isAuthenticated(request, {
+      failureRedirect: getRoute('/sign-in'),
+    });
 
-  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, appConfig] = await Promise.all([
+  const ruleId = fromParams(params, 'ruleId');
+
+  const [{ databaseAccessors, payloadAccessors }, dataModel, customLists, appConfig, rule] = await Promise.all([
     editor.listAccessors({ scenarioId: fromParams(params, 'scenarioId') }),
     dataModelRepository.getDataModel(),
     customListsRepository.listCustomLists(),
     appConfigRepository.getAppConfig(),
+    scenarioIterationRuleRepository.getRule({ ruleId }),
   ]);
 
   return {
@@ -99,6 +103,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     dataModel,
     customLists,
     isAiRuleDescriptionEnabled: appConfig.isManagedMarble,
+    rule,
   };
 }
 
@@ -170,7 +175,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function RuleDetail() {
-  const { databaseAccessors, payloadAccessors, dataModel, customLists, isAiRuleDescriptionEnabled } =
+  const { databaseAccessors, payloadAccessors, dataModel, customLists, isAiRuleDescriptionEnabled, rule } =
     useLoaderData<typeof loader>();
 
   const { t } = useTranslation(handle.i18n);
@@ -179,7 +184,6 @@ export default function RuleDetail() {
 
   const fetcher = useFetcher<typeof action>();
   const scenario = useCurrentScenario();
-  const rule = useCurrentScenarioIterationRule();
   const editor = useEditorMode();
   const ruleGroups = useRuleGroups();
 

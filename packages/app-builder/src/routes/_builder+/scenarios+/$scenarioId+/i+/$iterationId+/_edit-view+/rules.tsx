@@ -11,7 +11,7 @@ import {
 } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersContext';
 import { RulesFiltersMenu } from '@app-builder/components/Scenario/Rules/Filters/RulesFiltersMenu';
 import { EvaluationErrors } from '@app-builder/components/Scenario/ScenarioValidationError';
-import { type ScenarioIterationRule } from '@app-builder/models/scenario/iteration-rule';
+import { type ScenarioIterationRuleMetadata } from '@app-builder/models/scenario/iteration-rule';
 import { type ScreeningConfig } from '@app-builder/models/screening-config';
 import { CreateScreening } from '@app-builder/routes/ressources+/scenarios+/$scenarioId+/$iterationId+/screenings+/create';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
@@ -19,7 +19,7 @@ import { initServerServices } from '@app-builder/services/init.server';
 import { findRuleValidation, hasRuleErrors, useGetScenarioErrorMessage } from '@app-builder/services/validation';
 import { formatNumber, useFormatLanguage } from '@app-builder/utils/format';
 import { getRoute } from '@app-builder/utils/routes';
-import { fromParams, fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
+import { fromUUIDtoSUUID, useParam } from '@app-builder/utils/short-uuid';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { type LoaderFunctionArgs } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
@@ -38,7 +38,11 @@ import * as R from 'remeda';
 import { CtaClassName, Input, Table, Tag, useVirtualTable } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { useCurrentScenarioValidation } from '../_layout';
+import {
+  useCurrentScenarioIteration,
+  useCurrentScenarioValidation,
+  useScenarioIterationRulesMetadata,
+} from '../_layout';
 
 export const handle = {
   i18n: ['common', 'scenarios', 'decisions'] satisfies Namespace,
@@ -46,42 +50,17 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { scenarioIterationRuleRepository, entitlements, scenario } = await authService.isAuthenticated(request, {
+  const { entitlements } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
-  const scenarioIterationId = fromParams(params, 'iterationId');
-
-  const [iteration, rules] = await Promise.all([
-    scenario.getScenarioIteration({ iterationId: scenarioIterationId }),
-    scenarioIterationRuleRepository.listRules({
-      scenarioIterationId,
-    }),
-  ]);
-
-  const screenings = iteration.screeningConfigs ?? [];
-
-  const items = [
-    ...rules.map((r) => ({ ...r, type: 'rule' as const })),
-    ...screenings.map((s) => ({ ...s, type: 'sanction' as const })),
-  ];
-
-  const ruleGroups = R.pipe(
-    items,
-    R.map((i) => i.ruleGroup),
-    R.filter((val) => !R.isEmpty(val)),
-    R.unique(),
-  );
-
   return {
-    items,
-    ruleGroups,
     isSanctionAvailable: entitlements.sanctions,
   };
 }
 
 const columnHelper = createColumnHelper<
-  (ScenarioIterationRule & { type: 'rule' }) | (ScreeningConfig & { type: 'sanction' })
+  (ScenarioIterationRuleMetadata & { type: 'rule' }) | (ScreeningConfig & { type: 'sanction' })
 >();
 
 const AddRuleOrScreening = ({
@@ -120,9 +99,31 @@ export default function Rules() {
   const scenarioId = useParam('scenarioId');
   const editorMode = useEditorMode();
 
-  const { items, ruleGroups, isSanctionAvailable } = useLoaderData<typeof loader>();
+  const { isSanctionAvailable } = useLoaderData<typeof loader>();
+  const rulesMetadata = useScenarioIterationRulesMetadata();
+  const { screeningConfigs } = useCurrentScenarioIteration();
   const scenarioValidation = useCurrentScenarioValidation();
   const getScenarioErrorMessage = useGetScenarioErrorMessage();
+
+  const items: Array<(ScenarioIterationRuleMetadata & { type: 'rule' }) | (ScreeningConfig & { type: 'sanction' })> =
+    useMemo(
+      () => [
+        ...rulesMetadata.map((r) => ({ ...r, type: 'rule' as const })),
+        ...screeningConfigs.map((s) => ({ ...s, type: 'sanction' as const })),
+      ],
+      [rulesMetadata, screeningConfigs],
+    );
+
+  const ruleGroups = useMemo(
+    () =>
+      R.pipe(
+        items,
+        R.map((i) => i.ruleGroup),
+        R.filter((val): val is string => !R.isEmpty(val)),
+        R.unique(),
+      ),
+    [items],
+  );
 
   const columns = useMemo(
     () => [

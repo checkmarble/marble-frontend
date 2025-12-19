@@ -5,7 +5,7 @@ import {
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
 import { type ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
-import { type EditorMode, EditorModeContextProvider } from '@app-builder/services/editor/editor-mode';
+import { EditorMode, EditorModeContextProvider } from '@app-builder/services/editor/editor-mode';
 import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
 import { findRuleValidation } from '@app-builder/services/validation';
@@ -21,7 +21,6 @@ import { concat, filter, isEmpty, isNullish, map, pipe, unique } from 'remeda';
 import invariant from 'tiny-invariant';
 import { MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
-
 import { useScenarioIterationsSummary } from '../../_layout';
 
 export const handle = {
@@ -67,18 +66,21 @@ export const handle = {
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { authService } = initServerServices(request);
-  const { user, scenario } = await authService.isAuthenticated(request, {
+  const { scenario, scenarioIterationRuleRepository, user } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const iterationId = fromParams(params, 'iterationId');
 
-  const [scenarioIteration, scenarioValidation] = await Promise.all([
-    scenario.getScenarioIteration({
+  const [scenarioIteration, scenarioValidation, rulesMetadata] = await Promise.all([
+    scenario.getScenarioIterationWithoutRules({
       iterationId,
     }),
     scenario.validate({
       iterationId,
+    }),
+    scenarioIterationRuleRepository.listRulesMetadata({
+      scenarioIterationId: iterationId,
     }),
   ]);
 
@@ -89,6 +91,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     editorMode,
     scenarioIteration,
     scenarioValidation,
+    rulesMetadata,
   });
 }
 
@@ -113,19 +116,14 @@ export function useCurrentScenarioIteration() {
   return scenarioIteration;
 }
 
-export function useCurrentScenarioIterationRule() {
-  const ruleId = useParam('ruleId');
-  const scenarioIteration = useCurrentScenarioIteration();
-
-  const rule = scenarioIteration.rules.find((rule) => rule.id === ruleId);
-
-  invariant(rule, `No rule corresponding to ${ruleId}`);
-
-  return rule;
+export function useScenarioIterationRulesMetadata() {
+  const { rulesMetadata } = useCurrentScenarioIterationData();
+  return rulesMetadata;
 }
 
 export const useRuleGroups = () => {
-  const { rules, screeningConfigs } = useCurrentScenarioIteration();
+  const rulesMetadata = useScenarioIterationRulesMetadata();
+  const { screeningConfigs } = useCurrentScenarioIteration();
 
   const configGroups = useMemo(
     () =>
@@ -140,13 +138,13 @@ export const useRuleGroups = () => {
   return useMemo(
     () =>
       pipe(
-        rules,
+        rulesMetadata,
         map((r) => r.ruleGroup),
         concat(configGroups),
         filter((val) => !isEmpty(val)),
         unique(),
       ),
-    [rules, configGroups],
+    [rulesMetadata, configGroups],
   );
 };
 

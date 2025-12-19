@@ -18,9 +18,11 @@ import {
 import {
   adaptScenarioIteration,
   adaptScenarioIterationSummary,
+  adaptScenarioIterationWithoutRules,
   adaptUpdateScenarioIterationBody,
   type ScenarioIteration,
   type ScenarioIterationSummary,
+  ScenarioIterationWithoutRules,
   type UpdateScenarioIterationBody,
 } from '@app-builder/models/scenario/iteration';
 import {
@@ -53,6 +55,7 @@ export interface ScenarioRepository {
   createScenarioIteration(args: { scenarioId: string }): Promise<ScenarioIteration>;
   updateScenarioIteration(iterationId: string, input: UpdateScenarioIterationBody): Promise<ScenarioIteration>;
   getScenarioIteration(args: { iterationId: string }): Promise<ScenarioIteration>;
+  getScenarioIterationWithoutRules(args: { iterationId: string }): Promise<ScenarioIterationWithoutRules>;
   listScenarioIterations(args: { scenarioId: string }): Promise<ScenarioIteration[]>;
   listScenarioIterationsMetadata(args: { scenarioId: string }): Promise<ScenarioIterationSummary[]>;
   validate(args: { iterationId: string }): Promise<ScenarioValidation>;
@@ -128,6 +131,10 @@ export function makeGetScenarioRepository() {
     getScenarioIteration: async ({ iterationId }) => {
       const scenarioIteration = await marbleCoreApiClient.getScenarioIteration(iterationId);
       return adaptScenarioIteration(scenarioIteration);
+    },
+    getScenarioIterationWithoutRules: async ({ iterationId }) => {
+      const scenarioIteration = await marbleCoreApiClient.getScenarioIteration(iterationId);
+      return adaptScenarioIterationWithoutRules(scenarioIteration);
     },
     listScenarioIterations: async ({ scenarioId }) => {
       const dtos = await marbleCoreApiClient.listScenarioIterations(scenarioId);
