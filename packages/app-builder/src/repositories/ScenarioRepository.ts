@@ -132,6 +132,8 @@ export function makeGetScenarioRepository() {
       const scenarioIteration = await marbleCoreApiClient.getScenarioIteration(iterationId);
       return adaptScenarioIteration(scenarioIteration);
     },
+    // NB: the point of this method is to avoid handling the rules everywhere in the frontend and the loaders. It's not a big issue that
+    // the backend still returns the full iteration with rules, as this handled on the server side.
     getScenarioIterationWithoutRules: async ({ iterationId }) => {
       const scenarioIteration = await marbleCoreApiClient.getScenarioIteration(iterationId);
       return adaptScenarioIterationWithoutRules(scenarioIteration);
