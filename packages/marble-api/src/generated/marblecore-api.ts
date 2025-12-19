@@ -63,6 +63,7 @@ export type CaseDto = {
     tags: CaseTagDto[];
     snoozed_until?: string;
     assigned_to?: string;
+    "type": "decision" | "continuous_screening";
 };
 export type Error = {
     code: number;
@@ -154,6 +155,48 @@ export type CaseDecisionDto = {
     };
     score: number;
     error?: Error;
+};
+export type ScreeningEntityDto = "Thing" | "Address" | "Airplane" | "Asset" | "Associate" | "Company" | "CryptoWallet" | "Debt" | "Directorship" | "Employment" | "Family" | "Identification" | "LegalEntity" | "Membership" | "Occupancy" | "Organization" | "Ownership" | "Passport" | "Payment" | "Person" | "Position" | "PublicBody" | "Representation" | "Sanction" | "Security" | "Succession" | "UnknownLink" | "Vessel" | "Vehicle";
+export type Items = {
+    schema: ScreeningEntityDto;
+    properties: {
+        [key: string]: string[];
+    };
+};
+export type ContinuousScreeningRequestDto = {
+    search_input: {
+        queries: {
+            [key: string]: Items;
+        };
+    };
+};
+export type ContinuousScreeningMatchDto = {
+    id: string;
+    continuous_screening_id: string;
+    opensanction_entity_id: string;
+    status: "pending" | "confirmed_hit" | "no_hit" | "skipped";
+    payload: object;
+    reviewed_by?: string;
+    created_at: string;
+    updated_at: string;
+};
+export type ContinuousScreeningDto = {
+    id: string;
+    org_id: string;
+    continuous_screening_config_id: string;
+    continuous_screening_config_stable_id: string;
+    case_id?: string;
+    object_type: string;
+    object_id: string;
+    object_internal_id: string;
+    status: "in_review" | "error" | "confirmed_hit" | "no_hit";
+    trigger_type: "object_added" | "object_updated" | "dataset_updated";
+    request: ContinuousScreeningRequestDto;
+    partial: boolean;
+    number_of_matches: number;
+    matches: ContinuousScreeningMatchDto[];
+    created_at: string;
+    updated_at: string;
 };
 export type CaseEventDtoBase = {
     id: string;
@@ -321,6 +364,7 @@ export type CaseFileDto = {
 };
 export type CaseDetailDto = CaseDto & {
     decisions: CaseDecisionDto[];
+    continuous_screenings: ContinuousScreeningDto[];
     events: CaseEventDto[];
     files: CaseFileDto[];
 };
@@ -829,13 +873,6 @@ export type SnoozesOfIterationDto = {
     iteration_id: string;
     rule_snoozes: RuleSnoozeInformationDto[];
 };
-export type ScreeningEntityDto = "Thing" | "Address" | "Airplane" | "Asset" | "Associate" | "Company" | "CryptoWallet" | "Debt" | "Directorship" | "Employment" | "Family" | "Identification" | "LegalEntity" | "Membership" | "Occupancy" | "Organization" | "Ownership" | "Passport" | "Payment" | "Person" | "Position" | "PublicBody" | "Representation" | "Sanction" | "Security" | "Succession" | "UnknownLink" | "Vessel" | "Vehicle";
-export type Items = {
-    schema: ScreeningEntityDto;
-    properties: {
-        [key: string]: string[];
-    };
-};
 export type ScreeningRequestDto = {
     threshold: number;
     limit: number;
@@ -1034,41 +1071,6 @@ export type CreateContinuousScreeningObjectDto = {
     config_stable_id: string;
     object_id?: string;
     object_payload: object;
-};
-export type ContinuousScreeningRequestDto = {
-    search_input: {
-        queries: {
-            [key: string]: Items;
-        };
-    };
-};
-export type ContinuousScreeningMatchDto = {
-    id: string;
-    continuous_screening_id: string;
-    opensanction_entity_id: string;
-    status: "pending" | "confirmed_hit" | "no_hit" | "skipped";
-    payload: object;
-    reviewed_by?: string;
-    created_at: string;
-    updated_at: string;
-};
-export type ContinuousScreeningDto = {
-    id: string;
-    org_id: string;
-    continuous_screening_config_id: string;
-    continuous_screening_config_stable_id: string;
-    case_id?: string;
-    object_type: string;
-    object_id: string;
-    object_internal_id: string;
-    status: "in_review" | "error" | "confirmed_hit" | "no_hit";
-    trigger_type: "object_added" | "object_updated" | "dataset_updated";
-    request: ContinuousScreeningRequestDto;
-    partial: boolean;
-    number_of_matches: number;
-    matches: ContinuousScreeningMatchDto[];
-    created_at: string;
-    updated_at: string;
 };
 export type DeleteContinuousScreeningObjectDto = {
     object_type: string;
