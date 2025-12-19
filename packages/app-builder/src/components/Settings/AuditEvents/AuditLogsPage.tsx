@@ -80,7 +80,7 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
           <div className="flex flex-col gap-v2-md relative">
             {/* Title Row */}
             <div className="flex justify-between items-center">
-              <h1 className="text-l font-semibold text-grey-00">{t('settings:activity_follow_up.title')}</h1>
+              <h1 className="text-l font-semibold text-grey-00">{t('settings:audit.audit_logs_section')}</h1>
             </div>
 
             {/* Filters Row */}
@@ -111,7 +111,7 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
                   </ButtonV2>
                 </div>
               ))
-              .with({ isSuccess: true }, () => <AuditEventsTable auditEvents={auditEvents} />)
+              .with({ isSuccess: true }, () => <AuditEventsTable auditEvents={auditEvents} apiKeys={apiKeys} />)
               .exhaustive()}
 
             {/* Pagination */}
