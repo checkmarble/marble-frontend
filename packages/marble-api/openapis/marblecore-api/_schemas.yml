@@ -251,6 +251,8 @@ UpdateScenarioIterationRuleBodyDto:
 
 # RULES
 
+ScenarioIterationRuleMetadataDto:
+  $ref: scenario-iteration-rules.yml#/components/schemas/ScenarioIterationRuleMetadataDto
 ScenarioIterationRuleDto:
   $ref: scenario-iteration-rules.yml#/components/schemas/ScenarioIterationRuleDto
 ScenarioValidationDto:

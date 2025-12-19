@@ -1,21 +1,40 @@
 import {
   type CreateScenarioIterationRuleBodyDto,
   type ScenarioIterationRuleDto,
+  type ScenarioIterationRuleMetadataDto,
   type UpdateScenarioIterationRuleBodyDto,
 } from 'marble-api';
 
 import { type AstNode, adaptAstNode, adaptNodeDto } from '../astNode/ast-node';
 
-export interface ScenarioIterationRule {
+export interface ScenarioIterationRuleMetadata {
   id: string;
   scenarioIterationId: string;
   displayOrder: number;
   name: string;
   description: string;
   ruleGroup: string;
-  formula: AstNode | null;
   scoreModifier: number;
   createdAt: string;
+}
+
+export interface ScenarioIterationRule extends ScenarioIterationRuleMetadata {
+  formula: AstNode | null;
+}
+
+export function adaptScenarioIterationRuleMetadata(
+  dto: ScenarioIterationRuleMetadataDto,
+): ScenarioIterationRuleMetadata {
+  return {
+    id: dto.id,
+    scenarioIterationId: dto.scenario_iteration_id,
+    displayOrder: dto.display_order,
+    name: dto.name,
+    description: dto.description,
+    ruleGroup: dto.rule_group,
+    scoreModifier: dto.score_modifier,
+    createdAt: dto.created_at,
+  };
 }
 
 export function adaptScenarioIterationRule(dto: ScenarioIterationRuleDto): ScenarioIterationRule {
