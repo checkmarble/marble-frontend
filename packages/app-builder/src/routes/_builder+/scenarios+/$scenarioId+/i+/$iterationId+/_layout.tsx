@@ -4,7 +4,7 @@ import {
   getFormattedVersion,
   ScenarioIterationMenu,
 } from '@app-builder/components/Scenario/Iteration/ScenarioIterationMenu';
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
+import { type ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
 import { type EditorMode, EditorModeContextProvider } from '@app-builder/services/editor/editor-mode';
 import { isEditScenarioAvailable } from '@app-builder/services/feature-access';
 import { initServerServices } from '@app-builder/services/init.server';
@@ -22,14 +22,14 @@ import invariant from 'tiny-invariant';
 import { MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { useScenarioIterations } from '../../_layout';
+import { useScenarioIterationsSummary } from '../../_layout';
 
 export const handle = {
   i18n: ['scenarios'] satisfies Namespace,
   BreadCrumbs: [
     ({ isLast }: BreadCrumbProps) => {
       const { t } = useTranslation(['scenarios']);
-      const scenarioIterations = useScenarioIterations();
+      const scenarioIterations = useScenarioIterationsSummary();
       const iterationId = useParam('iterationId');
 
       const currentIteration = React.useMemo(() => {
@@ -165,8 +165,8 @@ export function VersionSelect({
   currentIteration,
   scenarioIterations,
 }: {
-  currentIteration: ScenarioIterationWithType;
-  scenarioIterations: ScenarioIterationWithType[];
+  currentIteration: ScenarioIterationSummaryWithType;
+  scenarioIterations: ScenarioIterationSummaryWithType[];
 }) {
   const { t } = useTranslation(['scenarios']);
   const location = useLocation();

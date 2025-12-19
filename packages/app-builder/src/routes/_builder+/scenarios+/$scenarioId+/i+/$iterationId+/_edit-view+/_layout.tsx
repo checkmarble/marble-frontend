@@ -8,7 +8,7 @@ import { DeactivateScenarioVersion } from '@app-builder/components/Scenario/Iter
 import { PrepareScenarioVersion } from '@app-builder/components/Scenario/Iteration/Actions/PrepareScenarioVersion';
 import {
   useCurrentScenario,
-  useScenarioIterations,
+  useScenarioIterationsSummary,
 } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { useEditorMode } from '@app-builder/services/editor/editor-mode';
 import { isCreateDraftAvailable, isDeploymentActionsAvailable } from '@app-builder/services/feature-access';
@@ -62,7 +62,7 @@ export default function ScenarioEditLayout() {
   const scenarioValidation = useCurrentScenarioValidation();
   const { isCreateDraftAvailable, ...loaderData } = useLoaderData<typeof loader>();
 
-  const scenarioIterations = useScenarioIterations();
+  const scenarioIterations = useScenarioIterationsSummary();
 
   const iterationId = useParam('iterationId');
 

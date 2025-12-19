@@ -183,6 +183,8 @@ paths:
 
   /scenario-iterations:
     $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations
+  /scenario-iterations/metadata:
+    $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1metadata
   /scenario-iterations/{scenarioIterationId}:
     $ref: ./marblecore-api/scenario-iterations.yml#/~1scenario-iterations~1{scenarioIterationId}
   /scenario-iterations/{scenarioIterationId}/schedule-execution:

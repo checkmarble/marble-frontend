@@ -17,7 +17,7 @@ import { Spinner } from '@app-builder/components/Spinner';
 import { WorkflowNudge } from '@app-builder/components/Workflows/Nudge';
 import { type ScheduledExecution } from '@app-builder/models/decision';
 import { type Scenario } from '@app-builder/models/scenario';
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
+import { type ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
 import { useListRulesQuery } from '@app-builder/queries/Workflows';
 import { createDecisionDocHref } from '@app-builder/services/documentation-href';
 import { isEditScenarioAvailable, isManualTriggerScenarioAvailable } from '@app-builder/services/feature-access';
@@ -39,7 +39,7 @@ import { match } from 'ts-pattern';
 import { ButtonV2, CtaV2ClassName, HiddenInputs, MenuButton } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 import { z } from 'zod/v4';
-import { useCurrentScenario, useScenarioIterations } from './_layout';
+import { useCurrentScenario, useScenarioIterationsSummary } from './_layout';
 
 export const handle = {
   i18n: ['common', 'scenarios'] satisfies Namespace,
@@ -52,17 +52,25 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     entitlements,
     decision,
     testRun: testRunRepository,
+    scenario,
   } = await authService.isAuthenticated(request, {
     failureRedirect: getRoute('/sign-in'),
   });
 
   const scenarioId = fromParams(params, 'scenarioId');
 
-  const [scheduledExecutions, testRuns] = await Promise.all([
+  // Get the current scenario to find the live version ID
+  const currentScenario = await scenario.getScenario({ scenarioId });
+
+  const [scheduledExecutions, testRuns, liveIteration] = await Promise.all([
     decision.listScheduledExecutions({ scenarioId }),
     testRunRepository.listTestRuns({
       scenarioId,
     }),
+    // Only fetch the live iteration if it exists (we need the schedule field)
+    currentScenario.liveVersionId
+      ? scenario.getScenarioIteration({ iterationId: currentScenario.liveVersionId })
+      : Promise.resolve(null),
   ]);
 
   return {
@@ -74,6 +82,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     },
     scheduledExecutions,
     testRuns,
+    liveIterationSchedule: liveIteration?.schedule,
   };
 }
 
@@ -138,10 +147,10 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function ScenarioHome() {
   const { t } = useTranslation(handle.i18n);
   const hydrated = useHydrated();
-  const { featureAccess, scheduledExecutions } = useLoaderData<typeof loader>();
+  const { featureAccess, scheduledExecutions, liveIterationSchedule } = useLoaderData<typeof loader>();
 
   const currentScenario = useCurrentScenario();
-  const scenarioIterations = useScenarioIterations();
+  const scenarioIterations = useScenarioIterationsSummary();
 
   const liveScenarioIteration = React.useMemo(
     () => scenarioIterations.find(({ type }) => type === 'live version'),
@@ -181,7 +190,8 @@ export default function ScenarioHome() {
                 scenarioId={currentScenario.id}
                 isManualTriggerScenarioAvailable={featureAccess.isManualTriggerScenarioAvailable}
                 scheduledExecutions={scheduledExecutions}
-                liveScenarioIteration={liveScenarioIteration}
+                liveIterationSchedule={liveIterationSchedule}
+                liveIterationId={liveScenarioIteration?.id}
               />
               {match(featureAccess.isTestRunAvailable)
                 .with('missing_configuration', (status) => <TestRunNudge kind={status} />)
@@ -204,12 +214,12 @@ export default function ScenarioHome() {
   );
 }
 
-function VersionSection({ scenarioIterations }: { scenarioIterations: ScenarioIterationWithType[] }) {
+function VersionSection({ scenarioIterations }: { scenarioIterations: ScenarioIterationSummaryWithType[] }) {
   const { t } = useTranslation(['scenarios']);
   const language = useFormatLanguage();
 
   const { quickDraft, quickVersion, otherVersions } = React.useMemo(() => {
-    let quickVersion: ScenarioIterationWithType | undefined;
+    let quickVersion: ScenarioIterationSummaryWithType | undefined;
     const liveVersion = scenarioIterations.find((si) => si.type === 'live version');
     if (liveVersion) {
       quickVersion = liveVersion;
@@ -275,7 +285,7 @@ function VersionSection({ scenarioIterations }: { scenarioIterations: ScenarioIt
   );
 }
 
-function QuickVersionAccess({ scenarioIteration }: { scenarioIteration: ScenarioIterationWithType }) {
+function QuickVersionAccess({ scenarioIteration }: { scenarioIteration: ScenarioIterationSummaryWithType }) {
   const { t } = useTranslation(['scenarios']);
 
   const currentFormattedVersion = getFormattedVersion(scenarioIteration, t);
@@ -301,7 +311,7 @@ function QuickVersionAccess({ scenarioIteration }: { scenarioIteration: Scenario
 function TestRunSection({ scenarioId, access }: { scenarioId: string; access: FeatureAccessLevelDto }) {
   const { t } = useTranslation();
   const currentScenario = useCurrentScenario();
-  const scenarioIterations = useScenarioIterations();
+  const scenarioIterations = useScenarioIterationsSummary();
   const { testRuns } = useLoaderData<typeof loader>();
 
   const currentTestRun = React.useMemo(() => testRuns.filter((r) => r.status === 'up'), [testRuns]);
@@ -374,7 +384,7 @@ function RealTimeSection({
   liveScenarioIteration,
 }: {
   scenarioId: string;
-  liveScenarioIteration?: ScenarioIterationWithType;
+  liveScenarioIteration?: ScenarioIterationSummaryWithType;
 }) {
   const { t } = useTranslation(['scenarios']);
   const isLive = liveScenarioIteration !== undefined;
@@ -423,21 +433,23 @@ function RealTimeSection({
 function BatchSection({
   scenarioId,
   scheduledExecutions,
-  liveScenarioIteration,
+  liveIterationSchedule,
+  liveIterationId,
   isManualTriggerScenarioAvailable,
 }: {
   scenarioId: string;
   scheduledExecutions: ScheduledExecution[];
+  liveIterationSchedule?: string;
+  liveIterationId?: string;
   isManualTriggerScenarioAvailable: boolean;
-  liveScenarioIteration?: ScenarioIterationWithType;
 }) {
   const {
     t,
     i18n: { language },
   } = useTranslation(['scenarios']);
 
-  const isLive = liveScenarioIteration !== undefined;
-  const schedule = liveScenarioIteration?.schedule;
+  const isLive = !!liveIterationId;
+  const schedule = liveIterationSchedule;
 
   const formattedSchedule = React.useMemo(() => {
     try {
@@ -493,8 +505,8 @@ function BatchSection({
       </CalloutV2>
 
       <div className="flex flex-row gap-v2-md mt-auto">
-        {isManualTriggerScenarioAvailable && isLive ? (
-          <ManualTriggerScenarioExecutionForm iterationId={liveScenarioIteration.id} disabled={isExecutionOngoing} />
+        {isManualTriggerScenarioAvailable && isLive && liveIterationId ? (
+          <ManualTriggerScenarioExecutionForm iterationId={liveIterationId} disabled={isExecutionOngoing} />
         ) : null}
         <Link
           className={CtaV2ClassName({ variant: 'secondary' })}

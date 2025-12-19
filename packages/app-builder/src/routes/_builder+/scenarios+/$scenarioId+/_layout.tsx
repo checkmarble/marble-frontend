@@ -1,7 +1,7 @@
 import { ErrorComponent } from '@app-builder/components';
 import { BreadCrumbLink, type BreadCrumbProps } from '@app-builder/components/Breadcrumbs';
 import { TriggerObjectTag } from '@app-builder/components/Scenario/TriggerObjectTag';
-import { adaptScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
+import { adaptScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
 import { initServerServices } from '@app-builder/services/init.server';
 import { getRoute, type RouteID } from '@app-builder/utils/routes';
 import { fromParams, fromUUIDtoSUUID } from '@app-builder/utils/short-uuid';
@@ -43,7 +43,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const [currentScenario, scenarioIterations] = await Promise.all([
     scenario.getScenario({ scenarioId }),
-    scenario.listScenarioIterations({
+    scenario.listScenarioIterationsMetadata({
       scenarioId,
     }),
   ]);
@@ -51,12 +51,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return {
     currentScenario,
     scenarioIterations: scenarioIterations.map((dto) =>
-      adaptScenarioIterationWithType(dto, currentScenario.liveVersionId),
+      adaptScenarioIterationSummaryWithType(dto, currentScenario.liveVersionId),
     ),
   };
 }
 
-export function useScenarioIterations() {
+export function useScenarioIterationsSummary() {
   const { scenarioIterations } = useRouteLoaderData(
     'routes/_builder+/scenarios+/$scenarioId+/_layout' satisfies RouteID,
   ) as SerializeFrom<typeof loader>;
