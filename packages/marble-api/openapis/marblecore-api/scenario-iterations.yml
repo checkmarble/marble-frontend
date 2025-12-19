@@ -11,7 +11,7 @@
       - name: scenario_id
         description: ID of the scenario returned iterations should be linked to
         in: query
-        required: false
+        required: true
         schema:
           type: string
           format: uuid
