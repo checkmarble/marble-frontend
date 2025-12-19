@@ -3041,7 +3041,7 @@ export function generateAiDescriptionForAstExpression(scenarioId: string, body: 
     })));
 }
 /**
- * List iterations
+ * List iterations with full body
  */
 export function listScenarioIterations({ scenarioId }: {
     scenarioId?: string;
@@ -3085,6 +3085,30 @@ export function createScenarioIteration(createScenarioIterationBody: CreateScena
         method: "POST",
         body: createScenarioIterationBody
     })));
+}
+/**
+ * List iterations metadata
+ */
+export function listScenarioIterationsMetadata({ scenarioId }: {
+    scenarioId?: string;
+} = {}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: ScenarioIterationDto[];
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>(`/scenario-iterations/metadata${QS.query(QS.explode({
+        scenario_id: scenarioId
+    }))}`, {
+        ...opts
+    }));
 }
 /**
  * Get a scenario iteration by id

@@ -17,8 +17,10 @@ import {
 } from '@app-builder/models/scenario';
 import {
   adaptScenarioIteration,
+  adaptScenarioIterationSummary,
   adaptUpdateScenarioIterationBody,
   type ScenarioIteration,
+  type ScenarioIterationSummary,
   type UpdateScenarioIterationBody,
 } from '@app-builder/models/scenario/iteration';
 import {
@@ -52,6 +54,7 @@ export interface ScenarioRepository {
   updateScenarioIteration(iterationId: string, input: UpdateScenarioIterationBody): Promise<ScenarioIteration>;
   getScenarioIteration(args: { iterationId: string }): Promise<ScenarioIteration>;
   listScenarioIterations(args: { scenarioId: string }): Promise<ScenarioIteration[]>;
+  listScenarioIterationsMetadata(args: { scenarioId: string }): Promise<ScenarioIterationSummary[]>;
   validate(args: { iterationId: string }): Promise<ScenarioValidation>;
   validateTrigger(args: { iterationId: string; trigger: AstNode }): Promise<ScenarioValidation['trigger']>;
   validateRule(args: {
@@ -131,6 +134,12 @@ export function makeGetScenarioRepository() {
         scenarioId,
       });
       return dtos.map(adaptScenarioIteration);
+    },
+    listScenarioIterationsMetadata: async ({ scenarioId }) => {
+      const dtos = await marbleCoreApiClient.listScenarioIterationsMetadata({
+        scenarioId,
+      });
+      return dtos.map(adaptScenarioIterationSummary);
     },
     validate: async ({ iterationId }) => {
       const { scenario_validation } = await marbleCoreApiClient.validateScenarioIteration(iterationId, undefined);
