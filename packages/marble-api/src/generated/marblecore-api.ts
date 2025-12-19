@@ -796,16 +796,18 @@ export type ScreeningConfigDto = {
         ignore_list_id?: string;
     };
 };
-export type ScenarioIterationRuleDto = {
+export type ScenarioIterationRuleMetadataDto = {
     id: string;
     scenario_iteration_id: string;
     display_order: number;
     name: string;
     description: string;
     rule_group: string;
-    formula_ast_expression: (NodeDto) | null;
     score_modifier: number;
     created_at: string;
+};
+export type ScenarioIterationRuleDto = ScenarioIterationRuleMetadataDto & {
+    formula_ast_expression: (NodeDto) | null;
 };
 export type ScenarioIterationWithBodyDto = ScenarioIterationDto & {
     body: {
@@ -995,16 +997,6 @@ export type OpenSanctionsDatasetFreshnessDto = {
     upstream: OpenSanctionsUpstreamDatasetFreshnessDto;
     version: string;
     up_to_date: boolean;
-};
-export type ScenarioIterationRuleMetadataDto = {
-    id: string;
-    scenario_iteration_id: string;
-    display_order: number;
-    name: string;
-    description: string;
-    rule_group: string;
-    score_modifier: number;
-    created_at: string;
 };
 export type UpdateScenarioIterationRuleBodyDto = {
     display_order?: number;
@@ -3456,9 +3448,7 @@ export function getDatasetsFreshness(opts?: Oazapfts.RequestOpts) {
 /**
  * List rules with full data
  */
-export function listScenarioIterationRules({ scenarioIterationId }: {
-    scenarioIterationId?: string;
-} = {}, opts?: Oazapfts.RequestOpts) {
+export function listScenarioIterationRules(scenarioIterationId: string, opts?: Oazapfts.RequestOpts) {
     return oazapfts.ok(oazapfts.fetchJson<{
         status: 200;
         data: ScenarioIterationRuleDto[];
@@ -3471,7 +3461,7 @@ export function listScenarioIterationRules({ scenarioIterationId }: {
     } | {
         status: 404;
         data: string;
-    }>(`/scenario-iteration-rules${QS.query(QS.form({
+    }>(`/scenario-iteration-rules${QS.query(QS.explode({
         scenarioIterationId
     }))}`, {
         ...opts
@@ -3495,7 +3485,7 @@ export function listScenarioIterationRulesMetadata({ scenarioIterationId }: {
     } | {
         status: 404;
         data: string;
-    }>(`/scenario-iteration-rules/metadata${QS.query(QS.form({
+    }>(`/scenario-iteration-rules/metadata${QS.query(QS.explode({
         scenarioIterationId
     }))}`, {
         ...opts
