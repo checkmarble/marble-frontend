@@ -7,7 +7,6 @@ import { type Versions } from '@app-builder/components/Scenario/TestRun/Graphs/H
 import { DistributionOfDecisionChartSkeleton } from '@app-builder/components/Scenario/TestRun/Skeletons/DistributionOfDecicionSkeleton';
 import { FilterTransactionByDecisionSkeleton } from '@app-builder/components/Scenario/TestRun/Skeletons/FilterTransactionByDecicionSkeleton';
 import { TestRunDetails } from '@app-builder/components/Scenario/TestRun/TestRunDetails';
-import { adaptScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
 import { initServerServices } from '@app-builder/services/init.server';
 import { useOrganizationUsers } from '@app-builder/services/organization/organization-users';
 import { getRoute } from '@app-builder/utils/routes';
@@ -20,7 +19,7 @@ import { mapToObj, pick } from 'remeda';
 import { Button } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
-import { useCurrentScenario, useScenarioIterations } from '../../_layout';
+import { useCurrentScenario, useScenarioIterationsSummary } from '../../_layout';
 
 export const handle = {
   BreadCrumbs: [
@@ -67,17 +66,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function TestRun() {
   const { run, decisionsPromise, rulesPromise } = useLoaderData<typeof loader>();
   const currentScenario = useCurrentScenario();
-  const sourceIterations = useScenarioIterations();
+  const sourceIterations = useScenarioIterationsSummary();
   const { orgUsers } = useOrganizationUsers();
   const { t } = useTranslation(['scenarios']);
 
   const iterations = useMemo(
-    () =>
-      mapToObj(sourceIterations, (i) => [
-        i.id,
-        pick(adaptScenarioIterationWithType(i, currentScenario.liveVersionId), ['version', 'type']),
-      ]),
-    [sourceIterations, currentScenario],
+    () => mapToObj(sourceIterations, (i) => [i.id, pick(i, ['version', 'type'])]),
+    [sourceIterations],
   );
 
   const versions = useMemo(

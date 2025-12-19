@@ -1,4 +1,4 @@
-import { useScenarioIterations } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
+import { useScenarioIterationsSummary } from '@app-builder/routes/_builder+/scenarios+/$scenarioId+/_layout';
 import { matchSorter } from '@app-builder/utils/search';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { Input, SelectWithCombobox } from 'ui-design-system';
@@ -10,7 +10,7 @@ export function VersionsFilter({ type }: { type: 'ref' | 'test' }) {
   const { refVersion, setRefVersion } = useRefVersionFilter();
   const { testVersion, setTestVersion } = useTestVersionFilter();
   const deferredValue = useDeferredValue(value);
-  const iterations = useScenarioIterations();
+  const iterations = useScenarioIterationsSummary();
 
   const filteredIterations = useMemo(() => iterations.filter(({ type }) => type !== 'draft'), [iterations]);
 

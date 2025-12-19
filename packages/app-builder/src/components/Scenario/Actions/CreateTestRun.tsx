@@ -5,7 +5,7 @@ import { FormErrorOrDescription } from '@app-builder/components/Form/Tanstack/Fo
 import { FormLabel } from '@app-builder/components/Form/Tanstack/FormLabel';
 import { useLoaderRevalidator } from '@app-builder/contexts/LoaderRevalidatorContext';
 import { type Scenario } from '@app-builder/models/scenario';
-import { type ScenarioIterationWithType } from '@app-builder/models/scenario/iteration';
+import { type ScenarioIterationSummaryWithType } from '@app-builder/models/scenario/iteration';
 import { createTestRunPayloadSchema, useCreateTestRunMutation } from '@app-builder/queries/scenarios/create-testrun';
 import { scenarioObjectDocHref } from '@app-builder/services/documentation-href';
 import { getFieldErrors } from '@app-builder/utils/form';
@@ -23,7 +23,7 @@ export function CreateTestRun({
 }: {
   children: React.ReactElement;
   currentScenario: Scenario;
-  scenarioIterations: ScenarioIterationWithType[];
+  scenarioIterations: ScenarioIterationSummaryWithType[];
   atLeastOneActiveTestRun: boolean;
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
@@ -62,7 +62,7 @@ function CreateTestRunToContent({
   scenarioIterations,
 }: {
   currentScenario: Scenario;
-  scenarioIterations: ScenarioIterationWithType[];
+  scenarioIterations: ScenarioIterationSummaryWithType[];
 }) {
   const { t } = useTranslation(['common', 'scenarios']);
   const createTestRunMutation = useCreateTestRunMutation(currentScenario.id);

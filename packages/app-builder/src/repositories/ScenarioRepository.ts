@@ -17,8 +17,12 @@ import {
 } from '@app-builder/models/scenario';
 import {
   adaptScenarioIteration,
+  adaptScenarioIterationSummary,
+  adaptScenarioIterationWithoutRules,
   adaptUpdateScenarioIterationBody,
   type ScenarioIteration,
+  type ScenarioIterationSummary,
+  ScenarioIterationWithoutRules,
   type UpdateScenarioIterationBody,
 } from '@app-builder/models/scenario/iteration';
 import {
@@ -51,7 +55,9 @@ export interface ScenarioRepository {
   createScenarioIteration(args: { scenarioId: string }): Promise<ScenarioIteration>;
   updateScenarioIteration(iterationId: string, input: UpdateScenarioIterationBody): Promise<ScenarioIteration>;
   getScenarioIteration(args: { iterationId: string }): Promise<ScenarioIteration>;
+  getScenarioIterationWithoutRules(args: { iterationId: string }): Promise<ScenarioIterationWithoutRules>;
   listScenarioIterations(args: { scenarioId: string }): Promise<ScenarioIteration[]>;
+  listScenarioIterationsMetadata(args: { scenarioId: string }): Promise<ScenarioIterationSummary[]>;
   validate(args: { iterationId: string }): Promise<ScenarioValidation>;
   validateTrigger(args: { iterationId: string; trigger: AstNode }): Promise<ScenarioValidation['trigger']>;
   validateRule(args: {
@@ -126,11 +132,21 @@ export function makeGetScenarioRepository() {
       const scenarioIteration = await marbleCoreApiClient.getScenarioIteration(iterationId);
       return adaptScenarioIteration(scenarioIteration);
     },
+    // NB: the point of this method is to avoid handling the rules everywhere in the frontend and the loaders. It's not a big issue that
+    // the backend still returns the full iteration with rules, as this handled on the server side.
+    getScenarioIterationWithoutRules: async ({ iterationId }) => {
+      const scenarioIteration = await marbleCoreApiClient.getScenarioIteration(iterationId);
+      return adaptScenarioIterationWithoutRules(scenarioIteration);
+    },
     listScenarioIterations: async ({ scenarioId }) => {
-      const dtos = await marbleCoreApiClient.listScenarioIterations({
+      const dtos = await marbleCoreApiClient.listScenarioIterations(scenarioId);
+      return dtos.map(adaptScenarioIteration);
+    },
+    listScenarioIterationsMetadata: async ({ scenarioId }) => {
+      const dtos = await marbleCoreApiClient.listScenarioIterationsMetadata({
         scenarioId,
       });
-      return dtos.map(adaptScenarioIteration);
+      return dtos.map(adaptScenarioIterationSummary);
     },
     validate: async ({ iterationId }) => {
       const { scenario_validation } = await marbleCoreApiClient.validateScenarioIteration(iterationId, undefined);
