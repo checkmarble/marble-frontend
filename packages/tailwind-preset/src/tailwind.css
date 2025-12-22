@@ -55,6 +55,9 @@
   --color-purple-96: var(--color-purple-background);
   --color-purple-98: var(--color-purple-background-light);
   --color-purple-99: oklch(99.19% 0.003955633727212019 286.3274403025669);
+
+  /* Semantic - Page backgrounds */
+  --color-page-background: var(--color-purple-99);
   --color-purple-restricted-border: var(--color-purple-secondary);
   --color-purple-restricted-background: var(--color-purple-background-light);
 
@@ -173,6 +176,12 @@
   --color-grey-background-dark: oklch(0.1473 0.0107 285.01); /* #0A0A0F - Dark background */
   --color-grey-white: oklch(0.1473 0.0107 285.01);        /* Same as bg-dark for surfaces */
 
+  /* Semantic - Page backgrounds */
+  --color-page-background: var(--color-grey-background-dark);
+
+  /* Grey - Surface overrides (cards, panels) */
+  --color-grey-100: var(--color-grey-background);         /* #13131A - Cards/surfaces */
+
   /* Purple - Dark mode overrides */
   --color-purple-primary: oklch(0.6377 0.1865 282.89);    /* #7F76F7 - Primary (filled) */
   --color-purple-primary-outline: oklch(0.7665 0.1218 286.34); /* #ADA7FD - Primary outline */
@@ -182,6 +191,8 @@
   --color-purple-border: oklch(0.9251 0.0378 287.27);     /* #E4E3FF - Border */
   --color-purple-border-light: oklch(0.9519 0.0227 288.66); /* #EEEDFE - Border light */
   --color-purple-background: oklch(0.9765 0.011965 291.2928); /* #F7F6FF - Background */
+  --color-purple-background-light: var(--color-purple-disabled); /* #4F4B93 - Hover/focus states */
+  --color-purple-98: var(--color-purple-disabled);        /* #4F4B93 - Alias for hover/focus */
 
   /* Scrollbar - Dark mode */
   --scrollbar-color-thumb: rgb(100, 100, 110);

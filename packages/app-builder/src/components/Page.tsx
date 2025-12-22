@@ -7,7 +7,7 @@ import { cn, Tooltip } from 'ui-design-system';
 import { Icon } from 'ui-icons';
 
 function PageMain({ className, ...props }: React.ComponentProps<'div'>) {
-  return <main className={cn('bg-purple-99 flex flex-1 flex-col overflow-hidden', className)} {...props} />;
+  return <main className={cn('bg-page-background flex flex-1 flex-col overflow-hidden', className)} {...props} />;
 }
 
 /**
@@ -28,7 +28,7 @@ function PageHeader({ className, children, ...props }: React.ComponentProps<'div
   return (
     <div
       className={cn(
-        'border-b-grey-90 bg-grey-100 text-l text-grey-00 relative flex shrink-0 flex-row items-center border-b font-bold px-v2-md',
+        'border-b-grey-90 bg-grey-100 text-l text-grey-00 relative flex shrink-0 flex-row items-center border-b font-bold px-v2-md dark:bg-grey-background dark:border-b-grey-border dark:text-grey-primary',
         headerHeight({ type: 'height' }),
         className,
       )}
@@ -58,7 +58,7 @@ function PageDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <aside
       className={cn(
-        'bg-purple-98 text-s text-purple-65 flex flex-row gap-2 p-4 font-normal lg:px-8 lg:py-4',
+        'bg-purple-98 text-s text-purple-65 dark:text-grey-primary flex flex-row gap-2 p-4 font-normal lg:px-8 lg:py-4 dark:bg-grey-background-light',
         className,
       )}
       {...props}
@@ -105,7 +105,9 @@ function PageContentV2({ className, centered, paddingLess, ...props }: PageConte
   return <div className={PageContentV2ClassName({ centered, paddingLess, className })} {...props} />;
 }
 
-const pageBack = cva('border-grey-90 hover:bg-grey-98 flex items-center justify-center rounded-md border p-2');
+const pageBack = cva(
+  'border-grey-90 hover:bg-grey-98 flex items-center justify-center rounded-md border p-2 dark:border-grey-border dark:hover:bg-grey-background',
+);
 
 function PageBackButton({ className, ...props }: React.ComponentProps<'button'>) {
   const navigate = useAgnosticNavigation();
