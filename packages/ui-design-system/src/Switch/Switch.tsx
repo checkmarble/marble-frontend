@@ -13,13 +13,14 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps & { className?: 
         'bg-grey-90 radix-state-checked:bg-purple-65 focus:border-purple-65 relative h-6 w-10 rounded-full outline-hidden transition-all',
         'focus:ring-purple-65 focus:ring-2',
         'disabled:bg-grey-90 disabled:opacity-50 disabled:cursor-not-allowed',
+        'dark:bg-grey-placeholder',
         className,
       )}
       {...props}
     >
       <Thumb
         className={clsx(
-          'bg-grey-100 block size-4 rounded-full transition-transform',
+          'bg-grey-100 block size-4 rounded-full transition-transform dark:bg-[#FFFFFF]',
           'radix-state-checked:rtl:-translate-x-5 rtl:-translate-x-1',
           'radix-state-checked:ltr:translate-x-5 ltr:translate-x-1',
         )}

@@ -8,7 +8,7 @@ export type { CheckedState } from '@radix-ui/react-checkbox';
 const checkbox = cva(
   [
     'flex shrink-0 items-center justify-center rounded-sm border outline-hidden',
-    'bg-grey-100 hover:bg-purple-98 group-hover/checkbox-parent:bg-purple-98 enabled:radix-state-checked:border-none enabled:radix-state-checked:bg-purple-65',
+    'bg-grey-100 hover:bg-purple-98 group-hover/checkbox-parent:bg-purple-98 enabled:radix-state-checked:border-none enabled:radix-state-checked:bg-purple-65 dark:hover:bg-purple-primary/20 dark:group-hover/checkbox-parent:bg-purple-primary/20',
     'disabled:bg-grey-90 disabled:border-grey-80 disabled:radix-state-checked:border disabled:radix-state-checked:bg-grey-90 disabled:cursor-not-allowed',
   ],
   {
@@ -50,11 +50,14 @@ export const Checkbox = forwardRef<
     >
       <Indicator asChild>
         {checked === undefined ? (
-          <Icon icon="tick" className="text-grey-100 group-disabled:text-grey-50" />
+          <Icon icon="tick" className="text-grey-100 group-disabled:text-grey-50 dark:text-[#FFFFFF]" />
         ) : checked === true ? (
-          <Icon icon="tick" className="text-grey-100 group-disabled:text-grey-50" />
+          <Icon icon="tick" className="text-grey-100 group-disabled:text-grey-50 dark:text-[#FFFFFF]" />
         ) : checked === 'indeterminate' ? (
-          <Icon icon="check-indeterminate-small" className="group-disabled:text-grey-50 text-purple-65" />
+          <Icon
+            icon="check-indeterminate-small"
+            className="group-disabled:text-grey-50 text-purple-65 dark:text-[#FFFFFF]"
+          />
         ) : null}
       </Indicator>
     </Root>

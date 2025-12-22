@@ -180,18 +180,39 @@ function ButtonsSection() {
             <ButtonV2 variant="primary" appearance="link">
               Primary Link
             </ButtonV2>
+            <ButtonV2 variant="primary" appearance="link" disabled>
+              Disabled
+            </ButtonV2>
             <ButtonV2 variant="secondary" appearance="link">
               Secondary Link
+            </ButtonV2>
+            <ButtonV2 variant="secondary" appearance="link" disabled>
+              Disabled
             </ButtonV2>
           </div>
         </div>
 
-        {/* Secondary */}
+        {/* Secondary Filled */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Secondary</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-50">Secondary Filled</h3>
           <div className="flex flex-wrap items-center gap-4">
-            <ButtonV2 variant="secondary">Secondary</ButtonV2>
-            <ButtonV2 variant="secondary" disabled>
+            <ButtonV2 variant="secondary" appearance="filled">
+              Secondary
+            </ButtonV2>
+            <ButtonV2 variant="secondary" appearance="filled" disabled>
+              Disabled
+            </ButtonV2>
+          </div>
+        </div>
+
+        {/* Secondary Stroked */}
+        <div>
+          <h3 className="mb-3 text-s font-medium text-grey-50">Secondary Stroked</h3>
+          <div className="flex flex-wrap items-center gap-4">
+            <ButtonV2 variant="secondary" appearance="stroked">
+              Stroked
+            </ButtonV2>
+            <ButtonV2 variant="secondary" appearance="stroked" disabled>
               Disabled
             </ButtonV2>
           </div>
