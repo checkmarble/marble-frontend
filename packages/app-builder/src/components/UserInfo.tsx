@@ -40,7 +40,7 @@ export function UserInfo({
               <Logo
                 logo="logo"
                 aria-labelledby="marble logo"
-                className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12"
+                className="size-6 shrink-0 transition-all group-aria-expanded/nav:size-12 text-grey-primary"
               />
               {isAutoAssignmentAvailable && unavailabilityQuery.isSuccess && unavailabilityQuery.data.until !== null ? (
                 <div className="absolute top-1 left-1 flex h-3 w-3">
@@ -51,7 +51,7 @@ export function UserInfo({
               <Logo
                 logo="marble"
                 aria-labelledby="marble"
-                className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100"
+                className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100 text-white"
               />
             </div>
 

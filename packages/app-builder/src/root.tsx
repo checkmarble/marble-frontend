@@ -32,6 +32,7 @@ import { AgnosticNavigationContext } from './contexts/AgnosticNavigationContext'
 import { AppConfigContext } from './contexts/AppConfigContext';
 import { FormatContext } from './contexts/FormatContext';
 import { LoaderRevalidatorContext } from './contexts/LoaderRevalidatorContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { HeaderEntry } from './core/middleware-types';
 import { createServerFn, data } from './core/requests';
 import { useSegmentPageTracking } from './services/segment';
@@ -134,14 +135,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {loaderData?.segmentScript ? <SegmentScript nonce={nonce} script={loaderData.segmentScript} /> : null}
         <ExternalScripts />
       </head>
-      <body className="selection:text-grey-100 selection:bg-purple-65 h-screen w-full overflow-hidden antialiased">
+      <body className="selection:text-grey-100 selection:bg-purple-65 h-screen w-full overflow-hidden antialiased text-grey-primary">
         <LoaderRevalidatorContext.Provider value={revalidator.revalidate}>
           <AgnosticNavigationContext.Provider value={navigate}>
             <AuthenticityTokenProvider token={loaderData?.['csrf'] ?? ''}>
               <FormatContext.Provider
                 value={{ locale: loaderData?.locale ?? 'en-GB', timezone: loaderData?.timezone ?? 'UTC' }}
               >
-                <Tooltip.Provider>{children}</Tooltip.Provider>
+                <ThemeProvider>
+                  <Tooltip.Provider>{children}</Tooltip.Provider>
+                </ThemeProvider>
               </FormatContext.Provider>
             </AuthenticityTokenProvider>
             <script
