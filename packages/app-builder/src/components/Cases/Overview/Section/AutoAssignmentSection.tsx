@@ -51,8 +51,8 @@ export const AutoAssignmentSection = ({ currentUserId, isGlobalAdmin, access }: 
   return (
     <div
       className={cn('border rounded-v2-lg p-v2-md flex flex-col gap-v2-md', {
-        'border-[#ada7fd] bg-[#f7f6ff]': restricted,
-        'border-grey-border bg-grey-background-light': !restricted,
+        'border-purple-secondary bg-purple-background-light': restricted,
+        'border-grey-border bg-surface-card': !restricted,
       })}
     >
       <div className="flex items-center gap-v2-md">

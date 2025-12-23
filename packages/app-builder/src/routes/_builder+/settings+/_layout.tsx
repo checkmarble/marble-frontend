@@ -82,8 +82,8 @@ export default function Settings() {
                             clsx(
                               'text-s flex w-full cursor-pointer flex-row rounded-sm p-2 font-medium first-letter:capitalize',
                               isActive
-                                ? 'bg-purple-96 text-purple-65'
-                                : 'bg-surface-card text-grey-00 hover:bg-purple-96 hover:text-purple-65',
+                                ? 'bg-grey-background-light text-purple-65'
+                                : 'text-grey-00 hover:bg-grey-background-light hover:text-purple-65',
                             )
                           }
                           to={setting.to}
