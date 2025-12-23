@@ -9,7 +9,7 @@ import {
 import { cva, type VariantProps } from 'class-variance-authority';
 import { type ComponentProps, forwardRef } from 'react';
 
-export const radioGroup = cva(['flex flex-row w-fit', 'p-1', 'rounded-lg', 'bg-purple-98']);
+export const radioGroup = cva(['flex flex-row w-fit', 'p-1', 'rounded-lg', 'bg-purple-background-light']);
 
 export type RadioGroupProps = VariantProps<typeof radioGroup> & RadixRadioGroupsProps;
 

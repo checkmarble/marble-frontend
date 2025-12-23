@@ -18,6 +18,7 @@ node_modules
 *.sublime-workspace
 /.cursor/rules
 .claude/
+CLAUDE.md
 
 # IDE - VSCode
 .vscode/*

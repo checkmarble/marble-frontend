@@ -28,13 +28,13 @@ const CollapsiblePaperContainer = forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<typeof Collapsible.Container>
 >(function CollapsiblePaperContainer({ className, ...props }, ref) {
-  return <Collapsible.Container ref={ref} className={clsx('bg-grey-100', className)} {...props} />;
+  return <Collapsible.Container ref={ref} className={clsx('bg-surface-card', className)} {...props} />;
 });
 
 const CollapsiblePaperTitle = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<typeof Collapsible.Title>>(
   function CollapsiblePaperContainer({ className, children, ...props }, ref) {
     return (
-      <Collapsible.Title ref={ref} className="bg-grey-98" {...props}>
+      <Collapsible.Title ref={ref} className="bg-surface-row" {...props}>
         <div className={clsx('flex flex-1 flex-row items-center gap-2 text-start font-bold', className)}>
           {children}
         </div>

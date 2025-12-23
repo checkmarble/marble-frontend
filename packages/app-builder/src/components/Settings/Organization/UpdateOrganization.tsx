@@ -103,7 +103,7 @@ export function UpdateOrganizationSettingsContents({
   return (
     <form onSubmit={handleSubmit(form)}>
       <Modal.Title>{t('settings:global_settings.title')}</Modal.Title>
-      <div className="bg-grey-100 flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-6 p-6">
         <form.Field
           name="autoAssignQueueLimit"
           validators={{

@@ -42,7 +42,7 @@ export const ActivatedAuditFilterItem = ({ filter, onUpdate, onClear, apiKeys }:
   }, [apiKeys]);
 
   const button = (
-    <span className="flex h-10 items-center gap-v2-xs rounded-v2-md border border-purple-96 bg-purple-98 p-v2-sm text-default">
+    <span className="flex h-10 items-center gap-v2-xs rounded-v2-md border border-purple-96 bg-purple-background-light p-v2-sm text-default">
       <span>
         <DisplayFilterValue filter={filter} getApiKeyById={getApiKeyById} />
       </span>
@@ -66,7 +66,7 @@ export const ActivatedAuditFilterItem = ({ filter, onUpdate, onClear, apiKeys }:
   }
 
   return (
-    <span className="flex h-10 items-center gap-v2-xs rounded-v2-md border border-purple-96 bg-purple-98 p-v2-sm text-default">
+    <span className="flex h-10 items-center gap-v2-xs rounded-v2-md border border-purple-96 bg-purple-background-light p-v2-sm text-default">
       <span>
         <DisplayFilterValue filter={filter} getApiKeyById={getApiKeyById} />
       </span>

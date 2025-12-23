@@ -14,7 +14,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetails }) {
   const { case: caseDetail, createdAt, scenario, triggerObjectType } = decision;
 
   return (
-    <Collapsible.Container className="bg-grey-100">
+    <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>{t('decisions:decision_detail.title')}</Collapsible.Title>
       <Collapsible.Content>
         <div className="grid auto-rows-fr grid-cols-[max-content_1fr] items-center gap-x-10 gap-y-2">

@@ -41,7 +41,7 @@ export const DatasetTagSelect = ({ tags, selectedTags, setSelectedTags }: Datase
               <DatasetTag category={tag as ScreeningCategory} />
             </MenuCommand.Item>
           ))}
-          <div className="bg-grey-100 sticky bottom-0 flex w-full gap-2">
+          <div className="bg-surface-card sticky bottom-0 flex w-full gap-2">
             <Button variant="secondary" size="small" className="basis-full" onClick={() => setSelectedTags([])}>
               <Icon icon="filters-off" className="size-4" />
             </Button>

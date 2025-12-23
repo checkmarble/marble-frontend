@@ -73,7 +73,7 @@ export function PivotDetail({ pivotValues, existingPivotDefinition }: PivotDetai
   }
 
   return (
-    <Collapsible.Container className="bg-grey-100">
+    <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>{t('decisions:pivot_detail.title')}</Collapsible.Title>
       <Collapsible.Content>{content}</Collapsible.Content>
     </Collapsible.Container>
@@ -133,7 +133,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
   });
 
   return (
-    <Table.Container {...getContainerProps()} className="bg-grey-100">
+    <Table.Container {...getContainerProps()} className="bg-surface-card">
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {

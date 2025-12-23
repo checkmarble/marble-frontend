@@ -20,7 +20,7 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps & { className?: 
     >
       <Thumb
         className={clsx(
-          'bg-grey-100 block size-4 rounded-full transition-transform dark:bg-[#FFFFFF]',
+          'bg-surface-card block size-4 rounded-full transition-transform dark:bg-[#FFFFFF]',
           'radix-state-checked:rtl:-translate-x-5 rtl:-translate-x-1',
           'radix-state-checked:ltr:translate-x-5 ltr:translate-x-1',
         )}

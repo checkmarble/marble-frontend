@@ -97,7 +97,7 @@ export const DecisionsScoreDistribution = ({ query }: DecisionsScoreDistribution
 
       <div className="min-h-[500px]">
         <div className="w-full">
-          <div className="bg-white border border-grey-90 rounded-lg p-v2-md mt-v2-sm relative">
+          <div className="bg-surface-card border border-grey-90 rounded-lg p-v2-md mt-v2-sm relative">
             {query.isFetching ? <GraphSpinnerOverlay /> : null}
             {query.isError ? (
               <div className="absolute inset-0 z-5 flex items-center justify-center rounded-lg bg-grey-98/80 hover:bg-grey-95/80">
@@ -200,7 +200,7 @@ const DecisionsScoreDistributionGraph = ({ data }: { data: DecisionsScoreDistrib
               return null;
             }
             return (
-              <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
+              <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-surface-card p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
                 <div className="flex items-center gap-v2-sm">
                   <strong className="text-grey-00 font-semibold">{`Score: ${point.data.x.toFixed(0)}->${(point.data.x + bucketSize).toFixed(0)}`}</strong>
                 </div>

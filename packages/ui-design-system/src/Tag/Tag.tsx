@@ -26,7 +26,7 @@ export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
           'bg-orange-95 text-orange-50 dark:border-orange-50 dark:text-orange-50': color === 'orange',
           'bg-red-95 text-red-47 dark:border-red-47 dark:text-red-47': color === 'red',
           'bg-grey-95 text-grey-50 dark:border-grey-secondary dark:text-grey-secondary': color === 'grey',
-          'bg-grey-100 text-grey-00 dark:border-grey-primary dark:text-grey-primary': color === 'grey-light',
+          'bg-surface-card text-grey-00 dark:border-grey-primary dark:text-grey-primary': color === 'grey-light',
         },
         {
           'rounded-full': border === 'rounded-sm',

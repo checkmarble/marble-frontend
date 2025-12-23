@@ -30,7 +30,7 @@ export function RulesDetail({
   const { t } = useTranslation(decisionsI18n);
 
   return (
-    <Collapsible.Container className="bg-grey-100">
+    <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>{t('decisions:rules.title')}</Collapsible.Title>
       <Collapsible.Content>
         <RulesExecutionsContainer>
@@ -141,7 +141,7 @@ function RuleFormula({
     [formula, evaluation],
   );
   return (
-    <Paper.Container className="bg-grey-100 @container">
+    <Paper.Container className="bg-surface-card @container">
       <AstBuilder.Provider scenarioId={scenarioId} mode="view" showValues={showValues}>
         <AstBuilder.Root node={formula} validation={validation} />
       </AstBuilder.Provider>

@@ -39,7 +39,7 @@ type OperandInfosProps = {
 
 const contentClassnames = clsx([
   'flex flex-col w-full flex-1 overflow-hidden z-50',
-  'bg-grey-100 border-grey-90 rounded-sm border shadow-md outline-hidden',
+  'bg-surface-card border-grey-90 rounded-sm border shadow-md outline-hidden',
 ]);
 
 export function OperandInfos(props: OperandInfosProps) {
@@ -53,7 +53,7 @@ export function OperandInfos(props: OperandInfosProps) {
       </HoverCardTrigger>
       <HoverCardPortal>
         <HoverCardContent side="right" align="start" sideOffset={20} alignOffset={-8} className={contentClassnames}>
-          <div className="bg-grey-100 flex flex-col gap-2 overflow-auto p-4">
+          <div className="bg-surface-card flex flex-col gap-2 overflow-auto p-4">
             <div className="flex flex-col gap-1">
               <TypeInfos operandType={props.operandType} dataType={props.dataType} />
               <p className="text-grey-00 text-s text-ellipsis hyphens-auto font-normal">{props.displayName}</p>

@@ -112,7 +112,7 @@ export default function ApiKeys() {
               <Table.Header headerGroups={table.getHeaderGroups()} />
               <Table.Body {...getBodyProps()}>
                 {rows.map((row) => {
-                  return <Table.Row key={row.id} className="hover:bg-purple-98 group" row={row} />;
+                  return <Table.Row key={row.id} className="hover:bg-purple-background-light group" row={row} />;
                 })}
               </Table.Body>
             </Table.Container>

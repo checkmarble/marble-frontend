@@ -22,7 +22,7 @@ export const FilterInboxSelector = ({ inboxes, selectedInbox, onSelectInbox }: F
             {t('cases:case.inbox')}: {selectedInbox.name}
           </span>
           {selectedInbox.casesCount !== undefined ? (
-            <div className="px-v2-xs py-v2-xxs rounded-full bg-white border border-grey-border text-purple-65 text-small">
+            <div className="px-v2-xs py-v2-xxs rounded-full bg-surface-card border border-grey-border text-purple-65 text-small">
               {selectedInbox.casesCount} cases
             </div>
           ) : null}

@@ -176,7 +176,7 @@ export default function Decision() {
   const editorMode = useEditorMode();
 
   return (
-    <Collapsible.Container className="bg-grey-100 max-w-3xl">
+    <Collapsible.Container className="bg-surface-card max-w-3xl">
       <Collapsible.Title>{t('scenarios:decision.score_based.title')}</Collapsible.Title>
       <Collapsible.Content>
         <Callout variant="outlined" className="mb-4 lg:mb-6">

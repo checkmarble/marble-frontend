@@ -120,7 +120,7 @@ export function CaseEvents({
           <div className="bg-grey-90 -z-10 h-full w-px" />
         </div>
       ) : null}
-      <div className="bg-grey-100 sticky left-0 top-0 z-[-15] flex w-full items-center justify-between pl-6">
+      <div className="bg-surface-card sticky left-0 top-0 z-[-15] flex w-full items-center justify-between pl-6">
         <span
           className={cn('text-grey-50 text-small', {
             'text-grey-100': showAll || newerEvents === 0,
@@ -170,7 +170,7 @@ export function CaseEvents({
       </div>
       {showAll ? null : (
         <span
-          className={cn('bg-grey-100 text-grey-50 sticky left-0 top-0 z-[-15] pl-6 text-xs', {
+          className={cn('bg-surface-card text-grey-50 sticky left-0 top-0 z-[-15] pl-6 text-xs', {
             'text-grey-100': showAll,
           })}
         >

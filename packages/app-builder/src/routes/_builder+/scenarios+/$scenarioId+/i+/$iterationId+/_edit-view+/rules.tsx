@@ -103,7 +103,7 @@ const AddRuleOrScreening = ({
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
         align="end"
-        className="bg-grey-100 border-grey-90 z-10 mt-2 flex flex-col gap-2 rounded-sm border p-2"
+        className="bg-surface-card border-grey-90 z-10 mt-2 flex flex-col gap-2 rounded-sm border p-2"
       >
         <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
         <CreateScreening scenarioId={scenarioId} iterationId={iterationId} isSanctionAvailable={isSanctionAvailable} />
@@ -293,7 +293,7 @@ export default function Rules() {
         <RulesFiltersBar />
       </RulesFiltersProvider>
 
-      <Table.Container {...getContainerProps()} className="bg-grey-100">
+      <Table.Container {...getContainerProps()} className="bg-surface-card">
         <Table.Header headerGroups={table.getHeaderGroups()} />
         <Table.Body {...getBodyProps()}>
           {hasItems ? (

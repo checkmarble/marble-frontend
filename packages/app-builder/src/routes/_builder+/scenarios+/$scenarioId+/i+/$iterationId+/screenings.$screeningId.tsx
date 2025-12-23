@@ -395,7 +395,7 @@ export default function ScreeningDetail() {
 
               <div className="flex flex-col gap-2">
                 <span className="text-s font-semibold">{t('scenarios:edit_sanction.global_settings')}</span>
-                <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded-md border p-4">
+                <div className="bg-surface-card border-grey-90 flex flex-col gap-4 rounded-md border p-4">
                   <Callout variant="outlined">
                     <span>
                       <Trans
@@ -427,7 +427,7 @@ export default function ScreeningDetail() {
                     )}
                   </form.Field>
                 </div>
-                <div className="bg-grey-100 border-grey-90 flex flex-col gap-2 rounded-md border p-4">
+                <div className="bg-surface-card border-grey-90 flex flex-col gap-2 rounded-md border p-4">
                   <div className="text-s flex items-center">
                     {t('scenarios:edit_sanction.consideration_matchings')}
                     <form.Field
@@ -491,7 +491,7 @@ export default function ScreeningDetail() {
                 </span>
                 <form.Field name="counterPartyId">
                   {(field) => (
-                    <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
+                    <div className="bg-surface-card border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
                       <AstBuilder.Provider scenarioId={scenario.id} initialData={options} mode={editor}>
                         <FieldNode
                           value={field.state.value}
@@ -509,7 +509,7 @@ export default function ScreeningDetail() {
               <AstBuilder.Provider scenarioId={scenario.id} initialData={options} mode={editor}>
                 <div className="flex flex-col gap-2">
                   <span className="text-s font-semibold">{t('scenarios:sanction.match_settings.title')}</span>
-                  <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
+                  <div className="bg-surface-card border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
                     <Callout variant="outlined">
                       <p className="whitespace-pre-wrap">{t('scenarios:sanction.match_settings.callout')}</p>
                     </Callout>

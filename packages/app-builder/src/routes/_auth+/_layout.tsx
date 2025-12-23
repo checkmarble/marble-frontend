@@ -51,7 +51,7 @@ export default function AuthLayout() {
           <img src="/img/main-illu.svg" alt="main-illu" className="size-full" />
         </div>
       </div>
-      <div className="relative bg-grey-100 basis-[600px] px-[120px] py-[124px] grid place-items-center">
+      <div className="relative bg-surface-card basis-[600px] px-[120px] py-[124px] grid place-items-center">
         <div className="absolute bottom-6 right-6">
           <LanguagePicker />
         </div>

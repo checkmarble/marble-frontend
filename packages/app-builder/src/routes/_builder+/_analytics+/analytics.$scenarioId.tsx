@@ -344,7 +344,7 @@ export default function Analytics() {
         }}
       >
         <Page.Container>
-          <Page.ContentV2 className="bg-white min-[2000px]:px-40 gap-v2-md">
+          <Page.ContentV2 className="bg-surface-card min-[2000px]:px-40 gap-v2-md">
             <div className="flex flex-row gap-v2-md mb-v2-lg w-full">
               <div className="flex flex-row gap-v2-sm items-start min-h-[88px] w-full">
                 <FiltersBar

@@ -89,7 +89,7 @@ export const SnoozePanel = ({
                     <PivotObjectDetails tableModel={table} dataModel={dataModelWithTableOptions} pivotObject={client} />
                   </div>
                 ) : null}
-                <div className="border-grey-90 bg-grey-100 relative w-full rounded-lg border">
+                <div className="border-grey-90 bg-surface-card relative w-full rounded-lg border">
                   <div className="text-2xs text-grey-50 relative grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] font-normal">
                     <span className="inline-flex items-center gap-2 p-2">
                       <span>{t('cases:decisions.rule.snooze')}</span>
@@ -123,7 +123,7 @@ export const SnoozePanel = ({
                     return (
                       <div
                         key={r.ruleId}
-                        className="border-grey-90 hover:bg-purple-98 grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] items-center border-t transition-colors"
+                        className="border-grey-90 hover:bg-purple-background-light grid grid-cols-[150px_120px_1fr_1fr_0.5fr_0.5fr_150px] items-center border-t transition-colors"
                       >
                         <div className="flex min-h-full items-center justify-center p-2">
                           <AddRuleSnooze decisionId={r.decisionId} ruleId={r.ruleId}>

@@ -187,7 +187,7 @@ export function ErrorBoundary() {
             />
           </Link>
         </div>
-        <div className="bg-grey-100 mb-10 flex shrink-0 rounded-2xl p-10 text-center shadow-md">
+        <div className="bg-surface-card mb-10 flex shrink-0 rounded-2xl p-10 text-center shadow-md">
           <ErrorComponent error={error} />
         </div>
       </div>

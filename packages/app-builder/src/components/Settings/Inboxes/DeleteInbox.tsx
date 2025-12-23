@@ -46,7 +46,7 @@ const DeleteInboxContent = ({ inboxId, onSuccess }: { inboxId: string; onSuccess
   return (
     <>
       <Modal.Title>{t('settings:inboxes.delete_inbox')}</Modal.Title>
-      <div className="bg-grey-100 flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-6 p-6">
         <div className="text-s flex flex-1 flex-col gap-4">
           <input name="inboxId" value={inboxId} type="hidden" />
           <p className="text-center">{t('settings:inboxes.delete_inbox.content')}</p>

@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { forwardRef, type ReactNode } from 'react';
 
 const modalContentClassnames = cva(
-  'bg-grey-100 top-[10vh] flex w-full flex-col rounded-lg drop-shadow-xl overflow-hidden',
+  'bg-surface-card top-[10vh] flex w-full flex-col rounded-lg drop-shadow-xl overflow-hidden',
   {
     variants: {
       size: {
@@ -46,7 +46,7 @@ const ModalContent = forwardRef<HTMLDivElement, ModalContentProps>(function Moda
 function ModalTitle(props: Dialog.DialogTitleProps) {
   return (
     <Dialog.Title
-      className="border-b-grey-90 bg-grey-98 text-m rounded-t-lg border-b p-6 text-center font-bold"
+      className="border-b-grey-90 bg-surface-row text-m rounded-t-lg border-b p-6 text-center font-bold"
       {...props}
     />
   );
@@ -99,7 +99,7 @@ export const ModalContentV2 = forwardRef<HTMLDivElement, ModalContentV2Props>(fu
 export function ModalTitleV2(props: Ariakit.DialogHeadingProps) {
   return (
     <Ariakit.DialogHeading
-      className="border-b-grey-90 bg-grey-98 text-m rounded-t-lg border-b p-6 text-center font-bold"
+      className="border-b-grey-90 bg-surface-row text-m rounded-t-lg border-b p-6 text-center font-bold"
       {...props}
     />
   );

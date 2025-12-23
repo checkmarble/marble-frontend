@@ -56,8 +56,20 @@
   --color-purple-98: var(--color-purple-background-light);
   --color-purple-99: oklch(99.19% 0.003955633727212019 286.3274403025669);
 
-  /* Semantic - Page backgrounds */
-  --color-page-background: var(--color-purple-99);
+  /* ========================================
+   * SEMANTIC SURFACE TOKENS
+   * These flip automatically in dark mode
+   * ======================================== */
+  --color-surface-page: var(--color-purple-99);
+  --color-surface-card: var(--color-grey-white);
+  --color-surface-sidebar: var(--color-grey-white);
+  --color-surface-elevated: var(--color-grey-white);
+  --color-surface-popover: var(--color-grey-white);
+  --color-surface-row: var(--color-grey-background-light); /* Table row backgrounds */
+  --color-surface-row-hover: var(--color-purple-background-light); /* Table row hover */
+
+  /* Semantic - Page backgrounds (legacy alias) */
+  --color-page-background: var(--color-surface-page);
   --color-purple-restricted-border: var(--color-purple-secondary);
   --color-purple-restricted-background: var(--color-purple-background-light);
 
@@ -164,6 +176,17 @@
 @variant dark (&:where(.dark, .dark *));
 
 .dark {
+  /* ========================================
+   * SEMANTIC SURFACE TOKENS - Dark mode
+   * ======================================== */
+  --color-surface-page: var(--color-grey-background-dark);     /* #0A0A0F - Darkest */
+  --color-surface-card: var(--color-grey-background);          /* #13131A - Cards */
+  --color-surface-sidebar: var(--color-grey-background);       /* #13131A - Sidebar */
+  --color-surface-elevated: var(--color-grey-background-light); /* #1F1F2E - Elevated */
+  --color-surface-popover: var(--color-grey-background);       /* #13131A - Popovers */
+  --color-surface-row: var(--color-grey-background-light);     /* #1F1F2E - Table rows */
+  --color-surface-row-hover: var(--color-purple-disabled);     /* #4F4B93 - Table row hover */
+
   /* Grey - Dark mode overrides */
   --color-grey-primary: oklch(0.9258 0.004 286.32);       /* #E6E6E9 - Light text on dark */
   --color-grey-hover: oklch(0.9854 0.0013 286.38);        /* #FAFAFB - Hover state */
@@ -174,13 +197,9 @@
   --color-grey-background-light: oklch(0.2465 0.0284 284.13); /* #1F1F2E - Light background */
   --color-grey-background: oklch(0.1901 0.0141 284.98);   /* #13131A - Background */
   --color-grey-background-dark: oklch(0.1473 0.0107 285.01); /* #0A0A0F - Dark background */
-  --color-grey-white: oklch(0.1473 0.0107 285.01);        /* Same as bg-dark for surfaces */
 
-  /* Semantic - Page backgrounds */
-  --color-page-background: var(--color-grey-background-dark);
-
-  /* Grey - Surface overrides (cards, panels) */
-  --color-grey-100: var(--color-grey-background);         /* #13131A - Cards/surfaces */
+  /* Semantic - Page backgrounds (legacy alias) */
+  --color-page-background: var(--color-surface-page);
 
   /* Purple - Dark mode overrides */
   --color-purple-primary: oklch(0.6377 0.1865 282.89);    /* #7F76F7 - Primary (filled) */
@@ -191,7 +210,7 @@
   --color-purple-border: oklch(0.9251 0.0378 287.27);     /* #E4E3FF - Border */
   --color-purple-border-light: oklch(0.9519 0.0227 288.66); /* #EEEDFE - Border light */
   --color-purple-background: oklch(0.9765 0.011965 291.2928); /* #F7F6FF - Background */
-  --color-purple-background-light: var(--color-purple-disabled); /* #4F4B93 - Hover/focus states */
+  --color-purple-background-light: var(--color-grey-background-light); /* #1F1F2E - Light background in dark mode */
   --color-purple-98: var(--color-purple-disabled);        /* #4F4B93 - Alias for hover/focus */
 
   /* Scrollbar - Dark mode */

@@ -155,7 +155,7 @@ export default function Lists() {
               {listFeatureAccess.isCreateListValueAvailable ? <AddListValueModal listId={customList.id} /> : null}
             </div>
             {virtualTable.isEmpty ? (
-              <div className="bg-grey-100 border-grey-90 flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-4">
+              <div className="bg-surface-card border-grey-90 flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-4">
                 <p className="text-s font-medium">
                   {listValues.length > 0
                     ? t('lists:empty_custom_list_matches')
@@ -371,7 +371,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
         }}
       >
         <ModalV2.Content onClick={(e) => e.stopPropagation()}>
-          <div className="bg-grey-100 text-s flex flex-col items-center gap-6 p-6">
+          <div className="bg-surface-card text-s flex flex-col items-center gap-6 p-6">
             <Icon
               icon={modalState.success ? 'tick' : 'cross'}
               className={clsx(

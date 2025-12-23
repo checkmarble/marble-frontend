@@ -10,11 +10,11 @@ export const CtaClassName = cva(
       variant: {
         primary: 'text-grey-100 focus:border-grey-00',
         secondary:
-          'text-grey-00 bg-grey-100 border-grey-90 disabled:text-grey-50 aria-disabled:text-grey-50 disabled:border-grey-95 aria-disabled:border-grey-95 disabled:bg-grey-95 aria-disabled:bg-grey-95',
+          'text-grey-00 bg-surface-card border-grey-90 disabled:text-grey-50 aria-disabled:text-grey-50 disabled:border-grey-95 aria-disabled:border-grey-95 disabled:bg-grey-95 aria-disabled:bg-grey-95',
         tertiary: 'text-grey-80 border-transparent',
         ghost: 'text-grey-00 border-transparent',
         outline:
-          'hover:bg-purple-96 active:bg-purple-96 bg-purple-98 border-purple-65 text-purple-65 disabled:text-grey-50 aria-disabled:text-grey-50 disabled:border-grey-95 aria-disabled:border-grey-95 disabled:bg-grey-95 aria-disabled:bg-grey-95 focus:border-purple-60',
+          'hover:bg-purple-96 active:bg-purple-96 bg-purple-background-light border-purple-65 text-purple-65 disabled:text-grey-50 aria-disabled:text-grey-50 disabled:border-grey-95 aria-disabled:border-grey-95 disabled:bg-grey-95 aria-disabled:bg-grey-95 focus:border-purple-60',
         dropdown: 'text-grey-00 border-transparent disabled:text-grey-80 disabled:bg-transparent',
       },
       color: {
@@ -62,7 +62,7 @@ export const CtaV2ClassName = cva(
         destructive:
           'bg-red-47 border-red-47 text-white hover:bg-red-43 hover:border-red-43 disabled:bg-red-74 disabled:border-red-74 dark:text-grey-primary dark:disabled:text-grey-secondary',
         secondary:
-          'bg-white border-grey-border text-grey-00 hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-80',
+          'bg-surface-card border-grey-border text-grey-00 hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-80 dark:hover:bg-grey-background-light dark:disabled:bg-grey-background-light',
       },
       appearance: {
         filled: '',

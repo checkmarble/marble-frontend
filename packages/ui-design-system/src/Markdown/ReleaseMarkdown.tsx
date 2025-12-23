@@ -36,7 +36,7 @@ const releaseMarkdownComponents: Components = {
       <TooltipPrimitive.Portal>
         <TooltipPrimitive.Content
           side="top"
-          className="z-50 bg-grey-100 border border-grey-90 rounded-sm shadow-md p-2"
+          className="z-50 bg-surface-card border border-grey-90 rounded-sm shadow-md p-2"
           sideOffset={5}
         >
           <div className="flex flex-col gap-1 items-center">
@@ -55,7 +55,7 @@ const releaseMarkdownComponents: Components = {
   h3: ({ children }) => <div className="text-s font-medium text-purple-65 mb-2 mt-4 first:mt-0">{children}</div>,
   hr: () => <hr className="my-4 border-grey-90" />,
   blockquote: ({ children }) => (
-    <div className="bg-purple-98 border-s-2 border-s-purple-65 rounded-sm p-2 mb-2 flex items-start gap-2">
+    <div className="bg-purple-background-light border-s-2 border-s-purple-65 rounded-sm p-2 mb-2 flex items-start gap-2">
       <Icon icon="quote" className="size-4 shrink-0 text-purple-65 mt-0.5" />
       <div className="text-s text-grey-00">{children}</div>
     </div>

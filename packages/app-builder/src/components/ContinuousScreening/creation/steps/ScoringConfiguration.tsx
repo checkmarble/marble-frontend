@@ -16,7 +16,7 @@ export const ScoringConfiguration = () => {
 
   return (
     <div className="flex flex-col gap-v2-md">
-      <Callout bordered className="bg-white">
+      <Callout bordered className="bg-surface-card">
         {t('continuousScreening:creation.scoringConfiguration.callout')}
       </Callout>
       <Field

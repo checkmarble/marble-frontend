@@ -91,7 +91,7 @@ export const FieldDatasetFilters = ({
                 <DatasetTag category={tag as ScreeningCategory} />
               </MenuCommand.Item>
             ))}
-            <div className="bg-grey-100 sticky bottom-0 flex w-full gap-2">
+            <div className="bg-surface-card sticky bottom-0 flex w-full gap-2">
               <Button
                 variant="secondary"
                 size="small"

@@ -68,7 +68,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
           sideOffset={8}
           alignOffset={-8}
           className={cn(
-            'bg-grey-100 z-50 flex w-60 flex-col items-center gap-6 rounded-sm border p-4 pointer-events-auto shadow-lg',
+            'bg-surface-card z-50 flex w-60 flex-col items-center gap-6 rounded-sm border p-4 pointer-events-auto shadow-lg',
             {
               'border-purple-82': kind !== 'missing_configuration',
               'border-yellow-50': kind === 'missing_configuration',

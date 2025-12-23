@@ -5,7 +5,7 @@ export const FilterTransactionByDecisionSkeleton = () => {
   const { t } = useTranslation(['scenarios']);
 
   return (
-    <Collapsible.Container className="bg-grey-100">
+    <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>{t('scenarios:testrun.transaction_by_decision')}</Collapsible.Title>
       <Collapsible.Content>
         <div className="mb-6 flex items-center justify-end space-x-2">

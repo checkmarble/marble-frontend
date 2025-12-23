@@ -38,7 +38,7 @@ export const OverviewPage = ({
         <BreadCrumbs />
       </Page.Header>
       <Page.Container>
-        <Page.ContentV2 className="bg-white gap-v2-md">
+        <Page.ContentV2 className="gap-v2-md">
           <div className="grid grid-cols-[1fr_calc(var(--spacing-v2-xs)_*_90)] gap-v2-lg">
             <div className="flex flex-col gap-v2-md">
               <CasesNavigationTabs />

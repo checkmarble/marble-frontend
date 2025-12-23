@@ -90,11 +90,11 @@ export default function ListsPage() {
           <div className="flex flex-col gap-4">
             <div className="flex flex-row justify-end">{isCreateListAvailable ? <CreateListModal /> : null}</div>
             {isEmpty ? (
-              <div className="bg-grey-100 border-grey-90 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
+              <div className="bg-surface-card border-grey-90 flex h-28 max-w-3xl flex-col items-center justify-center rounded-lg border border-solid p-4">
                 <p className="text-s font-medium">{t('lists:empty_custom_lists_list')}</p>
               </div>
             ) : (
-              <Table.Container {...getContainerProps()} className="bg-grey-100 max-h-[70dvh]">
+              <Table.Container {...getContainerProps()} className="bg-surface-card max-h-[70dvh]">
                 <Table.Header headerGroups={table.getHeaderGroups()} />
                 <Table.Body {...getBodyProps()}>
                   {rows.map((row) => (

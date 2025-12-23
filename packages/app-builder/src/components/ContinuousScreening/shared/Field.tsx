@@ -11,7 +11,7 @@ type FieldProps = {
 
 export const Field = ({ title, description, children, callout, titleClassName }: FieldProps) => {
   return (
-    <div className="bg-white rounded-v2-lg border border-grey-border p-v2-md flex flex-col gap-v2-sm">
+    <div className="bg-surface-card rounded-v2-lg border border-grey-border p-v2-md flex flex-col gap-v2-sm">
       <div className={cn('text-h2 font-semibold', titleClassName)}>{title}</div>
       <div className="text-grey-50">{description}</div>
       <div className="flex gap-v2-md items-center">{children}</div>

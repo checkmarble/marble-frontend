@@ -147,7 +147,7 @@ export function RefineSearchModal({
             )}
           </div>
           <ModalV2.Footer>
-            <div className="bg-grey-100 flex gap-2 p-8">
+            <div className="bg-surface-card flex gap-2 p-8">
               <Button className="flex-1" variant="secondary" name="cancel" onClick={handleBackToSearch}>
                 {t('screenings:refine_modal.back_search')}
               </Button>
@@ -189,7 +189,7 @@ export function RefineSearchModal({
             ))}
           </div>
           <ModalV2.Footer>
-            <div className="bg-grey-100 flex gap-2 p-8">
+            <div className="bg-surface-card flex gap-2 p-8">
               <ModalV2.Close render={<Button className="flex-1" variant="secondary" name="cancel" />}>
                 {t('common:cancel')}
               </ModalV2.Close>

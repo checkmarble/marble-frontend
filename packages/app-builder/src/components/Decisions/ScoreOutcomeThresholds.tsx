@@ -24,7 +24,7 @@ export function ScoreOutcomeThresholds({
 
       {showReviewOutcome ? (
         <>
-          <div className="bg-grey-100 relative w-1">
+          <div className="bg-surface-card relative w-1">
             <span className="text-grey-00 text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
               {scoreReviewThreshold}
             </span>
@@ -38,7 +38,7 @@ export function ScoreOutcomeThresholds({
 
       {showBlockAndReviewOutcome ? (
         <>
-          <div className="bg-grey-100 relative w-1">
+          <div className="bg-surface-card relative w-1">
             <span className="text-grey-00 text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
               {scoreBlockAndReviewThreshold}
             </span>
@@ -50,7 +50,7 @@ export function ScoreOutcomeThresholds({
         </>
       ) : null}
 
-      <div className="bg-grey-100 relative w-1">
+      <div className="bg-surface-card relative w-1">
         <span className="text-grey-00 text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
           {scoreDeclineThreshold}
         </span>

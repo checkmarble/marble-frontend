@@ -165,7 +165,7 @@ export function RulesHit({ isComparingRanges, data, isLoading }: RulesHitProps) 
           </div>
         ) : null}
         <div className="flex w-full flex-col items-start gap-v2-md">
-          <Table.Container {...getContainerProps()} className="bg-grey-100 w-full">
+          <Table.Container {...getContainerProps()} className="bg-surface-card w-full">
             <Table.Header headerGroups={table.getHeaderGroups()} />
             <Table.Body {...getBodyProps()}>
               {rows.map((row) => (
@@ -173,7 +173,7 @@ export function RulesHit({ isComparingRanges, data, isLoading }: RulesHitProps) 
               ))}
               {!expanded && data.length > 5 ? (
                 <tr
-                  className="even:bg-grey-98 h-12 hover:bg-purple-98 cursor-pointer"
+                  className="even:bg-surface-row h-12 hover:bg-purple-background-light cursor-pointer"
                   onClick={() => setExpanded(true)}
                 >
                   <td

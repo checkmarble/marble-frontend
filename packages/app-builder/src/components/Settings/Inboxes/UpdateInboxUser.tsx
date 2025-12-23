@@ -93,7 +93,7 @@ export function UpdateInboxUserContent({
       }}
     >
       <Modal.Title>{t('settings:inboxes.inbox_user.update')}</Modal.Title>
-      <div className="bg-grey-100 flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-6 p-6">
         <form.Field
           name="role"
           validators={{

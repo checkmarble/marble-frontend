@@ -34,7 +34,7 @@ export const ActivatedFilterItem = ({ filter, onUpdate, onClear }: ActivatedFilt
   });
 
   const button = (
-    <span className="h-10 bg-purple-98 border border-purple-96 rounded-v2-md p-v2-sm text-default flex items-center gap-v2-xs">
+    <span className="h-10 bg-purple-background-light border border-purple-96 rounded-v2-md p-v2-sm text-default flex items-center gap-v2-xs">
       <span>
         <DisplayFilterValue filter={filter} />
       </span>
@@ -58,7 +58,7 @@ export const ActivatedFilterItem = ({ filter, onUpdate, onClear }: ActivatedFilt
   }
 
   return (
-    <span className="h-10 bg-purple-98 border border-purple-96 rounded-v2-md p-v2-sm text-default flex items-center gap-v2-xs">
+    <span className="h-10 bg-purple-background-light border border-purple-96 rounded-v2-md p-v2-sm text-default flex items-center gap-v2-xs">
       <span>
         <DisplayFilterValue filter={filter} />
       </span>

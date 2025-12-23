@@ -206,7 +206,7 @@ const droppableVariants = cva('not-last:mb-2', {
 const draggableVariants = cva('p-2 grid grid-cols-[auto_1fr_auto] max-w-[500px] gap-2 items-center', {
   variants: {
     isDragging: {
-      true: 'bg-purple-98 rounded-sm',
+      true: 'bg-purple-background-light rounded-sm',
       false: null,
     },
   },

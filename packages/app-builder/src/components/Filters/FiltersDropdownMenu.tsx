@@ -9,7 +9,7 @@ const FiltersDropdownMenuContent = forwardRef<HTMLDivElement, React.ComponentPro
         <DropdownMenu.Content
           ref={ref}
           className={clsx(
-            'animate-slide-up-and-fade bg-grey-100 border-grey-90 rounded-sm border shadow-md will-change-[transform,opacity]',
+            'animate-slide-up-and-fade bg-surface-card border-grey-90 rounded-sm border shadow-md will-change-[transform,opacity]',
             className,
           )}
           side="bottom"
@@ -30,7 +30,7 @@ const FiltersDropdownMenuItem = forwardRef<HTMLDivElement, React.ComponentProps<
       <DropdownMenu.Item
         ref={ref}
         className={clsx(
-          'radix-highlighted:bg-purple-98 flex flex-row gap-2 rounded-sm p-2 outline-hidden transition-colors',
+          'radix-highlighted:bg-purple-background-light flex flex-row gap-2 rounded-sm p-2 outline-hidden transition-colors',
           className,
         )}
         {...props}

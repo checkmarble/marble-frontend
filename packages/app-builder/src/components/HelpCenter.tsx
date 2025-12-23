@@ -152,7 +152,7 @@ function HelpCenterContent({ defaultTab, resources, ChatWithUsButton, searchValu
               {currentResources.map((resource) => (
                 <MenuItem
                   key={`${resource.category}-${resource.label}`}
-                  className="border-grey-95 bg-grey-100 data-active-item:bg-purple-98 data-active-item:border-purple-65 flex scroll-my-2 flex-col gap-2 rounded-sm border p-2 outline-hidden"
+                  className="border-grey-95 bg-surface-card data-active-item:bg-purple-background-light data-active-item:border-purple-65 flex scroll-my-2 flex-col gap-2 rounded-sm border p-2 outline-hidden"
                   render={<a href={resource.href} target="_blank" rel="noreferrer" />}
                 >
                   {resource.label}

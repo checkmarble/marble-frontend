@@ -15,7 +15,7 @@ export const RuleSnoozeCreatedDetail = ({ event }: { event: RuleSnoozeCreatedEve
 
   return (
     <div key={event.id} className="flex w-full items-center gap-2">
-      <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
+      <div className="bg-surface-card border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="snooze" className="text-grey-00 size-3" />
       </div>
       <span className="text-grey-00 inline-flex h-full items-center whitespace-pre text-xs">

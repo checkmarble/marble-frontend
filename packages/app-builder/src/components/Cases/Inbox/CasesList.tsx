@@ -84,7 +84,7 @@ export function CasesList({
         </div>
         {cases.map((caseItem, index) => (
           <div
-            className="grid grid-cols-subgrid col-span-full items-center group/table-row hover:bg-purple-98 cursor-pointer h-18"
+            className="grid grid-cols-subgrid col-span-full items-center group/table-row hover:bg-purple-background-light cursor-pointer h-18"
             key={caseItem.id}
             onClick={handleRowClick}
           >

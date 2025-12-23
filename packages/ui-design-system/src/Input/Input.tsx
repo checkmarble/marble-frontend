@@ -7,7 +7,7 @@ import { type inputBorderColor } from './Input.constants';
 
 export const input = cva(
   [
-    'bg-grey-100 text-s text-grey-00 placeholder:text-grey-80 disabled:bg-grey-95 peer block size-full rounded-sm px-2 font-medium outline-hidden border focus:border-purple-65',
+    'bg-surface-card text-s text-grey-00 placeholder:text-grey-80 disabled:bg-grey-95 peer block size-full rounded-sm px-2 font-medium outline-hidden border focus:border-purple-65',
     // Dark mode
     'dark:bg-transparent dark:text-grey-primary dark:placeholder:text-grey-placeholder dark:disabled:bg-transparent dark:disabled:text-grey-disabled dark:focus:border-purple-primary',
   ],

@@ -263,7 +263,7 @@ function VersionSection({ scenarioIterations }: { scenarioIterations: ScenarioIt
         {quickDraft ? <QuickVersionAccess scenarioIteration={quickDraft} /> : null}
         {labelledOtherVersions.length > 0 ? (
           <ScenarioIterationMenu labelledScenarioIteration={labelledOtherVersions}>
-            <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 bg-white border border-grey-border rounded-v2-md font-medium px-v2-sm py-v2-xs outline-hidden transition-colors">
+            <MenuButton className="text-s text-grey-00 hover:text-purple-65 focus:text-purple-65 bg-surface-card border border-grey-border rounded-v2-md font-medium px-v2-sm py-v2-xs outline-hidden transition-colors">
               {t('scenarios:home.other_versions', {
                 count: otherVersions.length,
               })}
@@ -288,7 +288,7 @@ function QuickVersionAccess({ scenarioIteration }: { scenarioIteration: Scenario
         iterationId: fromUUIDtoSUUID(scenarioIteration.id),
       })}
       className={CtaV2ClassName({ variant: 'secondary' })}
-      // className="bg-grey-100 border-grey-90 text-grey-00 text-s hover:bg-grey-95 active:bg-grey-90 flex min-w-24 flex-row items-center justify-center gap-1 rounded-full border py-2 transition-colors"
+      // className="bg-surface-card border-grey-90 text-grey-00 text-s hover:bg-grey-95 active:bg-grey-90 flex min-w-24 flex-row items-center justify-center gap-1 rounded-full border py-2 transition-colors"
     >
       <span className="text-grey-00 text-s font-semibold capitalize">{currentFormattedVersion}</span>
       {currentFormattedLive ? (
@@ -311,7 +311,7 @@ function TestRunSection({ scenarioId, access }: { scenarioId: string; access: Fe
   return (
     <section
       className={clsx(
-        'bg-grey-100 border-grey-90 relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-v2-md',
+        'bg-surface-card border-grey-90 relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-v2-md',
         isExecutionOngoing && 'border-purple-65',
       )}
     >
@@ -380,7 +380,7 @@ function RealTimeSection({
   const isLive = liveScenarioIteration !== undefined;
 
   return (
-    <div className="bg-grey-100 border-grey-90 flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md">
+    <div className="bg-surface-card border-grey-90 flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md">
       <h3 className="text-grey-00 font-medium">{t('scenarios:home.execution.real_time')}</h3>
       <CalloutV2>
         <div className="flex flex-col gap-4">
@@ -458,7 +458,7 @@ function BatchSection({
   return (
     <div
       className={clsx(
-        'bg-grey-100 border-grey-90 relative flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md',
+        'bg-surface-card border-grey-90 relative flex flex-1 flex-col gap-4 rounded-v2-lg border p-v2-md',
         isExecutionOngoing && 'border-purple-65',
       )}
     >
@@ -555,7 +555,7 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
   let tooltip: string | undefined;
 
   return (
-    <section className="bg-grey-100 border-grey-90 relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-v2-md">
+    <section className="bg-surface-card border-grey-90 relative flex max-w-[500px] flex-col gap-4 rounded-v2-lg border p-v2-md">
       <h3 className="text-grey-00 font-medium">{t('scenarios:home.workflow')}</h3>
 
       {access === 'test' ? (
@@ -571,7 +571,7 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
 
       <div className="flex flex-row gap-4">
         {tag ? (
-          <div className="bg-purple-98 text-s text-purple-65 flex h-10 flex-row items-center gap-2 rounded-sm px-2 uppercase">
+          <div className="bg-purple-background-light text-s text-purple-65 flex h-10 flex-row items-center gap-2 rounded-sm px-2 uppercase">
             {tag}
             {tooltip ? (
               <Ariakit.HovercardProvider showTimeout={0} hideTimeout={0} placement="right">
@@ -584,7 +584,7 @@ function WorkflowSection({ scenario, access }: { scenario: Scenario; access: Fea
                 <Ariakit.Hovercard
                   portal
                   gutter={8}
-                  className="bg-grey-100 border-grey-90 flex w-fit max-w-80 rounded-sm border p-2 shadow-md"
+                  className="bg-surface-card border-grey-90 flex w-fit max-w-80 rounded-sm border p-2 shadow-md"
                 >
                   {tooltip}
                 </Ariakit.Hovercard>
@@ -657,7 +657,7 @@ function ResourcesSection() {
             rel="noopener noreferrer"
           >
             <img src={src} alt="" className="aspect-[21/9] object-cover" />
-            <span className="border-grey-90 bg-grey-100 text-s group-hover:border-purple-65 group-focus:border-purple-65 flex flex-row items-center justify-between border-t p-v2-sm font-medium transition-colors">
+            <span className="border-grey-90 bg-surface-card text-s group-hover:border-purple-65 group-focus:border-purple-65 flex flex-row items-center justify-between border-t p-v2-sm font-medium transition-colors">
               {t(tKey)}
               <Icon aria-hidden icon="arrow-right" className="size-3.5" />
             </span>

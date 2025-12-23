@@ -28,7 +28,7 @@ function PageHeader({ className, children, ...props }: React.ComponentProps<'div
   return (
     <div
       className={cn(
-        'border-b-grey-90 bg-grey-100 text-l text-grey-00 relative flex shrink-0 flex-row items-center border-b font-bold px-v2-md dark:bg-grey-background dark:border-b-grey-border dark:text-grey-primary',
+        'border-b-grey-90 bg-surface-card text-l relative flex shrink-0 flex-row items-center border-b font-bold px-v2-md dark:border-b-grey-border',
         headerHeight({ type: 'height' }),
         className,
       )}
@@ -58,7 +58,7 @@ function PageDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <aside
       className={cn(
-        'bg-purple-98 text-s text-purple-65 dark:text-grey-primary flex flex-row gap-2 p-4 font-normal lg:px-8 lg:py-4 dark:bg-grey-background-light',
+        'bg-purple-background-light text-s text-purple-65 dark:text-grey-primary flex flex-row gap-2 p-4 font-normal lg:px-8 lg:py-4 dark:bg-grey-background-light',
         className,
       )}
       {...props}

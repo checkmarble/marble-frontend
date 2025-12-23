@@ -50,7 +50,7 @@ function TableTH<TData extends RowData, TValue>({
       colSpan={header.colSpan}
       style={{ width: header.getSize() }}
       className={clsx(
-        'border-grey-90 bg-grey-100 relative h-12 w-full border-b border-r px-4 last:border-r-0',
+        'border-grey-90 bg-surface-card relative h-12 w-full border-b border-r px-4 last:border-r-0',
         {
           'cursor-pointer select-none': header.column.getCanSort(),
         },
@@ -79,7 +79,7 @@ function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderG
                 <th
                   colSpan={header.colSpan}
                   key={`${header.id}-${index}`}
-                  className="bg-grey-100 border-grey-90 w-0 border-b"
+                  className="bg-surface-card border-grey-90 w-0 border-b"
                 ></th>
               );
             }
@@ -256,8 +256,8 @@ function Row<TData extends RowData>({
         onClick?.(e);
       }}
       className={clsx(
-        'even:bg-grey-98 h-12',
-        withRowLink && 'hover:bg-purple-98 focus-within:bg-purple-98 cursor-pointer group/row-link',
+        'even:bg-surface-row h-12',
+        withRowLink && 'hover:bg-surface-row-hover focus-within:bg-surface-row-hover cursor-pointer group/row-link',
         className,
       )}
       {...props}
@@ -284,7 +284,7 @@ function DefaultTable<TData extends RowData>({
   getContainerProps,
 }: ReturnType<typeof useTable<TData>>) {
   return (
-    <Table.Container {...getContainerProps()} className="bg-grey-100 max-h-96">
+    <Table.Container {...getContainerProps()} className="bg-surface-card max-h-96">
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => (

@@ -17,7 +17,7 @@ export function ValidateSelfPivot({
   const { t } = useTranslation(['common', 'data']);
 
   return (
-    <div className="bg-grey-100 inline-block w-full flex-col gap-6 p-6">
+    <div className="bg-surface-card inline-block w-full flex-col gap-6 p-6">
       <Trans
         t={t}
         i18nKey="data:create_pivot.validate_self_link.description"

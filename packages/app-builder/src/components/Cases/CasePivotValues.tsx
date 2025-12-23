@@ -50,13 +50,13 @@ export function CasePivotValues({
                 <Ariakit.Hovercard
                   portal
                   gutter={16}
-                  className="bg-grey-100 border-grey-90 flex w-fit rounded-sm border p-2 shadow-md"
+                  className="bg-surface-card border-grey-90 flex w-fit rounded-sm border p-2 shadow-md"
                 >
                   <PivotDetails pivot={pivot} />
                 </Ariakit.Hovercard>
               </Ariakit.HovercardProvider>
             </Tag>
-            <CopyToClipboardButton toCopy={value} className="bg-grey-100">
+            <CopyToClipboardButton toCopy={value} className="bg-surface-card">
               <span className="text-s line-clamp-1 max-w-40 font-normal">{value}</span>
             </CopyToClipboardButton>
           </React.Fragment>

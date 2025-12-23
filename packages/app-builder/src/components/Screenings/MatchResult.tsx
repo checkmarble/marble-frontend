@@ -25,7 +25,7 @@ export function MatchResult({ entity }: { entity: ScreeningMatchPayload }) {
         <a
           href={`https://www.opensanctions.org/entities/${entity.id}`}
           target="_blank"
-          className="border-grey-90 bg-grey-100 flex items-center gap-2 rounded-sm border p-1"
+          className="border-grey-90 bg-surface-card flex items-center gap-2 rounded-sm border p-1"
           rel="noreferrer"
         >
           OpenSanctions

@@ -135,7 +135,7 @@ function CreateScenarioContent({ dataModel }: { dataModel: DataModel }) {
                     <Ariakit.Hovercard
                       portal
                       gutter={4}
-                      className="bg-grey-100 border-grey-90 flex w-fit max-w-80 rounded-sm border p-2 shadow-md"
+                      className="bg-surface-card border-grey-90 flex w-fit max-w-80 rounded-sm border p-2 shadow-md"
                     >
                       {t('scenarios:trigger_object.description')}
                     </Ariakit.Hovercard>
