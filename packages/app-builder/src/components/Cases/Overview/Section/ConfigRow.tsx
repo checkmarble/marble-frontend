@@ -40,7 +40,7 @@ export function ConfigRow({
     <div
       className={cn('border rounded-v2-lg p-v2-md flex flex-col gap-v2-md', {
         'border-purple-restricted-border bg-purple-restricted-background': isRestricted,
-        'border-grey-border bg-grey-background-light': !isRestricted,
+        'border-grey-border bg-surface-card': !isRestricted,
       })}
     >
       <div className="flex items-center justify-between">
