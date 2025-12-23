@@ -61,7 +61,7 @@ export const EditDataModelField = ({
       <MenuCommand.Trigger>
         <button
           disabled={disabled}
-          className="border-grey-90 text-s bg-grey-100 aria-disabled:bg-grey-98 text-grey-00 flex h-10 items-center justify-between rounded-sm border px-2"
+          className="border-grey-90 text-s bg-surface-card aria-disabled:bg-grey-98 text-grey-00 flex h-10 items-center justify-between rounded-sm border px-2"
         >
           {showPlaceholder ? (
             <span>{placeholder}</span>
@@ -114,7 +114,7 @@ export const EditDataModelFieldTableMenu = ({ tableName, fields, onChange }: Edi
           return (
             <MenuCommand.Item
               key={field.fieldName}
-              className="data-active-item:bg-purple-98 group grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
+              className="data-active-item:bg-purple-background-light group grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
               onSelect={() => onChange(field)}
             >
               {typeIcon ? <Icon icon={typeIcon} className="col-start-1 size-5 shrink-0" /> : null}
@@ -150,7 +150,7 @@ function FieldInfo({ field }: { field: DataModelField }) {
         gutter={24}
         shift={-8}
         portal
-        className="bg-grey-100 border-grey-90 text-s flex max-h-[min(var(--popover-available-height),400px)] max-w-(--popover-available-width) rounded-sm border shadow-md"
+        className="bg-surface-card border-grey-90 text-s flex max-h-[min(var(--popover-available-height),400px)] max-w-(--popover-available-width) rounded-sm border shadow-md"
       >
         <div className="p-4">{field.description}</div>
       </Ariakit.Hovercard>

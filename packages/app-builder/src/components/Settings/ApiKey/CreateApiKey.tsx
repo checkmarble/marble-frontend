@@ -59,7 +59,7 @@ const CreateApiKeyContent = ({ onSuccess }: { onSuccess: () => void }) => {
   return (
     <form onSubmit={handleSubmit(form)}>
       <ModalV2.Title>{t('settings:api_keys.new_api_key')}</ModalV2.Title>
-      <div className="bg-grey-100 flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-6 p-6">
         <form.Field name="description">
           {(field) => (
             <div className="group flex flex-col gap-2">

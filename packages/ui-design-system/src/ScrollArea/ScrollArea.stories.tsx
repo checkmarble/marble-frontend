@@ -15,7 +15,10 @@ export const V1: StoryFn = () => (
       <ul>
         {Array.from({ length: 15 }).map((_, index) => (
           <li
-            className={clsx('flex w-48 flex-col px-3 py-2 shadow-xs', index % 2 === 0 ? 'bg-grey-90' : 'bg-grey-100')}
+            className={clsx(
+              'flex w-48 flex-col px-3 py-2 shadow-xs',
+              index % 2 === 0 ? 'bg-grey-90' : 'bg-surface-card',
+            )}
             key={index}
           >
             <span>{index}</span>
@@ -38,7 +41,7 @@ export const V2: StoryFn = () => (
     <ul>
       {Array.from({ length: 15 }).map((_, index) => (
         <li
-          className={clsx('flex w-48 flex-col px-3 py-2 shadow-xs', index % 2 === 0 ? 'bg-grey-90' : 'bg-grey-100')}
+          className={clsx('flex w-48 flex-col px-3 py-2 shadow-xs', index % 2 === 0 ? 'bg-grey-90' : 'bg-surface-card')}
           key={index}
         >
           <span>{index}</span>

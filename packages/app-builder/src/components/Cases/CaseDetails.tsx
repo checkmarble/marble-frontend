@@ -75,7 +75,7 @@ export const CaseDetails = ({
   return (
     <div
       ref={containerRef}
-      className="relative flex w-full min-w-0 flex-col gap-v2-lg overflow-y-scroll bg-white pb-v2-lg"
+      className="relative flex w-full min-w-0 flex-col gap-v2-lg overflow-y-scroll bg-surface-card pb-v2-lg"
     >
       <div ref={sentinelRef} className="absolute left-0 top-0" />
       <div
@@ -172,7 +172,7 @@ export const CaseDetails = ({
             {/* Investigation */}
             <div className="flex flex-col justify-start gap-1.5">
               <span className="text-h2 text-grey-00 px-1 font-medium">{t('cases:investigation')}</span>
-              <div className="border-grey-90 bg-grey-100 flex flex-col rounded-v2-lg border">
+              <div className="border-grey-90 bg-surface-card flex flex-col rounded-v2-lg border">
                 <div className="p-4">
                   <CaseEvents events={detail.events} inboxes={inboxes} root={containerRef} />
                 </div>
@@ -207,7 +207,7 @@ export const CaseDetails = ({
             </UploadFile> */}
                 </div>
 
-                <div className="border-grey-90 bg-grey-100 flex flex-wrap gap-v2-sm rounded-v2-lg border p-v2-md">
+                <div className="border-grey-90 bg-surface-card flex flex-wrap gap-v2-sm rounded-v2-lg border p-v2-md">
                   {detail.files.map((file) => (
                     <CaseFile key={file.id} file={file} />
                   ))}
@@ -241,7 +241,7 @@ export const CaseDetails = ({
                 </ButtonV2>
               </div>
             </div>
-            <div className="border border-grey-90 rounded-lg p-4 bg-grey-100">
+            <div className="border border-grey-90 rounded-lg p-4 bg-surface-card">
               <Markdown>{caseReview?.review.output ?? ''}</Markdown>
             </div>
           </div>

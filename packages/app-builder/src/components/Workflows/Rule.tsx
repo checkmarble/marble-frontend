@@ -69,7 +69,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
       >
         {/* Conditions and Actions Boxes */}
         <div className="flex items-center w-full">
-          <div className="flex-none items-stretch relative w-[800px] bg-grey-100">
+          <div className="flex-none items-stretch relative w-[800px] bg-surface-card">
             {/* Unified bordered wrapper for title + content */}
             <div
               className={`rounded-lg overflow-hidden border-2 transition-all duration-200 ${
@@ -81,7 +81,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
               }`}
             >
               {/* Rule title bar */}
-              <div className="text-grey-00 font-semibold px-4 py-2 w-auto bg-purple-98 flex items-center justify-between">
+              <div className="text-grey-00 font-semibold px-4 py-2 w-auto bg-purple-background-light flex items-center justify-between">
                 {editingRuleId === displayRule.id ? (
                   <input
                     type="text"
@@ -95,12 +95,12 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                       }
                     }}
                     autoFocus
-                    className="bg-white font-semibold text-base w-2/3 min-w-0 px-2 py-1 rounded-sm border-2 border-purple-60 outline-hidden focus:ring-2 focus:ring-purple-30 transition-all"
+                    className="bg-surface-card font-semibold text-base w-2/3 min-w-0 px-2 py-1 rounded-sm border-2 border-purple-60 outline-hidden focus:ring-2 focus:ring-purple-30 transition-all"
                   />
                 ) : (
                   <div className="group inline-flex items-center gap-1">
                     <span
-                      className="cursor-text hover:bg-white hover:bg-opacity-20 px-1 py-0.5 rounded-sm transition-colors"
+                      className="cursor-text hover:bg-surface-card hover:bg-opacity-20 px-1 py-0.5 rounded-sm transition-colors"
                       onClick={(event) => handleRenameClick(event, displayRule.id, displayRule.name)}
                     >
                       {displayRule.name}
@@ -128,7 +128,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
                   </Button>
                 </div>
               </div>
-              <div className="bg-white p-4 transition-all duration-200 relative">
+              <div className="bg-surface-card p-4 transition-all duration-200 relative">
                 {/* Drag Handle */}
                 <div
                   className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-12 rounded-full cursor-grab active:cursor-grabbing transition-all duration-200 flex items-center justify-center ${
@@ -203,7 +203,7 @@ export function WorkflowRule({ rule, provided, snapshot }: RuleProps) {
 
           {/* Actions Box */}
           <div
-            className={`flex-none rounded-lg border-2 border-grey-90 bg-white p-4 transition-all duration-200 w-auto max-w-full bg-grey-100 ${
+            className={`flex-none rounded-lg border-2 border-grey-90 bg-surface-card p-4 transition-all duration-200 w-auto max-w-full bg-surface-card ${
               snapshot.isDragging
                 ? 'border-purple-60 shadow-xl'
                 : isRuleModified

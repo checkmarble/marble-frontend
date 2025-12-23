@@ -10,7 +10,7 @@ const FilterPopoverContent = forwardRef<HTMLDivElement, React.ComponentProps<typ
         <Popover.Content
           ref={ref}
           className={clsx(
-            'animate-slide-up-and-fade bg-grey-100 border-grey-90 rounded-sm border shadow-md will-change-[transform,opacity]',
+            'animate-slide-up-and-fade bg-surface-card border-grey-90 rounded-sm border shadow-md will-change-[transform,opacity]',
             className,
           )}
           side="bottom"
@@ -39,7 +39,7 @@ const FilterItemRoot = forwardRef<HTMLDivElement, Popover.PopoverAnchorProps>(fu
   return (
     <FilterPopover.Anchor
       ref={ref}
-      className={clsx('bg-purple-98 flex h-10 flex-row items-center rounded-sm', className)}
+      className={clsx('bg-purple-background-light flex h-10 flex-row items-center rounded-sm', className)}
       {...props}
     />
   );

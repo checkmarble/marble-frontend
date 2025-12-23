@@ -221,7 +221,7 @@ export const FilterTransactionByDecision = ({
   }, [displayChangedRules, rules, versions]);
 
   return (
-    <Collapsible.Container className="bg-grey-100">
+    <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>{t('scenarios:testrun.transaction_by_decision')}</Collapsible.Title>
       <Collapsible.Content>
         {rules.length === 0 ? (

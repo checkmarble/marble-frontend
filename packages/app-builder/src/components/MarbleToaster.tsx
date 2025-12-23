@@ -41,6 +41,7 @@ export function MarbleToaster({ toastMessage }: { toastMessage?: toastSession.To
       position="top-center"
       containerClassName={headerHeight({ type: 'mt' })}
       toastOptions={{
+        className: 'bg-surface-card text-grey-primary',
         loading: {
           icon: LoaderIcon,
         },
@@ -94,7 +95,7 @@ const LoaderIcon = (
 const ErrorIcon = (
   <div
     aria-hidden
-    className="animate-circle-animation after:animate-first-line-animation after:bg-grey-100 before:animate-second-line-animation before:bg-grey-100 bg-red-47 relative size-5 shrink-0 rotate-45 rounded-full delay-100 before:absolute before:bottom-[9px] before:left-1 before:h-[2px] before:w-3 before:rounded-lg before:delay-150 after:absolute after:bottom-[9px] after:left-1 after:h-[2px] after:w-3 after:rounded-lg after:delay-150"
+    className="animate-circle-animation after:animate-first-line-animation after:bg-[#FFFFFF] before:animate-second-line-animation before:bg-[#FFFFFF] bg-red-47 relative size-5 shrink-0 rotate-45 rounded-full delay-100 before:absolute before:bottom-[9px] before:left-1 before:h-[2px] before:w-3 before:rounded-lg before:delay-150 after:absolute after:bottom-[9px] after:left-1 after:h-[2px] after:w-3 after:rounded-lg after:delay-150"
   />
 );
 

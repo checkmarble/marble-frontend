@@ -35,7 +35,7 @@ export function EntityAnnotated({ event }: EntityAnnotatedProps) {
 
   return (
     <div key={event.id} className="flex w-full items-start gap-2">
-      <div className="bg-grey-100 border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
+      <div className="bg-surface-card border-grey-90 flex size-6 shrink-0 grow-0 items-center justify-center rounded-full border">
         <Icon icon="comment" className="text-grey-00 size-3" />
       </div>
       <div className="flex flex-col gap-1">

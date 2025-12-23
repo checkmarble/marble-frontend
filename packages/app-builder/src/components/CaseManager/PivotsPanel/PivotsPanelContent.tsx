@@ -84,7 +84,7 @@ export function PivotsPanelContent({
             }}
             className={cn('h-7 px-4 rounded-lg flex items-center border', {
               'bg-purple-96 text-purple-65 border-purple-96': isDisplayingProofs,
-              'bg-white text-grey-50 border-grey-90 cursor-pointer': !isDisplayingProofs,
+              'bg-surface-card text-grey-50 border-grey-90 cursor-pointer': !isDisplayingProofs,
             })}
           >
             {t('cases:ai_review.proof.title')}
@@ -161,7 +161,7 @@ export function PivotsPanelContent({
                 key={`${proof.type}-${proof.object.data['object_id']}`}
                 className="rounded-xl border border-grey-90 bg-grey-98"
               >
-                <div className="bg-grey-100 px-4 py-2 rounded-t-xl border-b border-grey-90">
+                <div className="bg-surface-card px-4 py-2 rounded-t-xl border-b border-grey-90">
                   {t('cases:ai_review.proof.tab_title', { number: idx + 1 })}
                 </div>
                 <div className="p-4 flex flex-col gap-v2-md">

@@ -10,7 +10,7 @@ export const TestRunNudge = ({ kind }: { kind: Exclude<FeatureAccessLevelDto, 'a
 
   return (
     <section
-      className={cn('bg-grey-100 relative flex h-fit max-w-[500px] flex-col gap-4 rounded-lg border-2 p-8', {
+      className={cn('bg-surface-card relative flex h-fit max-w-[500px] flex-col gap-4 rounded-lg border-2 p-8', {
         'border-purple-82': kind === 'restricted',
         'border-yellow-50': kind === 'missing_configuration',
       })}

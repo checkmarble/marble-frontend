@@ -24,7 +24,7 @@ export function LeftSidebar({ children }: { children: React.ReactNode }) {
   return (
     <div
       aria-expanded={isExpanded}
-      className="bg-grey-100 group/nav border-e-grey-90 z-20 flex max-h-screen w-14 shrink-0 flex-col border-e transition-all aria-expanded:w-[235px] dark:bg-grey-background dark:border-e-grey-border"
+      className="bg-surface-sidebar group/nav border-e-grey-90 z-20 flex max-h-screen w-14 shrink-0 flex-col border-e transition-all aria-expanded:w-[235px] dark:border-e-grey-border"
     >
       {children}
     </div>

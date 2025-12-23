@@ -18,7 +18,7 @@ export function DecisionDetailTriggerObject({ triggerObject }: { triggerObject: 
   const parsedTriggerObject = useParsedTriggerObject(triggerObject);
 
   return (
-    <Collapsible.Container className="bg-grey-100">
+    <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>{t('decisions:trigger_object.type')}</Collapsible.Title>
       <Collapsible.Content>
         <div className="grid grid-cols-[max-content_1fr] gap-2 break-all">

@@ -6,7 +6,7 @@ type TableProps = {
 };
 
 const Table = ({ className, children }: TableProps) => {
-  return <div className={cn('grid border border-grey-border rounded-lg bg-white', className)}>{children}</div>;
+  return <div className={cn('grid border border-grey-border rounded-lg bg-surface-card', className)}>{children}</div>;
 };
 
 type TableRowProps = {

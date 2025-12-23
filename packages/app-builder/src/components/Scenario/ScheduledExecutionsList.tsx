@@ -112,7 +112,7 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
   });
 
   return (
-    <Table.Container {...getContainerProps()} className="bg-grey-100 max-h-[70dvh]">
+    <Table.Container {...getContainerProps()} className="bg-surface-card max-h-[70dvh]">
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {

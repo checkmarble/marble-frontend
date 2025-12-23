@@ -27,7 +27,7 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
   return (
     <div
       className={cn(
-        'flex items-center justify-between sticky bottom-0 bg-white -mx-v2-lg -mb-v2-lg pt-v2-md px-v2-lg pb-v2-lg border-t border-transparent',
+        'flex items-center justify-between sticky bottom-0 bg-surface-card -mx-v2-lg -mb-v2-lg pt-v2-md px-v2-lg pb-v2-lg border-t border-transparent',
         className,
       )}
     >

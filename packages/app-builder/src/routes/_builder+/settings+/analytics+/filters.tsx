@@ -236,7 +236,7 @@ export default function Filters() {
                 <Table.Header headerGroups={table.getHeaderGroups()} />
                 <Table.Body {...getBodyProps()}>
                   {tableRows.map((row) => (
-                    <Table.Row key={row.id} row={row} className="hover:bg-purple-98 group" />
+                    <Table.Row key={row.id} row={row} className="hover:bg-purple-background-light group" />
                   ))}
                 </Table.Body>
               </Table.Container>

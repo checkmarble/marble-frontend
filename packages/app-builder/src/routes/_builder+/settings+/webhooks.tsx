@@ -170,7 +170,7 @@ export function ErrorBoundary() {
     <Page.Container>
       <Page.Content className="relative max-w-(--breakpoint-xl)">
         <div className="bg-grey-00/20 absolute z-50 flex size-full items-center justify-center p-4 backdrop-blur-[2px] transition-all">
-          <div className="bg-grey-100 border-grey-90 flex max-w-[500px] flex-col items-center rounded-sm border shadow-md">
+          <div className="bg-surface-card border-grey-90 flex max-w-[500px] flex-col items-center rounded-sm border shadow-md">
             <h1 className="bg-grey-95 text-grey-00 w-full p-8 text-center font-semibold">
               {t('settings:webhooks.configuration_error')}
             </h1>

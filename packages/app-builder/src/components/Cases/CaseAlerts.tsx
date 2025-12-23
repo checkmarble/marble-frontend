@@ -43,7 +43,7 @@ export const CaseAlerts = ({
 
   return decisions ? (
     <>
-      <div className="text-small border-grey-90 bg-grey-100 rounded-lg border">
+      <div className="text-small border-grey-90 bg-surface-card rounded-lg border">
         <div className="text-default text-grey-50 grid grid-cols-[82px_2fr_1.3fr_1fr] font-normal">
           <span className="p-v2-sm">{t('cases:decisions.date')}</span>
           <span className="p-v2-sm">{t('cases:decisions.alert')}</span>
@@ -61,7 +61,7 @@ export const CaseAlerts = ({
               className={cn(
                 'border-grey-90 hover:bg-grey-98 group grid min-h-28 grid-cols-[82px_2fr_1.3fr_1fr] border-t transition-colors',
                 {
-                  'bg-purple-98': selectedDecision === decision.id && drawerContentMode === 'decision',
+                  'bg-purple-background-light': selectedDecision === decision.id && drawerContentMode === 'decision',
                 },
               )}
             >

@@ -71,7 +71,7 @@ export function RuleVsDecisionOutcomes({
       onMouseEnter={() => {
         setIsHovered(true);
       }}
-      className="bg-white border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm"
+      className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-sm"
     >
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-v2-sm">
@@ -172,7 +172,7 @@ const RulesVsDecisionsOutcomesGraph = ({
             tickValues: [0, 25, 50, 75, 100],
           }}
           tooltip={({ id, value, data }) => (
-            <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
+            <div className="flex flex-col gap-v2-xs w-auto max-w-max bg-surface-card p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
               <div className="flex items-center gap-v2-sm">
                 <strong className="text-grey-00 font-semibold">
                   {String(id)}: {Number(value).toFixed(1)}%

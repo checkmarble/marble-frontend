@@ -76,7 +76,7 @@ export const FieldRuleGroup = ({
               <CommandGroup heading={t('scenarios:rules.heading')}>
                 {finalRuleGroups.map((r) => (
                   <CommandItem
-                    className="data-[selected=true]:bg-purple-98 rounded-sm"
+                    className="data-[selected=true]:bg-purple-background-light rounded-sm"
                     key={r}
                     onSelect={() => onChange?.(r)}
                   >

@@ -230,7 +230,7 @@ export function DecisionPanel({ setDrawerContentMode, decision }: DecisionPanelP
     <>
       <div ref={sentinelRef} />
       <div
-        className={clsx('bg-grey-100 sticky top-0 z-10 flex items-center pl-4', {
+        className={clsx('bg-surface-card sticky top-0 z-10 flex items-center pl-4', {
           'shadow-sticky-top': !intersection?.isIntersecting,
         })}
       >

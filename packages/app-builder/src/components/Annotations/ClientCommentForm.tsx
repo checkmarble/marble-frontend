@@ -62,7 +62,7 @@ export function ClientCommentForm({
   return (
     <form
       onSubmit={handleSubmit(form)}
-      className={cn('flex justify-between rounded-v2-md px-4 py-3 bg-white', className)}
+      className={cn('flex justify-between rounded-v2-md px-4 py-3 bg-surface-card', className)}
     >
       <form.Field
         name="payload.text"

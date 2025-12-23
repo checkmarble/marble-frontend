@@ -26,7 +26,7 @@ function SelectContent({ children, className, ...props }: React.PropsWithChildre
   return (
     <Portal>
       <Content
-        className={clsx('bg-grey-100 border-grey-90 z-50 mt-2 rounded-sm border shadow-md', className)}
+        className={clsx('bg-surface-card border-grey-90 z-50 mt-2 rounded-sm border shadow-md', className)}
         position="popper"
         {...props}
       >
@@ -55,7 +55,7 @@ export const selectTrigger = cva(
   {
     variants: {
       backgroundColor: {
-        enabled: 'bg-grey-100',
+        enabled: 'bg-surface-card',
         disabled: 'bg-grey-98',
       },
       border: {
@@ -108,7 +108,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectIt
       ref={ref}
       className={clsx(
         'text-s rounded-xs p-2 font-medium outline-hidden',
-        'radix-highlighted:bg-purple-98 radix-highlighted:text-purple-65',
+        'radix-highlighted:bg-purple-background-light radix-highlighted:text-purple-65',
         className,
       )}
       {...props}

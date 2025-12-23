@@ -196,7 +196,7 @@ export function DecisionsList({
   });
 
   return (
-    <Table.Container {...getContainerProps()} className={clsx('bg-grey-100', className)}>
+    <Table.Container {...getContainerProps()} className={clsx('bg-surface-card', className)}>
       <Table.Header headerGroups={table.getHeaderGroups()} />
       <Table.Body {...getBodyProps()}>
         {rows.map((row) => {

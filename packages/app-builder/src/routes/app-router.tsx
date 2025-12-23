@@ -52,8 +52,8 @@ export function ErrorBoundary() {
   }
 
   return (
-    <div className="bg-purple-98 flex size-full items-center justify-center">
-      <div className="bg-grey-100 flex max-w-md rounded-2xl p-10 shadow-md">{errorComponent}</div>
+    <div className="bg-purple-background-light flex size-full items-center justify-center">
+      <div className="bg-surface-card flex max-w-md rounded-2xl p-10 shadow-md">{errorComponent}</div>
     </div>
   );
 }

@@ -8,7 +8,7 @@ const Command = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive
     ref={ref}
-    className={clsx('bg-grey-100 border-grey-90 flex flex-col overflow-hidden rounded-sm border p-2', className)}
+    className={clsx('bg-surface-card border-grey-90 flex flex-col overflow-hidden rounded-sm border p-2', className)}
     {...props}
   />
 ));

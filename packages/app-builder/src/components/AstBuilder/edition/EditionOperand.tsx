@@ -31,7 +31,7 @@ export const editionOperandLabelClassnames = cva(
     'group',
     'size-fit min-h-10 min-w-10 rounded-sm outline-hidden',
     'flex flex-row items-center justify-between gap-2 px-2',
-    'bg-grey-100 aria-expanded:bg-purple-98 aria-expanded:border-purple-65',
+    'bg-surface-card aria-expanded:bg-purple-background-light aria-expanded:border-purple-65',
   ],
   {
     variants: {

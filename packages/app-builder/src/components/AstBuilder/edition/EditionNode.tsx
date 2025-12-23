@@ -268,7 +268,7 @@ const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps
           {!props.unary ? (
             <MenuCommand.Item
               onSelect={props.invertOperands}
-              className="data-active-item:bg-purple-98 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
+              className="data-active-item:bg-purple-background-light grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
             >
               <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon="swap" />
               <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
@@ -280,7 +280,7 @@ const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps
           ) : null}
           <MenuCommand.Item
             onSelect={addNesting}
-            className="data-active-item:bg-purple-98 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
+            className="data-active-item:bg-purple-background-light grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
           >
             <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon="parentheses" />
             <div className="col-start-2 flex flex-row gap-1 overflow-hidden">

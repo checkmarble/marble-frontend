@@ -57,7 +57,7 @@ export function Calendar({ classNames, showOutsideDays = true, fixedWeeks = true
         ),
         [SelectionState.range_start]: 'text-grey-100 bg-purple-65 rounded-s-v2-md',
         [SelectionState.range_end]: 'text-grey-100 bg-purple-65 rounded-e-v2-md',
-        [SelectionState.range_middle]: 'text-purple-65 bg-purple-98',
+        [SelectionState.range_middle]: 'text-purple-65 bg-purple-background-light',
         [DayFlag.outside]: 'text-grey-80',
         [DayFlag.disabled]: 'text-grey-90',
         [DayFlag.today]:

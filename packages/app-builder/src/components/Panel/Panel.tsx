@@ -75,7 +75,7 @@ export function PanelContainer({ children, className, size = 'md' }: PanelContai
     <div
       ref={panelRef}
       className={cn(
-        'fixed inset-y-0 right-0 bg-grey-100 border-l border-grey-border p-v2-lg w-full flex flex-col animate-slideRightAndFadeIn',
+        'fixed inset-y-0 right-0 bg-surface-card border-l border-grey-border p-v2-lg w-full flex flex-col animate-slideRightAndFadeIn',
         sizeClasses[size],
         className,
       )}

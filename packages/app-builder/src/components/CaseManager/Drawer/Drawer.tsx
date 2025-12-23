@@ -21,7 +21,7 @@ const drawerVariants = cva(
     },
   },
 );
-const drawerContainerVariants = cva(['bg-grey-100 h-full overflow-y-auto', 'transition-all duration-500'], {
+const drawerContainerVariants = cva(['bg-surface-card h-full overflow-y-auto', 'transition-all duration-500'], {
   variants: {
     expanded: {
       false: 'w-[519px]',
@@ -60,7 +60,7 @@ export function CaseManagerDrawerButtons({ expandable = false }: { expandable?: 
 
   return (
     <div className="p-4">
-      <div className="border-grey-90 bg-grey-100 z-10 flex gap-v2-sm p-v2-sm rounded-md border">
+      <div className="border-grey-90 bg-surface-card z-10 flex gap-v2-sm p-v2-sm rounded-md border">
         <button
           type="button"
           onClick={expandable ? () => context.setExpanded(false) : undefined}

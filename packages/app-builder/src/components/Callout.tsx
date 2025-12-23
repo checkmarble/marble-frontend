@@ -11,7 +11,7 @@ const callout = cva('text-s text-grey-00 flex flex-row items-center gap-2 rounde
      * @default soft
      */
     variant: {
-      outlined: 'bg-grey-100 border-grey-90 border',
+      outlined: 'bg-surface-card border-grey-90 border',
       soft: 'bg-grey-98',
     },
     color: {
@@ -51,7 +51,7 @@ export function CalloutV2({ children, className, ...otherProps }: React.Componen
   return (
     <aside
       className={cn(
-        'bg-purple-98 text-s text-purple-65 flex flex-row gap-2 rounded-lg p-4 font-normal items-center',
+        'bg-purple-background-light text-s text-purple-65 flex flex-row gap-2 rounded-lg p-4 font-normal items-center dark:text-grey-primary',
         className,
       )}
       {...otherProps}

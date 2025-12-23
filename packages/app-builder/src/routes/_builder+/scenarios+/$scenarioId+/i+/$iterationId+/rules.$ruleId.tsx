@@ -309,7 +309,7 @@ export default function RuleDetail() {
                     </Ariakit.MenuButton>
                     <Ariakit.Menu
                       shift={-80}
-                      className="bg-grey-100 border-grey-90 mt-2 flex flex-col gap-2 rounded-sm border p-2"
+                      className="bg-surface-card border-grey-90 mt-2 flex flex-col gap-2 rounded-sm border p-2"
                     >
                       <DuplicateRule ruleId={rule.id} iterationId={rule.scenarioIterationId} scenarioId={scenarioId}>
                         <Button variant="secondary" type="button">
@@ -382,7 +382,7 @@ export default function RuleDetail() {
               <div className="flex flex-col gap-2">
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
                 <div className="grid grid-cols-[var(--container-3xl)_1fr] gap-v2-lg">
-                  <div className="bg-grey-100 border-grey-90 rounded-md border p-6 max-w-3xl">
+                  <div className="bg-surface-card border-grey-90 rounded-md border p-6 max-w-3xl">
                     <form.Field
                       name="formula"
                       validators={{
@@ -415,7 +415,7 @@ export default function RuleDetail() {
                     />
                   ) : null}
                 </div>
-                <div className="bg-grey-100 border-grey-90 rounded-md border p-6 max-w-3xl">
+                <div className="bg-surface-card border-grey-90 rounded-md border p-6 max-w-3xl">
                   <div className="flex items-center gap-2">
                     <span className="bg-grey-95 text-grey-50 text-s inline-flex rounded-sm p-2 font-medium">
                       {t('scenarios:edit_rule.score_heading')}

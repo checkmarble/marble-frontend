@@ -114,7 +114,7 @@ const FieldCategory = memo(function FieldCategory({
         <CollapsibleV2.Content className="bg-grey-98 w-full p-2">
           <div
             className={cn('rounded-lg', {
-              'border-grey-90 bg-grey-100 border': section.datasets.length > 0,
+              'border-grey-90 bg-surface-card border': section.datasets.length > 0,
             })}
           >
             {section.datasets
@@ -167,7 +167,7 @@ export const FieldDataset = ({
   return (
     <div className="flex flex-col gap-2">
       <span className="text-s font-semibold">{t('scenarios:sanction.lists.title')}</span>
-      <div className="bg-grey-100 border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
+      <div className="bg-surface-card border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
         <Callout variant="outlined">
           <p className="whitespace-pre-wrap">{t('scenarios:sanction.lists.callout')}</p>
         </Callout>

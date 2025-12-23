@@ -19,7 +19,7 @@ export const CaseByInboxGraph = () => {
   return (
     <div className="h-100 bg-grey-background-light rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
       <span className="font-medium text-s">{t('cases:overview.graph.cases_by_inbox.title')}</span>
-      <div className="border border-grey-border rounded-v2-lg p-v2-sm bg-white h-full flex flex-col gap-v2-xs">
+      <div className="border border-grey-border rounded-v2-lg p-v2-sm bg-surface-card h-full flex flex-col gap-v2-xs">
         {match(caseStatusByInboxQuery)
           .with({ isPending: true }, () => (
             <div className="grid place-items-center h-full">
@@ -102,7 +102,7 @@ export const CaseByInboxGraph = () => {
                       },
                     ]}
                     tooltip={({ id, value, data }) => (
-                      <div className="flex flex-col gap-v2-sm w-auto max-w-max bg-white p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
+                      <div className="flex flex-col gap-v2-sm w-auto max-w-max bg-surface-card p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
                         <div className="text-s text-grey-60">{data.inbox}</div>
                         <div className="grid grid-cols-[calc(var(--spacing)_*_10)_1fr] gap-v2-xs">
                           {graphCaseStatuses.map((caseStatus) => (

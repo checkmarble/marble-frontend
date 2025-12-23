@@ -19,10 +19,10 @@ export const DatasetSelection = () => {
 
   return (
     <div className="flex flex-col gap-v2-md">
-      <Callout bordered className="bg-white">
+      <Callout bordered className="bg-surface-card">
         {t('continuousScreening:creation.datasetSelection.callout')}
       </Callout>
-      <div className="bg-white rounded-v2-lg border border-grey-border">
+      <div className="bg-surface-card rounded-v2-lg border border-grey-border">
         <div className="border-b border-grey-border p-v2-md flex justify-between items-center">
           <span className="text-s font-semibold">{t('continuousScreening:creation.datasetSelection.list.title')}</span>
           <SelectedListsCount />
@@ -83,7 +83,7 @@ const DatasetSection = ({ section }: { section: OpenSanctionsCatalogSection }) =
           <SelectAllCheckbox section={section} />
         </span>
       </Collapsible.Trigger>
-      <Collapsible.Content className="flex flex-col border border-grey-border rounded-v2-md overflow-hidden bg-white radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
+      <Collapsible.Content className="flex flex-col border border-grey-border rounded-v2-md overflow-hidden bg-surface-card radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
         {section.datasets.map((dataset) => (
           <DatasetItem key={dataset.name} dataset={dataset} />
         ))}

@@ -215,7 +215,7 @@ const ResultModal = ({
   return (
     <Modal.Root open={isOpen} onOpenChange={onOpenChange}>
       <Modal.Content>
-        <div className="bg-grey-100 text-s flex flex-col items-center gap-6 p-6">
+        <div className="bg-surface-card text-s flex flex-col items-center gap-6 p-6">
           <Icon
             icon={icon}
             className={clsx(
@@ -321,7 +321,7 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
   });
 
   return (
-    <Paper.Container className="bg-grey-100 mb-10 w-full">
+    <Paper.Container className="bg-surface-card mb-10 w-full">
       <Paper.Title> {t('upload:past_uploads')} </Paper.Title>
       <Table.Container {...getContainerProps()} className="max-h-96">
         <Table.Header headerGroups={table.getHeaderGroups()} />
@@ -393,7 +393,7 @@ export default function Upload() {
                   download={`${objectType}_template.csv`}
                   className={clsx(
                     'text-s flex flex-row items-center justify-center gap-1 rounded-sm border border-solid px-4 py-2 font-semibold outline-hidden',
-                    'hover:bg-grey-95 active:bg-grey-90 bg-grey-100 border-grey-90 text-grey-00 disabled:text-grey-50 disabled:border-grey-95 disabled:bg-grey-95 focus:border-purple-65',
+                    'hover:bg-grey-95 active:bg-grey-90 bg-surface-card border-grey-90 text-grey-00 disabled:text-grey-50 disabled:border-grey-95 disabled:bg-grey-95 focus:border-purple-65',
                   )}
                 >
                   <Icon icon="download" className="me-2 size-6" />

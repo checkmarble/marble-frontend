@@ -278,11 +278,11 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
               {reactTable.getHeaderGroups().map((headerGroup) => (
                 <tr
                   key={headerGroup.id}
-                  className="text-grey-50 border-grey-90 bg-grey-100 sticky top-0 z-20 h-10 text-left"
+                  className="text-grey-50 border-grey-90 bg-surface-card sticky top-0 z-20 h-10 text-left"
                 >
                   <th
                     className={clsx(
-                      'border-grey-90 bg-grey-100 sticky left-0 z-10 h-full border-y border-r p-2 font-normal',
+                      'border-grey-90 bg-surface-card sticky left-0 z-10 h-full border-y border-r p-2 font-normal',
                       {
                         'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting,
                       },
@@ -316,7 +316,7 @@ function DataTable({ caseId, pivotObject, table, list, metadata, pagination, nav
                   <tr key={row.id} className="border-grey-90 group z-0 h-10">
                     <td
                       className={clsx(
-                        'border-grey-90 bg-grey-100 group-hover:bg-grey-98 sticky left-0 z-10 h-full border-b border-r p-2',
+                        'border-grey-90 bg-surface-card group-hover:bg-grey-98 sticky left-0 z-10 h-full border-b border-r p-2',
                         {
                           'shadow-sticky-left overflow-y-hidden': !intersection?.isIntersecting,
                         },

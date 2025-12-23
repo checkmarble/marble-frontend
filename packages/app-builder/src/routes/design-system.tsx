@@ -37,7 +37,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-l font-semibold text-grey-00">{title}</h2>
-      <div className="rounded-xl border border-grey-90 bg-grey-100 p-6">{children}</div>
+      <div className="rounded-xl border border-grey-90 bg-surface-card p-6">{children}</div>
     </section>
   );
 }
@@ -73,7 +73,7 @@ function ColorPaletteSection() {
             <ColorSwatch name="grey-90" className="bg-grey-90" />
             <ColorSwatch name="grey-95" className="bg-grey-95" />
             <ColorSwatch name="grey-98" className="bg-grey-98" />
-            <ColorSwatch name="grey-100" className="bg-grey-100" />
+            <ColorSwatch name="grey-100" className="bg-surface-card" />
           </div>
         </div>
 
@@ -102,7 +102,7 @@ function ColorPaletteSection() {
             <ColorSwatch name="purple-82" className="bg-purple-82" />
             <ColorSwatch name="purple-85" className="bg-purple-85" />
             <ColorSwatch name="purple-96" className="bg-purple-96" />
-            <ColorSwatch name="purple-98" className="bg-purple-98" />
+            <ColorSwatch name="purple-98" className="bg-purple-background-light" />
           </div>
         </div>
 
@@ -377,7 +377,7 @@ function DesignSystemContent() {
   return (
     <div className="h-screen overflow-y-auto bg-grey-95 transition-colors">
       {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-grey-90 bg-grey-100 px-8 py-4">
+      <header className="sticky top-0 z-10 border-b border-grey-90 bg-surface-card px-8 py-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-grey-00">Design System</h1>
@@ -402,7 +402,7 @@ function DesignSystemContent() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-grey-90 bg-grey-100 px-8 py-4">
+      <footer className="border-t border-grey-90 bg-surface-card px-8 py-4">
         <div className="mx-auto max-w-6xl">
           <p className="text-xs text-grey-50">Marble Design System - Development Page</p>
         </div>

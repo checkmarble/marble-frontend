@@ -13,7 +13,7 @@ export function ScreeningDetail({ screening }: { screening: Screening }) {
   const hasError = isScreeningError(screening);
 
   return (
-    <Collapsible.Container className="bg-grey-100">
+    <Collapsible.Container className="bg-surface-card">
       <Collapsible.Title>
         <div className="flex grow items-center justify-between">
           <span>{screening.config.name}</span>

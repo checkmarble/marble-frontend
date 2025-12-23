@@ -36,7 +36,7 @@ export function SelectField({
 
   return (
     <form onSubmit={handleSubmit(form)}>
-      <div className="bg-grey-100 flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-6 p-6">
         <Modal.Description className="whitespace-pre-wrap">
           <Trans
             t={t}

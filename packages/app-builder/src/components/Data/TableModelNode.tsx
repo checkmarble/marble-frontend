@@ -226,7 +226,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
   });
 
   return (
-    <div className="border-grey-50 bg-grey-100 overflow-hidden rounded-xl border">
+    <div className="border-grey-50 bg-surface-card overflow-hidden rounded-xl border">
       <table
         className={clsx(
           'isolate table-auto border-collapse',

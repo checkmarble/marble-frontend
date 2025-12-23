@@ -75,7 +75,7 @@ export function SelectTargetEntity({
 
   return (
     <form onSubmit={handleSubmit(form)}>
-      <div className="bg-grey-100 flex flex-col gap-6 p-6">
+      <div className="bg-surface-card flex flex-col gap-6 p-6">
         <Modal.Description className="text-pretty">
           <Trans
             t={t}
@@ -134,7 +134,7 @@ export function SelectTargetEntity({
         {hasFieldOptions ? (
           <div className="flex flex-col gap-4">
             <div className="w-full border-b text-center leading-[0.1em]">
-              <span className="text-grey-50 bg-grey-100 px-[10px]">{t('common:or')}</span>
+              <span className="text-grey-50 bg-surface-card px-[10px]">{t('common:or')}</span>
             </div>
             <p className="text-grey-50">
               <Trans

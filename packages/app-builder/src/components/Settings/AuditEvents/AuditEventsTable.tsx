@@ -137,7 +137,7 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
         {rows.map((row) => (
           <Table.Row
             key={row.id}
-            className="hover:bg-purple-98 group cursor-pointer"
+            className="hover:bg-purple-background-light group cursor-pointer"
             row={row}
             onClick={() => handleRowClick(row.original)}
           />
