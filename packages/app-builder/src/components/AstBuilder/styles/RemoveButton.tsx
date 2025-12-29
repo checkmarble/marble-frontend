@@ -8,7 +8,7 @@ export const RemoveButton = React.forwardRef<HTMLButtonElement, ButtonProps>(({ 
     <button
       className={clsx(
         'size-fit rounded-xs border p-1 text-xs transition-colors duration-200 ease-in-out',
-        'bg-surface-card text-grey-80 border-grey-90',
+        'bg-surface-card text-grey-secondary border-grey-primary',
         'hover:text-grey-100 hover:border-red-47 hover:bg-red-47',
         'active:bg-red-43 active:border-red-43',
         className,

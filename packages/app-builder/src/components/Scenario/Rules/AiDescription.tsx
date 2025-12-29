@@ -38,7 +38,7 @@ export function AiDescription({ isPending, description, className }: AiDescripti
   return (
     <div
       className={cn(
-        'text-default rounded-v2-md border border-purple-96 bg-purple-background-light text-purple-65 flex flex-col gap-v2-sm p-v2-md',
+        'text-default rounded-v2-md border border-purple-96 bg-purple-background-light text-purple-65 flex flex-col gap-v2-sm p-v2-md dark:border-grey-border',
         className,
       )}
     >

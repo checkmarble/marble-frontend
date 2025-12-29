@@ -268,8 +268,8 @@ export default function RuleDetail() {
             }}
           >
             <div
-              className={cn('bg-purple-99 sticky top-0 flex h-[88px] items-center justify-between gap-4 max-w-3xl', {
-                'border-b-grey-90 border-b': !intersection?.isIntersecting,
+              className={cn('bg-surface-page sticky top-0 flex h-[88px] items-center justify-between gap-4 max-w-3xl', {
+                'border-b-grey-border border-b': !intersection?.isIntersecting,
               })}
             >
               <form.Field
@@ -351,7 +351,7 @@ export default function RuleDetail() {
                         defaultValue={field.state.value}
                         onChange={(e) => field.handleChange(e.currentTarget.value)}
                         onBlur={field.handleBlur}
-                        className="form-textarea text-grey-50 text-s w-full resize-none border-none bg-transparent font-medium outline-hidden"
+                        className="form-textarea text-grey-primary text-s w-full resize-none border-none bg-transparent font-medium outline-hidden"
                         placeholder={t('scenarios:edit_rule.description_placeholder')}
                       />
                       <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -417,7 +417,7 @@ export default function RuleDetail() {
                 </div>
                 <div className="bg-surface-card border-grey-90 rounded-md border p-6 max-w-3xl">
                   <div className="flex items-center gap-2">
-                    <span className="bg-grey-95 text-grey-50 text-s inline-flex rounded-sm p-2 font-medium">
+                    <span className="bg-grey-95 text-grey-50 dark:text-grey-secondary text-s inline-flex rounded-sm p-2 font-medium">
                       {t('scenarios:edit_rule.score_heading')}
                     </span>
                     <form.Field

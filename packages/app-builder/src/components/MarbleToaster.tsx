@@ -42,6 +42,10 @@ export function MarbleToaster({ toastMessage }: { toastMessage?: toastSession.To
       containerClassName={headerHeight({ type: 'mt' })}
       toastOptions={{
         className: 'bg-surface-card text-grey-primary',
+        style: {
+          background: 'var(--color-surface-card)',
+          color: 'var(--color-grey-primary)',
+        },
         loading: {
           icon: LoaderIcon,
         },
@@ -54,7 +58,13 @@ export function MarbleToaster({ toastMessage }: { toastMessage?: toastSession.To
       }}
     >
       {(currentToast) => (
-        <ToastBar toast={currentToast}>
+        <ToastBar
+          toast={currentToast}
+          style={{
+            background: 'var(--color-surface-card)',
+            color: 'var(--color-grey-primary)',
+          }}
+        >
           {({ icon, message }) => (
             <>
               {icon}
@@ -79,8 +89,8 @@ function getMessage(message: string) {
 
   return (
     <div className="flex flex-col gap-1">
-      <p className="text-s text-grey-00">{message}</p>
-      <p className="text-grey-50 text-xs">In dev, toast may be displayed twice due to strict mode</p>
+      <p className="text-s text-grey-primary">{message}</p>
+      <p className="text-grey-secondary text-xs">In dev, toast may be displayed twice due to strict mode</p>
     </div>
   );
 }
@@ -88,7 +98,7 @@ function getMessage(message: string) {
 const LoaderIcon = (
   <div
     aria-hidden
-    className="border-grey-98 border-r-grey-50 box-border size-4 shrink-0 animate-spin rounded-full border-2 border-solid"
+    className="border-grey-border border-r-grey-placeholder box-border size-4 shrink-0 animate-spin rounded-full border-2 border-solid"
   />
 );
 

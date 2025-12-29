@@ -81,7 +81,7 @@ export function TabLink({ Icon, labelTKey, to }: TabLinkProps) {
           'text-s flex flex-row items-center gap-2 rounded-sm px-4 py-2 font-medium',
           isActive
             ? 'bg-purple-96 text-purple-65 dark:bg-purple-disabled dark:text-grey-primary'
-            : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65 dark:text-grey-primary dark:hover:bg-purple-disabled',
+            : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65 dark:hover:text-grey-primary dark:text-grey-secondary dark:hover:bg-purple-disabled',
         )
       }
       to={to}

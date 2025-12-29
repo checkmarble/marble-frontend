@@ -10,7 +10,7 @@ const logicalOperatorClassnames = cva(
         contained: 'bg-grey-98',
       },
       validationStatus: {
-        valid: 'text-grey-80',
+        valid: 'text-grey-secondary',
         error: 'text-red-47 border-red-47',
       },
     },

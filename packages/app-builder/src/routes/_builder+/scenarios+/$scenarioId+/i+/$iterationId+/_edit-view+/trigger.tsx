@@ -228,7 +228,7 @@ export default function Trigger() {
           </Callout>
           <div className="flex flex-col gap-2 lg:gap-4">
             {isTriggerNull ? (
-              <div className="border-blue-58 bg-blue-96 text-blue-58 flex items-center rounded-sm border p-2">
+              <div className="border-blue-58 bg-blue-96 text-blue-58 flex items-center rounded-sm border p-2 dark:bg-transparent">
                 <span>
                   <Trans
                     t={t}

@@ -51,7 +51,7 @@ export function UserInfo({
               <Logo
                 logo="marble"
                 aria-labelledby="marble"
-                className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100 text-white"
+                className="h-6 w-full opacity-0 transition-opacity group-aria-expanded/nav:opacity-100 dark:invert"
               />
             </div>
 
