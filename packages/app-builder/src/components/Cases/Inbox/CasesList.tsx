@@ -55,7 +55,7 @@ export function CasesList({
   }, [casesQuery.data?.pages[currentPage]?.items]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-surface-card">
       <div className="w-full grid grid-cols-[0px_auto_1fr_auto_auto_auto_auto] border border-grey-border rounded-v2-md">
         <div className="grid grid-cols-subgrid col-span-full items-center group/table-row not-last:border-b border-grey-border">
           <HeaderCell className="ps-v2-xl relative col-span-2">

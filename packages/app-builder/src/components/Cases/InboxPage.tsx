@@ -140,7 +140,7 @@ export const InboxPage = ({
       />
       <CaseRightPanel.Root className="overflow-hidden">
         <Page.Container ref={wrapperRef}>
-          <Page.ContentV2 className="bg-surface-card gap-v2-md">
+          <Page.ContentV2 className="gap-v2-md">
             {canViewNavigationTabs ? <CasesNavigationTabs /> : null}
             <div className="flex flex-col gap-v2-md relative">
               <MultiSelect.Root id={inboxId}>
