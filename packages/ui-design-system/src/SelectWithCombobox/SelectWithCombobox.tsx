@@ -114,7 +114,7 @@ const Popover = forwardRef<HTMLDivElement, Ariakit.SelectPopoverProps>(function 
       fitViewport
       gutter={8}
       className={clsx(
-        'bg-surface-card border-grey-90 max-h-[min(var(--popover-available-height),300px)] -translate-y-1 rounded-sm border opacity-0 shadow-md transition-all data-enter:translate-y-0 data-enter:opacity-100',
+        'bg-surface-card border-grey-border max-h-[min(var(--popover-available-height),300px)] -translate-y-1 rounded-sm border opacity-0 shadow-md transition-all data-enter:translate-y-0 data-enter:opacity-100',
         className,
       )}
       {...props}
@@ -150,9 +150,9 @@ const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(function Comb
       {isMultiple ? (
         <Ariakit.SelectItemCheck
           className={clsx(
-            'bg-surface-card border-grey-90 flex shrink-0 items-center justify-center overflow-hidden rounded-xs border outline-hidden',
-            'group-aria-disabled:bg-grey-90 group-aria-disabled:text-grey-00',
-            'group-aria-selected:text-grey-100 group-aria-selected:border-purple-65 group-aria-selected:bg-purple-65',
+            'bg-surface-card border-grey-border flex shrink-0 items-center justify-center overflow-hidden rounded-xs border outline-hidden',
+            'group-aria-disabled:bg-grey-border group-aria-disabled:text-grey-primary',
+            'group-aria-selected:text-grey-white group-aria-selected:border-purple-primary group-aria-selected:bg-purple-primary',
           )}
         >
           <Icon icon="tick" />

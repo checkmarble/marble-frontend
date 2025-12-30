@@ -173,7 +173,7 @@ function SubMenu({
               <Icon
                 aria-hidden="true"
                 icon="arrow-right"
-                className="group-data-[state=open]/menu-item:text-purple-65 ml-auto size-5 shrink-0 rtl:rotate-180"
+                className="group-data-[state=open]/menu-item:text-purple-primary ml-auto size-5 shrink-0 rtl:rotate-180"
               />
             )}
           </Item>
@@ -224,10 +224,10 @@ const SelectButton = React.forwardRef<HTMLButtonElement, ButtonProps>(function S
       className={cn(
         clsx([
           'flex h-10 min-w-[40px] items-center justify-between gap-2 rounded-sm border px-2 outline-hidden',
-          'bg-surface-card disabled:border-grey-98 disabled:bg-grey-98',
-          'border-grey-90 focus:border-purple-65',
+          'bg-surface-card disabled:border-grey-background-light disabled:bg-grey-background-light',
+          'border-grey-border focus:border-purple-primary',
         ]),
-        { 'border-red-47': hasError },
+        { 'border-red-primary': hasError },
         className,
       )}
       {...props}
@@ -257,7 +257,7 @@ const contentClassname = cva('flex z-50 text-s', {
 const commandClassname = cva(
   [
     'flex flex-col z-50 w-full flex-1 overflow-hidden',
-    'bg-surface-card border-grey-90 rounded-sm border shadow-md outline-hidden',
+    'bg-surface-card border-grey-border rounded-sm border shadow-md outline-hidden',
     'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
     'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
     'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2',
@@ -342,7 +342,7 @@ function Combobox({ className, onValueChange, iconClasses, ...props }: ComboboxP
         onValueChange={setSearch}
         {...props}
       />
-      <div className="text-grey-50 peer-focus:text-grey-00 pointer-events-none absolute inset-y-0 start-0 flex items-center ps-2">
+      <div className="text-grey-placeholder peer-focus:text-grey-primary pointer-events-none absolute inset-y-0 start-0 flex items-center ps-2">
         <Icon icon="search" className={cn('size-5', iconClasses)} />
       </div>
     </div>
@@ -387,7 +387,7 @@ const Item = React.forwardRef<React.ElementRef<typeof Command.Item>, ItemProps>(
       ref={ref}
       className={cn(
         [
-          'aria-selected:bg-purple-background-light data-[state=open]:bg-purple-background-light aria-disabled:text-grey-80 outline-hidden',
+          'aria-selected:bg-purple-background-light data-[state=open]:bg-purple-background-light aria-disabled:text-grey-disabled outline-hidden',
           'flex min-h-10 scroll-mb-2 scroll-mt-12 flex-row items-center justify-between gap-2 rounded-xs p-2',
         ],
         { '': selected, 'cursor-pointer': props.onSelect && !props.disabled },
@@ -402,7 +402,7 @@ const Separator = React.forwardRef<
   React.ElementRef<typeof Command.Separator>,
   React.ComponentPropsWithoutRef<typeof Command.Separator>
 >(({ className, ...props }, ref) => (
-  <Command.Separator ref={ref} className={cn('bg-grey-90 -mx-2 my-2 h-px', className)} {...props} />
+  <Command.Separator ref={ref} className={cn('bg-grey-border -mx-2 my-2 h-px', className)} {...props} />
 ));
 Separator.displayName = Command.Separator.displayName;
 

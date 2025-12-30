@@ -31,10 +31,10 @@ export const UserFilterMenu = ({ onSelect }: UserFilterMenuProps) => {
             onSelect={() => onSelect(user.userId)}
           >
             <div className="flex flex-col">
-              <span className="text-grey-00 text-s">
+              <span className="text-grey-primary text-s">
                 {user.firstName} {user.lastName}
               </span>
-              <Highlight text={user.email} query={deferredValue} className="text-grey-50 text-xs" />
+              <Highlight text={user.email} query={deferredValue} className="text-grey-placeholder text-xs" />
             </div>
           </MenuCommand.Item>
         ))}

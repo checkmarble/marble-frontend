@@ -37,7 +37,7 @@ export function SelectOutcomesList({
     <MenuCommand.Menu open={open} onOpenChange={setOpen} persistOnSelect>
       <MenuCommand.Trigger>
         <MenuCommand.SelectButton
-          className={`min-w-0 flex-1 ${!pristine && !validateOutcomes(selectedOutcomes) ? 'border-red-47' : ''}`}
+          className={`min-w-0 flex-1 ${!pristine && !validateOutcomes(selectedOutcomes) ? 'border-red-primary' : ''}`}
         >
           {(() => {
             const validOutcomes = selectedOutcomes.filter((outcome) => outcome && outcome.length > 0);
@@ -48,7 +48,9 @@ export function SelectOutcomesList({
                 ))}
               </div>
             ) : (
-              <span className="text-grey-80">{t('workflows:detail_panel.decision_created.outcomes.placeholder')}</span>
+              <span className="text-grey-disabled">
+                {t('workflows:detail_panel.decision_created.outcomes.placeholder')}
+              </span>
             );
           })()}
         </MenuCommand.SelectButton>
@@ -65,7 +67,7 @@ export function SelectOutcomesList({
                 className="flex items-center gap-2"
               >
                 <div className="flex items-center justify-center w-5 h-5">
-                  {isSelected && <Icon icon="tick" className="size-4 text-purple-65" />}
+                  {isSelected && <Icon icon="tick" className="size-4 text-purple-primary" />}
                 </div>
                 <OutcomeBadge outcome={outcome} size="md" className="flex-1 whitespace-nowrap" />
               </MenuCommand.Item>

@@ -96,7 +96,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
           <NavLink
             className={clsx(
               'text-s flex flex-row items-center justify-center gap-1 rounded-sm border border-solid px-4 py-2 font-semibold outline-hidden',
-              'hover:bg-purple-60 active:bg-purple-60 text-grey-100 focus:border-grey-00 bg-purple-65 disabled:bg-purple-82',
+              'hover:bg-purple-hover active:bg-purple-hover text-grey-white focus:border-grey-primary bg-purple-primary disabled:bg-purple-disabled',
             )}
             to={getRoute('/upload/:objectType', {
               objectType: tableModel.name,
@@ -110,13 +110,13 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
       <CollapsiblePaper.Content>
         <div className="flex flex-col gap-6">
           {isEditDataModelInfoAvailable ? (
-            <div className="hover:before:bg-grey-95 text-grey-00 group relative flex w-fit flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded-sm before:transition-colors before:ease-in-out hover:cursor-pointer">
+            <div className="hover:before:bg-grey-background text-grey-primary group relative flex w-fit flex-row items-center gap-2 before:absolute before:-inset-3 before:block before:rounded-sm before:transition-colors before:ease-in-out hover:cursor-pointer">
               <EditTable table={tableModel}>
                 <div className="flex flex-row gap-5">
                   <FormatDescription description={tableModel.description || ''} />
                   <Icon
                     icon="edit-square"
-                    className="group-hover:text-grey-00 relative size-6 text-transparent transition-colors ease-in-out"
+                    className="group-hover:text-grey-primary relative size-6 text-transparent transition-colors ease-in-out"
                   />
                 </div>
               </EditTable>
@@ -225,7 +225,7 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
           if (unicityConstraint === 'pending_unique_constraint') {
             return (
               <div className="flex size-full items-center justify-center">
-                <Icon icon="restart-alt" className="text-grey-50 size-6 shrink-0" />
+                <Icon icon="restart-alt" className="text-grey-placeholder size-6 shrink-0" />
               </div>
             );
           }
@@ -245,7 +245,7 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
               {isEditDataModelFieldAvailable ? (
                 <div className="flex-shrink-0">
                   <EditField key={cell.row.original.id} field={cell.row.original} linksToThisTable={linksToThisTable}>
-                    <div className="group-hover:text-grey-00 group-hover:bg-grey-98 group-hover:border-grey-50 hover:group-hover:bg-grey-95 active:group-hover:bg-grey-90 relative cursor-pointer rounded-sm border p-2 text-transparent transition-colors ease-in-out">
+                    <div className="group-hover:text-grey-primary group-hover:bg-grey-background-light group-hover:border-grey-placeholder hover:group-hover:bg-grey-background active:group-hover:bg-grey-border relative cursor-pointer rounded-sm border p-2 text-transparent transition-colors ease-in-out">
                       <Icon icon="edit-square" className="size-6" />
                     </div>
                   </EditField>
@@ -348,7 +348,10 @@ function FormatDescription({ description }: { description: string }) {
 
   return (
     <span
-      className={clsx('relative first-letter:capitalize truncate block', description ? 'text-grey-00' : 'text-grey-80')}
+      className={clsx(
+        'relative first-letter:capitalize truncate block',
+        description ? 'text-grey-primary' : 'text-grey-disabled',
+      )}
       title={description || t('data:empty_description')}
     >
       {description || t('data:empty_description')}

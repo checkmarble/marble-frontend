@@ -17,8 +17,8 @@ export const FormErrorOrDescription = React.forwardRef<HTMLParagraphElement, For
         <p
           ref={ref}
           className={cn(
-            'bg-red-95 text-s text-red-47 flex flex-col gap-1 rounded-sm border border-transparent px-2 py-1 font-medium transition-opacity duration-200 ease-in-out',
-            'dark:bg-transparent dark:border-red-47',
+            'bg-red-background text-s text-red-primary flex flex-col gap-1 rounded-sm border border-transparent px-2 py-1 font-medium transition-opacity duration-200 ease-in-out',
+            'dark:bg-transparent dark:border-red-primary',
             errorClassName,
           )}
           {...props}

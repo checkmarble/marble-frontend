@@ -42,7 +42,7 @@ export const PaginationRow: FunctionComponent<PaginationRowProps> = ({
               appearance="stroked"
               size="default"
               key={`pagination-limit-${limit}`}
-              className={cn(isActive && 'border-purple-65 text-purple-65')}
+              className={cn(isActive && 'border-purple-primary text-purple-primary')}
               onClick={() => {
                 if (!isActive) {
                   setLimit(limit);

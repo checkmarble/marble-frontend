@@ -49,7 +49,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                   variant="secondary"
                   mode="icon"
                 >
-                  <Icon icon="edit-square" className="text-grey-50 size-3.5" />
+                  <Icon icon="edit-square" className="text-grey-placeholder size-3.5" />
                 </ButtonV2>
               ) : (
                 <div className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                     variant="secondary"
                     mode="icon"
                   >
-                    <Icon icon="cross" className="text-grey-50 size-3.5" />
+                    <Icon icon="cross" className="text-grey-placeholder size-3.5" />
                   </ButtonV2>
                 </div>
               )}
@@ -77,7 +77,7 @@ export const EditCaseName = ({ name, id }: { name: string; id: string }) => {
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.currentTarget.value)}
                 onBlur={field.handleBlur}
-                className="text-grey-00 text-h1 w-full border-none bg-transparent font-normal outline-hidden"
+                className="text-grey-primary text-h1 w-full border-none bg-transparent font-normal outline-hidden"
                 placeholder={t('cases:case.name')}
               />
             </div>

@@ -3,13 +3,13 @@ import clsx from 'clsx';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 
 export const textarea = cva(
-  'text-s text-grey-00 placeholder:text-grey-80 disabled:bg-grey-95 rounded-sm p-2 font-medium outline-hidden border focus:border-purple-65 row-start-1 row-end-2 col-start-1 col-end-2',
+  'text-s text-grey-primary placeholder:text-grey-disabled disabled:bg-grey-background rounded-sm p-2 font-medium outline-hidden border focus:border-purple-primary row-start-1 row-end-2 col-start-1 col-end-2',
   {
     variants: {
       borderColor: {
-        'greyfigma-90': 'border-grey-90',
-        'redfigma-87': 'border-red-87',
-        'redfigma-47': 'border-red-47',
+        'greyfigma-90': 'border-grey-border',
+        'redfigma-87': 'border-red-secondary',
+        'redfigma-47': 'border-red-primary',
       },
       resize: {
         none: 'resize-none',

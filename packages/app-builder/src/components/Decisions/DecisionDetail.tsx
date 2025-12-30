@@ -31,7 +31,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetails }) {
             to={getRoute('/scenarios/:scenarioId', {
               scenarioId: fromUUIDtoSUUID(scenario.id),
             })}
-            className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
+            className="hover:text-purple-hover focus:text-purple-hover text-purple-primary font-semibold hover:underline focus:underline"
           >
             {scenario.name}
           </Link>
@@ -42,7 +42,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetails }) {
               scenarioId: fromUUIDtoSUUID(scenario.id),
               iterationId: fromUUIDtoSUUID(scenario.scenarioIterationId),
             })}
-            className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
+            className="hover:text-purple-hover focus:text-purple-hover text-purple-primary font-semibold hover:underline focus:underline"
           >
             {`V${scenario.version}`}
           </Link>
@@ -58,7 +58,7 @@ export function DecisionDetail({ decision }: { decision: DecisionDetails }) {
                 to={getRoute('/cases/:caseId', {
                   caseId: fromUUIDtoSUUID(caseDetail.id),
                 })}
-                className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
+                className="hover:text-purple-hover focus:text-purple-hover text-purple-primary font-semibold hover:underline focus:underline"
               >
                 {caseDetail.name}
               </Link>

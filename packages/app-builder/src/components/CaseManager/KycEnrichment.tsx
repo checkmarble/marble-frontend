@@ -63,12 +63,12 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
     <div className="flex flex-row gap-6 p-4">
       <div className="flex h-fit flex-2 flex-col gap-2">
         <div className="flex flex-row items-center justify-between gap-2">
-          <div className="bg-grey-90 h-4 w-32 animate-pulse rounded-md" />
+          <div className="bg-grey-border h-4 w-32 animate-pulse rounded-md" />
         </div>
-        <div className="bg-grey-90 h-12 animate-pulse rounded-lg" />
-        <div className="bg-grey-90 h-14 animate-pulse rounded-lg" />
-        <div className="bg-grey-90 h-12 animate-pulse rounded-lg" />
-        <div className="bg-grey-90 h-16 animate-pulse rounded-lg" />
+        <div className="bg-grey-border h-12 animate-pulse rounded-lg" />
+        <div className="bg-grey-border h-14 animate-pulse rounded-lg" />
+        <div className="bg-grey-border h-12 animate-pulse rounded-lg" />
+        <div className="bg-grey-border h-16 animate-pulse rounded-lg" />
       </div>
     </div>
   );
@@ -106,7 +106,10 @@ export function KycEnrichment({ caseId }: { caseId: string }) {
                       <div key={`citation.${index}`} className="mb-2">
                         <span>[{index + 1}]</span>
                         <span>
-                          <a className="text-purple-65 hover:bg-purple-96 hover:text-grey-50" href={citation.url}>
+                          <a
+                            className="text-purple-primary hover:bg-purple-background hover:text-grey-placeholder"
+                            href={citation.url}
+                          >
                             {citation.title}
                           </a>
                         </span>

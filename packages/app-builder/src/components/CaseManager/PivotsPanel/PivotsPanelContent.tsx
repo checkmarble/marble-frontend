@@ -62,7 +62,7 @@ export function PivotsPanelContent({
   return (
     <div className="flex flex-col gap-8">
       {isAllMissingPivotObject ? (
-        <div className="border-grey-90 flex h-40 flex-col items-center justify-center gap-2 rounded-sm border p-8">
+        <div className="border-grey-border flex h-40 flex-col items-center justify-center gap-2 rounded-sm border p-8">
           <span className="text-center">
             {isAdmin(currentUser)
               ? t('cases:case_detail.pivot_panel.missing_pivot.admin')
@@ -83,20 +83,20 @@ export function PivotsPanelContent({
               setCurrentPivotObjectUniqKey(null);
             }}
             className={cn('h-7 px-4 rounded-lg flex items-center border', {
-              'bg-purple-96 text-purple-65 border-purple-96': isDisplayingProofs,
-              'bg-surface-card text-grey-50 border-grey-90 cursor-pointer': !isDisplayingProofs,
+              'bg-purple-background text-purple-primary border-purple-background': isDisplayingProofs,
+              'bg-surface-card text-grey-placeholder border-grey-border cursor-pointer': !isDisplayingProofs,
             })}
           >
             {t('cases:ai_review.proof.title')}
           </button>
         ) : null}
-        <div className="border-grey-90 flex gap-2 self-start rounded-v2-lg border p-v2-xs">
+        <div className="border-grey-border flex gap-2 self-start rounded-v2-lg border p-v2-xs">
           {pivotObjects.map((pivotObject, idx) => {
             const uniqKey = pivotUniqKey(pivotObject);
             return (
               <button
                 key={uniqKey}
-                className="text-grey-50 aria-current:bg-purple-96 aria-current:text-purple-65 rounded-v2-md p-v2-xs px-v2-sm cursor-pointer"
+                className="text-grey-placeholder aria-current:bg-purple-background aria-current:text-purple-primary rounded-v2-md p-v2-xs px-v2-sm cursor-pointer"
                 aria-current={uniqKey === pivotUniqKey(currentPivotObject)}
                 onClick={() => {
                   setCurrentPivotObjectUniqKey(pivotUniqKey(pivotObject));
@@ -118,10 +118,10 @@ export function PivotsPanelContent({
                 {isKycEnrichmentEnabled ? <KycEnrichment caseId={caseObj.id} /> : null}
               </div>
 
-              <div className="border-grey-90 flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
+              <div className="border-grey-border flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
                 <div className="capitalize font-semibold">{currentTable.name}</div>
                 <PivotObjectDetails tableModel={currentTable} dataModel={dataModel} pivotObject={currentPivotObject} />
-                <div className="h-px bg-grey-90" />
+                <div className="h-px bg-grey-border" />
                 <PivotNavigationOptions
                   currentUser={currentUser}
                   pivotObject={currentPivotObject}
@@ -159,16 +159,16 @@ export function PivotsPanelContent({
             return (
               <div
                 key={`${proof.type}-${proof.object.data['object_id']}`}
-                className="rounded-xl border border-grey-90 bg-grey-98"
+                className="rounded-xl border border-grey-border bg-grey-background-light"
               >
-                <div className="bg-surface-card px-4 py-2 rounded-t-xl border-b border-grey-90">
+                <div className="bg-surface-card px-4 py-2 rounded-t-xl border-b border-grey-border">
                   {t('cases:ai_review.proof.tab_title', { number: idx + 1 })}
                 </div>
                 <div className="p-4 flex flex-col gap-v2-md">
                   <ClientObjectDataList tableModel={tableModel} data={proof.object.data} />
                   {navigationOptions ? (
                     <>
-                      <div className="h-px bg-grey-90" />
+                      <div className="h-px bg-grey-border" />
                       <div className="flex flex-col gap-2">
                         {navigationOptions.map((navOption) => (
                           <div
@@ -221,7 +221,7 @@ export function PivotsPanelContent({
   );
 }
 
-const cellVariants = cva('border-grey-90 border-t p-2', {
+const cellVariants = cva('border-grey-border border-t p-2', {
   variants: {
     isLast: {
       true: 'border-b',
@@ -242,7 +242,7 @@ function RelatedCases({ currentCase, pivotValue }: { currentCase: CaseDetail; pi
     .with({ isError: true }, () => {
       return (
         <DataCard title={t('cases:case_detail.pivot_panel.case_history')}>
-          <div className="border-red-74 bg-red-95 text-red-47 mt-3 rounded-sm border p-2">
+          <div className="border-red-disabled bg-red-background text-red-primary mt-3 rounded-sm border p-2">
             {t('common:global_error')}
           </div>
         </DataCard>
@@ -332,7 +332,7 @@ export function PivotObjectDetails({ tableModel, dataModel, pivotObject }: Pivot
 
               return (
                 <Fragment key={relatedObjectType}>
-                  <h4 className="border-grey-90 mb-3 border-b text-right text-xs font-semibold">
+                  <h4 className="border-grey-border mb-3 border-b text-right text-xs font-semibold">
                     {t('cases:case_detail.pivot_panel.related_object', {
                       tableName: relatedObject.linkName ?? relatedObjectType,
                     })}

@@ -4,22 +4,22 @@ import { Icon } from 'ui-icons';
 
 export const variants = ['info', 'error'] as const;
 
-const callout = cva('text-s text-grey-00 flex flex-row items-center gap-2 rounded-sm p-2 font-normal', {
+const callout = cva('text-s text-grey-primary flex flex-row items-center gap-2 rounded-sm p-2 font-normal', {
   variants: {
     /**
      * Outlined variant is usefull when you want to use the callout on non white background
      * @default soft
      */
     variant: {
-      outlined: 'bg-surface-card border-grey-90 border',
-      soft: 'bg-grey-98',
+      outlined: 'bg-surface-card border-grey-border border',
+      soft: 'bg-grey-background-light',
     },
     color: {
-      purple: 'border-s-2 border-s-purple-65',
-      red: 'border-s-2 border-s-red-47',
+      purple: 'border-s-2 border-s-purple-primary',
+      red: 'border-s-2 border-s-red-primary',
     },
     bordered: {
-      true: 'border border-grey-90',
+      true: 'border border-grey-border',
       false: null,
     },
   },
@@ -51,7 +51,7 @@ export function CalloutV2({ children, className, ...otherProps }: React.Componen
   return (
     <aside
       className={cn(
-        'bg-purple-background-light text-s text-purple-65 flex flex-row gap-2 rounded-lg p-4 font-normal items-center dark:text-grey-primary',
+        'bg-purple-background-light text-s text-purple-primary flex flex-row gap-2 rounded-lg p-4 font-normal items-center dark:text-grey-primary',
         className,
       )}
       {...otherProps}

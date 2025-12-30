@@ -72,7 +72,7 @@ const FieldCategory = memo(function FieldCategory({
   return datasetIdsToShow.length > 0 ? (
     <CollapsibleV2.Provider defaultOpen={open}>
       <div key={section.name} className="w-full overflow-hidden rounded-lg">
-        <div className="bg-grey-98 flex w-full items-center justify-between p-4">
+        <div className="bg-grey-background-light flex w-full items-center justify-between p-4">
           <CollapsibleV2.Title onClick={() => setOpen(!open)} className="flex flex-row items-center gap-2">
             <Icon
               icon="arrow-right"
@@ -83,7 +83,7 @@ const FieldCategory = memo(function FieldCategory({
             <span className="text-s font-semibold">{section.title}</span>
           </CollapsibleV2.Title>
           <div className="flex items-center gap-4">
-            <span className="text-grey-50 text-xs">
+            <span className="text-grey-placeholder text-xs">
               {isAllSelected
                 ? t('common:all_selected')
                 : selectedDatasetIds.length > 0
@@ -111,10 +111,10 @@ const FieldCategory = memo(function FieldCategory({
             />
           </div>
         </div>
-        <CollapsibleV2.Content className="bg-grey-98 w-full p-2">
+        <CollapsibleV2.Content className="bg-grey-background-light w-full p-2">
           <div
             className={cn('rounded-lg', {
-              'border-grey-90 bg-surface-card border': section.datasets.length > 0,
+              'border-grey-border bg-surface-card border': section.datasets.length > 0,
             })}
           >
             {section.datasets
@@ -122,7 +122,7 @@ const FieldCategory = memo(function FieldCategory({
               .map((dataset) => (
                 <label
                   key={dataset.name}
-                  className="hover:bg-grey-98 flex cursor-pointer items-center justify-between p-2 transition-colors"
+                  className="hover:bg-grey-background-light flex cursor-pointer items-center justify-between p-2 transition-colors"
                 >
                   <div id={dataset.name} className="flex items-center gap-2">
                     <Checkbox
@@ -167,7 +167,7 @@ export const FieldDataset = ({
   return (
     <div className="flex flex-col gap-2">
       <span className="text-s font-semibold">{t('scenarios:sanction.lists.title')}</span>
-      <div className="bg-surface-card border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
+      <div className="bg-surface-card border-grey-border flex flex-col gap-4 rounded-sm border p-4">
         <Callout variant="outlined">
           <p className="whitespace-pre-wrap">{t('scenarios:sanction.lists.callout')}</p>
         </Callout>

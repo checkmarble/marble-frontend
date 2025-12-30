@@ -11,7 +11,7 @@ export const DrawerContext = createSimpleContext<{
 }>('Drawer');
 
 const drawerVariants = cva(
-  ['w-[520px] h-full border-grey-90 sticky z-10 top-0 border-l', 'transition-all duration-500'],
+  ['w-[520px] h-full border-grey-border sticky z-10 top-0 border-l', 'transition-all duration-500'],
   {
     variants: {
       expanded: {
@@ -60,7 +60,7 @@ export function CaseManagerDrawerButtons({ expandable = false }: { expandable?: 
 
   return (
     <div className="p-4">
-      <div className="border-grey-90 bg-surface-card z-10 flex gap-v2-sm p-v2-sm rounded-md border">
+      <div className="border-grey-border bg-surface-card z-10 flex gap-v2-sm p-v2-sm rounded-md border">
         <button
           type="button"
           onClick={expandable ? () => context.setExpanded(false) : undefined}
@@ -89,7 +89,7 @@ export function DrawerBreadcrumb({ items }: { items: string[] }) {
         return (
           <Fragment key={`${item}_${i}`}>
             <span>{item}</span>
-            {i < items.length - 1 ? <span className="text-grey-90">/</span> : null}
+            {i < items.length - 1 ? <span className="text-grey-border">/</span> : null}
           </Fragment>
         );
       })}

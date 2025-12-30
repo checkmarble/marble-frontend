@@ -70,7 +70,7 @@ export function createRightPanel(name: string) {
     return (
       <Dialog.Title
         {...props}
-        className={clsx('text-grey-00 text-l flex flex-row items-center gap-2 font-bold', props.className)}
+        className={clsx('text-grey-primary text-l flex flex-row items-center gap-2 font-bold', props.className)}
       />
     );
   }

@@ -254,7 +254,7 @@ export default function Inbox() {
                   <div className="flex gap-2">
                     {isEditInboxUserAvailable ? (
                       // TODO: inject trigger inside <UpdateTag /> and use style directly on it (so we can remove the container div)
-                      <div className="group-hover:text-grey-00 focus-within:text-grey-00 text-transparent">
+                      <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
                         <UpdateInboxUser
                           inboxUser={cell.row.original}
                           inboxUserRoles={inboxUserRoles}
@@ -264,7 +264,7 @@ export default function Inbox() {
                     ) : null}
                     {isDeleteInboxUserAvailable ? (
                       // TODO: inject trigger inside <UpdateTag /> and use style directly on it (so we can remove the container div)
-                      <div className="group-hover:text-grey-00 focus-within:text-grey-00 text-transparent">
+                      <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
                         <DeleteInboxUser inboxUser={cell.row.original} />
                       </div>
                     ) : null}

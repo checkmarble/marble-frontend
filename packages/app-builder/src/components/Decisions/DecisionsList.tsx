@@ -98,9 +98,9 @@ export function DecisionsList({
         cell: ({ getValue, row }) => (
           <div className="flex flex-row items-center gap-2">
             <Tooltip.Default content={getValue()}>
-              <span className="text-grey-00 text-s line-clamp-2 font-normal">{getValue()}</span>
+              <span className="text-grey-primary text-s line-clamp-2 font-normal">{getValue()}</span>
             </Tooltip.Default>
-            <div className="border-grey-90 text-grey-00 rounded-full border px-3 py-1 font-semibold">
+            <div className="border-grey-border text-grey-primary rounded-full border px-3 py-1 font-semibold">
               {`V${row.original.scenario.version}`}
             </div>
           </div>
@@ -112,7 +112,7 @@ export function DecisionsList({
         size: 100,
         minSize: 100,
         cell: ({ getValue }) => (
-          <span className="text-grey-00 text-s line-clamp-2 break-words font-normal">{getValue()}</span>
+          <span className="text-grey-primary text-s line-clamp-2 break-words font-normal">{getValue()}</span>
         ),
       }),
       columnHelper.accessor((row) => row.case?.name ?? '-', {
@@ -125,13 +125,13 @@ export function DecisionsList({
             <div className="flex w-fit flex-row items-center justify-center gap-2 align-baseline">
               <CaseStatusBadge status={row.original.case.status} size="large" showText={false} />
               <Tooltip.Default content={getValue()}>
-                <div className="bg-grey-98 flex h-8 items-center justify-center rounded-sm px-2">
-                  <span className="text-grey-00 text-s line-clamp-1 font-normal">{getValue()}</span>
+                <div className="bg-grey-background-light flex h-8 items-center justify-center rounded-sm px-2">
+                  <span className="text-grey-primary text-s line-clamp-1 font-normal">{getValue()}</span>
                 </div>
               </Tooltip.Default>
             </div>
           ) : (
-            <span className="bg-grey-98 text-grey-00 text-s flex size-8 items-center justify-center rounded-sm font-normal">
+            <span className="bg-grey-background-light text-grey-primary text-s flex size-8 items-center justify-center rounded-sm font-normal">
               {getValue()}
             </span>
           ),
@@ -147,7 +147,7 @@ export function DecisionsList({
             <div className="relative flex flex-col gap-1">
               {pivotValues.map((pivotValue) => (
                 <Tooltip.Default key={pivotValue.id} content={pivotValue.value}>
-                  <span className="text-grey-00 text-s line-clamp-1 text-ellipsis">{pivotValue.value}</span>
+                  <span className="text-grey-primary text-s line-clamp-1 text-ellipsis">{pivotValue.value}</span>
                 </Tooltip.Default>
               ))}
             </div>

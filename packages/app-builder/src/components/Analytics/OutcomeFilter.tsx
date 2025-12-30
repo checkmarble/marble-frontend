@@ -70,7 +70,9 @@ const FilterItem = ({
     onClick={() => handleToggle(outcome)}
   >
     <button
-      className={cn('w-4 h-4 border border-grey-90 rounded-sm flex items-center justify-center hover:bg-grey-50')}
+      className={cn(
+        'w-4 h-4 border border-grey-border rounded-sm flex items-center justify-center hover:bg-grey-placeholder',
+      )}
       style={{ backgroundColor: OUTCOME_COLORS[outcome] }}
     ></button>
     <div className="flex items-center flex-1 whitespace-nowrap min-w-0">
@@ -79,13 +81,13 @@ const FilterItem = ({
         {highlight && !hasHighlightedRef.current ? (
           <Icon
             icon={checked ? 'eye' : 'eye-slash'}
-            className={cn('absolute size-4 animate-ping-once', checked ? 'text-blue-58' : 'text-grey-50')}
+            className={cn('absolute size-4 animate-ping-once', checked ? 'text-blue-58' : 'text-grey-placeholder')}
           />
         ) : null}
         {highlight || !checked ? (
           <Icon
             icon={checked ? 'eye' : 'eye-slash'}
-            className={cn('relative size-4', checked ? 'text-blue-58' : 'text-grey-50')}
+            className={cn('relative size-4', checked ? 'text-blue-58' : 'text-grey-placeholder')}
           />
         ) : null}
       </div>

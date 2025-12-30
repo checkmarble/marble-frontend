@@ -250,7 +250,7 @@ export default function Filters() {
               {t('settings:filters.delete_filter.content')}
             </Modal.Description>
             <Modal.Footer>
-              <div className="bg-grey-98 flex justify-end gap-3 border-t p-4">
+              <div className="bg-grey-background-light flex justify-end gap-3 border-t p-4">
                 <ButtonV2 variant="secondary" onClick={() => setIsConfirmOpen(false)}>
                   {t('common:cancel')}
                 </ButtonV2>

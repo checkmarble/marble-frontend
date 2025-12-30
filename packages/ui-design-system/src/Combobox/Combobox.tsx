@@ -39,7 +39,7 @@ export const ComboboxPopover = React.forwardRef<HTMLDivElement, Ariakit.Combobox
       fitViewport
       gutter={8}
       className={clsx(
-        'bg-surface-card border-grey-90 max-h-[min(var(--popover-available-height),300px)] -translate-y-1 rounded-sm border opacity-0 shadow-md transition-all data-enter:translate-y-0 data-enter:opacity-100',
+        'bg-surface-card border-grey-border max-h-[min(var(--popover-available-height),300px)] -translate-y-1 rounded-sm border opacity-0 shadow-md transition-all data-enter:translate-y-0 data-enter:opacity-100',
         className,
       )}
       {...props}

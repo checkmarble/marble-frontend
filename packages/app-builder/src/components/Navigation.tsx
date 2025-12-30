@@ -20,9 +20,9 @@ export interface SidebarLinkProps {
 export const sidebarLink = cva('text-s flex flex-row items-center gap-2 rounded-xs p-2 font-medium w-full', {
   variants: {
     isActive: {
-      true: 'bg-purple-96 text-purple-65 dark:bg-purple-disabled dark:text-grey-primary',
+      true: 'bg-purple-background text-purple-primary dark:bg-purple-disabled dark:text-grey-primary',
       false:
-        'text-grey-00 hover:bg-purple-96 hover:text-purple-65 dark:hover:text-grey-primary dark:text-grey-primary dark:hover:bg-purple-disabled',
+        'text-grey-primary hover:bg-purple-background hover:text-purple-primary dark:hover:text-grey-primary dark:text-grey-primary dark:hover:bg-purple-disabled',
     },
   },
   defaultVariants: {
@@ -80,8 +80,8 @@ export function TabLink({ Icon, labelTKey, to }: TabLinkProps) {
         clsx(
           'text-s flex flex-row items-center gap-2 rounded-sm px-4 py-2 font-medium',
           isActive
-            ? 'bg-purple-96 text-purple-65 dark:bg-purple-disabled dark:text-grey-primary'
-            : 'text-grey-00 hover:bg-purple-96 hover:text-purple-65 dark:hover:text-grey-primary dark:text-grey-secondary dark:hover:bg-purple-disabled',
+            ? 'bg-purple-background text-purple-primary dark:bg-purple-disabled dark:text-grey-primary'
+            : 'text-grey-primary hover:bg-purple-background hover:text-purple-primary dark:hover:text-grey-primary dark:text-grey-secondary dark:hover:bg-purple-disabled',
         )
       }
       to={to}

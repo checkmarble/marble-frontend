@@ -53,7 +53,7 @@ export const Associations = ({ associations }: { associations: AssociationEntity
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-purple-65 hover:text-purple-75 underline"
+                                className="text-purple-primary hover:text-purple-75 underline"
                               >
                                 {url}
                               </a>

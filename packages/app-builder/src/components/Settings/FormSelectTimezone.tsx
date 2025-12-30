@@ -50,12 +50,12 @@ export const FormSelectTimezone = ({
             </SelectWithCombobox.ComboboxItem>
           ))}
           {matches.length === 0 ? (
-            <p className="text-s text-grey-50 flex items-center justify-center p-2">
+            <p className="text-s text-grey-placeholder flex items-center justify-center p-2">
               {t('settings:scenario_default_timezone.no_match')}
             </p>
           ) : null}
           {matches.length > MAX_TIMEZONE_MATCHES ? (
-            <p className="text-s text-grey-50 flex items-center justify-center whitespace-pre-wrap text-balance p-2 text-center">
+            <p className="text-s text-grey-placeholder flex items-center justify-center whitespace-pre-wrap text-balance p-2 text-center">
               {t('settings:scenario_default_timezone.more_results', {
                 count: matches.length - MAX_TIMEZONE_MATCHES,
               })}

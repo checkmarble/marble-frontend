@@ -61,7 +61,7 @@ export const EditDataModelField = ({
       <MenuCommand.Trigger>
         <button
           disabled={disabled}
-          className="border-grey-90 text-s bg-surface-card aria-disabled:bg-grey-98 text-grey-00 flex h-10 items-center justify-between rounded-sm border px-2"
+          className="border-grey-border text-s bg-surface-card aria-disabled:bg-grey-background-light text-grey-primary flex h-10 items-center justify-between rounded-sm border px-2"
         >
           {showPlaceholder ? (
             <span>{placeholder}</span>
@@ -104,7 +104,7 @@ export const EditDataModelFieldTableMenu = ({ tableName, fields, onChange }: Edi
     <MenuCommand.List>
       <MenuCommand.Group
         heading={
-          <div className="text-grey-50 mb-2 items-center px-2 pb-2 text-xs">
+          <div className="text-grey-placeholder mb-2 items-center px-2 pb-2 text-xs">
             <Trans t={t} i18nKey="scenarios:edit_aggregation.available_fields" values={{ tableName }} />
           </div>
         }
@@ -142,7 +142,7 @@ function FieldInfo({ field }: { field: DataModelField }) {
       <Ariakit.HovercardAnchor tabIndex={-1}>
         <Icon
           icon="tip"
-          className="hover:group-hover:text-purple-65 group-hover:text-purple-82 size-5 shrink-0 text-transparent transition-colors"
+          className="hover:group-hover:text-purple-primary group-hover:text-purple-disabled size-5 shrink-0 text-transparent transition-colors"
         />
       </Ariakit.HovercardAnchor>
       <Ariakit.Hovercard
@@ -150,7 +150,7 @@ function FieldInfo({ field }: { field: DataModelField }) {
         gutter={24}
         shift={-8}
         portal
-        className="bg-surface-card border-grey-90 text-s flex max-h-[min(var(--popover-available-height),400px)] max-w-(--popover-available-width) rounded-sm border shadow-md"
+        className="bg-surface-card border-grey-border text-s flex max-h-[min(var(--popover-available-height),400px)] max-w-(--popover-available-width) rounded-sm border shadow-md"
       >
         <div className="p-4">{field.description}</div>
       </Ariakit.Hovercard>

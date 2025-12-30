@@ -288,7 +288,7 @@ export default function RuleDetail() {
                       defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
-                      className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-hidden"
+                      className="text-grey-primary text-l w-full border-none bg-transparent font-normal outline-hidden"
                       placeholder={t('scenarios:edit_rule.name_placeholder')}
                     />
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -309,7 +309,7 @@ export default function RuleDetail() {
                     </Ariakit.MenuButton>
                     <Ariakit.Menu
                       shift={-80}
-                      className="bg-surface-card border-grey-90 mt-2 flex flex-col gap-2 rounded-sm border p-2"
+                      className="bg-surface-card border-grey-border mt-2 flex flex-col gap-2 rounded-sm border p-2"
                     >
                       <DuplicateRule ruleId={rule.id} iterationId={rule.scenarioIterationId} scenarioId={scenarioId}>
                         <Button variant="secondary" type="button">
@@ -335,7 +335,7 @@ export default function RuleDetail() {
               ) : null}
             </div>
             <div className="flex flex-col gap-8">
-              <div className="border-grey-90 flex flex-col items-start gap-6 border-b pb-6 max-w-3xl">
+              <div className="border-grey-border flex flex-col items-start gap-6 border-b pb-6 max-w-3xl">
                 <form.Field
                   name="description"
                   validators={{
@@ -382,7 +382,7 @@ export default function RuleDetail() {
               <div className="flex flex-col gap-2">
                 <span className="text-s font-medium">{t('scenarios:edit_rule.formula')}</span>
                 <div className="grid grid-cols-[var(--container-3xl)_1fr] gap-v2-lg">
-                  <div className="bg-surface-card border-grey-90 rounded-md border p-6 max-w-3xl">
+                  <div className="bg-surface-card border-grey-border rounded-md border p-6 max-w-3xl">
                     <form.Field
                       name="formula"
                       validators={{
@@ -415,9 +415,9 @@ export default function RuleDetail() {
                     />
                   ) : null}
                 </div>
-                <div className="bg-surface-card border-grey-90 rounded-md border p-6 max-w-3xl">
+                <div className="bg-surface-card border-grey-border rounded-md border p-6 max-w-3xl">
                   <div className="flex items-center gap-2">
-                    <span className="bg-grey-95 text-grey-50 dark:text-grey-secondary text-s inline-flex rounded-sm p-2 font-medium">
+                    <span className="bg-grey-background text-grey-placeholder dark:text-grey-secondary text-s inline-flex rounded-sm p-2 font-medium">
                       {t('scenarios:edit_rule.score_heading')}
                     </span>
                     <form.Field

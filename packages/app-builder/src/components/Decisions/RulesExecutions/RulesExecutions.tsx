@@ -15,7 +15,7 @@ export function RuleExecutionCollapsible({ className, ...props }: React.Componen
     <CollapsibleV2.Provider>
       <div
         className={clsx(
-          'bg-grey-98 col-span-full grid grid-cols-subgrid gap-2 overflow-hidden rounded-lg p-2',
+          'bg-grey-background-light col-span-full grid grid-cols-subgrid gap-2 overflow-hidden rounded-lg p-2',
           className,
         )}
         {...props}
@@ -26,7 +26,7 @@ export function RuleExecutionCollapsible({ className, ...props }: React.Componen
 
 export function RuleExecutionTitle({ ruleExecution }: { ruleExecution: RuleExecution }) {
   return (
-    <CollapsibleV2.Title className="bg-grey-98 group col-span-full grid grid-cols-subgrid items-center outline-hidden">
+    <CollapsibleV2.Title className="bg-grey-background-light group col-span-full grid grid-cols-subgrid items-center outline-hidden">
       <Icon
         icon="smallarrow-up"
         aria-hidden
@@ -49,9 +49,9 @@ export function RuleExecutionContent({ className, ...props }: React.ComponentPro
 export function RuleExecutionDescription({ description }: { description?: string }) {
   if (!description) return null;
   return (
-    <div className="bg-purple-background-light border-purple-96 flex flex-row gap-2 rounded-sm border p-2 dark:bg-transparent dark:border-purple-primary">
-      <Icon icon="tip" className="text-purple-65 size-5 shrink-0" />
-      <span className="text-s text-purple-65 font-normal">{description}</span>
+    <div className="bg-purple-background-light border-purple-background flex flex-row gap-2 rounded-sm border p-2 dark:bg-transparent dark:border-purple-primary">
+      <Icon icon="tip" className="text-purple-primary size-5 shrink-0" />
+      <span className="text-s text-purple-primary font-normal">{description}</span>
     </div>
   );
 }

@@ -103,7 +103,7 @@ const AddRuleOrScreening = ({
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
         align="end"
-        className="bg-surface-card border-grey-90 z-10 mt-2 flex flex-col gap-2 rounded-sm border p-2"
+        className="bg-surface-card border-grey-border z-10 mt-2 flex flex-col gap-2 rounded-sm border p-2"
       >
         <CreateRule scenarioId={scenarioId} iterationId={iterationId} />
         <CreateScreening scenarioId={scenarioId} iterationId={iterationId} isSanctionAvailable={isSanctionAvailable} />
@@ -142,7 +142,7 @@ export default function Rules() {
             <span className="flex items-center gap-2">
               <span className="flex w-2 items-center justify-center">
                 {hasErrors ? (
-                  <Ping className="text-red-47 relative box-content size-[6px] border border-transparent" />
+                  <Ping className="text-red-primary relative box-content size-[6px] border border-transparent" />
                 ) : null}
               </span>
               <Highlight text={getValue() ?? ''} query={query} className="hyphens-auto" />
@@ -178,7 +178,7 @@ export default function Rules() {
           const scoreModifier = getValue();
           if (!scoreModifier) return '';
           return (
-            <span className={scoreModifier < 0 ? 'text-green-38' : 'text-red-47'}>
+            <span className={scoreModifier < 0 ? 'text-green-38' : 'text-red-primary'}>
               {formatNumber(scoreModifier, {
                 language,
                 signDisplay: 'exceptZero',

@@ -5,7 +5,11 @@ import { Collapsible } from 'ui-design-system';
 function PaperContainer({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <div
-      className={clsx('border-grey-90 w-full rounded-lg border', 'flex flex-col gap-4 p-4 lg:gap-6 lg:p-6', className)}
+      className={clsx(
+        'border-grey-border w-full rounded-lg border',
+        'flex flex-col gap-4 p-4 lg:gap-6 lg:p-6',
+        className,
+      )}
     >
       {children}
     </div>
@@ -16,7 +20,7 @@ function PaperTitle({
   className,
   ...props
 }: React.DetailedHTMLProps<React.HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>) {
-  return <p className={clsx('text-m text-grey-00 font-semibold', className)} {...props} />;
+  return <p className={clsx('text-m text-grey-primary font-semibold', className)} {...props} />;
 }
 
 export const Paper = {

@@ -31,8 +31,8 @@ export function DeleteScreeningRule({
       <Modal.Content>
         <div className="flex flex-col gap-6 p-6">
           <div className="flex flex-1 flex-col items-center justify-center gap-2">
-            <div className="bg-red-95 mb-6 box-border rounded-[90px] p-4">
-              <Icon icon="delete" className="text-red-47 size-16" />
+            <div className="bg-red-background mb-6 box-border rounded-[90px] p-4">
+              <Icon icon="delete" className="text-red-primary size-16" />
             </div>
             <h1 className="text-l font-semibold">{t('scenarios:delete_sanction.title')}</h1>
             <p className="text-center">{t('scenarios:delete_sanction.content')}</p>

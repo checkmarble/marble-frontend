@@ -26,7 +26,7 @@ function SelectContent({ children, className, ...props }: React.PropsWithChildre
   return (
     <Portal>
       <Content
-        className={clsx('bg-surface-card border-grey-90 z-50 mt-2 rounded-sm border shadow-md', className)}
+        className={clsx('bg-surface-card border-grey-border z-50 mt-2 rounded-sm border shadow-md', className)}
         position="popper"
         {...props}
       >
@@ -51,21 +51,21 @@ function SelectViewport({ children, className, ...props }: React.PropsWithChildr
 }
 
 export const selectTrigger = cva(
-  'text-s text-grey-00 flex min-h-10 min-w-10 items-center justify-between border font-medium outline-hidden radix-state-open:border-purple-65 radix-state-open:text-purple-65 radix-disabled:border-grey-90 radix-disabled:bg-grey-95 radix-disabled:text-grey-50 radix-placeholder:text-grey-80 radix-placeholder:radix-state-open:text-grey-80',
+  'text-s text-grey-primary flex min-h-10 min-w-10 items-center justify-between border font-medium outline-hidden radix-state-open:border-purple-primary radix-state-open:text-purple-primary radix-disabled:border-grey-border radix-disabled:bg-grey-background radix-disabled:text-grey-placeholder radix-placeholder:text-grey-disabled radix-placeholder:radix-state-open:text-grey-disabled',
   {
     variants: {
       backgroundColor: {
         enabled: 'bg-surface-card',
-        disabled: 'bg-grey-98',
+        disabled: 'bg-grey-background-light',
       },
       border: {
         square: 'gap-2 rounded-sm p-2',
         rounded: 'rounded-full p-2',
       },
       borderColor: {
-        'greyfigma-90': 'border-grey-90 focus:border-purple-65',
-        'redfigma-47': 'border-red-47 focus:border-purple-65',
-        'redfigma-87': 'border-red-87 focus:border-purple-65',
+        'greyfigma-90': 'border-grey-border focus:border-purple-primary',
+        'redfigma-47': 'border-red-primary focus:border-purple-primary',
+        'redfigma-87': 'border-red-secondary focus:border-purple-primary',
       },
     },
   },
@@ -108,7 +108,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(function SelectIt
       ref={ref}
       className={clsx(
         'text-s rounded-xs p-2 font-medium outline-hidden',
-        'radix-highlighted:bg-purple-background-light radix-highlighted:text-purple-65',
+        'radix-highlighted:bg-purple-background-light radix-highlighted:text-purple-primary',
         className,
       )}
       {...props}
@@ -136,7 +136,7 @@ const SelectValue = forwardRef<HTMLDivElement, SelectValueProps & { align?: 'cen
 });
 
 const SelectArrow = () => (
-  <SelectIcon className="group-radix-state-open:rotate-180 text-grey-00 size-6 shrink-0" asChild>
+  <SelectIcon className="group-radix-state-open:rotate-180 text-grey-primary size-6 shrink-0" asChild>
     <Icon icon="arrow-2-down" />
   </SelectIcon>
 );

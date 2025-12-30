@@ -102,7 +102,7 @@ ViewingAstBuilderNode.displayName = 'ViewingAstBuilderNode';
 
 function Brackets({ children }: PropsWithChildren) {
   const className =
-    'text-grey-00 border-grey-90 [.group/nest:hover:not(:has(.group/nest:hover))_>_&]:bg-grey-95 [.group/nest:hover:not(:has(.group/nest:hover))_>_&]:border-grey-50 flex h-10 items-center justify-center rounded border px-2';
+    'text-grey-primary border-grey-border [.group/nest:hover:not(:has(.group/nest:hover))_>_&]:bg-grey-background [.group/nest:hover:not(:has(.group/nest:hover))_>_&]:border-grey-placeholder flex h-10 items-center justify-center rounded border px-2';
   return (
     <div className="group/nest contents">
       <button type="button" className={className}>

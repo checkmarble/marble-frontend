@@ -53,7 +53,7 @@ export const EscalateCase = ({ id, inboxId }: { id: string; inboxId: string }) =
                 to={getRoute('/settings/inboxes/:inboxId', {
                   inboxId: fromUUIDtoSUUID(inboxId),
                 })}
-                className="hover:text-purple-60 focus:text-purple-60 text-purple-65 font-semibold hover:underline focus:underline"
+                className="hover:text-purple-hover focus:text-purple-hover text-purple-primary font-semibold hover:underline focus:underline"
               >
                 {t('cases:case.inbox_settings_link')}
               </Link>

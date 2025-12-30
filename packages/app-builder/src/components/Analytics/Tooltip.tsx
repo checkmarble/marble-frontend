@@ -8,7 +8,10 @@ export function AnalyticsTooltip({ className, content }: { className: string; co
         <TooltipV2.TooltipTrigger asChild>
           <Icon
             icon="tip"
-            className={cn('text-grey-60 text-purple-65 hover:text-grey-50 cursor-pointer ml-v2-sm', className)}
+            className={cn(
+              'text-grey-60 text-purple-primary hover:text-grey-placeholder cursor-pointer ml-v2-sm',
+              className,
+            )}
           />
         </TooltipV2.TooltipTrigger>
         <TooltipV2.TooltipContent>{content}</TooltipV2.TooltipContent>

@@ -14,8 +14,8 @@ import { Icon } from 'ui-icons';
 function ColorSwatch({ name, className }: { name: string; className: string }) {
   return (
     <div className="flex flex-col gap-1">
-      <div className={`h-16 w-24 rounded-lg border border-grey-90 ${className}`} />
-      <span className="text-xs text-grey-50">{name}</span>
+      <div className={`h-16 w-24 rounded-lg border border-grey-border ${className}`} />
+      <span className="text-xs text-grey-placeholder">{name}</span>
     </div>
   );
 }
@@ -36,8 +36,8 @@ function ThemeToggle() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-l font-semibold text-grey-00">{title}</h2>
-      <div className="rounded-xl border border-grey-90 bg-surface-card p-6">{children}</div>
+      <h2 className="text-l font-semibold text-grey-primary">{title}</h2>
+      <div className="rounded-xl border border-grey-border bg-surface-card p-6">{children}</div>
     </section>
   );
 }
@@ -49,7 +49,7 @@ function ColorPaletteSection() {
       <div className="flex flex-col gap-6">
         {/* Grey scale - SEMANTIC names (new) */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Grey - Semantic Names (New)</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Grey - Semantic Names (New)</h3>
           <div className="flex flex-wrap gap-4">
             <ColorSwatch name="grey-primary" className="bg-grey-primary" />
             <ColorSwatch name="grey-hover" className="bg-grey-hover" />
@@ -65,21 +65,21 @@ function ColorPaletteSection() {
 
         {/* Grey scale - NUMERIC names (backward compatible) */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Grey - Numeric Aliases (Old)</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Grey - Numeric Aliases (Old)</h3>
           <div className="flex flex-wrap gap-4">
-            <ColorSwatch name="grey-00" className="bg-grey-00" />
-            <ColorSwatch name="grey-50" className="bg-grey-50" />
-            <ColorSwatch name="grey-80" className="bg-grey-80" />
-            <ColorSwatch name="grey-90" className="bg-grey-90" />
-            <ColorSwatch name="grey-95" className="bg-grey-95" />
-            <ColorSwatch name="grey-98" className="bg-grey-98" />
+            <ColorSwatch name="grey-00" className="bg-grey-primary" />
+            <ColorSwatch name="grey-50" className="bg-grey-placeholder" />
+            <ColorSwatch name="grey-80" className="bg-grey-disabled" />
+            <ColorSwatch name="grey-90" className="bg-grey-border" />
+            <ColorSwatch name="grey-95" className="bg-grey-background" />
+            <ColorSwatch name="grey-98" className="bg-grey-background-light" />
             <ColorSwatch name="grey-100" className="bg-surface-card" />
           </div>
         </div>
 
         {/* Purple scale - SEMANTIC names (new) */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Purple - Semantic Names (New)</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Purple - Semantic Names (New)</h3>
           <div className="flex flex-wrap gap-4">
             <ColorSwatch name="purple-primary-outline" className="bg-purple-primary-outline" />
             <ColorSwatch name="purple-primary" className="bg-purple-primary" />
@@ -95,23 +95,23 @@ function ColorPaletteSection() {
 
         {/* Purple scale - NUMERIC names (backward compatible) */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Purple - Numeric Aliases (Old)</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Purple - Numeric Aliases (Old)</h3>
           <div className="flex flex-wrap gap-4">
-            <ColorSwatch name="purple-60" className="bg-purple-60" />
-            <ColorSwatch name="purple-65" className="bg-purple-65" />
-            <ColorSwatch name="purple-82" className="bg-purple-82" />
-            <ColorSwatch name="purple-85" className="bg-purple-85" />
-            <ColorSwatch name="purple-96" className="bg-purple-96" />
+            <ColorSwatch name="purple-60" className="bg-purple-hover" />
+            <ColorSwatch name="purple-65" className="bg-purple-primary" />
+            <ColorSwatch name="purple-82" className="bg-purple-disabled" />
+            <ColorSwatch name="purple-85" className="bg-purple-secondary" />
+            <ColorSwatch name="purple-96" className="bg-purple-background" />
             <ColorSwatch name="purple-98" className="bg-purple-background-light" />
           </div>
         </div>
 
         {/* Semantic colors */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Other Colors</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Other Colors</h3>
           <div className="flex flex-wrap gap-4">
             <ColorSwatch name="green-38" className="bg-green-38" />
-            <ColorSwatch name="red-47" className="bg-red-47" />
+            <ColorSwatch name="red-47" className="bg-red-primary" />
             <ColorSwatch name="yellow-50" className="bg-yellow-50" />
             <ColorSwatch name="orange-50" className="bg-orange-50" />
             <ColorSwatch name="blue-58" className="bg-blue-58" />
@@ -127,13 +127,13 @@ function TypographySection() {
   return (
     <Section title="Typography">
       <div className="flex flex-col gap-4">
-        <p className="text-2xl font-semibold text-grey-00">Text 2XL - Heading</p>
-        <p className="text-l font-semibold text-grey-00">Text L - Subheading</p>
-        <p className="text-m text-grey-00">Text M - Body text</p>
-        <p className="text-s text-grey-00">Text S - Small text</p>
-        <p className="text-r text-grey-50">Text R - Regular text (secondary)</p>
-        <p className="text-xs text-grey-50">Text XS - Extra small (placeholder)</p>
-        <p className="text-2xs text-grey-80">Text 2XS - Tiny (disabled)</p>
+        <p className="text-2xl font-semibold text-grey-primary">Text 2XL - Heading</p>
+        <p className="text-l font-semibold text-grey-primary">Text L - Subheading</p>
+        <p className="text-m text-grey-primary">Text M - Body text</p>
+        <p className="text-s text-grey-primary">Text S - Small text</p>
+        <p className="text-r text-grey-placeholder">Text R - Regular text (secondary)</p>
+        <p className="text-xs text-grey-placeholder">Text XS - Extra small (placeholder)</p>
+        <p className="text-2xs text-grey-disabled">Text 2XS - Tiny (disabled)</p>
       </div>
     </Section>
   );
@@ -146,7 +146,7 @@ function ButtonsSection() {
       <div className="flex flex-col gap-6">
         {/* Primary filled */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Primary Filled</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Primary Filled</h3>
           <div className="flex flex-wrap items-center gap-4">
             <ButtonV2 variant="primary" appearance="filled">
               Primary
@@ -162,7 +162,7 @@ function ButtonsSection() {
 
         {/* Primary stroked */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Primary Stroked</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Primary Stroked</h3>
           <div className="flex flex-wrap items-center gap-4">
             <ButtonV2 variant="primary" appearance="stroked">
               Stroked
@@ -175,7 +175,7 @@ function ButtonsSection() {
 
         {/* Primary link */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Link</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Link</h3>
           <div className="flex flex-wrap items-center gap-4">
             <ButtonV2 variant="primary" appearance="link">
               Primary Link
@@ -194,7 +194,7 @@ function ButtonsSection() {
 
         {/* Secondary Filled */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Secondary Filled</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Secondary Filled</h3>
           <div className="flex flex-wrap items-center gap-4">
             <ButtonV2 variant="secondary" appearance="filled">
               Secondary
@@ -207,7 +207,7 @@ function ButtonsSection() {
 
         {/* Secondary Stroked */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Secondary Stroked</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Secondary Stroked</h3>
           <div className="flex flex-wrap items-center gap-4">
             <ButtonV2 variant="secondary" appearance="stroked">
               Stroked
@@ -220,7 +220,7 @@ function ButtonsSection() {
 
         {/* Destructive */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Destructive</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Destructive</h3>
           <div className="flex flex-wrap items-center gap-4">
             <ButtonV2 variant="destructive">Destructive</ButtonV2>
             <ButtonV2 variant="destructive" disabled>
@@ -231,7 +231,7 @@ function ButtonsSection() {
 
         {/* Icon mode */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Icon Mode</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Icon Mode</h3>
           <div className="flex flex-wrap items-center gap-4">
             <ButtonV2 variant="primary" mode="icon">
               <Icon icon="plus" className="size-5" />
@@ -258,7 +258,7 @@ function InputsSection() {
       <div className="flex flex-col gap-6">
         {/* Text inputs */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Text Input States</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Text Input States</h3>
           <div className="grid max-w-md gap-4">
             <Input
               placeholder="Placeholder text..."
@@ -273,7 +273,7 @@ function InputsSection() {
 
         {/* With adornments */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">With Adornments</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">With Adornments</h3>
           <div className="grid max-w-md gap-4">
             <Input placeholder="Search..." startAdornment="search" />
             <Input placeholder="Email" endAdornment="send" />
@@ -294,38 +294,38 @@ function CheckboxesSection() {
       <div className="flex flex-col gap-6">
         {/* Checkboxes */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Checkboxes</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Checkboxes</h3>
           <div className="flex flex-wrap items-center gap-6">
             <label className="flex items-center gap-2">
               <Checkbox checked={checked} onCheckedChange={(value) => setChecked(value === true)} />
-              <span className="text-s text-grey-00">Default checkbox</span>
+              <span className="text-s text-grey-primary">Default checkbox</span>
             </label>
             <label className="flex items-center gap-2">
               <Checkbox checked disabled />
-              <span className="text-s text-grey-80">Disabled checked</span>
+              <span className="text-s text-grey-disabled">Disabled checked</span>
             </label>
             <label className="flex items-center gap-2">
               <Checkbox disabled />
-              <span className="text-s text-grey-80">Disabled unchecked</span>
+              <span className="text-s text-grey-disabled">Disabled unchecked</span>
             </label>
           </div>
         </div>
 
         {/* Switches */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Switches</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Switches</h3>
           <div className="flex flex-wrap items-center gap-6">
             <label className="flex items-center gap-2">
               <Switch checked={switchOn} onCheckedChange={setSwitchOn} />
-              <span className="text-s text-grey-00">Toggle switch</span>
+              <span className="text-s text-grey-primary">Toggle switch</span>
             </label>
             <label className="flex items-center gap-2">
               <Switch checked disabled />
-              <span className="text-s text-grey-80">Disabled on</span>
+              <span className="text-s text-grey-disabled">Disabled on</span>
             </label>
             <label className="flex items-center gap-2">
               <Switch disabled />
-              <span className="text-s text-grey-80">Disabled off</span>
+              <span className="text-s text-grey-disabled">Disabled off</span>
             </label>
           </div>
         </div>
@@ -341,7 +341,7 @@ function TagsSection() {
       <div className="flex flex-col gap-6">
         {/* Color variants */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Colors</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Colors</h3>
           <div className="flex flex-wrap items-center gap-3">
             <Tag color="purple">Purple</Tag>
             <Tag color="grey">Grey</Tag>
@@ -355,7 +355,7 @@ function TagsSection() {
 
         {/* Sizes */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-50">Sizes</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Sizes</h3>
           <div className="flex flex-wrap items-center gap-3">
             <Tag color="purple" size="small">
               Small
@@ -375,13 +375,13 @@ function DesignSystemContent() {
   const { theme } = useTheme();
 
   return (
-    <div className="h-screen overflow-y-auto bg-grey-95 transition-colors">
+    <div className="h-screen overflow-y-auto bg-grey-background transition-colors">
       {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-grey-90 bg-surface-card px-8 py-4">
+      <header className="sticky top-0 z-10 border-b border-grey-border bg-surface-card px-8 py-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-grey-00">Design System</h1>
-            <p className="text-s text-grey-50">
+            <h1 className="text-2xl font-bold text-grey-primary">Design System</h1>
+            <p className="text-s text-grey-placeholder">
               Current theme: <span className="font-medium">{theme}</span>
             </p>
           </div>
@@ -402,9 +402,9 @@ function DesignSystemContent() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-grey-90 bg-surface-card px-8 py-4">
+      <footer className="border-t border-grey-border bg-surface-card px-8 py-4">
         <div className="mx-auto max-w-6xl">
-          <p className="text-xs text-grey-50">Marble Design System - Development Page</p>
+          <p className="text-xs text-grey-placeholder">Marble Design System - Development Page</p>
         </div>
       </footer>
     </div>

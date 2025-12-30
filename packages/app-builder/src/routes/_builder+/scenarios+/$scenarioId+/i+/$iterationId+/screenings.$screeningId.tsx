@@ -305,7 +305,7 @@ export default function ScreeningDetail() {
           <form className="relative flex max-w-[800px] flex-col" onSubmit={handleSubmit(form)}>
             <div
               className={cn('bg-purple-99 sticky top-0 z-40 flex h-[88px] items-center justify-between gap-4', {
-                'border-b-grey-90 border-b': !intersection?.isIntersecting,
+                'border-b-grey-border border-b': !intersection?.isIntersecting,
               })}
             >
               <form.Field
@@ -324,7 +324,7 @@ export default function ScreeningDetail() {
                       defaultValue={field.state.value}
                       onChange={(e) => field.handleChange(e.currentTarget.value)}
                       onBlur={field.handleBlur}
-                      className="text-grey-00 text-l w-full border-none bg-transparent font-normal outline-hidden"
+                      className="text-grey-primary text-l w-full border-none bg-transparent font-normal outline-hidden"
                       placeholder={t('scenarios:sanction_name_placeholder')}
                     />
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -348,7 +348,7 @@ export default function ScreeningDetail() {
               ) : null}
             </div>
             <div className="flex flex-col gap-8">
-              <div className="border-grey-90 flex flex-col items-start gap-6 border-b pb-6">
+              <div className="border-grey-border flex flex-col items-start gap-6 border-b pb-6">
                 <form.Field
                   name="description"
                   validators={{
@@ -364,7 +364,7 @@ export default function ScreeningDetail() {
                         disabled={editor === 'view'}
                         onChange={(e) => field.handleChange(e.currentTarget.value)}
                         onBlur={field.handleBlur}
-                        className="form-textarea text-grey-50 text-r w-full resize-none border-none bg-transparent font-medium outline-hidden"
+                        className="form-textarea text-grey-placeholder text-r w-full resize-none border-none bg-transparent font-medium outline-hidden"
                         placeholder={t('scenarios:sanction_description_placeholder')}
                       />
                       <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />
@@ -395,7 +395,7 @@ export default function ScreeningDetail() {
 
               <div className="flex flex-col gap-2">
                 <span className="text-s font-semibold">{t('scenarios:edit_sanction.global_settings')}</span>
-                <div className="bg-surface-card border-grey-90 flex flex-col gap-4 rounded-md border p-4">
+                <div className="bg-surface-card border-grey-border flex flex-col gap-4 rounded-md border p-4">
                   <Callout variant="outlined">
                     <span>
                       <Trans
@@ -427,7 +427,7 @@ export default function ScreeningDetail() {
                     )}
                   </form.Field>
                 </div>
-                <div className="bg-surface-card border-grey-90 flex flex-col gap-2 rounded-md border p-4">
+                <div className="bg-surface-card border-grey-border flex flex-col gap-2 rounded-md border p-4">
                   <div className="text-s flex items-center">
                     {t('scenarios:edit_sanction.consideration_matchings')}
                     <form.Field
@@ -491,7 +491,7 @@ export default function ScreeningDetail() {
                 </span>
                 <form.Field name="counterPartyId">
                   {(field) => (
-                    <div className="bg-surface-card border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
+                    <div className="bg-surface-card border-grey-border flex flex-col gap-4 rounded-sm border p-4">
                       <AstBuilder.Provider scenarioId={scenario.id} initialData={options} mode={editor}>
                         <FieldNode
                           value={field.state.value}
@@ -509,7 +509,7 @@ export default function ScreeningDetail() {
               <AstBuilder.Provider scenarioId={scenario.id} initialData={options} mode={editor}>
                 <div className="flex flex-col gap-2">
                   <span className="text-s font-semibold">{t('scenarios:sanction.match_settings.title')}</span>
-                  <div className="bg-surface-card border-grey-90 flex flex-col gap-4 rounded-sm border p-4">
+                  <div className="bg-surface-card border-grey-border flex flex-col gap-4 rounded-sm border p-4">
                     <Callout variant="outlined">
                       <p className="whitespace-pre-wrap">{t('scenarios:sanction.match_settings.callout')}</p>
                     </Callout>
@@ -523,7 +523,7 @@ export default function ScreeningDetail() {
                       </form.Field>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <div className="bg-grey-98 flex flex-col gap-2 rounded-sm p-2">
+                      <div className="bg-grey-background-light flex flex-col gap-2 rounded-sm p-2">
                         <form.Field name="query.name">
                           {(field) => {
                             const value = screeningConfig?.query?.name;
@@ -598,7 +598,7 @@ export default function ScreeningDetail() {
                                 <FieldToolTip>
                                   {t('scenarios:edit_sanction.enable_entity_recognition.tooltip')}
                                 </FieldToolTip>
-                                <span className="text-xs rounded-full bg-purple-65 px-2 py-0.5 text-grey-100">
+                                <span className="text-xs rounded-full bg-purple-primary px-2 py-0.5 text-grey-white">
                                   beta
                                 </span>
                               </div>

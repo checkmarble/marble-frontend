@@ -16,7 +16,7 @@ export function CaseAssignedTo({ userId }: { userId: string }) {
       content={
         <div key={user?.userId ?? 0} className="flex flex-row items-center gap-1">
           <Avatar key={user?.userId} size="xs" firstName={user?.firstName} lastName={user?.lastName} />
-          <div className="text-grey-00 text-xs font-normal capitalize">
+          <div className="text-grey-primary text-xs font-normal capitalize">
             {getFullName(user) || t('cases:case_detail.unknown_user')}
           </div>
         </div>
@@ -25,7 +25,7 @@ export function CaseAssignedTo({ userId }: { userId: string }) {
       <div className="flex w-fit flex-row items-center gap-1">
         <Avatar
           key={user?.userId ?? 0}
-          className="border-grey-100 border-2"
+          className="border-grey-white border-2"
           size="s"
           firstName={user?.firstName}
           lastName={user?.lastName}

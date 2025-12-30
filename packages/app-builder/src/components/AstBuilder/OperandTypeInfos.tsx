@@ -4,11 +4,12 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { type TFunction } from 'i18next';
 import { Icon } from 'ui-icons';
 
-const operandTypeInfosClassnames = cva('flex items-center justify-center rounded-xs p-1 text-grey-00', {
+const operandTypeInfosClassnames = cva('flex items-center justify-center rounded-xs p-1 text-grey-primary', {
   variants: {
     interactionMode: {
-      viewer: 'bg-grey-90',
-      editor: 'bg-grey-98 group-aria-expanded:bg-purple-96 group-aria-expanded:text-purple-65',
+      viewer: 'bg-grey-border',
+      editor:
+        'bg-grey-background-light group-aria-expanded:bg-purple-background group-aria-expanded:text-purple-primary',
     },
   },
   defaultVariants: {

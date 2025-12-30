@@ -95,11 +95,11 @@ export default function Lists() {
           const value = getValue();
           return (
             <div className="group flex items-center justify-between">
-              <p className="text-grey-00 text-s font-medium">{value}</p>
+              <p className="text-grey-primary text-s font-medium">{value}</p>
               {listFeatureAccess.isDeleteListValueAvailable ? (
                 <DeleteListValueModal listId={customList.id} listValueId={row.original.id} value={value}>
                   <button
-                    className="group-hover:text-grey-00 text-transparent transition-colors duration-200 ease-in-out"
+                    className="group-hover:text-grey-primary text-transparent transition-colors duration-200 ease-in-out"
                     name="delete"
                     tabIndex={-1}
                   >
@@ -155,7 +155,7 @@ export default function Lists() {
               {listFeatureAccess.isCreateListValueAvailable ? <AddListValueModal listId={customList.id} /> : null}
             </div>
             {virtualTable.isEmpty ? (
-              <div className="bg-surface-card border-grey-90 flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-4">
+              <div className="bg-surface-card border-grey-border flex h-28 flex-col items-center justify-center rounded-lg border border-solid p-4">
                 <p className="text-s font-medium">
                   {listValues.length > 0
                     ? t('lists:empty_custom_list_matches')
@@ -354,7 +354,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
   return (
     <UploadAsCsvDropzone
       {...getRootProps()}
-      className={isDragActive ? 'bg-purple-96 border-purple-82 opacity-90' : 'border-grey-50'}
+      className={isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder'}
     >
       <input {...getInputProps()} />
       <p>{t('lists:drop_csv_here')}</p>
@@ -377,8 +377,8 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
               className={clsx(
                 'size-[108px] rounded-full border-8',
                 modalState.success
-                  ? 'bg-purple-96 border-purple-96 text-purple-65'
-                  : 'bg-red-95 border-red-95 text-red-47',
+                  ? 'bg-purple-background border-purple-background text-purple-primary'
+                  : 'bg-red-background border-red-background text-red-primary',
               )}
             />
             <div className="flex flex-col items-center gap-2 text-center">
@@ -423,7 +423,7 @@ function UploadAsCsv({ listId }: { listId: string }) {
   return (
     <ClientOnly
       fallback={
-        <UploadAsCsvDropzone className="border-grey-50">
+        <UploadAsCsvDropzone className="border-grey-placeholder">
           <LoadingIcon icon="upload" loading={true} className="size-6" />
         </UploadAsCsvDropzone>
       }

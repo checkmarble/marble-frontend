@@ -79,7 +79,7 @@ export function AddToCase() {
         </form.Field>
         {isNewCase ? (
           <>
-            <p className="text-s text-grey-00 font-semibold first-letter:capitalize">
+            <p className="text-s text-grey-primary font-semibold first-letter:capitalize">
               {t('decisions:add_to_case.new_case.informations')}
             </p>
             <form.Field
@@ -145,7 +145,7 @@ export function AddToCase() {
           </>
         ) : (
           <>
-            <p className="text-s text-grey-00 font-semibold first-letter:capitalize">
+            <p className="text-s text-grey-primary font-semibold first-letter:capitalize">
               {t('decisions:add_to_case.new_case.attribution')}
             </p>
             <form.Field

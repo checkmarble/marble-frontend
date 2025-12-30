@@ -23,7 +23,7 @@ export function MenuOption({ option, value, onSelect, rightElement, highlightSea
       <div className="grid w-full grid-cols-[20px_1fr] gap-1">
         {leftIcon ? <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon={leftIcon} /> : null}
         <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
-          <div className="text-grey-00 text-s w-full break-all text-start font-normal">
+          <div className="text-grey-primary text-s w-full break-all text-start font-normal">
             {searchValue && highlightSearch ? (
               <Highlight text={option.displayName} query={searchValue} />
             ) : (

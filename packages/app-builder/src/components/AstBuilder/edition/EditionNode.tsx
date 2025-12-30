@@ -259,7 +259,7 @@ const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps
   return (
     <MenuCommand.Menu open={open} onOpenChange={setOpen}>
       <MenuCommand.Trigger>
-        <button className="text-grey-00 border-grey-90 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-95 [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:border-grey-50 flex h-10 items-center justify-center rounded-sm border px-2">
+        <button className="text-grey-primary border-grey-border [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:bg-grey-background [.group\/nest:hover:not(:has(.group\/nest:hover))_>_&]:border-grey-placeholder flex h-10 items-center justify-center rounded-sm border px-2">
           {children}
         </button>
       </MenuCommand.Trigger>
@@ -272,7 +272,7 @@ const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps
             >
               <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon="swap" />
               <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
-                <div className="text-grey-00 text-s w-full break-all text-start font-normal">
+                <div className="text-grey-primary text-s w-full break-all text-start font-normal">
                   {t('scenarios:nesting.swap_operands')}
                 </div>
               </div>
@@ -284,18 +284,18 @@ const Bracket = ({ children, removeNesting, addNesting, ...props }: BracketProps
           >
             <Icon aria-hidden="true" className="col-start-1 size-5 shrink-0" icon="parentheses" />
             <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
-              <div className="text-grey-00 text-s w-full break-all text-start font-normal">
+              <div className="text-grey-primary text-s w-full break-all text-start font-normal">
                 {t('scenarios:nesting.add_right_nesting')}
               </div>
             </div>
           </MenuCommand.Item>
           <MenuCommand.Item
             onSelect={removeNesting}
-            className="data-active-item:bg-red-95 grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
+            className="data-active-item:bg-red-background grid w-full select-none grid-cols-[20px_1fr] gap-1 rounded-xs p-2 outline-hidden"
           >
-            <Icon aria-hidden="true" className="text-red-43 col-start-1 size-5 shrink-0" icon="delete" />
+            <Icon aria-hidden="true" className="text-red-hover col-start-1 size-5 shrink-0" icon="delete" />
             <div className="col-start-2 flex flex-row gap-1 overflow-hidden">
-              <div className="text-grey-00 text-s w-full break-all text-start font-normal">
+              <div className="text-grey-primary text-s w-full break-all text-start font-normal">
                 {t('scenarios:nesting.remove')}
               </div>
             </div>

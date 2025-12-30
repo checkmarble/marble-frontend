@@ -34,7 +34,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
           'bg-green-94 dark:bg-transparent dark:border-green-38': color === 'green',
           'bg-yellow-90 dark:bg-transparent dark:border-yellow-50': color === 'yellow',
           'bg-orange-95 dark:bg-transparent dark:border-orange-50': color === 'orange',
-          'bg-red-95 dark:bg-transparent dark:border-red-47': color === 'red',
+          'bg-red-background dark:bg-transparent dark:border-red-primary': color === 'red',
         },
       )}
     >
@@ -43,7 +43,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
           'text-green-68': color === 'green',
           'text-yellow-75': color === 'yellow',
           'text-orange-50': color === 'orange',
-          'text-red-74': color === 'red',
+          'text-red-disabled': color === 'red',
         })}
       >
         {t('decisions:outcome')}
@@ -53,7 +53,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
           'text-green-38': color === 'green',
           'text-yellow-50': color === 'yellow',
           'text-orange-50': color === 'orange',
-          'text-red-47': color === 'red',
+          'text-red-primary': color === 'red',
         })}
       >
         {t(tKey)}
@@ -104,13 +104,13 @@ export const OutcomeBadge = ({
           showBackground &&
             match(outcome)
               .with('approve', () => 'bg-green-94 dark:bg-transparent dark:border-green-38')
-              .with('decline', () => 'bg-red-95 dark:bg-transparent dark:border-red-47')
+              .with('decline', () => 'bg-red-background dark:bg-transparent dark:border-red-primary')
               .with('review', () => 'bg-yellow-90 dark:bg-transparent dark:border-yellow-50')
-              .with('unknown', () => 'bg-grey-95 dark:bg-transparent dark:border-grey-50')
+              .with('unknown', () => 'bg-grey-background dark:bg-transparent dark:border-grey-placeholder')
               .with('block_and_review', () =>
                 match(reviewStatus)
                   .with('approve', () => 'bg-green-94 dark:bg-transparent dark:border-green-38')
-                  .with('decline', () => 'bg-red-95 dark:bg-transparent dark:border-red-47')
+                  .with('decline', () => 'bg-red-background dark:bg-transparent dark:border-red-primary')
                   .otherwise(() => 'bg-orange-95 dark:bg-transparent dark:border-orange-50'),
               )
               .exhaustive(),
@@ -119,13 +119,13 @@ export const OutcomeBadge = ({
     >
       {match(outcome)
         .with('approve', () => <Icon icon="accepted" className="text-green-38 size-4" />)
-        .with('decline', () => <Icon icon="denied" className="text-red-47 size-4" />)
+        .with('decline', () => <Icon icon="denied" className="text-red-primary size-4" />)
         .with('review', () => <div className={cn('size-3.5 rounded-full border-2 border-yellow-50')} />)
-        .with('unknown', () => <div className="border-grey-50 size-4 rounded-full border-2" />)
+        .with('unknown', () => <div className="border-grey-placeholder size-4 rounded-full border-2" />)
         .with('block_and_review', () =>
           match(reviewStatus)
             .with('approve', () => <Icon icon="manually_accepted" className="text-green-38 size-4" />)
-            .with('decline', () => <Icon icon="manually_denied" className="text-red-47 size-4" />)
+            .with('decline', () => <Icon icon="manually_denied" className="text-red-primary size-4" />)
             .otherwise(() => <Icon icon="block_and_review" className="size-4 text-orange-50" />),
         )
         .exhaustive()}
@@ -136,13 +136,13 @@ export const OutcomeBadge = ({
             showBackground &&
               match(outcome)
                 .with('approve', () => 'text-green-38')
-                .with('decline', () => 'text-red-47')
+                .with('decline', () => 'text-red-primary')
                 .with('review', () => 'text-yellow-50')
-                .with('unknown', () => 'text-grey-50')
+                .with('unknown', () => 'text-grey-placeholder')
                 .with('block_and_review', () =>
                   match(reviewStatus)
                     .with('approve', () => 'text-green-38')
-                    .with('decline', () => 'text-red-47')
+                    .with('decline', () => 'text-red-primary')
                     .otherwise(() => 'text-orange-50'),
                 )
                 .exhaustive(),

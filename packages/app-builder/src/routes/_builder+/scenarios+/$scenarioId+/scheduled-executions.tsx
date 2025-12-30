@@ -61,7 +61,7 @@ export default function ScheduledExecutions() {
 
       <Page.Container>
         <Page.Content className="max-w-(--breakpoint-lg)">
-          <h1 className="text-grey-00 text-m font-bold">
+          <h1 className="text-grey-primary text-m font-bold">
             {t('scenarios:home.execution.batch.scheduled_execution', {
               count: scheduledExecutions.length,
             })}

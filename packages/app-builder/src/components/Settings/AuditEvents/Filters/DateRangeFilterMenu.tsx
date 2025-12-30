@@ -17,13 +17,13 @@ export const DateRangeFilterMenu: FunctionComponent<DateRangeFilterMenuProps> = 
       <MenuCommand.List>
         <DateRangeFilter.Root dateRangeFilter={value} setDateRangeFilter={setValue} className="grid">
           <DateRangeFilter.FromNowPicker title={t('settings:audit.filter.presets')} />
-          <Separator className="bg-grey-90" decorative orientation="vertical" />
+          <Separator className="bg-grey-border" decorative orientation="vertical" />
           <DateRangeFilter.Calendar />
-          <Separator className="bg-grey-90 col-span-3" decorative orientation="horizontal" />
+          <Separator className="bg-grey-border col-span-3" decorative orientation="horizontal" />
           <DateRangeFilter.Summary className="col-span-3 row-span-1" />
         </DateRangeFilter.Root>
       </MenuCommand.List>
-      <div className="border-grey-90 flex justify-center gap-2 overflow-x-auto border-t p-2">
+      <div className="border-grey-border flex justify-center gap-2 overflow-x-auto border-t p-2">
         <MenuCommand.HeadlessItem
           onSelect={() => {
             if (value) {

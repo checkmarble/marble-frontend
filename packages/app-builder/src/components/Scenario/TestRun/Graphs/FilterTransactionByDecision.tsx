@@ -25,7 +25,7 @@ const TestRunRuleName = ({
       <div className="flex flex-col">
         <span className="text-s font-normal">{testRuleName}</span>
         {refRuleName !== testRuleName ? (
-          <span className="text-grey-50 inline-flex flex-row items-center gap-2">
+          <span className="text-grey-placeholder inline-flex flex-row items-center gap-2">
             <Icon icon="arrow-top-left" className="size-2" />
             <span className="text-xs">{refRuleName}</span>
           </span>
@@ -47,7 +47,7 @@ const TestRunRuleName = ({
     return (
       <div className="flex flex-row items-baseline gap-2">
         <span className="text-s font-normal">{refRuleName}</span>
-        <span className="text-grey-80 text-xs font-semibold">({t('scenarios:testrun.rule.old')})</span>
+        <span className="text-grey-disabled text-xs font-semibold">({t('scenarios:testrun.rule.old')})</span>
       </div>
     );
   }
@@ -104,7 +104,7 @@ const TestRunRuleHitPercentage = ({
   return (
     <div className="flex flex-row items-center gap-2">
       {direction !== 'equal' ? (
-        <span className="text-s text-grey-50 font-normal">
+        <span className="text-s text-grey-placeholder font-normal">
           {formatNumber(refRuleHitPercentage! / 100, {
             language,
             style: 'percent',
@@ -113,22 +113,22 @@ const TestRunRuleHitPercentage = ({
       ) : null}
       <div
         className={clsx('flex flex-row items-center justify-center rounded-sm p-1.5', {
-          'bg-purple-96': direction === 'up' || direction === 'down',
-          'bg-grey-95': direction === 'equal',
+          'bg-purple-background': direction === 'up' || direction === 'down',
+          'bg-grey-background': direction === 'equal',
         })}
       >
         <Icon
           icon={direction === 'up' || direction === 'down' ? 'arrow-forward' : 'dash'}
           className={clsx({
             'size-1.5': direction === 'equal',
-            'text-purple-65 size-2.5': direction === 'up' || direction === 'down',
+            'text-purple-primary size-2.5': direction === 'up' || direction === 'down',
             'rotate-90': direction === 'down',
             '-rotate-90': direction === 'up',
             'text-green-38': direction === 'equal',
           })}
         />
       </div>
-      <span className="text-s text-grey-00 font-medium">
+      <span className="text-s text-grey-primary font-medium">
         {formatNumber((testRuleHitPercentage !== undefined ? testRuleHitPercentage : refRuleHitPercentage)! / 100, {
           language,
           style: 'percent',
@@ -166,25 +166,25 @@ const RuleExecution = ({
             hit: {
               border: 'border-green-68',
               background: 'bg-green-68',
-              text: 'text-grey-00',
+              text: 'text-grey-primary',
               name: t('decisions:rules.status.hit'),
             },
             no_hit: {
-              border: 'border-grey-90',
-              background: 'bg-grey-90',
-              text: 'text-grey-00',
+              border: 'border-grey-border',
+              background: 'bg-grey-border',
+              text: 'text-grey-primary',
               name: t('decisions:rules.status.no_hit'),
             },
             error: {
-              border: 'border-red-74',
-              background: 'bg-red-74',
-              text: 'text-grey-00',
+              border: 'border-red-disabled',
+              background: 'bg-red-disabled',
+              text: 'text-grey-primary',
               name: t('decisions:rules.status.error'),
             },
             snoozed: {
               border: 'border-[#AAA6CC]',
               background: 'bg-[#AAA6CC]',
-              text: 'text-grey-100',
+              text: 'text-grey-white',
               name: t('decisions:rules.status.snoozed'),
             },
           }}
@@ -225,13 +225,13 @@ export const FilterTransactionByDecision = ({
       <Collapsible.Title>{t('scenarios:testrun.transaction_by_decision')}</Collapsible.Title>
       <Collapsible.Content>
         {rules.length === 0 ? (
-          <span className="text-grey-50 inline-block w-full text-center font-semibold">
+          <span className="text-grey-placeholder inline-block w-full text-center font-semibold">
             {t('scenarios:testrun.no_rules')}
           </span>
         ) : (
           <div className="flex flex-col gap-8">
             <div className="flex w-full flex-row items-center justify-end gap-2">
-              <span className="text-s text-grey-00 font-medium">{t('scenarios:testrun.show_rules_changes')}</span>
+              <span className="text-s text-grey-primary font-medium">{t('scenarios:testrun.show_rules_changes')}</span>
               <Switch checked={displayChangedRules} onCheckedChange={toggleChangedRulesDisplay} />
             </div>
             {keys(rulesByRuleId).length ? (

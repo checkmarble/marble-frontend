@@ -141,7 +141,7 @@ export function SignInWithEmailAndPassword({
             </div>
           )}
         </form.Field>
-        <Link className="text-s text-purple-65 underline" to={getRoute('/create-password')}>
+        <Link className="text-s text-purple-primary underline" to={getRoute('/create-password')}>
           {t('auth:sign_in.forgot_password')}
         </Link>
       </div>
@@ -190,7 +190,7 @@ export const StaticSignInWithEmailAndPassword = ({
             valid
           />
         </div>
-        <Link className="text-s text-purple-65 underline" to={getRoute('/create-password')}>
+        <Link className="text-s text-purple-primary underline" to={getRoute('/create-password')}>
           {t('auth:sign_in.forgot_password')}
         </Link>
       </div>

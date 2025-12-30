@@ -158,7 +158,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         {...getRootProps()}
         className={clsx(
           'text-s flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
-          isDragActive ? 'bg-purple-96 border-purple-82 opacity-90' : 'border-grey-50',
+          isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
         )}
       >
         <input {...getInputProps()} />
@@ -166,7 +166,7 @@ const UploadForm = ({ objectType }: { objectType: string }) => {
         {!loading ? (
           <>
             <p>{t('upload:drop_file_cta')}</p>
-            <p className="text-grey-80 uppercase">{t('common:or')}</p>
+            <p className="text-grey-disabled uppercase">{t('common:or')}</p>
             <Button>
               <Icon icon="plus" className="size-6" />
               {t('upload:pick_file_cta')}
@@ -221,8 +221,8 @@ const ResultModal = ({
             className={clsx(
               'size-[108px] rounded-full border-8',
               modalContent.success
-                ? 'bg-purple-96 border-purple-96 text-purple-65'
-                : 'bg-red-95 border-red-95 text-red-47',
+                ? 'bg-purple-background border-purple-background text-purple-primary'
+                : 'bg-red-background border-red-background text-red-primary',
             )}
           />
           <div className="flex flex-col items-center gap-2">
@@ -340,9 +340,9 @@ const getStatusIcon = (status: string) => {
     return <Icon icon="tick" className="text-green-38 size-6" />;
   }
   if (status === 'failure') {
-    return <Icon icon="cross" className="text-red-47 size-6" />;
+    return <Icon icon="cross" className="text-red-primary size-6" />;
   }
-  return <Icon icon="restart-alt" className="text-grey-50 size-6" />;
+  return <Icon icon="restart-alt" className="text-grey-placeholder size-6" />;
 };
 
 const getStatusTKey = (status: string): ParseKeys<['upload']> => {
@@ -393,7 +393,7 @@ export default function Upload() {
                   download={`${objectType}_template.csv`}
                   className={clsx(
                     'text-s flex flex-row items-center justify-center gap-1 rounded-sm border border-solid px-4 py-2 font-semibold outline-hidden',
-                    'hover:bg-grey-95 active:bg-grey-90 bg-surface-card border-grey-90 text-grey-00 disabled:text-grey-50 disabled:border-grey-95 disabled:bg-grey-95 focus:border-purple-65',
+                    'hover:bg-grey-background active:bg-grey-border bg-surface-card border-grey-border text-grey-primary disabled:text-grey-placeholder disabled:border-grey-background disabled:bg-grey-background focus:border-purple-primary',
                   )}
                 >
                   <Icon icon="download" className="me-2 size-6" />
@@ -416,7 +416,7 @@ const Loading = ({ className }: { className?: string }) => {
     <div
       className={clsx(
         className,
-        'border-grey-50 flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
+        'border-grey-placeholder flex h-60 flex-col items-center justify-center gap-4 rounded-sm border-2 border-dashed',
       )}
     >
       {t('common:loading')}

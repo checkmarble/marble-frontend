@@ -39,7 +39,7 @@ export function ConfigRow({
   return (
     <div
       className={cn('border rounded-v2-lg p-v2-md flex flex-col gap-v2-md', {
-        'border-purple-restricted-border bg-purple-restricted-background': isRestricted,
+        'border-purple-secondary bg-purple-background-light': isRestricted,
         'border-grey-border bg-surface-card': !isRestricted,
       })}
     >
@@ -62,12 +62,12 @@ export function ConfigRow({
           .with({ canEdit: true }, () => (
             <Icon
               icon={editIcon}
-              className="size-5 cursor-pointer text-purple-65 hover:text-purple-60"
+              className="size-5 cursor-pointer text-purple-primary hover:text-purple-hover"
               onClick={onClick}
             />
           ))
           .otherwise(() => (
-            <Icon icon="eye" className="size-5 cursor-pointer text-purple-65" onClick={onClick} />
+            <Icon icon="eye" className="size-5 cursor-pointer text-purple-primary" onClick={onClick} />
           ))}
       </div>
     </div>

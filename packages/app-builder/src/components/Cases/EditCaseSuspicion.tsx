@@ -96,7 +96,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                       setOpenReportModal(true);
                     }}
                   >
-                    <Icon icon="full-flag" className="text-red-47 size-3.5" />
+                    <Icon icon="full-flag" className="text-red-primary size-3.5" />
                     {t('cases:sar.status.completed')}
                   </Button>
                 </div>
@@ -114,7 +114,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                       setOpenReportModal(true);
                     }}
                   >
-                    <Icon icon="full-flag" className="text-red-47 size-3.5" />
+                    <Icon icon="full-flag" className="text-red-primary size-3.5" />
                     {t('cases:sar.action.mark_as_completed')}
                   </Button>
                   <Button
@@ -125,14 +125,14 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                       form.handleSubmit();
                     }}
                   >
-                    <Icon icon="cross" className="text-grey-50 size-4" />
+                    <Icon icon="cross" className="text-grey-placeholder size-4" />
                   </Button>
                 </div>
               ))
               .with('completed', () => (
                 <div className="flex items-center gap-2">
                   <span className="flex items-center gap-1">
-                    <Icon icon="full-flag" className="text-red-47 size-3.5" />
+                    <Icon icon="full-flag" className="text-red-primary size-3.5" />
                     <span className="text-xs font-medium">{t('cases:sar.status.completed')}</span>
                   </span>
                   {reports[0]?.hasFile ? (
@@ -160,27 +160,27 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                   {...getRootProps()}
                   className={cn(
                     'flex flex-col items-center justify-center gap-6 rounded-sm border-2 border-dashed p-6',
-                    isDragActive ? 'bg-purple-96 border-purple-82 opacity-90' : 'border-grey-50',
+                    isDragActive ? 'bg-purple-background border-purple-disabled opacity-90' : 'border-grey-placeholder',
                   )}
                 >
                   <input {...getInputProps()} />
                   <p className="text-r flex flex-col gap-1 text-center">
-                    <span className="text-grey-00">{t('cases:sar.modale.heading')}</span>
-                    <span className="text-grey-50 inline-flex flex-col">
+                    <span className="text-grey-primary">{t('cases:sar.modale.heading')}</span>
+                    <span className="text-grey-placeholder inline-flex flex-col">
                       <span>{t('cases:sar.modale.supported_extensions')}</span>
                       <span>{t('cases:drop_file_accepted_types')}</span>
                     </span>
                   </p>
-                  <span className="text-grey-50 text-r">or</span>
+                  <span className="text-grey-placeholder text-r">or</span>
                   <Button>
                     <Icon icon="plus" className="size-6" />
                     {t('cases:sar.modale.cta_choose_file')}
                   </Button>
                   {reportFile ? (
-                    <span className="border-grey-90 flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
+                    <span className="border-grey-border flex items-center gap-1 rounded-sm border px-1.5 py-0.5 text-xs font-medium">
                       {reportFile.name}
                       <Button variant="ghost" size="icon" onClick={() => form.setFieldValue('file', undefined)}>
-                        <Icon icon="cross" className="text-grey-00 size-4" />
+                        <Icon icon="cross" className="text-grey-primary size-4" />
                       </Button>
                     </span>
                   ) : null}

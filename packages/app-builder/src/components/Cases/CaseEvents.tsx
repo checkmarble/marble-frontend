@@ -117,13 +117,13 @@ export function CaseEvents({
     <div className="relative z-0 flex w-full flex-col gap-3">
       {filteredEvents.length > 0 ? (
         <div className="absolute left-0 top-0 flex h-full w-6 flex-col items-center">
-          <div className="bg-grey-90 -z-10 h-full w-px" />
+          <div className="bg-grey-border -z-10 h-full w-px" />
         </div>
       ) : null}
       <div className="bg-surface-card sticky left-0 top-0 z-[-15] flex w-full items-center justify-between pl-6">
         <span
-          className={cn('text-grey-50 text-small', {
-            'text-grey-100': showAll || newerEvents === 0,
+          className={cn('text-grey-placeholder text-small', {
+            'text-grey-white': showAll || newerEvents === 0,
           })}
         >
           {t('cases:investigation.more_recent', { number: newerEvents })}
@@ -170,8 +170,8 @@ export function CaseEvents({
       </div>
       {showAll ? null : (
         <span
-          className={cn('bg-surface-card text-grey-50 sticky left-0 top-0 z-[-15] pl-6 text-xs', {
-            'text-grey-100': showAll,
+          className={cn('bg-surface-card text-grey-placeholder sticky left-0 top-0 z-[-15] pl-6 text-xs', {
+            'text-grey-white': showAll,
           })}
         >
           {filteredEvents.length === 0 || olderEvents === 0

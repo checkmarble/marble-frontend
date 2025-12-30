@@ -141,7 +141,7 @@ function UpdateUserContent({
                 <FormLabel name={field.name} className="flex flex-row gap-2">
                   <span
                     className={clsx({
-                      'text-grey-80': access === 'restricted',
+                      'text-grey-disabled': access === 'restricted',
                     })}
                   >
                     {t('settings:users.role')}

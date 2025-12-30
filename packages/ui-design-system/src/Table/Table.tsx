@@ -28,7 +28,7 @@ function TableContainer({
   return (
     <ScrollAreaV2
       ref={scrollElementRef}
-      className={clsx('border-grey-90 border-spacing-0 rounded-lg border', className)}
+      className={clsx('border-grey-border border-spacing-0 rounded-lg border', className)}
       orientation="both"
       type="auto"
     >
@@ -50,7 +50,7 @@ function TableTH<TData extends RowData, TValue>({
       colSpan={header.colSpan}
       style={{ width: header.getSize() }}
       className={clsx(
-        'border-grey-90 bg-surface-card relative h-12 w-full border-b border-r px-4 last:border-r-0',
+        'border-grey-border bg-surface-card relative h-12 w-full border-b border-r px-4 last:border-r-0',
         {
           'cursor-pointer select-none': header.column.getCanSort(),
         },
@@ -79,14 +79,14 @@ function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderG
                 <th
                   colSpan={header.colSpan}
                   key={`${header.id}-${index}`}
-                  className="bg-surface-card border-grey-90 w-0 border-b"
+                  className="bg-surface-card border-grey-border w-0 border-b"
                 ></th>
               );
             }
             return (
               <Table.TH header={header} key={header.id}>
                 {header.isPlaceholder ? null : (
-                  <div className="text-s text-grey-00 flex flex-row items-center font-semibold">
+                  <div className="text-s text-grey-primary flex flex-row items-center font-semibold">
                     <div className="flex flex-1">{flexRender(header.column.columnDef.header, context)}</div>
                     {{
                       asc: <Icon icon="arrow-2-up" className="size-6" />,
@@ -95,7 +95,7 @@ function Header<TData extends RowData>({ headerGroups }: { headerGroups: HeaderG
                     {header.column.getCanResize() ? (
                       <div
                         className={clsx(
-                          'hover:bg-grey-90 active:bg-grey-50 absolute right-0 h-full w-1 cursor-col-resize touch-none select-none',
+                          'hover:bg-grey-border active:bg-grey-placeholder absolute right-0 h-full w-1 cursor-col-resize touch-none select-none',
                           // Hack to take scroll bar into account
                           index === headerGroup.headers.length - 1 && 'right-2',
                         )}

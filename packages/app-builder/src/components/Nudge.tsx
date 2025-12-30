@@ -18,8 +18,8 @@ type NudgeProps = {
 const triggerClassName = cva('flex items-center justify-center text-white ', {
   variants: {
     kind: {
-      test: 'bg-purple-65',
-      restricted: 'bg-purple-82',
+      test: 'bg-purple-primary',
+      restricted: 'bg-purple-disabled',
       missing_configuration: 'bg-yellow-50',
     },
     collapsed: {
@@ -70,7 +70,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
           className={cn(
             'bg-surface-card z-50 flex w-60 flex-col items-center gap-6 rounded-sm border p-4 pointer-events-auto shadow-lg',
             {
-              'border-purple-82': kind !== 'missing_configuration',
+              'border-purple-disabled': kind !== 'missing_configuration',
               'border-yellow-50': kind === 'missing_configuration',
             },
           )}
@@ -89,7 +89,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
             </p>
             {link ? (
               <a
-                className="text-s text-purple-65 inline-block w-full text-center hover:underline"
+                className="text-s text-purple-primary inline-block w-full text-center hover:underline"
                 target="_blank"
                 rel="noreferrer"
                 href={link}

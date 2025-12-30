@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import { cn } from 'ui-design-system';
 
 export const linkClasses =
-  'hover:text-purple-60 focus:text-purple-60 font-semibold lowercase text-purple-65 hover:underline focus:underline';
+  'hover:text-purple-hover focus:text-purple-hover font-semibold lowercase text-purple-primary hover:underline focus:underline';
 
 export const ExternalLink = forwardRef<HTMLAnchorElement, React.ComponentPropsWithoutRef<'a'>>(function ExternalLink(
   { className, children, ...otherProps },

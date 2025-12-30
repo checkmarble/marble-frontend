@@ -16,7 +16,7 @@ export const SchemaMenuMenuButton = React.forwardRef<HTMLDivElement, Omit<MenuBu
       <MenuButton
         ref={ref}
         className={clsx(
-          'hover:bg-purple-60 active:bg-purple-60 text-grey-100 bg-purple-65 flex size-fit flex-row gap-1 rounded-sm p-2',
+          'hover:bg-purple-hover active:bg-purple-hover text-grey-white bg-purple-primary flex size-fit flex-row gap-1 rounded-sm p-2',
           className,
         )}
         {...props}

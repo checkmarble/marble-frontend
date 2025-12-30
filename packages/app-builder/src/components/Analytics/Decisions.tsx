@@ -305,14 +305,14 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                       ]),
                     );
                   }}
-                  className={percentage ? 'bg-purple-background-light border-purple-65 text-purple-65' : ''}
+                  className={percentage ? 'bg-purple-background-light border-purple-primary text-purple-primary' : ''}
                 >
                   %
                 </ButtonV2>
                 <ButtonV2
                   variant="secondary"
                   onClick={() => setPercentage(false)}
-                  className={!percentage ? 'bg-purple-background-light border-purple-65 text-purple-65' : ''}
+                  className={!percentage ? 'bg-purple-background-light border-purple-primary text-purple-primary' : ''}
                 >
                   #
                 </ButtonV2>
@@ -328,7 +328,9 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                     onClick={() => {
                       setScale('linear');
                     }}
-                    className={scale === 'linear' ? 'bg-purple-background-light border-purple-65 text-purple-65' : ''}
+                    className={
+                      scale === 'linear' ? 'bg-purple-background-light border-purple-primary text-purple-primary' : ''
+                    }
                   >
                     {t('analytics:decisions.scale.linear.label')}
                   </ButtonV2>
@@ -338,7 +340,9 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                       setGroupDate('weekly');
                       setScale('symlog');
                     }}
-                    className={scale === 'symlog' ? 'bg-purple-background-light border-purple-65 text-purple-65' : ''}
+                    className={
+                      scale === 'symlog' ? 'bg-purple-background-light border-purple-primary text-purple-primary' : ''
+                    }
                   >
                     {t('analytics:decisions.scale.symlog.label')}
                   </ButtonV2>
@@ -405,7 +409,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 const outcomes: Outcome[] = ['approve', 'decline', 'review', 'blockAndReview'];
                 const totalValue = !percentage && typeof data.total === 'number' ? data.total : undefined;
                 return (
-                  <div className="flex flex-col gap-v2-xs bg-surface-card p-v2-sm rounded-lg border border-grey-90 shadow-sm">
+                  <div className="flex flex-col gap-v2-xs bg-surface-card p-v2-sm rounded-lg border border-grey-border shadow-sm">
                     <div className="text-s text-grey-60 mb-v2-xs">{getTootlipDateFormat(data?.date)}</div>
                     <div className="flex flex-col gap-v2-xs">
                       {outcomes.map((outcome) => {
@@ -417,7 +421,7 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                               className="size-3 rounded-sm flex-shrink-0"
                               style={{ backgroundColor: OUTCOME_COLORS[outcome] }}
                             />
-                            <span className="text-s text-grey-00">
+                            <span className="text-s text-grey-primary">
                               {t(getOutcomeTranslationKey(outcome))}:{' '}
                               <strong className="font-semibold">{displayValue}</strong>
                             </span>
@@ -426,8 +430,8 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                       })}
                     </div>
                     {!percentage && totalValue !== undefined && (
-                      <div className="flex items-center gap-v2-sm pt-v2-xs border-t border-grey-90 mt-v2-xs">
-                        <span className="text-s text-grey-00 font-semibold">
+                      <div className="flex items-center gap-v2-sm pt-v2-xs border-t border-grey-border mt-v2-xs">
+                        <span className="text-s text-grey-primary font-semibold">
                           {t('analytics:decisions.tooltip.total', { defaultValue: 'Total' })}: {totalValue}
                         </span>
                       </div>
@@ -465,7 +469,9 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                   setGroupDate('daily');
                   setScale('linear');
                 }}
-                className={groupDate === 'daily' ? 'bg-purple-background-light border-purple-65 text-purple-65' : ''}
+                className={
+                  groupDate === 'daily' ? 'bg-purple-background-light border-purple-primary text-purple-primary' : ''
+                }
               >
                 {t('analytics:time_granularity.day')}
               </ButtonV2>
@@ -474,7 +480,9 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 variant="secondary"
                 mode="normal"
                 onClick={() => setGroupDate('weekly')}
-                className={groupDate === 'weekly' ? 'bg-purple-background-light border-purple-65 text-purple-65' : ''}
+                className={
+                  groupDate === 'weekly' ? 'bg-purple-background-light border-purple-primary text-purple-primary' : ''
+                }
               >
                 {t('analytics:time_granularity.week')}
               </ButtonV2>
@@ -483,7 +491,9 @@ export function Decisions({ data, scenarioVersions, isLoading = false }: Decisio
                 variant="secondary"
                 mode="normal"
                 onClick={() => setGroupDate('monthly')}
-                className={groupDate === 'monthly' ? 'bg-purple-background-light border-purple-65 text-purple-65' : ''}
+                className={
+                  groupDate === 'monthly' ? 'bg-purple-background-light border-purple-primary text-purple-primary' : ''
+                }
               >
                 {t('analytics:time_granularity.month')}
               </ButtonV2>

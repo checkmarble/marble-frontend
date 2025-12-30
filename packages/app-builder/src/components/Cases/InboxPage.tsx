@@ -132,7 +132,7 @@ export const InboxPage = ({
       </Page.Header>
       <div
         className={cn(
-          'h-1 animate-gradient bg-linear-to-r from-transparent from-25% via-purple-65 to-transparent to-75% invisible',
+          'h-1 animate-gradient bg-linear-to-r from-transparent from-25% via-purple-primary to-transparent to-75% invisible',
           {
             visible: isSubsequentlyFetching,
           },
@@ -210,7 +210,7 @@ export const InboxPage = ({
                   })
                   .with({ isError: true }, () => {
                     return (
-                      <div className="border-red-74 bg-red-95 text-red-47 mt-3 rounded-sm border p-v2-lg flex flex-col gap-v2-sm items-center">
+                      <div className="border-red-disabled bg-red-background text-red-primary mt-3 rounded-sm border p-v2-lg flex flex-col gap-v2-sm items-center">
                         <span>{t('cases:errors.fetching_cases')}</span>
                         <ButtonV2 variant="secondary" onClick={() => casesQuery.refetch()}>
                           {t('common:retry')}

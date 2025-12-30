@@ -208,22 +208,22 @@ export function EditField({
                         <p className="text-xs">{t('data:edit_field.is_unique.toggle')}</p>
                       ) : null}
                       {uniqueSettingDisabled.reason === 'cannot_toggle_index_pending' ? (
-                        <p className="text-red-74 text-xs">
+                        <p className="text-red-disabled text-xs">
                           {t('data:edit_field.is_unique.cannot_toggle_index_pending')}
                         </p>
                       ) : null}
                       {uniqueSettingDisabled.reason === 'cannot_untoggle_field_linked' ? (
-                        <p className="text-red-74 text-xs">
+                        <p className="text-red-disabled text-xs">
                           {t('data:edit_field.is_unique.cannot_untoggle_field_linked')}
                         </p>
                       ) : null}
                       {field.state.value && inputField.unicityConstraint === 'no_unicity_constraint' ? (
-                        <p className="text-red-74 text-xs">
+                        <p className="text-red-disabled text-xs">
                           {t('data:edit_field.is_unique.warning_creation_asynchronous')}
                         </p>
                       ) : null}
                       {inputField.unicityConstraint === 'active_unique_constraint' && !field.state.value ? (
-                        <p className="text-red-74 text-xs">{t('data:edit_field.is_unique.warning_untoggle')}</p>
+                        <p className="text-red-disabled text-xs">{t('data:edit_field.is_unique.warning_untoggle')}</p>
                       ) : null}
                     </FormLabel>
                     <FormErrorOrDescription errors={getFieldErrors(field.state.meta.errors)} />

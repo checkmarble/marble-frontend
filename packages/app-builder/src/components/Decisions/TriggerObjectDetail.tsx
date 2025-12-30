@@ -59,7 +59,7 @@ export function CaseDetailTriggerObject({
   return (
     <div
       className={clsx(
-        'text-s text-grey-00 bg-grey-98 grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg p-4',
+        'text-s text-grey-primary bg-grey-background-light grid grid-cols-[max-content_1fr] gap-3 gap-x-4 break-all rounded-lg p-4',
         className,
       )}
     >
@@ -69,7 +69,7 @@ export function CaseDetailTriggerObject({
           <div className="inline-flex items-center gap-2">
             {links[property] && !!data.value ? (
               <button
-                className="text-purple-65 group flex items-center gap-1 text-left"
+                className="text-purple-primary group flex items-center gap-1 text-left"
                 onClick={() => onLinkClicked(links[property] as string, data.value as string)}
               >
                 <FormatData data={data} />

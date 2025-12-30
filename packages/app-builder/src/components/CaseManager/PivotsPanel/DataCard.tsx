@@ -5,7 +5,7 @@ const titleVariants = cva('text-s px-2 py-3 font-semibold flex justify-between i
   variants: {
     borderless: {
       true: null,
-      false: 'border-b border-grey-90',
+      false: 'border-b border-grey-border',
     },
   },
   defaultVariants: {
@@ -24,7 +24,7 @@ export function DataCard({ title, subtitle, children, borderless }: DataCardProp
     <div>
       <h3 className={titleVariants({ borderless })}>
         <span>{title}</span>
-        {subtitle ? <span className="text-purple-82 text-xs">{subtitle}</span> : null}
+        {subtitle ? <span className="text-purple-disabled text-xs">{subtitle}</span> : null}
       </h3>
       {children}
     </div>

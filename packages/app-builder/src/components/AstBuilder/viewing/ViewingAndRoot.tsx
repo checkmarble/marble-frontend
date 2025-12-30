@@ -19,7 +19,7 @@ export function ViewingAstBuilderAndRoot(props: ViewingAstBuilderAndRootProps) {
   return (
     <div className="flex flex-col gap-2 lg:gap-4">
       <div className="text-s grid grid-cols-[8px_16px_max-content_1fr_max-content]">
-        <div className="text-s bg-grey-98 text-purple-65 col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded-sm p-2 font-semibold">
+        <div className="text-s bg-grey-background-light text-purple-primary col-span-5 flex size-fit min-h-[40px] min-w-[40px] flex-wrap items-center justify-center gap-1 rounded-sm p-2 font-semibold">
           {dataSharp.value.data.$triggerObjectType}
         </div>
         {props.node.children.map((child, i, children) => {
@@ -53,11 +53,11 @@ function ViewingRootAndLine({ isFirst, isLast, path, validation, node }: Viewing
   return (
     <>
       {/* Row 1 */}
-      <div className={clsx('border-grey-90 col-span-5 w-2 border-e', isFirst ? 'h-4' : 'h-2')} />
+      <div className={clsx('border-grey-border col-span-5 w-2 border-e', isFirst ? 'h-4' : 'h-2')} />
 
       {/* Row 2 */}
-      <div className={clsx('border-grey-90 col-start-1 border-e', isLast && 'h-5')} />
-      <div className="border-grey-90 col-start-2 h-5 border-b" />
+      <div className={clsx('border-grey-border col-start-1 border-e', isLast && 'h-5')} />
+      <div className="border-grey-border col-start-2 h-5 border-b" />
 
       <LogicalOperatorLabel operator={isFirst ? 'where' : 'and'} className="col-start-3" type="contained" />
 

@@ -10,7 +10,7 @@ export const DatasetTag = ({ category }: { category: ScreeningCategory }) => {
     <span
       className={cn(
         'text-2xs shrink-0 rounded-full px-2 py-[3px] font-medium',
-        SCREENING_CATEGORY_COLORS[category] ?? 'bg-grey-95 text-grey-50',
+        SCREENING_CATEGORY_COLORS[category] ?? 'bg-grey-background text-grey-placeholder',
       )}
     >
       {match(category)

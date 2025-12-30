@@ -45,7 +45,7 @@ export function TagSelector({
   if (orgTags.length === 0) {
     return (
       <Button variant="secondary" disabled>
-        <span className="text-grey-50 text-xs">{t('workflows:action.tags.no_tags')}</span>
+        <span className="text-grey-placeholder text-xs">{t('workflows:action.tags.no_tags')}</span>
       </Button>
     );
   }
@@ -55,8 +55,8 @@ export function TagSelector({
       <MenuCommand.Menu persistOnSelect onOpenChange={onOpenChange}>
         <MenuCommand.Trigger>
           <Button variant="secondary" size={selectedTagIds.length ? 'icon' : 'xs'}>
-            <Icon icon={selectedTagIds.length ? 'edit-square' : 'plus'} className="text-grey-50 size-4" />
-            {!selectedTagIds.length ? <span className="text-grey-50 text-xs">{t('common:add')}</span> : null}
+            <Icon icon={selectedTagIds.length ? 'edit-square' : 'plus'} className="text-grey-placeholder size-4" />
+            {!selectedTagIds.length ? <span className="text-grey-placeholder text-xs">{t('common:add')}</span> : null}
           </Button>
         </MenuCommand.Trigger>
         <MenuCommand.Content className="mt-2 min-w-[200px]" side="bottom">
@@ -71,7 +71,7 @@ export function TagSelector({
               >
                 <div className="inline-flex w-full justify-between">
                   <TagPreview name={formattedTags[tagId]!.name} />
-                  {selectedTagIds.includes(tagId) ? <Icon icon="tick" className="text-purple-65 size-6" /> : null}
+                  {selectedTagIds.includes(tagId) ? <Icon icon="tick" className="text-purple-primary size-6" /> : null}
                 </div>
               </MenuCommand.Item>
             ))}
@@ -85,7 +85,7 @@ export function TagSelector({
         <TagPreview key={id} name={formattedTags[id]?.name ?? id} />
       ))}
       {maxVisibleTags && selectedTagIds.length > maxVisibleTags ? (
-        <span className="text-grey-50 text-xs">+{selectedTagIds.length - maxVisibleTags}</span>
+        <span className="text-grey-placeholder text-xs">+{selectedTagIds.length - maxVisibleTags}</span>
       ) : null}
     </div>
   );

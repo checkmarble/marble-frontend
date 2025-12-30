@@ -77,7 +77,7 @@ export default function WebhookDetail() {
               {webhook.eventTypes.length > 0 ? (
                 <EventTypes eventTypes={webhook.eventTypes} />
               ) : (
-                <span className="text-grey-80 text-s">{t('settings:webhooks.event_types.placeholder')}</span>
+                <span className="text-grey-disabled text-s">{t('settings:webhooks.event_types.placeholder')}</span>
               )}
 
               <WebhookLabel>{t('settings:webhooks.http_timeout')}</WebhookLabel>
@@ -118,9 +118,9 @@ const WebhookLabel = ({ children }: { children: React.ReactNode }) => (
 
 const WebhookValue = ({ children }: { children: React.ReactNode }) => {
   if (children === null || children === undefined) {
-    return <span className="text-s text-grey-50">-</span>;
+    return <span className="text-s text-grey-placeholder">-</span>;
   }
-  return <span className="text-s text-grey-00">{children}</span>;
+  return <span className="text-s text-grey-primary">{children}</span>;
 };
 
 const columnHelper = createColumnHelper<WebhookSecret>();

@@ -6,7 +6,7 @@ export const ScoreModifier = ({ score, className, ...rest }: ComponentProps<'spa
     <span
       {...rest}
       className={cn(
-        'bg-purple-96 text-purple-65 inline-flex items-center gap-1 rounded-full px-2 py-[3px] text-xs font-normal',
+        'bg-purple-background text-purple-primary inline-flex items-center gap-1 rounded-full px-2 py-[3px] text-xs font-normal',
         className,
       )}
     >

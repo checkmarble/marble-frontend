@@ -80,7 +80,7 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
           <div className="flex flex-col gap-v2-md relative">
             {/* Title Row */}
             <div className="flex justify-between items-center">
-              <h1 className="text-l font-semibold text-grey-00">{t('settings:audit.audit_logs_section')}</h1>
+              <h1 className="text-l font-semibold text-grey-primary">{t('settings:audit.audit_logs_section')}</h1>
             </div>
 
             {/* Filters Row */}
@@ -104,7 +104,7 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
                 </div>
               ))
               .with({ isError: true }, () => (
-                <div className="border-red-74 bg-red-95 text-red-47 mt-3 rounded-sm border p-v2-lg flex flex-col gap-v2-sm items-center">
+                <div className="border-red-disabled bg-red-background text-red-primary mt-3 rounded-sm border p-v2-lg flex flex-col gap-v2-sm items-center">
                   <span>{t('common:errors.unknown')}</span>
                   <ButtonV2 variant="secondary" onClick={() => auditEventsQuery.refetch()}>
                     {t('common:retry')}

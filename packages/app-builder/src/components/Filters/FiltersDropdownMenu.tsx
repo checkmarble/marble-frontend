@@ -9,7 +9,7 @@ const FiltersDropdownMenuContent = forwardRef<HTMLDivElement, React.ComponentPro
         <DropdownMenu.Content
           ref={ref}
           className={clsx(
-            'animate-slide-up-and-fade bg-surface-card border-grey-90 rounded-sm border shadow-md will-change-[transform,opacity]',
+            'animate-slide-up-and-fade bg-surface-card border-grey-border rounded-sm border shadow-md will-change-[transform,opacity]',
             className,
           )}
           side="bottom"

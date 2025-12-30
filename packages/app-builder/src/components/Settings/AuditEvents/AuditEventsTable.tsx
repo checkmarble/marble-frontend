@@ -33,7 +33,7 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
         cell: ({ getValue }) => {
           const value = getValue();
           return value ? (
-            <span className="text-grey-00 text-sm">
+            <span className="text-grey-primary text-sm">
               {formatDateTimeWithoutPresets(value, {
                 language,
                 dateStyle: 'short',
@@ -41,7 +41,7 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
               })}
             </span>
           ) : (
-            <span className="text-grey-50">-</span>
+            <span className="text-grey-placeholder">-</span>
           );
         },
       }),
@@ -70,8 +70,8 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
 
           return (
             <div className="flex flex-col">
-              <span className="text-grey-00 text-sm">{displayName}</span>
-              <span className="text-grey-50 text-xs">{secondaryText}</span>
+              <span className="text-grey-primary text-sm">{displayName}</span>
+              <span className="text-grey-placeholder text-xs">{secondaryText}</span>
             </div>
           );
         },
@@ -89,9 +89,9 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
         cell: ({ getValue }) => {
           const value = getValue();
           return value ? (
-            <span className="text-grey-00 text-sm">{value}</span>
+            <span className="text-grey-primary text-sm">{value}</span>
           ) : (
-            <span className="text-grey-50">-</span>
+            <span className="text-grey-placeholder">-</span>
           );
         },
       }),
@@ -101,11 +101,11 @@ export const AuditEventsTable: FunctionComponent<AuditEventsTableProps> = ({ aud
         size: 250,
         cell: ({ getValue }) => {
           const value = getValue();
-          if (!value) return <span className="text-grey-50">-</span>;
+          if (!value) return <span className="text-grey-placeholder">-</span>;
           return (
             <div onClick={(e) => e.stopPropagation()}>
               <CopyToClipboardButton toCopy={value} size="sm">
-                <span className="text-grey-00 max-w-[200px] truncate font-mono text-xs">{value}</span>
+                <span className="text-grey-primary max-w-[200px] truncate font-mono text-xs">{value}</span>
               </CopyToClipboardButton>
             </div>
           );

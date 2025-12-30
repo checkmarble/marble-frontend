@@ -7,5 +7,5 @@ interface CodeProps {
 }
 
 export const Code: React.FC<CodeProps> = ({ children, className }) => (
-  <span className={cn('bg-grey-90 rounded-md px-[.2em] py-[.1em]', className)}>{children}</span>
+  <span className={cn('bg-grey-border rounded-md px-[.2em] py-[.1em]', className)}>{children}</span>
 );

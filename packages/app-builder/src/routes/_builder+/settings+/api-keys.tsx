@@ -80,7 +80,7 @@ export default function ApiKeys() {
               cell: ({ cell }) => {
                 return (
                   // TODO: inject trigger inside <DeleteApiKey /> and use style directly on it (so we can remove the container div)
-                  <div className="group-hover:text-grey-00 focus-within:text-grey-00 text-transparent">
+                  <div className="group-hover:text-grey-primary focus-within:text-grey-primary text-transparent">
                     <DeleteApiKey apiKey={cell.row.original} />
                   </div>
                 );

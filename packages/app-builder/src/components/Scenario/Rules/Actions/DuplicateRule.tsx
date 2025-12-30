@@ -31,8 +31,8 @@ export function DuplicateRule({
       <ModalV2.Content>
         <div className="flex flex-col gap-6 p-6">
           <div className="flex flex-1 flex-col items-center justify-center gap-2">
-            <div className="bg-purple-96 mb-8 box-border rounded-[90px] p-4">
-              <Icon icon="copy" className="text-purple-65 size-16" />
+            <div className="bg-purple-background mb-8 box-border rounded-[90px] p-4">
+              <Icon icon="copy" className="text-purple-primary size-16" />
             </div>
             <h1 className="text-l font-semibold">{t('scenarios:clone_rule.title')}</h1>
             <p className="text-center">{t('scenarios:clone_rule.content')}</p>

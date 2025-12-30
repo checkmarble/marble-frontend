@@ -97,16 +97,16 @@ export function CasesList({
               </MultiSelect.Item>
               <CaseStatusBadge status={caseItem.status} size="large" showText={false} />
             </div>
-            <div className="p-v2-md group-hover/table-row:text-purple-65 group-hover/table-row:underline">
+            <div className="p-v2-md group-hover/table-row:text-purple-primary group-hover/table-row:underline">
               {caseItem.name}
             </div>
             <div className="p-v2-md">
               {caseItem.outcome && caseItem.outcome !== 'unset' ? (
                 <span
                   className={cn('rounded-full border px-v2-sm py-v2-xs text-small text-nowrap', {
-                    'border-red-47 text-red-47': caseItem.outcome === 'confirmed_risk',
+                    'border-red-primary text-red-primary': caseItem.outcome === 'confirmed_risk',
                     'border-green-38 text-green-38': caseItem.outcome === 'valuable_alert',
-                    'border-grey-50 text-grey-50': caseItem.outcome === 'false_positive',
+                    'border-grey-placeholder text-grey-placeholder': caseItem.outcome === 'false_positive',
                   })}
                 >
                   {t(`cases:case.outcome.${caseItem.outcome}`)}

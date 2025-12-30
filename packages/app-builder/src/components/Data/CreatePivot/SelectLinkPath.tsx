@@ -75,7 +75,7 @@ export function SelectLinkPath({
                               onOpenChange(false);
                             }}
                           >
-                            <span className="text-s text-grey-00 font-medium">
+                            <span className="text-s text-grey-primary font-medium">
                               {option.displayPath ?? option.displayValue}
                             </span>
                           </MenuCommand.Item>

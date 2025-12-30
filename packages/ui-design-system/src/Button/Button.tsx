@@ -8,22 +8,22 @@ export const CtaClassName = cva(
   {
     variants: {
       variant: {
-        primary: 'text-grey-100 focus:border-grey-00',
+        primary: 'text-grey-white focus:border-grey-primary',
         secondary:
-          'text-grey-00 bg-surface-card border-grey-90 disabled:text-grey-50 aria-disabled:text-grey-50 disabled:border-grey-95 aria-disabled:border-grey-95 disabled:bg-grey-95 aria-disabled:bg-grey-95',
-        tertiary: 'text-grey-80 border-transparent',
-        ghost: 'text-grey-00 border-transparent',
+          'text-grey-primary bg-surface-card border-grey-border disabled:text-grey-placeholder aria-disabled:text-grey-placeholder disabled:border-grey-background aria-disabled:border-grey-background disabled:bg-grey-background aria-disabled:bg-grey-background',
+        tertiary: 'text-grey-disabled border-transparent',
+        ghost: 'text-grey-primary border-transparent',
         outline:
-          'hover:bg-purple-96 active:bg-purple-96 bg-purple-background-light border-purple-65 text-purple-65 disabled:text-grey-50 aria-disabled:text-grey-50 disabled:border-grey-95 aria-disabled:border-grey-95 disabled:bg-grey-95 aria-disabled:bg-grey-95 focus:border-purple-60',
-        dropdown: 'text-grey-00 border-transparent disabled:text-grey-80 disabled:bg-transparent',
+          'hover:bg-purple-background active:bg-purple-background bg-purple-background-light border-purple-primary text-purple-primary disabled:text-grey-placeholder aria-disabled:text-grey-placeholder disabled:border-grey-background aria-disabled:border-grey-background disabled:bg-grey-background aria-disabled:bg-grey-background focus:border-purple-hover',
+        dropdown: 'text-grey-primary border-transparent disabled:text-grey-disabled disabled:bg-transparent',
       },
       color: {
         purple:
-          'hover:bg-purple-60 active:bg-purple-60 border-purple-65 bg-purple-65 disabled:bg-purple-82 disabled:border-purple-82 aria-disabled:bg-purple-82 aria-disabled:border-purple-82',
+          'hover:bg-purple-hover active:bg-purple-hover border-purple-primary bg-purple-primary disabled:bg-purple-disabled disabled:border-purple-disabled aria-disabled:bg-purple-disabled aria-disabled:border-purple-disabled',
         green:
           'hover:bg-green-34 active:bg-green-34 border-green-38 bg-green-38 disabled:bg-green-68 disabled:border-green-68 aria-disabled:bg-green-68 aria-disabled:border-green-68',
-        red: 'hover:bg-red-43 active:bg-red-43 border-red-47 bg-red-47 disabled:bg-red-74 aria-disabled:bg-red-74',
-        grey: 'hover:bg-grey-95 active:bg-grey-90 focus:border-purple-65',
+        red: 'hover:bg-red-hover active:bg-red-hover border-red-primary bg-red-primary disabled:bg-red-disabled aria-disabled:bg-red-disabled',
+        grey: 'hover:bg-grey-background active:bg-grey-border focus:border-purple-primary',
       },
       size: {
         default: 'px-4 py-2 gap-1',
@@ -60,9 +60,9 @@ export const CtaV2ClassName = cva(
       variant: {
         primary: '',
         destructive:
-          'bg-red-47 border-red-47 text-white hover:bg-red-43 hover:border-red-43 disabled:bg-red-74 disabled:border-red-74 dark:text-grey-primary dark:disabled:text-grey-secondary',
+          'bg-red-primary border-red-primary text-white hover:bg-red-hover hover:border-red-hover disabled:bg-red-disabled disabled:border-red-disabled dark:text-grey-primary dark:disabled:text-grey-secondary',
         secondary:
-          'bg-surface-card border-grey-border text-grey-00 hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-80 dark:hover:bg-grey-background-light dark:disabled:bg-grey-background-light',
+          'bg-surface-card border-grey-border text-grey-primary hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-disabled dark:hover:bg-grey-background-light dark:disabled:bg-grey-background-light',
       },
       appearance: {
         filled: '',

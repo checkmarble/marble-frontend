@@ -25,7 +25,7 @@ export function ScoreOutcomeThresholds({
       {showReviewOutcome ? (
         <>
           <div className="bg-surface-card relative w-1">
-            <span className="text-grey-00 text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
+            <span className="text-grey-primary text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
               {scoreReviewThreshold}
             </span>
           </div>
@@ -39,7 +39,7 @@ export function ScoreOutcomeThresholds({
       {showBlockAndReviewOutcome ? (
         <>
           <div className="bg-surface-card relative w-1">
-            <span className="text-grey-00 text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
+            <span className="text-grey-primary text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
               {scoreBlockAndReviewThreshold}
             </span>
           </div>
@@ -51,13 +51,13 @@ export function ScoreOutcomeThresholds({
       ) : null}
 
       <div className="bg-surface-card relative w-1">
-        <span className="text-grey-00 text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
+        <span className="text-grey-primary text-m absolute bottom-0 left-1/2 -translate-x-1/2 font-bold">
           {scoreDeclineThreshold}
         </span>
       </div>
 
-      <div className="bg-red-95 border-b-red-47 flex h-10 flex-1 items-center justify-center rounded-e-md border-b-4">
-        <span className="text-s text-red-47 font-semibold">{t('decisions:outcome.decline')}</span>
+      <div className="bg-red-background border-b-red-primary flex h-10 flex-1 items-center justify-center rounded-e-md border-b-4">
+        <span className="text-s text-red-primary font-semibold">{t('decisions:outcome.decline')}</span>
       </div>
     </div>
   );

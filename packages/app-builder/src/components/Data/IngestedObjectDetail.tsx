@@ -55,13 +55,13 @@ export const IngestedObjectDetail = ({
   return (
     <div
       className={clsx('flex flex-col gap-4 p-4', {
-        'border-grey-90 rounded-md border': bordered,
-        'bg-grey-98': !light,
+        'border-grey-border rounded-md border': bordered,
+        'bg-grey-background-light': !light,
       })}
     >
       <div className="text-m col-span-full flex items-center gap-2">
         <span className="bg-surface-card border-blue-58 text-blue-58 rounded-sm border px-2 py-1">ID: {objectId}</span>
-        <span className="bg-surface-card border-grey-50 text-grey-50 rounded-sm border px-2 py-1">
+        <span className="bg-surface-card border-grey-placeholder text-grey-placeholder rounded-sm border px-2 py-1">
           {t('data:last_ingestion_at', {
             date: formatDateTime(object.metadata.validFrom, {
               dateStyle: 'short',
@@ -77,7 +77,7 @@ export const IngestedObjectDetail = ({
             <div className="inline-flex items-center gap-2">
               {links[property] && withLinks ? (
                 <Link
-                  className="text-purple-65 group flex items-center gap-1"
+                  className="text-purple-primary group flex items-center gap-1"
                   to={getRoute('/data/view/:tableName/:objectId', {
                     tableName: links[property],
                     objectId: data.value as string,

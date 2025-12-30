@@ -64,7 +64,7 @@ export function TextMatchFilter({ filter, buttonState }: { filter: TextFilter; b
       </FilterItem.Root>
       <FilterPopover.Content>
         <div className="p-4 flex flex-col gap-2 w-80">
-          <aside className="bg-purple-background-light text-s text-purple-65 flex flex-row gap-2 rounded-lg p-4 font-normal items-center">
+          <aside className="bg-purple-background-light text-s text-purple-primary flex flex-row gap-2 rounded-lg p-4 font-normal items-center">
             <Icon icon="tip" className="size-4 shrink-0" />
             {t('filters:ds.text_match_filter.description')}
           </aside>

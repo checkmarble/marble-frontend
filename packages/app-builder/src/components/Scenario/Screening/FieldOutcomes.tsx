@@ -35,7 +35,7 @@ export const FieldOutcomes = ({
         name={name}
         disabled={disabled}
         onBlur={onBlur}
-        className="hover:bg-grey-98 w-full border-0 transition-colors"
+        className="hover:bg-grey-background-light w-full border-0 transition-colors"
       >
         {selectedOutcome ? <OutcomeBadge size="sm" outcome={selectedOutcome} /> : null}
         <SelectWithCombobox.Arrow />

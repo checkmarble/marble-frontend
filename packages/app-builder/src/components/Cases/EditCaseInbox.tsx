@@ -47,7 +47,7 @@ export const EditCaseInbox = ({ inboxId, id, inboxes }: { inboxId: string; id: s
             <MenuCommand.Menu open={open} onOpenChange={setOpen}>
               <MenuCommand.Trigger>
                 <Button className="w-fit p-0.5" variant="secondary" size="icon">
-                  <Icon icon="edit-square" className="text-grey-50 size-4" />
+                  <Icon icon="edit-square" className="text-grey-placeholder size-4" />
                 </Button>
               </MenuCommand.Trigger>
               <MenuCommand.Content className="mt-2 min-w-[250px]">
@@ -63,7 +63,7 @@ export const EditCaseInbox = ({ inboxId, id, inboxes }: { inboxId: string; id: s
                     >
                       <span className="inline-flex w-full justify-between">
                         <span className="text-s">{name}</span>
-                        {id === selectedInboxId ? <Icon icon="tick" className="text-purple-65 size-6" /> : null}
+                        {id === selectedInboxId ? <Icon icon="tick" className="text-purple-primary size-6" /> : null}
                       </span>
                     </MenuCommand.Item>
                   ))}

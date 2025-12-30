@@ -39,7 +39,7 @@ type OperandInfosProps = {
 
 const contentClassnames = clsx([
   'flex flex-col w-full flex-1 overflow-hidden z-50',
-  'bg-surface-card border-grey-90 rounded-sm border shadow-md outline-hidden',
+  'bg-surface-card border-grey-border rounded-sm border shadow-md outline-hidden',
 ]);
 
 export function OperandInfos(props: OperandInfosProps) {
@@ -48,7 +48,7 @@ export function OperandInfos(props: OperandInfosProps) {
       <HoverCardTrigger asChild>
         <Icon
           icon="tip"
-          className="hover:group-hover:text-purple-65 group-hover:text-purple-82 data-[state=open]:text-purple-65 size-5 shrink-0 text-transparent"
+          className="hover:group-hover:text-purple-primary group-hover:text-purple-disabled data-[state=open]:text-purple-primary size-5 shrink-0 text-transparent"
         />
       </HoverCardTrigger>
       <HoverCardPortal>
@@ -56,7 +56,7 @@ export function OperandInfos(props: OperandInfosProps) {
           <div className="bg-surface-card flex flex-col gap-2 overflow-auto p-4">
             <div className="flex flex-col gap-1">
               <TypeInfos operandType={props.operandType} dataType={props.dataType} />
-              <p className="text-grey-00 text-s text-ellipsis hyphens-auto font-normal">{props.displayName}</p>
+              <p className="text-grey-primary text-s text-ellipsis hyphens-auto font-normal">{props.displayName}</p>
             </div>
             <OperandDescription node={props.node} />
           </div>
@@ -86,7 +86,7 @@ function TypeInfos({ operandType, dataType }: TypeInfosProps) {
       {typeInfos.map(({ icon, tKey }) => {
         if (!tKey) return null;
         return (
-          <span key={tKey} className="text-purple-82 inline-flex items-center gap-[2px] text-xs font-normal">
+          <span key={tKey} className="text-purple-disabled inline-flex items-center gap-[2px] text-xs font-normal">
             {icon ? <Icon icon={icon} className="size-3" /> : null}
             {t(tKey, { count: 1 })}
           </span>
@@ -124,7 +124,7 @@ function OperandDescription({ node }: OperandDescriptionProps) {
 
 function Description({ description }: { description: string }) {
   return description ? (
-    <p className="text-grey-50 max-w-[300px] text-xs font-normal first-letter:capitalize">{description}</p>
+    <p className="text-grey-placeholder max-w-[300px] text-xs font-normal first-letter:capitalize">{description}</p>
   ) : null;
 }
 
@@ -139,7 +139,7 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
 
   return (
     <div className="grid grid-cols-[min-content_1fr] items-center gap-2">
-      <span className="text-purple-65 text-center font-bold">{aggregator.constant}</span>
+      <span className="text-purple-primary text-center font-bold">{aggregator.constant}</span>
       <span className="font-bold">{aggregatedFieldName}</span>
       {filters.children.map((filter, index) => {
         const { operator, fieldName } = filter.namedChildren;
@@ -155,7 +155,7 @@ function AggregatorDescription({ node }: AggregatorDescriptionProps) {
               - a field name (string) = fieldName?.constant
               - a table name (string) = tableName?.constant
               */}
-              <p className="bg-grey-98 whitespace-nowrap p-2 text-end">{fieldName.constant ?? '...'}</p>
+              <p className="bg-grey-background-light whitespace-nowrap p-2 text-end">{fieldName.constant ?? '...'}</p>
               <ViewingOperator operator={operator.constant} isFilter />
               {!isUnaryAggregationFilter(filter) ? (
                 <ViewingAstBuilderOperand node={filter.namedChildren.value} />
@@ -192,7 +192,7 @@ function DataAccessorDescription({ node, dataModel, triggerObjectTable }: DataAc
     <>
       <Description description={field.description} />
       {field.isEnum && field.values && field.values.length > 0 ? (
-        <div className="text-grey-50 flex max-w-[300px] flex-col gap-1">
+        <div className="text-grey-placeholder flex max-w-[300px] flex-col gap-1">
           <p className="text-s">{t('scenarios:enum_options')}</p>
           <ul className="flex flex-col">
             {field.values

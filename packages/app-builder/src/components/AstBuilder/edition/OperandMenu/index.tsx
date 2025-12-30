@@ -34,7 +34,7 @@ export function AstBuilderOperandMenu({
         <MenuCommand.Combobox placeholder="Select or create an operand" />
         <SmartMenuList onSelect={onSelect} />
         {bottomActions.length > 0 ? (
-          <div className="border-grey-90 flex gap-2 overflow-x-auto border-t p-2">
+          <div className="border-grey-border flex gap-2 overflow-x-auto border-t p-2">
             {bottomActions.map((action) => {
               return (
                 <MenuCommand.HeadlessItem key={action.id} forceMount onSelect={action.onSelect}>

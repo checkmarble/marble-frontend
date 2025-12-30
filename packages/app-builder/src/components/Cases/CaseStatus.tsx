@@ -45,27 +45,29 @@ export const CaseStatusBadge = ({
         className={caseStatusBadgeVariants({
           size,
           className: cn(className, {
-            'bg-purple-96 dark:bg-transparent dark:border-purple-primary':
+            'bg-purple-background dark:bg-transparent dark:border-purple-primary':
               (status === 'snoozed' || status === 'closed') && showBackground,
-            'bg-red-95 dark:bg-transparent dark:border-red-47': status === 'waiting_for_action' && showBackground,
-            'bg-grey-95 dark:bg-transparent dark:border-grey-50': status === 'pending' && showBackground,
+            'bg-red-background dark:bg-transparent dark:border-red-primary':
+              status === 'waiting_for_action' && showBackground,
+            'bg-grey-background dark:bg-transparent dark:border-grey-placeholder':
+              status === 'pending' && showBackground,
             'bg-blue-96 dark:bg-transparent dark:border-blue-58': status === 'investigating' && showBackground,
           }),
         })}
       >
         {match(status)
-          .with('snoozed', () => <Icon icon="status_snoozed" className="text-purple-65 size-4" />)
-          .with('waiting_for_action', () => <Icon icon="waiting_for_action" className="text-red-47 size-4" />)
-          .with('pending', () => <div className="border-grey-80 size-3.5 rounded-full border-2" />)
+          .with('snoozed', () => <Icon icon="status_snoozed" className="text-purple-primary size-4" />)
+          .with('waiting_for_action', () => <Icon icon="waiting_for_action" className="text-red-primary size-4" />)
+          .with('pending', () => <div className="border-grey-disabled size-3.5 rounded-full border-2" />)
           .with('investigating', () => <Icon icon="investigating" className="text-blue-58 size-4" />)
-          .with('closed', () => <Icon icon="resolved" className="text-purple-65 size-4" />)
+          .with('closed', () => <Icon icon="resolved" className="text-purple-primary size-4" />)
           .exhaustive()}
         {showText ? (
           <span
-            className={cn('text-grey-00', {
-              'text-purple-65': status === 'snoozed' || status === 'closed',
-              'text-red-47': status === 'waiting_for_action',
-              'text-grey-50': status === 'pending',
+            className={cn('text-grey-primary', {
+              'text-purple-primary': status === 'snoozed' || status === 'closed',
+              'text-red-primary': status === 'waiting_for_action',
+              'text-grey-placeholder': status === 'pending',
               'text-blue-58': status === 'investigating',
             })}
           >
@@ -76,9 +78,9 @@ export const CaseStatusBadge = ({
       {outcome && outcome !== 'unset' ? (
         <span
           className={cn('rounded-full border px-2 py-0.5 text-xs', {
-            'border-red-47 text-red-47': outcome === 'confirmed_risk',
+            'border-red-primary text-red-primary': outcome === 'confirmed_risk',
             'border-green-38 text-green-38': outcome === 'valuable_alert',
-            'border-grey-50 text-grey-50': outcome === 'false_positive',
+            'border-grey-placeholder text-grey-placeholder': outcome === 'false_positive',
           })}
         >
           {t(`cases:case.outcome.${outcome}`)}

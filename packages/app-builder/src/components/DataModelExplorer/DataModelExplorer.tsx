@@ -114,7 +114,7 @@ export function DataModelExplorer(props: DataModelExplorerProps) {
   return (
     <div className="h-[calc(100vh-210px)] min-w-[80vw] overflow-y-scroll p-14 py-2">
       <div className="flex flex-col gap-3">
-        <div className="before:bg-grey-90 relative py-2 pr-40 before:absolute before:inset-x-0 before:bottom-0 before:h-px">
+        <div className="before:bg-grey-border relative py-2 pr-40 before:absolute before:inset-x-0 before:bottom-0 before:h-px">
           {tabs.map((tab) => {
             const tabUniqValue = getTabUniqValue(tab);
             return (
@@ -171,7 +171,7 @@ function DataModelExplorerTab(props: { current: boolean; label: string; onClick:
     <button
       aria-current={props.current}
       type="button"
-      className="group/tab text-default text-grey-50 aria-current:bg-purple-96 aria-current:text-purple-65 relative inline-flex items-center gap-2 rounded-v2-md px-v2-sm py-v2-xs"
+      className="group/tab text-default text-grey-placeholder aria-current:bg-purple-background aria-current:text-purple-primary relative inline-flex items-center gap-2 rounded-v2-md px-v2-sm py-v2-xs"
       onClick={props.onClick}
     >
       {props.label}

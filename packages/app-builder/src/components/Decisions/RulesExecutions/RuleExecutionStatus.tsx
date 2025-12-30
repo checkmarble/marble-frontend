@@ -20,7 +20,7 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
   return (
     <div className="inline-flex h-8 gap-1">
       {isHit ? (
-        <span className="bg-purple-96 text-s text-purple-65 flex items-center justify-center rounded-sm border border-transparent p-2 font-semibold dark:bg-transparent dark:border-purple-primary">
+        <span className="bg-purple-background text-s text-purple-primary flex items-center justify-center rounded-sm border border-transparent p-2 font-semibold dark:bg-transparent dark:border-purple-primary">
           {formatNumber(ruleExecution.scoreModifier, {
             language,
             signDisplay: 'exceptZero',
@@ -32,11 +32,11 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
           'text-s flex flex-1 items-center justify-center rounded-sm border border-transparent p-2 font-semibold capitalize',
           isRuleExecutionHit(ruleExecution) && 'bg-green-94 text-green-38 dark:bg-transparent dark:border-green-38',
           getRuleExecutionStatusColor(ruleExecution) === 'grey' &&
-            'bg-grey-90 text-grey-00 dark:bg-transparent dark:border-grey-50',
+            'bg-grey-border text-grey-primary dark:bg-transparent dark:border-grey-placeholder',
           getRuleExecutionStatusColor(ruleExecution) === 'lavender' &&
-            'text-grey-100 bg-[#AAA6CC] dark:bg-transparent dark:border-purple-primary dark:text-purple-65',
+            'text-grey-white bg-[#AAA6CC] dark:bg-transparent dark:border-purple-primary dark:text-purple-primary',
           getRuleExecutionStatusColor(ruleExecution) === 'red' &&
-            'bg-red-95 text-red-47 dark:bg-transparent dark:border-red-47',
+            'bg-red-background text-red-primary dark:bg-transparent dark:border-red-primary',
         )}
       >
         {getRuleExecutionStatusLabel(t, ruleExecution)}

@@ -24,13 +24,6 @@
   --color-grey-white: oklch(1 0 0);                       /* #FFFFFF - White/Surface */
 
   /* Grey - Backward compatibility aliases */
-  --color-grey-00: var(--color-grey-primary);
-  --color-grey-50: var(--color-grey-placeholder);
-  --color-grey-80: var(--color-grey-disabled);
-  --color-grey-90: var(--color-grey-border);
-  --color-grey-95: var(--color-grey-background);
-  --color-grey-98: var(--color-grey-background-light);
-  --color-grey-100: var(--color-grey-white);
   --color-black: var(--color-grey-primary);
   --color-white: var(--color-grey-white);
 
@@ -47,20 +40,11 @@
   --color-purple-background: oklch(0.9519 0.0227 288.66); /* #EEEDFE - Background */
   --color-purple-background-light: oklch(0.9765 0.011965 291.2928); /* #F7F6FF - Light background */
 
-  /* Purple - Backward compatibility aliases */
-  --color-purple-60: var(--color-purple-hover);
-  --color-purple-65: var(--color-purple-primary);
-  --color-purple-82: var(--color-purple-disabled);
-  --color-purple-85: var(--color-purple-secondary);
-  --color-purple-96: var(--color-purple-background);
-  --color-purple-98: var(--color-purple-background-light);
-  --color-purple-99: oklch(99.19% 0.003955633727212019 286.3274403025669);
-
   /* ========================================
    * SEMANTIC SURFACE TOKENS
    * These flip automatically in dark mode
    * ======================================== */
-  --color-surface-page: var(--color-purple-99);
+  --color-surface-page: oklch(99.19% 0.003955633727212019 286.3274403025669);
   --color-surface-card: var(--color-grey-white);
   --color-surface-sidebar: var(--color-grey-white);
   --color-surface-elevated: var(--color-grey-white);
@@ -68,26 +52,14 @@
   --color-surface-row: var(--color-grey-background-light); /* Table row backgrounds */
   --color-surface-row-hover: var(--color-purple-background-light); /* Table row hover */
 
-  /* Semantic - Page backgrounds (legacy alias) */
-  --color-page-background: var(--color-surface-page);
-  --color-purple-restricted-border: var(--color-purple-secondary);
-  --color-purple-restricted-background: var(--color-purple-background-light);
-
   /* ========================================
    * RED - Primitive scale
    * ======================================== */
-  --color-red-43: oklch(53.16% 0.1799 31.32);
-  --color-red-47: oklch(57.14% 0.1956 32.06);
-  --color-red-74: oklch(76.36% 0.0962 29.85);
-  --color-red-87: oklch(88% 0.045 28.28);
-  --color-red-95: oklch(95.19% 0.0179 30.27);
-
-  /* Red - Semantic aliases */
-  --color-red-primary: var(--color-red-47);
-  --color-red-hover: var(--color-red-43);
-  --color-red-disabled: var(--color-red-74);
-  --color-red-secondary: var(--color-red-87);
-  --color-red-background: var(--color-red-95);
+  --color-red-hover: oklch(53.16% 0.1799 31.32);
+  --color-red-primary: oklch(57.14% 0.1956 32.06);
+  --color-red-disabled: oklch(76.36% 0.0962 29.85);
+  --color-red-secondary: oklch(88% 0.045 28.28);
+  --color-red-background: oklch(95.19% 0.0179 30.27);
 
   /* ========================================
    * GREEN - Semantic naming
@@ -197,9 +169,6 @@
   --color-grey-background-light: oklch(0.2465 0.0284 284.13); /* #1F1F2E - Light background */
   --color-grey-background: oklch(0.1901 0.0141 284.98);   /* #13131A - Background */
   --color-grey-background-dark: oklch(0.1473 0.0107 285.01); /* #0A0A0F - Dark background */
-
-  /* Semantic - Page backgrounds (legacy alias) */
-  --color-page-background: var(--color-surface-page);
 
   /* Purple - Dark mode overrides */
   --color-purple-primary: oklch(0.6377 0.1865 282.89);    /* #7F76F7 - Primary (filled) */

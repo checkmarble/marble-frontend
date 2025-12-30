@@ -20,7 +20,7 @@ export function CaseContributors({ contributors }: { contributors: CaseContribut
             return (
               <div key={contributor.id} className="flex flex-row items-center gap-1">
                 <Avatar key={contributor.id} size="xs" firstName={user?.firstName} lastName={user?.lastName} />
-                <div className="text-grey-00 text-xs font-normal capitalize">
+                <div className="text-grey-primary text-xs font-normal capitalize">
                   {getFullName(user) || t('cases:case_detail.unknown_user')}
                 </div>
               </div>
@@ -37,7 +37,7 @@ export function CaseContributors({ contributors }: { contributors: CaseContribut
               <Avatar
                 key={contributor.id}
                 className={cx(
-                  'border-grey-100 border-2',
+                  'border-grey-white border-2',
                   index === 0 && 'z-30',
                   index === 1 && 'z-20',
                   index === 2 && 'z-10',
@@ -50,7 +50,7 @@ export function CaseContributors({ contributors }: { contributors: CaseContribut
           })}
         </div>
         {contributors.length > 3 ? (
-          <div className="text-s text-grey-00 font-normal">+{contributors.length - 3}</div>
+          <div className="text-s text-grey-primary font-normal">+{contributors.length - 3}</div>
         ) : null}
       </div>
     </Tooltip.Default>

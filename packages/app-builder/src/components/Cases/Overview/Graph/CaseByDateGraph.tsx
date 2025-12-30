@@ -109,7 +109,7 @@ export const CaseByDateGraph = () => {
                       },
                     ]}
                     tooltip={({ data }) => (
-                      <div className="flex flex-col gap-v2-sm w-auto max-w-max bg-surface-card p-v2-sm rounded-lg border border-grey-90 shadow-sm whitespace-nowrap">
+                      <div className="flex flex-col gap-v2-sm w-auto max-w-max bg-surface-card p-v2-sm rounded-lg border border-grey-border shadow-sm whitespace-nowrap">
                         <div className="text-s text-grey-60">{formatDateTime(data.date, { dateStyle: 'medium' })}</div>
                         <div className="grid grid-cols-[calc(var(--spacing)_*_10)_1fr] gap-v2-xs">
                           {graphCaseStatuses.map((caseStatus) => (

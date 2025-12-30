@@ -135,7 +135,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {loaderData?.segmentScript ? <SegmentScript nonce={nonce} script={loaderData.segmentScript} /> : null}
         <ExternalScripts />
       </head>
-      <body className="selection:text-grey-100 selection:bg-purple-65 h-screen w-full overflow-hidden antialiased text-grey-primary">
+      <body className="selection:text-grey-white selection:bg-purple-primary h-screen w-full overflow-hidden antialiased text-grey-primary">
         <LoaderRevalidatorContext.Provider value={revalidator.revalidate}>
           <AgnosticNavigationContext.Provider value={navigate}>
             <AuthenticityTokenProvider token={loaderData?.['csrf'] ?? ''}>
@@ -175,7 +175,7 @@ export function ErrorBoundary() {
   captureRemixErrorBoundaryError(error);
 
   return (
-    <div className="from-purple-96 to-grey-98 flex size-full flex-col items-center bg-linear-to-r">
+    <div className="from-purple-background to-grey-background-light flex size-full flex-col items-center bg-linear-to-r">
       <div className="flex size-full flex-col items-center bg-no-repeat">
         <div className="flex h-full max-h-80 flex-col justify-center">
           <Link to={getRoute('/sign-in')}>

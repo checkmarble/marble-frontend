@@ -28,20 +28,20 @@ export const DateSelector = forwardRef<ElementRef<typeof Input>, DateSelectorPro
           <Icon
             icon="calendar-month"
             className={clsx('size-6', {
-              'text-grey-00': selectedDate,
-              'text-grey-50': !selectedDate,
+              'text-grey-primary': selectedDate,
+              'text-grey-placeholder': !selectedDate,
             })}
           />
           <span
             className={clsx('font-normal', {
-              'text-grey-00': selectedDate,
-              'text-grey-50': !selectedDate,
+              'text-grey-primary': selectedDate,
+              'text-grey-placeholder': !selectedDate,
             })}
           >
             {selectedDate ? formatDateTime(selectedDate, { dateStyle: 'short' }) : props.placeholder}
           </span>
         </PopoverDisclosure>
-        <Popover className="bg-surface-card border-grey-95 isolate rounded-md border p-4" gutter={8}>
+        <Popover className="bg-surface-card border-grey-background isolate rounded-md border p-4" gutter={8}>
           <Calendar
             mode="single"
             hidden={{ before: new Date() }}

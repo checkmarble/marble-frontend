@@ -9,14 +9,14 @@ const viewingOperandLabelClassnames = cva(
     'group',
     'size-fit min-h-[40px] min-w-[40px] rounded-sm outline-hidden',
     'flex flex-row items-center justify-between gap-2 px-2',
-    'bg-grey-98',
+    'bg-grey-background-light',
   ],
   {
     variants: {
       validationStatus: {
-        valid: 'border border-grey-98',
-        error: 'border border-red-47',
-        'light-error': 'border border-red-87',
+        valid: 'border border-grey-background-light',
+        error: 'border border-red-primary',
+        'light-error': 'border border-red-secondary',
       },
     },
     defaultVariants: {

@@ -11,11 +11,11 @@ export const WorkflowNudge = ({ kind }: { kind: Exclude<FeatureAccessLevelDto, '
   return (
     <section
       className={cn('bg-surface-card relative flex h-fit max-w-[500px] flex-col gap-4 rounded-lg border-2 p-8', {
-        'border-purple-82': kind === 'restricted',
+        'border-purple-disabled': kind === 'restricted',
         'border-yellow-50': kind === 'missing_configuration',
       })}
     >
-      <h3 className="text-grey-00 text-l font-bold">{t('scenarios:home.workflow')}</h3>
+      <h3 className="text-grey-primary text-l font-bold">{t('scenarios:home.workflow')}</h3>
 
       <Nudge kind={kind} className="absolute -right-3 -top-3 size-6" content={t('workflows:nudge')} />
 

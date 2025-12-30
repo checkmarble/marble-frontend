@@ -81,16 +81,18 @@ export const EditCaseAssignee = ({
                   form.handleSubmit();
                 }}
               >
-                <Icon icon="plus" className="text-grey-50 size-4" />
-                <span className="text-grey-50 text-xs">{t('cases:case_detail.assign_to_myself_button.label')}</span>
+                <Icon icon="plus" className="text-grey-placeholder size-4" />
+                <span className="text-grey-placeholder text-xs">
+                  {t('cases:case_detail.assign_to_myself_button.label')}
+                </span>
               </Button>
             ) : null}
             {!disabled ? (
               <MenuCommand.Menu open={open} onOpenChange={setOpen}>
                 <MenuCommand.Trigger>
                   <Button variant="secondary" size={assignee ? 'icon' : 'xs'}>
-                    <Icon icon={assignee ? 'edit-square' : 'plus'} className="text-grey-50 size-4" />
-                    {!assignee ? <span className="text-grey-50 text-xs">Add</span> : null}
+                    <Icon icon={assignee ? 'edit-square' : 'plus'} className="text-grey-placeholder size-4" />
+                    {!assignee ? <span className="text-grey-placeholder text-xs">Add</span> : null}
                   </Button>
                 </MenuCommand.Trigger>
                 <MenuCommand.Content sameWidth className="mt-2">
@@ -108,7 +110,9 @@ export const EditCaseAssignee = ({
                       >
                         <span className="inline-flex w-full justify-between">
                           <span>{`${capitalize(firstName)} ${capitalize(lastName)}`}</span>
-                          {userId === selectedUserId ? <Icon icon="tick" className="text-purple-65 size-6" /> : null}
+                          {userId === selectedUserId ? (
+                            <Icon icon="tick" className="text-purple-primary size-6" />
+                          ) : null}
                         </span>
                       </MenuCommand.Item>
                     ))}

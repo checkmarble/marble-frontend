@@ -113,7 +113,7 @@ function PivotList({ pivotValues }: Pick<PivotDetailProps, 'pivotValues'>) {
           <Tooltip.Default content={t('decisions:pivot_detail.pivot_value.tooltip')}>
             <Link
               to={getDecisionRoute({ pivotValue: getValue() })}
-              className="hover:text-purple-60 focus:text-purple-60 text-purple-65 relative font-semibold hover:underline focus:underline"
+              className="hover:text-purple-hover focus:text-purple-hover text-purple-primary relative font-semibold hover:underline focus:underline"
             >
               {getValue()}
             </Link>

@@ -446,5 +446,5 @@ function EditScoreThresholds() {
 }
 
 const style = {
-  errorMessage: 'bg-red-95 rounded-sm px-2 py-1 h-8 flex items-center justify-center',
+  errorMessage: 'bg-red-background rounded-sm px-2 py-1 h-8 flex items-center justify-center',
 } as const;

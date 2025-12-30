@@ -31,8 +31,8 @@ export const ApiKeyFilterMenu = ({ apiKeys, onSelect }: ApiKeyFilterMenuProps) =
             onSelect={() => onSelect(apiKey.id)}
           >
             <div className="flex flex-col">
-              <Highlight text={apiKey.description} query={deferredValue} className="text-grey-00 text-s" />
-              <span className="text-grey-50 text-xs">{apiKey.prefix}*************</span>
+              <Highlight text={apiKey.description} query={deferredValue} className="text-grey-primary text-s" />
+              <span className="text-grey-placeholder text-xs">{apiKey.prefix}*************</span>
             </div>
           </MenuCommand.Item>
         ))}

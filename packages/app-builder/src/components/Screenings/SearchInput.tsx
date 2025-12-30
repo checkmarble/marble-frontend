@@ -11,7 +11,7 @@ export const SearchInputDisplay = ({ searchInput }: SearchInputProps) => {
   const searchInfos = R.map(searchInput, (input) => R.entries(input.properties));
 
   return (
-    <div className="bg-surface-card border-grey-90 text-s flex flex-col gap-2 rounded-sm border p-2">
+    <div className="bg-surface-card border-grey-border text-s flex flex-col gap-2 rounded-sm border p-2">
       {searchInfos.map((value, i) => {
         return (
           <Fragment key={i}>
@@ -20,7 +20,7 @@ export const SearchInputDisplay = ({ searchInput }: SearchInputProps) => {
                 return <span key={property}>{propValue.join(', ')}</span>;
               })}
             </div>
-            {i < searchInfos.length - 1 ? <Separator className="bg-grey-90" /> : null}
+            {i < searchInfos.length - 1 ? <Separator className="bg-grey-border" /> : null}
           </Fragment>
         );
       })}

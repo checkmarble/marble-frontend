@@ -52,7 +52,7 @@ export default function Settings() {
         <BreadCrumbs />
       </Page.Header>
       <div className="flex size-full flex-row overflow-hidden">
-        <div className="border-e-grey-90 bg-surface-card flex h-full w-fit min-w-[200px] flex-col overflow-y-auto border-e p-4">
+        <div className="border-e-grey-border bg-surface-card flex h-full w-fit min-w-[200px] flex-col overflow-y-auto border-e p-4">
           <div className="flex flex-col">
             {Object.entries(sections).map(([section, { icon, settings }]) => {
               if (settings.length === 0) return null;
@@ -68,7 +68,7 @@ export default function Settings() {
                       setting.title === 'webhooks' && !isAccessible(entitlements.webhooks) ? (
                         <span
                           key={setting.title}
-                          className="text-s bg-surface-card text-grey-80 inline-flex w-full gap-2 p-2 font-medium first-letter:capitalize"
+                          className="text-s bg-surface-card text-grey-disabled inline-flex w-full gap-2 p-2 font-medium first-letter:capitalize"
                         >
                           {t(`settings:${setting.title}` as any)}
                           {entitlements.webhooks !== 'allowed' ? (
@@ -82,8 +82,8 @@ export default function Settings() {
                             clsx(
                               'text-s flex w-full cursor-pointer flex-row rounded-sm p-2 font-medium first-letter:capitalize',
                               isActive
-                                ? 'bg-grey-background-light text-purple-65'
-                                : 'text-grey-00 hover:bg-grey-background-light hover:text-purple-65',
+                                ? 'bg-grey-background-light text-purple-primary'
+                                : 'text-grey-primary hover:bg-grey-background-light hover:text-purple-primary',
                             )
                           }
                           to={setting.to}

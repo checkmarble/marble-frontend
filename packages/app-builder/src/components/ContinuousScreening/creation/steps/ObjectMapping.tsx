@@ -118,7 +118,9 @@ const ObjectMappingConfigurator = ({
             {mappingConfig?.objectType ??
               t('continuousScreening:creation.objectMapping.configurator.title_placeholder')}
           </span>
-          {mappingConfig?.ftmEntity ? <span className="text-s text-grey-50">{mappingConfig.ftmEntity}</span> : null}
+          {mappingConfig?.ftmEntity ? (
+            <span className="text-s text-grey-placeholder">{mappingConfig.ftmEntity}</span>
+          ) : null}
         </div>
       </Collapsible.Trigger>
       <Collapsible.Content className="flex flex-col gap-v2-sm mt-v2-sm radix-state-open:animate-slide-down radix-state-closed:animate-slide-up">
@@ -197,7 +199,7 @@ const ObjectMappingFtmContent = ({
                     {mappingConfig.objectType}.{field.name}
                   </div>
                   <div className={cn('p-v2-sm', { 'opacity-50': hasSavedMapping })}>
-                    <Icon icon="arrow-forward" className="size-6 text-purple-65" />
+                    <Icon icon="arrow-forward" className="size-6 text-purple-primary" />
                   </div>
                   <FtmFieldSelector
                     disabled={hasSavedMapping}

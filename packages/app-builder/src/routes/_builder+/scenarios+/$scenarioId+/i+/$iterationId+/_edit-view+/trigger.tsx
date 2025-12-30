@@ -186,7 +186,7 @@ export default function Trigger() {
                           ScenarioIdLabel: <code className="select-none" />,
                           ScenarioIdValue: (
                             <code
-                              className="border-grey-90 cursor-pointer select-none rounded-xs border px-1"
+                              className="border-grey-border cursor-pointer select-none rounded-xs border px-1"
                               {...getCopyToClipboardProps(scenarioIteration.scenarioId)}
                             />
                           ),

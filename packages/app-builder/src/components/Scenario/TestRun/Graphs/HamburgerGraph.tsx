@@ -53,15 +53,15 @@ export function Hamburger<T extends string>({
 
   return (
     <div className="flex size-full flex-col items-center gap-4">
-      <Tag size="big" color="grey-light" className="border-grey-90 gap-1 border px-4 py-2">
-        <span className="text-grey-00 font-semibold">{`V${version.value}`}</span>
+      <Tag size="big" color="grey-light" className="border-grey-border gap-1 border px-4 py-2">
+        <span className="text-grey-primary font-semibold">{`V${version.value}`}</span>
         {version.type === 'live version' ? (
-          <span className="text-purple-65 font-semibold">{t('common:live')}</span>
+          <span className="text-purple-primary font-semibold">{t('common:live')}</span>
         ) : null}
       </Tag>
       <div className="flex size-full flex-col gap-1">
         {pairs.length === 0 ? (
-          <div className="border-grey-90 size-full rounded-lg border-2" />
+          <div className="border-grey-border size-full rounded-lg border-2" />
         ) : (
           pairs.map(([status, count]) => (
             <div
@@ -160,7 +160,7 @@ export function HamburgerChart<T extends string>({
           summary={summaryByVersions[ref.value] as Summary<T>}
           mapping={mapping}
         />
-        <Icon icon="arrow-forward" className="text-grey-00 h-4" />
+        <Icon icon="arrow-forward" className="text-grey-primary h-4" />
         <Hamburger
           type={type}
           legend={legend}
@@ -194,7 +194,7 @@ export function HamburgerChart<T extends string>({
                 [mapping[option].background]: legend.includes(option),
               })}
             />
-            <span className="text-grey-00">{mapping[option].name}</span>
+            <span className="text-grey-primary">{mapping[option].name}</span>
           </Button>
         ))}
       </div>

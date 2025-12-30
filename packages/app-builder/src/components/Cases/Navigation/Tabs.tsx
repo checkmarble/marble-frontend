@@ -5,14 +5,16 @@ import { cn } from 'ui-design-system';
 const tabClassName = ({ isActive }: { isActive: boolean }) =>
   cn(
     'flex items-center h-8 px-v2-sm text-s font-medium',
-    isActive ? 'bg-purple-primary text-white rounded-v2-md' : 'bg-purple-96 text-purple-primary dark:bg-transparent',
+    isActive
+      ? 'bg-purple-primary text-white rounded-v2-md'
+      : 'bg-purple-background text-purple-primary dark:bg-transparent',
   );
 
 export function CasesNavigationTabs() {
   const { t } = useTranslation(['cases']);
 
   return (
-    <div className="flex p-v2-xs gap-v2-xs rounded-v2-md bg-purple-96 self-start justify-self-start border border-transparent dark:bg-transparent dark:border-purple-primary">
+    <div className="flex p-v2-xs gap-v2-xs rounded-v2-md bg-purple-background self-start justify-self-start border border-transparent dark:bg-transparent dark:border-purple-primary">
       <NavLink to="/cases/overview" className={tabClassName}>
         <span>{t('cases:overview.navigation.overview')}</span>
       </NavLink>

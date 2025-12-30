@@ -47,8 +47,8 @@ const SearchInput = ({ request }: { request: NonNullable<Screening['request']> }
     <div className="flex items-center gap-2">
       <span>{t('screenings:search_input')}</span>
       {searchInputList.map((input, i) => (
-        <div key={i} className="border-grey-90 flex items-center gap-2 rounded-sm border p-2">
-          <span className="bg-grey-95 size-6 rounded-xs p-1">
+        <div key={i} className="border-grey-border flex items-center gap-2 rounded-sm border p-2">
+          <span className="bg-grey-background size-6 rounded-xs p-1">
             <Icon icon="string" className="size-4" />
           </span>
           {input}
