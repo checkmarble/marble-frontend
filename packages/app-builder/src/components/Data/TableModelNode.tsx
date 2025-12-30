@@ -235,7 +235,7 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
       >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="bg-grey-98 border-b-grey-80 border-b">
+            <tr key={headerGroup.id} className="bg-surface-row border-b-grey-border border-b">
               {/* This is the handle for the left side of the table */}
               <th></th>
               {headerGroup.headers.map((header) => (
@@ -255,9 +255,11 @@ export function TableModelNode({ data }: NodeProps<TableModelNodeData>) {
               <tr
                 key={row.id}
                 className={clsx(
-                  'border-t-grey-80 relative scale-100 border-t',
-                  !displayPivot && isEditDataModelFieldAvailable && 'hover:bg-purple-96 group',
-                  displayPivot && isFieldPartOfPivot(row.original.id) && 'bg-purple-96',
+                  'border-t-grey-border relative scale-100 border-t',
+                  !displayPivot &&
+                    isEditDataModelFieldAvailable &&
+                    'hover:bg-purple-96 hover:dark:bg-purple-primary/10 group',
+                  displayPivot && isFieldPartOfPivot(row.original.id) && 'bg-purple-96 dark:bg-purple-primary/10',
                   displayPivot && !isFieldPartOfPivot(row.original.id) && 'opacity-20',
                 )}
               >

@@ -142,7 +142,7 @@ function HelpCenterContent({ defaultTab, resources, ChatWithUsButton, searchValu
           })}
         </div>
       </Ariakit.TabList>
-      <div className="border-grey-90 bg-grey-98 flex h-full flex-col overflow-hidden border-y">
+      <div className="border-grey-90 bg-surface-page flex h-full flex-col overflow-hidden border-y">
         <Ariakit.TabPanel tabId={deferredTabId} className="flex flex-col overflow-hidden">
           <MenuContent>
             <div className="flex flex-col gap-2 overflow-y-auto p-2">

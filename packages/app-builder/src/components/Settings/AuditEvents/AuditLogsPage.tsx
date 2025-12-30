@@ -76,7 +76,7 @@ export const ActivityFollowUpPage: FunctionComponent<ActivityFollowUpPageProps> 
   return (
     <PanelProvider>
       <Page.Container>
-        <Page.ContentV2 className="gap-v2-md bg-surface-card">
+        <Page.ContentV2 className="gap-v2-md bg-surface-page">
           <div className="flex flex-col gap-v2-md relative">
             {/* Title Row */}
             <div className="flex justify-between items-center">
