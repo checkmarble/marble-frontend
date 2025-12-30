@@ -79,7 +79,7 @@ export function RuleExecutionDetail({
   return (
     <>
       <div className="flex w-full items-center justify-between gap-2">
-        <div className="bg-purple-96 text-s text-purple-65 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded-sm px-2 font-normal">
+        <div className="bg-purple-96 text-s text-purple-65 inline-flex h-8 w-fit items-center justify-center whitespace-pre rounded-sm border border-transparent px-2 font-normal dark:bg-transparent dark:border-purple-primary">
           <Trans
             t={t}
             i18nKey="scenarios:rules.consequence.score_modifier"

@@ -28,12 +28,15 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
 
   return (
     <div
-      className={clsx('flex flex-1 flex-col items-center justify-center gap-2 rounded-lg p-2', {
-        'bg-green-94': color === 'green',
-        'bg-yellow-90': color === 'yellow',
-        'bg-orange-95': color === 'orange',
-        'bg-red-95': color === 'red',
-      })}
+      className={clsx(
+        'flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-transparent p-2',
+        {
+          'bg-green-94 dark:bg-transparent dark:border-green-38': color === 'green',
+          'bg-yellow-90 dark:bg-transparent dark:border-yellow-50': color === 'yellow',
+          'bg-orange-95 dark:bg-transparent dark:border-orange-50': color === 'orange',
+          'bg-red-95 dark:bg-transparent dark:border-red-47': color === 'red',
+        },
+      )}
     >
       <div
         className={clsx('text-s', {
@@ -59,7 +62,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
   );
 }
 
-export const outcomeBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0', {
+export const outcomeBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0 border border-transparent', {
   variants: {
     size: {
       sm: 'gap-1 rounded-full px-2 py-1 text-xs font-normal',
@@ -100,15 +103,15 @@ export const OutcomeBadge = ({
           className,
           showBackground &&
             match(outcome)
-              .with('approve', () => 'bg-green-94')
-              .with('decline', () => 'bg-red-95')
-              .with('review', () => 'bg-yellow-90')
-              .with('unknown', () => 'bg-grey-95')
+              .with('approve', () => 'bg-green-94 dark:bg-transparent dark:border-green-38')
+              .with('decline', () => 'bg-red-95 dark:bg-transparent dark:border-red-47')
+              .with('review', () => 'bg-yellow-90 dark:bg-transparent dark:border-yellow-50')
+              .with('unknown', () => 'bg-grey-95 dark:bg-transparent dark:border-grey-50')
               .with('block_and_review', () =>
                 match(reviewStatus)
-                  .with('approve', () => 'bg-green-94')
-                  .with('decline', () => 'bg-red-95')
-                  .otherwise(() => 'bg-orange-95'),
+                  .with('approve', () => 'bg-green-94 dark:bg-transparent dark:border-green-38')
+                  .with('decline', () => 'bg-red-95 dark:bg-transparent dark:border-red-47')
+                  .otherwise(() => 'bg-orange-95 dark:bg-transparent dark:border-orange-50'),
               )
               .exhaustive(),
         ),
@@ -117,7 +120,7 @@ export const OutcomeBadge = ({
       {match(outcome)
         .with('approve', () => <Icon icon="accepted" className="text-green-38 size-4" />)
         .with('decline', () => <Icon icon="denied" className="text-red-47 size-4" />)
-        .with('review', () => <div className={cn('size-3.5 rounded-full border-2 border-orange-50')} />)
+        .with('review', () => <div className={cn('size-3.5 rounded-full border-2 border-yellow-50')} />)
         .with('unknown', () => <div className="border-grey-50 size-4 rounded-full border-2" />)
         .with('block_and_review', () =>
           match(reviewStatus)
@@ -134,7 +137,7 @@ export const OutcomeBadge = ({
               match(outcome)
                 .with('approve', () => 'text-green-38')
                 .with('decline', () => 'text-red-47')
-                .with('review', () => 'text-orange-50')
+                .with('review', () => 'text-yellow-50')
                 .with('unknown', () => 'text-grey-50')
                 .with('block_and_review', () =>
                   match(reviewStatus)

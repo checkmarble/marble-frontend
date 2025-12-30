@@ -8,7 +8,7 @@ import { Icon } from 'ui-icons';
 
 import { casesI18n } from './cases-i18n';
 
-export const caseStatusBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0', {
+export const caseStatusBadgeVariants = cva('inline-flex items-center w-fit shrink-0 grow-0 border border-transparent', {
   variants: {
     size: {
       large: 'justify-center rounded-sm p-2 gap-2 text-r font-medium',
@@ -45,10 +45,11 @@ export const CaseStatusBadge = ({
         className={caseStatusBadgeVariants({
           size,
           className: cn(className, {
-            'bg-purple-96': (status === 'snoozed' || status === 'closed') && showBackground,
-            'bg-red-95': status === 'waiting_for_action' && showBackground,
-            'bg-grey-95': status === 'pending' && showBackground,
-            'bg-blue-96': status === 'investigating' && showBackground,
+            'bg-purple-96 dark:bg-transparent dark:border-purple-primary':
+              (status === 'snoozed' || status === 'closed') && showBackground,
+            'bg-red-95 dark:bg-transparent dark:border-red-47': status === 'waiting_for_action' && showBackground,
+            'bg-grey-95 dark:bg-transparent dark:border-grey-50': status === 'pending' && showBackground,
+            'bg-blue-96 dark:bg-transparent dark:border-blue-58': status === 'investigating' && showBackground,
           }),
         })}
       >

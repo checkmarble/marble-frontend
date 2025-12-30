@@ -358,7 +358,7 @@ function ClientUploadAsCsv({ listId }: { listId: string }) {
     >
       <input {...getInputProps()} />
       <p>{t('lists:drop_csv_here')}</p>
-      <p className="text-grey-80 uppercase">{t('common:or')}</p>
+      <p className="text-grey-secondary uppercase">{t('common:or')}</p>
       <Button>
         <LoadingIcon icon="upload" loading={loading} className="size-6" />
         {t('lists:pick_csv')}
