@@ -17,7 +17,7 @@ export const CaseByInboxGraph = () => {
   const [hovering, setHovering] = useState<string | null>(null);
 
   return (
-    <div className="h-100 bg-grey-background-light rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
+    <div className="h-100 bg-surface-card rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
       <span className="font-medium text-s">{t('cases:overview.graph.cases_by_inbox.title')}</span>
       <div className="border border-grey-border rounded-v2-lg p-v2-sm bg-surface-card h-full flex flex-col gap-v2-xs">
         {match(caseStatusByInboxQuery)
@@ -115,7 +115,10 @@ export const CaseByInboxGraph = () => {
                       </div>
                     )}
                     theme={{
-                      grid: { line: { stroke: '#E5E7EB', strokeWidth: 1, strokeDasharray: '4 4' } },
+                      text: { fill: 'var(--color-grey-secondary)' },
+                      axis: { ticks: { text: { fill: 'var(--color-grey-secondary)' } } },
+                      legends: { text: { fill: 'var(--color-grey-secondary)' } },
+                      grid: { line: { stroke: 'var(--color-grey-border)', strokeWidth: 1, strokeDasharray: '4 4' } },
                     }}
                   />
                 </div>

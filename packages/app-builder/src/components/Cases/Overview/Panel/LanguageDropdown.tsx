@@ -19,7 +19,7 @@ export function LanguageDropdown({ value, onChange, disabled }: LanguageDropdown
         <button
           type="button"
           disabled={disabled}
-          className="bg-purple-96 text-purple-65 text-xs font-medium px-v2-sm py-v2-xs rounded-sm flex items-center gap-v2-xs w-fit disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-purple-96 text-purple-primary text-xs font-medium px-v2-sm py-v2-xs rounded-sm flex items-center gap-v2-xs w-fit border border-transparent dark:bg-transparent dark:border-purple-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Output language: {currentLanguage}
           <Icon icon="caret-down" className="size-4" />

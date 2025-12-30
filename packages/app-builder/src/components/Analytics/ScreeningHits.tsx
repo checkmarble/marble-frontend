@@ -83,7 +83,7 @@ export function ScreeningHits({ data, isLoading }: { data: ScreeningHitTableResp
     enableSorting: false,
   });
   return (
-    <div className="bg-grey-background-light rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
+    <div className="bg-surface-card rounded-v2-lg p-v2-md flex flex-col gap-v2-sm">
       <div className="flex items-center justify-between">
         <h2 className="text-h2 font-semibold">{t('analytics:screening_hits.title')}</h2>
       </div>
