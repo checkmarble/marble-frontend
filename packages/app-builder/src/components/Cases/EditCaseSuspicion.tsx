@@ -86,7 +86,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
                       form.handleSubmit();
                     }}
                   >
-                    <Icon icon="half-flag" className="size-3.5 text-orange-50" />
+                    <Icon icon="half-flag" className="size-3.5 text-orange-primary" />
                     {t('cases:sar.status.pending')}
                   </Button>
                   <Button
@@ -104,7 +104,7 @@ export const EditCaseSuspicion = ({ id, reports }: EditCaseSuspicionProps) => {
               .with('pending', () => (
                 <div className="flex items-center gap-2">
                   <span className="flex items-center gap-1">
-                    <Icon icon="half-flag" className="size-3.5 text-orange-50" />
+                    <Icon icon="half-flag" className="size-3.5 text-orange-primary" />
                     <span className="text-xs font-medium">{t('cases:sar.status.pending')}</span>
                   </span>
                   <Button

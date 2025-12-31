@@ -45,8 +45,8 @@ export const DistributionOfDecisionChart = ({
                 name: t('decisions:outcome.decline'),
               },
               block_and_review: {
-                background: 'bg-orange-50',
-                border: 'border-orange-50',
+                background: 'bg-orange-primary',
+                border: 'border-orange-primary',
                 text: 'text-grey-white',
                 name: t('decisions:outcome.block_and_review'),
               },

@@ -44,8 +44,8 @@ export function ScoreOutcomeThresholds({
             </span>
           </div>
 
-          <div className="bg-orange-95 flex h-10 flex-1 items-center justify-center border-b-4 border-b-orange-50">
-            <span className="text-s font-semibold text-orange-50">{t('decisions:outcome.block_and_review')}</span>
+          <div className="bg-orange-background-light flex h-10 flex-1 items-center justify-center border-b-4 border-b-orange-primary">
+            <span className="text-s font-semibold text-orange-primary">{t('decisions:outcome.block_and_review')}</span>
           </div>
         </>
       ) : null}

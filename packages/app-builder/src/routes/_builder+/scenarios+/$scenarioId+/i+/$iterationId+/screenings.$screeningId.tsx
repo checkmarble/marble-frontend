@@ -823,7 +823,7 @@ export default function ScreeningDetail() {
                     </div>
 
                     {!hasRequiredFields && (
-                      <CalloutV2 className="bg-yellow-90 text-orange-50 p-2 text-xs items-center font-semibold">
+                      <CalloutV2 className="bg-yellow-90 text-orange-primary p-2 text-xs items-center font-semibold">
                         {t('scenarios:edit_sanction.required_fields_disclaimer')}
                       </CalloutV2>
                     )}

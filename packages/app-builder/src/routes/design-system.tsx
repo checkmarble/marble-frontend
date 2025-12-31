@@ -113,7 +113,7 @@ function ColorPaletteSection() {
             <ColorSwatch name="green-38" className="bg-green-38" />
             <ColorSwatch name="red-47" className="bg-red-primary" />
             <ColorSwatch name="yellow-50" className="bg-yellow-50" />
-            <ColorSwatch name="orange-50" className="bg-orange-50" />
+            <ColorSwatch name="orange-50" className="bg-orange-primary" />
             <ColorSwatch name="blue-58" className="bg-blue-58" />
           </div>
         </div>
