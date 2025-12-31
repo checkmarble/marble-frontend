@@ -34,7 +34,7 @@ export function OutcomePanel({ outcome }: { outcome: Outcome }) {
           'bg-green-94 dark:bg-transparent dark:border-green-38': color === 'green',
           'bg-yellow-90 dark:bg-transparent dark:border-yellow-50': color === 'yellow',
           'bg-orange-95 dark:bg-transparent dark:border-orange-50': color === 'orange',
-          'bg-red-background dark:bg-transparent dark:border-red-primary': color === 'red',
+          'bg-red-95 dark:bg-transparent dark:border-red-primary': color === 'red',
         },
       )}
     >
@@ -104,13 +104,13 @@ export const OutcomeBadge = ({
           showBackground &&
             match(outcome)
               .with('approve', () => 'bg-green-94 dark:bg-transparent dark:border-green-38')
-              .with('decline', () => 'bg-red-background dark:bg-transparent dark:border-red-primary')
+              .with('decline', () => 'bg-red-95 dark:bg-transparent dark:border-red-primary')
               .with('review', () => 'bg-yellow-90 dark:bg-transparent dark:border-yellow-50')
               .with('unknown', () => 'bg-grey-background dark:bg-transparent dark:border-grey-placeholder')
               .with('block_and_review', () =>
                 match(reviewStatus)
                   .with('approve', () => 'bg-green-94 dark:bg-transparent dark:border-green-38')
-                  .with('decline', () => 'bg-red-background dark:bg-transparent dark:border-red-primary')
+                  .with('decline', () => 'bg-red-95 dark:bg-transparent dark:border-red-primary')
                   .otherwise(() => 'bg-orange-95 dark:bg-transparent dark:border-orange-50'),
               )
               .exhaustive(),

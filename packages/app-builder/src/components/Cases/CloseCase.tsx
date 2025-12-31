@@ -74,10 +74,13 @@ export const CloseCase = ({ id }: { id: string }) => {
                         className="border-grey-border data-[state=checked]:border-purple-hover flex items-center justify-center rounded-[20px] border bg-transparent p-1.5"
                       >
                         <span
-                          className={cn('rounded-[20px] px-2 py-[3px] text-xs', {
-                            'bg-red-background text-red-primary': s === 'confirmed_risk',
-                            'bg-grey-background text-grey-placeholder': s === 'false_positive',
-                            'bg-yellow-90 text-yellow-50': s === 'valuable_alert',
+                          className={cn('rounded-[20px] border border-transparent px-2 py-[3px] text-xs', {
+                            'bg-red-background text-red-primary dark:bg-transparent dark:border-red-primary':
+                              s === 'confirmed_risk',
+                            'bg-grey-background text-grey-placeholder dark:bg-transparent dark:border-grey-placeholder':
+                              s === 'false_positive',
+                            'bg-yellow-90 text-yellow-50 dark:bg-transparent dark:border-yellow-50':
+                              s === 'valuable_alert',
                           })}
                         >
                           {match(s)
