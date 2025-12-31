@@ -69,12 +69,28 @@
   --color-green-68: oklch(81.03% 0.0926 161.33);
   --color-green-94: oklch(96.01% 0.0183 166.38);
 
+  --color-green-base: oklch(0.6497 0.1594 153.6); /* #18AA5F */
+  --color-green-secondary: oklch(0.7104 0.1378 157.43); /* #46BB7F */
+  --color-green-hover: oklch(0.5891 0.1574 151.3); /* #009649 */
+  --color-green-disabled: oklch(0.81 0.0935 160.67); /* #89D4AD */
+  --color-green-border: oklch(0.8783 0.0604 162.17); /* #B4E4CB */
+  --color-green-background: oklch(0.9237 0.0414 163.15); /* #CEEFDE */
+  --color-green-background-light: oklch(0.9504 0.024 163.14); /* #E1F4EA */
+
   /* ========================================
    * YELLOW - Semantic naming
    * ======================================== */
   --color-yellow-50: oklch(82.26% 0.1684 83.23);
   --color-yellow-75: oklch(90.35% 0.1157 91.7);
   --color-yellow-90: oklch(95.87% 0.0473 91.32);
+
+  --color-yellow-base: oklch(0.7674 0.161691 75.2842); /* #EEA200 */
+  --color-yellow-secondary: oklch(0.836 0.1581 81.24); /* #FDBD35 */
+  --color-yellow-hover: oklch(0.6713 0.1413 75.44); /* #C78700 */
+  --color-yellow-disabled: oklch(0.891 0.1158 84.33); /* #FFD57E */
+  --color-yellow-border: oklch(0.9365 0.0772 91.28); /* #FDE9AF */
+  --color-yellow-background: oklch(0.9564 0.0579 91.09); /* #FFF0C5 */
+  --color-yellow-background-light: oklch(0.9733 0.0313 91.02); /* #FEF6DF */
 
   /* Blue scale */
   --color-blue-58: oklch(63.11% 0.19990007248114244 257.69061986426914);
@@ -84,6 +100,14 @@
   --color-orange-50: oklch(69.58% 0.20425909529071523 43.49103689485837);
   --color-orange-87: oklch(88.69% 0.06019174087690467 32.301452587972335);
   --color-orange-95: oklch(95.66% 0.022279930128345612 38.33533240178478);
+
+  --color-orange-base: oklch(0.6958 0.204259 43.491); /* #FF6600 */
+  --color-orange-secondary: oklch(0.7414 0.1734 50.15); /* #FF8533 */
+  --color-orange-hover: oklch(0.6178 0.1797 44); /* #D95700 */
+  --color-orange-disabled: oklch(0.7995 0.1316 53.83); /* #FFA568 */
+  --color-orange-border: oklch(0.8468 0.0976 54.87); /* #FFBC8F */
+  --color-orange-background: oklch(0.8927 0.0664 55.68); /* #FFD1B2 */
+  --color-orange-background-light: oklch(0.9456 0.0322 55.36); /* #FFE8D9 */
 
   --spacing-v2-xxxl: 3rem;
   --spacing-v2-xxl: 2.5rem;
@@ -182,8 +206,29 @@
   --color-purple-background-light: var(--color-grey-background-light); /* #1F1F2E - Light background in dark mode */
   --color-purple-98: var(--color-purple-disabled);        /* #4F4B93 - Alias for hover/focus */
 
+  /* Green - Dark mode overrides */
+  --color-green-base: oklch(0.7104 0.1378 157.43);
+
   /* Scrollbar - Dark mode */
   --scrollbar-color-thumb: rgb(100, 100, 110);
+
+  /* Yellow - Dark mode overrides */
+  --color-yellow-base: oklch(0.836 0.1581 81.24); /* #FDBD35 */
+  --color-yellow-secondary: oklch(0.7888 0.1585 78.91); /* #F0AC1C */
+  --color-yellow-hover: oklch(0.891 0.1158 84.33); /* #FFD57E */
+  --color-yellow-disabled: oklch(0.6713 0.1413 75.44); /* #C78700 */
+  --color-yellow-border: oklch(0.9365 0.0772 91.28); /* #FDE9AF */
+  --color-yellow-background: oklch(0.9564 0.0579 91.09); /* #FFF0C5 */
+  --color-yellow-background-light: oklch(0.9733 0.0313 91.02); /* #FEF6DF */
+
+  /* Orange - Dark mode overrides */
+  --color-orange-base: oklch(0.7414 0.1734 50.15); /* #FF8533 */
+  --color-orange-secondary: oklch(0.6865 0.1765 48.08); /* #EE711D */
+  --color-orange-hover: oklch(0.7995 0.1316 53.83); /* #FFA568 */
+  --color-orange-disabled: oklch(0.5497 0.1587 44.43); /* #B94A00 */
+  --color-orange-border: oklch(0.8468 0.0976 54.87); /* #FFBC8F */
+  --color-orange-background: oklch(0.8927 0.0664 55.68); /* #FFD1B2 */
+  --color-orange-background-light: oklch(0.9456 0.0322 55.36); /* #FFE8D9 */
 }
 
 /* Custom keyframes */
