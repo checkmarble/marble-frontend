@@ -1,3 +1,4 @@
+import { useTheme } from '@app-builder/contexts/ThemeContext';
 import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
 import clsx from 'clsx';
 import type * as React from 'react';
@@ -51,6 +52,18 @@ export function ToggleSidebar() {
           {...props}
         />
       )}
+    />
+  );
+}
+
+export function ToggleTheme() {
+  const { theme, toggleTheme } = useTheme();
+
+  return (
+    <SidebarButton
+      onClick={toggleTheme}
+      labelTKey={theme === 'dark' ? 'navigation:light_mode' : 'navigation:dark_mode'}
+      Icon={(props) => <Icon icon={theme === 'dark' ? 'lightbulb' : 'visibility_off'} {...props} />}
     />
   );
 }

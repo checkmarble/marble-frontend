@@ -1,6 +1,11 @@
 import { navigationI18n, SidebarButton, SidebarLink } from '@app-builder/components';
 import { HelpCenter, useMarbleCoreResources } from '@app-builder/components/HelpCenter';
-import { LeftSidebar, LeftSidebarSharpFactory, ToggleSidebar } from '@app-builder/components/Layout/LeftSidebar';
+import {
+  LeftSidebar,
+  LeftSidebarSharpFactory,
+  ToggleSidebar,
+  ToggleTheme,
+} from '@app-builder/components/Layout/LeftSidebar';
 import { Nudge } from '@app-builder/components/Nudge';
 import { PanelProvider } from '@app-builder/components/Panel';
 import { DatasetFreshnessBanner } from '@app-builder/components/Screenings/DatasetFresshnessBanner';
@@ -249,6 +254,9 @@ export default function Builder() {
                                 }
                                 versions={versions}
                               />
+                            </li>
+                            <li>
+                              <ToggleTheme />
                             </li>
                             <li>
                               <ToggleSidebar />

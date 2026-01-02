@@ -1,3 +1,5 @@
+import { setPreferencesCookie } from '@app-builder/utils/preferences-cookies/preferences-cookies-write';
+import Cookie from 'js-cookie';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 export type Theme = 'light' | 'dark';
@@ -8,7 +10,7 @@ interface ThemeContextValue {
   setTheme: (theme: Theme) => void;
 }
 
-const THEME_STORAGE_KEY = 'marble-theme';
+const COOKIE_NAME = 'u-prefs';
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 ThemeContext.displayName = 'Theme';
@@ -26,7 +28,7 @@ export function useTheme(): ThemeContextValue {
 }
 
 /**
- * Get the initial theme from localStorage or default to 'light'.
+ * Get the initial theme from cookie or default to 'light'.
  * This runs only on the client side.
  */
 function getInitialTheme(): Theme {
@@ -34,9 +36,16 @@ function getInitialTheme(): Theme {
     return 'light';
   }
 
-  const stored = localStorage.getItem(THEME_STORAGE_KEY);
-  if (stored === 'dark' || stored === 'light') {
-    return stored;
+  try {
+    const raw = Cookie.get(COOKIE_NAME);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed.theme === 'dark' || parsed.theme === 'light') {
+        return parsed.theme;
+      }
+    }
+  } catch {
+    // ignore parse errors
   }
 
   return 'light';
@@ -57,13 +66,13 @@ function applyTheme(theme: Theme): void {
 
 interface ThemeProviderProps {
   children: React.ReactNode;
-  /** Optional initial theme. If not provided, reads from localStorage or defaults to 'light'. */
+  /** Optional initial theme. If not provided, reads from cookie or defaults to 'light'. */
   defaultTheme?: Theme;
 }
 
 /**
  * Provider component for theme context.
- * Handles theme state, persistence to localStorage, and applying the dark class.
+ * Handles theme state, persistence to cookie, and applying the dark class.
  *
  * Usage:
  * ```tsx
@@ -78,7 +87,7 @@ export function ThemeProvider({ children, defaultTheme }: ThemeProviderProps) {
   // Apply theme on mount and when it changes
   useEffect(() => {
     applyTheme(theme);
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
+    setPreferencesCookie('theme', theme);
   }, [theme]);
 
   const setTheme = useCallback((newTheme: Theme) => {

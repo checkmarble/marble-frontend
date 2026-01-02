@@ -16,6 +16,7 @@ import {
 import { captureRemixErrorBoundaryError, withSentry } from '@sentry/remix';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import clsx from 'clsx';
 import { type Namespace } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -80,6 +81,7 @@ export const loader = createServerFn([], async function loader({ request, contex
   ]);
 
   const timezone = getPreferencesCookie(request, 'timezone') ?? 'UTC';
+  const theme = getPreferencesCookie(request, 'theme') ?? 'light';
 
   const toastMessage = getToastMessage(toastSession);
 
@@ -96,7 +98,7 @@ export const loader = createServerFn([], async function loader({ request, contex
 
   const segmentScript = !disableSegment && segmentApiKey ? getSegmentScript(segmentApiKey) : undefined;
 
-  return data({ ENV, locale, timezone, csrf: csrfToken, toastMessage, segmentScript, appConfig }, headers);
+  return data({ ENV, locale, timezone, theme, csrf: csrfToken, toastMessage, segmentScript, appConfig }, headers);
 });
 
 export const handle = {
@@ -127,7 +129,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   useSegmentPageTracking();
 
   return (
-    <html lang={loaderData?.locale ?? 'en'} dir={i18n.dir()}>
+    <html lang={loaderData?.locale ?? 'en'} dir={i18n.dir()} className={clsx(loaderData?.theme === 'dark' && 'dark')}>
       <head>
         <Meta />
         {/* <script crossOrigin="anonymous" src="//unpkg.com/react-scan/dist/auto.global.js" /> */}
@@ -142,7 +144,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <FormatContext.Provider
                 value={{ locale: loaderData?.locale ?? 'en-GB', timezone: loaderData?.timezone ?? 'UTC' }}
               >
-                <ThemeProvider>
+                <ThemeProvider defaultTheme={loaderData?.theme}>
                   <Tooltip.Provider>{children}</Tooltip.Provider>
                 </ThemeProvider>
               </FormatContext.Provider>
