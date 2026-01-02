@@ -115,7 +115,7 @@ function DateRangeFilterFromNowPicker({ title, className }: { title: string; cla
   return (
     <div className={clsx('flex flex-col gap-4 p-4', className)}>
       <div className="flex items-center">
-        <p className="text-grey-disabled text-s font-normal first-letter:capitalize">{title}</p>
+        <p className="text-grey-primary text-s font-normal first-letter:capitalize">{title}</p>
       </div>
       <div className="flex flex-col gap-1">
         {fromNowDurations.map((duration) => (
@@ -125,9 +125,10 @@ function DateRangeFilterFromNowPicker({ title, className }: { title: string; cla
               onFromNowSelect(duration);
             }}
             className={clsx(
-              'text-s bg-surface-card text-grey-primary border-grey-white flex h-10 items-center rounded-sm border p-2 outline-hidden',
-              'hover:bg-purple-background-light active:bg-purple-background hover:text-purple-primary',
-              fromNow === duration && 'bg-purple-background border-purple-primary text-purple-primary', // highlight the currently selected
+              'text-s bg-surface-card text-grey-primary border-grey-white dark:border-grey-border flex h-10 items-center rounded-sm border p-2 outline-hidden',
+              'hover:bg-purple-background-light active:bg-purple-background hover:text-purple-primary dark:hover:bg-purple-disabled dark:hover:text-grey-primary',
+              fromNow === duration &&
+                'bg-purple-background border-purple-primary text-purple-primary dark:bg-purple-disabled dark:text-grey-primary', // highlight the currently selected
             )}
           >
             <time dateTime={duration}>{formatDuration(duration, language)}</time>

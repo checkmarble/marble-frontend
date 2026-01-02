@@ -39,7 +39,10 @@ const FilterItemRoot = forwardRef<HTMLDivElement, Popover.PopoverAnchorProps>(fu
   return (
     <FilterPopover.Anchor
       ref={ref}
-      className={clsx('bg-purple-background-light flex h-10 flex-row items-center rounded-sm', className)}
+      className={clsx(
+        'bg-purple-background-light dark:bg-purple-disabled flex h-10 flex-row items-center rounded-sm',
+        className,
+      )}
       {...props}
     />
   );
@@ -53,7 +56,7 @@ const FilterItemTrigger = forwardRef<HTMLButtonElement, Popover.PopoverTriggerPr
     <FilterPopover.Trigger
       ref={ref}
       className={clsx(
-        'text-purple-primary focus:border-purple-primary -mr-1 flex h-full flex-row items-center gap-1 rounded-sm border border-solid border-transparent px-2 outline-hidden',
+        'text-purple-primary dark:text-grey-primary focus:border-purple-primary dark:focus:border-purple-hover -mr-1 flex h-full flex-row items-center gap-1 rounded-sm border border-solid border-transparent px-2 outline-hidden',
         className,
       )}
       {...props}
@@ -69,12 +72,12 @@ const FilterItemClear = forwardRef<HTMLButtonElement, ComponentPropsWithoutRef<'
     <button
       ref={ref}
       className={clsx(
-        'focus:border-purple-primary -ml-1 h-full rounded-sm border border-solid border-transparent px-2 outline-hidden',
+        'focus:border-purple-primary dark:focus:border-purple-hover -ml-1 h-full rounded-sm border border-solid border-transparent px-2 outline-hidden',
         className,
       )}
       {...props}
     >
-      <Icon icon="cross" className="text-purple-primary size-5 shrink-0" />
+      <Icon icon="cross" className="text-purple-primary dark:text-grey-primary size-5 shrink-0" />
     </button>
   );
 });
