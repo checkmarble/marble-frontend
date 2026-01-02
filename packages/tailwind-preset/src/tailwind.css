@@ -53,13 +53,15 @@
   --color-surface-row-hover: var(--color-purple-background-light); /* Table row hover */
 
   /* ========================================
-   * RED - Primitive scale
+   * RED - Semantic naming from Figma
    * ======================================== */
-  --color-red-hover: oklch(53.16% 0.1799 31.32);
-  --color-red-primary: oklch(57.14% 0.1956 32.06);
-  --color-red-disabled: oklch(76.36% 0.0962 29.85);
-  --color-red-secondary: oklch(88% 0.045 28.28);
-  --color-red-background: oklch(95.19% 0.0179 30.27);
+  --color-red-primary: oklch(57.14% 0.1956 32.06);      /* #D2371D - Primary */
+  --color-red-hover: oklch(53.16% 0.1799 31.32);        /* #BE321E - Hover */
+  --color-red-secondary: oklch(63.72% 0.160 31.57);     /* #DB5F4A - Secondary */
+  --color-red-disabled: oklch(76.36% 0.0962 29.85);     /* #E99B8E - Disabled */
+  --color-red-border: oklch(84.69% 0.0589 28.84);       /* #F1BFB7 - Border */
+  --color-red-background: oklch(90.53% 0.0376 28.05);   /* #F8D7D2 - Background */
+  --color-red-background-light: oklch(95.19% 0.0179 30.27); /* #FBEBE8 - Background light */
 
   /* ========================================
    * GREEN - Semantic naming
