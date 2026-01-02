@@ -18,7 +18,7 @@ export const AddLogicalOperatorButton = React.forwardRef<HTMLButtonElement, AddL
           'bg-transparent border-purple-primary text-purple-primary',
           'hover:bg-purple-background hover:border-purple-hover hover:text-purple-hover',
           'disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-disabled',
-          'dark:border-purple-primary-outline dark:text-purple-primary-outline',
+          'dark:border-purple-hover dark:text-purple-hover',
           'dark:hover:bg-transparent dark:hover:border-purple-hover dark:hover:text-purple-hover',
           'dark:disabled:bg-transparent dark:disabled:border-purple-disabled dark:disabled:text-purple-disabled',
           className,

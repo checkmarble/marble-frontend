@@ -75,7 +75,7 @@ export const CaseDetails = ({
   return (
     <div
       ref={containerRef}
-      className="relative flex w-full min-w-0 flex-col gap-v2-lg overflow-y-scroll bg-surface-card pb-v2-lg"
+      className="relative flex w-full min-w-0 flex-col gap-v2-lg overflow-y-scroll bg-surface-page pb-v2-lg"
     >
       <div ref={sentinelRef} className="absolute left-0 top-0" />
       <div
@@ -126,7 +126,7 @@ export const CaseDetails = ({
         {selectedTab === 'caseDetails' ? (
           <>
             {/* Case details */}
-            <div className="border-grey-border text-small flex flex-col gap-2 border p-v2-md bg-grey-background-light rounded-v2-lg">
+            <div className="border-grey-border text-small flex flex-col gap-2 border p-v2-md bg-surface-card rounded-v2-lg">
               <div className="grid grid-cols-[170px_1fr] items-center">
                 <span className="text-grey-placeholder font-normal">{t('cases:case.status')}</span>
                 <span className="flex items-center gap-2">

@@ -13,8 +13,18 @@ import { Icon } from 'ui-icons';
 // Color swatch component for displaying color palette
 function ColorSwatch({ name, className }: { name: string; className: string }) {
   return (
-    <div className="flex flex-col gap-1">
-      <div className={`h-16 w-24 rounded-lg border border-grey-border ${className}`} />
+    <div className="flex flex-col items-center gap-2">
+      <div className={`size-16 rounded-v2-md border border-grey-border shadow-sm ${className}`} />
+      <span className="text-2xs text-grey-placeholder text-center max-w-20 leading-tight">{name}</span>
+    </div>
+  );
+}
+
+// Surface swatch for semantic surface tokens
+function SurfaceSwatch({ name, className }: { name: string; className: string }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <div className={`h-20 w-32 rounded-v2-lg border border-grey-border shadow-sm ${className}`} />
       <span className="text-xs text-grey-placeholder">{name}</span>
     </div>
   );
@@ -25,7 +35,7 @@ function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <ButtonV2 onClick={toggleTheme} variant="secondary" appearance="stroked">
+    <ButtonV2 onClick={toggleTheme} variant="secondary" appearance="stroked" size="default">
       <Icon icon={theme === 'dark' ? 'lightbulb' : 'visibility_off'} className="size-5" />
       <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
     </ButtonV2>
@@ -37,137 +47,182 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <section className="flex flex-col gap-4">
       <h2 className="text-l font-semibold text-grey-primary">{title}</h2>
-      <div className="rounded-xl border border-grey-border bg-surface-card p-6">{children}</div>
+      <div className="rounded-v2-xl border border-grey-border bg-surface-card p-v2-lg">{children}</div>
     </section>
   );
 }
 
-// Color palette section - testing both semantic and numeric names
+// Subsection for grouping related colors
+function ColorGroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <h3 className="text-s font-medium text-grey-secondary">{title}</h3>
+      <div className="flex flex-wrap gap-4">{children}</div>
+    </div>
+  );
+}
+
+// Surface tokens section
+function SurfaceTokensSection() {
+  return (
+    <Section title="Surface Tokens">
+      <div className="flex flex-col gap-6">
+        <p className="text-s text-grey-placeholder">
+          Semantic surface tokens that automatically adapt to light/dark mode.
+        </p>
+        <div className="flex flex-wrap gap-6">
+          <SurfaceSwatch name="surface-page" className="bg-surface-page" />
+          <SurfaceSwatch name="surface-card" className="bg-surface-card" />
+          <SurfaceSwatch name="surface-sidebar" className="bg-surface-sidebar" />
+          <SurfaceSwatch name="surface-elevated" className="bg-surface-elevated" />
+          <SurfaceSwatch name="surface-popover" className="bg-surface-popover" />
+          <SurfaceSwatch name="surface-row" className="bg-surface-row" />
+          <SurfaceSwatch name="surface-row-hover" className="bg-surface-row-hover" />
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+// Color palette section
 function ColorPaletteSection() {
   return (
     <Section title="Color Palette">
-      <div className="flex flex-col gap-6">
-        {/* Grey scale - SEMANTIC names (new) */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Grey - Semantic Names (New)</h3>
-          <div className="flex flex-wrap gap-4">
-            <ColorSwatch name="grey-primary" className="bg-grey-primary" />
-            <ColorSwatch name="grey-hover" className="bg-grey-hover" />
-            <ColorSwatch name="grey-secondary" className="bg-grey-secondary" />
-            <ColorSwatch name="grey-placeholder" className="bg-grey-placeholder" />
-            <ColorSwatch name="grey-disabled" className="bg-grey-disabled" />
-            <ColorSwatch name="grey-border" className="bg-grey-border" />
-            <ColorSwatch name="grey-background" className="bg-grey-background" />
-            <ColorSwatch name="grey-background-light" className="bg-grey-background-light" />
-            <ColorSwatch name="grey-white" className="bg-grey-white" />
-          </div>
-        </div>
+      <div className="flex flex-col gap-8">
+        {/* Grey scale */}
+        <ColorGroup title="Grey">
+          <ColorSwatch name="primary" className="bg-grey-primary" />
+          <ColorSwatch name="hover" className="bg-grey-hover" />
+          <ColorSwatch name="secondary" className="bg-grey-secondary" />
+          <ColorSwatch name="placeholder" className="bg-grey-placeholder" />
+          <ColorSwatch name="disabled" className="bg-grey-disabled" />
+          <ColorSwatch name="border" className="bg-grey-border" />
+          <ColorSwatch name="background" className="bg-grey-background" />
+          <ColorSwatch name="background-light" className="bg-grey-background-light" />
+          <ColorSwatch name="white" className="bg-grey-white" />
+        </ColorGroup>
 
-        {/* Grey scale - NUMERIC names (backward compatible) */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Grey - Numeric Aliases (Old)</h3>
-          <div className="flex flex-wrap gap-4">
-            <ColorSwatch name="grey-00" className="bg-grey-primary" />
-            <ColorSwatch name="grey-50" className="bg-grey-placeholder" />
-            <ColorSwatch name="grey-80" className="bg-grey-disabled" />
-            <ColorSwatch name="grey-90" className="bg-grey-border" />
-            <ColorSwatch name="grey-95" className="bg-grey-background" />
-            <ColorSwatch name="grey-98" className="bg-grey-background-light" />
-            <ColorSwatch name="grey-100" className="bg-surface-card" />
-          </div>
-        </div>
-
-        {/* Purple scale - SEMANTIC names (new) */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Purple - Semantic Names (New)</h3>
-          <div className="flex flex-wrap gap-4">
-            <ColorSwatch name="purple-primary-outline" className="bg-purple-primary-outline" />
-            <ColorSwatch name="purple-primary" className="bg-purple-primary" />
-            <ColorSwatch name="purple-secondary" className="bg-purple-secondary" />
-            <ColorSwatch name="purple-hover" className="bg-purple-hover" />
-            <ColorSwatch name="purple-disabled" className="bg-purple-disabled" />
-            <ColorSwatch name="purple-border" className="bg-purple-border" />
-            <ColorSwatch name="purple-border-light" className="bg-purple-border-light" />
-            <ColorSwatch name="purple-background" className="bg-purple-background" />
-            <ColorSwatch name="purple-background-light" className="bg-purple-background-light" />
-          </div>
-        </div>
-
-        {/* Purple scale - NUMERIC names (backward compatible) */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Purple - Numeric Aliases (Old)</h3>
-          <div className="flex flex-wrap gap-4">
-            <ColorSwatch name="purple-60" className="bg-purple-hover" />
-            <ColorSwatch name="purple-65" className="bg-purple-primary" />
-            <ColorSwatch name="purple-82" className="bg-purple-disabled" />
-            <ColorSwatch name="purple-85" className="bg-purple-secondary" />
-            <ColorSwatch name="purple-96" className="bg-purple-background" />
-            <ColorSwatch name="purple-98" className="bg-purple-background-light" />
-          </div>
-        </div>
+        {/* Purple scale */}
+        <ColorGroup title="Purple">
+          <ColorSwatch name="primary" className="bg-purple-primary" />
+          <ColorSwatch name="hover" className="bg-purple-hover" />
+          <ColorSwatch name="secondary" className="bg-purple-secondary" />
+          <ColorSwatch name="placeholder" className="bg-purple-placeholder" />
+          <ColorSwatch name="disabled" className="bg-purple-disabled" />
+          <ColorSwatch name="border" className="bg-purple-border" />
+          <ColorSwatch name="border-light" className="bg-purple-border-light" />
+          <ColorSwatch name="background" className="bg-purple-background" />
+          <ColorSwatch name="background-light" className="bg-purple-background-light" />
+        </ColorGroup>
 
         {/* Green scale */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Green - Semantic Names</h3>
-          <div className="flex flex-wrap gap-4">
-            <ColorSwatch name="green-primary" className="bg-green-primary" />
-            <ColorSwatch name="green-hover" className="bg-green-hover" />
-            <ColorSwatch name="green-secondary" className="bg-green-secondary" />
-            <ColorSwatch name="green-disabled" className="bg-green-disabled" />
-            <ColorSwatch name="green-border" className="bg-green-border" />
-            <ColorSwatch name="green-background" className="bg-green-background" />
-            <ColorSwatch name="green-background-light" className="bg-green-background-light" />
-          </div>
-        </div>
+        <ColorGroup title="Green">
+          <ColorSwatch name="primary" className="bg-green-primary" />
+          <ColorSwatch name="hover" className="bg-green-hover" />
+          <ColorSwatch name="secondary" className="bg-green-secondary" />
+          <ColorSwatch name="placeholder" className="bg-green-placeholder" />
+          <ColorSwatch name="disabled" className="bg-green-disabled" />
+          <ColorSwatch name="border" className="bg-green-border" />
+          <ColorSwatch name="background" className="bg-green-background" />
+          <ColorSwatch name="background-light" className="bg-green-background-light" />
+        </ColorGroup>
 
         {/* Red scale */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Red - Semantic Names</h3>
-          <div className="flex flex-wrap gap-4">
-            <ColorSwatch name="red-primary" className="bg-red-primary" />
-            <ColorSwatch name="red-hover" className="bg-red-hover" />
-            <ColorSwatch name="red-secondary" className="bg-red-secondary" />
-            <ColorSwatch name="red-disabled" className="bg-red-disabled" />
-            <ColorSwatch name="red-border" className="bg-red-border" />
-            <ColorSwatch name="red-background" className="bg-red-background" />
-            <ColorSwatch name="red-background-light" className="bg-red-background-light" />
-          </div>
-        </div>
+        <ColorGroup title="Red">
+          <ColorSwatch name="primary" className="bg-red-primary" />
+          <ColorSwatch name="hover" className="bg-red-hover" />
+          <ColorSwatch name="secondary" className="bg-red-secondary" />
+          <ColorSwatch name="placeholder" className="bg-red-placeholder" />
+          <ColorSwatch name="disabled" className="bg-red-disabled" />
+          <ColorSwatch name="border" className="bg-red-border" />
+          <ColorSwatch name="background" className="bg-red-background" />
+          <ColorSwatch name="background-light" className="bg-red-background-light" />
+        </ColorGroup>
 
         {/* Yellow scale */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Yellow - Semantic Names</h3>
-          <div className="flex flex-wrap gap-4">
-            <ColorSwatch name="yellow-primary" className="bg-yellow-primary" />
-            <ColorSwatch name="yellow-hover" className="bg-yellow-hover" />
-            <ColorSwatch name="yellow-secondary" className="bg-yellow-secondary" />
-            <ColorSwatch name="yellow-disabled" className="bg-yellow-disabled" />
-            <ColorSwatch name="yellow-border" className="bg-yellow-border" />
-            <ColorSwatch name="yellow-background" className="bg-yellow-background" />
-            <ColorSwatch name="yellow-background-light" className="bg-yellow-background-light" />
-          </div>
-        </div>
+        <ColorGroup title="Yellow">
+          <ColorSwatch name="primary" className="bg-yellow-primary" />
+          <ColorSwatch name="hover" className="bg-yellow-hover" />
+          <ColorSwatch name="secondary" className="bg-yellow-secondary" />
+          <ColorSwatch name="placeholder" className="bg-yellow-placeholder" />
+          <ColorSwatch name="disabled" className="bg-yellow-disabled" />
+          <ColorSwatch name="border" className="bg-yellow-border" />
+          <ColorSwatch name="background" className="bg-yellow-background" />
+          <ColorSwatch name="background-light" className="bg-yellow-background-light" />
+        </ColorGroup>
 
         {/* Orange scale */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Orange - Semantic Names</h3>
-          <div className="flex flex-wrap gap-4">
-            <ColorSwatch name="orange-primary" className="bg-orange-primary" />
-            <ColorSwatch name="orange-hover" className="bg-orange-hover" />
-            <ColorSwatch name="orange-secondary" className="bg-orange-secondary" />
-            <ColorSwatch name="orange-disabled" className="bg-orange-disabled" />
-            <ColorSwatch name="orange-border" className="bg-orange-border" />
-            <ColorSwatch name="orange-background" className="bg-orange-background" />
-            <ColorSwatch name="orange-background-light" className="bg-orange-background-light" />
+        <ColorGroup title="Orange">
+          <ColorSwatch name="primary" className="bg-orange-primary" />
+          <ColorSwatch name="hover" className="bg-orange-hover" />
+          <ColorSwatch name="secondary" className="bg-orange-secondary" />
+          <ColorSwatch name="placeholder" className="bg-orange-placeholder" />
+          <ColorSwatch name="disabled" className="bg-orange-disabled" />
+          <ColorSwatch name="border" className="bg-orange-border" />
+          <ColorSwatch name="background" className="bg-orange-background" />
+          <ColorSwatch name="background-light" className="bg-orange-background-light" />
+        </ColorGroup>
+
+        {/* Blue scale */}
+        <ColorGroup title="Blue">
+          <ColorSwatch name="blue-58" className="bg-blue-58" />
+          <ColorSwatch name="blue-96" className="bg-blue-96" />
+        </ColorGroup>
+      </div>
+    </Section>
+  );
+}
+
+// Spacing tokens section
+function SpacingSection() {
+  const spacings = [
+    { name: 'xxs', value: '0.125rem', class: 'w-v2-xxs' },
+    { name: 'xs', value: '0.25rem', class: 'w-v2-xs' },
+    { name: 'sm', value: '0.5rem', class: 'w-v2-sm' },
+    { name: 'md', value: '1rem', class: 'w-v2-md' },
+    { name: 'lg', value: '1.5rem', class: 'w-v2-lg' },
+    { name: 'xl', value: '2rem', class: 'w-v2-xl' },
+    { name: 'xxl', value: '2.5rem', class: 'w-v2-xxl' },
+    { name: 'xxxl', value: '3rem', class: 'w-v2-xxxl' },
+  ];
+
+  const radiuses = [
+    { name: 'xs', value: '0.125rem', class: 'rounded-v2-xs' },
+    { name: 's', value: '0.25rem', class: 'rounded-v2-s' },
+    { name: 'md', value: '0.5rem', class: 'rounded-v2-md' },
+    { name: 'lg', value: '0.75rem', class: 'rounded-v2-lg' },
+    { name: 'xl', value: '1rem', class: 'rounded-v2-xl' },
+    { name: 'xxl', value: '1.5rem', class: 'rounded-v2-xxl' },
+  ];
+
+  return (
+    <Section title="Spacing & Radius">
+      <div className="flex flex-col gap-8">
+        {/* Spacing */}
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Spacing Tokens</h3>
+          <div className="flex flex-col gap-3">
+            {spacings.map((s) => (
+              <div key={s.name} className="flex items-center gap-4">
+                <span className="w-16 text-xs font-mono text-grey-placeholder">v2-{s.name}</span>
+                <div className={`h-4 bg-purple-primary ${s.class}`} />
+                <span className="text-xs text-grey-disabled">{s.value}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Blue scale */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Blue</h3>
-          <div className="flex flex-wrap gap-4">
-            <ColorSwatch name="blue-58" className="bg-blue-58" />
-            <ColorSwatch name="blue-96" className="bg-blue-96" />
+        {/* Radius */}
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Border Radius</h3>
+          <div className="flex flex-wrap gap-6">
+            {radiuses.map((r) => (
+              <div key={r.name} className="flex flex-col items-center gap-2">
+                <div className={`size-16 border-2 border-purple-primary bg-purple-background ${r.class}`} />
+                <span className="text-xs font-mono text-grey-placeholder">v2-{r.name}</span>
+                <span className="text-2xs text-grey-disabled">{r.value}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -179,14 +234,52 @@ function ColorPaletteSection() {
 function TypographySection() {
   return (
     <Section title="Typography">
-      <div className="flex flex-col gap-4">
-        <p className="text-2xl font-semibold text-grey-primary">Text 2XL - Heading</p>
-        <p className="text-l font-semibold text-grey-primary">Text L - Subheading</p>
-        <p className="text-m text-grey-primary">Text M - Body text</p>
-        <p className="text-s text-grey-primary">Text S - Small text</p>
-        <p className="text-r text-grey-placeholder">Text R - Regular text (secondary)</p>
-        <p className="text-xs text-grey-placeholder">Text XS - Extra small (placeholder)</p>
-        <p className="text-2xs text-grey-disabled">Text 2XS - Tiny (disabled)</p>
+      <div className="flex flex-col gap-6">
+        {/* Size scale */}
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Size Scale</h3>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-baseline gap-4">
+              <span className="w-16 text-xs font-mono text-grey-placeholder">2xl</span>
+              <p className="text-2xl font-semibold text-grey-primary">The quick brown fox</p>
+            </div>
+            <div className="flex items-baseline gap-4">
+              <span className="w-16 text-xs font-mono text-grey-placeholder">l</span>
+              <p className="text-l font-semibold text-grey-primary">The quick brown fox</p>
+            </div>
+            <div className="flex items-baseline gap-4">
+              <span className="w-16 text-xs font-mono text-grey-placeholder">m</span>
+              <p className="text-m text-grey-primary">The quick brown fox</p>
+            </div>
+            <div className="flex items-baseline gap-4">
+              <span className="w-16 text-xs font-mono text-grey-placeholder">s</span>
+              <p className="text-s text-grey-primary">The quick brown fox</p>
+            </div>
+            <div className="flex items-baseline gap-4">
+              <span className="w-16 text-xs font-mono text-grey-placeholder">r</span>
+              <p className="text-r text-grey-primary">The quick brown fox</p>
+            </div>
+            <div className="flex items-baseline gap-4">
+              <span className="w-16 text-xs font-mono text-grey-placeholder">xs</span>
+              <p className="text-xs text-grey-primary">The quick brown fox</p>
+            </div>
+            <div className="flex items-baseline gap-4">
+              <span className="w-16 text-xs font-mono text-grey-placeholder">2xs</span>
+              <p className="text-2xs text-grey-primary">The quick brown fox</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Text colors */}
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Text Colors</h3>
+          <div className="flex flex-col gap-2">
+            <p className="text-s text-grey-primary">Primary text - grey-primary</p>
+            <p className="text-s text-grey-secondary">Secondary text - grey-secondary</p>
+            <p className="text-s text-grey-placeholder">Placeholder text - grey-placeholder</p>
+            <p className="text-s text-grey-disabled">Disabled text - grey-disabled</p>
+          </div>
+        </div>
       </div>
     </Section>
   );
@@ -195,105 +288,133 @@ function TypographySection() {
 // Buttons section
 function ButtonsSection() {
   return (
-    <Section title="Buttons (ButtonV2)">
-      <div className="flex flex-col gap-6">
-        {/* Primary filled */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Primary Filled</h3>
-          <div className="flex flex-wrap items-center gap-4">
-            <ButtonV2 variant="primary" appearance="filled">
-              Primary
-            </ButtonV2>
-            <ButtonV2 variant="primary" appearance="filled" size="default">
-              Default Size
-            </ButtonV2>
-            <ButtonV2 variant="primary" appearance="filled" disabled>
-              Disabled
-            </ButtonV2>
+    <Section title="Buttons">
+      <div className="flex flex-col gap-8">
+        {/* Primary */}
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Primary</h3>
+          <div className="grid grid-cols-3 gap-6">
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-grey-placeholder">Filled</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <ButtonV2 variant="primary" appearance="filled">
+                  Button
+                </ButtonV2>
+                <ButtonV2 variant="primary" appearance="filled" disabled>
+                  Disabled
+                </ButtonV2>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-grey-placeholder">Stroked</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <ButtonV2 variant="primary" appearance="stroked">
+                  Button
+                </ButtonV2>
+                <ButtonV2 variant="primary" appearance="stroked" disabled>
+                  Disabled
+                </ButtonV2>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-grey-placeholder">Link</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <ButtonV2 variant="primary" appearance="link">
+                  Link
+                </ButtonV2>
+                <ButtonV2 variant="primary" appearance="link" disabled>
+                  Disabled
+                </ButtonV2>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Primary stroked */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Primary Stroked</h3>
-          <div className="flex flex-wrap items-center gap-4">
-            <ButtonV2 variant="primary" appearance="stroked">
-              Stroked
-            </ButtonV2>
-            <ButtonV2 variant="primary" appearance="stroked" disabled>
-              Disabled
-            </ButtonV2>
-          </div>
-        </div>
-
-        {/* Primary link */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Link</h3>
-          <div className="flex flex-wrap items-center gap-4">
-            <ButtonV2 variant="primary" appearance="link">
-              Primary Link
-            </ButtonV2>
-            <ButtonV2 variant="primary" appearance="link" disabled>
-              Disabled
-            </ButtonV2>
-            <ButtonV2 variant="secondary" appearance="link">
-              Secondary Link
-            </ButtonV2>
-            <ButtonV2 variant="secondary" appearance="link" disabled>
-              Disabled
-            </ButtonV2>
-          </div>
-        </div>
-
-        {/* Secondary Filled */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Secondary Filled</h3>
-          <div className="flex flex-wrap items-center gap-4">
-            <ButtonV2 variant="secondary" appearance="filled">
-              Secondary
-            </ButtonV2>
-            <ButtonV2 variant="secondary" appearance="filled" disabled>
-              Disabled
-            </ButtonV2>
-          </div>
-        </div>
-
-        {/* Secondary Stroked */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Secondary Stroked</h3>
-          <div className="flex flex-wrap items-center gap-4">
-            <ButtonV2 variant="secondary" appearance="stroked">
-              Stroked
-            </ButtonV2>
-            <ButtonV2 variant="secondary" appearance="stroked" disabled>
-              Disabled
-            </ButtonV2>
+        {/* Secondary */}
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Secondary</h3>
+          <div className="grid grid-cols-3 gap-6">
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-grey-placeholder">Filled</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <ButtonV2 variant="secondary" appearance="filled">
+                  Button
+                </ButtonV2>
+                <ButtonV2 variant="secondary" appearance="filled" disabled>
+                  Disabled
+                </ButtonV2>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-grey-placeholder">Stroked</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <ButtonV2 variant="secondary" appearance="stroked">
+                  Button
+                </ButtonV2>
+                <ButtonV2 variant="secondary" appearance="stroked" disabled>
+                  Disabled
+                </ButtonV2>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-grey-placeholder">Link</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <ButtonV2 variant="secondary" appearance="link">
+                  Link
+                </ButtonV2>
+                <ButtonV2 variant="secondary" appearance="link" disabled>
+                  Disabled
+                </ButtonV2>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Destructive */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Destructive</h3>
-          <div className="flex flex-wrap items-center gap-4">
-            <ButtonV2 variant="destructive">Destructive</ButtonV2>
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Destructive</h3>
+          <div className="flex flex-wrap items-center gap-3">
+            <ButtonV2 variant="destructive">Delete</ButtonV2>
             <ButtonV2 variant="destructive" disabled>
               Disabled
             </ButtonV2>
           </div>
         </div>
 
-        {/* Icon mode */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Icon Mode</h3>
+        {/* Sizes */}
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Sizes</h3>
+          <div className="flex flex-wrap items-end gap-4">
+            <div className="flex flex-col items-center gap-2">
+              <ButtonV2 variant="primary" size="small">
+                Small
+              </ButtonV2>
+              <span className="text-2xs text-grey-placeholder">small</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <ButtonV2 variant="primary" size="default">
+                Default
+              </ButtonV2>
+              <span className="text-2xs text-grey-placeholder">default</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Icon buttons */}
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Icon Mode</h3>
           <div className="flex flex-wrap items-center gap-4">
-            <ButtonV2 variant="primary" mode="icon">
+            <ButtonV2 variant="primary" mode="icon" size="small">
+              <Icon icon="plus" className="size-4" />
+            </ButtonV2>
+            <ButtonV2 variant="primary" mode="icon" size="default">
               <Icon icon="plus" className="size-5" />
             </ButtonV2>
             <ButtonV2 variant="secondary" mode="icon">
-              <Icon icon="edit" className="size-5" />
+              <Icon icon="edit" className="size-4" />
             </ButtonV2>
             <ButtonV2 variant="destructive" mode="icon">
-              <Icon icon="delete" className="size-5" />
+              <Icon icon="delete" className="size-4" />
             </ButtonV2>
           </div>
         </div>
@@ -310,8 +431,8 @@ function InputsSection() {
     <Section title="Form Inputs">
       <div className="flex flex-col gap-6">
         {/* Text inputs */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Text Input States</h3>
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Text Input States</h3>
           <div className="grid max-w-md gap-4">
             <Input
               placeholder="Placeholder text..."
@@ -325,8 +446,8 @@ function InputsSection() {
         </div>
 
         {/* With adornments */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">With Adornments</h3>
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">With Adornments</h3>
           <div className="grid max-w-md gap-4">
             <Input placeholder="Search..." startAdornment="search" />
             <Input placeholder="Email" endAdornment="send" />
@@ -346,8 +467,8 @@ function CheckboxesSection() {
     <Section title="Checkboxes & Toggles">
       <div className="flex flex-col gap-6">
         {/* Checkboxes */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Checkboxes</h3>
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Checkboxes</h3>
           <div className="flex flex-wrap items-center gap-6">
             <label className="flex items-center gap-2">
               <Checkbox checked={checked} onCheckedChange={(value) => setChecked(value === true)} />
@@ -365,8 +486,8 @@ function CheckboxesSection() {
         </div>
 
         {/* Switches */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Switches</h3>
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Switches</h3>
           <div className="flex flex-wrap items-center gap-6">
             <label className="flex items-center gap-2">
               <Switch checked={switchOn} onCheckedChange={setSwitchOn} />
@@ -393,8 +514,8 @@ function TagsSection() {
     <Section title="Tags">
       <div className="flex flex-col gap-6">
         {/* Color variants */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Colors</h3>
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Colors</h3>
           <div className="flex flex-wrap items-center gap-3">
             <Tag color="purple">Purple</Tag>
             <Tag color="grey">Grey</Tag>
@@ -407,8 +528,8 @@ function TagsSection() {
         </div>
 
         {/* Sizes */}
-        <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Sizes</h3>
+        <div className="flex flex-col gap-4">
+          <h3 className="text-s font-medium text-grey-secondary">Sizes</h3>
           <div className="flex flex-wrap items-center gap-3">
             <Tag color="purple" size="small">
               Small
@@ -428,24 +549,31 @@ function DesignSystemContent() {
   const { theme } = useTheme();
 
   return (
-    <div className="h-screen overflow-y-auto bg-grey-background transition-colors">
+    <div className="h-screen overflow-y-auto bg-surface-page transition-colors">
       {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-grey-border bg-surface-card px-8 py-4">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-grey-primary">Design System</h1>
-            <p className="text-s text-grey-placeholder">
-              Current theme: <span className="font-medium">{theme}</span>
-            </p>
+      <header className="sticky top-0 z-10 border-b border-grey-border bg-surface-card/80 px-v2-lg py-v2-md backdrop-blur-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <div className="flex items-center gap-v2-md">
+            <div className="flex size-10 items-center justify-center rounded-v2-lg bg-purple-primary">
+              <span className="text-l font-bold text-white">M</span>
+            </div>
+            <div>
+              <h1 className="text-l font-bold text-grey-primary">Design System</h1>
+              <p className="text-xs text-grey-placeholder">
+                Theme: <span className="font-medium text-grey-secondary">{theme}</span>
+              </p>
+            </div>
           </div>
           <ThemeToggle />
         </div>
       </header>
 
       {/* Main content */}
-      <main className="mx-auto max-w-6xl px-8 py-8">
-        <div className="flex flex-col gap-8">
+      <main className="mx-auto max-w-7xl px-v2-lg py-v2-xl">
+        <div className="flex flex-col gap-v2-xl">
+          <SurfaceTokensSection />
           <ColorPaletteSection />
+          <SpacingSection />
           <TypographySection />
           <ButtonsSection />
           <InputsSection />
@@ -455,9 +583,9 @@ function DesignSystemContent() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-grey-border bg-surface-card px-8 py-4">
-        <div className="mx-auto max-w-6xl">
-          <p className="text-xs text-grey-placeholder">Marble Design System - Development Page</p>
+      <footer className="border-t border-grey-border bg-surface-card px-v2-lg py-v2-md">
+        <div className="mx-auto max-w-7xl">
+          <p className="text-xs text-grey-placeholder">Marble Design System v2</p>
         </div>
       </footer>
     </div>

@@ -9,7 +9,7 @@ interface TriggerObjectTagProps {
 export function TriggerObjectTag({ children }: TriggerObjectTagProps) {
   const { t } = useTranslation(['scenarios']);
   return (
-    <div className="text-s bg-purple-background-light text-purple-primary flex items-center gap-2 rounded-v2-md py-v2-xs px-v2-sm font-normal dark:text-purple-primary-outline">
+    <div className="text-s bg-purple-background-light text-purple-primary flex items-center gap-2 rounded-v2-md py-v2-xs px-v2-sm font-normal dark:text-purple-hover">
       {children}
 
       <Ariakit.HovercardProvider showTimeout={0} hideTimeout={0} placement="bottom">

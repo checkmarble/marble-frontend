@@ -60,9 +60,9 @@ export const CtaV2ClassName = cva(
       variant: {
         primary: '',
         destructive:
-          'bg-red-primary border-red-primary text-white hover:bg-red-hover hover:border-red-hover disabled:bg-red-disabled disabled:border-red-disabled dark:text-grey-primary dark:disabled:text-grey-secondary',
+          'bg-red-primary border-red-primary text-white enabled:hover:bg-red-hover enabled:hover:border-red-hover disabled:bg-red-disabled disabled:border-red-disabled dark:text-grey-primary dark:disabled:text-grey-secondary',
         secondary:
-          'bg-surface-card border-grey-border text-grey-primary hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-disabled dark:hover:bg-grey-background-light dark:disabled:bg-grey-background-light',
+          'bg-surface-card border-grey-border text-grey-primary enabled:hover:bg-grey-background disabled:bg-grey-background disabled:text-grey-disabled dark:enabled:hover:bg-grey-background-light dark:disabled:bg-grey-background-light',
       },
       appearance: {
         filled: '',
@@ -105,35 +105,35 @@ export const CtaV2ClassName = cva(
         variant: 'primary',
         appearance: 'filled',
         class:
-          'bg-purple-primary border-purple-primary text-white hover:bg-purple-hover hover:border-purple-hover disabled:bg-purple-disabled disabled:border-purple-disabled dark:text-grey-primary dark:hover:bg-purple-primary-outline dark:hover:border-purple-primary-outline dark:disabled:text-grey-secondary',
+          'bg-purple-primary border-purple-primary text-white enabled:hover:bg-purple-hover enabled:hover:border-purple-hover disabled:bg-purple-disabled disabled:border-purple-disabled dark:text-grey-primary dark:enabled:hover:bg-purple-hover dark:enabled:hover:border-purple-hover dark:disabled:text-grey-secondary',
       },
       // Primary + Stroked
       {
         variant: 'primary',
         appearance: 'stroked',
         class:
-          'bg-transparent border-purple-primary text-purple-primary hover:bg-purple-background hover:border-purple-hover disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-disabled dark:border-purple-primary-outline dark:text-purple-primary-outline dark:hover:bg-transparent dark:hover:border-purple-hover dark:hover:text-purple-hover dark:disabled:bg-transparent dark:disabled:border-purple-disabled dark:disabled:text-purple-disabled',
+          'bg-transparent border-purple-primary text-purple-primary enabled:hover:bg-purple-primary enabled:hover:border-purple-primary enabled:hover:text-white disabled:bg-grey-background disabled:border-grey-border disabled:text-grey-disabled dark:border-purple-hover dark:text-purple-hover dark:enabled:hover:bg-purple-primary dark:enabled:hover:border-purple-primary dark:enabled:hover:text-grey-white dark:disabled:bg-transparent dark:disabled:border-purple-disabled dark:disabled:text-purple-disabled',
       },
       // Primary + Link
       {
         variant: 'primary',
         appearance: 'link',
         class:
-          'bg-transparent border-transparent p-0 h-auto rounded-none hover:underline hover:bg-transparent text-purple-primary hover:text-purple-hover disabled:text-grey-disabled dark:text-purple-primary-outline dark:hover:text-purple-hover dark:disabled:text-purple-disabled',
+          'bg-transparent border-transparent p-0 h-auto rounded-none enabled:hover:underline enabled:hover:bg-transparent text-purple-primary enabled:hover:text-purple-hover disabled:text-grey-disabled disabled:no-underline dark:text-purple-hover dark:enabled:hover:text-purple-hover dark:disabled:text-purple-disabled',
       },
       // Secondary + Stroked
       {
         variant: 'secondary',
         appearance: 'stroked',
         class:
-          'dark:bg-transparent dark:border-grey-secondary dark:text-grey-secondary dark:hover:border-grey-primary dark:hover:text-grey-primary dark:hover:bg-transparent dark:disabled:border-grey-disabled dark:disabled:text-grey-disabled dark:disabled:bg-transparent',
+          'dark:bg-transparent dark:border-grey-secondary dark:text-grey-secondary dark:enabled:hover:border-grey-primary dark:enabled:hover:text-grey-primary dark:enabled:hover:bg-transparent dark:disabled:border-grey-disabled dark:disabled:text-grey-disabled dark:disabled:bg-transparent',
       },
       // Secondary + Link
       {
         variant: 'secondary',
         appearance: 'link',
         class:
-          'bg-transparent border-transparent p-0 h-auto rounded-none hover:underline hover:bg-transparent text-grey-secondary hover:text-grey-primary disabled:text-grey-disabled dark:text-grey-secondary dark:hover:text-grey-primary dark:disabled:text-grey-disabled',
+          'bg-transparent border-transparent p-0 h-auto rounded-none enabled:hover:underline enabled:hover:bg-transparent text-grey-secondary enabled:hover:text-grey-primary disabled:text-grey-disabled disabled:no-underline dark:text-grey-secondary dark:enabled:hover:text-grey-primary dark:disabled:text-grey-disabled',
       },
     ],
     defaultVariants: {

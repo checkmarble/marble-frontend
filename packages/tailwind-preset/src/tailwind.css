@@ -31,10 +31,10 @@
    * PURPLE - Semantic naming from Figma
    * ======================================== */
   --color-purple-primary: oklch(0.5515 0.2424 277.49);    /* #5A50FA - Primary (filled) */
-  --color-purple-primary-outline: oklch(0.5515 0.2424 277.49); /* #5A50FA - Primary outline (same in light) */
   --color-purple-hover: oklch(0.478 0.2462 274.58);       /* #4136E3 - Hover state */
-  --color-purple-disabled: oklch(0.6377 0.1865 282.89);   /* #7F76F7 - Disabled state */
   --color-purple-secondary: oklch(0.7665 0.1218 286.34);  /* #ADA7FD - Secondary */
+  --color-purple-placeholder: oklch(41.26% 0.221 273.52); /* #3128BF - Placeholder (temp: same as dark) */
+  --color-purple-disabled: oklch(0.6377 0.1865 282.89);   /* #7F76F7 - Disabled state */
   --color-purple-border: oklch(0.8537 0.0761 287.17);     /* #CBC8FF - Border */
   --color-purple-border-light: oklch(0.9251 0.0378 287.27); /* #E4E3FF - Light border */
   --color-purple-background: oklch(0.9519 0.0227 288.66); /* #EEEDFE - Background */
@@ -58,6 +58,7 @@
   --color-red-primary: oklch(57.14% 0.1956 32.06);      /* #D2371D - Primary */
   --color-red-hover: oklch(53.16% 0.1799 31.32);        /* #BE321E - Hover */
   --color-red-secondary: oklch(63.72% 0.160 31.57);     /* #DB5F4A - Secondary */
+  --color-red-placeholder: oklch(49.93% 0.194 31.04);   /* #B81700 - Placeholder (temp: same as dark) */
   --color-red-disabled: oklch(76.36% 0.0962 29.85);     /* #E99B8E - Disabled */
   --color-red-border: oklch(84.69% 0.0589 28.84);       /* #F1BFB7 - Border */
   --color-red-background: oklch(90.53% 0.0376 28.05);   /* #F8D7D2 - Background */
@@ -67,8 +68,9 @@
    * GREEN - Semantic naming
    * ======================================== */
   --color-green-primary: oklch(0.6497 0.1594 153.6); /* #18AA5F */
-  --color-green-secondary: oklch(0.7104 0.1378 157.43); /* #46BB7F */
   --color-green-hover: oklch(0.5891 0.1574 151.3); /* #009649 */
+  --color-green-secondary: oklch(0.7104 0.1378 157.43); /* #46BB7F */
+  --color-green-placeholder: oklch(50.45% 0.133 151.71); /* #01793B - Placeholder (temp: same as dark) */
   --color-green-disabled: oklch(0.81 0.0935 160.67); /* #89D4AD */
   --color-green-border: oklch(0.8783 0.0604 162.17); /* #B4E4CB */
   --color-green-background: oklch(0.9237 0.0414 163.15); /* #CEEFDE */
@@ -78,8 +80,9 @@
    * YELLOW - Semantic naming
    * ======================================== */
   --color-yellow-primary: oklch(0.7674 0.161691 75.2842); /* #EEA200 */
-  --color-yellow-secondary: oklch(0.836 0.1581 81.24); /* #FDBD35 */
   --color-yellow-hover: oklch(0.6713 0.1413 75.44); /* #C78700 */
+  --color-yellow-secondary: oklch(0.836 0.1581 81.24); /* #FDBD35 */
+  --color-yellow-placeholder: oklch(67.13% 0.141 75.44); /* #C78700 - Placeholder (temp: same as dark) */
   --color-yellow-disabled: oklch(0.891 0.1158 84.33); /* #FFD57E */
   --color-yellow-border: oklch(0.9365 0.0772 91.28); /* #FDE9AF */
   --color-yellow-background: oklch(0.9564 0.0579 91.09); /* #FFF0C5 */
@@ -89,10 +92,13 @@
   --color-blue-58: oklch(63.11% 0.19990007248114244 257.69061986426914);
   --color-blue-96: oklch(96.09% 0.018782499204383577 255.53286989477857);
 
-  /* Orange scale */
+  /* ========================================
+   * ORANGE - Semantic naming
+   * ======================================== */
   --color-orange-primary: oklch(0.6958 0.204259 43.491); /* #FF6600 */
-  --color-orange-secondary: oklch(0.7414 0.1734 50.15); /* #FF8533 */
   --color-orange-hover: oklch(0.6178 0.1797 44); /* #D95700 */
+  --color-orange-secondary: oklch(0.7414 0.1734 50.15); /* #FF8533 */
+  --color-orange-placeholder: oklch(54.97% 0.159 44.43); /* #B94A00 - Placeholder (temp: same as dark) */
   --color-orange-disabled: oklch(0.7995 0.1316 53.83); /* #FFA568 */
   --color-orange-border: oklch(0.8468 0.0976 54.87); /* #FFBC8F */
   --color-orange-background: oklch(0.8927 0.0664 55.68); /* #FFD1B2 */
@@ -173,8 +179,8 @@
   --color-surface-row-hover: var(--color-purple-disabled);     /* #4F4B93 - Table row hover */
 
   /* Grey - Dark mode overrides */
-  --color-grey-primary: oklch(0.9258 0.004 286.32);       /* #E6E6E9 - Light text on dark */
-  --color-grey-hover: oklch(0.9854 0.0013 286.38);        /* #FAFAFB - Hover state */
+  --color-grey-primary: oklch(98.54% 0.001 286.38);       /* #FAFAFB - Light text on dark */
+  --color-grey-hover: oklch(100% 0 0);                    /* #FFFFFF - Hover state */
   --color-grey-secondary: oklch(0.811 0.0112 291.9);      /* #C1C0C8 - Secondary text */
   --color-grey-placeholder: oklch(0.6129 0.024 288.54);   /* #838292 - Placeholder (same) */
   --color-grey-disabled: oklch(0.3703 0.0119 285.81);     /* #3F3F46 - Disabled state */
@@ -185,9 +191,9 @@
 
   /* Purple - Dark mode overrides */
   --color-purple-primary: oklch(63.77% 0.187 282.89);    /* #7F76F7 - Primary (filled) */
-  --color-purple-primary-outline: oklch(0.7665 0.1218 286.34); /* #ADA7FD - Primary outline */
   --color-purple-hover: oklch(76.65% 0.122 286.34);      /* #ADA7FD - Hover state */
   --color-purple-secondary: oklch(55.15% 0.242 277.49);  /* #5A50FA - Secondary */
+  --color-purple-placeholder: oklch(41.26% 0.221 273.52); /* #3128BF - Placeholder */
   --color-purple-disabled: oklch(45.32% 0.115 283.34);   /* #4F4B93 - Disabled state */
   --color-purple-border: oklch(26.26% 0.081 282.29);     /* #201D4A - Border */
   --color-purple-border-light: oklch(0.9519 0.0227 288.66); /* #EEEDFE - Border light */
