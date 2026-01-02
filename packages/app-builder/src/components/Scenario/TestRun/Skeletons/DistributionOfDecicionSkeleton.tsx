@@ -20,10 +20,10 @@ export const DistributionOfDecisionChartSkeleton = () => {
             <div className="flex size-full flex-col items-center gap-4">
               <div className="bg-grey-border size-6 animate-pulse rounded-md" />
               <div className="flex size-full flex-col gap-1">
-                <div className="bg-green-94 h-10 w-full animate-pulse rounded-md" />
+                <div className="bg-green-background-light h-10 w-full animate-pulse rounded-md" />
                 <div className="bg-red-background h-10 w-full animate-pulse rounded-md" />
                 <div className="bg-orange-background-light h-10 w-full animate-pulse rounded-md" />
-                <div className="bg-yellow-90 h-10 w-full animate-pulse rounded-md" />
+                <div className="bg-yellow-background h-10 w-full animate-pulse rounded-md" />
               </div>
             </div>
 
@@ -32,10 +32,10 @@ export const DistributionOfDecisionChartSkeleton = () => {
             <div className="flex size-full flex-col items-center gap-4">
               <div className="bg-grey-border size-6 animate-pulse rounded-md" />
               <div className="flex size-full flex-col gap-1">
-                <div className="bg-green-94 h-10 w-full animate-pulse rounded-md" />
+                <div className="bg-green-background-light h-10 w-full animate-pulse rounded-md" />
                 <div className="bg-red-background h-10 w-full animate-pulse rounded-md" />
                 <div className="bg-orange-background-light h-10 w-full animate-pulse rounded-md" />
-                <div className="bg-yellow-90 h-10 w-full animate-pulse rounded-md" />
+                <div className="bg-yellow-background h-10 w-full animate-pulse rounded-md" />
               </div>
             </div>
           </div>

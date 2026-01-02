@@ -79,7 +79,7 @@ export const CloseCase = ({ id }: { id: string }) => {
                               s === 'confirmed_risk',
                             'bg-grey-background text-grey-placeholder dark:bg-transparent dark:border-grey-placeholder':
                               s === 'false_positive',
-                            'bg-yellow-90 text-yellow-50 dark:bg-transparent dark:border-yellow-50':
+                            'bg-yellow-background text-yellow-primary dark:bg-transparent dark:border-yellow-primary':
                               s === 'valuable_alert',
                           })}
                         >

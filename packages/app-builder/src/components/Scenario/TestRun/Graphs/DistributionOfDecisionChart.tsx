@@ -33,8 +33,8 @@ export const DistributionOfDecisionChart = ({
               }))}
             mapping={{
               approve: {
-                background: 'bg-green-38',
-                border: 'border-green-38',
+                background: 'bg-green-primary',
+                border: 'border-green-primary',
                 text: 'text-grey-white',
                 name: t('decisions:outcome.approve'),
               },
@@ -51,8 +51,8 @@ export const DistributionOfDecisionChart = ({
                 name: t('decisions:outcome.block_and_review'),
               },
               review: {
-                background: 'bg-yellow-50',
-                border: 'border-yellow-50',
+                background: 'bg-yellow-primary',
+                border: 'border-yellow-primary',
                 text: 'text-grey-primary',
                 name: t('decisions:outcome.review'),
               },

@@ -79,7 +79,7 @@ export const CaseStatusBadge = ({
         <span
           className={cn('rounded-full border px-2 py-0.5 text-xs', {
             'border-red-primary text-red-primary': outcome === 'confirmed_risk',
-            'border-green-38 text-green-38': outcome === 'valuable_alert',
+            'border-green-primary text-green-primary': outcome === 'valuable_alert',
             'border-grey-placeholder text-grey-placeholder': outcome === 'false_positive',
           })}
         >

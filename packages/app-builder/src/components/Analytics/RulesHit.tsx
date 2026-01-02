@@ -221,7 +221,7 @@ const deltaColor = cva('flex flex-row items-center text-xs', {
     {
       higherIsBetter: true,
       delta: 'higher',
-      class: 'text-green-38',
+      class: 'text-green-primary',
     },
     {
       higherIsBetter: true,
@@ -231,7 +231,7 @@ const deltaColor = cva('flex flex-row items-center text-xs', {
     {
       higherIsBetter: false,
       delta: 'lower',
-      class: 'text-green-38',
+      class: 'text-green-primary',
     },
     {
       higherIsBetter: false,

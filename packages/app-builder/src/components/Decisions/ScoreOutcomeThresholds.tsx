@@ -18,8 +18,8 @@ export function ScoreOutcomeThresholds({
 
   return (
     <div className="relative flex h-[70px] w-full flex-row">
-      <div className="bg-green-94 border-b-green-38 isolate flex h-10 flex-1 items-center justify-center rounded-s-md border-b-4">
-        <span className="text-s text-green-38 font-semibold">{t('decisions:outcome.approve')}</span>
+      <div className="bg-green-background-light border-b-green-primary isolate flex h-10 flex-1 items-center justify-center rounded-s-md border-b-4">
+        <span className="text-s text-green-primary font-semibold">{t('decisions:outcome.approve')}</span>
       </div>
 
       {showReviewOutcome ? (
@@ -30,8 +30,8 @@ export function ScoreOutcomeThresholds({
             </span>
           </div>
 
-          <div className="bg-yellow-90 flex h-10 flex-1 items-center justify-center border-b-4 border-b-yellow-50">
-            <span className="text-s font-semibold text-yellow-50">{t('decisions:outcome.review')}</span>
+          <div className="bg-yellow-background flex h-10 flex-1 items-center justify-center border-b-4 border-b-yellow-primary">
+            <span className="text-s font-semibold text-yellow-primary">{t('decisions:outcome.review')}</span>
           </div>
         </>
       ) : null}

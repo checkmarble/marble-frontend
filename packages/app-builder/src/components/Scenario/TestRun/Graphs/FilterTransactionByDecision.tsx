@@ -38,7 +38,7 @@ const TestRunRuleName = ({
     return (
       <div className="flex flex-row items-baseline gap-2">
         <span className="text-s font-normal">{testRuleName}</span>
-        <span className="text-green-38 text-xs font-semibold">({t('scenarios:testrun.rule.new')})</span>
+        <span className="text-green-primary text-xs font-semibold">({t('scenarios:testrun.rule.new')})</span>
       </div>
     );
   }
@@ -124,7 +124,7 @@ const TestRunRuleHitPercentage = ({
             'text-purple-primary size-2.5': direction === 'up' || direction === 'down',
             'rotate-90': direction === 'down',
             '-rotate-90': direction === 'up',
-            'text-green-38': direction === 'equal',
+            'text-green-primary': direction === 'equal',
           })}
         />
       </div>
@@ -164,8 +164,8 @@ const RuleExecution = ({
           }))}
           mapping={{
             hit: {
-              border: 'border-green-68',
-              background: 'bg-green-68',
+              border: 'border-green-border',
+              background: 'bg-green-background',
               text: 'text-grey-primary',
               name: t('decisions:rules.status.hit'),
             },

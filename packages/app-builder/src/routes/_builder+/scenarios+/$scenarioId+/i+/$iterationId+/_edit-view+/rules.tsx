@@ -178,7 +178,7 @@ export default function Rules() {
           const scoreModifier = getValue();
           if (!scoreModifier) return '';
           return (
-            <span className={scoreModifier < 0 ? 'text-green-38' : 'text-red-primary'}>
+            <span className={scoreModifier < 0 ? 'text-green-primary' : 'text-red-primary'}>
               {formatNumber(scoreModifier, {
                 language,
                 signDisplay: 'exceptZero',

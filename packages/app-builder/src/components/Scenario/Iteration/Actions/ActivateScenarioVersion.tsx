@@ -198,7 +198,7 @@ function RuleSnoozeDetail({ scenarioId, iterationId }: { scenarioId: string; ite
                   <Icon
                     className={clsx(
                       'size-5 shrink-0',
-                      hasSnoozesActive === true && 'text-green-38',
+                      hasSnoozesActive === true && 'text-green-primary',
                       hasSnoozesActive === false && 'text-red-primary',
                     )}
                     icon={hasSnoozesActive ? 'tick' : 'cross'}

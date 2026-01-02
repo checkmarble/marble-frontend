@@ -20,7 +20,7 @@ const triggerClassName = cva('flex items-center justify-center text-white ', {
     kind: {
       test: 'bg-purple-primary',
       restricted: 'bg-purple-disabled',
-      missing_configuration: 'bg-yellow-50',
+      missing_configuration: 'bg-yellow-primary',
     },
     collapsed: {
       true: 'absolute top-v2-sm right-v2-sm translate-x-[50%] -translate-y-[50%] rounded-full',
@@ -71,7 +71,7 @@ export const Nudge = ({ content, link, className, kind = 'restricted', iconClass
             'bg-surface-card z-50 flex w-60 flex-col items-center gap-6 rounded-sm border p-4 pointer-events-auto shadow-lg',
             {
               'border-purple-disabled': kind !== 'missing_configuration',
-              'border-yellow-50': kind === 'missing_configuration',
+              'border-yellow-primary': kind === 'missing_configuration',
             },
           )}
           onClick={(e) => e.stopPropagation()}

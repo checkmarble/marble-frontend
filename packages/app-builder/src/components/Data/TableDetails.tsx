@@ -218,7 +218,7 @@ function TableDetailFields({ fields, tableModel, dataModel }: TableDetailColumns
           if (unicityConstraint === 'active_unique_constraint') {
             return (
               <div className="flex size-full items-center justify-center">
-                <Icon icon="tick" className="text-green-38 size-6 shrink-0 justify-center" />
+                <Icon icon="tick" className="text-green-primary size-6 shrink-0 justify-center" />
               </div>
             );
           }

@@ -337,7 +337,7 @@ const PastUploads = ({ uploadLogs }: { uploadLogs: UploadLog[] }) => {
 
 const getStatusIcon = (status: string) => {
   if (status === 'success') {
-    return <Icon icon="tick" className="text-green-38 size-6" />;
+    return <Icon icon="tick" className="text-green-primary size-6" />;
   }
   if (status === 'failure') {
     return <Icon icon="cross" className="text-red-primary size-6" />;

@@ -321,7 +321,7 @@ export const SCREENING_CATEGORY_COLORS: Record<ScreeningCategory, string> = {
   sanctions: 'bg-red-background text-red-hover',
   peps: 'bg-blue-96 text-blue-58',
   'third-parties': 'bg-grey-background text-grey-placeholder',
-  'adverse-media': 'bg-yellow-90 text-yellow-50',
+  'adverse-media': 'bg-yellow-background text-yellow-primary',
 };
 
 export const SCREENING_TOPICS_MAP = new Map<string, ScreeningCategory>([

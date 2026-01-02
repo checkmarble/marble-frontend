@@ -106,15 +106,68 @@ function ColorPaletteSection() {
           </div>
         </div>
 
-        {/* Semantic colors */}
+        {/* Green scale */}
         <div>
-          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Other Colors</h3>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Green - Semantic Names</h3>
           <div className="flex flex-wrap gap-4">
-            <ColorSwatch name="green-38" className="bg-green-38" />
-            <ColorSwatch name="red-47" className="bg-red-primary" />
-            <ColorSwatch name="yellow-50" className="bg-yellow-50" />
-            <ColorSwatch name="orange-50" className="bg-orange-primary" />
+            <ColorSwatch name="green-primary" className="bg-green-primary" />
+            <ColorSwatch name="green-hover" className="bg-green-hover" />
+            <ColorSwatch name="green-secondary" className="bg-green-secondary" />
+            <ColorSwatch name="green-disabled" className="bg-green-disabled" />
+            <ColorSwatch name="green-border" className="bg-green-border" />
+            <ColorSwatch name="green-background" className="bg-green-background" />
+            <ColorSwatch name="green-background-light" className="bg-green-background-light" />
+          </div>
+        </div>
+
+        {/* Red scale */}
+        <div>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Red - Semantic Names</h3>
+          <div className="flex flex-wrap gap-4">
+            <ColorSwatch name="red-primary" className="bg-red-primary" />
+            <ColorSwatch name="red-hover" className="bg-red-hover" />
+            <ColorSwatch name="red-secondary" className="bg-red-secondary" />
+            <ColorSwatch name="red-disabled" className="bg-red-disabled" />
+            <ColorSwatch name="red-border" className="bg-red-border" />
+            <ColorSwatch name="red-background" className="bg-red-background" />
+            <ColorSwatch name="red-background-light" className="bg-red-background-light" />
+          </div>
+        </div>
+
+        {/* Yellow scale */}
+        <div>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Yellow - Semantic Names</h3>
+          <div className="flex flex-wrap gap-4">
+            <ColorSwatch name="yellow-primary" className="bg-yellow-primary" />
+            <ColorSwatch name="yellow-hover" className="bg-yellow-hover" />
+            <ColorSwatch name="yellow-secondary" className="bg-yellow-secondary" />
+            <ColorSwatch name="yellow-disabled" className="bg-yellow-disabled" />
+            <ColorSwatch name="yellow-border" className="bg-yellow-border" />
+            <ColorSwatch name="yellow-background" className="bg-yellow-background" />
+            <ColorSwatch name="yellow-background-light" className="bg-yellow-background-light" />
+          </div>
+        </div>
+
+        {/* Orange scale */}
+        <div>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Orange - Semantic Names</h3>
+          <div className="flex flex-wrap gap-4">
+            <ColorSwatch name="orange-primary" className="bg-orange-primary" />
+            <ColorSwatch name="orange-hover" className="bg-orange-hover" />
+            <ColorSwatch name="orange-secondary" className="bg-orange-secondary" />
+            <ColorSwatch name="orange-disabled" className="bg-orange-disabled" />
+            <ColorSwatch name="orange-border" className="bg-orange-border" />
+            <ColorSwatch name="orange-background" className="bg-orange-background" />
+            <ColorSwatch name="orange-background-light" className="bg-orange-background-light" />
+          </div>
+        </div>
+
+        {/* Blue scale */}
+        <div>
+          <h3 className="mb-3 text-s font-medium text-grey-placeholder">Blue</h3>
+          <div className="flex flex-wrap gap-4">
             <ColorSwatch name="blue-58" className="bg-blue-58" />
+            <ColorSwatch name="blue-96" className="bg-blue-96" />
           </div>
         </div>
       </div>

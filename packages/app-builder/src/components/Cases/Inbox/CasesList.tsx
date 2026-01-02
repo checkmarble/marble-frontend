@@ -105,7 +105,7 @@ export function CasesList({
                 <span
                   className={cn('rounded-full border px-v2-sm py-v2-xs text-small text-nowrap', {
                     'border-red-primary text-red-primary': caseItem.outcome === 'confirmed_risk',
-                    'border-green-38 text-green-38': caseItem.outcome === 'valuable_alert',
+                    'border-green-primary text-green-primary': caseItem.outcome === 'valuable_alert',
                     'border-grey-placeholder text-grey-placeholder': caseItem.outcome === 'false_positive',
                   })}
                 >

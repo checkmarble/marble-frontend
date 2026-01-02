@@ -21,7 +21,7 @@ export const CtaClassName = cva(
         purple:
           'hover:bg-purple-hover active:bg-purple-hover border-purple-primary bg-purple-primary disabled:bg-purple-disabled disabled:border-purple-disabled aria-disabled:bg-purple-disabled aria-disabled:border-purple-disabled',
         green:
-          'hover:bg-green-34 active:bg-green-34 border-green-38 bg-green-38 disabled:bg-green-68 disabled:border-green-68 aria-disabled:bg-green-68 aria-disabled:border-green-68',
+          'hover:bg-green-hover active:bg-green-hover border-green-primary bg-green-primary disabled:bg-green-disabled disabled:border-green-disabled aria-disabled:bg-green-disabled aria-disabled:border-green-disabled',
         red: 'hover:bg-red-hover active:bg-red-hover border-red-primary bg-red-primary disabled:bg-red-disabled aria-disabled:bg-red-disabled',
         grey: 'hover:bg-grey-background active:bg-grey-border focus:border-purple-primary',
       },

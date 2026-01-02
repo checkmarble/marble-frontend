@@ -112,6 +112,6 @@ const ErrorIcon = (
 const SuccessIcon = (
   <div
     aria-hidden
-    className="animate-circle-animation after:animate-checkmark-animation after:border-grey-white bg-green-38 relative size-5 shrink-0 rotate-45 rounded-full delay-100 after:absolute after:bottom-[6px] after:left-[6px] after:box-border after:h-[10px] after:w-[6px] after:border-b-2 after:border-r-2 after:border-solid after:delay-200"
+    className="animate-circle-animation after:animate-checkmark-animation after:border-grey-white bg-green-primary relative size-5 shrink-0 rotate-45 rounded-full delay-100 after:absolute after:bottom-[6px] after:left-[6px] after:box-border after:h-[10px] after:w-[6px] after:border-b-2 after:border-r-2 after:border-solid after:delay-200"
   />
 );

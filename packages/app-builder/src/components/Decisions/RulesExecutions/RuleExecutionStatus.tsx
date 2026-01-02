@@ -30,7 +30,8 @@ export function RuleExecutionStatus({ ruleExecution }: { ruleExecution: RuleExec
       <span
         className={clsx(
           'text-s flex flex-1 items-center justify-center rounded-sm border border-transparent p-2 font-semibold capitalize',
-          isRuleExecutionHit(ruleExecution) && 'bg-green-94 text-green-38 dark:bg-transparent dark:border-green-38',
+          isRuleExecutionHit(ruleExecution) &&
+            'bg-green-background-light text-green-primary dark:bg-transparent dark:border-green-primary',
           getRuleExecutionStatusColor(ruleExecution) === 'grey' &&
             'bg-grey-border text-grey-primary dark:bg-transparent dark:border-grey-placeholder',
           getRuleExecutionStatusColor(ruleExecution) === 'lavender' &&

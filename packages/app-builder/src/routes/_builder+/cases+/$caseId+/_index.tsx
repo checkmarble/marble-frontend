@@ -269,7 +269,7 @@ export default function CaseManagerIndexPage() {
                                         icon={mostRecentReview.review.ok ? 'tick' : 'cross'}
                                         className={cn(
                                           'size-5',
-                                          mostRecentReview.review.ok ? 'text-green-34' : 'text-red-primary',
+                                          mostRecentReview.review.ok ? 'text-green-primary' : 'text-red-primary',
                                         )}
                                       />
                                     </TabsTrigger>

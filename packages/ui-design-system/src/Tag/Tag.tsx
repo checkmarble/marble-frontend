@@ -22,8 +22,10 @@ export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(function Tag(
           'bg-purple-background text-purple-primary dark:border-purple-primary dark:text-purple-primary':
             color === 'purple',
           'bg-blue-96 text-blue-58 dark:border-blue-58 dark:text-blue-58': color === 'blue',
-          'bg-green-94 text-green-38 dark:border-green-38 dark:text-green-38': color === 'green',
-          'bg-yellow-90 text-yellow-50 dark:border-yellow-50 dark:text-yellow-50': color === 'yellow',
+          'bg-green-background-light text-green-primary dark:border-green-primary dark:text-green-primary':
+            color === 'green',
+          'bg-yellow-background text-yellow-primary dark:border-yellow-primary dark:text-yellow-primary':
+            color === 'yellow',
           'bg-orange-background-light text-orange-primary dark:border-orange-primary dark:text-orange-primary':
             color === 'orange',
           'bg-red-background text-red-primary dark:border-red-primary dark:text-red-primary': color === 'red',

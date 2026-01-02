@@ -19,8 +19,8 @@ export const OperationBadge: FunctionComponent<OperationBadgeProps> = ({ operati
   if (!operation) return <span className="text-grey-placeholder">-</span>;
 
   const colorClass = {
-    INSERT: 'bg-green-94 text-green-38',
-    UPDATE: 'bg-yellow-94 text-yellow-50',
+    INSERT: 'bg-green-background-light text-green-primary',
+    UPDATE: 'bg-yellow-94 text-yellow-primary',
     DELETE: 'bg-red-background text-red-primary',
   }[operation];
 

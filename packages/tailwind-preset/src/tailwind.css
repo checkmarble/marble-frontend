@@ -66,11 +66,6 @@
   /* ========================================
    * GREEN - Semantic naming
    * ======================================== */
-  --color-green-34: oklch(60.19% 0.1439 155.06);
-  --color-green-38: oklch(64.97% 0.1594 153.6);
-  --color-green-68: oklch(81.03% 0.0926 161.33);
-  --color-green-94: oklch(96.01% 0.0183 166.38);
-
   --color-green-primary: oklch(0.6497 0.1594 153.6); /* #18AA5F */
   --color-green-secondary: oklch(0.7104 0.1378 157.43); /* #46BB7F */
   --color-green-hover: oklch(0.5891 0.1574 151.3); /* #009649 */
@@ -82,10 +77,6 @@
   /* ========================================
    * YELLOW - Semantic naming
    * ======================================== */
-  --color-yellow-50: oklch(82.26% 0.1684 83.23);
-  --color-yellow-75: oklch(90.35% 0.1157 91.7);
-  --color-yellow-90: oklch(95.87% 0.0473 91.32);
-
   --color-yellow-primary: oklch(0.7674 0.161691 75.2842); /* #EEA200 */
   --color-yellow-secondary: oklch(0.836 0.1581 81.24); /* #FDBD35 */
   --color-yellow-hover: oklch(0.6713 0.1413 75.44); /* #C78700 */

@@ -38,7 +38,7 @@ export const JsonDiff: FunctionComponent<JsonDiffProps> = ({ oldData, newData })
               </div>
             )}
             {isAdded && (
-              <div className="bg-green-94 text-green-38">
+              <div className="bg-green-background-light text-green-primary">
                 <span className="font-semibold">+ {key}:</span> {newStr}
               </div>
             )}
@@ -52,7 +52,7 @@ export const JsonDiff: FunctionComponent<JsonDiffProps> = ({ oldData, newData })
                 <div className="bg-red-background text-red-primary line-through">
                   <span className="font-semibold">- {key}:</span> {oldStr}
                 </div>
-                <div className="bg-green-94 text-green-38">
+                <div className="bg-green-background-light text-green-primary">
                   <span className="font-semibold">+ {key}:</span> {newStr}
                 </div>
               </>

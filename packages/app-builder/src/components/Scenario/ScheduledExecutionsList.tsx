@@ -125,7 +125,7 @@ export function ScheduledExecutionsList({ scheduledExecutions }: { scheduledExec
 
 const getStatusIcon = (status: string) => {
   if (status === 'success') {
-    return <Icon icon="tick" className="text-green-38 size-6 shrink-0" />;
+    return <Icon icon="tick" className="text-green-primary size-6 shrink-0" />;
   }
   if (status === 'failure' || status === 'partial_failure') {
     return <Icon icon="cross" className="text-red-primary size-6 shrink-0" />;
