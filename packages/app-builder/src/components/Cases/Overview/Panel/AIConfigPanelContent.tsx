@@ -60,7 +60,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
         <PanelContent>
           <form id="ai-config-panel-form" className="flex flex-col gap-v2-sm" onSubmit={handleSubmit(form)}>
             {/* Section: Informations générales */}
-            <div className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
+            <div className="bg-grey-background-light dark:bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
               <span className="text-s font-medium">{t('cases:ai_settings.general.title')}</span>
               <form.Field name="caseReviewSetting.orgDescription">
                 {(field) => (
@@ -158,7 +158,7 @@ export function AIConfigPanelContent({ settings, onSuccess, readOnly }: AIConfig
             </div>
 
             {/* Section: IA (KYC Enrichment) */}
-            <div className="bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
+            <div className="bg-grey-background-light dark:bg-surface-card border border-grey-border rounded-v2-lg p-v2-md flex flex-col gap-v2-md">
               <span className="text-s font-medium">{t('cases:overview.panel.ai_config.kyc_enrichment')}</span>
               <form.Field name="kycEnrichmentSetting.enabled">
                 {(field) => (

@@ -124,7 +124,7 @@ export const EscalationConditionsPanelContent = ({
             ))
             .with({ isSuccess: true }, () => (
               <div className="flex flex-col gap-v2-md">
-                <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light flex flex-col gap-v2-md">
+                <div className="border border-grey-border rounded-v2-lg p-v2-md bg-grey-background-light dark:bg-surface-card flex flex-col gap-v2-md">
                   <div className="text-s font-medium">{t('cases:overview.panel.escalation.conditions_title')}</div>
 
                   <div className="flex flex-col gap-v2-md">
