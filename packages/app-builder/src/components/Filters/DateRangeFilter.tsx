@@ -126,9 +126,9 @@ function DateRangeFilterFromNowPicker({ title, className }: { title: string; cla
             }}
             className={clsx(
               'text-s bg-surface-card text-grey-primary border-grey-white dark:border-grey-border flex h-10 items-center rounded-sm border p-2 outline-hidden',
-              'hover:bg-purple-background-light active:bg-purple-background hover:text-purple-primary dark:hover:bg-purple-disabled dark:hover:text-grey-primary',
+              'hover:bg-purple-background-light active:bg-purple-background hover:text-purple-primary dark:hover:bg-grey-background-light dark:hover:text-purple-hover',
               fromNow === duration &&
-                'bg-purple-background border-purple-primary text-purple-primary dark:bg-purple-disabled dark:text-grey-primary', // highlight the currently selected
+                'bg-purple-background border-purple-primary text-purple-primary dark:bg-grey-background-light dark:text-purple-hover', // highlight the currently selected
             )}
           >
             <time dateTime={duration}>{formatDuration(duration, language)}</time>

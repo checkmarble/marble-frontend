@@ -96,7 +96,7 @@ export function PivotsPanelContent({
             return (
               <button
                 key={uniqKey}
-                className="text-grey-placeholder aria-current:bg-purple-background aria-current:text-purple-primary rounded-v2-md p-v2-xs px-v2-sm cursor-pointer"
+                className="text-grey-placeholder aria-current:bg-purple-background aria-current:text-purple-primary aria-current:dark:bg-grey-background-light aria-current:dark:text-purple-hover rounded-v2-md p-v2-xs px-v2-sm cursor-pointer"
                 aria-current={uniqKey === pivotUniqKey(currentPivotObject)}
                 onClick={() => {
                   setCurrentPivotObjectUniqKey(pivotUniqKey(pivotObject));
@@ -118,7 +118,7 @@ export function PivotsPanelContent({
                 {isKycEnrichmentEnabled ? <KycEnrichment caseId={caseObj.id} /> : null}
               </div>
 
-              <div className="border-grey-border flex flex-col gap-v2-md border p-v2-md bg-grey-background-light rounded-v2-lg">
+              <div className="border-grey-border flex flex-col gap-v2-md border p-v2-md bg-surface-card rounded-v2-lg">
                 <div className="capitalize font-semibold">{currentTable.name}</div>
                 <PivotObjectDetails tableModel={currentTable} dataModel={dataModel} pivotObject={currentPivotObject} />
                 <div className="h-px bg-grey-border" />
@@ -159,7 +159,7 @@ export function PivotsPanelContent({
             return (
               <div
                 key={`${proof.type}-${proof.object.data['object_id']}`}
-                className="rounded-xl border border-grey-border bg-grey-background-light"
+                className="rounded-xl border border-grey-border bg-surface-card"
               >
                 <div className="bg-surface-card px-4 py-2 rounded-t-xl border-b border-grey-border">
                   {t('cases:ai_review.proof.tab_title', { number: idx + 1 })}

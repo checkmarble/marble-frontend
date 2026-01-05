@@ -176,7 +176,7 @@
   --color-surface-elevated: var(--color-grey-background-light); /* #1F1F2E - Elevated */
   --color-surface-popover: var(--color-grey-background);       /* #13131A - Popovers */
   --color-surface-row: var(--color-grey-background-light);     /* #1F1F2E - Table rows */
-  --color-surface-row-hover: var(--color-purple-disabled);     /* #4F4B93 - Table row hover */
+  --color-surface-row-hover: var(--color-grey-background-light); /* #1F1F2E - Table row hover */
 
   /* Grey - Dark mode overrides */
   --color-grey-primary: oklch(98.54% 0.001 286.38);       /* #FAFAFB - Light text on dark */

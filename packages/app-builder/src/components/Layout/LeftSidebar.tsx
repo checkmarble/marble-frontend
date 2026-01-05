@@ -63,7 +63,7 @@ export function ToggleTheme() {
     <SidebarButton
       onClick={toggleTheme}
       labelTKey={theme === 'dark' ? 'navigation:light_mode' : 'navigation:dark_mode'}
-      Icon={(props) => <Icon icon={theme === 'dark' ? 'lightbulb' : 'visibility_off'} {...props} />}
+      Icon={(props) => <Icon icon={theme === 'dark' ? 'light_mode' : 'dark_mode'} {...props} />}
     />
   );
 }

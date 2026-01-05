@@ -95,7 +95,7 @@ export function TableDetails({ tableModel, dataModel }: TableDetailsProps) {
         {isIngestDataAvailable ? (
           <NavLink
             className={clsx(
-              'text-s flex flex-row items-center justify-center gap-1 rounded-sm border border-solid px-4 py-2 font-semibold outline-hidden',
+              'text-s flex flex-row items-center justify-center gap-1 rounded-sm border border-transparent px-4 py-2 font-semibold outline-hidden',
               'hover:bg-purple-hover active:bg-purple-hover text-grey-white focus:border-grey-primary bg-purple-primary disabled:bg-purple-disabled',
             )}
             to={getRoute('/upload/:objectType', {

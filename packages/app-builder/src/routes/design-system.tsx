@@ -403,19 +403,61 @@ function ButtonsSection() {
         {/* Icon buttons */}
         <div className="flex flex-col gap-4">
           <h3 className="text-s font-medium text-grey-secondary">Icon Mode</h3>
-          <div className="flex flex-wrap items-center gap-4">
-            <ButtonV2 variant="primary" mode="icon" size="small">
-              <Icon icon="plus" className="size-4" />
-            </ButtonV2>
-            <ButtonV2 variant="primary" mode="icon" size="default">
-              <Icon icon="plus" className="size-5" />
-            </ButtonV2>
-            <ButtonV2 variant="secondary" mode="icon">
-              <Icon icon="edit" className="size-4" />
-            </ButtonV2>
-            <ButtonV2 variant="destructive" mode="icon">
-              <Icon icon="delete" className="size-4" />
-            </ButtonV2>
+          <div className="flex flex-col gap-6">
+            {/* Primary icon buttons */}
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-grey-placeholder">Primary</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <ButtonV2 variant="primary" mode="icon" size="small">
+                  <Icon icon="plus" className="size-4" />
+                </ButtonV2>
+                <ButtonV2 variant="primary" mode="icon" size="default">
+                  <Icon icon="plus" className="size-5" />
+                </ButtonV2>
+                <ButtonV2 variant="primary" mode="icon" size="small" disabled>
+                  <Icon icon="plus" className="size-4" />
+                </ButtonV2>
+                <ButtonV2 variant="primary" mode="icon" size="default" disabled>
+                  <Icon icon="plus" className="size-5" />
+                </ButtonV2>
+              </div>
+            </div>
+            {/* Secondary icon buttons */}
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-grey-placeholder">Secondary</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <ButtonV2 variant="secondary" mode="icon" size="small">
+                  <Icon icon="plus" className="size-4" />
+                </ButtonV2>
+                <ButtonV2 variant="secondary" mode="icon" size="default">
+                  <Icon icon="plus" className="size-5" />
+                </ButtonV2>
+                <ButtonV2 variant="secondary" mode="icon" size="small" disabled>
+                  <Icon icon="plus" className="size-4" />
+                </ButtonV2>
+                <ButtonV2 variant="secondary" mode="icon" size="default" disabled>
+                  <Icon icon="plus" className="size-5" />
+                </ButtonV2>
+              </div>
+            </div>
+            {/* Destructive icon buttons */}
+            <div className="flex flex-col gap-2">
+              <span className="text-xs text-grey-placeholder">Destructive</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <ButtonV2 variant="destructive" mode="icon" size="small">
+                  <Icon icon="plus" className="size-4" />
+                </ButtonV2>
+                <ButtonV2 variant="destructive" mode="icon" size="default">
+                  <Icon icon="plus" className="size-5" />
+                </ButtonV2>
+                <ButtonV2 variant="destructive" mode="icon" size="small" disabled>
+                  <Icon icon="plus" className="size-4" />
+                </ButtonV2>
+                <ButtonV2 variant="destructive" mode="icon" size="default" disabled>
+                  <Icon icon="plus" className="size-5" />
+                </ButtonV2>
+              </div>
+            </div>
           </div>
         </div>
       </div>

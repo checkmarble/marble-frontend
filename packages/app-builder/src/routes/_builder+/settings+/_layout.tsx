@@ -82,8 +82,8 @@ export default function Settings() {
                             clsx(
                               'text-s flex w-full cursor-pointer flex-row rounded-sm p-2 font-medium first-letter:capitalize',
                               isActive
-                                ? 'bg-purple-background text-purple-primary dark:bg-purple-disabled dark:text-grey-primary'
-                                : 'text-grey-primary hover:bg-purple-background hover:text-purple-primary dark:hover:text-grey-primary dark:hover:bg-purple-disabled',
+                                ? 'bg-purple-background text-purple-primary dark:bg-grey-background-light dark:text-purple-hover'
+                                : 'text-grey-primary hover:bg-purple-background hover:text-purple-primary dark:text-grey-primary dark:hover:bg-grey-background-light dark:hover:text-purple-hover',
                             )
                           }
                           to={setting.to}

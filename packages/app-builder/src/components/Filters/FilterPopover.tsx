@@ -40,7 +40,7 @@ const FilterItemRoot = forwardRef<HTMLDivElement, Popover.PopoverAnchorProps>(fu
     <FilterPopover.Anchor
       ref={ref}
       className={clsx(
-        'bg-purple-background-light dark:bg-purple-disabled flex h-10 flex-row items-center rounded-sm',
+        'bg-purple-background-light dark:bg-grey-background-light flex h-10 flex-row items-center rounded-sm',
         className,
       )}
       {...props}

@@ -42,7 +42,10 @@ export function AddComment({ caseId }: { caseId: string }) {
   });
 
   return (
-    <form onSubmit={handleSubmit(form)} className="border-grey-border flex grow items-end gap-4 border-t p-4">
+    <form
+      onSubmit={handleSubmit(form)}
+      className="bg-surface-elevated border-grey-border flex grow items-end gap-4 border-t p-4"
+    >
       <div className="flex grow flex-col items-start gap-2.5">
         <form.Field name="comment">
           {(field) => (

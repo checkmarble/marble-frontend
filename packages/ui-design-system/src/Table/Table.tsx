@@ -256,7 +256,7 @@ function Row<TData extends RowData>({
         onClick?.(e);
       }}
       className={clsx(
-        'even:bg-surface-row h-12',
+        'h-12 even:bg-surface-row dark:even:bg-transparent dark:hover:bg-surface-row-hover',
         withRowLink && 'hover:bg-surface-row-hover focus-within:bg-surface-row-hover cursor-pointer group/row-link',
         className,
       )}

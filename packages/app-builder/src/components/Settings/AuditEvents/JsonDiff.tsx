@@ -43,13 +43,13 @@ export const JsonDiff: FunctionComponent<JsonDiffProps> = ({ oldData, newData })
               </div>
             )}
             {isRemoved && (
-              <div className="bg-red-background text-red-primary line-through">
+              <div className="bg-red-background-light text-red-primary line-through">
                 <span className="font-semibold">- {key}:</span> {oldStr}
               </div>
             )}
             {isChanged && (
               <>
-                <div className="bg-red-background text-red-primary line-through">
+                <div className="bg-red-background-light text-red-primary line-through">
                   <span className="font-semibold">- {key}:</span> {oldStr}
                 </div>
                 <div className="bg-green-background-light text-green-primary">

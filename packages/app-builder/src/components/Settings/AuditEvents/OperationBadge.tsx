@@ -19,13 +19,15 @@ export const OperationBadge: FunctionComponent<OperationBadgeProps> = ({ operati
   if (!operation) return <span className="text-grey-placeholder">-</span>;
 
   const colorClass = {
-    INSERT: 'bg-green-background-light text-green-primary',
-    UPDATE: 'bg-yellow-94 text-yellow-primary',
-    DELETE: 'bg-red-background text-red-primary',
+    INSERT:
+      'bg-green-background-light text-green-primary dark:bg-transparent dark:border-green-light dark:text-green-light',
+    UPDATE:
+      'bg-yellow-background-light text-yellow-primary dark:bg-transparent dark:border-yellow-light dark:text-yellow-light',
+    DELETE: 'bg-red-background-light text-red-primary dark:bg-transparent dark:border-red-light dark:text-red-light',
   }[operation];
 
   return (
-    <span className={clsx('rounded-sm px-2 py-0.5 text-xs font-medium', colorClass)}>
+    <span className={clsx('rounded-sm px-2 py-0.5 text-xs font-medium dark:border', colorClass)}>
       {t(operationToTranslationKey[operation])}
     </span>
   );
