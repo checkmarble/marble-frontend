@@ -3468,6 +3468,30 @@ export function listScenarioIterationRules(scenarioIterationId: string, opts?: O
     }));
 }
 /**
+ * Create a scenario iteration rule
+ */
+export function createScenarioIterationRule(createScenarioIterationRuleBodyDto: CreateScenarioIterationRuleBodyDto, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchJson<{
+        status: 200;
+        data: {
+            rule: ScenarioIterationRuleDto;
+        };
+    } | {
+        status: 401;
+        data: string;
+    } | {
+        status: 403;
+        data: string;
+    } | {
+        status: 404;
+        data: string;
+    }>("/scenario-iteration-rules", oazapfts.json({
+        ...opts,
+        method: "POST",
+        body: createScenarioIterationRuleBodyDto
+    })));
+}
+/**
  * List rules metadata
  */
 export function listScenarioIterationRulesMetadata({ scenarioIterationId }: {
@@ -3490,30 +3514,6 @@ export function listScenarioIterationRulesMetadata({ scenarioIterationId }: {
     }))}`, {
         ...opts
     }));
-}
-/**
- * Create a scenario iteration rule
- */
-export function createScenarioIterationRule(createScenarioIterationRuleBodyDto: CreateScenarioIterationRuleBodyDto, opts?: Oazapfts.RequestOpts) {
-    return oazapfts.ok(oazapfts.fetchJson<{
-        status: 200;
-        data: {
-            rule: ScenarioIterationRuleDto;
-        };
-    } | {
-        status: 401;
-        data: string;
-    } | {
-        status: 403;
-        data: string;
-    } | {
-        status: 404;
-        data: string;
-    }>("/scenario-iteration-rules/metadata", oazapfts.json({
-        ...opts,
-        method: "POST",
-        body: createScenarioIterationRuleBodyDto
-    })));
 }
 /**
  * Get a scenario iteration rule by id
