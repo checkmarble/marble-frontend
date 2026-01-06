@@ -69,7 +69,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     }),
     // Only fetch the live iteration if it exists (we need the schedule field)
     currentScenario.liveVersionId
-      ? scenario.getScenarioIteration({ iterationId: currentScenario.liveVersionId })
+      ? scenario.getScenarioIterationWithoutRules({ iterationId: currentScenario.liveVersionId })
       : Promise.resolve(null),
   ]);
 
